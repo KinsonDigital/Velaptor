@@ -1,6 +1,6 @@
 ﻿using KDScorpionCore.Graphics;
 using KDScorpionCore.Plugins;
-using SDL2;
+using SDLCore;
 using System;
 using System.IO;
 
@@ -11,8 +11,19 @@ namespace SDLScorpPlugin
     /// </summary>
     public class SDLContentLoader : IContentLoader
     {
+        #region Private Fields
+        private SDL _sdl;
+        private SDLImage _sdlImage;
+        private SDLFonts _sdlFonts;
+        #endregion
+
+
         #region Constructors
-        public SDLContentLoader() => ContentRootDirectory = $@"{GamePath}\Content\";
+        public SDLContentLoader()
+        {
+            //TODO: Add code here to load the SDL libraries using a library loader
+            ContentRootDirectory = $@"{GamePath}\Content\";
+        }
         #endregion
 
 
@@ -30,24 +41,24 @@ namespace SDLScorpPlugin
 
 
             //Load image at specified path
-            var loadedSurface = SDL_image.IMG_Load(texturePath);
+            var loadedSurface = _sdlImage.Load(texturePath);
 
             //The final optimized image
             IntPtr newTexturePtr;
             if (loadedSurface == IntPtr.Zero)
             {
-                throw new Exception($"Unable to load image {texturePath}! \n\nSDL Error: {SDL.SDL_GetError()}");
+                throw new Exception($"Unable to load image {texturePath}! \n\nSDL Error: {_sdl.GetError()}");
             }
             else
             {
                 //Create texture from surface pixels
-                newTexturePtr = SDL.SDL_CreateTextureFromSurface(SDLEngineCore.RendererPointer, loadedSurface);
+                newTexturePtr = _sdl.CreateTextureFromSurface(SDLEngineCore.RendererPointer, loadedSurface);
 
                 if (newTexturePtr == IntPtr.Zero)
-                    throw new Exception($"Unable to create texture from {texturePath}! \n\nSDL Error: {SDL.SDL_GetError()}");
+                    throw new Exception($"Unable to create texture from {texturePath}! \n\nSDL Error: {_sdl.GetError()}");
 
                 //Get rid of old loaded surface
-                SDL.SDL_FreeSurface(loadedSurface);
+                _sdl.FreeSurface(loadedSurface);
             }
 
             ITexture newTexture = new SDLTexture(newTexturePtr);
@@ -72,7 +83,7 @@ namespace SDLScorpPlugin
             //same name with the .ffd extension exists, throw an exception explaining the issue.
             var font = $@"{ContentRootDirectory}Fonts\{name}.ttf";
 
-            var fontPtr = SDL_ttf.TTF_OpenFont(font, 14);
+            var fontPtr = _sdlFonts.OpenFont(font, 14);
 
             var newText = new SDLText(fontPtr, "Default Text");
 

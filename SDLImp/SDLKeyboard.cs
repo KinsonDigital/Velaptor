@@ -3,7 +3,7 @@ using KDScorpionCore.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SDL2;
+using SDLCore;
 
 namespace SDLScorpPlugin
 {
@@ -13,8 +13,9 @@ namespace SDLScorpPlugin
     public class SDLKeyboard : IKeyboard
     {
         #region Private Fields
-        private readonly List<SDL.SDL_Keycode> _currentStateKeys = new List<SDL.SDL_Keycode>();
-        private readonly List<SDL.SDL_Keycode> _prevStateKeys = new List<SDL.SDL_Keycode>();
+        private SDL _sdl;
+        private readonly List<Keycode> _currentStateKeys = new List<Keycode>();
+        private readonly List<Keycode> _prevStateKeys = new List<Keycode>();
         #endregion
 
 
@@ -22,42 +23,42 @@ namespace SDLScorpPlugin
         /// <summary>
         /// Gets a value indicating if the caps lock key is on.
         /// </summary>
-        public bool CapsLockOn => (SDL.SDL_GetModState() & SDL.SDL_Keymod.KMOD_CAPS) == SDL.SDL_Keymod.KMOD_CAPS;
+        public bool CapsLockOn => (_sdl.GetModState() & Keymod.KMOD_CAPS) == Keymod.KMOD_CAPS;
 
         /// <summary>
         /// Gets a value indicating if the numlock key is on.
         /// </summary>
-        public bool NumLockOn => (SDL.SDL_GetModState() & SDL.SDL_Keymod.KMOD_NUM) == SDL.SDL_Keymod.KMOD_NUM;
+        public bool NumLockOn => (_sdl.GetModState() & Keymod.KMOD_NUM) == Keymod.KMOD_NUM;
 
         /// <summary>
         /// Gets a value indicating if the left shift key is being held down.
         /// </summary>
-        public bool IsLeftShiftDown => (SDL.SDL_GetModState() & SDL.SDL_Keymod.KMOD_LSHIFT) == SDL.SDL_Keymod.KMOD_LSHIFT;
+        public bool IsLeftShiftDown => (_sdl.GetModState() & Keymod.KMOD_LSHIFT) == Keymod.KMOD_LSHIFT;
 
         /// <summary>
         /// Gets a value indicating if the right shift key is being held down.
         /// </summary>
-        public bool IsRightShiftDown => (SDL.SDL_GetModState() & SDL.SDL_Keymod.KMOD_RSHIFT) == SDL.SDL_Keymod.KMOD_RSHIFT;
+        public bool IsRightShiftDown => (_sdl.GetModState() & Keymod.KMOD_RSHIFT) == Keymod.KMOD_RSHIFT;
 
         /// <summary>
         /// Gets a value indicating if the left control key is being held down.
         /// </summary>
-        public bool IsLeftCtrlDown => (SDL.SDL_GetModState() & SDL.SDL_Keymod.KMOD_LCTRL) == SDL.SDL_Keymod.KMOD_LCTRL;
+        public bool IsLeftCtrlDown => (_sdl.GetModState() & Keymod.KMOD_LCTRL) == Keymod.KMOD_LCTRL;
 
         /// <summary>
         /// Gets a value indicating if the right control key is being held down.
         /// </summary>
-        public bool IsRightCtrlDown => (SDL.SDL_GetModState() & SDL.SDL_Keymod.KMOD_RCTRL) == SDL.SDL_Keymod.KMOD_RCTRL;
+        public bool IsRightCtrlDown => (_sdl.GetModState() & Keymod.KMOD_RCTRL) == Keymod.KMOD_RCTRL;
 
         /// <summary>
         /// Gets a value indicating if the left alt key is being held down.
         /// </summary>
-        public bool IsLeftAltDown => (SDL.SDL_GetModState() & SDL.SDL_Keymod.KMOD_LALT) == SDL.SDL_Keymod.KMOD_LALT;
+        public bool IsLeftAltDown => (_sdl.GetModState() & Keymod.KMOD_LALT) == Keymod.KMOD_LALT;
 
         /// <summary>
         /// Gets a value indicating if the right alt key is being held down.
         /// </summary>
-        public bool IsRightAltDown => (SDL.SDL_GetModState() & SDL.SDL_Keymod.KMOD_RALT) == SDL.SDL_Keymod.KMOD_RALT;
+        public bool IsRightAltDown => (_sdl.GetModState() & Keymod.KMOD_RALT) == Keymod.KMOD_RALT;
         #endregion
 
 

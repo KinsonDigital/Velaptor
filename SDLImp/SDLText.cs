@@ -1,6 +1,7 @@
 ﻿using KDScorpionCore;
 using KDScorpionCore.Graphics;
-using SDL2;
+using SDLCore;
+using SDLCore.Structs;
 using System;
 
 namespace SDLScorpPlugin
@@ -11,6 +12,8 @@ namespace SDLScorpPlugin
     public class SDLText : IText
     {
         #region Private Fields
+        private SDL _sdl;
+        private SDLFonts _sdlFonts;
         private readonly IntPtr _fontPtr;
         private IntPtr _texturePointer;
         private string _text;
@@ -25,6 +28,7 @@ namespace SDLScorpPlugin
         /// <param name="text">The text to render to the surface.</param>
         public SDLText(IntPtr fontPtr, string text)
         {
+            //TODO: Load the SDL libraries using a library loader
             _fontPtr = fontPtr;
             Color = new GameColor(255, 255, 255, 255);
             Text = text;
@@ -43,7 +47,7 @@ namespace SDLScorpPlugin
             {
                 _text = value;
 
-                var color = new SDL.SDL_Color()
+                var color = new Color()
                 {
                     r = Color.Red,
                     g = Color.Green,
@@ -52,16 +56,16 @@ namespace SDLScorpPlugin
                 };
 
                 //Create a surface for which to render the text to
-                var surfacePtr = SDL_ttf.TTF_RenderText_Solid(_fontPtr, value, color);
+                var surfacePtr = _sdlFonts.RenderTextSolid(_fontPtr, value, color);
 
                 //Remove the old texture pointer before creating a new one to prevent a memory leak
                 if (_texturePointer != IntPtr.Zero)
-                    SDL.SDL_DestroyTexture(_texturePointer);
+                    _sdl.DestroyTexture(_texturePointer);
 
                 //Create a texture from the surface
-                _texturePointer = SDL.SDL_CreateTextureFromSurface(SDLEngineCore.RendererPointer, surfacePtr);
+                _texturePointer = _sdl.CreateTextureFromSurface(SDLEngineCore.RendererPointer, surfacePtr);
 
-                SDL.SDL_FreeSurface(surfacePtr);
+                _sdl.FreeSurface(surfacePtr);
             }
         }
 
@@ -72,7 +76,7 @@ namespace SDLScorpPlugin
         {
             get
             {
-                SDL.SDL_QueryTexture(_texturePointer, out var _, out var _, out var width, out var _);
+                _sdl.QueryTexture(_texturePointer, out var _, out var _, out var width, out var _);
 
 
                 return width;
@@ -86,7 +90,7 @@ namespace SDLScorpPlugin
         {
             get
             {
-                SDL.SDL_QueryTexture(_texturePointer, out var _, out var _, out var _, out var height);
+                _sdl.QueryTexture(_texturePointer, out var _, out var _, out var _, out var height);
 
 
                 return height;

@@ -1,6 +1,6 @@
 ﻿using KDScorpionCore;
 using KDScorpionCore.Graphics;
-using SDL2;
+using SDLCore;
 using System;
 
 namespace SDLScorpPlugin
@@ -11,6 +11,7 @@ namespace SDLScorpPlugin
     public class SDLTexture : ITexture
     {
         #region Private Fields
+        private SDL _sdl;
         private readonly IntPtr _texturePtr;
         private readonly int _width;
         private readonly int _height;
@@ -24,10 +25,11 @@ namespace SDLScorpPlugin
         /// <param name="texturePtr">The pointer to the SDL texture.</param>
         public SDLTexture(IntPtr texturePtr)
         {
+            //TODO: Load the SDL libraries using a library loader
             _texturePtr = texturePtr;
 
             //Query the texture data which gets the width and height of the texture
-            SDL.SDL_QueryTexture(_texturePtr, out uint _, out _, out _width, out _height);
+            _sdl.QueryTexture(_texturePtr, out uint _, out _, out _width, out _height);
         }
         #endregion
 

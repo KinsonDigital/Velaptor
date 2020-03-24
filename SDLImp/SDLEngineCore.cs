@@ -1,6 +1,6 @@
 ﻿using KDScorpionCore;
 using KDScorpionCore.Plugins;
-using SDL2;
+using SDLCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,6 +23,9 @@ namespace SDLScorpPlugin
 
 
         #region Private Fields
+        private SDL _sdl;
+        private SDLImage _sdlImage;
+        private SDLFonts _sdlFonts;
         private Stopwatch _timer;
         private TimeSpan _lastFrameTime;
         private bool _isRunning;
@@ -35,7 +38,10 @@ namespace SDLScorpPlugin
         /// <summary>
         /// Creates a new instance of <see cref="SDLEngineCore"/>.
         /// </summary>
-        public SDLEngineCore() { }
+        public SDLEngineCore()
+        {
+            //TODO: Add code here to load the SDL libraries using library loaders
+        }
         #endregion
 
 
@@ -47,14 +53,14 @@ namespace SDLScorpPlugin
         {
             get
             {
-                SDL.SDL_GetWindowSize(WindowPtr, out int w, out _);
+                _sdl.GetWindowSize(WindowPtr, out int w, out _);
 
                 return w;
             }
             set
             {
-                SDL.SDL_GetWindowSize(WindowPtr, out _, out int h);
-                SDL.SDL_SetWindowSize(WindowPtr, value, h);
+                _sdl.GetWindowSize(WindowPtr, out _, out int h);
+                _sdl.SetWindowSize(WindowPtr, value, h);
             }
         }
 
@@ -65,14 +71,14 @@ namespace SDLScorpPlugin
         {
             get
             {
-                SDL.SDL_GetWindowSize(WindowPtr, out _, out int h);
+                _sdl.GetWindowSize(WindowPtr, out _, out int h);
 
                 return h;
             }
             set
             {
-                SDL.SDL_GetWindowSize(WindowPtr, out int w, out _);
-                SDL.SDL_SetWindowSize(WindowPtr, w, value);
+                _sdl.GetWindowSize(WindowPtr, out int w, out _);
+                _sdl.SetWindowSize(WindowPtr, w, value);
             }
         }
 
@@ -104,12 +110,12 @@ namespace SDLScorpPlugin
         /// <summary>
         /// Gets or sets the current state of the keyboard for the current frame.
         /// </summary>
-        internal static List<SDL.SDL_Keycode> CurrentKeyboardState { get; set; } = new List<SDL.SDL_Keycode>();
+        internal static List<Keycode> CurrentKeyboardState { get; set; } = new List<Keycode>();
 
         /// <summary>
         /// Gets or sets the previous state of the keyboard for the previous frame.
         /// </summary>
-        internal static List<SDL.SDL_Keycode> PreviousKeyboardState { get; set; } = new List<SDL.SDL_Keycode>();
+        internal static List<Keycode> PreviousKeyboardState { get; set; } = new List<Keycode>();
 
         /// <summary>
         /// Gets the current state of the left mouse button.
@@ -211,14 +217,14 @@ namespace SDLScorpPlugin
         public void Dispose()
         {
             _isRunning = false;
-            SDL.SDL_DestroyRenderer(RendererPointer);
-            SDL.SDL_DestroyWindow(WindowPtr);
+            _sdl.DestroyRenderer(RendererPointer);
+            _sdl.DestroyWindow(WindowPtr);
 
             //Quit SDL sub systems
-            SDL_ttf.TTF_Quit();
-            SDL_image.IMG_Quit();
+            _sdlFonts.Quit();
+            _sdlImage.Quit();
 
-            SDL.SDL_Quit();
+            _sdl.Quit();
         }
         #endregion
 
@@ -230,31 +236,31 @@ namespace SDLScorpPlugin
         private void InitEngine()
         {
             //Initialize SDL
-            if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
+            if (_sdl.Init(SDL.SDL_INIT_VIDEO) < 0)
             {
-                throw new Exception($"SDL could not initialize! \n\nSDL_Error: {SDL.SDL_GetError()}");
+                throw new Exception($"SDL could not initialize! \n\nError: {_sdl.GetError()}");
             }
             else
             {
                 //Set texture filtering to linear
-                if (SDL.SDL_SetHint(SDL.SDL_HINT_RENDER_SCALE_QUALITY, "0") == SDL.SDL_bool.SDL_FALSE)
+                if (_sdl.SetHint(SDL.SDL_HINT_RENDER_SCALE_QUALITY, "0") == SDL_bool.SDL_FALSE)
                     throw new Exception("Warning: Linear texture filtering not enabled!");
 
                 //Create window
-                WindowPtr = SDL.SDL_CreateWindow("SDL Tutorial", SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED,
-                    640, 480, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
+                WindowPtr = _sdl.CreateWindow("SDL Tutorial", SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED,
+                    640, 480, WindowFlags.SDL_WINDOW_SHOWN);
 
                 if (WindowPtr == IntPtr.Zero)
                 {
-                    throw new Exception($"Window could not be created! \n\nSDL_Error: {SDL.SDL_GetError()}");
+                    throw new Exception($"Window could not be created! \n\nError: {_sdl.GetError()}");
                 }
                 else
                 {
                     //Create vsynced renderer for window
-                    var renderFlags = SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED;
+                    var renderFlags = RendererFlags.SDL_RENDERER_ACCELERATED;
 
                     Renderer = new SDLRenderer();
-                    RendererPointer = SDL.SDL_CreateRenderer(WindowPtr, -1, renderFlags);
+                    RendererPointer = _sdl.CreateRenderer(WindowPtr, -1, renderFlags);
 
                     var ptrContainer = new PointerContainer();
                     ptrContainer.PackPointer(RendererPointer);
@@ -264,22 +270,22 @@ namespace SDLScorpPlugin
 
                     if (RendererPointer == IntPtr.Zero)
                     {
-                        throw new Exception($"Renderer could not be created! \n\nSDL_Error: {SDL.SDL_GetError()}");
+                        throw new Exception($"Renderer could not be created! \n\nError: {_sdl.GetError()}");
                     }
                     else
                     {
                         //Initialize renderer color
-                        SDL.SDL_SetRenderDrawColor(RendererPointer, 48, 48, 48, 255);
+                        _sdl.SetRenderDrawColor(RendererPointer, 48, 48, 48, 255);
 
                         //Initialize PNG loading
-                        var imgFlags = SDL_image.IMG_InitFlags.IMG_INIT_PNG;
+                        var imgFlags = IMG_InitFlags.IMG_INIT_PNG;
 
-                        if ((SDL_image.IMG_Init(imgFlags) > 0 & imgFlags > 0) == false)
-                            throw new Exception($"SDL_image could not initialize! \n\nSDL_image Error: {SDL.SDL_GetError()}");
+                        if ((_sdlImage.Init(imgFlags) > 0 & imgFlags > 0) == false)
+                            throw new Exception($"image could not initialize! \n\nimage Error: {_sdl.GetError()}");
 
-                        //Initialize SDL_ttf
-                        if (SDL_ttf.TTF_Init() == -1)
-                            throw new Exception($"SDL_ttf could not initialize! \n\nSDL_ttf Error: {SDL.SDL_GetError()}");
+                        //Initialize ttf
+                        if (_sdlFonts.Init() == -1)
+                            throw new Exception($"ttf could not initialize! \n\nttf Error: {_sdl.GetError()}");
                     }
                 }
             }
@@ -376,34 +382,34 @@ namespace SDLScorpPlugin
         /// </summary>
         private void UpdateInputStates()
         {
-            while (SDL.SDL_PollEvent(out var e) != 0)
+            while (_sdl.PollEvent(out var e) != 0)
             {
-                if (e.type == SDL.SDL_EventType.SDL_QUIT)
+                if (e.type == EventType.SDL_QUIT)
                 {
                     ShutDown();
                 }
-                else if (e.type == SDL.SDL_EventType.SDL_KEYDOWN)
+                else if (e.type == EventType.SDL_KEYDOWN)
                 {
                     if (!CurrentKeyboardState.Contains(e.key.keysym.sym))
                         CurrentKeyboardState.Add(e.key.keysym.sym);
                 }
-                else if (e.type == SDL.SDL_EventType.SDL_KEYUP)
+                else if (e.type == EventType.SDL_KEYUP)
                 {
                     CurrentKeyboardState.Remove(e.key.keysym.sym);
                 }
-                else if (e.type == SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN)
+                else if (e.type == EventType.SDL_MOUSEBUTTONDOWN)
                 {
                     CurrentLeftMouseButtonState = e.button.button == 1 && e.button.state == 1;
                     CurrentMiddleMouseButtonState = e.button.button == 2 && e.button.state == 1;
                     CurrentRightMouseButtonState = e.button.button == 3 && e.button.state == 1;
                 }
-                else if (e.type == SDL.SDL_EventType.SDL_MOUSEBUTTONUP)
+                else if (e.type == EventType.SDL_MOUSEBUTTONUP)
                 {
                     CurrentLeftMouseButtonState = e.button.button == 1 && e.button.state == 1;
                     CurrentMiddleMouseButtonState = e.button.button == 2 && e.button.state == 1;
                     CurrentRightMouseButtonState = e.button.button == 3 && e.button.state == 1;
                 }
-                else if (e.type == SDL.SDL_EventType.SDL_MOUSEMOTION)
+                else if (e.type == EventType.SDL_MOUSEMOTION)
                 {
                     MousePosition = new Vector(e.button.x, e.button.y);
                 }

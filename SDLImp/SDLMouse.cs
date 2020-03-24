@@ -1,6 +1,6 @@
 ﻿using KDScorpionCore.Input;
 using KDScorpionCore.Plugins;
-using SDL2;
+using SDLCore;
 using System;
 
 namespace SDLScorpPlugin
@@ -11,12 +11,21 @@ namespace SDLScorpPlugin
     public class SDLMouse : IMouse
     {
         #region Private Fields
+        private SDL _sdl;
         private static bool _currentLeftButtonState;
         private static bool _currentRightButtonState;
         private static bool _currentMiddleButtonState;
         private static bool _prevLeftButtonState;
         private static bool _prevRightButtonState;
         private static bool _prevMiddleButtonState;
+        #endregion
+
+
+        #region Constructors
+        public SDLMouse()
+        {
+            //TODO: Load the SDL libraries using library loaders
+        }
         #endregion
 
 
@@ -69,7 +78,7 @@ namespace SDLScorpPlugin
         /// </summary>
         /// <param name="x">The horizontal X position to set the mouse in the game window.</param>
         /// <param name="y">The vertical Y position to set the mouse in the game window.</param>
-        public void SetPosition(int x, int y) => SDL.SDL_WarpMouseInWindow(SDLEngineCore.WindowPtr, x, y);
+        public void SetPosition(int x, int y) => _sdl.WarpMouseInWindow(SDLEngineCore.WindowPtr, x, y);
 
 
         /// <summary>

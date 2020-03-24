@@ -1,8 +1,11 @@
 ﻿using KDScorpionCore;
 using KDScorpionCore.Graphics;
 using KDScorpionCore.Plugins;
-using SDL2;
+using SDLCore;
+using SDLCore.Structs;
 using System;
+using SDLRect = SDLCore.Structs.Rect;
+using CoreRect = KDScorpionCore.Rect;
 
 namespace SDLScorpPlugin
 {
@@ -12,6 +15,7 @@ namespace SDLScorpPlugin
     public class SDLRenderer : IRenderer
     {
         #region Private Fields
+        private SDL _sdl;
         private bool _beginInvoked = false;
         private IntPtr _rendererPtr;
         #endregion
@@ -39,7 +43,7 @@ namespace SDLScorpPlugin
             if (!_beginInvoked)
                 throw new Exception($"The '{nameof(Begin)}' method must be invoked first before the '{nameof(End)}' method.");
 
-            SDL.SDL_RenderPresent(_rendererPtr);
+            _sdl.RenderPresent(_rendererPtr);
 
             _beginInvoked = false;
         }
@@ -53,8 +57,8 @@ namespace SDLScorpPlugin
         {
             CheckRenderPointer();
 
-            SDL.SDL_SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
-            SDL.SDL_RenderClear(_rendererPtr);
+            _sdl.SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
+            _sdl.RenderClear(_rendererPtr);
         }
 
 
@@ -95,13 +99,13 @@ namespace SDLScorpPlugin
             CheckRenderPointer();
 
             //NOTE: SDL takes the angle in degrees, not radians.
-            var textureOrigin = new SDL.SDL_Point()
+            var textureOrigin = new Point()
             {
                 x = (int)((texture.Width * size) / 2f),
                 y = (int)((texture.Height * size) / 2f)
             };
 
-            var srcRect = new SDL.SDL_Rect()
+            var srcRect = new SDLRect()
             {
                 x = 0,
                 y = 0,
@@ -109,7 +113,7 @@ namespace SDLScorpPlugin
                 h = texture.Height
             };
 
-            var destRect = new SDL.SDL_Rect()
+            var destRect = new SDLRect()
             {
                 x = (int)(x - ((texture.Width * size) / 2)),//Texture X on screen
                 y = (int)(y - ((texture.Height * size) / 2)),//Texture Y on screen
@@ -122,10 +126,10 @@ namespace SDLScorpPlugin
             //var texturePtr = texture.GetData<PointerContainer>(1).UnpackPointer();
             var texturePtr = IntPtr.Zero;
 
-            SDL.SDL_SetTextureBlendMode(texturePtr, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
-            SDL.SDL_SetTextureColorMod(texturePtr, color.Red, color.Green, color.Blue);
-            SDL.SDL_SetTextureAlphaMod(texturePtr, color.Alpha);
-            SDL.SDL_RenderCopyEx(_rendererPtr, texturePtr, ref srcRect, ref destRect, angle, ref textureOrigin, SDL.SDL_RendererFlip.SDL_FLIP_NONE);
+            _sdl.SetTextureBlendMode(texturePtr, SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            _sdl.SetTextureColorMod(texturePtr, color.Red, color.Green, color.Blue);
+            _sdl.SetTextureAlphaMod(texturePtr, color.Alpha);
+            _sdl.RenderCopyEx(_rendererPtr, texturePtr, ref srcRect, ref destRect, angle, ref textureOrigin, SDL_RendererFlip.SDL_FLIP_NONE);
         }
 
 
@@ -156,11 +160,11 @@ namespace SDLScorpPlugin
             var texturePtr = IntPtr.Zero;
 
             //TODO:  Check for color index values first
-            SDL.SDL_SetTextureColorMod(texturePtr, color.Red, color.Green, color.Blue);
-            SDL.SDL_SetTextureAlphaMod(texturePtr, color.Alpha);
-            SDL.SDL_SetTextureBlendMode(texturePtr, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            _sdl.SetTextureColorMod(texturePtr, color.Red, color.Green, color.Blue);
+            _sdl.SetTextureAlphaMod(texturePtr, color.Alpha);
+            _sdl.SetTextureBlendMode(texturePtr, SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
-            var srcRect = new SDL.SDL_Rect()
+            var srcRect = new SDLRect()
             {
                 x = 0,
                 y = 0,
@@ -168,7 +172,7 @@ namespace SDLScorpPlugin
                 h = text.Height
             };
 
-            var destRect = new SDL.SDL_Rect()
+            var destRect = new SDLRect()
             {
                 x = (int)x,
                 y = (int)y,
@@ -177,7 +181,7 @@ namespace SDLScorpPlugin
             };
 
             //Render texture to screen
-            SDL.SDL_RenderCopy(_rendererPtr, texturePtr, ref srcRect, ref destRect);
+            _sdl.RenderCopy(_rendererPtr, texturePtr, ref srcRect, ref destRect);
         }
 
 
@@ -189,17 +193,17 @@ namespace SDLScorpPlugin
         /// <param name="area">The area/section of the texture to render.</param>
         /// <param name="x">The X coordinate location on the screen to render.</param>
         /// <param name="y">The Y coordinate location on the screen to render.</param>
-        public void RenderTextureArea(ITexture texture, Rect area, float x, float y)
+        public void RenderTextureArea(ITexture texture, CoreRect area, float x, float y)
         {
             CheckRenderPointer();
 
-            var textureOrigin = new SDL.SDL_Point()
+            var textureOrigin = new Point()
             {
                 x = texture.Width / 2,
                 y = texture.Height / 2
             };
 
-            var srcRect = new SDL.SDL_Rect()
+            var srcRect = new SDLRect()
             {
                 x = (int)area.X,
                 y = (int)area.Y,
@@ -207,7 +211,7 @@ namespace SDLScorpPlugin
                 h = texture.Height
             };
 
-            var destRect = new SDL.SDL_Rect()
+            var destRect = new SDLRect()
             {
                 x = (int)x,//Texture X on screen
                 y = (int)y,//Texture Y on screen
@@ -219,7 +223,7 @@ namespace SDLScorpPlugin
             //var texturePtr = texture.GetData<PointerContainer>(1).UnpackPointer();
             var texturePtr = IntPtr.Zero;
 
-            SDL.SDL_RenderCopyEx(_rendererPtr, texturePtr, ref srcRect, ref destRect, 0.0, ref textureOrigin, SDL.SDL_RendererFlip.SDL_FLIP_NONE);
+            _sdl.RenderCopyEx(_rendererPtr, texturePtr, ref srcRect, ref destRect, 0.0, ref textureOrigin, SDL_RendererFlip.SDL_FLIP_NONE);
         }
 
 
@@ -249,9 +253,9 @@ namespace SDLScorpPlugin
         {
             CheckRenderPointer();
 
-            SDL.SDL_SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
+            _sdl.SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
 
-            SDL.SDL_RenderDrawLine(_rendererPtr, (int)startX, (int)startY, (int)endX, (int)endY);
+            _sdl.RenderDrawLine(_rendererPtr, (int)startX, (int)startY, (int)endX, (int)endY);
         }
 
 
@@ -284,19 +288,19 @@ namespace SDLScorpPlugin
             int centerXIntValue = (int)centerX;
             int centerYIntValue = (int)centerY;
 
-            SDL.SDL_SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
+            _sdl.SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
 
             while (x >= y)
             {
                 //Each of the following renders an octant of the circle
-                SDL.SDL_RenderDrawPoint(_rendererPtr, centerXIntValue + x, centerYIntValue - y);
-                SDL.SDL_RenderDrawPoint(_rendererPtr, centerXIntValue + x, centerYIntValue + y);
-                SDL.SDL_RenderDrawPoint(_rendererPtr, centerXIntValue - x, centerYIntValue - y);
-                SDL.SDL_RenderDrawPoint(_rendererPtr, centerXIntValue - x, centerYIntValue + y);
-                SDL.SDL_RenderDrawPoint(_rendererPtr, centerXIntValue + y, centerYIntValue - x);
-                SDL.SDL_RenderDrawPoint(_rendererPtr, centerXIntValue + y, centerYIntValue + x);
-                SDL.SDL_RenderDrawPoint(_rendererPtr, centerXIntValue - y, centerYIntValue - x);
-                SDL.SDL_RenderDrawPoint(_rendererPtr, centerXIntValue - y, centerYIntValue + x);
+                _sdl.RenderDrawPoint(_rendererPtr, centerXIntValue + x, centerYIntValue - y);
+                _sdl.RenderDrawPoint(_rendererPtr, centerXIntValue + x, centerYIntValue + y);
+                _sdl.RenderDrawPoint(_rendererPtr, centerXIntValue - x, centerYIntValue - y);
+                _sdl.RenderDrawPoint(_rendererPtr, centerXIntValue - x, centerYIntValue + y);
+                _sdl.RenderDrawPoint(_rendererPtr, centerXIntValue + y, centerYIntValue - x);
+                _sdl.RenderDrawPoint(_rendererPtr, centerXIntValue + y, centerYIntValue + x);
+                _sdl.RenderDrawPoint(_rendererPtr, centerXIntValue - y, centerYIntValue - x);
+                _sdl.RenderDrawPoint(_rendererPtr, centerXIntValue - y, centerYIntValue + x);
 
                 if (error <= 0)
                 {
@@ -321,9 +325,9 @@ namespace SDLScorpPlugin
         /// </summary>
         /// <param name="rect">The rectangle to render.</param>
         /// <param name="color">The color of the rectangle.</param>
-        public void FillRect(Rect rect, GameColor color)
+        public void FillRect(CoreRect rect, GameColor color)
         {
-            var sdlRect = new SDL.SDL_Rect()
+            var sdlRect = new SDLRect()
             {
                 x = (int)rect.X,
                 y = (int)rect.Y,
@@ -331,8 +335,8 @@ namespace SDLScorpPlugin
                 h = (int)rect.Height
             };
 
-            SDL.SDL_SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
-            SDL.SDL_RenderFillRect(_rendererPtr, ref sdlRect);
+            _sdl.SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
+            _sdl.RenderFillRect(_rendererPtr, ref sdlRect);
         }
 
 
@@ -370,7 +374,7 @@ namespace SDLScorpPlugin
         /// <summary>
         /// Properly destroys the SDL renderer.
         /// </summary>
-        public void Dispose() => SDL.SDL_DestroyRenderer(_rendererPtr);
+        public void Dispose() => _sdl.DestroyRenderer(_rendererPtr);
         #endregion
 
 
