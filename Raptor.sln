@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KD.Scorpion.Core.Tests", "R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDLImp", "SDLImp\SDLImp.csproj", "{8272283F-D8A2-40A7-A8FB-14AEEC53C527}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelcroPhysicsPlugin", "VelcroPhysicsImp\VelcroPhysicsPlugin.csproj", "{92D4B6DE-DE8C-4254-A1F8-39B2D8DB8EE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelcroPhysicsImp", "VelcroPhysicsImp\VelcroPhysicsImp.csproj", "{92D4B6DE-DE8C-4254-A1F8-39B2D8DB8EE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
