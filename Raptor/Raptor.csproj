@@ -1,12 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>KDScorpionCore</RootNamespace>
   </PropertyGroup>
-
-  
-  <ItemGroup>
-    <Reference Include="SDL2-CS">
-      <HintPath>Libs\SDL\AnyCPU\SDL2-CS.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
