@@ -1,5 +1,4 @@
-﻿using Raptor;
-using Raptor.Graphics;
+﻿using Raptor.Graphics;
 using Raptor.Plugins;
 using System;
 

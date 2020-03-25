@@ -1,5 +1,4 @@
-﻿using Raptor;
-using Raptor.Graphics;
+﻿using Raptor.Graphics;
 using SDLCore;
 using SDLCore.Structs;
 using System;

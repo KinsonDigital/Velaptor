@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using VelcroPhysics.Primitives;
 
-namespace VelcroPhysicsImp
+namespace Raptor.VelcroPhysicsImp
 {
     /// <summary>
     /// Provides extensions to various things to help make better code.

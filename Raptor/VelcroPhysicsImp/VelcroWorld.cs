@@ -1,5 +1,4 @@
-﻿using Raptor;
-using Raptor.Plugins;
+﻿using Raptor.Plugins;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using VelcroPhysics.Collision.Shapes;
@@ -8,7 +7,7 @@ using VelcroPhysics.Factories;
 using VelcroPhysics.Primitives;
 using VelcroPhysics.Shared;
 
-namespace VelcroPhysicsImp
+namespace Raptor.VelcroPhysicsImp
 {
     /// <summary>
     /// Represents a world with simulated physics.

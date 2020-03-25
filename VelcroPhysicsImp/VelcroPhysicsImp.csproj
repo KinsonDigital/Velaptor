@@ -14,14 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assemblies\VelcroPhysics.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assemblies\VelcroPhysics.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,6 +29,10 @@
     <Reference Include="VelcroPhysics">
       <HintPath>Assemblies\VelcroPhysics.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assemblies\" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
-﻿using Raptor;
-using Raptor.Plugins;
+﻿using Raptor.Plugins;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using VelcroPhysics.Dynamics;
 using VelcroPhysics.Primitives;
 using System.Diagnostics.CodeAnalysis;
 
-namespace VelcroPhysicsImp
+namespace Raptor.VelcroPhysicsImp
 {
     /// <summary>
     /// Represents a body in a world that obeys physics.

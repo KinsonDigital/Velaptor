@@ -34,6 +34,23 @@
 
 
   <ItemGroup>
+    <None Remove="Libs\VelcroPhysics.dll" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Include="Libs\VelcroPhysics.dll" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.0.1" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Reference Include="VelcroPhysics">
+      <HintPath>Libs\VelcroPhysics.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
