@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KDScorpionCoreTests.Input
+namespace RaptorTests.Input
 {
     /// <summary>
     /// Unit tests to test the <see cref="Keyboard"/> class.

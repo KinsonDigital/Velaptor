@@ -3,7 +3,7 @@ using Xunit;
 using Raptor.Plugins;
 using Raptor;
 
-namespace KDScorpionCoreTests
+namespace RaptorTests
 {
     /// <summary>
     /// Unit tests to test the <see cref="OnRenderEventArgs"/> class.

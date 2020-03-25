@@ -2,7 +2,7 @@
 using Raptor.Input;
 using Raptor;
 
-namespace KDScorpionCoreTests.Input
+namespace RaptorTests.Input
 {
     /// <summary>
     /// Unit tests to test the <see cref="MouseEventArgs"/> class.

@@ -1,7 +1,7 @@
 ﻿using Raptor.Graphics;
 using Xunit;
 
-namespace KDScorpionCoreTests.Graphics
+namespace RaptorTests.Graphics
 {
     /// <summary>
     /// Unit tests to test the <see cref="GameColor"/> class.

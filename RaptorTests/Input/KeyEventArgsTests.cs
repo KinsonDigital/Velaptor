@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using Raptor.Input;
 
-namespace KDScorpionCoreTests.Input
+namespace RaptorTests.Input
 {
     /// <summary>
     /// Unit tests to test the <see cref="KeyEventArgs"/> class.

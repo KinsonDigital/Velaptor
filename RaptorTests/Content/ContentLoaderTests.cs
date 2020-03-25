@@ -6,7 +6,7 @@ using Raptor;
 using Xunit;
 using System;
 
-namespace KDScorpionCoreTests.Content
+namespace RaptorTests.Content
 {
     /// <summary>
     /// Unit tests to test the <see cref="ContentLoader"/> class.

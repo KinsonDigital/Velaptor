@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using System;
 
-namespace KDScorpionCoreTests
+namespace RaptorTests
 {
     /// <summary>
     /// Provides extensions to the <see cref="Assert"/> class.

@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
-namespace KDScorpionCoreTests
+namespace RaptorTests
 {
     /// <summary>
     /// Provides extensions to various things to help make better code.

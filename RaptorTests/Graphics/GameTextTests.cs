@@ -3,7 +3,7 @@ using Raptor.Graphics;
 using Raptor;
 using Xunit;
 
-namespace KDScorpionCoreTests.Graphics
+namespace RaptorTests.Graphics
 {
     /// <summary>
     /// Unit tests to test the <see cref="GameText"/> class.

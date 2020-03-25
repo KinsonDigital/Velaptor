@@ -5,7 +5,7 @@ using Raptor.Plugins;
 using Raptor;
 using System;
 
-namespace KDScorpionCoreTests.Graphics
+namespace RaptorTests.Graphics
 {
     /// <summary>
     /// Unit tests to test the <see cref="Renderer"/> class.

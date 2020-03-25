@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaptorPlayground", "RaptorP
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{DA2AB7CF-A778-416B-BFBF-1E27CC23855C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KD.Scorpion.Core.Tests", "Raptor.Tests\KD.Scorpion.Core.Tests.csproj", "{2E9B16A9-4C00-493E-B82A-3E362D532C49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaptorTests", "RaptorTests\Raptor.Tests.csproj", "{2E9B16A9-4C00-493E-B82A-3E362D532C49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelcroPhysicsImp", "VelcroPhysicsImp\VelcroPhysicsImp.csproj", "{92D4B6DE-DE8C-4254-A1F8-39B2D8DB8EE9}"
 EndProject

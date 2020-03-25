@@ -6,7 +6,7 @@ using Raptor.Plugins;
 using Raptor.Physics;
 using System.Linq;
 
-namespace KDScorpionCoreTests.Physics
+namespace RaptorTests.Physics
 {
     /// <summary>
     /// Unit tests to test the <see cref="PhysicsBody"/> class.

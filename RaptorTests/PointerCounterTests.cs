@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace KDScorpionCoreTests
+namespace RaptorTests
 {
     /// <summary>
     /// Unit tests to test the <see cref="PointerContainer"/> class.

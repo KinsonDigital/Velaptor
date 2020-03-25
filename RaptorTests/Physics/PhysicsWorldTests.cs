@@ -6,7 +6,7 @@ using Raptor.Graphics;
 using Raptor.Plugins;
 using Raptor.Physics;
 
-namespace KDScorpionCoreTests.Physics
+namespace RaptorTests.Physics
 {
     /// <summary>
     /// Unit tests to test the <see cref="PhysicsWorld"/> class.
