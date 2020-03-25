@@ -10,6 +10,7 @@
     <FileVersion>0.1.0</FileVersion>
     <Company>Kinson Digital</Company>
     <RootNamespace>VelcroPhysicsImp</RootNamespace>
+    <Configurations>Debug-Win;Release-Win</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

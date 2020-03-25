@@ -12,6 +12,7 @@
     <Company>Kinson Digital</Company>
     <AssemblyName>ScorpionCoreTests</AssemblyName>
     <RootNamespace>KDScorpionCoreTests</RootNamespace>
+    <Configurations>Debug-Win;Release-Win</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

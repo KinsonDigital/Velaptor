@@ -2,5 +2,18 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>RaptorCore</RootNamespace>
+    <Configurations>Debug-Win;Release-Win</Configurations>
   </PropertyGroup>
+
+
+  <PropertyGroup Condition="'$(ConfigurationName)|$(Platform)' == 'Debug-Win|AnyCPU'">
+    <OSPlatform>win</OSPlatform>
+  </PropertyGroup>
+
+
+  <Target Name="AddNativeLibsToPackage" AfterTargets="Build">
+    <ItemGroup>
+      <Content Include="$(ProjectDir)SDL\win-x64\*.dll" Pack="true" PackagePath="\runtimes\win-x64\native" />
+    </ItemGroup>
+  </Target>
 </Project>
