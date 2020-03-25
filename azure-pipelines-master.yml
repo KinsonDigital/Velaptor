@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- feature/us-1487-merge-scorpion-projects-into-raptor-solution
+- master
 
 
 pool:

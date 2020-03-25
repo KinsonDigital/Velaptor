@@ -1,5 +1,5 @@
 trigger:
-- feature/us-1487-merge-scorpion-projects-into-raptor-solution
+- develop
 
 
 pool:
