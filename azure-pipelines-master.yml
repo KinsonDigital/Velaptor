@@ -1,0 +1,75 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+trigger:
+- master
+
+
+pool:
+  name: 'KinsonDigital'
+
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'AnyCPU'
+  buildConfiguration: 'Release-Win'
+  coverageReportDirName: 'CoverageReport'
+  appName: 'Raptor'
+
+
+steps:
+- task: NuGetToolInstaller@1
+
+
+- task: NuGetCommand@2
+  displayName: Restore Packages
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(solution)'
+    feedsToUse: 'select'
+    vstsFeed: '1020f331-f22a-4330-a69a-78abfe6f6372/4c644bf2-f1e8-4f28-a3df-3bc9d3283df9'# KinsonDigitalFeed
+
+
+- task: DotNetCoreCLI@2
+  displayName: "Run $(appName) Tests & Collect Code Coverage"
+  inputs:
+    command: 'test'
+    projects: '**\*[Tt]ests\*.csproj'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+    publishTestResults: true
+    testRunTitle: '$(appName) Project Unit Test Results'
+
+
+- task: reportgenerator@4
+  displayName: "Generate $(appName) Code Coverage Reports"
+  inputs:
+    reports: '**\*.cobertura.xml'
+    targetdir: 'CoverageReport'
+    sourcedirs: '$(System.DefaultWorkingDirectory)\$(appName)'
+
+
+- task: PublishCodeCoverageResults@1
+  displayName: "Publish $(appName) Code Coverage Results"
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)\$(coverageReportDirName)\Cobertura.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)\$(coverageReportDirName)'
+
+
+- task: DotNetCoreCLI@2
+  displayName: 'Create $(appName) Nuget Package Artifact'
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(System.DefaultWorkingDirectory)\$(appName)\$(appName).csproj'
+    configuration: '$(buildConfiguration)'
+    versioningScheme: 'off'
+
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish $(appName) Build Artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
