@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace VelcroPhysicsPlugin
+namespace VelcroPhysicsImp
 {
     /// <summary>
     /// Holds settings for a <see cref="VelcroBody"/>.

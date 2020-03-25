@@ -8,7 +8,7 @@ using VelcroPhysics.Dynamics;
 using VelcroPhysics.Primitives;
 using System.Diagnostics.CodeAnalysis;
 
-namespace VelcroPhysicsPlugin
+namespace VelcroPhysicsImp
 {
     /// <summary>
     /// Represents a body in a world that obeys physics.

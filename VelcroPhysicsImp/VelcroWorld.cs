@@ -8,7 +8,7 @@ using VelcroPhysics.Factories;
 using VelcroPhysics.Primitives;
 using VelcroPhysics.Shared;
 
-namespace VelcroPhysicsPlugin
+namespace VelcroPhysicsImp
 {
     /// <summary>
     /// Represents a world with simulated physics.
