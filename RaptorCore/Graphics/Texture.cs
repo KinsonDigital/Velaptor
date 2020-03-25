@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore.Graphics
+﻿namespace RaptorCore.Graphics
 {
     /// <summary>
     /// The texture to render to the screen.

@@ -1,5 +1,5 @@
-﻿using KDScorpionCore;
-using KDScorpionCore.Plugins;
+﻿using RaptorCore;
+using RaptorCore.Plugins;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using VelcroPhysics.Collision.Shapes;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Represents the timing of a game engine.

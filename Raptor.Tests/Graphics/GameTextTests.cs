@@ -1,6 +1,6 @@
 ﻿using Moq;
-using KDScorpionCore.Graphics;
-using KDScorpionCore;
+using RaptorCore.Graphics;
+using RaptorCore;
 using Xunit;
 
 namespace KDScorpionCoreTests.Graphics

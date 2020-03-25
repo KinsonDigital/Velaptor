@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore.Input
+﻿namespace RaptorCore.Input
 {
     /// <summary>
     /// Represents the keys on a keyboard.

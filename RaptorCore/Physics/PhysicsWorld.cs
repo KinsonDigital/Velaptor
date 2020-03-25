@@ -1,7 +1,7 @@
-﻿using KDScorpionCore.Plugins;
+﻿using RaptorCore.Plugins;
 using System.Diagnostics.CodeAnalysis;
 
-namespace KDScorpionCore.Physics
+namespace RaptorCore.Physics
 {
     /// <summary>
     /// Represents a world with simulated physics.

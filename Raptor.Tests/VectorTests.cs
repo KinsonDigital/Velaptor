@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Unit tests to test the <see cref="Vector"/> class.

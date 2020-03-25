@@ -1,7 +1,7 @@
-﻿using KDScorpionCore.Plugins;
+﻿using RaptorCore.Plugins;
 using System;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Holds information about the <see cref="IEngineEvents.OnRender"/> event.

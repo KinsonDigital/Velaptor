@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore
+﻿namespace RaptorCore
 {
     /// <summary>
     /// Represents a 2D rectangle with position and size.

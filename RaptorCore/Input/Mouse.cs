@@ -1,8 +1,8 @@
-﻿using KDScorpionCore.Plugins;
+﻿using RaptorCore.Plugins;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace KDScorpionCore.Input
+namespace RaptorCore.Input
 {
     /// <summary>
     /// Provides functionality for the mouse.

@@ -1,6 +1,6 @@
-﻿using KDScorpionCore;
-using KDScorpionCore.Graphics;
-using KDScorpionCore.Plugins;
+﻿using RaptorCore;
+using RaptorCore.Graphics;
+using RaptorCore.Plugins;
 using System;
 
 namespace SDLScorpPlugin

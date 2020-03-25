@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Maintains a list of actions that are meant to be executed only once at a later time.

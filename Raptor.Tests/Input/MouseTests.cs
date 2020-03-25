@@ -1,9 +1,9 @@
 ﻿using System;
 using Moq;
 using Xunit;
-using KDScorpionCore;
-using KDScorpionCore.Input;
-using KDScorpionCore.Plugins;
+using RaptorCore;
+using RaptorCore.Input;
+using RaptorCore.Plugins;
 
 namespace KDScorpionCoreTests.Input
 {

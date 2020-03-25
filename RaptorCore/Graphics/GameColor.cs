@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore.Graphics
+﻿namespace RaptorCore.Graphics
 {
     /// <summary>
     /// Represents a color made up of the 4 color components alpha, red, green and blue.

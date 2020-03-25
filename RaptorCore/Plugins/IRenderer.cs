@@ -1,7 +1,7 @@
-﻿using KDScorpionCore.Graphics;
+﻿using RaptorCore.Graphics;
 using System;
 
-namespace KDScorpionCore.Plugins
+namespace RaptorCore.Plugins
 {
     /// <summary>
     /// Provides methods for rendering textures, text and primitives to the screen.

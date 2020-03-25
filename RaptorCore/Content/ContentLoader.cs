@@ -1,8 +1,8 @@
-﻿using KDScorpionCore.Graphics;
-using KDScorpionCore.Plugins;
+﻿using RaptorCore.Graphics;
+using RaptorCore.Plugins;
 using System.Diagnostics.CodeAnalysis;
 
-namespace KDScorpionCore.Content
+namespace RaptorCore.Content
 {
     /// <summary>
     /// Loads graphical and soud content for rendering and playback.

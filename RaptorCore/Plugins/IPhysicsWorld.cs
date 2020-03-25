@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore.Plugins
+﻿namespace RaptorCore.Plugins
 {
     /// <summary>
     /// Represents a world with simulated physics.

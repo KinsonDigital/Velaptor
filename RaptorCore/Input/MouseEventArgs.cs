@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KDScorpionCore.Input
+namespace RaptorCore.Input
 {
     /// <summary>
     /// Holds information about a mouse down event.

@@ -1,6 +1,6 @@
-﻿using KDScorpionCore.Graphics;
+﻿using RaptorCore.Graphics;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Text that can be rendered to the graphics surface.

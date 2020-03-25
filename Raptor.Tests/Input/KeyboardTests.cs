@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Xunit;
-using KDScorpionCore.Input;
-using KDScorpionCore.Plugins;
+using RaptorCore.Input;
+using RaptorCore.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;

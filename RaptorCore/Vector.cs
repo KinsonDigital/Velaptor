@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Represents a vector in 2D space.

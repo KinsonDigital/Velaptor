@@ -1,4 +1,4 @@
-﻿using KDScorpionCore.Graphics;
+﻿using RaptorCore.Graphics;
 using Xunit;
 
 namespace KDScorpionCoreTests.Graphics

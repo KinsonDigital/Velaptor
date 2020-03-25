@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Provides extensions to various things to help make better code.

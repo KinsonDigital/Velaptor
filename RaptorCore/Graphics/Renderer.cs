@@ -1,7 +1,7 @@
-﻿using KDScorpionCore.Plugins;
+﻿using RaptorCore.Plugins;
 using System.Diagnostics.CodeAnalysis;
 
-namespace KDScorpionCore.Graphics
+namespace RaptorCore.Graphics
 {
     /// <summary>
     /// Used to render graphics to the graphics surface.

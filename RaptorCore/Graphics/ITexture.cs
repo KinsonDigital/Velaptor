@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore.Graphics
+﻿namespace RaptorCore.Graphics
 {
     /// <summary>
     /// Represents a texture that can be renderered to a graphics surface.

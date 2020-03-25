@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore
+﻿namespace RaptorCore
 {
     /// <summary>
     /// Provides the ability to initialize and object.

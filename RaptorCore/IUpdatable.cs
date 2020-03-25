@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore
+﻿namespace RaptorCore
 {
     /// <summary>
     /// Provides the ability for an object to be updated.

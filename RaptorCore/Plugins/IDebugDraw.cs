@@ -1,5 +1,5 @@
-﻿using KDScorpionCore.Graphics;
-namespace KDScorpionCore.Plugins
+﻿using RaptorCore.Graphics;
+namespace RaptorCore.Plugins
 {
     /// <summary>
     /// Provides the ability to draw frames around a physics body shape for debugging purposes.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KDScorpionCore.Plugins
+namespace RaptorCore.Plugins
 {
     /// <summary>
     /// Provides the core of a game engine which facilitates how the engine starts, stops,

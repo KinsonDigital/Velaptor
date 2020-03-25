@@ -1,5 +1,5 @@
-﻿using KDScorpionCore;
-using KDScorpionCore.Graphics;
+﻿using RaptorCore;
+using RaptorCore.Graphics;
 using SDLCore;
 using System;
 

@@ -1,5 +1,5 @@
-﻿using KDScorpionCore.Input;
-namespace KDScorpionCore.Plugins
+﻿using RaptorCore.Input;
+namespace RaptorCore.Plugins
 {
     /// <summary>
     /// Represents a mouse that provides user input.

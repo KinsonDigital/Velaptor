@@ -1,9 +1,9 @@
-﻿using KDScorpionCore.Plugins;
+﻿using RaptorCore.Plugins;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace KDScorpionCore.Input
+namespace RaptorCore.Input
 {
     /// <summary>
     /// Provides functionality for the keyboard.

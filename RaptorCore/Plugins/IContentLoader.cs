@@ -1,5 +1,5 @@
-﻿using KDScorpionCore.Graphics;
-namespace KDScorpionCore.Plugins
+﻿using RaptorCore.Graphics;
+namespace RaptorCore.Plugins
 {
     /// <summary>
     /// Represents a loader that can load content for rendering or sound.

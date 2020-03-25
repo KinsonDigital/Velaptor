@@ -1,4 +1,4 @@
-﻿using KDScorpionCore;
+﻿using RaptorCore;
 using Xunit;
 
 namespace KDScorpionCoreTests

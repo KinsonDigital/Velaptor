@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Adds various game loop events for a game engine.

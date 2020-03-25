@@ -1,4 +1,4 @@
-﻿using KDScorpionCore;
+﻿using RaptorCore;
 using Moq;
 using Xunit;
 

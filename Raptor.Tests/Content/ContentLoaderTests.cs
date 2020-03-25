@@ -1,8 +1,8 @@
 ﻿using Moq;
-using KDScorpionCore.Content;
-using KDScorpionCore.Graphics;
-using KDScorpionCore.Plugins;
-using KDScorpionCore;
+using RaptorCore.Content;
+using RaptorCore.Graphics;
+using RaptorCore.Plugins;
+using RaptorCore;
 using Xunit;
 using System;
 

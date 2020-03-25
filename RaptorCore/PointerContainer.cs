@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Holds a pointer to make it easier to pass the pointer struct

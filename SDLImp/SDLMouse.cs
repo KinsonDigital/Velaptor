@@ -1,5 +1,5 @@
-﻿using KDScorpionCore.Input;
-using KDScorpionCore.Plugins;
+﻿using RaptorCore.Input;
+using RaptorCore.Plugins;
 using SDLCore;
 using System;
 

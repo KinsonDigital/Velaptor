@@ -1,11 +1,11 @@
-﻿using KDScorpionCore;
-using KDScorpionCore.Graphics;
-using KDScorpionCore.Plugins;
+﻿using RaptorCore;
+using RaptorCore.Graphics;
+using RaptorCore.Plugins;
 using SDLCore;
 using SDLCore.Structs;
 using System;
 using SDLRect = SDLCore.Structs.Rect;
-using CoreRect = KDScorpionCore.Rect;
+using CoreRect = RaptorCore.Rect;
 
 namespace SDLScorpPlugin
 {

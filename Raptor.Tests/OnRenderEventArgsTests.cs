@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Xunit;
-using KDScorpionCore.Plugins;
-using KDScorpionCore;
+using RaptorCore.Plugins;
+using RaptorCore;
 
 namespace KDScorpionCoreTests
 {

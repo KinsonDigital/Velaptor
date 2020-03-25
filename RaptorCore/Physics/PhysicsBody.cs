@@ -1,9 +1,9 @@
-using KDScorpionCore.Plugins;
+using RaptorCore.Plugins;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace KDScorpionCore.Physics
+namespace RaptorCore.Physics
 {
     /// <summary>
     /// Represents a body in a world that obeys physics.

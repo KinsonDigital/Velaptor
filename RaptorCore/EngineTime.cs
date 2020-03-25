@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Holds timing information of the game engine.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Holds information about the <see cref="IEngineEvents.OnUpdate"/> event.

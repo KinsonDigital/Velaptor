@@ -1,6 +1,6 @@
 ﻿//using SFML.Audio;
 
-namespace KDScorpionCore.Sound
+namespace RaptorCore.Sound
 {
     /// <summary>
     /// Represents a song that can play by method of streaming from music files.

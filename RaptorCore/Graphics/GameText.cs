@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore.Graphics
+﻿namespace RaptorCore.Graphics
 {
     /// <summary>
     /// Provides game text that can be rendered to a graphics surface.

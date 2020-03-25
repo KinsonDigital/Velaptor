@@ -1,4 +1,4 @@
-﻿namespace KDScorpionCore
+﻿namespace RaptorCore
 {
     /// <summary>
     /// Represents different ways that a scene should run.

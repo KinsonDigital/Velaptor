@@ -1,6 +1,6 @@
-﻿using KDScorpionCore.Content;
+﻿using RaptorCore.Content;
 
-namespace KDScorpionCore
+namespace RaptorCore
 {
     /// <summary>
     /// Provides the ability to load content.
