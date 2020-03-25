@@ -1,10 +1,10 @@
 ﻿using System;
 using Moq;
 using Xunit;
-using RaptorCore;
-using RaptorCore.Graphics;
-using RaptorCore.Plugins;
-using RaptorCore.Physics;
+using Raptor;
+using Raptor.Graphics;
+using Raptor.Plugins;
+using Raptor.Physics;
 
 namespace KDScorpionCoreTests.Physics
 {

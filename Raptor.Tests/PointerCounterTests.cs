@@ -1,4 +1,4 @@
-﻿using RaptorCore;
+﻿using Raptor;
 using System;
 using Xunit;
 

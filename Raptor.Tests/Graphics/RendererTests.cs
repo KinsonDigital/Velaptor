@@ -1,8 +1,8 @@
 ﻿using Moq;
 using Xunit;
-using RaptorCore.Graphics;
-using RaptorCore.Plugins;
-using RaptorCore;
+using Raptor.Graphics;
+using Raptor.Plugins;
+using Raptor;
 using System;
 
 namespace KDScorpionCoreTests.Graphics

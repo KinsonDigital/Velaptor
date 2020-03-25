@@ -1,6 +1,6 @@
-﻿using RaptorCore;
-using RaptorCore.Graphics;
-using RaptorCore.Plugins;
+﻿using Raptor;
+using Raptor.Graphics;
+using Raptor.Plugins;
 using System;
 
 namespace SDLImp

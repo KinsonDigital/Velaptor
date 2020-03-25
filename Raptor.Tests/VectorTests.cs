@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace RaptorCore
+namespace Raptor
 {
     /// <summary>
     /// Unit tests to test the <see cref="Vector"/> class.

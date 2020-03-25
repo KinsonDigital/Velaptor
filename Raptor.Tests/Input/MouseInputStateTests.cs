@@ -1,6 +1,6 @@
 ﻿using Xunit;
-using RaptorCore.Input;
-using RaptorCore;
+using Raptor.Input;
+using Raptor;
 
 namespace KDScorpionCoreTests.Input
 {

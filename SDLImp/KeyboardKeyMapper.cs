@@ -1,4 +1,4 @@
-﻿using RaptorCore.Input;
+﻿using Raptor.Input;
 using SDLCore;
 using System.Collections.Generic;
 using System.Linq;

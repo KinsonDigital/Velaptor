@@ -1,11 +1,11 @@
-﻿using RaptorCore;
-using RaptorCore.Graphics;
-using RaptorCore.Plugins;
+﻿using Raptor;
+using Raptor.Graphics;
+using Raptor.Plugins;
 using SDLCore;
 using SDLCore.Structs;
 using System;
 using SDLRect = SDLCore.Structs.Rect;
-using CoreRect = RaptorCore.Rect;
+using CoreRect = Raptor.Rect;
 
 namespace SDLImp
 {

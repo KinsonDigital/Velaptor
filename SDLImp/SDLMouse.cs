@@ -1,5 +1,5 @@
-﻿using RaptorCore.Input;
-using RaptorCore.Plugins;
+﻿using Raptor.Input;
+using Raptor.Plugins;
 using SDLCore;
 using System;
 

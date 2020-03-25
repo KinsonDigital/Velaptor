@@ -1,5 +1,5 @@
-﻿using RaptorCore;
-using RaptorCore.Plugins;
+﻿using Raptor;
+using Raptor.Plugins;
 using SDLCore;
 using System;
 using System.Collections.Generic;

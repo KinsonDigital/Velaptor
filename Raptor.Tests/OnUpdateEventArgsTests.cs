@@ -1,4 +1,4 @@
-﻿using RaptorCore;
+﻿using Raptor;
 using Moq;
 using Xunit;
 

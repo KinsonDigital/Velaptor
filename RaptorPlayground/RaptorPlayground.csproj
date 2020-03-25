@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RaptorCore\RaptorCore.csproj" />
+    <ProjectReference Include="..\RaptorCore\RaptorLibrary.csproj" />
   </ItemGroup>
 
 </Project>

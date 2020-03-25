@@ -1,5 +1,5 @@
-﻿using RaptorCore;
-using RaptorCore.Plugins;
+﻿using Raptor;
+using Raptor.Plugins;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using VelcroPhysics.Collision.Shapes;

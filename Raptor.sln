@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaptorCore", "RaptorCore\RaptorCore.csproj", "{E1625351-56F0-4058-A3F2-ACF009187CFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Raptor", "Raptor\Raptor.csproj", "{E1625351-56F0-4058-A3F2-ACF009187CFC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaptorPlayground", "RaptorPlayground\RaptorPlayground.csproj", "{970CED30-C6F6-4B55-A7C3-8C6E1628AB2B}"
 EndProject

@@ -1,9 +1,9 @@
 ﻿using System;
 using Moq;
 using Xunit;
-using RaptorCore;
-using RaptorCore.Plugins;
-using RaptorCore.Physics;
+using Raptor;
+using Raptor.Plugins;
+using Raptor.Physics;
 using System.Linq;
 
 namespace KDScorpionCoreTests.Physics

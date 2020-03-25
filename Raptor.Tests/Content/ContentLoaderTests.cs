@@ -1,8 +1,8 @@
 ﻿using Moq;
-using RaptorCore.Content;
-using RaptorCore.Graphics;
-using RaptorCore.Plugins;
-using RaptorCore;
+using Raptor.Content;
+using Raptor.Graphics;
+using Raptor.Plugins;
+using Raptor;
 using Xunit;
 using System;
 
