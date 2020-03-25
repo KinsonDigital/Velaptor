@@ -2,18 +2,32 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>RaptorCore</RootNamespace>
+    <Authors>Calvin Wilkinson</Authors>
+    <Company>Kinson Digital</Company>
+    <Product>Raptor</Product>
+    <Description>2D game development framework that provides 2D rendering, keyboard and mouse input and sound</Description>
+    <Copyright>Copyright ©2020 Kinson Digital</Copyright>
+    <PackageTags>raptor 2D game games framework</PackageTags>
     <Configurations>Debug-Win;Release-Win</Configurations>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
   </PropertyGroup>
 
 
-  <PropertyGroup Condition="'$(ConfigurationName)|$(Platform)' == 'Debug-Win|AnyCPU'">
-    <OSPlatform>win</OSPlatform>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Win|AnyCPU'">
+    <Optimize>false</Optimize>
+    <OSPlatform>Windows</OSPlatform>
+  </PropertyGroup>
+  
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Win|AnyCPU'">
+    <Optimize>true</Optimize>
+    <OSPlatform>Windows</OSPlatform>
   </PropertyGroup>
 
 
-  <Target Name="AddNativeLibsToPackage" AfterTargets="Build">
-    <ItemGroup>
-      <Content Include="$(ProjectDir)SDL\win-x64\*.dll" Pack="true" PackagePath="\runtimes\win-x64\native" />
-    </ItemGroup>
-  </Target>
+  <PropertyGroup>
+    <PackageId>KinsonDigital.Raptor.$(OSPlatform)</PackageId>
+  </PropertyGroup>
 </Project>
