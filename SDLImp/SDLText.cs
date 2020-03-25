@@ -4,7 +4,7 @@ using SDLCore;
 using SDLCore.Structs;
 using System;
 
-namespace SDLScorpPlugin
+namespace SDLImp
 {
     /// <summary>
     /// SDL text that can be rendered to the graphics surface.

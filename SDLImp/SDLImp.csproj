@@ -8,7 +8,7 @@
     <Version>0.1.0</Version>
     <FileVersion>0.1.0</FileVersion>
     <Company>Kinson Digital</Company>
-    <RootNamespace>SDLScorpPlugin</RootNamespace>
+    <RootNamespace>SDLImp</RootNamespace>
   </PropertyGroup>
 
   

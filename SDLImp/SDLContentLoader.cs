@@ -4,7 +4,7 @@ using SDLCore;
 using System;
 using System.IO;
 
-namespace SDLScorpPlugin
+namespace SDLImp
 {
     /// <summary>
     /// Loads and unloads content using SDL.

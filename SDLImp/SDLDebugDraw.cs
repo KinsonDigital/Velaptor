@@ -3,7 +3,7 @@ using RaptorCore.Graphics;
 using RaptorCore.Plugins;
 using System;
 
-namespace SDLScorpPlugin
+namespace SDLImp
 {
     /// <summary>
     /// Provides the ability to draw frames around a physics body shape for debugging purposes.

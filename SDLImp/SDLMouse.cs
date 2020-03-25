@@ -3,7 +3,7 @@ using RaptorCore.Plugins;
 using SDLCore;
 using System;
 
-namespace SDLScorpPlugin
+namespace SDLImp
 {
     /// <summary>
     /// Provides mouse input using SDL.

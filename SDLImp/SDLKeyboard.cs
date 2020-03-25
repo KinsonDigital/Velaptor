@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SDLCore;
 
-namespace SDLScorpPlugin
+namespace SDLImp
 {
     /// <summary>
     /// Provides functionality to interact with the keyboard using SDL.

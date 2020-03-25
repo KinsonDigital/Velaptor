@@ -1,4 +1,4 @@
-﻿namespace SDLScorpPlugin
+﻿namespace SDLImp
 {
     /// <summary>
     /// Represents the different types of game loops.

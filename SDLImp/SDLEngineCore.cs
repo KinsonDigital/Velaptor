@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace SDLScorpPlugin
+namespace SDLImp
 {
     /// <summary>
     /// Provides the core of a game engine which facilitates how the engine starts, stops,
