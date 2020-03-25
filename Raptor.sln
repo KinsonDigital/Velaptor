@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{DA2A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KD.Scorpion.Core.Tests", "Raptor.Tests\KD.Scorpion.Core.Tests.csproj", "{2E9B16A9-4C00-493E-B82A-3E362D532C49}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDLImp", "SDLImp\SDLImp.csproj", "{8272283F-D8A2-40A7-A8FB-14AEEC53C527}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelcroPhysicsImp", "VelcroPhysicsImp\VelcroPhysicsImp.csproj", "{92D4B6DE-DE8C-4254-A1F8-39B2D8DB8EE9}"
 EndProject
 Global
@@ -33,10 +31,6 @@ Global
 		{2E9B16A9-4C00-493E-B82A-3E362D532C49}.Debug-Win|Any CPU.Build.0 = Debug-Win|Any CPU
 		{2E9B16A9-4C00-493E-B82A-3E362D532C49}.Release-Win|Any CPU.ActiveCfg = Release-Win|Any CPU
 		{2E9B16A9-4C00-493E-B82A-3E362D532C49}.Release-Win|Any CPU.Build.0 = Release-Win|Any CPU
-		{8272283F-D8A2-40A7-A8FB-14AEEC53C527}.Debug-Win|Any CPU.ActiveCfg = Debug-Win|Any CPU
-		{8272283F-D8A2-40A7-A8FB-14AEEC53C527}.Debug-Win|Any CPU.Build.0 = Debug-Win|Any CPU
-		{8272283F-D8A2-40A7-A8FB-14AEEC53C527}.Release-Win|Any CPU.ActiveCfg = Release-Win|Any CPU
-		{8272283F-D8A2-40A7-A8FB-14AEEC53C527}.Release-Win|Any CPU.Build.0 = Release-Win|Any CPU
 		{92D4B6DE-DE8C-4254-A1F8-39B2D8DB8EE9}.Debug-Win|Any CPU.ActiveCfg = Debug-Win|Any CPU
 		{92D4B6DE-DE8C-4254-A1F8-39B2D8DB8EE9}.Debug-Win|Any CPU.Build.0 = Debug-Win|Any CPU
 		{92D4B6DE-DE8C-4254-A1F8-39B2D8DB8EE9}.Release-Win|Any CPU.ActiveCfg = Release-Win|Any CPU

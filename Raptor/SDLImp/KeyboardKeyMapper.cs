@@ -3,7 +3,7 @@ using SDLCore;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SDLImp
+namespace Raptor.SDLImp
 {
     /// <summary>
     /// Holds keyboard keycode mappings for SDL and standard key codes.

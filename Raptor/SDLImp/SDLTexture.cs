@@ -3,7 +3,7 @@ using Raptor.Graphics;
 using SDLCore;
 using System;
 
-namespace SDLImp
+namespace Raptor.SDLImp
 {
     /// <summary>
     /// Represents a SDL texture that can be renderered to a graphics surface.

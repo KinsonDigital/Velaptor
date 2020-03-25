@@ -1,4 +1,4 @@
-﻿namespace SDLImp
+﻿namespace Raptor.SDLImp
 {
     /// <summary>
     /// Represents the different types of game loops.

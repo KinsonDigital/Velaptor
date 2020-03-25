@@ -4,7 +4,7 @@ using SDLCore;
 using System;
 using System.IO;
 
-namespace SDLImp
+namespace Raptor.SDLImp
 {
     /// <summary>
     /// Loads and unloads content using SDL.

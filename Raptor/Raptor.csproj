@@ -31,4 +31,9 @@
     <PackageId>KinsonDigital.Raptor.$(OSPlatform)</PackageId>
     <AssemblyName>Raptor</AssemblyName>
   </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.0.1" />
+  </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@ using System;
 using SDLRect = SDLCore.Structs.Rect;
 using CoreRect = Raptor.Rect;
 
-namespace SDLImp
+namespace Raptor.SDLImp
 {
     /// <summary>
     /// Provides methods for rendering SDL textures, text and primitives to the screen.
