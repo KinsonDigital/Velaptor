@@ -1,12 +1,56 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Raptor</RootNamespace>
+    <Authors>Calvin Wilkinson</Authors>
+    <Company>Kinson Digital</Company>
+    <Product>Raptor</Product>
+    <Description>2D game development framework that provides 2D rendering, keyboard and mouse input and sound</Description>
+    <Copyright>Copyright ©2020 Kinson Digital</Copyright>
+    <PackageTags>raptor 2D game games framework</PackageTags>
+    <Configurations>Debug-Win;Release-Win</Configurations>
+    <Version>0.2.0</Version>
+    <AssemblyVersion>0.2.0</AssemblyVersion>
+    <FileVersion>0.2.0</FileVersion>
   </PropertyGroup>
 
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Win|AnyCPU'">
+    <Optimize>false</Optimize>
+    <OSPlatform>Windows</OSPlatform>
+  </PropertyGroup>
   
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Win|AnyCPU'">
+    <Optimize>true</Optimize>
+    <OSPlatform>Windows</OSPlatform>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <PackageId>KinsonDigital.Raptor.$(OSPlatform)</PackageId>
+    <AssemblyName>Raptor</AssemblyName>
+  </PropertyGroup>
+
+
   <ItemGroup>
-    <Reference Include="SDL2-CS">
-      <HintPath>Libs\SDL\AnyCPU\SDL2-CS.dll</HintPath>
+    <None Remove="Libs\VelcroPhysics.dll" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Include="Libs\VelcroPhysics.dll" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.0.1" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Reference Include="VelcroPhysics">
+      <HintPath>Libs\VelcroPhysics.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

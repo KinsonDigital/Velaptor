@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU</Platforms>
+    <AssemblyTitle>ScorpionCore</AssemblyTitle>
+    <Product>Kinson Digital - Scorpion Core</Product>
+    <Copyright>Copyright © 2018</Copyright>
+    <Version>0.1.0</Version>
+    <FileVersion>0.1.0</FileVersion>
+    <Company>Kinson Digital</Company>
+    <RootNamespace>VelcroPhysicsImp</RootNamespace>
+    <Configurations>Debug-Win;Release-Win</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.Analyzers.Compatibility" Version="0.2.12-alpha">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SimpleInjector" Version="4.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Raptor\Raptor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="VelcroPhysics">
+      <HintPath>Assemblies\VelcroPhysics.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assemblies\" />
+  </ItemGroup>
+
+</Project>
