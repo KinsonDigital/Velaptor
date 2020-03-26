@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Raptor</RootNamespace>
+    <AssemblyName>Raptor</AssemblyName>
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Raptor</Product>
@@ -9,9 +10,9 @@
     <Copyright>Copyright ©2020 Kinson Digital</Copyright>
     <PackageTags>raptor 2D game games framework</PackageTags>
     <Configurations>Debug-Win;Release-Win</Configurations>
-    <Version>0.3.0</Version>
-    <AssemblyVersion>0.3.0</AssemblyVersion>
-    <FileVersion>0.3.0</FileVersion>
+    <Version>0.4.0</Version>
+    <AssemblyVersion>0.4.0</AssemblyVersion>
+    <FileVersion>0.4.0</FileVersion>
   </PropertyGroup>
 
 
@@ -29,23 +30,57 @@
 
   <PropertyGroup>
     <PackageId>KinsonDigital.Raptor.$(OSPlatform)</PackageId>
-    <AssemblyName>Raptor</AssemblyName>
+    <SDLPath>$(ProjectDir)Libs\SDL\$(OSPlatform)\</SDLPath>
+    <Win32BitNativePath>\runtimes\win-x86\native</Win32BitNativePath>
+    <Win64BitNativePath>\runtimes\win-x64\native</Win64BitNativePath>
   </PropertyGroup>
-
-
-  <ItemGroup>
-    <None Remove="Libs\VelcroPhysics.dll" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Content Include="Libs\VelcroPhysics.dll" />
-  </ItemGroup>
 
 
   <ItemGroup>
     <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.0.1" />
   </ItemGroup>
+
+  
+  <!--ADD VELCRO PHYSICS LIBRARY TO NUGET PACKAGE-->
+  <Target Name="AddVelcroPhysicsLib" AfterTargets="Build">
+    <ItemGroup>
+      <Content Include="$(ProjectDir)Libs\VelcroPhysics.dll" Pack="true" PackagePath="\lib\$(TargetFramework)" />
+    </ItemGroup>
+  </Target>
+
+
+  <Target Name="Add-Native-Windows-x86-SDL-Libraries" AfterTargets="Build">
+    <ItemGroup>
+      <!--ADD THE MAIN SDL LIBRARY-->
+      <Content Include="$(SDLPath)x86\SDL2.dll" Pack="true" PackagePath="$(Win32BitNativePath)" />
+      
+      <!--ADD THE SDL IMAGE LIBRARIES-->
+      <Content Include="$(SDLPath)x86\Image\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)" />
+
+      <!--ADD THE SDL MIXER LIBRARIES-->
+      <Content Include="$(SDLPath)x86\Mixer\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)" />
+
+      <!--ADD THE SDL TTF(FONT) LIBRARIES-->
+      <Content Include="$(SDLPath)x86\TTF\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)" />
+    </ItemGroup>
+  </Target>
+
+
+  <Target Name="Add-Native-Windows-x64-SDL-Libraries" AfterTargets="Build">
+    <ItemGroup>
+      <!--ADD THE MAIN SDL LIBRARY-->
+      <Content Include="$(SDLPath)x64\SDL2.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
+
+      <!--ADD THE SDL IMAGE LIBRARIES-->
+      <Content Include="$(SDLPath)x64\Image\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
+
+      <!--ADD THE SDL MIXER LIBRARIES-->
+      <Content Include="$(SDLPath)x64\Mixer\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
+
+      <!--ADD THE SDL TTF(FONT) LIBRARIES-->
+      <Content Include="$(SDLPath)x64\TTF\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
+    </ItemGroup>
+  </Target>
 
 
   <ItemGroup>
