@@ -9,7 +9,7 @@
         /// <summary>
         /// Gets the internal texture plugin.
         /// </summary>
-        internal ITexture InternalTexture { get; set; }
+        public ITexture InternalTexture { get; set; }
 
         /// <summary>
         /// Gets the width of the texture.
@@ -28,7 +28,7 @@
         /// Creates a new instance of <see cref="Texture"/>.
         /// </summary>
         /// <param name="mockedTexture">The mocked texture to inject.</param>
-        internal Texture(ITexture mockedTexture) => InternalTexture = mockedTexture;
+        public Texture(ITexture mockedTexture) => InternalTexture = mockedTexture;
         #endregion
     }
 }

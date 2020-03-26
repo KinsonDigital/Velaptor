@@ -21,7 +21,7 @@ namespace Raptor.Physics
         /// USED FOR UNIT TESTING.
         /// </summary>
         /// <param name="mockedPhysicsWorld">The mocked world to inject.</param>
-        internal PhysicsWorld(IPhysicsWorld mockedPhysicsWorld) => _internalWorld = mockedPhysicsWorld;
+        public PhysicsWorld(IPhysicsWorld mockedPhysicsWorld) => _internalWorld = mockedPhysicsWorld;
 
 
         /// <summary>

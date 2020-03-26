@@ -48,7 +48,7 @@ namespace Raptor.Input
         /// USED FOR UNIT TESTING.
         /// </summary>
         /// <param name="mockedMouse">The mocked mouse to inject.</param>
-        internal Mouse(IMouse mockedMouse) => InternalMouse = mockedMouse;
+        public Mouse(IMouse mockedMouse) => InternalMouse = mockedMouse;
 
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Raptor.Input
         /// <summary>
         /// The internal mouse plugin implementation.
         /// </summary>
-        internal IMouse InternalMouse { get; }
+        public IMouse InternalMouse { get; }
 
 
         /// <summary>
