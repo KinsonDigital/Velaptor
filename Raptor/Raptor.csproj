@@ -34,19 +34,16 @@
 
 
   <ItemGroup>
-    <None Remove="Libs\VelcroPhysics.dll" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Content Include="Libs\VelcroPhysics.dll" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.0.1" />
   </ItemGroup>
 
+  
+  <Target Name="SetupNugetPackage" AfterTargets="Build">
+    <ItemGroup>
+      <Content Include="$(ProjectDir)Libs\VelcroPhysics.dll" Pack="true" PackagePath="\lib\$(TargetFramework)" />
+    </ItemGroup>
+  </Target>
+  
 
   <ItemGroup>
     <Reference Include="VelcroPhysics">
