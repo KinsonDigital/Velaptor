@@ -20,7 +20,7 @@ namespace Raptor.Content
         /// USED FOR UNIT TESTING.
         /// </summary>
         /// <param name="mockedContentLoader">The mocked content loader to inject.</param>
-        internal ContentLoader(IContentLoader mockedContentLoader) => _internalLoader = mockedContentLoader;
+        public ContentLoader(IContentLoader mockedContentLoader) => _internalLoader = mockedContentLoader;
 
 
         /// <summary>

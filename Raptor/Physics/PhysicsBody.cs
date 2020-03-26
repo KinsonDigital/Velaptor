@@ -22,7 +22,7 @@ namespace Raptor.Physics
         /// injects the given <paramref name="mockedBody"/> for mocking and unit testing.
         /// </summary>
         /// <param name="mockedBody">The mocked body to inject.</param>
-        internal PhysicsBody(IPhysicsBody mockedBody)
+        public PhysicsBody(IPhysicsBody mockedBody)
         {
             InternalPhysicsBody = mockedBody;
             Setup(new Vector[1] { Vector.Zero }, Vector.Zero, 0, 1, 0.2f, 0, false);
@@ -49,7 +49,7 @@ namespace Raptor.Physics
         /// <summary>
         /// The internal physics engine body.
         /// </summary>
-        internal IPhysicsBody InternalPhysicsBody
+        public IPhysicsBody InternalPhysicsBody
         {
             [ExcludeFromCodeCoverage]
             get

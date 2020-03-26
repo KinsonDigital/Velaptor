@@ -104,7 +104,7 @@ namespace Raptor.Input
         /// USED FOR UNIT TESTING.
         /// </summary>
         /// <param name="mockedKeyboard">The mocked keyboard to inject.</param>
-        internal Keyboard(IKeyboard mockedKeyboard) => InternalKeyboard = mockedKeyboard;
+        public Keyboard(IKeyboard mockedKeyboard) => InternalKeyboard = mockedKeyboard;
 
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Raptor.Input
         /// <summary>
         /// The internal keyboard plugin implementation.
         /// </summary>
-        internal IKeyboard InternalKeyboard { get; }
+        public IKeyboard InternalKeyboard { get; }
 
         /// <summary>
         /// Gets a value indicating if the caps lock key is on.

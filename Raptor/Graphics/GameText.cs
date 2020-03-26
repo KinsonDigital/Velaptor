@@ -6,7 +6,7 @@
     public class GameText
     {
         #region Props
-        internal IText InternalText { get; set; }
+        public IText InternalText { get; set; }
 
         public string Text
         {

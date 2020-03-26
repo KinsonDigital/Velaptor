@@ -20,7 +20,7 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="mockedRenderer">The mocked renderer to inject.</param>
         /// <param name="mockedDebugDraw">The mocked debug draw object to inject.</param>
-        internal Renderer(IRenderer mockedRenderer, IDebugDraw mockedDebugDraw)
+        public Renderer(IRenderer mockedRenderer, IDebugDraw mockedDebugDraw)
         {
             InternalRenderer = mockedRenderer;
             _debugDraw = mockedDebugDraw;
@@ -42,7 +42,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// The internal renderer plugin implementation.
         /// </summary>
-        internal IRenderer InternalRenderer { get; set; }
+        public IRenderer InternalRenderer { get; set; }
         #endregion
 
 
