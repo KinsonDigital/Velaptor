@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Raptor</RootNamespace>
     <AssemblyName>Raptor</AssemblyName>
+    <Nullable>enable</Nullable>
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Raptor</Product>
