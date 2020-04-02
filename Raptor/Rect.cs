@@ -1,4 +1,6 @@
-﻿namespace Raptor
+﻿using System.Numerics;
+
+namespace Raptor
 {
     /// <summary>
     /// Represents a 2D rectangle with position and size.
@@ -37,9 +39,9 @@
         /// <summary>
         /// Gets or sets the position of the <see cref="Rect"/>.
         /// </summary>
-        public Vector Position
+        public Vector2 Position
         {
-            get => new Vector(X, Y);
+            get => new Vector2(X, Y);
             set
             {
                 X = value.X;
@@ -104,7 +106,7 @@
         /// </summary>
         /// <param name="vector">The location that might be contained.</param>
         /// <returns></returns>
-        public bool Contains(Vector vector) => vector.X > Left && vector.Y > Top && vector.X < Right && vector.Y < Bottom;
+        public bool Contains(Vector2 vector) => vector.X > Left && vector.Y > Top && vector.X < Right && vector.Y < Bottom;
         #endregion
     }
 }

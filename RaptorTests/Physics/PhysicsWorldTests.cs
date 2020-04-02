@@ -5,6 +5,7 @@ using Raptor;
 using Raptor.Graphics;
 using Raptor.Plugins;
 using Raptor.Physics;
+using System.Numerics;
 
 namespace RaptorTests.Physics
 {
@@ -37,7 +38,7 @@ namespace RaptorTests.Physics
         {
             //Arrange
             var world = new PhysicsWorld(_mockPhysicsWorld.Object);
-            var expected = new Vector(2, 4);
+            var expected = new Vector2(2, 4);
 
             //Act
             var actual = world.Gravity;
@@ -54,7 +55,7 @@ namespace RaptorTests.Physics
             var mockTexture = new Mock<ITexture>();
 
             var texture = new Texture(mockTexture.Object);
-            var vertices = new Vector[] { Vector.Zero, Vector.Zero };
+            var vertices = new Vector2[] { Vector2.Zero, Vector2.Zero };
             var body = new PhysicsBody(_mockPhysicsBody.Object);
             var world = new PhysicsWorld(_mockPhysicsWorld.Object);
 
