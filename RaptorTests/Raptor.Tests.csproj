@@ -5,6 +5,7 @@
     <Platforms>AnyCPU</Platforms>
     <IsPackable>false</IsPackable>
     <AssemblyTitle>ScorpionCoreTests</AssemblyTitle>
+    <LangVersion>8.0</LangVersion>
     <Product>Kinson Digital - Scorpion Core Unit Tests</Product>
     <Copyright>Copyright © 2018</Copyright>
     <Version>1.0.0</Version>
