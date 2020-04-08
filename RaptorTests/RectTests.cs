@@ -1,4 +1,5 @@
 ﻿using Raptor;
+using System.Numerics;
 using Xunit;
 
 namespace RaptorTests
@@ -66,10 +67,10 @@ namespace RaptorTests
         {
             //Arrange
             var rect = new Rect();
-            var expected = new Vector(11.22f, 33.44f);
+            var expected = new Vector2(11.22f, 33.44f);
 
             //Act
-            rect.Position = new Vector(11.22f, 33.44f);
+            rect.Position = new Vector2(11.22f, 33.44f);
             var actual = rect.Position;
 
             //Assert
@@ -261,7 +262,7 @@ namespace RaptorTests
                 Height = 10f
             };
             var expected = true;
-            var location = new Vector(5.5f, 6.0f);
+            var location = new Vector2(5.5f, 6.0f);
 
             //Act
             var actual = rect.Contains(location);
@@ -281,7 +282,7 @@ namespace RaptorTests
                 Height = 10f
             };
             var expected = false;
-            var location = new Vector(50.5f, 60.0f);
+            var location = new Vector2(50.5f, 60.0f);
 
             //Act
             var actual = rect.Contains(location);

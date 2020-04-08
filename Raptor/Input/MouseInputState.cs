@@ -1,4 +1,6 @@
-﻿namespace Raptor.Input
+﻿using System.Numerics;
+
+namespace Raptor.Input
 {
     /// <summary>
     /// Represents the state of the mouse.
@@ -34,9 +36,9 @@
         /// <summary>
         /// Gets or sets the position of the mouse.
         /// </summary>
-        public Vector Position
+        public Vector2 Position
         {
-            get => new Vector(X, Y);
+            get => new Vector2(X, Y);
             set
             {
                 X = (int)value.X;

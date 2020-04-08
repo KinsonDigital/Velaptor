@@ -1,5 +1,6 @@
 ﻿using Raptor.Plugins;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace Raptor.Graphics
 {
@@ -93,7 +94,7 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="texture">The texture to render.</param>
         /// <param name="position">The position on the surface to render.</param>
-        public void Render(Texture texture, Vector position) => Render(texture, position.X, position.Y);
+        public void Render(Texture texture, Vector2 position) => Render(texture, position.X, position.Y);
 
 
 
@@ -141,7 +142,7 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="texture">The texture to render.</param>
         /// <param name="position">The position on the surface to render.</param>
-        public void Render(GameText text, Vector position) => Render(text, position.X, position.Y);
+        public void Render(GameText text, Vector2 position) => Render(text, position.X, position.Y);
 
 
         /// <summary>
@@ -162,7 +163,7 @@ namespace Raptor.Graphics
         /// <param name="text">The text to render.</param>
         /// <param name="position">The position on the surface to render.</param>
         /// <param name="color">The color to render the text.</param>
-        public void Render(GameText text, Vector position, GameColor color) => Render(text, position.X, position.Y, color);
+        public void Render(GameText text, Vector2 position, GameColor color) => Render(text, position.X, position.Y, color);
 
 
         /// <summary>
@@ -172,7 +173,7 @@ namespace Raptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="area">The area/section of the texture to render.</param>
         /// <param name="position">The position on the surface to render.</param>
-        public void RenderTextureArea(Texture texture, Rect area, Vector position) => 
+        public void RenderTextureArea(Texture texture, Rect area, Vector2 position) => 
             InternalRenderer.RenderTextureArea(texture.InternalTexture, area, position.X, position.Y);
 
 
@@ -184,7 +185,7 @@ namespace Raptor.Graphics
         /// <param name="position">The position on the surface to render.</param>
         /// <param name="radius">The radius of the circle.</param>
         /// <param name="color">The color of the circle.</param>
-        public void FillCircle(Vector position, float radius, GameColor color) => 
+        public void FillCircle(Vector2 position, float radius, GameColor color) => 
             InternalRenderer.FillCircle(position.X, position.Y, radius, color);
 
 
@@ -203,7 +204,7 @@ namespace Raptor.Graphics
         /// <param name="start">The starting position of the line.</param>
         /// <param name="end">The ending position of the line.</param>
         /// <param name="color">The color of the line.</param>
-        public void Line(Vector start, Vector end, GameColor color) => InternalRenderer.RenderLine(start.X, start.Y, end.X, end.Y, color);
+        public void Line(Vector2 start, Vector2 end, GameColor color) => InternalRenderer.RenderLine(start.X, start.Y, end.X, end.Y, color);
 
 
         /// <summary>

@@ -4,6 +4,7 @@ using Xunit;
 using Raptor;
 using Raptor.Input;
 using Raptor.Plugins;
+using System.Numerics;
 
 namespace RaptorTests.Input
 {
@@ -137,7 +138,7 @@ namespace RaptorTests.Input
             var mouse = new Mouse(mockMouse.Object);
 
             //Act
-            mouse.SetPosition(It.IsAny<Vector>());
+            mouse.SetPosition(It.IsAny<Vector2>());
 
             //Assert
             mockMouse.Verify(m => m.SetPosition(It.IsAny<int>(), It.IsAny<int>()), Times.Once());

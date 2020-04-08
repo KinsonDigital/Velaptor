@@ -1,6 +1,7 @@
 ﻿using Raptor.Plugins;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace Raptor.Input
 {
@@ -125,7 +126,7 @@ namespace Raptor.Input
         /// Sets the mouse to the given <paramref name="position"/>.
         /// </summary>
         /// <param name="position">The position to set the mouse to over the game window.</param>
-        public void SetPosition(Vector position) => InternalMouse.SetPosition((int)position.X, (int)position.Y);
+        public void SetPosition(Vector2 position) => InternalMouse.SetPosition((int)position.X, (int)position.Y);
 
 
         /// <summary>

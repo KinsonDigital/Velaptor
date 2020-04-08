@@ -1,6 +1,7 @@
 ﻿using Xunit;
 using Raptor.Input;
 using Raptor;
+using System.Numerics;
 
 namespace RaptorTests.Input
 {
@@ -14,10 +15,10 @@ namespace RaptorTests.Input
         {
             //Arrange
             var state = new MouseInputState();
-            var expected = new Vector(11, 22);
+            var expected = new Vector2(11, 22);
 
             //Act
-            state.Position = new Vector(11, 22);
+            state.Position = new Vector2(11, 22);
             var actual = state.Position;
 
             //Arrange

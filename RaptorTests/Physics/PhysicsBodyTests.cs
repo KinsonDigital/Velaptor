@@ -1,10 +1,10 @@
 ﻿using System;
 using Moq;
 using Xunit;
-using Raptor;
 using Raptor.Plugins;
 using Raptor.Physics;
 using System.Linq;
+using System.Numerics;
 
 namespace RaptorTests.Physics
 {
@@ -44,11 +44,11 @@ namespace RaptorTests.Physics
         public void Vertices_WhenSettingValue_SetsValues()
         {
             //Arrange
-            var expectedVertices = new Vector[]
+            var expectedVertices = new Vector2[]
             {
-                new Vector(11, 22),
-                new Vector(33, 44),
-                new Vector(55, 66),
+                new Vector2(11, 22),
+                new Vector2(33, 44),
+                new Vector2(55, 66),
             };
 
             //Act
@@ -66,11 +66,11 @@ namespace RaptorTests.Physics
         public void Vertices_WhenGettingValue_GetsCorrectValue()
         {
             //Arrange
-            var expectedVertices = new Vector[]
+            var expectedVertices = new Vector2[]
             {
-                new Vector(11, 22),
-                new Vector(33, 44),
-                new Vector(55, 66),
+                new Vector2(11, 22),
+                new Vector2(33, 44),
+                new Vector2(55, 66),
             };
             _mockPhysicsBody.SetupGet(p => p.XVertices).Returns(new float[] { 11, 33, 55 });
             _mockPhysicsBody.SetupGet(p => p.YVertices).Returns(new float[] { 22, 44, 66 });
@@ -93,11 +93,11 @@ namespace RaptorTests.Physics
             _mockPhysicsBody.SetupGet(p => p.XVertices).Returns(nullResult);
             _mockPhysicsBody.SetupGet(p => p.YVertices).Returns(nullResult);
 
-            var expectedVertices = new Vector[]
+            var expectedVertices = new Vector2[]
             {
-                new Vector(11, 22),
-                new Vector(33, 44),
-                new Vector(55, 66),
+                new Vector2(11, 22),
+                new Vector2(33, 44),
+                new Vector2(55, 66),
             };
 
             //Act
@@ -244,10 +244,10 @@ namespace RaptorTests.Physics
         {
             //Arrange
             var body = new PhysicsBody(_mockPhysicsBody.Object);
-            var expected = new Vector(123.321f, 789.987f);
+            var expected = new Vector2(123.321f, 789.987f);
 
             //Act
-            body.LinearVelocity = new Vector(123.321f, 789.987f);
+            body.LinearVelocity = new Vector2(123.321f, 789.987f);
             var actual = body.LinearVelocity;
 
             //Assert

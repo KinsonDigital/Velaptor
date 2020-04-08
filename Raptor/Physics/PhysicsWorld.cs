@@ -1,5 +1,6 @@
 ﻿using Raptor.Plugins;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace Raptor.Physics
 {
@@ -31,7 +32,7 @@ namespace Raptor.Physics
         /// </summary>
         /// <param name="gravity">The gravity of the world.</param>
         [ExcludeFromCodeCoverage]
-        public PhysicsWorld(Vector gravity)
+        public PhysicsWorld(Vector2 gravity)
         {
             //TODO: Figure out how to get the proper implementation inside of this class
         }
@@ -42,7 +43,7 @@ namespace Raptor.Physics
         /// <summary>
         /// Gets the worlds gravity.
         /// </summary>
-        public Vector Gravity => new Vector(_internalWorld.GravityX, _internalWorld.GravityY);
+        public Vector2 Gravity => new Vector2(_internalWorld.GravityX, _internalWorld.GravityY);
         #endregion
 
 
