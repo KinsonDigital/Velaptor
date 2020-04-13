@@ -1,6 +1,7 @@
 ﻿using Raptor.Graphics;
 using Raptor.Plugins;
 using System;
+using System.Numerics;
 
 namespace Raptor.SDLImp
 {
@@ -19,12 +20,12 @@ namespace Raptor.SDLImp
         {
             int max = body.XVertices.Length;
 
-            var origin = new Vector(body.X, body.Y);
+            var origin = new Vector2(body.X, body.Y);
 
             for (int i = 0; i < max; i++)
             {
-                var start = new Vector(body.XVertices[i], body.YVertices[i]).RotateAround(origin, body.Angle);
-                var stop = new Vector(body.XVertices[i < max - 1 ? i + 1 : 0], body.YVertices[i < max - 1 ? i + 1 : 0]).RotateAround(origin, body.Angle);
+                var start = new Vector2(body.XVertices[i], body.YVertices[i]).RotateAround(origin, body.Angle);
+                var stop = new Vector2(body.XVertices[i < max - 1 ? i + 1 : 0], body.YVertices[i < max - 1 ? i + 1 : 0]).RotateAround(origin, body.Angle);
 
                 renderer.RenderLine(start.X, start.Y, stop.X, stop.Y);
             }
@@ -41,12 +42,12 @@ namespace Raptor.SDLImp
         {
             int max = body.XVertices.Length;
 
-            var origin = new Vector(body.X, body.Y);
+            var origin = new Vector2(body.X, body.Y);
 
             for (int i = 0; i < max; i++)
             {
-                var start = new Vector(body.XVertices[i], body.YVertices[i]).RotateAround(origin, body.Angle);
-                var stop = new Vector(body.XVertices[i < max - 1 ? i + 1 : 0], body.YVertices[i < max - 1 ? i + 1 : 0]).RotateAround(origin, body.Angle);
+                var start = new Vector2(body.XVertices[i], body.YVertices[i]).RotateAround(origin, body.Angle);
+                var stop = new Vector2(body.XVertices[i < max - 1 ? i + 1 : 0], body.YVertices[i < max - 1 ? i + 1 : 0]).RotateAround(origin, body.Angle);
 
                 renderer.RenderLine(start.X, start.Y, stop.X, stop.Y, color);
             }

@@ -1,4 +1,5 @@
 ﻿using Raptor.Graphics;
+using System.Numerics;
 
 namespace Raptor.UI
 {
@@ -19,14 +20,14 @@ namespace Raptor.UI
         /// <summary>
         /// Creates a new instance of <see cref="UIText"/>.
         /// </summary>
-        public UIText() => Position = Vector.Zero;
+        public UIText() => Position = Vector2.Zero;
 
 
         /// <summary>
         /// Creates a new instance of <see cref="UIText"/>.
         /// </summary>
         /// <param name="position">The position to to render the text item.</param>
-        public UIText(Vector position) => Position = position;
+        public UIText(Vector2 position) => Position = position;
 
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace Raptor.UI
         /// </summary>
         /// <param name="x">The X location of the text item.</param>
         /// <param name="y">The Y location of the text item.</param>
-        public UIText(int x = 0, int y = 0) => Position = new Vector(x, y);
+        public UIText(int x = 0, int y = 0) => Position = new Vector2(x, y);
         #endregion
 
 
@@ -75,7 +76,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the position of the text on the graphics surface.
         /// </summary>
-        public Vector Position { get; set; }
+        public Vector2 Position { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating if the text will render as selected.
@@ -88,9 +89,9 @@ namespace Raptor.UI
         public int UpdateFrequency { get; set; } = 62;
 
         /// <summary>
-        /// Gets or sets the size of the text. <see cref="Vector.X"/> is for the width and <see cref="Vector.Y"/> is for the height.
+        /// Gets or sets the size of the text. <see cref="Vector2.X"/> is for the width and <see cref="Vector2.Y"/> is for the height.
         /// </summary>
-        public Vector TextItemSize => new Vector(Width, Height);
+        public Vector2 TextItemSize => new Vector2(Width, Height);
 
         /// <summary>
         /// Gets the width of the entire text.

@@ -1,6 +1,7 @@
 ﻿using Xunit;
 using Raptor.Input;
 using Raptor;
+using System.Numerics;
 
 namespace RaptorTests.Input
 {
@@ -18,7 +19,7 @@ namespace RaptorTests.Input
                 LeftButtonDown = true,
                 RightButtonDown = true,
                 MiddleButtonDown = true,
-                Position = new Vector(11, 22),
+                Position = new Vector2(11, 22),
                 ScrollWheelValue = 4
             });
 
@@ -27,7 +28,7 @@ namespace RaptorTests.Input
                 LeftButtonDown = true,
                 RightButtonDown = true,
                 MiddleButtonDown = true,
-                Position = new Vector(11, 22),
+                Position = new Vector2(11, 22),
                 ScrollWheelValue = 4
             };
 

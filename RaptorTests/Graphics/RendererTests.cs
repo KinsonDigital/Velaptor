@@ -4,6 +4,7 @@ using Raptor.Graphics;
 using Raptor.Plugins;
 using Raptor;
 using System;
+using System.Numerics;
 
 namespace RaptorTests.Graphics
 {
@@ -79,7 +80,7 @@ namespace RaptorTests.Graphics
             var renderer = new Renderer(mockRenderer.Object, _mockDebugDraw.Object);
 
             //Act
-            renderer.Render(_texture, It.IsAny<Vector>());
+            renderer.Render(_texture, It.IsAny<Vector2>());
 
             //Assert
             mockRenderer.Verify(m => m.Render(It.IsAny<ITexture>(), It.IsAny<float>(), It.IsAny<float>()), Times.Once());
@@ -137,7 +138,7 @@ namespace RaptorTests.Graphics
             var renderer = new Renderer(mockRenderer.Object, _mockDebugDraw.Object);
 
             //Act
-            renderer.Render(_gameText, It.IsAny<Vector>(), It.IsAny<GameColor>());
+            renderer.Render(_gameText, It.IsAny<Vector2>(), It.IsAny<GameColor>());
 
             //Assert
             mockRenderer.Verify(m => m.Render(It.IsAny<IText>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<GameColor>()), Times.Once());
@@ -152,7 +153,7 @@ namespace RaptorTests.Graphics
             var renderer = new Renderer(mockRenderer.Object, _mockDebugDraw.Object);
 
             //Act
-            renderer.Render(_gameText, It.IsAny<Vector>());
+            renderer.Render(_gameText, It.IsAny<Vector2>());
 
             //Assert
             mockRenderer.Verify(m => m.Render(It.IsAny<IText>(), It.IsAny<float>(), It.IsAny<float>()), Times.Once());
@@ -167,7 +168,7 @@ namespace RaptorTests.Graphics
             var renderer = new Renderer(mockRenderer.Object, _mockDebugDraw.Object);
 
             //Act
-            renderer.Line(It.IsAny<Vector>(), It.IsAny<Vector>(), It.IsAny<GameColor>());
+            renderer.Line(It.IsAny<Vector2>(), It.IsAny<Vector2>(), It.IsAny<GameColor>());
 
             //Assert
             mockRenderer.Verify(m => m.RenderLine(It.IsAny<float>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<GameColor>()), Times.Once());
@@ -242,7 +243,7 @@ namespace RaptorTests.Graphics
             var renderer = new Renderer(mockRenderer.Object, _mockDebugDraw.Object);
 
             //Act
-            renderer.FillCircle(It.IsAny<Vector>(), It.IsAny<float>(), It.IsAny<GameColor>());
+            renderer.FillCircle(It.IsAny<Vector2>(), It.IsAny<float>(), It.IsAny<GameColor>());
 
             //Assert
             mockRenderer.Verify(m => m.FillCircle(It.IsAny<float>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<GameColor>()), Times.Once());
@@ -257,7 +258,7 @@ namespace RaptorTests.Graphics
             var renderer = new Renderer(mockRenderer.Object, _mockDebugDraw.Object);
             
             //Act
-            renderer.RenderTextureArea(_texture, It.IsAny<Rect>(), It.IsAny<Vector>());
+            renderer.RenderTextureArea(_texture, It.IsAny<Rect>(), It.IsAny<Vector2>());
 
             //Assert
             mockRenderer.Verify(m => m.RenderTextureArea(It.IsAny<ITexture>(), It.IsAny<Rect>(), It.IsAny<float>(), It.IsAny<float>()), Times.Once());

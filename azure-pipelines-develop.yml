@@ -19,7 +19,7 @@ steps:
 
 
 - task: NuGetCommand@2
-  displayName: Restore Packages
+  displayName: Restore $(appName) Packages
   inputs:
     command: 'restore'
     restoreSolution: '$(solution)'

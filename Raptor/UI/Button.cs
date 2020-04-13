@@ -2,6 +2,7 @@
 using Raptor.Graphics;
 using Raptor.Input;
 using System;
+using System.Numerics;
 
 namespace Raptor.UI
 {
@@ -37,7 +38,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the position of the <see cref="Button"/> on the screen.
         /// </summary>
-        public Vector Position { get; set; }
+        public Vector2 Position { get; set; }
 
         /// <summary>
         /// Gets the width of the <see cref="Button"/>.
@@ -152,7 +153,7 @@ namespace Raptor.UI
 
             }
 
-            var textPosition = new Vector()
+            var textPosition = new Vector2()
             {
                 X = Position.X - ButtonText.Width / 2f,
                 Y = Position.Y - ButtonText.Height / 2f

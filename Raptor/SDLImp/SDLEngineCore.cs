@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 
 namespace Raptor.SDLImp
 {
@@ -134,7 +135,7 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Gets the current position of the mouse cursur in the game window.
         /// </summary>
-        internal static Vector MousePosition { get; private set; }
+        internal static Vector2 MousePosition { get; private set; }
         #endregion
 
 
@@ -410,7 +411,7 @@ namespace Raptor.SDLImp
                 }
                 else if (e.type == EventType.SDL_MOUSEMOTION)
                 {
-                    MousePosition = new Vector(e.button.x, e.button.y);
+                    MousePosition = new Vector2(e.button.x, e.button.y);
                 }
             }
         }

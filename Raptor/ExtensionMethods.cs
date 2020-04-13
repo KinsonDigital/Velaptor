@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace Raptor
 {
@@ -52,7 +53,7 @@ namespace Raptor
         /// <param name="origin">The origin to rotate the <paramref name="vector"/> around.</param>
         /// <param name="angle">The angle in degress to rotate <paramref name="vector"/>.  Value must be positive.</param>
         /// <returns></returns>
-        public static Vector RotateAround(this Vector vector, Vector origin, float angle, bool clockWise = true)
+        public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
         {
             var angleRadians = clockWise ? angle.ToRadians() : angle.ToRadians() * -1;
 
@@ -69,7 +70,7 @@ namespace Raptor
             var y = tempY + origin.Y;
 
 
-            return new Vector(x, y);
+            return new Vector2(x, y);
         }
         #endregion
     }

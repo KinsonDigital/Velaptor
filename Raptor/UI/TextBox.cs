@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Raptor.Content;
 using Raptor.Graphics;
 using Raptor.Input;
@@ -17,7 +18,7 @@ namespace Raptor.UI
         private static GameText _textRuler;//Used for measuring text with and height
         private int _visibleTextCharPosition;
         private int _charPosDelta;
-        private Vector _textPosition;
+        private Vector2 _textPosition;
         private int _characterPosition;
         private int _cursorElapsedMilliseconds;
         private bool _cursorVisible;
@@ -42,7 +43,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the position of the text box.
         /// </summary>
-        public Vector Position { get; set; }
+        public Vector2 Position { get; set; }
 
         /// <summary>
         /// Gets the width of the <see cref="TextBox"/>.
@@ -120,7 +121,7 @@ namespace Raptor.UI
             renderer.Render(Background, Position);
 
             //Update the X position of the text
-            _textPosition = new Vector(_leftSide, Position.Y - _visibleText.Height / 2f);
+            _textPosition = new Vector2(_leftSide, Position.Y - _visibleText.Height / 2f);
 
             //Render the text inside of the <see cref="TextBox"/>
             _visibleText.Text = ClipText(Text);
@@ -128,32 +129,32 @@ namespace Raptor.UI
             renderer.Render(_visibleText, _textPosition, new GameColor(255, 0, 0, 0));
 
             //Render the end to cover any text that has passed the end of the render area
-            var topLeftCorner = new Vector(Position.X - Width / 2, Position.Y - Height / 2);
+            var topLeftCorner = new Vector2(Position.X - Width / 2, Position.Y - Height / 2);
 
             var areaWidth = Width - (_rightSide - topLeftCorner.X);
 
             var coverArea = new Rect(Width - areaWidth, 0, areaWidth, Height);
-            var coverPosition = new Vector(454, 250);// new Vector(_rightSide, Position.Y);
+            var coverPosition = new Vector2(454, 250);// new Vector2(_rightSide, Position.Y);
 
             renderer.RenderTextureArea(Background, coverArea, coverPosition);
 
             //DEBUGGING
             //Render the dot at the right side line
-            renderer.FillCircle(new Vector(_rightSide, Position.Y - Height / 2), 5, new GameColor(255, 125, 125, 0));
+            renderer.FillCircle(new Vector2(_rightSide, Position.Y - Height / 2), 5, new GameColor(255, 125, 125, 0));
 
             //Render the margins for visual debugging
-            var leftMarginStart = new Vector(_leftSide, Position.Y - 50);
-            var leftMarginStop = new Vector(_leftSide, Position.Y + 50);
+            var leftMarginStart = new Vector2(_leftSide, Position.Y - 50);
+            var leftMarginStop = new Vector2(_leftSide, Position.Y + 50);
             renderer.Line(leftMarginStart, leftMarginStop, new GameColor(255, 0, 255, 0));
 
-            var rightMarginStart = new Vector(_rightSide, Position.Y - 50);
-            var rightMarginStop = new Vector(_rightSide, Position.Y + 50);
+            var rightMarginStart = new Vector2(_rightSide, Position.Y - 50);
+            var rightMarginStop = new Vector2(_rightSide, Position.Y + 50);
             renderer.Line(rightMarginStart, rightMarginStop, new GameColor(255, 0, 255, 0));
             ///////////
 
             //Render the blinking cursor
-            var lineStart = CalcCursorStart();// new Vector(cursorPositionX, Position.Y - (Background.Height / 2) + 3);
-            var lineStop = CalcCursorStop();// new Vector(cursorPositionX, Position.Y + (Background.Height / 2) - 3);
+            var lineStart = CalcCursorStart();// new Vector2(cursorPositionX, Position.Y - (Background.Height / 2) + 3);
+            var lineStop = CalcCursorStop();// new Vector2(cursorPositionX, Position.Y + (Background.Height / 2) - 3);
 
             lineStart.X = lineStart.X > _rightSide ? _rightSide : lineStart.X;
             lineStop.X = lineStop.X > _rightSide ? _rightSide : lineStop.X;
@@ -275,14 +276,14 @@ namespace Raptor.UI
         /// Calculates the starting position of the cursor inside of the <see cref="TextBox"/>.
         /// </summary>
         /// <returns></returns>
-        private Vector CalcCursorStart() => new Vector(_leftSide + CalcCursorXPos(), Position.Y - (Background.Height / 2) + 3);
+        private Vector2 CalcCursorStart() => new Vector2(_leftSide + CalcCursorXPos(), Position.Y - (Background.Height / 2) + 3);
 
 
         /// <summary>
         /// Calculates the stopping position of the cursor insdie of the <see cref="TextBox"/>.
         /// </summary>
         /// <returns></returns>
-        private Vector CalcCursorStop() => new Vector(_leftSide + CalcCursorXPos(), Position.Y + (Background.Height / 2) - 3);
+        private Vector2 CalcCursorStop() => new Vector2(_leftSide + CalcCursorXPos(), Position.Y + (Background.Height / 2) - 3);
 
 
         /// <summary>

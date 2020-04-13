@@ -2,6 +2,7 @@ using Raptor.Plugins;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Numerics;
 
 namespace Raptor.Physics
 {
@@ -25,7 +26,7 @@ namespace Raptor.Physics
         public PhysicsBody(IPhysicsBody mockedBody)
         {
             InternalPhysicsBody = mockedBody;
-            Setup(new Vector[1] { Vector.Zero }, Vector.Zero, 0, 1, 0.2f, 0, false);
+            Setup(new Vector2[1] { Vector2.Zero }, Vector2.Zero, 0, 1, 0.2f, 0, false);
         }
 
 
@@ -40,7 +41,7 @@ namespace Raptor.Physics
         /// <param name="restitution">The restitution of the body.</param>
         /// <param name="isStatic">True if the body is a static body.</param>
         [ExcludeFromCodeCoverage]
-        public PhysicsBody(Vector[] vertices, Vector position, float angle = 0, float density = 1, float friction = 0.2f, float restitution = 0, bool isStatic = false) =>
+        public PhysicsBody(Vector2[] vertices, Vector2 position, float angle = 0, float density = 1, float friction = 0.2f, float restitution = 0, bool isStatic = false) =>
             Setup(vertices, position, angle, density, friction, restitution, isStatic);
         #endregion
 
@@ -63,18 +64,18 @@ namespace Raptor.Physics
         /// <summary>
         /// Gets or sets the vertices that maake up the shape of the body.
         /// </summary>
-        public Vector[] Vertices
+        public Vector2[] Vertices
         {
             get
             {
-                var result = new List<Vector>();
+                var result = new List<Vector2>();
 
                 if (InternalPhysicsBody.XVertices == null || InternalPhysicsBody.YVertices == null)
                     return null;
 
                 for (int i = 0; i < InternalPhysicsBody.XVertices.Length; i++)
                 {
-                    result.Add(new Vector(InternalPhysicsBody.XVertices[i], InternalPhysicsBody.YVertices[i]));
+                    result.Add(new Vector2(InternalPhysicsBody.XVertices[i], InternalPhysicsBody.YVertices[i]));
                 }
 
 
@@ -144,9 +145,9 @@ namespace Raptor.Physics
         /// <summary>
         /// Gets or sets the linear velocity in the Y plane.
         /// </summary>
-        public Vector LinearVelocity
+        public Vector2 LinearVelocity
         {
-            get => new Vector(InternalPhysicsBody.LinearVelocityX, InternalPhysicsBody.LinearVelocityY);
+            get => new Vector2(InternalPhysicsBody.LinearVelocityX, InternalPhysicsBody.LinearVelocityY);
             set
             {
                 InternalPhysicsBody.LinearVelocityX = value.X;
@@ -194,7 +195,7 @@ namespace Raptor.Physics
         /// <param name="friction">The friction of the body.</param>
         /// <param name="restitution">The restitution of the body.</param>
         /// <param name="isStatic">True if the body is a static body.</param>
-        private void Setup(Vector[] vertices, Vector position, float angle, float density, float friction, float restitution, bool isStatic)
+        private void Setup(Vector2[] vertices, Vector2 position, float angle, float density, float friction, float restitution, bool isStatic)
         {
             _ctorParams = new object[9];
 
