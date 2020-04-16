@@ -1,4 +1,5 @@
 ﻿using Raptor.Plugins;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -14,86 +15,86 @@ namespace Raptor.Input
         /// <summary>
         /// The letter keys including the space bar.
         /// </summary>
-        private static readonly KeyCodes[] _letterKeys = new[]
+        private static readonly KeyCode[] _letterKeys = new[]
         {
-            KeyCodes.A, KeyCodes.B, KeyCodes.C, KeyCodes.D, KeyCodes.E,
-            KeyCodes.F, KeyCodes.G, KeyCodes.H, KeyCodes.I, KeyCodes.J,
-            KeyCodes.K,KeyCodes.L, KeyCodes.M, KeyCodes.N, KeyCodes.O,
-            KeyCodes.P, KeyCodes.Q, KeyCodes.R, KeyCodes.S, KeyCodes.T,
-            KeyCodes.U, KeyCodes.V, KeyCodes.W, KeyCodes.X, KeyCodes.Y,
-            KeyCodes.Z, KeyCodes.Space
+            KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.D, KeyCode.E,
+            KeyCode.F, KeyCode.G, KeyCode.H, KeyCode.I, KeyCode.J,
+            KeyCode.K,KeyCode.L, KeyCode.M, KeyCode.N, KeyCode.O,
+            KeyCode.P, KeyCode.Q, KeyCode.R, KeyCode.S, KeyCode.T,
+            KeyCode.U, KeyCode.V, KeyCode.W, KeyCode.X, KeyCode.Y,
+            KeyCode.Z, KeyCode.Space
         };
 
         /// <summary>
         /// The standard number keys above the letter keys.
         /// </summary>
-        private static readonly KeyCodes[] _standardNumberKeys = new[]
+        private static readonly KeyCode[] _standardNumberKeys = new[]
         {
-            KeyCodes.D0, KeyCodes.D1, KeyCodes.D2,
-            KeyCodes.D3, KeyCodes.D4, KeyCodes.D5,
-            KeyCodes.D6, KeyCodes.D7, KeyCodes.D8,
-            KeyCodes.D9
+            KeyCode.D0, KeyCode.D1, KeyCode.D2,
+            KeyCode.D3, KeyCode.D4, KeyCode.D5,
+            KeyCode.D6, KeyCode.D7, KeyCode.D8,
+            KeyCode.D9
         };
 
         /// <summary>
         /// The number keys on the numpad.
         /// </summary>
-        private static readonly KeyCodes[] _numpadNumberKeys = new[]
+        private static readonly KeyCode[] _numpadNumberKeys = new[]
         {
-            KeyCodes.NumPad0, KeyCodes.NumPad1, KeyCodes.NumPad2,
-            KeyCodes.NumPad3, KeyCodes.NumPad4, KeyCodes.NumPad5,
-            KeyCodes.NumPad6, KeyCodes.NumPad7, KeyCodes.NumPad8,
-            KeyCodes.NumPad9,
+            KeyCode.NumPad0, KeyCode.NumPad1, KeyCode.NumPad2,
+            KeyCode.NumPad3, KeyCode.NumPad4, KeyCode.NumPad5,
+            KeyCode.NumPad6, KeyCode.NumPad7, KeyCode.NumPad8,
+            KeyCode.NumPad9,
         };
 
         /// <summary>
         /// The symbol keys.
         /// </summary>
-        private static readonly KeyCodes[] _symbolKeys = new[]
+        private static readonly KeyCode[] _symbolKeys = new[]
         {
-            KeyCodes.OemSemicolon, KeyCodes.OemPlus, KeyCodes.OemComma,
-            KeyCodes.OemMinus, KeyCodes.OemPeriod, KeyCodes.OemQuestion,
-            KeyCodes.OemTilde, KeyCodes.OemOpenBrackets, KeyCodes.OemPipe,
-            KeyCodes.OemCloseBrackets, KeyCodes.OemQuotes, KeyCodes.Decimal,
-            KeyCodes.Divide, KeyCodes.Multiply, KeyCodes.Subtract, KeyCodes.Add
+            KeyCode.OemSemicolon, KeyCode.OemPlus, KeyCode.OemComma,
+            KeyCode.OemMinus, KeyCode.OemPeriod, KeyCode.OemQuestion,
+            KeyCode.OemTilde, KeyCode.OemOpenBrackets, KeyCode.OemPipe,
+            KeyCode.OemCloseBrackets, KeyCode.OemQuotes, KeyCode.Decimal,
+            KeyCode.Divide, KeyCode.Multiply, KeyCode.Subtract, KeyCode.Add
         };
 
         /// <summary>
         /// The characters produced by the standard number keys when no shift modifier keys are pressed.
         /// </summary>
-        private static readonly Dictionary<KeyCodes, char> _noShiftStandardNumberCharacters = new Dictionary<KeyCodes, char>()
+        private static readonly Dictionary<KeyCode, char> _noShiftStandardNumberCharacters = new Dictionary<KeyCode, char>()
         {
-            { KeyCodes.D0 , '0'}, { KeyCodes.D1 , '1'}, { KeyCodes.D2 , '2'},
-            { KeyCodes.D3 , '3'}, { KeyCodes.D4 , '4'}, { KeyCodes.D5 , '5'},
-            { KeyCodes.D6 , '6'}, { KeyCodes.D7 , '7'}, { KeyCodes.D8 , '8'}, { KeyCodes.D9 , '9'},
+            { KeyCode.D0 , '0'}, { KeyCode.D1 , '1'}, { KeyCode.D2 , '2'},
+            { KeyCode.D3 , '3'}, { KeyCode.D4 , '4'}, { KeyCode.D5 , '5'},
+            { KeyCode.D6 , '6'}, { KeyCode.D7 , '7'}, { KeyCode.D8 , '8'}, { KeyCode.D9 , '9'},
         };
 
         /// <summary>
         /// The symbol keys produced by the keyboard when no shift modifier keys are pressed.
         /// </summary>
-        private static readonly Dictionary<KeyCodes, char> _noShiftSymbolCharacters = new Dictionary<KeyCodes, char>()
+        private static readonly Dictionary<KeyCode, char> _noShiftSymbolCharacters = new Dictionary<KeyCode, char>()
         {
-            { KeyCodes.OemPlus, '=' }, { KeyCodes.OemComma, ',' }, { KeyCodes.OemMinus, '-' },
-            { KeyCodes.OemPeriod, '.' }, { KeyCodes.OemQuestion, '/' }, { KeyCodes.OemTilde, '`' },
-            { KeyCodes.OemPipe, '\\' }, { KeyCodes.OemOpenBrackets, '[' }, { KeyCodes.OemCloseBrackets, ']' },
-            { KeyCodes.OemQuotes, '\'' }, { KeyCodes.OemSemicolon, ';' }, { KeyCodes.Decimal, '.' },
-            { KeyCodes.Divide, '/' }, { KeyCodes.Multiply, '*' }, { KeyCodes.Subtract, '-' },
-            { KeyCodes.Add, '+' }
+            { KeyCode.OemPlus, '=' }, { KeyCode.OemComma, ',' }, { KeyCode.OemMinus, '-' },
+            { KeyCode.OemPeriod, '.' }, { KeyCode.OemQuestion, '/' }, { KeyCode.OemTilde, '`' },
+            { KeyCode.OemPipe, '\\' }, { KeyCode.OemOpenBrackets, '[' }, { KeyCode.OemCloseBrackets, ']' },
+            { KeyCode.OemQuotes, '\'' }, { KeyCode.OemSemicolon, ';' }, { KeyCode.Decimal, '.' },
+            { KeyCode.Divide, '/' }, { KeyCode.Multiply, '*' }, { KeyCode.Subtract, '-' },
+            { KeyCode.Add, '+' }
         };
 
         /// <summary>
         /// The symbol keys produced by the keyboard when any shift modifier keys are pressed.
         /// </summary>
-        private static readonly Dictionary<KeyCodes, char> _withShiftSymbolCharacters = new Dictionary<KeyCodes, char>()
+        private static readonly Dictionary<KeyCode, char> _withShiftSymbolCharacters = new Dictionary<KeyCode, char>()
         {
-            { KeyCodes.OemPlus, '+' }, { KeyCodes.OemComma, '<' }, { KeyCodes.OemMinus, '_' },
-            { KeyCodes.OemPeriod, '>' }, { KeyCodes.OemQuestion, '?' }, { KeyCodes.OemTilde, '~' },
-            { KeyCodes.OemPipe, '|' }, { KeyCodes.OemOpenBrackets, '{' }, { KeyCodes.OemCloseBrackets, '}' },
-            { KeyCodes.OemQuotes, '\'' }, { KeyCodes.OemSemicolon, ':' }, { KeyCodes.D1, '!' },
-            { KeyCodes.D2, '@' }, { KeyCodes.D3, '#' }, { KeyCodes.D4, '$' }, { KeyCodes.D5, '%' },
-            { KeyCodes.D6, '^' }, { KeyCodes.D7, '&' }, { KeyCodes.D8, '*' }, { KeyCodes.D9, '(' },
-            { KeyCodes.D0, ')' }, { KeyCodes.Divide, '/' }, { KeyCodes.Multiply, '*' }, { KeyCodes.Subtract, '-' },
-            { KeyCodes.Add, '+' }
+            { KeyCode.OemPlus, '+' }, { KeyCode.OemComma, '<' }, { KeyCode.OemMinus, '_' },
+            { KeyCode.OemPeriod, '>' }, { KeyCode.OemQuestion, '?' }, { KeyCode.OemTilde, '~' },
+            { KeyCode.OemPipe, '|' }, { KeyCode.OemOpenBrackets, '{' }, { KeyCode.OemCloseBrackets, '}' },
+            { KeyCode.OemQuotes, '\'' }, { KeyCode.OemSemicolon, ':' }, { KeyCode.D1, '!' },
+            { KeyCode.D2, '@' }, { KeyCode.D3, '#' }, { KeyCode.D4, '$' }, { KeyCode.D5, '%' },
+            { KeyCode.D6, '^' }, { KeyCode.D7, '&' }, { KeyCode.D8, '*' }, { KeyCode.D9, '(' },
+            { KeyCode.D0, ')' }, { KeyCode.Divide, '/' }, { KeyCode.Multiply, '*' }, { KeyCode.Subtract, '-' },
+            { KeyCode.Add, '+' }
         };
         #endregion
 
@@ -120,47 +121,47 @@ namespace Raptor.Input
         /// <summary>
         /// The internal keyboard plugin implementation.
         /// </summary>
-        public IKeyboard InternalKeyboard { get; }
+        internal IKeyboard? InternalKeyboard { get; }
 
         /// <summary>
         /// Gets a value indicating if the caps lock key is on.
         /// </summary>
-        public bool CapsLockOn => InternalKeyboard.CapsLockOn;
+        public bool CapsLockOn => !(InternalKeyboard is null) && InternalKeyboard.CapsLockOn;
 
         /// <summary>
         /// Gets a value indicating if the numlock key is on.
         /// </summary>
-        public bool NumLockOn => InternalKeyboard.NumLockOn;
+        public bool NumLockOn => !(InternalKeyboard is null) && InternalKeyboard.NumLockOn;
 
         /// <summary>
         /// Gets a value indicating if the left shift key is being pressed down.
         /// </summary>
-        public bool IsLeftShiftDown => InternalKeyboard.IsLeftShiftDown;
+        public bool IsLeftShiftDown => !(InternalKeyboard is null) && InternalKeyboard.IsLeftShiftDown;
 
         /// <summary>
         /// Gets a value indicating if the right shift key is being pressed down.
         /// </summary>
-        public bool IsRightShiftDown => InternalKeyboard.IsRightShiftDown;
+        public bool IsRightShiftDown => !(InternalKeyboard is null) && InternalKeyboard.IsRightShiftDown;
 
         /// <summary>
         /// Gets a value indicating if the left control key is being pressed down.
         /// </summary>
-        public bool IsLeftCtrlDown => InternalKeyboard.IsLeftCtrlDown;
+        public bool IsLeftCtrlDown => !(InternalKeyboard is null) && InternalKeyboard.IsLeftCtrlDown;
 
         /// <summary>
         /// Gets a value indicating if the right control key is being pressed down.
         /// </summary>
-        public bool IsRightCtrlDown => InternalKeyboard.IsRightCtrlDown;
+        public bool IsRightCtrlDown => !(InternalKeyboard is null) && InternalKeyboard.IsRightCtrlDown;
 
         /// <summary>
         /// Gets a value indicating if the left alt key is being pressed down.
         /// </summary>
-        public bool IsLeftAltDown => InternalKeyboard.IsLeftAltDown;
+        public bool IsLeftAltDown => !(InternalKeyboard is null) && InternalKeyboard.IsLeftAltDown;
 
         /// <summary>
         /// Gets a value indicating if the right alt key is being pressed down.
         /// </summary>
-        public bool IsRightAltDown => InternalKeyboard.IsRightAltDown;
+        public bool IsRightAltDown => !(InternalKeyboard is null) && InternalKeyboard.IsRightAltDown;
         #endregion
 
 
@@ -169,23 +170,35 @@ namespace Raptor.Input
         /// Returns all of the currently pressed keys on the keyboard.
         /// </summary>
         /// <returns></returns>
-        public KeyCodes[] GetCurrentPressedKeys() => (from k in InternalKeyboard.GetCurrentPressedKeys()
-                                                      select k).ToArray();
+        public KeyCode[] GetCurrentPressedKeys()
+        {
+            if (InternalKeyboard is null)
+                return Array.Empty<KeyCode>();
+
+            return (from k in InternalKeyboard.GetCurrentPressedKeys()
+                    select k).ToArray();
+        }
 
 
         /// <summary>
         /// Returns all of the previously pressed keys from the last check.
         /// </summary>
         /// <returns></returns>
-        public KeyCodes[] GetPreviousPressedKeys() => (from k in InternalKeyboard.GetPreviousPressedKeys()
-                                                       select k).ToArray();
+        public KeyCode[] GetPreviousPressedKeys()
+        {
+            if (InternalKeyboard is null)
+                return Array.Empty<KeyCode>();
+
+            return (from k in InternalKeyboard.GetPreviousPressedKeys()
+                    select k).ToArray();
+        }
 
 
         /// <summary>
         /// Gets a value indicating if any keys are in the down position.
         /// </summary>
         /// <returns></returns>
-        public bool AreAnyKeysDown() => InternalKeyboard.AreAnyKeysDown();
+        public bool AreAnyKeysDown() => !(InternalKeyboard is null) && InternalKeyboard.AreAnyKeysDown();
 
 
         /// <summary>
@@ -193,7 +206,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="keys">The list of key codes to check.</param>
         /// <returns></returns>
-        public bool IsAnyKeyDown(KeyCodes[] keys) => InternalKeyboard.AreKeysDown(keys);
+        public bool IsAnyKeyDown(KeyCode[] keys) => !(InternalKeyboard is null) && InternalKeyboard.AreKeysDown(keys);
 
 
         /// <summary>
@@ -201,7 +214,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyDown(KeyCodes key) => InternalKeyboard.IsKeyDown(key);
+        public bool IsKeyDown(KeyCode key) => !(InternalKeyboard is null) && InternalKeyboard.IsKeyDown(key);
 
 
         /// <summary>
@@ -209,7 +222,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyUp(KeyCodes key) => InternalKeyboard.IsKeyUp(key);
+        public bool IsKeyUp(KeyCode key) => InternalKeyboard is null || InternalKeyboard.IsKeyUp(key);
 
 
         /// <summary>
@@ -218,7 +231,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyPressed(KeyCodes key) => InternalKeyboard.IsKeyPressed(key);
+        public bool IsKeyPressed(KeyCode key) => !(InternalKeyboard is null) && InternalKeyboard.IsKeyPressed(key);
 
 
         /// <summary>
@@ -244,8 +257,13 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="letterKey">The letter key that was pressed if found.</param>
         /// <returns></returns>
-        public bool AnyLettersPressed(out KeyCodes letterKey)
+        public bool AnyLettersPressed(out KeyCode letterKey)
         {
+            letterKey = KeyCode.None;
+
+            if (InternalKeyboard is null)
+                return false;
+
             for (int i = 0; i < _letterKeys.Length; i++)
             {
                 if (InternalKeyboard.IsKeyPressed(_letterKeys[i]))
@@ -254,8 +272,6 @@ namespace Raptor.Input
                     return true;
                 }
             }
-
-            letterKey = KeyCodes.None;
 
 
             return false;
@@ -354,8 +370,13 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="symbolKey">The number key that was pressed if found.</param>
         /// <returns></returns>
-        public bool AnyNumbersPressed(out KeyCodes numberKey)
+        public bool AnyNumbersPressed(out KeyCode numberKey)
         {
+            numberKey = KeyCode.None;
+
+            if (InternalKeyboard is null)
+                return false;
+
             //Check standard number keys
             for (int i = 0; i < _standardNumberKeys.Length; i++)
             {
@@ -378,11 +399,10 @@ namespace Raptor.Input
                 }
             }
 
-            numberKey = KeyCodes.None;
-
 
             return false;
         }
+
 
 
         /// <summary>
@@ -392,13 +412,14 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public char KeyToChar(KeyCodes key)
+        [SuppressMessage("Globalization", "CA1304:Specify CultureInfo", Justification = "<Pending>")]
+        public char KeyToChar(KeyCode key)
         {
             if (IsAnyShiftKeyDown())
             {
                 if (_letterKeys.Contains(key))
                 {
-                    return key == KeyCodes.Space ? ' ' : key.ToString().ToLower()[0];
+                    return key == KeyCode.Space ? ' ' : key.ToString().ToLower()[0];
                 }
                 else if (_standardNumberKeys.Contains(key) || _symbolKeys.Contains(key))
                 {
@@ -433,14 +454,14 @@ namespace Raptor.Input
         /// </summary>
         /// <returns></returns>
         public bool IsAnyShiftKeyDown() =>
-            InternalKeyboard.IsKeyDown(KeyCodes.LeftShift) || InternalKeyboard.IsKeyDown(KeyCodes.RightShift);
+            !(InternalKeyboard is null) && (InternalKeyboard.IsKeyDown(KeyCode.LeftShift) || InternalKeyboard.IsKeyDown(KeyCode.RightShift));
 
 
         /// <summary>
         /// Returns a value indicating if any of the control keys are being pressed down.
         /// </summary>
         /// <returns></returns>
-        public bool IsAnyCtrlKeyDown() => InternalKeyboard.IsLeftCtrlDown || InternalKeyboard.IsRightCtrlDown;
+        public bool IsAnyCtrlKeyDown() => !(InternalKeyboard is null) && (InternalKeyboard.IsLeftCtrlDown || InternalKeyboard.IsRightCtrlDown);
 
 
         /// <summary>
@@ -448,7 +469,7 @@ namespace Raptor.Input
         /// </summary>
         /// <returns></returns>
         public bool IsDeleteKeyPressed() =>
-            IsKeyPressed(KeyCodes.Delete) || (IsAnyShiftKeyDown() && IsKeyPressed(KeyCodes.Decimal));
+            IsKeyPressed(KeyCode.Delete) || (IsAnyShiftKeyDown() && IsKeyPressed(KeyCode.Decimal));
 
 
         /// <summary>
@@ -456,19 +477,31 @@ namespace Raptor.Input
         /// pressed to the down position then let go to the up position.
         /// </summary>
         /// <returns></returns>
-        public bool IsBackspaceKeyPressed() => IsKeyPressed(KeyCodes.Back);
+        public bool IsBackspaceKeyPressed() => IsKeyPressed(KeyCode.Back);
 
 
         /// <summary>
         /// Update the current state of the keyboard.
         /// </summary>
-        public void UpdateCurrentState() => InternalKeyboard.UpdateCurrentState();
+        public void UpdateCurrentState()
+        {
+            if (InternalKeyboard is null)
+                return;
+
+            InternalKeyboard.UpdateCurrentState();
+        }
 
 
         /// <summary>
         /// Update the previous state of the keyboard.
         /// </summary>
-        public void UpdatePreviousState() => InternalKeyboard.UpdatePreviousState();
+        public void UpdatePreviousState()
+        {
+            if (InternalKeyboard is null)
+                return;
+
+            InternalKeyboard.UpdatePreviousState();
+        }
         #endregion
     }
 }

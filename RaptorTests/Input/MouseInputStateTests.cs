@@ -1,6 +1,5 @@
 ﻿using Xunit;
 using Raptor.Input;
-using Raptor;
 using System.Numerics;
 
 namespace RaptorTests.Input

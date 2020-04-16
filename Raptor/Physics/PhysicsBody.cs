@@ -1,5 +1,7 @@
 using Raptor.Plugins;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
@@ -12,8 +14,8 @@ namespace Raptor.Physics
     public class PhysicsBody
     {
         #region Private Fields
-        private IPhysicsBody _internalPhysicsBody;
-        private object[] _ctorParams;
+        private IPhysicsBody? _internalPhysicsBody;
+        private object[]? _ctorParams;
         #endregion
 
 
@@ -50,7 +52,7 @@ namespace Raptor.Physics
         /// <summary>
         /// The internal physics engine body.
         /// </summary>
-        public IPhysicsBody InternalPhysicsBody
+        internal IPhysicsBody? InternalPhysicsBody
         {
             [ExcludeFromCodeCoverage]
             get
@@ -58,33 +60,34 @@ namespace Raptor.Physics
                 //TODO: Figure out how to get the proper implementation inside of this class
                 return _internalPhysicsBody;
             }
-            private set => _internalPhysicsBody = value;
+            private set
+            {
+                if (value is null)
+                    return;
+
+                _internalPhysicsBody = value;
+            }
         }
 
         /// <summary>
         /// Gets or sets the vertices that maake up the shape of the body.
         /// </summary>
-        public Vector2[] Vertices
+        public ReadOnlyCollection<Vector2> Vertices
         {
             get
             {
                 var result = new List<Vector2>();
 
-                if (InternalPhysicsBody.XVertices == null || InternalPhysicsBody.YVertices == null)
-                    return null;
+                if (InternalPhysicsBody is null || InternalPhysicsBody.XVertices == null || InternalPhysicsBody.YVertices == null)
+                    return new ReadOnlyCollection<Vector2>(Array.Empty<Vector2>());
 
-                for (int i = 0; i < InternalPhysicsBody.XVertices.Length; i++)
+                for (int i = 0; i < InternalPhysicsBody.XVertices.Count; i++)
                 {
                     result.Add(new Vector2(InternalPhysicsBody.XVertices[i], InternalPhysicsBody.YVertices[i]));
                 }
 
 
-                return result.ToArray();
-            }
-            set
-            {
-                InternalPhysicsBody.XVertices = (from v in value select v.X).ToArray();
-                InternalPhysicsBody.YVertices = (from v in value select v.Y).ToArray();
+                return new ReadOnlyCollection<Vector2>(result);
             }
         }
 
@@ -93,8 +96,8 @@ namespace Raptor.Physics
         /// </summary>
         public float X
         {
-            get => InternalPhysicsBody.X;
-            set => InternalPhysicsBody.X = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.X;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.X = value; }
         }
 
         /// <summary>
@@ -102,8 +105,8 @@ namespace Raptor.Physics
         /// </summary>
         public float Y
         {
-            get => InternalPhysicsBody.Y;
-            set => InternalPhysicsBody.Y = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Y;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Y = value; }
         }
 
         /// <summary>
@@ -111,8 +114,8 @@ namespace Raptor.Physics
         /// </summary>
         public float Angle
         {
-            get => InternalPhysicsBody.Angle;
-            set => InternalPhysicsBody.Angle = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Angle;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Angle = value; }
         }
 
         /// <summary>
@@ -120,8 +123,8 @@ namespace Raptor.Physics
         /// </summary>
         public float Density
         {
-            get => InternalPhysicsBody.Density;
-            set => InternalPhysicsBody.Density = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Density;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Density = value; }
         }
 
         /// <summary>
@@ -129,8 +132,8 @@ namespace Raptor.Physics
         /// </summary>
         public float Friction
         {
-            get => InternalPhysicsBody.Friction;
-            set => InternalPhysicsBody.Friction = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Friction;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Friction = value; }
         }
 
         /// <summary>
@@ -138,8 +141,8 @@ namespace Raptor.Physics
         /// </summary>
         public float Restitution
         {
-            get => InternalPhysicsBody.Restitution;
-            set => InternalPhysicsBody.Restitution = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Restitution;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Restitution = value; }
         }
 
         /// <summary>
@@ -147,9 +150,12 @@ namespace Raptor.Physics
         /// </summary>
         public Vector2 LinearVelocity
         {
-            get => new Vector2(InternalPhysicsBody.LinearVelocityX, InternalPhysicsBody.LinearVelocityY);
+            get => new Vector2(InternalPhysicsBody is null ? 0 : InternalPhysicsBody.LinearVelocityX, InternalPhysicsBody is null ? 0 : InternalPhysicsBody.LinearVelocityY);
             set
             {
+                if (InternalPhysicsBody is null)
+                    return;
+
                 InternalPhysicsBody.LinearVelocityX = value.X;
                 InternalPhysicsBody.LinearVelocityY = value.Y;
             }
@@ -160,8 +166,8 @@ namespace Raptor.Physics
         /// </summary>
         public float AngularVelocity
         {
-            get => InternalPhysicsBody.AngularVelocity;
-            set => InternalPhysicsBody.AngularVelocity = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.AngularVelocity;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.AngularVelocity = value; }
         }
 
         /// <summary>
@@ -169,8 +175,8 @@ namespace Raptor.Physics
         /// </summary>
         public float LinearDeceleration
         {
-            get => InternalPhysicsBody.LinearDeceleration;
-            set => InternalPhysicsBody.LinearDeceleration = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.LinearDeceleration;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.LinearDeceleration = value; }
         }
 
         /// <summary>
@@ -178,8 +184,8 @@ namespace Raptor.Physics
         /// </summary>
         public float AngularDeceleration
         {
-            get => InternalPhysicsBody.AngularDeceleration;
-            set => InternalPhysicsBody.AngularDeceleration = value;
+            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.AngularDeceleration;
+            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.AngularDeceleration = value; }
         }
         #endregion
 

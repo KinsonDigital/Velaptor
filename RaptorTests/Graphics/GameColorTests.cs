@@ -68,5 +68,18 @@ namespace RaptorTests.Graphics
             Assert.Equal(expected, actual);
         }
         #endregion
+
+
+        #region Method Tests
+        [Fact]
+        public void GetHashCode_WhenInvoking_ReturnsCorrectCode()
+        {
+            //Arrange
+            var color = new GameColor(4, 1, 2, 3);
+
+            //Act & Assert
+            Assert.Equal(1778121426, color.GetHashCode());
+        }
+        #endregion
     }
 }

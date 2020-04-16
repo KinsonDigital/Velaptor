@@ -1,9 +1,9 @@
-﻿using Moq;
+﻿#nullable disable
+using Moq;
 using Xunit;
 using Raptor.Graphics;
 using Raptor.Plugins;
 using Raptor;
-using System;
 using System.Numerics;
 
 namespace RaptorTests.Graphics
@@ -11,7 +11,7 @@ namespace RaptorTests.Graphics
     /// <summary>
     /// Unit tests to test the <see cref="Renderer"/> class.
     /// </summary>
-    public class RendererTests : IDisposable
+    public class RendererTests
     {
         #region Private Fields
         private Texture _texture;
@@ -76,7 +76,7 @@ namespace RaptorTests.Graphics
         {
             //Arrange
             var mockRenderer = new Mock<IRenderer>();
-           
+
             var renderer = new Renderer(mockRenderer.Object, _mockDebugDraw.Object);
 
             //Act
@@ -201,7 +201,7 @@ namespace RaptorTests.Graphics
             renderer.Begin();
 
             //Assert
-            mockRenderer.Verify(m => m.Begin(), Times.Once());
+            mockRenderer.Verify(m => m.RenderBegin(), Times.Once());
         }
 
 
@@ -216,7 +216,7 @@ namespace RaptorTests.Graphics
             renderer.End();
 
             //Assert
-            mockRenderer.Verify(m => m.End(), Times.Once());
+            mockRenderer.Verify(m => m.RenderEnd(), Times.Once());
         }
 
 
@@ -256,7 +256,7 @@ namespace RaptorTests.Graphics
             //Arrange
             var mockRenderer = new Mock<IRenderer>();
             var renderer = new Renderer(mockRenderer.Object, _mockDebugDraw.Object);
-            
+
             //Act
             renderer.RenderTextureArea(_texture, It.IsAny<Rect>(), It.IsAny<Vector2>());
 
@@ -278,11 +278,6 @@ namespace RaptorTests.Graphics
             //Assert
             _mockDebugDraw.Verify(m => m.Draw(It.IsAny<IRenderer>(), It.IsAny<IPhysicsBody>(), It.IsAny<GameColor>()), Times.Once());
         }
-        #endregion
-
-
-        #region Public Methods
-        public void Dispose() => _texture = null;
         #endregion
     }
 }

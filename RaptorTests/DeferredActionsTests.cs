@@ -5,7 +5,7 @@ using Xunit;
 namespace RaptorTests
 {
     /// <summary>
-    /// Unit tests to test the <see cref="DeferredActions"/> class.
+    /// Unit tests to test the <see cref="DeferredActionsCollection"/> class.
     /// </summary>
     public class DeferredActionsTests
     {
@@ -14,7 +14,7 @@ namespace RaptorTests
         public void ExecuteAll_WhenInvoking_ExecutesAllActions()
         {
             //Arrange
-            var actions = new DeferredActions();
+            var actions = new DeferredActionsCollection();
             var expectedCount = 0;
             var expectedActionAExecuted = true;
             var expectedActionBExecuted = true;
@@ -43,7 +43,7 @@ namespace RaptorTests
         public void Count_WhenGettingValue_ReturnsCorrectResult()
         {
             //Arrange
-            var actions = new DeferredActions();
+            var actions = new DeferredActionsCollection();
             void testAction() { }
             var expected = 1;
 
@@ -60,7 +60,7 @@ namespace RaptorTests
         public void IsReadOnly_WhenGettingValue_ReturnsCorrectResult()
         {
             //Arrange
-            var actions = new DeferredActions();
+            var actions = new DeferredActionsCollection();
             var expected = false;
 
             //Act
@@ -75,7 +75,7 @@ namespace RaptorTests
         public void IndexProp_WhenGettingAndSettingValue_ReturnsCorrectAction()
         {
             //Arrange
-            var actions = new DeferredActions();
+            var actions = new DeferredActionsCollection();
             void actionA() { }
             void actionB() { }
             void actionC() { }

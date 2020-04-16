@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Numerics;
 using Raptor.Content;
 using Raptor.Graphics;
@@ -13,9 +14,8 @@ namespace Raptor.UI
     {
         #region Private Fields
         private readonly Keyboard _keyboard = new Keyboard();
-        private readonly string _leftText = string.Empty;
-        private GameText _visibleText;
-        private static GameText _textRuler;//Used for measuring text with and height
+        private GameText? _visibleText;
+        private static GameText? _textRuler;//Used for measuring text with and height
         private int _visibleTextCharPosition;
         private int _charPosDelta;
         private Vector2 _textPosition;
@@ -27,15 +27,15 @@ namespace Raptor.UI
         private int _rightSide;
         private int _leftSide;
         private int _lastDirectionOfTravel = 0;
-        private readonly DeferredActions _deferredActions = new DeferredActions();
+        private readonly DeferredActionsCollection _deferredActions = new DeferredActionsCollection();
         #endregion
-        
+
 
         #region Constructors
         /// <summary>
         /// Creates a new instance of <see cref="TextBox"/>.
         /// </summary>
-        public TextBox() { }
+        public TextBox(Texture backgroundTexture) => BackgroundTexture = backgroundTexture;
         #endregion
 
 
@@ -48,27 +48,27 @@ namespace Raptor.UI
         /// <summary>
         /// Gets the width of the <see cref="TextBox"/>.
         /// </summary>
-        public int Width => Background.Width;
+        public int Width => BackgroundTexture.Width;
 
         /// <summary>
         /// Gets the height of the <see cref="TextBox"/>.
         /// </summary>
-        public int Height => Background.Height;
+        public int Height => BackgroundTexture.Height;
 
         /// <summary>
         /// Gets the background UI of the <see cref="TextBox"/>.
         /// </summary>
-        public Texture Background { get; set; }
+        public Texture BackgroundTexture { get; }
 
         /// <summary>
         /// Gets or sets the font name of the <see cref="TextBox"/>.
         /// </summary>
-        public string FontName { get; set; }
+        public string FontName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the text in the <see cref="TextBox"/>.
         /// </summary>
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
         #endregion
 
 
@@ -79,12 +79,21 @@ namespace Raptor.UI
         public void Initialize() { }
 
 
+
         /// <summary>
         /// Loads the content of the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="contentLoader">The content loader used to load the content.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void LoadContent(ContentLoader contentLoader)
         {
+            if (contentLoader is null)
+                throw new ArgumentNullException(nameof(contentLoader), "The content loader must not be null.");
+
+            //TODO: Currently for every single instance of this class TextBox, there will be 2 GameText objects created.
+            //One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
+            //This is not ideal.  Try to figure out a way to measure text without the use of another GameText object.  This is
+            //not best for performance as well as taking extra memory.
             _visibleText = contentLoader.LoadText(FontName);
             _textRuler = contentLoader.LoadText(FontName);
 
@@ -92,12 +101,17 @@ namespace Raptor.UI
         }
 
 
+
         /// <summary>
         /// Updates the texbox.
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Update(EngineTime engineTime)
         {
+            if (engineTime is null)
+                throw new ArgumentNullException(nameof(engineTime), "The engine time must not be null.");
+
             UpdateSideLocations();
 
             ProcessKeys();
@@ -112,21 +126,28 @@ namespace Raptor.UI
         }
 
 
+
         /// <summary>
         /// Renders the <see cref="TextBox"/> to the graphics surface.
         /// </summary>
         /// <param name="renderer">The renderer used to render the <see cref="TextBox"/>.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(Renderer renderer)
         {
-            renderer.Render(Background, Position);
+            if (renderer is null)
+                throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
+
+            renderer.Render(BackgroundTexture, Position);
 
             //Update the X position of the text
-            _textPosition = new Vector2(_leftSide, Position.Y - _visibleText.Height / 2f);
+            _textPosition = new Vector2(_leftSide, Position.Y - (_visibleText is null ? 0 : _visibleText.Height / 2f));
 
-            //Render the text inside of the <see cref="TextBox"/>
-            _visibleText.Text = ClipText(Text);
-
-            renderer.Render(_visibleText, _textPosition, new GameColor(255, 0, 0, 0));
+            //Render the text inside of the text box
+            if (!(_visibleText is null))
+            {
+                _visibleText.Text = ClipText(Text);
+                renderer.Render(_visibleText, _textPosition, new GameColor(255, 0, 0, 0));
+            }
 
             //Render the end to cover any text that has passed the end of the render area
             var topLeftCorner = new Vector2(Position.X - Width / 2, Position.Y - Height / 2);
@@ -136,8 +157,10 @@ namespace Raptor.UI
             var coverArea = new Rect(Width - areaWidth, 0, areaWidth, Height);
             var coverPosition = new Vector2(454, 250);// new Vector2(_rightSide, Position.Y);
 
-            renderer.RenderTextureArea(Background, coverArea, coverPosition);
+            renderer.RenderTextureArea(BackgroundTexture, coverArea, coverPosition);
 
+
+            //TODO: Figure out is the code in the debugging comment section below is needed and if not, remove it
             //DEBUGGING
             //Render the dot at the right side line
             renderer.FillCircle(new Vector2(_rightSide, Position.Y - Height / 2), 5, new GameColor(255, 125, 125, 0));
@@ -185,7 +208,7 @@ namespace Raptor.UI
         {
             _keyboard.UpdateCurrentState();
 
-            if (_keyboard.IsKeyPressed(KeyCodes.Right))
+            if (_keyboard.IsKeyPressed(KeyCode.Right))
             {
                 _lastDirectionOfTravel = 1;
 
@@ -193,7 +216,7 @@ namespace Raptor.UI
                     _characterPosition :
                     _characterPosition + 1;
 
-                _visibleTextCharPosition = _visibleTextCharPosition > _visibleText.Text.Length - 1 ?
+                _visibleTextCharPosition = _visibleTextCharPosition > (_visibleText is null ? 0 : _visibleText.Text.Length - 1) ?
                     _visibleTextCharPosition :
                     _visibleTextCharPosition + 1;
 
@@ -203,7 +226,7 @@ namespace Raptor.UI
                 return;
             }
 
-            if (_keyboard.IsKeyPressed(KeyCodes.Left))
+            if (_keyboard.IsKeyPressed(KeyCode.Left))
             {
                 _lastDirectionOfTravel = -1;
 
@@ -221,9 +244,9 @@ namespace Raptor.UI
                 return;
             }
 
-            var isShiftDown = _keyboard.IsKeyDown(KeyCodes.LeftShift) || _keyboard.IsKeyDown(KeyCodes.RightShift);
+            var isShiftDown = _keyboard.IsKeyDown(KeyCode.LeftShift) || _keyboard.IsKeyDown(KeyCode.RightShift);
 
-            if (!string.IsNullOrEmpty(_visibleText.Text))
+            if (!(_visibleText is null) && !string.IsNullOrEmpty(_visibleText.Text))
             {
                 //The delete keys. This is the standard one and the numpad one
                 if(_keyboard.IsDeleteKeyPressed())
@@ -231,18 +254,18 @@ namespace Raptor.UI
                     _visibleText.Text = _visibleText.Text.Remove(_characterPosition, 1);
                 }
 
-                if (_keyboard.IsKeyPressed(KeyCodes.Back) && _characterPosition > 0)
+                if (_keyboard.IsKeyPressed(KeyCode.Back) && _characterPosition > 0)
                 {
                     RemoveCharacterUsingBackspace();
                 }
             }
 
             //If a letter is pressed, add it to the <see cref="TextBox"/>
-            if (_keyboard.AnyLettersPressed(out KeyCodes letter))
+            if (_keyboard.AnyLettersPressed(out KeyCode letter))
             {
-                var letterText = "";
+                string letterText;
 
-                if (letter == KeyCodes.Space)
+                if (letter == KeyCode.Space)
                 {
                     letterText = " ";
                 }
@@ -250,19 +273,22 @@ namespace Raptor.UI
                 {
                     letterText = isShiftDown || _keyboard.CapsLockOn ?
                         letter.ToString() :
-                        letter.ToString().ToLower();
+                        letter.ToString().ToUpperInvariant();
                 }
 
-                _visibleText.Text = _visibleText.Text.Insert(_characterPosition, letterText);
+                if (!(_visibleText is null))
+                    _visibleText.Text = _visibleText.Text.Insert(_characterPosition, letterText);
+
                 _characterPosition += 1;
             }
 
             //If a number was pressed on the keyboard
-            if (_keyboard.AnyNumbersPressed(out KeyCodes number))
+            if (_keyboard.AnyNumbersPressed(out KeyCode number))
             {
-                var character = _keyboard.KeyToChar(number).ToString();
+                var character = _keyboard.KeyToChar(number).ToString(CultureInfo.InvariantCulture);
 
-                _visibleText.Text = _visibleText.Text.Insert(_characterPosition, character);
+                if (!(_visibleText is null))
+                    _visibleText.Text = _visibleText.Text.Insert(_characterPosition, character);
 
                 _characterPosition += 1;
             }
@@ -276,20 +302,26 @@ namespace Raptor.UI
         /// Calculates the starting position of the cursor inside of the <see cref="TextBox"/>.
         /// </summary>
         /// <returns></returns>
-        private Vector2 CalcCursorStart() => new Vector2(_leftSide + CalcCursorXPos(), Position.Y - (Background.Height / 2) + 3);
+        private Vector2 CalcCursorStart() => new Vector2(_leftSide + CalcCursorXPos(), Position.Y - (BackgroundTexture.Height / 2) + 3);
 
 
         /// <summary>
         /// Calculates the stopping position of the cursor insdie of the <see cref="TextBox"/>.
         /// </summary>
         /// <returns></returns>
-        private Vector2 CalcCursorStop() => new Vector2(_leftSide + CalcCursorXPos(), Position.Y + (Background.Height / 2) - 3);
+        private Vector2 CalcCursorStop() => new Vector2(_leftSide + CalcCursorXPos(), Position.Y + (BackgroundTexture.Height / 2) - 3);
 
 
         /// <summary>
         /// Removes the characters using the backspace key.
         /// </summary>
-        private void RemoveCharacterUsingBackspace() => Text = Text.Remove(Text.IndexOf(_visibleText.Text) + _characterPosition - 1, 1);
+        private void RemoveCharacterUsingBackspace()
+        {
+            if (_visibleText is null)
+                return;
+
+            Text = Text.Remove(Text.IndexOf(_visibleText.Text, StringComparison.Ordinal) + _characterPosition - 1, 1);
+        }
 
 
         /// <summary>
@@ -298,6 +330,9 @@ namespace Raptor.UI
         /// <returns></returns>
         private int CalcCursorXPos()
         {
+            if (_textRuler is null)
+                return 0;
+
             _textRuler.Text = string.Empty;
 
             //Update the text that is from the first letter up to the cursor position
@@ -306,6 +341,7 @@ namespace Raptor.UI
             var result = _textRuler.Width;
 
             _textRuler.Text = string.Empty;
+
 
             return result;
         }
@@ -319,6 +355,9 @@ namespace Raptor.UI
         /// <returns></returns>
         private string ClipText(string text)
         {
+            if (_textRuler is null)
+                return string.Empty;
+
             _textRuler.Text = string.Empty;
 
             var textAreaWidth = _rightSide - _leftSide;
@@ -329,7 +368,7 @@ namespace Raptor.UI
 
             for (int i = startIndex; i < text.Length; i++)
             {
-                _textRuler.Text += Text[i].ToString();
+                _textRuler.Text += Text[i].ToString(CultureInfo.InvariantCulture);
 
                 //If the text is currently too wide to fit, remove one character
                 if (_textRuler.Width > textAreaWidth)

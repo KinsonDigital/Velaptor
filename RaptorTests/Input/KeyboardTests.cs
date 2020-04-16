@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿#nullable disable
+using Moq;
 using Xunit;
 using Raptor.Input;
 using Raptor.Plugins;
@@ -34,16 +35,16 @@ namespace RaptorTests.Input
         {
             _lowerCaseLetters = LetterKeyData.Select(l =>
             {
-                var keyCode = (KeyCodes)l[0];
+                var keyCode = (KeyCode)l[0];
 
-                return keyCode == KeyCodes.Space ? ' ' : char.Parse(keyCode.ToString().ToLower());
+                return keyCode == KeyCode.Space ? ' ' : char.Parse(keyCode.ToString().ToLower());
             }).ToArray();
 
             _upperCaseLetters = LetterKeyData.Select(l =>
             {
-                var keyCode = (KeyCodes)l[0];
+                var keyCode = (KeyCode)l[0];
 
-                return keyCode == KeyCodes.Space ? ' ' : char.Parse(keyCode.ToString());
+                return keyCode == KeyCode.Space ? ' ' : char.Parse(keyCode.ToString());
             }).ToArray();
 
             _mockKeyboard = new Mock<IKeyboard>();
@@ -162,12 +163,12 @@ namespace RaptorTests.Input
         public void GetCurrentPressedKeys_WhenInvoking_ReturnsCorrectPressedKeys()
         {
             //Arrange
-            var pressedKeys = new KeyCodes[] { KeyCodes.Left, KeyCodes.Z };
+            var pressedKeys = new KeyCode[] { KeyCode.Left, KeyCode.Z };
 
             _mockKeyboard.Setup(m => m.GetCurrentPressedKeys()).Returns(pressedKeys);
 
             var keyboard = new Keyboard(_mockKeyboard.Object);
-            var expected = new KeyCodes[] { KeyCodes.Left, KeyCodes.Z };
+            var expected = new KeyCode[] { KeyCode.Left, KeyCode.Z };
 
             //Act
             var actual = keyboard.GetCurrentPressedKeys();
@@ -182,11 +183,11 @@ namespace RaptorTests.Input
         public void GetPreviousPressedKeys_WhenInvoking_ReturnsCorrectPressedKeys()
         {
             //Arrange
-            var pressedKeys = new KeyCodes[] { KeyCodes.Down, KeyCodes.U };
+            var pressedKeys = new KeyCode[] { KeyCode.Down, KeyCode.U };
             _mockKeyboard.Setup(m => m.GetPreviousPressedKeys()).Returns(pressedKeys);
 
             var keyboard = new Keyboard(_mockKeyboard.Object);
-            var expected = new KeyCodes[] { KeyCodes.Down, KeyCodes.U };
+            var expected = new KeyCode[] { KeyCode.Down, KeyCode.U };
 
             //Act
             var actual = keyboard.GetPreviousPressedKeys();
@@ -201,14 +202,14 @@ namespace RaptorTests.Input
         public void IsKeyDown_WhenInvoking_InternalMethodInvoked()
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyDown(It.IsAny<KeyCodes>())).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyDown(It.IsAny<KeyCode>())).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
-            var actual = keyboard.IsKeyDown(KeyCodes.A);
+            var actual = keyboard.IsKeyDown(KeyCode.A);
 
             //Assert
-            _mockKeyboard.Verify(m => m.IsKeyDown(It.IsAny<KeyCodes>()), Times.Once());
+            _mockKeyboard.Verify(m => m.IsKeyDown(It.IsAny<KeyCode>()), Times.Once());
         }
 
 
@@ -216,14 +217,14 @@ namespace RaptorTests.Input
         public void IsKeyUp_WhenInvoking_InternalMethodInvoked()
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyUp(It.IsAny<KeyCodes>())).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyUp(It.IsAny<KeyCode>())).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
-            var actual = keyboard.IsKeyUp(KeyCodes.A);
+            var actual = keyboard.IsKeyUp(KeyCode.A);
 
             //Assert
-            _mockKeyboard.Verify(m => m.IsKeyUp(It.IsAny<KeyCodes>()), Times.Once());
+            _mockKeyboard.Verify(m => m.IsKeyUp(It.IsAny<KeyCode>()), Times.Once());
         }
 
 
@@ -231,14 +232,14 @@ namespace RaptorTests.Input
         public void IsKeyPressed_WhenInvoking_InternalMethodInvoked()
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyPressed(It.IsAny<KeyCodes>())).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyPressed(It.IsAny<KeyCode>())).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
-            var actual = keyboard.IsKeyPressed(KeyCodes.A);
+            var actual = keyboard.IsKeyPressed(KeyCode.A);
 
             //Assert
-            _mockKeyboard.Verify(m => m.IsKeyPressed(It.IsAny<KeyCodes>()), Times.Once());
+            _mockKeyboard.Verify(m => m.IsKeyPressed(It.IsAny<KeyCode>()), Times.Once());
         }
 
 
@@ -291,16 +292,16 @@ namespace RaptorTests.Input
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
-            keyboard.IsAnyKeyDown(new KeyCodes[] { KeyCodes.X, KeyCodes.Z });
+            keyboard.IsAnyKeyDown(new KeyCode[] { KeyCode.X, KeyCode.Z });
 
             //Assert
-            _mockKeyboard.Verify(m => m.AreKeysDown(It.IsAny<KeyCodes[]>()), Times.Once());
+            _mockKeyboard.Verify(m => m.AreKeysDown(It.IsAny<KeyCode[]>()), Times.Once());
         }
 
 
         [Theory]
         [MemberData(nameof(LetterKeyData))]
-        public void AnyLettersPressed_WhenInvokingWithNoParamsWithLetterKeyDown_ReturnsTrue(KeyCodes keyToCheck)
+        public void AnyLettersPressed_WhenInvokingWithNoParamsWithLetterKeyDown_ReturnsTrue(KeyCode keyToCheck)
         {
             //Act
             _mockKeyboard.Setup(m => m.IsKeyPressed(keyToCheck)).Returns(true);
@@ -313,7 +314,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(LetterKeyData))]
-        public void AnyLettersPressed_WhenInvokingWithNoParamsWithLetterKeyNotDown_ReturnsFalse(KeyCodes keyToCheck)
+        public void AnyLettersPressed_WhenInvokingWithNoParamsWithLetterKeyNotDown_ReturnsFalse(KeyCode keyToCheck)
         {
             //Act
             _mockKeyboard.Setup(m => m.IsKeyPressed(keyToCheck)).Returns(false);
@@ -326,7 +327,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(LetterKeyData))]
-        public void AnyLettersPressed_WhenInvokingWithOneParamAndPressedLetterKey_InvokesKeyPressedAndReturnsPressedKeyValue(KeyCodes letterToCheck)
+        public void AnyLettersPressed_WhenInvokingWithOneParamAndPressedLetterKey_InvokesKeyPressedAndReturnsPressedKeyValue(KeyCode letterToCheck)
         {
             //Arrange
             _mockKeyboard.Setup(m => m.IsKeyPressed(letterToCheck)).Returns(true);
@@ -343,7 +344,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(LetterKeyData))]
-        public void AnyLettersPressed_WhenInvokingWithOneParamAndNoPressedLetterKeys_ReturnsFalse(KeyCodes letterToCheck)
+        public void AnyLettersPressed_WhenInvokingWithOneParamAndNoPressedLetterKeys_ReturnsFalse(KeyCode letterToCheck)
         {
             //Arrange
             _mockKeyboard.Setup(m => m.IsKeyPressed(letterToCheck)).Returns(false);
@@ -354,17 +355,17 @@ namespace RaptorTests.Input
 
             //Assert
             _mockKeyboard.Verify(m => m.IsKeyPressed(letterToCheck), Times.Once());
-            Assert.Equal(KeyCodes.None, pressedKey);
+            Assert.Equal(KeyCode.None, pressedKey);
             Assert.False(actual);
         }
 
 
         [Theory]
         [MemberData(nameof(StandardNumberKeyData))]
-        public void AnyNumbersPressed_WhenInvokingWithoutParamAndWithStandardNumberKeyIsPressed_ReturnsTrue(KeyCodes numToCheck)
+        public void AnyNumbersPressed_WhenInvokingWithoutParamAndWithStandardNumberKeyIsPressed_ReturnsTrue(KeyCode numToCheck)
         {
             //Arrange
-            var numpadNumberKeys = (from k in NumpadNumberKeyData select (KeyCodes)k[0]).ToArray();
+            var numpadNumberKeys = (from k in NumpadNumberKeyData select (KeyCode)k[0]).ToArray();
 
             //Setup all of the standard number keys to return false
             numpadNumberKeys.ToList().ForEach(k => _mockKeyboard.Setup(m => m.IsKeyPressed(k)).Returns(false));
@@ -383,10 +384,10 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(StandardNumberKeyData))]
-        public void AnyNumbersPressed_WhenInvokingWithoutParamAndWithNumberKeysNotPressed_ReturnsFalse(KeyCodes numToCheck)
+        public void AnyNumbersPressed_WhenInvokingWithoutParamAndWithNumberKeysNotPressed_ReturnsFalse(KeyCode numToCheck)
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyPressed(It.IsAny<KeyCodes>())).Returns(false);
+            _mockKeyboard.Setup(m => m.IsKeyPressed(It.IsAny<KeyCode>())).Returns(false);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
@@ -400,10 +401,10 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(NumpadNumberKeyData))]
-        public void AnyNumbersPressed_WhenInvokingWithoutParamAndWithNumpadNumberKeysNotPressed_ReturnsTrue(KeyCodes numToCheck)
+        public void AnyNumbersPressed_WhenInvokingWithoutParamAndWithNumpadNumberKeysNotPressed_ReturnsTrue(KeyCode numToCheck)
         {
             //Arrange
-            var standardKeys = (from k in StandardNumberKeyData select (KeyCodes)k[0]).ToArray();
+            var standardKeys = (from k in StandardNumberKeyData select (KeyCode)k[0]).ToArray();
 
             //Setup all of the standard number keys to return false
             standardKeys.ToList().ForEach(k => _mockKeyboard.Setup(m => m.IsKeyPressed(k)).Returns(false));
@@ -415,17 +416,17 @@ namespace RaptorTests.Input
             var actual = keyboard.AnyNumbersPressed();
 
             //Assert
-            _mockKeyboard.Verify(m => m.IsKeyPressed(It.IsAny<KeyCodes>()), Times.AtLeastOnce());
+            _mockKeyboard.Verify(m => m.IsKeyPressed(It.IsAny<KeyCode>()), Times.AtLeastOnce());
             Assert.True(actual);
         }
 
 
         [Theory]
         [MemberData(nameof(StandardNumberKeyData))]
-        public void AnyNumbersPressed_WhenInvokingWithoutParamAndStandardNumberKeyIsPressed_ReturnsTrue(KeyCodes numToCheck)
+        public void AnyNumbersPressed_WhenInvokingWithoutParamAndStandardNumberKeyIsPressed_ReturnsTrue(KeyCode numToCheck)
         {
             //Arrange
-            var numpadKeys = (from k in NumpadNumberKeyData select (KeyCodes)k[0]).ToArray();
+            var numpadKeys = (from k in NumpadNumberKeyData select (KeyCode)k[0]).ToArray();
 
             //Setup all of the standard number keys to return false
             numpadKeys.ToList().ForEach(k => _mockKeyboard.Setup(m => m.IsKeyPressed(k)).Returns(false));
@@ -445,10 +446,10 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(NumpadNumberKeyData))]
-        public void AnyNumbersPressed_WhenInvokingWithParamAndNumpadNumberKeyIsPressed_ReturnsTrue(KeyCodes numToCheck)
+        public void AnyNumbersPressed_WhenInvokingWithParamAndNumpadNumberKeyIsPressed_ReturnsTrue(KeyCode numToCheck)
         {
             //Arrange
-            var standardKeys = (from k in StandardNumberKeyData select (KeyCodes)k[0]).ToArray();
+            var standardKeys = (from k in StandardNumberKeyData select (KeyCode)k[0]).ToArray();
 
             //Setup all of the standard number keys to return false
             standardKeys.ToList().ForEach(k => _mockKeyboard.Setup(m => m.IsKeyPressed(k)).Returns(false));
@@ -469,7 +470,7 @@ namespace RaptorTests.Input
         [Theory]
         [MemberData(nameof(StandardNumberKeyData))]
         [MemberData(nameof(NumpadNumberKeyData))]
-        public void AnyNumbersPressed_WhenInvokingWithParamAndNoNumbersPressed_ReturnsFalse(KeyCodes numToCheck)
+        public void AnyNumbersPressed_WhenInvokingWithParamAndNoNumbersPressed_ReturnsFalse(KeyCode numToCheck)
         {
             _mockKeyboard.Setup(m => m.IsKeyPressed(numToCheck)).Returns(false);
             var keyboard = new Keyboard(_mockKeyboard.Object);
@@ -480,16 +481,16 @@ namespace RaptorTests.Input
             //Assert
             _mockKeyboard.Verify(m => m.IsKeyPressed(numToCheck), Times.Once());
             Assert.False(actual);
-            Assert.Equal(KeyCodes.None, pressedKey);
+            Assert.Equal(KeyCode.None, pressedKey);
         }
 
 
         [Theory]
         [MemberData(nameof(LetterKeyData))]
-        public void KeyToChar_WhenInvokingWithShiftDownAndLetterKeys_ReturnsCorrectLetterCharacter(KeyCodes keyToCheck)
+        public void KeyToChar_WhenInvokingWithShiftDownAndLetterKeys_ReturnsCorrectLetterCharacter(KeyCode keyToCheck)
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyDown(KeyCodes.LeftShift)).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyDown(KeyCode.LeftShift)).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
@@ -502,7 +503,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(LetterKeyData))]
-        public void KeyToChar_WhenInvokingWithShiftUpAndLetterKeys_ReturnsCorrectLetterCharacter(KeyCodes keyToCheck)
+        public void KeyToChar_WhenInvokingWithShiftUpAndLetterKeys_ReturnsCorrectLetterCharacter(KeyCode keyToCheck)
         {
             //Arrange
             var keyboard = new Keyboard(_mockKeyboard.Object);
@@ -517,10 +518,10 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(ShiftDownSymbolKeys))]
-        public void KeyToChar_WhenInvokingWithShiftDownAndSymbolKeys_ReturnsCorrectSymbolCharacter(KeyCodes keyToCheck)
+        public void KeyToChar_WhenInvokingWithShiftDownAndSymbolKeys_ReturnsCorrectSymbolCharacter(KeyCode keyToCheck)
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyDown(KeyCodes.LeftShift)).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyDown(KeyCode.LeftShift)).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
@@ -533,7 +534,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(ShiftUpSymbolKeys))]
-        public void KeyToChar_WhenInvokingWithShiftUpAndSymbolKeys_ReturnsCorrectSymbolCharacter(KeyCodes keyToCheck)
+        public void KeyToChar_WhenInvokingWithShiftUpAndSymbolKeys_ReturnsCorrectSymbolCharacter(KeyCode keyToCheck)
         {
             //Arrange
             var keyboard = new Keyboard(_mockKeyboard.Object);
@@ -548,7 +549,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(StandardNumberKeyData))]
-        public void KeyToChar_WhenInvokingWithShiftUpAndStandardNumberKeys_ReturnsCorrectNumberCharacter(KeyCodes keyToCheck)
+        public void KeyToChar_WhenInvokingWithShiftUpAndStandardNumberKeys_ReturnsCorrectNumberCharacter(KeyCode keyToCheck)
         {
             //Arrange
             var keyboard = new Keyboard(_mockKeyboard.Object);
@@ -563,7 +564,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(NumpadSymbolKeyData))]
-        public void KeyToChar_WhenInvokingWithShiftUpAndNumpadNumberKeys_ReturnsCorrectNumberCharacter(KeyCodes keyToCheck)
+        public void KeyToChar_WhenInvokingWithShiftUpAndNumpadNumberKeys_ReturnsCorrectNumberCharacter(KeyCode keyToCheck)
         {
             //Arrange
             var keyboard = new Keyboard(_mockKeyboard.Object);
@@ -580,11 +581,11 @@ namespace RaptorTests.Input
         public void KeyToChar_WhenInvokingWithShiftDownAndKeyWithNoCharacterValue_ReturnsTildeCharacter()
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyDown(KeyCodes.LeftShift)).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyDown(KeyCode.LeftShift)).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
-            var actual = keyboard.KeyToChar(KeyCodes.CapsLock);
+            var actual = keyboard.KeyToChar(KeyCode.CapsLock);
 
             //Assert
             Assert.Equal((char)0, actual);
@@ -598,7 +599,7 @@ namespace RaptorTests.Input
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
             //Act
-            var actual = keyboard.KeyToChar(KeyCodes.CapsLock);
+            var actual = keyboard.KeyToChar(KeyCode.CapsLock);
 
             //Assert
             Assert.Equal((char)0, actual);
@@ -609,7 +610,7 @@ namespace RaptorTests.Input
         public void IsDeleteKeyPressed_WhenInvokedWithDeleteKeyDown_ReturnsTrue()
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyPressed(KeyCodes.Delete)).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyPressed(KeyCode.Delete)).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
 
@@ -622,8 +623,8 @@ namespace RaptorTests.Input
         public void IsDeleteKeyPressed_WhenInvokedWithNumpadDeleteKeyDown_ReturnsTrue()
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyDown(KeyCodes.LeftShift)).Returns(true);
-            _mockKeyboard.Setup(m => m.IsKeyPressed(KeyCodes.Decimal)).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyDown(KeyCode.LeftShift)).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyPressed(KeyCode.Decimal)).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
 
@@ -636,7 +637,7 @@ namespace RaptorTests.Input
         public void IsBackspaceKeyPressed_WhenInvokedWithBackspaceKeyDown_ReturnsTrue()
         {
             //Arrange
-            _mockKeyboard.Setup(m => m.IsKeyPressed(KeyCodes.Back)).Returns(true);
+            _mockKeyboard.Setup(m => m.IsKeyPressed(KeyCode.Back)).Returns(true);
             var keyboard = new Keyboard(_mockKeyboard.Object);
 
 
@@ -673,7 +674,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(StandardNumberKeyData))]
-        public void AnyStandardNumberKeysDown_WhenInvokedWithStandardKeyIsDown_ReturnsTrue(KeyCodes keyToCheck)
+        public void AnyStandardNumberKeysDown_WhenInvokedWithStandardKeyIsDown_ReturnsTrue(KeyCode keyToCheck)
         {
             //Arrange
             _mockKeyboard.Setup(m => m.IsKeyDown(keyToCheck)).Returns(true);
@@ -686,7 +687,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(StandardNumberKeyData))]
-        public void AnyStandardNumberKeysDown_WhenInvokedWithStandardKeyNotDown_ReturnsFalse(KeyCodes keyToCheck)
+        public void AnyStandardNumberKeysDown_WhenInvokedWithStandardKeyNotDown_ReturnsFalse(KeyCode keyToCheck)
         {
             //Arrange
             _mockKeyboard.Setup(m => m.IsKeyDown(keyToCheck)).Returns(false);
@@ -699,7 +700,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(NumpadNumberKeyData))]
-        public void AnyNumpadNumberKeysDown_WhenInvokedWithNumpadNumberKeyIsDown_ReturnsTrue(KeyCodes keyToCheck)
+        public void AnyNumpadNumberKeysDown_WhenInvokedWithNumpadNumberKeyIsDown_ReturnsTrue(KeyCode keyToCheck)
         {
             //Arrange
             _mockKeyboard.Setup(m => m.IsKeyDown(keyToCheck)).Returns(true);
@@ -712,7 +713,7 @@ namespace RaptorTests.Input
 
         [Theory]
         [MemberData(nameof(NumpadNumberKeyData))]
-        public void AnyNumpadNumberKeysDown_WhenInvokedWithNumpadNumberKeyNotDown_ReturnsFalse(KeyCodes keyToCheck)
+        public void AnyNumpadNumberKeysDown_WhenInvokedWithNumpadNumberKeyNotDown_ReturnsFalse(KeyCode keyToCheck)
         {
             //Arrange
             _mockKeyboard.Setup(m => m.IsKeyDown(keyToCheck)).Returns(false);
@@ -730,16 +731,16 @@ namespace RaptorTests.Input
         /// </summary>
         public static IEnumerable<object[]> StandardNumberKeyData => new List<object[]>
         {
-            new object[] { KeyCodes.D0 },
-            new object[] { KeyCodes.D1 },
-            new object[] { KeyCodes.D2 },
-            new object[] { KeyCodes.D3 },
-            new object[] { KeyCodes.D4 },
-            new object[] { KeyCodes.D5 },
-            new object[] { KeyCodes.D6 },
-            new object[] { KeyCodes.D7 },
-            new object[] { KeyCodes.D8 },
-            new object[] { KeyCodes.D9 }
+            new object[] { KeyCode.D0 },
+            new object[] { KeyCode.D1 },
+            new object[] { KeyCode.D2 },
+            new object[] { KeyCode.D3 },
+            new object[] { KeyCode.D4 },
+            new object[] { KeyCode.D5 },
+            new object[] { KeyCode.D6 },
+            new object[] { KeyCode.D7 },
+            new object[] { KeyCode.D8 },
+            new object[] { KeyCode.D9 }
         };
 
         /// <summary>
@@ -747,16 +748,16 @@ namespace RaptorTests.Input
         /// </summary>
         public static IEnumerable<object[]> NumpadNumberKeyData => new List<object[]>
         {
-            new object[] { KeyCodes.NumPad0 },
-            new object[] { KeyCodes.NumPad1 },
-            new object[] { KeyCodes.NumPad2 },
-            new object[] { KeyCodes.NumPad3 },
-            new object[] { KeyCodes.NumPad4 },
-            new object[] { KeyCodes.NumPad5 },
-            new object[] { KeyCodes.NumPad6 },
-            new object[] { KeyCodes.NumPad7 },
-            new object[] { KeyCodes.NumPad8 },
-            new object[] { KeyCodes.NumPad9 }
+            new object[] { KeyCode.NumPad0 },
+            new object[] { KeyCode.NumPad1 },
+            new object[] { KeyCode.NumPad2 },
+            new object[] { KeyCode.NumPad3 },
+            new object[] { KeyCode.NumPad4 },
+            new object[] { KeyCode.NumPad5 },
+            new object[] { KeyCode.NumPad6 },
+            new object[] { KeyCode.NumPad7 },
+            new object[] { KeyCode.NumPad8 },
+            new object[] { KeyCode.NumPad9 }
         };
 
         /// <summary>
@@ -764,33 +765,33 @@ namespace RaptorTests.Input
         /// </summary>
         public static IEnumerable<object[]> LetterKeyData => new List<object[]>
         {
-            new object[] { KeyCodes.A },
-            new object[] { KeyCodes.B },
-            new object[] { KeyCodes.C },
-            new object[] { KeyCodes.D },
-            new object[] { KeyCodes.E },
-            new object[] { KeyCodes.F },
-            new object[] { KeyCodes.G },
-            new object[] { KeyCodes.H },
-            new object[] { KeyCodes.I },
-            new object[] { KeyCodes.J },
-            new object[] { KeyCodes.K },
-            new object[] { KeyCodes.L },
-            new object[] { KeyCodes.M },
-            new object[] { KeyCodes.N },
-            new object[] { KeyCodes.O },
-            new object[] { KeyCodes.P },
-            new object[] { KeyCodes.Q },
-            new object[] { KeyCodes.R },
-            new object[] { KeyCodes.S },
-            new object[] { KeyCodes.T },
-            new object[] { KeyCodes.U },
-            new object[] { KeyCodes.V },
-            new object[] { KeyCodes.W },
-            new object[] { KeyCodes.X },
-            new object[] { KeyCodes.Y },
-            new object[] { KeyCodes.Z },
-            new object[] { KeyCodes.Space }
+            new object[] { KeyCode.A },
+            new object[] { KeyCode.B },
+            new object[] { KeyCode.C },
+            new object[] { KeyCode.D },
+            new object[] { KeyCode.E },
+            new object[] { KeyCode.F },
+            new object[] { KeyCode.G },
+            new object[] { KeyCode.H },
+            new object[] { KeyCode.I },
+            new object[] { KeyCode.J },
+            new object[] { KeyCode.K },
+            new object[] { KeyCode.L },
+            new object[] { KeyCode.M },
+            new object[] { KeyCode.N },
+            new object[] { KeyCode.O },
+            new object[] { KeyCode.P },
+            new object[] { KeyCode.Q },
+            new object[] { KeyCode.R },
+            new object[] { KeyCode.S },
+            new object[] { KeyCode.T },
+            new object[] { KeyCode.U },
+            new object[] { KeyCode.V },
+            new object[] { KeyCode.W },
+            new object[] { KeyCode.X },
+            new object[] { KeyCode.Y },
+            new object[] { KeyCode.Z },
+            new object[] { KeyCode.Space }
         };
 
         /// <summary>
@@ -798,31 +799,31 @@ namespace RaptorTests.Input
         /// </summary>
         public static IEnumerable<object[]> ShiftDownSymbolKeys => new List<object[]>
         {
-            new object[] { KeyCodes.OemPlus },
-            new object[] { KeyCodes.OemComma },
-            new object[] { KeyCodes.OemMinus },
-            new object[] { KeyCodes.OemPeriod },
-            new object[] { KeyCodes.OemQuestion },
-            new object[] { KeyCodes.OemTilde },
-            new object[] { KeyCodes.OemPipe },
-            new object[] { KeyCodes.OemOpenBrackets },
-            new object[] { KeyCodes.OemCloseBrackets },
-            new object[] { KeyCodes.OemQuotes },
-            new object[] { KeyCodes.OemSemicolon },
-            new object[] { KeyCodes.Divide },
-            new object[] { KeyCodes.Multiply },
-            new object[] { KeyCodes.Subtract },
-            new object[] { KeyCodes.Add },
-            new object[] { KeyCodes.D0 },
-            new object[] { KeyCodes.D1 },
-            new object[] { KeyCodes.D2 },
-            new object[] { KeyCodes.D3 },
-            new object[] { KeyCodes.D4 },
-            new object[] { KeyCodes.D5 },
-            new object[] { KeyCodes.D6 },
-            new object[] { KeyCodes.D7 },
-            new object[] { KeyCodes.D8 },
-            new object[] { KeyCodes.D9 }
+            new object[] { KeyCode.OemPlus },
+            new object[] { KeyCode.OemComma },
+            new object[] { KeyCode.OemMinus },
+            new object[] { KeyCode.OemPeriod },
+            new object[] { KeyCode.OemQuestion },
+            new object[] { KeyCode.OemTilde },
+            new object[] { KeyCode.OemPipe },
+            new object[] { KeyCode.OemOpenBrackets },
+            new object[] { KeyCode.OemCloseBrackets },
+            new object[] { KeyCode.OemQuotes },
+            new object[] { KeyCode.OemSemicolon },
+            new object[] { KeyCode.Divide },
+            new object[] { KeyCode.Multiply },
+            new object[] { KeyCode.Subtract },
+            new object[] { KeyCode.Add },
+            new object[] { KeyCode.D0 },
+            new object[] { KeyCode.D1 },
+            new object[] { KeyCode.D2 },
+            new object[] { KeyCode.D3 },
+            new object[] { KeyCode.D4 },
+            new object[] { KeyCode.D5 },
+            new object[] { KeyCode.D6 },
+            new object[] { KeyCode.D7 },
+            new object[] { KeyCode.D8 },
+            new object[] { KeyCode.D9 }
         };
 
         /// <summary>
@@ -830,21 +831,21 @@ namespace RaptorTests.Input
         /// </summary>
         public static IEnumerable<object[]> ShiftUpSymbolKeys => new List<object[]>
         {
-            new object[] { KeyCodes.OemPlus },
-            new object[] { KeyCodes.OemComma },
-            new object[] { KeyCodes.OemMinus },
-            new object[] { KeyCodes.OemPeriod },
-            new object[] { KeyCodes.OemQuestion },
-            new object[] { KeyCodes.OemTilde },
-            new object[] { KeyCodes.OemPipe },
-            new object[] { KeyCodes.OemOpenBrackets },
-            new object[] { KeyCodes.OemCloseBrackets },
-            new object[] { KeyCodes.OemQuotes },
-            new object[] { KeyCodes.OemSemicolon },
-            new object[] { KeyCodes.Divide },
-            new object[] { KeyCodes.Multiply },
-            new object[] { KeyCodes.Subtract },
-            new object[] { KeyCodes.Add }
+            new object[] { KeyCode.OemPlus },
+            new object[] { KeyCode.OemComma },
+            new object[] { KeyCode.OemMinus },
+            new object[] { KeyCode.OemPeriod },
+            new object[] { KeyCode.OemQuestion },
+            new object[] { KeyCode.OemTilde },
+            new object[] { KeyCode.OemPipe },
+            new object[] { KeyCode.OemOpenBrackets },
+            new object[] { KeyCode.OemCloseBrackets },
+            new object[] { KeyCode.OemQuotes },
+            new object[] { KeyCode.OemSemicolon },
+            new object[] { KeyCode.Divide },
+            new object[] { KeyCode.Multiply },
+            new object[] { KeyCode.Subtract },
+            new object[] { KeyCode.Add }
         };
 
         /// <summary>
@@ -852,11 +853,11 @@ namespace RaptorTests.Input
         /// </summary>
         public static IEnumerable<object[]> NumpadSymbolKeyData => new List<object[]>
         {
-            new object[] { KeyCodes.Add },
-            new object[] { KeyCodes.Subtract },
-            new object[] { KeyCodes.Multiply },
-            new object[] { KeyCodes.Divide },
-            new object[] { KeyCodes.Decimal }
+            new object[] { KeyCode.Add },
+            new object[] { KeyCode.Subtract },
+            new object[] { KeyCode.Multiply },
+            new object[] { KeyCode.Divide },
+            new object[] { KeyCode.Decimal }
         };
         #endregion
 

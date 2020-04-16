@@ -13,14 +13,14 @@ namespace RaptorTests.Input
         public void Ctor_WhenInvoking_SetsKeysProp()
         {
             //Arrange
-            var expected = new KeyCodes[]
+            var expected = new KeyCode[]
             {
-                KeyCodes.Left,
-                KeyCodes.Right
+                KeyCode.Left,
+                KeyCode.Right
             };
 
             //Act
-            var eventArgs = new KeyEventArgs(new KeyCodes[] { KeyCodes.Left, KeyCodes.Right });
+            var eventArgs = new KeyEventArgs(new KeyCode[] { KeyCode.Left, KeyCode.Right });
             var actual = eventArgs.Keys;
 
             //Assert
@@ -31,20 +31,17 @@ namespace RaptorTests.Input
 
         #region Prop Tests
         [Fact]
-        public void Keys_WhenSettingAndGettingValue_ReturnsCorrectValue()
+        public void Keys_WhenGettingValue_ReturnsCorrectValue()
         {
             //Arrange
-            var expected = new KeyCodes[]
+            var expected = new KeyCode[]
             {
-                KeyCodes.Up,
-                KeyCodes.Down
+                KeyCode.Up,
+                KeyCode.Down
             };
 
             //Act
-            var eventArgs = new KeyEventArgs(new KeyCodes[] { KeyCodes.Left, KeyCodes.Right })
-            {
-                Keys = new KeyCodes[] { KeyCodes.Up, KeyCodes.Down }
-            };
+            var eventArgs = new KeyEventArgs(new KeyCode[] { KeyCode.Left, KeyCode.Right });
             var actual = eventArgs.Keys;
 
             //Assert

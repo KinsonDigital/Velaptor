@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a color made up of the 4 color components alpha, red, green and blue.
     /// </summary>
-    public struct GameColor
+    public struct GameColor : System.IEquatable<GameColor>
     {
         #region Constructors
         /// <summary>
@@ -53,31 +53,30 @@
         /// </summary>
         /// <param name="obj">The object to compare.</param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            var clrObj = (GameColor)obj;
+            if (!(obj is GameColor gameClr))
+                return false;
 
 
-            return Alpha == clrObj.Alpha && Red == clrObj.Red && Green == clrObj.Green && Blue == clrObj.Blue;
+            return Equals(gameClr);
         }
+
+
+        public bool Equals(GameColor other) => Alpha == other.Alpha && Red == other.Red && Green == other.Green && Blue == other.Blue;
+
+
+        public static bool operator ==(GameColor left, GameColor right) => left.Equals(right);
+
+
+        public static bool operator !=(GameColor left, GameColor right) => !(left == right);
 
 
         /// <summary>
         /// Returns the hash code of this object that makes this object unique.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -712724744;
-
-            hashCode = hashCode * -1521134295 + Red.GetHashCode();
-            hashCode = hashCode * -1521134295 + Green.GetHashCode();
-            hashCode = hashCode * -1521134295 + Blue.GetHashCode();
-            hashCode = hashCode * -1521134295 + Alpha.GetHashCode();
-
-
-            return hashCode;
-        }
+        public override int GetHashCode() => System.HashCode.Combine(Red, Green, Blue, Alpha);
         #endregion
     }
 }
