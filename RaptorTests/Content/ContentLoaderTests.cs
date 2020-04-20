@@ -4,14 +4,13 @@ using Raptor.Graphics;
 using Raptor.Plugins;
 using Raptor;
 using Xunit;
-using System;
 
 namespace RaptorTests.Content
 {
     /// <summary>
     /// Unit tests to test the <see cref="ContentLoader"/> class.
     /// </summary>
-    public class ContentLoaderTests : IDisposable
+    public class ContentLoaderTests
     {
         #region Private Fields
         private IContentLoader _contentLoader;
@@ -121,11 +120,6 @@ namespace RaptorTests.Content
             Assert.NotNull(actual);
             _mockCoreContentLoader.Verify(m => m.LoadText<IText>(It.IsAny<string>()), Times.Once());
         }
-        #endregion
-
-
-        #region Public Methods
-        public void Dispose() => _contentLoader = null;
         #endregion
     }
 }

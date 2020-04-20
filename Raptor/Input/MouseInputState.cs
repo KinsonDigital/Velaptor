@@ -1,11 +1,12 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Raptor.Input
 {
     /// <summary>
     /// Represents the state of the mouse.
     /// </summary>
-    public struct MouseInputState
+    public struct MouseInputState : IEquatable<MouseInputState>
     {
         #region Props
         /// <summary>
@@ -50,6 +51,38 @@ namespace Raptor.Input
         /// Gets or sets the position value of the mouse scroll wheel.
         /// </summary>
         public int ScrollWheelValue { get; set; }
+        #endregion
+
+
+        #region Public Methods
+        public override bool Equals(object? obj)
+        {
+            if (!(obj is MouseInputState state))
+                return false;
+
+
+            return Equals(state);
+        }
+
+
+        public bool Equals(MouseInputState other)
+        {
+            return X == other.X && Y == other.Y &&
+                LeftButtonDown == other.LeftButtonDown &&
+                MiddleButtonDown == other.MiddleButtonDown &&
+                RightButtonDown == other.RightButtonDown &&
+                ScrollWheelValue == other.ScrollWheelValue &&
+                Position == other.Position;
+        }
+
+
+        public override int GetHashCode() => HashCode.Combine(X, Y, ScrollWheelValue, LeftButtonDown, MiddleButtonDown, RightButtonDown);
+
+
+        public static bool operator ==(MouseInputState left, MouseInputState right) => left.Equals(right);
+
+
+        public static bool operator !=(MouseInputState left, MouseInputState right) => !(left == right);
         #endregion
     }
 }

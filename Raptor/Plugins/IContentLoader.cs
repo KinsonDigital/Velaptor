@@ -26,7 +26,7 @@ namespace Raptor.Plugins
         /// <typeparam name="T">The type of texture to render.</typeparam>
         /// <param name="name">The name of the texture object to render.</param>
         /// <returns></returns>
-        T LoadTexture<T>(string name) where T : class, ITexture;
+        T? LoadTexture<T>(string name) where T : class, ITexture;
 
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Raptor.Plugins
         /// <typeparam name="T">The type of text object to render.</typeparam>
         /// <param name="name">The name of the text object to render.</param>
         /// <returns></returns>
-        T LoadText<T>(string name) where T : class, IText;
+        T? LoadText<T>(string name) where T : class, IText;
         #endregion
     }
 }

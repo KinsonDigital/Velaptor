@@ -10,7 +10,7 @@ namespace Raptor.SDLImp
     public class SDLTexture : ITexture
     {
         #region Private Fields
-        private SDL _sdl;
+        private readonly SDL? _sdl = null;
         private readonly IntPtr _texturePtr;
         private readonly int _width;
         private readonly int _height;
@@ -28,7 +28,8 @@ namespace Raptor.SDLImp
             _texturePtr = texturePtr;
 
             //Query the texture data which gets the width and height of the texture
-            _sdl.QueryTexture(_texturePtr, out uint _, out _, out _width, out _height);
+            if (!(_sdl is null))
+                _sdl.QueryTexture(_texturePtr, out uint _, out _, out _width, out _height);
         }
         #endregion
 
@@ -62,7 +63,7 @@ namespace Raptor.SDLImp
         /// <typeparam name="T">The type of data to get.</typeparam>
         /// <exception cref="Exception">Thrown if the <paramref name="option"/> value is not the value of
         /// type '1' for the type <see cref="PointerContainer"/>.</exception>
-        public T GetData<T>(int option) where T : class
+        public T? GetData<T>(int option) where T : class
         {
             if (option == 1)
             {

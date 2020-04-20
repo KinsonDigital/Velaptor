@@ -74,7 +74,7 @@ namespace Raptor.Plugins
         /// </summary>
         /// <param name="keys">The list of key codes to check.</param>
         /// <returns></returns>
-        bool AreKeysDown(KeyCodes[] keys);
+        bool AreKeysDown(KeyCode[] keys);
 
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Raptor.Plugins
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        bool IsKeyDown(KeyCodes key);
+        bool IsKeyDown(KeyCode key);
 
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Raptor.Plugins
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        bool IsKeyUp(KeyCodes key);
+        bool IsKeyUp(KeyCode key);
 
 
         /// <summary>
@@ -98,21 +98,21 @@ namespace Raptor.Plugins
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        bool IsKeyPressed(KeyCodes key);
+        bool IsKeyPressed(KeyCode key);
 
 
         /// <summary>
         /// Returns all of the currently pressed keys of the keyboard for the current frame.
         /// </summary>
         /// <returns></returns>
-        KeyCodes[] GetCurrentPressedKeys();
+        KeyCode[] GetCurrentPressedKeys();
 
 
         /// <summary>
         /// Returns all of the previously pressed keys of the keyborad from the last frame.
         /// </summary>
         /// <returns></returns>
-        KeyCodes[] GetPreviousPressedKeys();
+        KeyCode[] GetPreviousPressedKeys();
         #endregion
     }
 }

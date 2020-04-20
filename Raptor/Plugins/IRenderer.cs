@@ -13,13 +13,13 @@ namespace Raptor.Plugins
         /// Starts the process of rendering a batch of <see cref="ITexture"/>s, <see cref="IText"/> items
         /// or primitives.  This method must be invoked before rendering.
         /// </summary>
-        void Begin();
+        void RenderBegin();
 
 
         /// <summary>
         /// Stops the batching process and renders all of the batched textures to the screen.
         /// </summary>
-        void End();
+        void RenderEnd();
 
 
         /// <summary>

@@ -1,11 +1,12 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Raptor
 {
     /// <summary>
     /// Represents a 2D rectangle with position and size.
     /// </summary>
-    public struct Rect
+    public struct Rect : IEquatable<Rect>
     {
         #region Constructors
         /// <summary>
@@ -107,6 +108,28 @@ namespace Raptor
         /// <param name="vector">The location that might be contained.</param>
         /// <returns></returns>
         public bool Contains(Vector2 vector) => vector.X > Left && vector.Y > Top && vector.X < Right && vector.Y < Bottom;
+
+
+        public override bool Equals(object? obj)
+        {
+            if (!(obj is Rect rect))
+                return false;
+
+
+            return Equals(rect);
+        }
+
+
+        public bool Equals(Rect other) => X == other.X && Y == other.Y && Width == other.Width && Height == other.Height;
+
+
+        public override int GetHashCode() => HashCode.Combine(X, Y, Width, Height);
+
+
+        public static bool operator ==(Rect left, Rect right) => left.Equals(right);
+
+
+        public static bool operator !=(Rect left, Rect right) => !(left == right);
         #endregion
     }
 }

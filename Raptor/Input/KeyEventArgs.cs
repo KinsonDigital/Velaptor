@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 
 namespace Raptor.Input
 {
@@ -11,7 +12,7 @@ namespace Raptor.Input
         /// <summary>
         /// Gets the keys that was pressed.
         /// </summary>
-        public KeyCodes[] Keys { get; set; }
+        public ReadOnlyCollection<KeyCode> Keys { get; private set; }
         #endregion
 
 
@@ -20,7 +21,7 @@ namespace Raptor.Input
         /// Creates a new instance of <see cref="KeyEventArgs"/>.
         /// </summary>
         /// <param name="keys">The list of keys that are in the down position.</param>
-        public KeyEventArgs(KeyCodes[] keys) => Keys = keys;
+        public KeyEventArgs(KeyCode[] keys) => Keys = new ReadOnlyCollection<KeyCode>(keys);
         #endregion
     }
 }

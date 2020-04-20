@@ -12,26 +12,6 @@ namespace RaptorTests.Graphics
     {
         #region Prop Tests
         [Fact]
-        public void Text_WhenSettingNullValue_ReturnsCorrectValue()
-        {
-            //Arrange
-            var mockInternalText = new Mock<IText>();
-            mockInternalText.SetupProperty(m => m.Text);
-
-            var gameText = new GameText()
-            {
-                InternalText = mockInternalText.Object
-            };
-
-            //Act
-            gameText.Text = null;
-
-            //Assert
-            Assert.Equal("", gameText.Text);
-        }
-
-
-        [Fact]
         public void Text_WhenGettingAndSettingValue_ProperlyReturnsAndSetsInternalValue()
         {
             //Arrange
@@ -125,23 +105,16 @@ namespace RaptorTests.Graphics
             //Act & Assert
             Assert.NotEqual(colorA, colorB);
         }
-
-
-        [Fact]
-        public void GetHashCode_WhenInvoking_ReturnsCorrectCode()
-        {
-            //Arrange
-            var color = new GameColor(4, 1, 2, 3);
-
-            //Act & Assert
-            Assert.Equal(1778121426, color.GetHashCode());
-        }
         #endregion
 
 
         #region Overloaded Operator Tests
-        [Fact]
-        public void AddOperator_WhenAddingTwoObjects_ReturnsCorrectValue()
+        [Theory]
+        [InlineData("Hello ", "World", "Hello World")]
+        [InlineData(null, "World", "World")]
+        [InlineData("Hello ", null, "Hello ")]
+        [InlineData(null, null, "")]
+        public void AddOperator_WhenAddingTwoGameTexts_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
             //Arrange
             var mockTextA = new Mock<IText>();
@@ -153,14 +126,13 @@ namespace RaptorTests.Graphics
             var textA = new GameText()
             {
                 InternalText = mockTextA.Object,
-                Text = "Hello "
+                Text = stringA
             };
             var textB = new GameText()
             {
                 InternalText = mockTextB.Object,
-                Text = "World"
+                Text = stringB
             };
-            var expected = "Hello World";
 
             //Act
             var actual = textA + textB;
@@ -170,8 +142,12 @@ namespace RaptorTests.Graphics
         }
 
 
-        [Fact]
-        public void AddOperator_WhenAddingObjectAndString_ReturnsCorrectValue()
+        [Theory]
+        [InlineData("Hello ", "World", "Hello World")]
+        [InlineData(null, "World", "World")]
+        [InlineData("Hello ", null, "Hello ")]
+        [InlineData(null, null, "")]
+        public void AddOperator_WhenAddingGameTextAndString_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
             //Arrange
             var mockText = new Mock<IText>();
@@ -180,20 +156,23 @@ namespace RaptorTests.Graphics
             var textA = new GameText()
             {
                 InternalText = mockText.Object,
-                Text = "Hello "
+                Text = stringA
             };
-            var expected = "Hello World";
 
             //Act
-            var actual = textA + "World";
+            var actual = textA + stringB;
 
             //Assert
             Assert.Equal(expected, actual);
         }
 
 
-        [Fact]
-        public void AddOperator_WhenAddingStringAndObject_ReturnsCorrectValue()
+        [Theory]
+        [InlineData("Hello ", "World", "Hello World")]
+        [InlineData(null, "World", "World")]
+        [InlineData("Hello ", null, "Hello ")]
+        [InlineData(null, null, "")]
+        public void AddOperator_WhenAddingStringAndGameText_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
             //Arrange
             var mockText = new Mock<IText>();
@@ -202,12 +181,11 @@ namespace RaptorTests.Graphics
             var textB = new GameText()
             {
                 InternalText = mockText.Object,
-                Text = "World"
+                Text = stringB
             };
-            var expected = "Hello World";
 
             //Act
-            var actual = "Hello " + textB;
+            var actual = stringA + textB;
 
             //Assert
             Assert.Equal(expected, actual);

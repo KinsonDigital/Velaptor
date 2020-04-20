@@ -12,7 +12,7 @@ namespace Raptor
         /// <summary>
         /// Used to render to the screen.
         /// </summary>
-        public IRenderer Renderer { get; set; }
+        public IRenderer? Renderer { get; set; }
         #endregion
 
 
@@ -21,7 +21,7 @@ namespace Raptor
         /// Creates a new instance of <see cref="OnRenderEventArgs"/>.
         /// </summary>
         /// <param name="renderer">The game renderer.</param>
-        public OnRenderEventArgs(IRenderer renderer) => Renderer = renderer;
+        public OnRenderEventArgs(IRenderer? renderer) => Renderer = renderer;
         #endregion
     }
 }

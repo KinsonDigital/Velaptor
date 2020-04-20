@@ -11,7 +11,7 @@ namespace Raptor.SDLImp
     public class SDLMouse : IMouse
     {
         #region Private Fields
-        private SDL _sdl;
+        private readonly SDL? _sdl = null;
         private static bool _currentLeftButtonState;
         private static bool _currentRightButtonState;
         private static bool _currentMiddleButtonState;
@@ -78,7 +78,13 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="x">The horizontal X position to set the mouse in the game window.</param>
         /// <param name="y">The vertical Y position to set the mouse in the game window.</param>
-        public void SetPosition(int x, int y) => _sdl.WarpMouseInWindow(SDLEngineCore.WindowPtr, x, y);
+        public void SetPosition(int x, int y)
+        {
+            if (_sdl is null)
+                return;
+
+            _sdl.WarpMouseInWindow(SDLEngineCore.WindowPtr, x, y);
+        }
 
 
         /// <summary>
@@ -138,7 +144,9 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <typeparam name="T">The type of data to inject.</typeparam>
         /// <param name="data">The data to inject.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         public void InjectData<T>(T data) where T : class => throw new NotImplementedException();
+
 
 
         /// <summary>
@@ -147,7 +155,12 @@ namespace Raptor.SDLImp
         /// <param name="option">Used to pass in options for the <see cref="GetData{T}(int)"/> implementation to process.</param>
         /// <typeparam name="T">The type of data to get.</typeparam>
         /// <returns></returns>
-        public T GetData<T>(int option) where T : class => throw new NotImplementedException();
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        public static T GetData<T>(int option) where T : class
+        {
+            var otherOption = option;//Used to simply get rid of warnings.
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }

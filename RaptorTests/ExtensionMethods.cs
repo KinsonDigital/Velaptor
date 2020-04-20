@@ -34,35 +34,27 @@ namespace RaptorTests
 
             if (foundField.FieldType.IsPrimitive)
             {
-                switch (foundField.FieldType)
+                var fieldValue = foundField.GetValue(fieldContainer);
+
+                if (fieldValue is null)
+                    return false;
+
+                return foundField.FieldType switch
                 {
-                    case Type intType when intType == typeof(int):
-                        return (int)foundField.GetValue(null) == 0;
-                    case Type uintType when uintType == typeof(uint):
-                        return (int)foundField.GetValue(null) == 0;
-                    case Type longType when longType == typeof(long):
-                        return (long)foundField.GetValue(null) == 0;
-                    case Type ulongType when ulongType == typeof(ulong):
-                        return (ulong)foundField.GetValue(null) == 0;
-                    case Type shortType when shortType == typeof(short):
-                        return (short)foundField.GetValue(null) == 0;
-                    case Type ushortType when ushortType == typeof(ushort):
-                        return (ushort)foundField.GetValue(null) == 0;
-                    case Type byteType when byteType == typeof(byte):
-                        return (byte)foundField.GetValue(null) == 0;
-                    case Type sbyteType when sbyteType == typeof(sbyte):
-                        return (sbyte)foundField.GetValue(null) == 0;
-                    case Type charType when charType == typeof(char):
-                        return (char)foundField.GetValue(null) == 0;
-                    case Type floatType when floatType == typeof(float):
-                        return (float)foundField.GetValue(null) == 0.0f;
-                    case Type decimalType when decimalType == typeof(decimal):
-                        return (decimal)foundField.GetValue(null) == 0.0m;
-                    case Type doubleType when doubleType == typeof(double):
-                        return (double)foundField.GetValue(null) == 0.0;
-                    default:
-                        throw new Exception($"The field of type {foundField.FieldType.Name} is unknown.");
-                }
+                    Type intType when intType == typeof(int) => (int)fieldValue == 0,
+                    Type uintType when uintType == typeof(uint) => (int)fieldValue == 0,
+                    Type longType when longType == typeof(long) => (long)fieldValue == 0,
+                    Type ulongType when ulongType == typeof(ulong) => (ulong)fieldValue == 0,
+                    Type shortType when shortType == typeof(short) => (short)fieldValue == 0,
+                    Type ushortType when ushortType == typeof(ushort) => (ushort)fieldValue == 0,
+                    Type byteType when byteType == typeof(byte) => (byte)fieldValue == 0,
+                    Type sbyteType when sbyteType == typeof(sbyte) => (sbyte)fieldValue == 0,
+                    Type charType when charType == typeof(char) => (char)fieldValue == 0,
+                    Type floatType when floatType == typeof(float) => (float)fieldValue == 0.0f,
+                    Type decimalType when decimalType == typeof(decimal) => (decimal)fieldValue == 0.0m,
+                    Type doubleType when doubleType == typeof(double) => (double)fieldValue == 0.0,
+                    _ => throw new Exception($"The field of type {foundField.FieldType.Name} is unknown."),
+                };
             }
             else
             {

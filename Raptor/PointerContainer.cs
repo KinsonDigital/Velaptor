@@ -15,10 +15,10 @@ namespace Raptor
 
         #region Public Methods
         /// <summary>
-        /// Packs the given <paramref name="pointer"/> into the container for transport.
+        /// Packs the given <paramref name="pointerToPack"/> into the container for transport.
         /// </summary>
-        /// <param name="pointer">The pointer to pack.</param>
-        public void PackPointer(IntPtr pointer) => _pointer = pointer;
+        /// <param name="pointerToPack">The pointer to pack.</param>
+        public void PackPointer(IntPtr pointerToPack) => _pointer = pointerToPack;
 
 
         /// <summary>

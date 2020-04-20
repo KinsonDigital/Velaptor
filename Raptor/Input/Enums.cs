@@ -3,7 +3,8 @@
     /// <summary>
     /// Represents the keys on a keyboard.
     /// </summary>	
-    public enum KeyCodes
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "<Pending>")]
+    public enum KeyCode
     {
         /// <summary>
         /// Reserved

@@ -16,9 +16,16 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="renderer">The renderer to use for rendering the outline/frame.</param>
         /// <param name="body">The body to render the outline/frame around.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Draw(IRenderer renderer, IPhysicsBody body)
         {
-            int max = body.XVertices.Length;
+            if (renderer is null)
+                throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
+
+            if (body is null)
+                throw new ArgumentNullException(nameof(body), "The physics body must not be null.");
+
+            int max = body.XVertices.Count;
 
             var origin = new Vector2(body.X, body.Y);
 
@@ -32,15 +39,23 @@ namespace Raptor.SDLImp
         }
 
 
+
         /// <summary>
         /// Draws an outline using the given <paramref name="color"/> around the given <paramref name="body"/> using the given <paramref name="renderer"/>.
         /// </summary>
         /// <param name="renderer">The renderer to use for rendering the outline/frame.</param>
         /// <param name="body">The body to render the outline/frame around.</param>
         /// <param name="color">The color of the outline</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Draw(IRenderer renderer, IPhysicsBody body, GameColor color)
         {
-            int max = body.XVertices.Length;
+            if (renderer is null)
+                throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
+
+            if (body is null)
+                throw new ArgumentNullException(nameof(body), "The physics body must not be null.");
+
+            int max = body.XVertices.Count;
 
             var origin = new Vector2(body.X, body.Y);
 
@@ -54,13 +69,16 @@ namespace Raptor.SDLImp
         }
 
 
+
         /// <summary>
         /// Gets the data as the given type <typeparamref name="T"/>.
         /// </summary>
         /// <param name="option">Used to pass in options for the <see cref="GetData{T}(int)"/> implementation to process.</param>
         /// <typeparam name="T">The type of data to get.</typeparam>
         /// <returns></returns>
-        public T GetData<T>(int option) where T : class => throw new NotImplementedException();
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>")]
+        public static T GetData<T>(int option) where T : class => throw new NotImplementedException(option.ToString());
+
 
 
         /// <summary>
@@ -68,6 +86,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <typeparam name="T">The type of data to inject.</typeparam>
         /// <param name="data">The data to inject.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         public void InjectData<T>(T data) where T : class => throw new NotImplementedException();
         #endregion
     }

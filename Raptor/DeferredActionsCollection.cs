@@ -8,7 +8,7 @@ namespace Raptor
     /// <summary>
     /// Maintains a list of actions that are meant to be executed only once at a later time.
     /// </summary>
-    public class DeferredActions : IEnumerable, IList<Action>
+    public class DeferredActionsCollection : IEnumerable, IList<Action>
     {
         #region Private Fields
         private readonly List<Action> _actions = new List<Action>();
@@ -17,7 +17,7 @@ namespace Raptor
 
         #region Props
         /// <summary>
-        /// Gets or sets the index item of the <see cref="DeferredActions"/> list.
+        /// Gets or sets the index item of the <see cref="DeferredActionsCollection"/> list.
         /// </summary>
         /// <param name="index">The index of the item.</param>
         /// <returns></returns>

@@ -13,7 +13,7 @@ namespace Raptor.SDLImp
     public class SDLKeyboard : IKeyboard
     {
         #region Private Fields
-        private SDL _sdl;
+        private SDL? _sdl = null;
         private readonly List<Keycode> _currentStateKeys = new List<Keycode>();
         private readonly List<Keycode> _prevStateKeys = new List<Keycode>();
         #endregion
@@ -23,42 +23,42 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Gets a value indicating if the caps lock key is on.
         /// </summary>
-        public bool CapsLockOn => (_sdl.GetModState() & Keymod.KMOD_CAPS) == Keymod.KMOD_CAPS;
+        public bool CapsLockOn => (_sdl.GetModState() & Keymods.Caps) == Keymods.Caps;
 
         /// <summary>
         /// Gets a value indicating if the numlock key is on.
         /// </summary>
-        public bool NumLockOn => (_sdl.GetModState() & Keymod.KMOD_NUM) == Keymod.KMOD_NUM;
+        public bool NumLockOn => (_sdl.GetModState() & Keymods.Num) == Keymods.Num;
 
         /// <summary>
         /// Gets a value indicating if the left shift key is being held down.
         /// </summary>
-        public bool IsLeftShiftDown => (_sdl.GetModState() & Keymod.KMOD_LSHIFT) == Keymod.KMOD_LSHIFT;
+        public bool IsLeftShiftDown => (_sdl.GetModState() & Keymods.LShift) == Keymods.LShift;
 
         /// <summary>
         /// Gets a value indicating if the right shift key is being held down.
         /// </summary>
-        public bool IsRightShiftDown => (_sdl.GetModState() & Keymod.KMOD_RSHIFT) == Keymod.KMOD_RSHIFT;
+        public bool IsRightShiftDown => (_sdl.GetModState() & Keymods.RShift) == Keymods.RShift;
 
         /// <summary>
         /// Gets a value indicating if the left control key is being held down.
         /// </summary>
-        public bool IsLeftCtrlDown => (_sdl.GetModState() & Keymod.KMOD_LCTRL) == Keymod.KMOD_LCTRL;
+        public bool IsLeftCtrlDown => (_sdl.GetModState() & Keymods.LCtrl) == Keymods.LCtrl;
 
         /// <summary>
         /// Gets a value indicating if the right control key is being held down.
         /// </summary>
-        public bool IsRightCtrlDown => (_sdl.GetModState() & Keymod.KMOD_RCTRL) == Keymod.KMOD_RCTRL;
+        public bool IsRightCtrlDown => (_sdl.GetModState() & Keymods.RCtrl) == Keymods.RCtrl;
 
         /// <summary>
         /// Gets a value indicating if the left alt key is being held down.
         /// </summary>
-        public bool IsLeftAltDown => (_sdl.GetModState() & Keymod.KMOD_LALT) == Keymod.KMOD_LALT;
+        public bool IsLeftAltDown => (_sdl.GetModState() & Keymods.LAlt) == Keymods.LAlt;
 
         /// <summary>
         /// Gets a value indicating if the right alt key is being held down.
         /// </summary>
-        public bool IsRightAltDown => (_sdl.GetModState() & Keymod.KMOD_RALT) == Keymod.KMOD_RALT;
+        public bool IsRightAltDown => (_sdl.GetModState() & Keymods.RAlt) == Keymods.RAlt;
         #endregion
 
 
@@ -95,7 +95,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="keys">The list of key codes to check.</param>
         /// <returns></returns>
-        public bool AreKeysDown(KeyCodes[] keys) => keys.Any(k => _currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(k)));
+        public bool AreKeysDown(KeyCode[] keys) => keys.Any(k => _currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(k)));
 
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyDown(KeyCodes key) => _currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key));
+        public bool IsKeyDown(KeyCode key) => _currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key));
 
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyUp(KeyCodes key) => !IsKeyDown(key);
+        public bool IsKeyUp(KeyCode key) => !IsKeyDown(key);
 
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyPressed(KeyCodes key) => !_currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key)) &&
+        public bool IsKeyPressed(KeyCode key) => !_currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key)) &&
             _prevStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key));
 
 
@@ -127,14 +127,14 @@ namespace Raptor.SDLImp
         /// Returns all of the currently pressed keys of the keyboard for the current frame.
         /// </summary>
         /// <returns></returns>
-        public KeyCodes[] GetCurrentPressedKeys() => KeyboardKeyMapper.ToStandardKeyCodes(_currentStateKeys.ToArray());
+        public KeyCode[] GetCurrentPressedKeys() => KeyboardKeyMapper.ToStandardKeyCodes(_currentStateKeys.ToArray());
 
 
         /// <summary>
         /// Returns all of the previously pressed keys of the keyborad from the last frame.
         /// </summary>
         /// <returns></returns>
-        public KeyCodes[] GetPreviousPressedKeys() => KeyboardKeyMapper.ToStandardKeyCodes(_prevStateKeys.ToArray());
+        public KeyCode[] GetPreviousPressedKeys() => KeyboardKeyMapper.ToStandardKeyCodes(_prevStateKeys.ToArray());
 
 
         /// <summary>
@@ -145,13 +145,19 @@ namespace Raptor.SDLImp
         public void InjectData<T>(T data) where T : class => throw new NotImplementedException();
 
 
+
         /// <summary>
         /// Gets the data as the given type <typeparamref name="T"/>.
         /// </summary>
         /// <param name="option">Used to pass in options for the <see cref="GetData{T}(int)"/> implementation to process.</param>
         /// <typeparam name="T">The type of data to get.</typeparam>
         /// <returns></returns>
-        public T GetData<T>(int option) where T : class => throw new NotImplementedException();
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        public static T GetData<T>(int option) where T : class
+        {
+            var otherOption = option;
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }

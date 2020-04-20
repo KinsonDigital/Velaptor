@@ -10,7 +10,7 @@ namespace Raptor.Physics
     public class PhysicsWorld
     {
         #region Private Fields
-        private readonly IPhysicsWorld _internalWorld;
+        private readonly IPhysicsWorld? _internalWorld;
         #endregion
 
 
@@ -34,6 +34,7 @@ namespace Raptor.Physics
         [ExcludeFromCodeCoverage]
         public PhysicsWorld(Vector2 gravity)
         {
+            var otherGravity = gravity.X;
             //TODO: Figure out how to get the proper implementation inside of this class
         }
         #endregion
@@ -43,7 +44,7 @@ namespace Raptor.Physics
         /// <summary>
         /// Gets the worlds gravity.
         /// </summary>
-        public Vector2 Gravity => new Vector2(_internalWorld.GravityX, _internalWorld.GravityY);
+        public Vector2 Gravity => new Vector2(_internalWorld is null ? 0 : _internalWorld.GravityX, _internalWorld is null ? 0 : _internalWorld.GravityY);
         #endregion
 
 
@@ -52,14 +53,26 @@ namespace Raptor.Physics
         /// Adds the given <paramref name="body"/> to the world.
         /// </summary>
         /// <param name="body">The body to add.</param>
-        public void AddBody(IPhysicsBody body) => _internalWorld.AddBody(body);
+        public void AddBody(IPhysicsBody body)
+        {
+            if (_internalWorld is null)
+                return;
+
+            _internalWorld.AddBody(body);
+        }
 
 
         /// <summary>
         /// Updates the physics world to keep the physics simulation moving ahead.
         /// </summary>
         /// <param name="dt">The time passed in milliseconds since the last frame.</param>
-        public void Update(float dt) => _internalWorld.Update(dt);
+        public void Update(float dt)
+        {
+            if (_internalWorld is null)
+                return;
+
+            _internalWorld.Update(dt);
+        }
         #endregion
     }
 }

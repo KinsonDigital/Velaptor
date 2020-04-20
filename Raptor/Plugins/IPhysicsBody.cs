@@ -1,4 +1,6 @@
-﻿namespace Raptor.Plugins
+﻿using System.Collections.ObjectModel;
+
+namespace Raptor.Plugins
 {
     /// <summary>
     /// Represents a body in a world that obeys physics.
@@ -9,12 +11,12 @@
         /// <summary>
         /// The X vertices of the body's shape.
         /// </summary>
-        float[] XVertices { get; set; }
+        ReadOnlyCollection<float> XVertices { get; }
 
         /// <summary>
         /// The X vertices of the body's shape.
         /// </summary>
-        float[] YVertices { get; set; }
+        ReadOnlyCollection<float> YVertices { get; }
 
         /// <summary>
         /// The X coordinate of the body's location.
@@ -74,7 +76,7 @@
         /// <summary>
         /// Gets or sets the list of actions to execute after the body has been added to the <see cref="IPhysicsWorld"/>.
         /// </summary>
-        DeferredActions AfterAddedToWorldActions { get; set; }
+        DeferredActionsCollection AfterAddedToWorldActions { get; }
         #endregion
 
 
@@ -105,6 +107,20 @@
         /// <param name="worldLocationX">The location in the world of where to apply this force.</param>
         /// <param name="worldLocationY">The location in the world of where to apply this force.</param>
         void ApplyForce(float forceX, float forceY, float worldLocationX, float worldLocationY);
+
+
+        /// <summary>
+        /// Sets all of the X verticies that makes up the physics body.
+        /// </summary>
+        /// <param name="xVertices">The list of X vertices.</param>
+        void SetXVertices(float[] xVertices);
+
+
+        /// <summary>
+        /// Sets all of the X verticies that makes up the physics body.
+        /// </summary>
+        /// <param name="yVertices">The list of X vertices.</param>
+        void SetYVertices(float[] yVertices);
         #endregion
     }
 }

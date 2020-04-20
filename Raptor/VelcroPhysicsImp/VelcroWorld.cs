@@ -35,7 +35,7 @@ namespace Raptor.VelcroPhysicsImp
         /// <summary>
         /// Gets or sets the velcro physics world that is used internally.
         /// </summary>
-        internal static World PhysicsWorld { get; set; }
+        internal static World? PhysicsWorld { get; set; }
 
         /// <summary>
         /// Gets or sets the world's gravity in the X plane.
@@ -54,7 +54,11 @@ namespace Raptor.VelcroPhysicsImp
         /// Updates the physics world.
         /// </summary>
         /// <param name="dt">The time that has passed for the current frame.</param>
-        public void Update(float dt) => PhysicsWorld.Step(dt);
+        public void Update(float dt)
+        {
+            if (!(PhysicsWorld is null))
+                PhysicsWorld.Step(dt);
+        }
 
 
         /// <summary>
@@ -71,7 +75,7 @@ namespace Raptor.VelcroPhysicsImp
             //var bodySettings = body.GetData<PhysicsBodySettings>(1);
             var bodySettings = new PhysicsBodySettings();
 
-            for (int i = 0; i < bodySettings.XVertices.Length; i++)
+            for (int i = 0; i < bodySettings.XVertices.Count; i++)
             {
                 velVertices.Add(new Vector2(bodySettings.XVertices[i], bodySettings.YVertices[i]).ToPhysics());
             }
@@ -103,13 +107,17 @@ namespace Raptor.VelcroPhysicsImp
         public T GetBody<T>() => throw new NotImplementedException();
 
 
+
         /// <summary>
         /// Gets the data as the given type <typeparamref name="T"/>.
         /// </summary>
         /// <param name="option">Used to pass in options for the <see cref="GetData{T}(int)"/> implementation to process.</param>
         /// <typeparam name="T">The type of data to get.</typeparam>
         /// <returns></returns>
-        public T GetData<T>(int option) where T : class => throw new NotImplementedException();
+        //TODO: This mehod is planning on being removed
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        [SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>")]
+        public static T GetData<T>(int option) where T : class => throw new NotImplementedException(option.ToString());
 
 
         /// <summary>
@@ -117,7 +125,9 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         /// <typeparam name="T">The type of data to inject.</typeparam>
         /// <param name="data">The data to inject.</param>
-        public void InjectData<T>(T data) where T : class => throw new NotImplementedException();
+        //TODO: This mehod is planning on being removed
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        public static void InjectData<T>(T data) where T : class => throw new NotImplementedException();
         #endregion
     }
 }

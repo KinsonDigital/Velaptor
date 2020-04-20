@@ -22,7 +22,7 @@ namespace Raptor.Plugins
         /// <summary>
         /// Gets or sets the renderer that renders graphics to the window.
         /// </summary>
-        IRenderer Renderer { get; }
+        IRenderer? Renderer { get; }
         #endregion
 
 
@@ -30,13 +30,13 @@ namespace Raptor.Plugins
         /// <summary>
         /// Starts the engine.
         /// </summary>
-        void Start();
+        void StartEngine();
 
 
         /// <summary>
         /// Stops the engine.
         /// </summary>
-        void Stop();
+        void StopEngine();
 
 
         /// <summary>

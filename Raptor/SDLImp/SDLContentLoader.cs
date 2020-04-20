@@ -2,6 +2,7 @@
 using Raptor.Plugins;
 using SDLCore;
 using System;
+using System.Globalization;
 using System.IO;
 
 namespace Raptor.SDLImp
@@ -12,9 +13,9 @@ namespace Raptor.SDLImp
     public class SDLContentLoader : IContentLoader
     {
         #region Private Fields
-        private SDL _sdl;
-        private SDLImage _sdlImage;
-        private SDLFonts _sdlFonts;
+        private SDL? _sdl = null;
+        private SDLImage? _sdlImage = null;
+        private SDLFonts? _sdlFonts = null;
         #endregion
 
 
@@ -28,15 +29,28 @@ namespace Raptor.SDLImp
 
 
         #region Props
-        public string GamePath { get; } = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
+        public string GamePath
+        {
+            get
+            {
+                var path = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
+
+
+                return path is null ? string.Empty : path;
+            }
+        }
 
         public string ContentRootDirectory { get; set; }
         #endregion
 
 
         #region Public Methods
-        T IContentLoader.LoadTexture<T>(string name)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1033:Interface methods should be callable by child types", Justification = "<Pending>")]
+        T? IContentLoader.LoadTexture<T>(string name) where T : class
         {
+            if (_sdlImage is null || _sdl is null)
+                return null;
+
             var texturePath = $@"{ContentRootDirectory}\Graphics\{name}.png";
 
 
@@ -68,14 +82,21 @@ namespace Raptor.SDLImp
         }
 
 
-        public T GetData<T>(int option) where T : class => throw new NotImplementedException();
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        public static T GetData<T>(int option) where T : class => throw new NotImplementedException(option.ToString(CultureInfo.InvariantCulture));
 
 
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         public void InjectData<T>(T data) where T : class => throw new NotImplementedException();
 
-
-        T IContentLoader.LoadText<T>(string name)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1033:Interface methods should be callable by child types", Justification = "<Pending>")]
+        T? IContentLoader.LoadText<T>(string name) where T : class
         {
+            if (_sdlFonts is null)
+                return null;
+
             //TODO: Create a system where the user can create a JSON file with font size and color
             //and default text contained in it that can be created and put in 
             //the same location with the same name as the ttf file.  The 
