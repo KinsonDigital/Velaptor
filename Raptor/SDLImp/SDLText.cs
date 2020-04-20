@@ -11,11 +11,11 @@ namespace Raptor.SDLImp
     public class SDLText : IText
     {
         #region Private Fields
-        private SDL _sdl;
-        private SDLFonts _sdlFonts;
+        private readonly SDL? _sdl = null;
+        private readonly SDLFonts? _sdlFonts = null;
         private readonly IntPtr _fontPtr;
         private IntPtr _texturePointer;
-        private string _text;
+        private string _text = string.Empty;
         #endregion
 
 
@@ -44,6 +44,9 @@ namespace Raptor.SDLImp
             get => _text;
             set
             {
+                if (_sdlFonts is null || _sdl is null)
+                    return;
+
                 _text = value;
 
                 var color = new Color()
@@ -53,7 +56,7 @@ namespace Raptor.SDLImp
                     b = Color.Blue,
                     a = Color.Alpha,
                 };
-
+                    
                 //Create a surface for which to render the text to
                 var surfacePtr = _sdlFonts.RenderTextSolid(_fontPtr, value, color);
 
@@ -75,6 +78,9 @@ namespace Raptor.SDLImp
         {
             get
             {
+                if (_sdl is null)
+                    return 0;
+
                 _sdl.QueryTexture(_texturePointer, out var _, out var _, out var width, out var _);
 
 
@@ -89,6 +95,9 @@ namespace Raptor.SDLImp
         {
             get
             {
+                if (_sdl is null)
+                    return 0;
+
                 _sdl.QueryTexture(_texturePointer, out var _, out var _, out var _, out var height);
 
 
@@ -119,7 +128,7 @@ namespace Raptor.SDLImp
         /// <typeparam name="T">The type of data to get.</typeparam>
         /// <exception cref="Exception">Thrown if the <paramref name="option"/> value is not the value of
         /// type '1' for the type <see cref="PointerContainer"/>.</exception>
-        public T GetData<T>(int option) where T : class
+        public T? GetData<T>(int option) where T : class
         {
             if (option == 1)
             {

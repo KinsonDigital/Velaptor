@@ -1,7 +1,6 @@
 ﻿using System;
 using Moq;
 using Xunit;
-using Raptor;
 using Raptor.Input;
 using Raptor.Plugins;
 using System.Numerics;

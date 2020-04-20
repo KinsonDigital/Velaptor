@@ -14,7 +14,7 @@ namespace Raptor.SDLImp
     public class SDLRenderer : IRenderer
     {
         #region Private Fields
-        private SDL _sdl;
+        private readonly SDL? _sdl = null;
         private bool _beginInvoked = false;
         private IntPtr _rendererPtr;
         #endregion
@@ -25,24 +25,27 @@ namespace Raptor.SDLImp
         /// Starts the process of rendering a batch of <see cref="Texture"/>s, <see cref="GameText"/> items
         /// or primitives.  This method must be invoked before rendering.
         /// </summary>
-        public void Begin()
+        public void RenderBegin()
         {
             CheckRenderPointer();
             _beginInvoked = true;
         }
 
 
+
         /// <summary>
         /// Stops the batching process and renders all of the batched textures to the screen.
         /// </summary>
-        public void End()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        public void RenderEnd()
         {
             CheckRenderPointer();
 
             if (!_beginInvoked)
-                throw new Exception($"The '{nameof(Begin)}' method must be invoked first before the '{nameof(End)}' method.");
+                throw new Exception($"The '{nameof(RenderBegin)}' method must be invoked first before the '{nameof(RenderEnd)}' method.");
 
-            _sdl.RenderPresent(_rendererPtr);
+            if (!(_sdl is null))
+                _sdl.RenderPresent(_rendererPtr);
 
             _beginInvoked = false;
         }
@@ -56,8 +59,11 @@ namespace Raptor.SDLImp
         {
             CheckRenderPointer();
 
-            _sdl.SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
-            _sdl.RenderClear(_rendererPtr);
+            if (!(_sdl is null))
+            {
+                _sdl.SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
+                _sdl.RenderClear(_rendererPtr);
+            }
         }
 
 
@@ -83,6 +89,7 @@ namespace Raptor.SDLImp
         public void Render(ITexture texture, float x, float y, float angle) => Render(texture, x, y, angle, 1f, new GameColor(255, 255, 255, 255));
 
 
+
         /// <summary>
         /// Renders the given <paramref name="texture"/> at the given <paramref name="x"/>
         /// and <paramref name="y"/> location and rotates the texture to the given
@@ -93,8 +100,15 @@ namespace Raptor.SDLImp
         /// <param name="y">The Y coordinate location on the screen to render.</param>
         /// <param name="angle">The angle in degrees to rotate the texture to.</param>
         /// <param name="color">The color to apply to the texture.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(ITexture texture, float x, float y, float angle, float size, GameColor color)
         {
+            if (texture is null)
+                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
+
+            if (_sdl is null)
+                return;
+
             CheckRenderPointer();
 
             //NOTE: SDL takes the angle in degrees, not radians.
@@ -132,6 +146,7 @@ namespace Raptor.SDLImp
         }
 
 
+
         /// <summary>
         /// Renders the given <paramref name="text"/> at the given <paramref name="x"/>
         /// and <paramref name="y"/> location.
@@ -139,7 +154,15 @@ namespace Raptor.SDLImp
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X coordinate location on the screen to render.</param>
         /// <param name="y">The Y coordinate location on the screen to render.</param>
-        public void Render(IText text, float x, float y) => Render(text, x, y, text.Color);
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        public void Render(IText text, float x, float y)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text), "The UI text must not be null.");
+
+            Render(text, x, y, text.Color);
+        }
+
 
 
         /// <summary>
@@ -150,8 +173,15 @@ namespace Raptor.SDLImp
         /// <param name="x">The X coordinate location of where to render the text.</param>
         /// <param name="y">The Y coordinate location of where to render the text.</param>
         /// <param name="color">The color to render the text.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(IText text, float x, float y, GameColor color)
         {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text), "The text object must not be null.");
+
+            if (_sdl is null)
+                return;
+
             CheckRenderPointer();
 
             //TODO: Figure out how to deal with pointer from the IText object.
@@ -184,6 +214,7 @@ namespace Raptor.SDLImp
         }
 
 
+
         /// <summary>
         /// Renders an area of the given <paramref name="texture"/> at the given <paramref name="x"/>
         /// and <paramref name="y"/> location.
@@ -192,8 +223,15 @@ namespace Raptor.SDLImp
         /// <param name="area">The area/section of the texture to render.</param>
         /// <param name="x">The X coordinate location on the screen to render.</param>
         /// <param name="y">The Y coordinate location on the screen to render.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void RenderTextureArea(ITexture texture, CoreRect area, float x, float y)
         {
+            if (texture is null)
+                throw new ArgumentNullException(nameof(texture), "The text object must not be null.");
+
+            if (_sdl is null)
+                return;
+
             CheckRenderPointer();
 
             var textureOrigin = new Point()
@@ -252,6 +290,9 @@ namespace Raptor.SDLImp
         {
             CheckRenderPointer();
 
+            if (_sdl is null)
+                return;
+
             _sdl.SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
 
             _sdl.RenderDrawLine(_rendererPtr, (int)startX, (int)startY, (int)endX, (int)endY);
@@ -270,6 +311,9 @@ namespace Raptor.SDLImp
         public void FillCircle(float centerX, float centerY, float radius, GameColor color)
         {
             CheckRenderPointer();
+
+            if (_sdl is null)
+                return;
 
             /*Midpoint Algorithm
              * 1. https://stackoverflow.com/questions/38334081/howto-draw-circles-arcs-and-vector-graphics-in-sdl
@@ -334,6 +378,9 @@ namespace Raptor.SDLImp
                 h = (int)rect.Height
             };
 
+            if (_sdl is null)
+                return;
+
             _sdl.SetRenderDrawColor(_rendererPtr, color.Red, color.Green, color.Blue, color.Alpha);
             _sdl.RenderFillRect(_rendererPtr, ref sdlRect);
         }
@@ -345,14 +392,24 @@ namespace Raptor.SDLImp
         /// <typeparam name="T">The <see cref="PointerContainer"/> type to inject.</typeparam>
         /// <param name="data">The data to inject.</param>
         /// <exception cref="Exception">Thrown if the '<paramref name="data"/>' parameter is not of type <see cref="PointerContainer"/>.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void InjectData<T>(T data) where T : class
         {
+            if (data is null)
+                throw new ArgumentNullException(nameof(data), "The data must not be null.");
+
             //TODO: Replace this with a custom exception called InjectDataException class
             if (data.GetType() != typeof(PointerContainer))
                 throw new Exception($"Data getting injected into {nameof(SDLRenderer)} is not of type {nameof(PointerContainer)}.  Incorrect type is '{data.GetType().ToString()}'");
 
-            _rendererPtr = (data as PointerContainer).UnpackPointer();
+            var pointerContainer = data as PointerContainer;
+
+            if (pointerContainer is null)
+                throw new Exception("The incoming data could not be cast to a pointer container");
+
+            _rendererPtr = pointerContainer.UnpackPointer();
         }
+
 
 
         /// <summary>
@@ -360,8 +417,11 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <typeparam name="T">The type of data to get.</typeparam>
         /// <returns></returns>
-        public T GetData<T>(int option) where T : class
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        public T? GetData<T>(int option) where T : class
         {
+            var otherOption = option;//Here just to get rid of warning.  This method is planned to be removed.
+
             var ptrContainer = new PointerContainer();
             ptrContainer.PackPointer(_rendererPtr);
 
@@ -373,11 +433,25 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Properly destroys the SDL renderer.
         /// </summary>
-        public void Dispose() => _sdl.DestroyRenderer(_rendererPtr);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing || _sdl is null)
+                return;
+
+            _sdl.DestroyRenderer(_rendererPtr);
+        }
         #endregion
 
 
         #region Private Methods
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         private void CheckRenderPointer()
         {
             if (_rendererPtr == IntPtr.Zero)

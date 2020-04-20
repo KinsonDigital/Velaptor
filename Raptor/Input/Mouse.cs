@@ -14,32 +14,32 @@ namespace Raptor.Input
         /// <summary>
         /// Occurs when the left mouse button has been pushed to the down position.
         /// </summary>
-        public event EventHandler<MouseEventArgs> OnLeftButtonDown;
+        public event EventHandler<MouseEventArgs>? OnLeftButtonDown;
 
         /// <summary>
         /// Occurs when the left mouse button has been released from the down position.
         /// </summary>
-        public event EventHandler<MouseEventArgs> OnLeftButtonPressed;
+        public event EventHandler<MouseEventArgs>? OnLeftButtonPressed;
 
         /// <summary>
         /// Occurs when the right mouse button has been pushed to the down position.
         /// </summary>
-        public event EventHandler<MouseEventArgs> OnRightButtonDown;
+        public event EventHandler<MouseEventArgs>? OnRightButtonDown;
 
         /// <summary>
         /// Occurs when the right mouse button has been released from the down position.
         /// </summary>
-        public event EventHandler<MouseEventArgs> OnRightButtonPressed;
+        public event EventHandler<MouseEventArgs>? OnRightButtonPressed;
 
         /// <summary>
         /// Occurs when the middle mouse button has been pushed to the down position.
         /// </summary>
-        public event EventHandler<MouseEventArgs> OnMiddleButtonDown;
+        public event EventHandler<MouseEventArgs>? OnMiddleButtonDown;
 
         /// <summary>
         /// Occurs when the middle mouse button has been released from the down position.
         /// </summary>
-        public event EventHandler<MouseEventArgs> OnMiddleButtonPressed;
+        public event EventHandler<MouseEventArgs>? OnMiddleButtonPressed;
         #endregion
 
 
@@ -65,7 +65,7 @@ namespace Raptor.Input
         /// <summary>
         /// The internal mouse plugin implementation.
         /// </summary>
-        public IMouse InternalMouse { get; }
+        public IMouse? InternalMouse { get; }
 
 
         /// <summary>
@@ -73,8 +73,8 @@ namespace Raptor.Input
         /// </summary>
         public int X
         {
-            get => InternalMouse.X;
-            set => InternalMouse.X = value;
+            get => InternalMouse is null ? 0 : InternalMouse.X;
+            set { if (!(InternalMouse is null)) InternalMouse.X = value; }
         }
 
 
@@ -83,8 +83,8 @@ namespace Raptor.Input
         /// </summary>
         public int Y
         {
-            get => InternalMouse.Y;
-            set => InternalMouse.Y = value;
+            get => InternalMouse is null ? 0 : InternalMouse.Y;
+            set { if (!(InternalMouse is null)) InternalMouse.Y = value; }
         }
         #endregion
 
@@ -95,7 +95,13 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="input">The input button to check.</param>
         /// <returns></returns>
-        public bool IsButtonDown(InputButton input) => InternalMouse.IsButtonDown(input);
+        public bool IsButtonDown(InputButton input)
+        {
+            if (InternalMouse is null)
+                return false;
+
+            return InternalMouse.IsButtonDown(input);
+        }
 
 
         /// <summary>
@@ -103,7 +109,13 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="input">The input button to check.</param>
         /// <returns></returns>
-        public bool IsButtonUp(InputButton input) => InternalMouse.IsButtonUp(input);
+        public bool IsButtonUp(InputButton input)
+        {
+            if (InternalMouse is null)
+                return true;
+
+            return InternalMouse.IsButtonUp(input);
+        }
 
 
         /// <summary>
@@ -111,7 +123,13 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="input">The mouse input button to check.</param>
         /// <returns></returns>
-        public bool IsButtonPressed(InputButton input) => InternalMouse.IsButtonPressed(input);
+        public bool IsButtonPressed(InputButton input)
+        {
+            if (InternalMouse is null)
+                return false;
+
+            return InternalMouse.IsButtonPressed(input);
+        }
 
 
         /// <summary>
@@ -119,14 +137,26 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="x">The horizontal X position to set the mouse to over the game window.</param>
         /// <param name="y">The vertical Y position to set the mouse to over the game window.</param>
-        public void SetPosition(int x, int y) => InternalMouse.SetPosition(x, y);
+        public void SetPosition(int x, int y)
+        {
+            if (InternalMouse is null)
+                return;
+
+            InternalMouse.SetPosition(x, y);
+        }
 
 
         /// <summary>
         /// Sets the mouse to the given <paramref name="position"/>.
         /// </summary>
         /// <param name="position">The position to set the mouse to over the game window.</param>
-        public void SetPosition(Vector2 position) => InternalMouse.SetPosition((int)position.X, (int)position.Y);
+        public void SetPosition(Vector2 position)
+        {
+            if (InternalMouse is null)
+                return;
+
+            InternalMouse.SetPosition((int)position.X, (int)position.Y);
+        }
 
 
         /// <summary>
@@ -134,6 +164,9 @@ namespace Raptor.Input
         /// </summary>
         public void UpdateCurrentState()
         {
+            if (InternalMouse is null)
+                return;
+
             InternalMouse.UpdateCurrentState();
 
             //If the left mouse button has been pressed down
@@ -209,7 +242,13 @@ namespace Raptor.Input
         /// <summary>
         /// Update the previous state of the mouse.
         /// </summary>
-        public void UpdatePreviousState() => InternalMouse.UpdatePreviousState();
+        public void UpdatePreviousState()
+        {
+            if (InternalMouse is null)
+                return;
+
+            InternalMouse.UpdatePreviousState();
+        }
         #endregion
     }
 }

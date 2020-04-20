@@ -15,7 +15,7 @@ namespace Raptor.UI
         /// <summary>
         /// Occurs when the button has been clicked.
         /// </summary>
-        public event EventHandler<EventArgs> Click;
+        public event EventHandler<EventArgs>? Click;
         #endregion
 
 
@@ -30,7 +30,14 @@ namespace Raptor.UI
         /// <summary>
         /// Creates a new instance of <see cref="Button"/>.
         /// </summary>
-        public Button() => _mouse = new Mouse();
+        public Button(Texture mouseOverTexture, Texture mouseNotOverTexture, Texture mouseDownTexture)
+        {
+            MouseOverTexture = mouseOverTexture;
+            MouseNotOverTexture = mouseNotOverTexture;
+            MouseDownTexture = mouseDownTexture;
+
+            _mouse = new Mouse();
+        }
         #endregion
 
 
@@ -96,7 +103,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the text of the button.
         /// </summary>
-        public GameText ButtonText { get; set; }
+        public GameText? ButtonText { get; set; }
         #endregion
 
 
@@ -129,12 +136,17 @@ namespace Raptor.UI
         }
 
 
+
         /// <summary>
         /// Renders the <see cref="Button"/> to the screen.
         /// </summary>
         /// <param name="renderer">Renders the <see cref="Button"/>.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(Renderer renderer)
         {
+            if (renderer is null)
+                throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
+
             if (_isMouseDown && MouseDownTexture != null)
             {
                 renderer.Render(MouseDownTexture, Position.X, Position.Y);
@@ -155,8 +167,8 @@ namespace Raptor.UI
 
             var textPosition = new Vector2()
             {
-                X = Position.X - ButtonText.Width / 2f,
-                Y = Position.Y - ButtonText.Height / 2f
+                X = Position.X - (ButtonText is null ? 0 : ButtonText.Width / 2f),
+                Y = Position.Y - (ButtonText is null ? 0 :  ButtonText.Height / 2f)
             };
 
             if(ButtonText != null)

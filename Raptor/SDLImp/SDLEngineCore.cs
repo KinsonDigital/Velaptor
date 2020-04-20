@@ -15,18 +15,18 @@ namespace Raptor.SDLImp
     public class SDLEngineCore : IEngineCore
     {
         #region Public Events
-        public event EventHandler<OnUpdateEventArgs> OnUpdate;
-        public event EventHandler<OnRenderEventArgs> OnRender;
-        public event EventHandler OnInitialize;
-        public event EventHandler OnLoadContent;
+        public event EventHandler<OnUpdateEventArgs>? OnUpdate;
+        public event EventHandler<OnRenderEventArgs>? OnRender;
+        public event EventHandler? OnInitialize;
+        public event EventHandler? OnLoadContent;
         #endregion
 
 
         #region Private Fields
-        private SDL _sdl;
-        private SDLImage _sdlImage;
-        private SDLFonts _sdlFonts;
-        private Stopwatch _timer;
+        private readonly SDL? _sdl = null;
+        private readonly SDLImage? _sdlImage = null;
+        private readonly SDLFonts? _sdlFonts = null;
+        private Stopwatch _timer = new Stopwatch();
         private TimeSpan _lastFrameTime;
         private bool _isRunning;
         private float _targetFrameRate = 1000f / 120f;
@@ -53,12 +53,18 @@ namespace Raptor.SDLImp
         {
             get
             {
+                if (_sdl is null)
+                    return 0;
+
                 _sdl.GetWindowSize(WindowPtr, out int w, out _);
 
                 return w;
             }
             set
             {
+                if (_sdl is null)
+                    return;
+
                 _sdl.GetWindowSize(WindowPtr, out _, out int h);
                 _sdl.SetWindowSize(WindowPtr, value, h);
             }
@@ -71,12 +77,18 @@ namespace Raptor.SDLImp
         {
             get
             {
+                if (_sdl is null)
+                    return 0;
+
                 _sdl.GetWindowSize(WindowPtr, out _, out int h);
 
                 return h;
             }
             set
             {
+                if (_sdl is null)
+                    return;
+
                 _sdl.GetWindowSize(WindowPtr, out int w, out _);
                 _sdl.SetWindowSize(WindowPtr, w, value);
             }
@@ -85,7 +97,7 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Gets or sets the renderer that renders graphics to the window.
         /// </summary>
-        public IRenderer Renderer { get; private set; }
+        public IRenderer? Renderer { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating the type of game loop to run.
@@ -143,7 +155,7 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Starts the engine.
         /// </summary>
-        public void Start()
+        public void StartEngine()
         {
             InitEngine();
             OnInitialize?.Invoke(this, new EventArgs());
@@ -154,7 +166,7 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Stops the engine.
         /// </summary>
-        public void Stop()
+        public void StopEngine()
         {
             _timer.Stop();
             _isRunning = false;
@@ -183,13 +195,15 @@ namespace Raptor.SDLImp
         public void InjectData<T>(T data) where T : class => throw new NotImplementedException();
 
 
+
         /// <summary>
         /// Gets the data as the given type <typeparamref name="T"/>.
         /// </summary>
         /// <param name="option">Used to pass in options for the <see cref="GetData{T}(int)"/> implementation to process.</param>
         /// <typeparam name="T">The type of data to get.</typeparam>
         /// <returns></returns>
-        public T GetData<T>(int option) where T : class
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        public T? GetData<T>(int option) where T : class
         {
             var ptrContainer = new PointerContainer();
 
@@ -216,15 +230,33 @@ namespace Raptor.SDLImp
         /// </summary>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
             _isRunning = false;
-            _sdl.DestroyRenderer(RendererPointer);
-            _sdl.DestroyWindow(WindowPtr);
+
+            if (!(_sdl is null))
+            {
+                _sdl.DestroyRenderer(RendererPointer);
+                _sdl.DestroyWindow(WindowPtr);
+            }
 
             //Quit SDL sub systems
-            _sdlFonts.Quit();
-            _sdlImage.Quit();
+            if (!(_sdlFonts is null))
+                _sdlFonts.Quit();
 
-            _sdl.Quit();
+            if (!(_sdlImage is null))
+                _sdlImage.Quit();
+
+            if (!(_sdl is null))
+                _sdl.Quit();
         }
         #endregion
 
@@ -233,8 +265,12 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Initializes the engine by setting up SDL.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         private void InitEngine()
         {
+            if (_sdl is null)
+                throw new Exception("The SDL library is not loaded.");
+
             //Initialize SDL
             if (_sdl.Init(SDL.InitVideo) < 0)
             {
@@ -280,11 +316,11 @@ namespace Raptor.SDLImp
                         //Initialize PNG loading
                         var imgFlags = IMGInitFlags.PNG;
 
-                        if ((_sdlImage.Init(imgFlags) > 0 & imgFlags > 0) == false)
+                        if (_sdlImage is null || (_sdlImage.Init(imgFlags) > 0 & imgFlags > 0) == false)
                             throw new Exception($"image could not initialize! \n\nimage Error: {_sdl.GetError()}");
 
                         //Initialize ttf
-                        if (_sdlFonts.Init() == -1)
+                        if (_sdlFonts is null || _sdlFonts.Init() == -1)
                             throw new Exception($"ttf could not initialize! \n\nttf Error: {_sdl.GetError()}");
                     }
                 }
@@ -382,6 +418,9 @@ namespace Raptor.SDLImp
         /// </summary>
         private void UpdateInputStates()
         {
+            if (_sdl is null)
+                return;
+
             while (_sdl.PollEvent(out var e) != 0)
             {
                 if (e.type == EventType.Quit)

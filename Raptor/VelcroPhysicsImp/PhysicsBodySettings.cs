@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Raptor.VelcroPhysicsImp
 {
@@ -12,12 +14,12 @@ namespace Raptor.VelcroPhysicsImp
         /// <summary>
         /// The X vertices of the body's shape.
         /// </summary>
-        public float[] XVertices { get; set; }
+        public ReadOnlyCollection<float> XVertices { get; private set; } = new ReadOnlyCollection<float>(Array.Empty<float>());
 
         /// <summary>
         /// The X vertices of the body's shape.
         /// </summary>
-        public float[] YVertices { get; set; }
+        public ReadOnlyCollection<float> YVertices { get; private set; } = new ReadOnlyCollection<float>(Array.Empty<float>());
 
         /// <summary>
         /// The X coordinate of the body's location.
@@ -53,6 +55,14 @@ namespace Raptor.VelcroPhysicsImp
         /// Gets or sets a value indicating if the body is static and will not move.
         /// </summary>
         public bool IsStatic { get; set; }
+        #endregion
+
+
+        #region Public Methods
+        public void SetXVertices(float[] xVertices) => XVertices = new ReadOnlyCollection<float>(xVertices);
+
+
+        public void SetYVertices(float[] yVertices) => YVertices = new ReadOnlyCollection<float>(yVertices);
         #endregion
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Raptor.Graphics;
+using System;
 using System.Numerics;
 
 namespace Raptor.UI
@@ -12,7 +13,7 @@ namespace Raptor.UI
         #region Private Fields
         private int _elapsedTime;//The amount of time that has elapsed since the last frame in miliseconds.
         private bool _updateText;//Indicates if the text can be updated.  Only updated if the UpdateFrequency value is >= to the elapsed time
-        private GameText _labelText;
+        private GameText? _labelText;
         #endregion
 
 
@@ -53,16 +54,21 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the name of the text item.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+
 
         /// <summary>
         /// Gets or sets the label section of the text item.
         /// </summary>
-        public GameText LabelText
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        public GameText? LabelText
         {
             get => _labelText;
             set
             {
+                if (value is null)
+                    throw new Exception($"The property '{nameof(LabelText)}' value must not be set to null.");
+
                 value.Text += ": ";
                 _labelText = value;
             }
@@ -71,7 +77,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the value section of the text.
         /// </summary>
-        public GameText ValueText { get; set; }
+        public GameText? ValueText { get; set; }
 
         /// <summary>
         /// Gets or sets the position of the text on the graphics surface.
@@ -96,12 +102,32 @@ namespace Raptor.UI
         /// <summary>
         /// Gets the width of the entire text.
         /// </summary>
-        public int Width => LabelText.Width + SectionSpacing + ValueText.Width;
+        public int Width
+        {
+            get
+            {
+                var labelTextWidth = LabelText is null ? 0 : LabelText.Width;
+                var valueTextWidth = ValueText is null ? 0 : ValueText.Width;
+
+
+                return labelTextWidth + SectionSpacing + valueTextWidth;
+            }
+        }
 
         /// <summary>
         /// Gets the height of the entire text item.
         /// </summary>
-        public int Height => LabelText.Height > ValueText.Height ? LabelText.Height : ValueText.Height;
+        public int Height
+        {
+            get
+            {
+                var labelTextHeight = LabelText is null ? 0 : LabelText.Height;
+                var valueTextHeight = ValueText is null ? 0 : ValueText.Height;
+
+
+                return labelTextHeight > valueTextHeight ? labelTextHeight : valueTextHeight;
+            }
+        }
 
         /// <summary>
         /// Gets the location of the right side of the <see cref="UIText"/>.
@@ -158,7 +184,7 @@ namespace Raptor.UI
         /// <param name="text">The text to set the label section to.</param>
         public void SetLabelText(string text)
         {
-            if (_updateText || UpdateFrequency == 0 || IgnoreUpdateFrequency)
+            if (!(LabelText is null) && (_updateText || UpdateFrequency == 0 || IgnoreUpdateFrequency))
             {
                 LabelText.Text = text;
                 _updateText = false;
@@ -172,7 +198,7 @@ namespace Raptor.UI
         /// <param name="text">The text to set the value section to.</param>
         public void SetValueText(string text)
         {
-            if (_updateText || UpdateFrequency == 0 || IgnoreUpdateFrequency)
+            if (!(ValueText is null) && (_updateText || UpdateFrequency == 0 || IgnoreUpdateFrequency))
             {
                 ValueText.Text = text;
                 _updateText = false;
@@ -180,12 +206,17 @@ namespace Raptor.UI
         }
 
 
+
         /// <summary>
         /// Updates the text item. This helps keep the update frequency up to date.
         /// </summary>
         /// <param name="gameTime">The game time of the last frame.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Update(IEngineTiming gameTime)
         {
+            if (gameTime is null)
+                throw new ArgumentNullException(nameof(gameTime), "The game time must not be null.");
+
             _elapsedTime += gameTime.ElapsedEngineTime.Milliseconds;
 
             if (_elapsedTime >= UpdateFrequency)
@@ -200,10 +231,17 @@ namespace Raptor.UI
         /// Render the text item to the screen.
         /// </summary>
         /// <param name="renderer">The renderer to use to render the <see cref="UIText"/>.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(Renderer renderer)
         {
-            renderer.Render(LabelText, Position.X, Position.Y + VerticalLabelOffset);
-            renderer.Render(ValueText, Position.X + LabelText.Width + SectionSpacing, Position.Y + VerticalValueOffset);
+            if (renderer is null)
+                throw new Exception($"The renderer cannot be null.");
+
+            if (!(LabelText is null))
+                renderer.Render(LabelText, Position.X, Position.Y + VerticalLabelOffset);
+
+            if (!(ValueText is null))
+                renderer.Render(ValueText, Position.X + (LabelText is null ? 0 : LabelText.Width) + SectionSpacing, Position.Y + VerticalValueOffset);
         }
         #endregion
     }

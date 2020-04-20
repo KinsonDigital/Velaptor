@@ -10,7 +10,7 @@ namespace Raptor.Content
     public class ContentLoader
     {
         #region Private Fields
-        private readonly IContentLoader _internalLoader;
+        private readonly IContentLoader? _internalLoader;
         #endregion
 
 
@@ -19,8 +19,8 @@ namespace Raptor.Content
         /// Creates a new instance of <see cref="ContentLoader"/>.
         /// USED FOR UNIT TESTING.
         /// </summary>
-        /// <param name="mockedContentLoader">The mocked content loader to inject.</param>
-        public ContentLoader(IContentLoader mockedContentLoader) => _internalLoader = mockedContentLoader;
+        /// <param name="contentLoader">The mocked content loader to inject.</param>
+        public ContentLoader(IContentLoader contentLoader) => _internalLoader = contentLoader;
 
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Raptor.Content
         /// <summary>
         /// The path to the executable game consuming the content being loaded.
         /// </summary>
-        public string GamePath => _internalLoader.GamePath;
+        public string GamePath => _internalLoader is null ? string.Empty : _internalLoader.GamePath;
 
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace Raptor.Content
         /// </summary>
         public string ContentRootDirectory
         {
-            get => _internalLoader.ContentRootDirectory;
-            set => _internalLoader.ContentRootDirectory = value;
+            get => _internalLoader is null ? string.Empty : _internalLoader.ContentRootDirectory;
+            set { if (!(_internalLoader is null)) _internalLoader.ContentRootDirectory = value; }
         }
         #endregion
 
@@ -59,7 +59,16 @@ namespace Raptor.Content
         /// <typeparam name="T">The type of texture to render.</typeparam>
         /// <param name="name">The name of the texture object to render.</param>
         /// <returns></returns>
-        public Texture LoadTexture(string textureName) => new Texture(_internalLoader.LoadTexture<ITexture>(textureName));
+        public Texture? LoadTexture(string textureName)
+        {
+            if (_internalLoader is null)
+                return null;
+
+            var loadedTexture = _internalLoader.LoadTexture<ITexture>(textureName);
+
+
+            return loadedTexture is null ? null : new Texture(loadedTexture);
+        }
 
 
         /// <summary>
@@ -68,7 +77,16 @@ namespace Raptor.Content
         /// <typeparam name="T">The type of text object to render.</typeparam>
         /// <param name="name">The name of the text object to render.</param>
         /// <returns></returns>
-        public GameText LoadText(string textName) => new GameText() { InternalText = _internalLoader.LoadText<IText>(textName) };
+        public GameText? LoadText(string textName)
+        {
+            if (_internalLoader is null)
+                return null;
+
+            return new GameText()
+            {
+                InternalText = _internalLoader.LoadText<IText>(textName)
+            };
+        }
         #endregion
     }
 }
