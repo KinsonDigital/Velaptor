@@ -272,19 +272,19 @@ namespace Raptor.SDLImp
                 throw new Exception("The SDL library is not loaded.");
 
             //Initialize SDL
-            if (_sdl.Init(SDL.SDL_INIT_VIDEO) < 0)
+            if (_sdl.Init(SDL.InitVideo) < 0)
             {
                 throw new Exception($"SDL could not initialize! \n\nError: {_sdl.GetError()}");
             }
             else
             {
                 //Set texture filtering to linear
-                if (_sdl.SetHint(SDL.SDL_HINT_RENDER_SCALE_QUALITY, "0") == SDL_bool.SDL_FALSE)
+                if (_sdl.SetHint(SDL.HintRenderScaleQuality, "0"))
                     throw new Exception("Warning: Linear texture filtering not enabled!");
 
                 //Create window
-                WindowPtr = _sdl.CreateWindow("SDL Tutorial", SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED,
-                    640, 480, WindowFlags.SDL_WINDOW_SHOWN);
+                WindowPtr = _sdl.CreateWindow("SDL Tutorial", SDL.WindowPosCentered, SDL.WindowPosCentered,
+                    640, 480, WindowFlags.WindowShown);
 
                 if (WindowPtr == IntPtr.Zero)
                 {
@@ -293,7 +293,7 @@ namespace Raptor.SDLImp
                 else
                 {
                     //Create vsynced renderer for window
-                    var renderFlags = RendererFlags.SDL_RENDERER_ACCELERATED;
+                    var renderFlags = RendererFlags.RendererAccelerated;
 
                     Renderer = new SDLRenderer();
                     RendererPointer = _sdl.CreateRenderer(WindowPtr, -1, renderFlags);
@@ -314,7 +314,7 @@ namespace Raptor.SDLImp
                         _sdl.SetRenderDrawColor(RendererPointer, 48, 48, 48, 255);
 
                         //Initialize PNG loading
-                        var imgFlags = IMG_InitFlags.IMG_INIT_PNG;
+                        var imgFlags = IMGInitFlags.PNG;
 
                         if (_sdlImage is null || (_sdlImage.Init(imgFlags) > 0 & imgFlags > 0) == false)
                             throw new Exception($"image could not initialize! \n\nimage Error: {_sdl.GetError()}");
@@ -423,32 +423,32 @@ namespace Raptor.SDLImp
 
             while (_sdl.PollEvent(out var e) != 0)
             {
-                if (e.type == EventType.SDL_QUIT)
+                if (e.type == EventType.Quit)
                 {
                     ShutDown();
                 }
-                else if (e.type == EventType.SDL_KEYDOWN)
+                else if (e.type == EventType.KeyDown)
                 {
                     if (!CurrentKeyboardState.Contains(e.key.keysym.sym))
                         CurrentKeyboardState.Add(e.key.keysym.sym);
                 }
-                else if (e.type == EventType.SDL_KEYUP)
+                else if (e.type == EventType.KeyUp)
                 {
                     CurrentKeyboardState.Remove(e.key.keysym.sym);
                 }
-                else if (e.type == EventType.SDL_MOUSEBUTTONDOWN)
+                else if (e.type == EventType.MouseButtonDown)
                 {
                     CurrentLeftMouseButtonState = e.button.button == 1 && e.button.state == 1;
                     CurrentMiddleMouseButtonState = e.button.button == 2 && e.button.state == 1;
                     CurrentRightMouseButtonState = e.button.button == 3 && e.button.state == 1;
                 }
-                else if (e.type == EventType.SDL_MOUSEBUTTONUP)
+                else if (e.type == EventType.MouseButtonUp)
                 {
                     CurrentLeftMouseButtonState = e.button.button == 1 && e.button.state == 1;
                     CurrentMiddleMouseButtonState = e.button.button == 2 && e.button.state == 1;
                     CurrentRightMouseButtonState = e.button.button == 3 && e.button.state == 1;
                 }
-                else if (e.type == EventType.SDL_MOUSEMOTION)
+                else if (e.type == EventType.MouseMotion)
                 {
                     MousePosition = new Vector2(e.button.x, e.button.y);
                 }
