@@ -41,7 +41,7 @@ namespace RaptorTests.Input
             };
 
             //Act
-            var eventArgs = new KeyEventArgs(new KeyCode[] { KeyCode.Left, KeyCode.Right });
+            var eventArgs = new KeyEventArgs(new KeyCode[] { KeyCode.Up, KeyCode.Down });
             var actual = eventArgs.Keys;
 
             //Assert

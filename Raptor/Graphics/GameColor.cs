@@ -76,7 +76,7 @@
         /// Returns the hash code of this object that makes this object unique.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode() => System.HashCode.Combine(Red, Green, Blue, Alpha);
+        public override int GetHashCode() => Red + Green + Blue + Alpha;
         #endregion
     }
 }

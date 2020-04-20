@@ -34,8 +34,6 @@ namespace RaptorTests.Physics
             _mockPhysicsBody.SetupProperty(m => m.AngularDeceleration);
             _mockPhysicsBody.SetupProperty(m => m.LinearVelocityX);
             _mockPhysicsBody.SetupProperty(m => m.LinearVelocityY);
-            _mockPhysicsBody.SetupProperty(m => m.XVertices);
-            _mockPhysicsBody.SetupProperty(m => m.YVertices);
         }
         #endregion
 

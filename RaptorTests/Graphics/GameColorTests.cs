@@ -78,7 +78,7 @@ namespace RaptorTests.Graphics
             var color = new GameColor(4, 1, 2, 3);
 
             //Act & Assert
-            Assert.Equal(1778121426, color.GetHashCode());
+            Assert.Equal(10, color.GetHashCode());
         }
         #endregion
     }
