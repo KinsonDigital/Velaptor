@@ -5,7 +5,7 @@
 
 ### **Changes**
 1. Updated **SDLCore** nuget package from **v0.0.1** to **v0.1.0**
-2. Refactored code according to **Microsofts** FxCop analyzers as well as to adhere to nullable references.
+2. Refactored code according to **Microsofts** FxCop analyzers as well as setting code base to use nullable references.
    * This greatly improves the code base to account for null reference exceptions as well as following better coding standards.
 
 ### **Developer Related Items**
