@@ -125,10 +125,10 @@ namespace Raptor.SDLImp
             //var texturePtr = texture.GetData<PointerContainer>(1).UnpackPointer();
             var texturePtr = IntPtr.Zero;
 
-            _sdl.SetTextureBlendMode(texturePtr, SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            _sdl.SetTextureBlendMode(texturePtr, BlendModes.Blend);
             _sdl.SetTextureColorMod(texturePtr, color.Red, color.Green, color.Blue);
             _sdl.SetTextureAlphaMod(texturePtr, color.Alpha);
-            _sdl.RenderCopyEx(_rendererPtr, texturePtr, ref srcRect, ref destRect, angle, ref textureOrigin, SDL_RendererFlip.SDL_FLIP_NONE);
+            _sdl.RenderCopyEx(_rendererPtr, texturePtr, ref srcRect, ref destRect, angle, ref textureOrigin, RendererFlips.FlipNone);
         }
 
 
@@ -161,7 +161,7 @@ namespace Raptor.SDLImp
             //TODO:  Check for color index values first
             _sdl.SetTextureColorMod(texturePtr, color.Red, color.Green, color.Blue);
             _sdl.SetTextureAlphaMod(texturePtr, color.Alpha);
-            _sdl.SetTextureBlendMode(texturePtr, SDL_BlendMode.SDL_BLENDMODE_BLEND);
+            _sdl.SetTextureBlendMode(texturePtr, BlendModes.Blend);
 
             var srcRect = new SDLRect()
             {
@@ -222,7 +222,7 @@ namespace Raptor.SDLImp
             //var texturePtr = texture.GetData<PointerContainer>(1).UnpackPointer();
             var texturePtr = IntPtr.Zero;
 
-            _sdl.RenderCopyEx(_rendererPtr, texturePtr, ref srcRect, ref destRect, 0.0, ref textureOrigin, SDL_RendererFlip.SDL_FLIP_NONE);
+            _sdl.RenderCopyEx(_rendererPtr, texturePtr, ref srcRect, ref destRect, 0.0, ref textureOrigin, RendererFlips.FlipNone);
         }
 
 

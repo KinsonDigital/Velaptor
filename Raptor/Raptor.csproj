@@ -39,7 +39,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.0.1" />
+    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.1.0" />
   </ItemGroup>
 
   

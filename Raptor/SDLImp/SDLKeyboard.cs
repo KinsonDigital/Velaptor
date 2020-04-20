@@ -23,42 +23,42 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Gets a value indicating if the caps lock key is on.
         /// </summary>
-        public bool CapsLockOn => (_sdl.GetModState() & Keymod.KMOD_CAPS) == Keymod.KMOD_CAPS;
+        public bool CapsLockOn => (_sdl.GetModState() & Keymods.Caps) == Keymods.Caps;
 
         /// <summary>
         /// Gets a value indicating if the numlock key is on.
         /// </summary>
-        public bool NumLockOn => (_sdl.GetModState() & Keymod.KMOD_NUM) == Keymod.KMOD_NUM;
+        public bool NumLockOn => (_sdl.GetModState() & Keymods.Num) == Keymods.Num;
 
         /// <summary>
         /// Gets a value indicating if the left shift key is being held down.
         /// </summary>
-        public bool IsLeftShiftDown => (_sdl.GetModState() & Keymod.KMOD_LSHIFT) == Keymod.KMOD_LSHIFT;
+        public bool IsLeftShiftDown => (_sdl.GetModState() & Keymods.LShift) == Keymods.LShift;
 
         /// <summary>
         /// Gets a value indicating if the right shift key is being held down.
         /// </summary>
-        public bool IsRightShiftDown => (_sdl.GetModState() & Keymod.KMOD_RSHIFT) == Keymod.KMOD_RSHIFT;
+        public bool IsRightShiftDown => (_sdl.GetModState() & Keymods.RShift) == Keymods.RShift;
 
         /// <summary>
         /// Gets a value indicating if the left control key is being held down.
         /// </summary>
-        public bool IsLeftCtrlDown => (_sdl.GetModState() & Keymod.KMOD_LCTRL) == Keymod.KMOD_LCTRL;
+        public bool IsLeftCtrlDown => (_sdl.GetModState() & Keymods.LCtrl) == Keymods.LCtrl;
 
         /// <summary>
         /// Gets a value indicating if the right control key is being held down.
         /// </summary>
-        public bool IsRightCtrlDown => (_sdl.GetModState() & Keymod.KMOD_RCTRL) == Keymod.KMOD_RCTRL;
+        public bool IsRightCtrlDown => (_sdl.GetModState() & Keymods.RCtrl) == Keymods.RCtrl;
 
         /// <summary>
         /// Gets a value indicating if the left alt key is being held down.
         /// </summary>
-        public bool IsLeftAltDown => (_sdl.GetModState() & Keymod.KMOD_LALT) == Keymod.KMOD_LALT;
+        public bool IsLeftAltDown => (_sdl.GetModState() & Keymods.LAlt) == Keymods.LAlt;
 
         /// <summary>
         /// Gets a value indicating if the right alt key is being held down.
         /// </summary>
-        public bool IsRightAltDown => (_sdl.GetModState() & Keymod.KMOD_RALT) == Keymod.KMOD_RALT;
+        public bool IsRightAltDown => (_sdl.GetModState() & Keymods.RAlt) == Keymods.RAlt;
         #endregion
 
 
