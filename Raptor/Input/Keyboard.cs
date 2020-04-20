@@ -11,7 +11,7 @@ namespace Raptor.Input
     /// </summary>
     public class Keyboard
     {
-        #region Pivate Fields
+        #region Private Fields
         /// <summary>
         /// The letter keys including the space bar.
         /// </summary>
