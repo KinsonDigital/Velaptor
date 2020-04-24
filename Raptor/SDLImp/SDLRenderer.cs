@@ -11,7 +11,7 @@ namespace Raptor.SDLImp
     /// <summary>
     /// Provides methods for rendering SDL textures, text and primitives to the screen.
     /// </summary>
-    public class SDLRenderer : IRenderer
+    internal class SDLRenderer : IRenderer
     {
         #region Private Fields
         private readonly SDL? _sdl = null;
