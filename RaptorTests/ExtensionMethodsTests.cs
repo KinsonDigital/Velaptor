@@ -9,6 +9,7 @@ namespace RaptorTests
     /// </summary>
     public class ExtensionMethodsTests
     {
+        #region Method Tests
         [Fact]
         public void ForcePositive_WhenUsingNegativeValue_ReturnsPositiveValue()
         {
@@ -79,5 +80,6 @@ namespace RaptorTests
             Assert.Equal(expected.X, actual.X);
             Assert.Equal(expected.Y, actual.Y);
         }
+        #endregion
     }
 }
