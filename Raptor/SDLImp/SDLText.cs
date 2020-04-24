@@ -8,7 +8,7 @@ namespace Raptor.SDLImp
     /// <summary>
     /// SDL text that can be rendered to the graphics surface.
     /// </summary>
-    public class SDLText : IText
+    internal class SDLText : IText
     {
         #region Private Fields
         private readonly SDL? _sdl = null;
