@@ -7,7 +7,7 @@ namespace RaptorTests
     /// <summary>
     /// Unit tests to test the <see cref="ExtensionMethods"/> class.
     /// </summary>
-    public class ExtensionMethodTests
+    public class ExtensionMethodsTests
     {
         [Fact]
         public void ForcePositive_WhenUsingNegativeValue_ReturnsPositiveValue()
