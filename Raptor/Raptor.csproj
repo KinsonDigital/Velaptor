@@ -35,11 +35,20 @@
     <SDLPath>$(ProjectDir)Libs\SDL\$(OSPlatform)\</SDLPath>
     <Win32BitNativePath>\runtimes\win-x86\native</Win32BitNativePath>
     <Win64BitNativePath>\runtimes\win-x64\native</Win64BitNativePath>
+
+    <!-- Links that explain the Pkg<Package_Name> MSBuild property works
+        1. https://duanenewman.net/blog/post/a-better-way-to-override-references-with-packagereference/
+        2. https://www.patriksvensson.se/2019/09/how-to-find-a-nuget-package-path-from-msbuild
+     -->
+    
+    <SDLCorePackagePath>$(PkgKinsonDigital_SDLCore_Windows)\</SDLCorePackagePath>
+    <SDLCoreLibPath>$(SDLCorePackagePath)lib\$(TargetFramework)\SDLCore.dll</SDLCoreLibPath>
+    <SDLCoreRuntimesDir>$(SDLCorePackagePath)runtimes\</SDLCoreRuntimesDir>
   </PropertyGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.1.1" />
+    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.1.1" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -47,44 +56,51 @@
   </ItemGroup>
 
   
+  <!--TODO: Need to find a way to have different nuget packages for other operating systems such as linux and MacOS-->
+
+  
+  <!--COPY THE SDLCore LIBRARY TO THE OUTPUT FOLDER-->
+  <Target Name="Copy-SDLCore-Lib-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
+    <Copy SourceFiles="$(SDLCoreLibPath)" DestinationFolder="$(TargetDir)" />
+  </Target>
+  
+  
+  <!--COPY NATIVE SDL LIBRARIES FROM LOCAL KinsonDigital.SDLCore.Windows NUGET CACHE TO OUTPUT FOLDER-->
+  <Target Name="Copy-Nuget-Package-Native-Libs-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
+    <!--If the runtimes directory does not exist, create one-->
+    <MakeDir Directories="$(TargetDir)\runtimes" Condition="!Exists('$(TargetDir)runtimes')" />
+
+    <Exec Command="xcopy &quot;$(SDLCoreRuntimesDir)*.dll&quot; &quot;$(TargetDir)runtimes&quot; /Y /E" />
+  </Target>
+
+
+  <!--ADD SDLCore LIBRARY TO NUGET PACKAGE-->
+  <Target Name="Add-SDLCore-Lib" AfterTargets="Build">
+    <ItemGroup>
+      <Content Include="$(TargetDir)SDLCore.dll" Pack="true" PackagePath="\lib\$(TargetFramework)" />
+    </ItemGroup>
+  </Target>
+  
+  
   <!--ADD VELCRO PHYSICS LIBRARY TO NUGET PACKAGE-->
-  <Target Name="AddVelcroPhysicsLib" AfterTargets="Build">
+  <Target Name="Add-Velcro-Physics-Lib" AfterTargets="Build">
     <ItemGroup>
       <Content Include="$(ProjectDir)Libs\VelcroPhysics.dll" Pack="true" PackagePath="\lib\$(TargetFramework)" />
     </ItemGroup>
   </Target>
 
 
-  <Target Name="Add-Native-Windows-x86-SDL-Libraries" AfterTargets="Build">
+  <!--TODO: Enable this once the SDLCore library contains native x86 SDL libraries-->
+  <!--<Target Name="Add-Native-Windows-x86-SDL-Libraries" AfterTargets="Build">
     <ItemGroup>
-      <!--ADD THE MAIN SDL LIBRARY-->
-      <Content Include="$(SDLPath)x86\SDL2.dll" Pack="true" PackagePath="$(Win32BitNativePath)" />
-      
-      <!--ADD THE SDL IMAGE LIBRARIES-->
-      <Content Include="$(SDLPath)x86\Image\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)" />
-
-      <!--ADD THE SDL MIXER LIBRARIES-->
-      <Content Include="$(SDLPath)x86\Mixer\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)" />
-
-      <!--ADD THE SDL TTF(FONT) LIBRARIES-->
-      <Content Include="$(SDLPath)x86\TTF\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)" />
+      <Content Include="$(TargetDir)\runtimes\win-x86\native\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)"/>
     </ItemGroup>
-  </Target>
+  </Target>-->
 
 
   <Target Name="Add-Native-Windows-x64-SDL-Libraries" AfterTargets="Build">
     <ItemGroup>
-      <!--ADD THE MAIN SDL LIBRARY-->
-      <Content Include="$(SDLPath)x64\SDL2.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
-
-      <!--ADD THE SDL IMAGE LIBRARIES-->
-      <Content Include="$(SDLPath)x64\Image\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
-
-      <!--ADD THE SDL MIXER LIBRARIES-->
-      <Content Include="$(SDLPath)x64\Mixer\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
-
-      <!--ADD THE SDL TTF(FONT) LIBRARIES-->
-      <Content Include="$(SDLPath)x64\TTF\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
+      <Content Include="$(TargetDir)\runtimes\win-x64\native\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
     </ItemGroup>
   </Target>
 
@@ -94,4 +110,11 @@
       <HintPath>Libs\VelcroPhysics.dll</HintPath>
     </Reference>
   </ItemGroup>
+  
+
+  <Target Name="Print-Paths" AfterTargets="Build">
+    <Exec Command="echo &quot;Nuget Package Path: ==&gt; $(SDLCorePackagePath)&quot;" />
+    <Exec Command="echo &quot;Nuget Package Lib: ==&gt; $(SDLCoreLibPath)&quot;" />
+    <Exec Command="echo &quot;Nuget Package Runtimes: ==&gt; $(SDLCoreRuntimesDir)&quot;" />
+  </Target>
 </Project>
