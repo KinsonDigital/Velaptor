@@ -41,9 +41,9 @@
         2. https://www.patriksvensson.se/2019/09/how-to-find-a-nuget-package-path-from-msbuild
      -->
     
-    <SDLCorePackagePath>$(PkgKinsonDigital_SDLCore_Windows)\</SDLCorePackagePath>
-    <SDLCoreLibPath>$(SDLCorePackagePath)lib\$(TargetFramework)\SDLCore.dll</SDLCoreLibPath>
-    <SDLCoreRuntimesDir>$(SDLCorePackagePath)runtimes\</SDLCoreRuntimesDir>
+    <SDLCorePackageDir>$(PkgKinsonDigital_SDLCore_Windows)\</SDLCorePackageDir>
+    <SDLCoreLibPath>$(SDLCorePackageDir)lib\$(TargetFramework)\SDLCore.dll</SDLCoreLibPath>
+    <SDLCoreRuntimesDir>$(SDLCorePackageDir)runtimes\</SDLCoreRuntimesDir>
   </PropertyGroup>
 
 
@@ -113,8 +113,8 @@
   
 
   <Target Name="Print-Paths" AfterTargets="Build">
-    <Exec Command="echo &quot;Nuget Package Path: ==&gt; $(SDLCorePackagePath)&quot;" />
+    <Exec Command="echo &quot;Nuget Package Directory: ==&gt; $(SDLCorePackageDir)&quot;" />
     <Exec Command="echo &quot;Nuget Package Lib: ==&gt; $(SDLCoreLibPath)&quot;" />
-    <Exec Command="echo &quot;Nuget Package Runtimes: ==&gt; $(SDLCoreRuntimesDir)&quot;" />
+    <Exec Command="echo &quot;Nuget Package Runtimes Directory: ==&gt; $(SDLCoreRuntimesDir)&quot;" />
   </Target>
 </Project>
