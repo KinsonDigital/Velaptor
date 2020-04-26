@@ -10,7 +10,7 @@ namespace Raptor.SDLImp
     /// <summary>
     /// Loads and unloads content using SDL.
     /// </summary>
-    public class SDLContentLoader : IContentLoader
+    internal class SDLContentLoader : IContentLoader
     {
         #region Private Fields
         private SDL? _sdl = null;

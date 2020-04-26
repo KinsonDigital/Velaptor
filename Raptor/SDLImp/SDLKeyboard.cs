@@ -10,7 +10,7 @@ namespace Raptor.SDLImp
     /// <summary>
     /// Provides functionality to interact with the keyboard using SDL.
     /// </summary>
-    public class SDLKeyboard : IKeyboard
+    internal class SDLKeyboard : IKeyboard
     {
         #region Private Fields
         private SDL? _sdl = null;

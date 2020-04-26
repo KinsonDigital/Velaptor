@@ -8,7 +8,7 @@ namespace Raptor.SDLImp
     /// <summary>
     /// Provides mouse input using SDL.
     /// </summary>
-    public class SDLMouse : IMouse
+    internal class SDLMouse : IMouse
     {
         #region Private Fields
         private readonly SDL? _sdl = null;
