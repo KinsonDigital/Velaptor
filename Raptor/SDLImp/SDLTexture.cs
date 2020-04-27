@@ -7,7 +7,7 @@ namespace Raptor.SDLImp
     /// <summary>
     /// Represents a SDL texture that can be renderered to a graphics surface.
     /// </summary>
-    public class SDLTexture : ITexture
+    internal class SDLTexture : ITexture
     {
         #region Private Fields
         private readonly SDL? _sdl = null;

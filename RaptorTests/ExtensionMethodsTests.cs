@@ -7,11 +7,13 @@ namespace RaptorTests
     /// <summary>
     /// Unit tests to test the <see cref="ExtensionMethods"/> class.
     /// </summary>
-    public class ExtensionMethodTests
+    public class ExtensionMethodsTests
     {
+        #region Method Tests
         [Fact]
         public void ForcePositive_WhenUsingNegativeValue_ReturnsPositiveValue()
         {
+            //Act & Assert
             Assert.Equal(123f, (-123f).ForcePositive());
         }
 
@@ -19,6 +21,7 @@ namespace RaptorTests
         [Fact]
         public void ForcePositive_WhenUsingPositiveValue_ReturnsPositiveValue()
         {
+            //Act & Assert
             Assert.Equal(123f, 123f.ForcePositive());
         }
 
@@ -26,6 +29,7 @@ namespace RaptorTests
         [Fact]
         public void ForceNegative_WhenUsingPositiveValue_ReturnsNegativeValue()
         {
+            //Act & Assert
             Assert.Equal(-123f, 123f.ForceNegative());
         }
 
@@ -33,6 +37,7 @@ namespace RaptorTests
         [Fact]
         public void ForceNegative_WhenUsingNegativeValue_ReturnsNegativeValue()
         {
+            //Act & Assert
             Assert.Equal(-123f, (-123f).ForceNegative());
         }
 
@@ -40,7 +45,7 @@ namespace RaptorTests
         [Fact]
         public void ToRadians_WhenInvoking_ReturnsCorrectValue()
         {
-            //Act/Assert
+            //Act & Assert
             Assert.Equal(70710.06f, 1234.1234f.ToDegrees());
         }
 
@@ -79,5 +84,6 @@ namespace RaptorTests
             Assert.Equal(expected.X, actual.X);
             Assert.Equal(expected.Y, actual.Y);
         }
+        #endregion
     }
 }

@@ -8,7 +8,7 @@ namespace Raptor.SDLImp
     /// <summary>
     /// Provides the ability to draw frames around a physics body shape for debugging purposes.
     /// </summary>
-    public class SDLDebugDraw : IDebugDraw
+    internal class SDLDebugDraw : IDebugDraw
     {
         #region Public Methods
         /// <summary>

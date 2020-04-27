@@ -12,7 +12,7 @@ namespace Raptor.SDLImp
     /// Provides the core of a game engine which facilitates how the engine starts, stops,
     /// manages time and how the game loop runs.
     /// </summary>
-    public class SDLEngineCore : IEngineCore
+    internal class SDLEngineCore : IEngineCore
     {
         #region Public Events
         public event EventHandler<OnUpdateEventArgs>? OnUpdate;
