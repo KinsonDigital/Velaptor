@@ -1,5 +1,24 @@
 # **Raptor Release Notes**
 
+## **Version 0.7.0**
+
+### **Changes**
+
+1. Changed the visible scope of all **SDL** implementation classes from **public** to **internal**.
+   * This is a breaking change
+2. Updated **SDLCore** nuget package library from **v0.1.0** to **v0.1.1**
+
+### **Developer Related Items**
+
+2. Changed how **SDL** files are dealt with in the build and nuget packaging process.
+   * Removes dependency on the native **SDL** libraries in **Raptor** code base and relies on **SDLCore** nuget package native **SDL** libraries.
+3. Added a file to the code base for other developers to know how to contribute to the project.
+   * Refer to the **CONTRIBUTING.md** file
+4. Improved **YAML** files for the **develop** and **production** build pipelines.
+   * This involved splitting various build tasks intro proper states and jobs.
+5. Cleaned up **ExtensionMethodTests** file.
+
+---
 
 ## **Version 0.6.0**
 
