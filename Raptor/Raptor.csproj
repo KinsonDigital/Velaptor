@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Raptor</RootNamespace>
@@ -48,7 +48,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.1.1" GeneratePathProperty="true" />
+    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.3.0" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
