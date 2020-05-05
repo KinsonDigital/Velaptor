@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SDLCore;
+using SDLKeyCode = SDLCore.KeyCode;
+using RaptorKeyCode = Raptor.Input.KeyCode;
 
 namespace Raptor.SDLImp
 {
@@ -14,8 +16,8 @@ namespace Raptor.SDLImp
     {
         #region Private Fields
         private SDL? _sdl = null;
-        private readonly List<Keycode> _currentStateKeys = new List<Keycode>();
-        private readonly List<Keycode> _prevStateKeys = new List<Keycode>();
+        private readonly List<SDLKeyCode> _currentStateKeys = new List<SDLKeyCode>();
+        private readonly List<SDLKeyCode> _prevStateKeys = new List<SDLKeyCode>();
         #endregion
 
 
@@ -95,7 +97,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="keys">The list of key codes to check.</param>
         /// <returns></returns>
-        public bool AreKeysDown(KeyCode[] keys) => keys.Any(k => _currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(k)));
+        public bool AreKeysDown(RaptorKeyCode[] keys) => keys.Any(k => _currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(k)));
 
 
         /// <summary>
@@ -103,7 +105,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyDown(KeyCode key) => _currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key));
+        public bool IsKeyDown(RaptorKeyCode key) => _currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key));
 
 
         /// <summary>
@@ -111,7 +113,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyUp(KeyCode key) => !IsKeyDown(key);
+        public bool IsKeyUp(RaptorKeyCode key) => !IsKeyDown(key);
 
 
         /// <summary>
@@ -119,7 +121,7 @@ namespace Raptor.SDLImp
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyPressed(KeyCode key) => !_currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key)) &&
+        public bool IsKeyPressed(RaptorKeyCode key) => !_currentStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key)) &&
             _prevStateKeys.Contains(KeyboardKeyMapper.ToSDLKeyCode(key));
 
 
@@ -127,14 +129,14 @@ namespace Raptor.SDLImp
         /// Returns all of the currently pressed keys of the keyboard for the current frame.
         /// </summary>
         /// <returns></returns>
-        public KeyCode[] GetCurrentPressedKeys() => KeyboardKeyMapper.ToStandardKeyCodes(_currentStateKeys.ToArray());
+        public RaptorKeyCode[] GetCurrentPressedKeys() => KeyboardKeyMapper.ToStandardKeyCodes(_currentStateKeys.ToArray());
 
 
         /// <summary>
         /// Returns all of the previously pressed keys of the keyborad from the last frame.
         /// </summary>
         /// <returns></returns>
-        public KeyCode[] GetPreviousPressedKeys() => KeyboardKeyMapper.ToStandardKeyCodes(_prevStateKeys.ToArray());
+        public RaptorKeyCode[] GetPreviousPressedKeys() => KeyboardKeyMapper.ToStandardKeyCodes(_prevStateKeys.ToArray());
 
 
         /// <summary>

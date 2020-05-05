@@ -2,7 +2,7 @@
 using SDLCore;
 using System.Collections.Generic;
 using System.Linq;
-using SDLKeyCode = SDLCore.Keycode;
+using SDLKeyCode = SDLCore.KeyCode;
 using RaptorKeyCode = Raptor.Input.KeyCode;
 
 namespace Raptor.SDLImp
@@ -161,7 +161,7 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Holds the mappings of standard key codes to SDL key codes.
         /// </summary>
-        public static Dictionary<KeyCode, Keycode> StandardToSDLMappings => new Dictionary<KeyCode, Keycode>()
+        public static Dictionary<RaptorKeyCode, SDLKeyCode> StandardToSDLMappings => new Dictionary<RaptorKeyCode, SDLKeyCode>()
         {
             { RaptorKeyCode.None, SDLKeyCode.Unknown },
             { RaptorKeyCode.Back, SDLKeyCode.Backspace},
@@ -306,12 +306,12 @@ namespace Raptor.SDLImp
 
         #region Public Methods
         /// <summary>
-        /// Converts the given <paramref name="key"/> of type <see cref="SDL.SDL_Keycode"/> to 
-        /// the keycode of type <see cref="KeyCode"/>.
+        /// Converts the given <paramref name="key"/> of type <see cref="SDLCore.KeyCode"/> to 
+        /// the keycode of type <see cref="Raptor.Input.KeyCode"/>.
         /// </summary>
         /// <param name="key">The SDL key code used to map to the standard key code.</param>
         /// <returns></returns>
-        public static KeyCode ToStandardKeyCode(Keycode key)
+        public static RaptorKeyCode ToStandardKeyCode(SDLKeyCode key)
         {
             //Need to recogize the SDLK_RETURN and SDLK_KP_ENTER keys as the same RaptorKeyCode.Enter key code
             if (key == SDLKeyCode.Return || key == SDLKeyCode.KeypadEnter)
@@ -323,12 +323,12 @@ namespace Raptor.SDLImp
 
 
         /// <summary>
-        /// Converts the given <paramref name="keys"/> of type <see cref="Keycode"/> to 
-        /// the keycode of type <see cref="KeyCode"/>.
+        /// Converts the given <paramref name="keys"/> of type <see cref="SDLCore.KeyCode"/> to 
+        /// the keycode of type <see cref="Raptor.Input.KeyCode"/>.
         /// </summary>
         /// <param name="key">The SDL key codes used to map to the standard key codes.</param>
         /// <returns></returns>
-        public static KeyCode[] ToStandardKeyCodes(Keycode[] keys)
+        public static RaptorKeyCode[] ToStandardKeyCodes(SDLKeyCode[] keys)
         {
             return keys.Select(k =>
             {
@@ -346,20 +346,20 @@ namespace Raptor.SDLImp
 
         /// <summary>
         /// Converts the given <paramref name="standardKeyCode"/> of type <see cref="KeyCode"/> to
-        /// the keycode of type <see cref="Keycode"/>.
+        /// the keycode of type <see cref="SDLCore.KeyCode"/>.
         /// </summary>
         /// <param name="standardKeyCode">The standard key code used to map to the SDL key code.</param>
         /// <returns></returns>
-        public static Keycode ToSDLKeyCode(KeyCode standardKeyCode) => StandardToSDLMappings[standardKeyCode];
+        public static SDLKeyCode ToSDLKeyCode(RaptorKeyCode standardKeyCode) => StandardToSDLMappings[standardKeyCode];
 
 
         /// <summary>
         /// Converts the given <paramref name="keys"/> of type <see cref="KeyCode"/> to
-        /// the keycode of type <see cref="Keycode"/>.
+        /// the keycode of type <see cref="SDLCore.KeyCode"/>.
         /// </summary>
         /// <param name="key">The standard key codes used to map to the SDL key code.</param>
         /// <returns></returns>
-        public static Keycode[] ToSDLKeyCodes(KeyCode[] keys) => (from k in keys select ToSDLKeyCode(k)).ToArray();
+        public static SDLKeyCode[] ToSDLKeyCodes(RaptorKeyCode[] keys) => (from k in keys select ToSDLKeyCode(k)).ToArray();
         #endregion
     }
 }

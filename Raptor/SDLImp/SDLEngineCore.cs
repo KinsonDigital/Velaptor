@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using RaptorKeyCode = Raptor.Input.KeyCode;
+using SDLKeyCode = SDLCore.KeyCode;
 
 namespace Raptor.SDLImp
 {
@@ -122,12 +124,12 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Gets or sets the current state of the keyboard for the current frame.
         /// </summary>
-        internal static List<Keycode> CurrentKeyboardState { get; set; } = new List<Keycode>();
+        internal static List<SDLKeyCode> CurrentKeyboardState { get; set; } = new List<SDLKeyCode>();
 
         /// <summary>
         /// Gets or sets the previous state of the keyboard for the previous frame.
         /// </summary>
-        internal static List<Keycode> PreviousKeyboardState { get; set; } = new List<Keycode>();
+        internal static List<SDLKeyCode> PreviousKeyboardState { get; set; } = new List<SDLKeyCode>();
 
         /// <summary>
         /// Gets the current state of the left mouse button.
