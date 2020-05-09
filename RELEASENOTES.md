@@ -1,5 +1,21 @@
 # **Raptor Release Notes**
 
+## **Version 0.8.0**
+
+### **New**
+
+1. Setup library to use native **x86** **SDL** libraries
+
+### **Changes**
+
+1. Updated **SDLCore** library from **v0.1.1** to **v0.3.0**
+
+### **Developer Related Items**
+
+1. Updated **FxCopAnalyzers** library from version **v2.9.8** to **v3.0.0**.
+
+---
+
 ## **Version 0.7.0**
 
 ### **Changes**
