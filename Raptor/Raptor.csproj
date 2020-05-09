@@ -12,9 +12,9 @@
     <Copyright>Copyright ©2020 Kinson Digital</Copyright>
     <PackageTags>raptor 2D game games framework</PackageTags>
     <Configurations>Debug-Win;Release-Win</Configurations>
-    <Version>0.7.0</Version>
-    <AssemblyVersion>0.7.0</AssemblyVersion>
-    <FileVersion>0.7.0</FileVersion>
+    <Version>0.8.0</Version>
+    <AssemblyVersion>0.8.0</AssemblyVersion>
+    <FileVersion>0.8.0</FileVersion>
   </PropertyGroup>
 
 
@@ -48,8 +48,8 @@
 
 
   <ItemGroup>
-    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.1.1" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.3.0" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -90,14 +90,15 @@
   </Target>
 
 
-  <!--TODO: Enable this once the SDLCore library contains native x86 SDL libraries-->
-  <!--<Target Name="Add-Native-Windows-x86-SDL-Libraries" AfterTargets="Build">
+  <!--Add native x86 SDL libraries to nuget package-->
+  <Target Name="Add-Native-Windows-x86-SDL-Libraries" AfterTargets="Build">
     <ItemGroup>
       <Content Include="$(TargetDir)\runtimes\win-x86\native\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)"/>
     </ItemGroup>
-  </Target>-->
+  </Target>
 
 
+  <!--Add native x64 SDL libraries to nuget package-->
   <Target Name="Add-Native-Windows-x64-SDL-Libraries" AfterTargets="Build">
     <ItemGroup>
       <Content Include="$(TargetDir)\runtimes\win-x64\native\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
