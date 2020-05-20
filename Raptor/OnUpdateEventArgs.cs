@@ -3,7 +3,7 @@
 namespace Raptor
 {
     /// <summary>
-    /// Holds information about the <see cref="IEngineEvents.OnUpdate"/> event.
+    /// Holds information about the <see cref="IGameEvents.OnUpdate"/> event.
     /// </summary>
     public class OnUpdateEventArgs : EventArgs
     {
@@ -11,7 +11,7 @@ namespace Raptor
         /// <summary>
         /// Holds elapsed time information of when the game loop last ran.
         /// </summary>
-        public IEngineTiming EngineTime { get; set; }
+        public IGameTiming EngineTime { get; set; }
         #endregion
 
 
@@ -20,7 +20,7 @@ namespace Raptor
         /// Creates a new instance of <see cref="OnUpdateEventArgs"/>.
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
-        public OnUpdateEventArgs(IEngineTiming engineTime) => EngineTime = engineTime;
+        public OnUpdateEventArgs(IGameTiming engineTime) => EngineTime = engineTime;
         #endregion
     }
 }

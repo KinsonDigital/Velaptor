@@ -4,7 +4,7 @@ using System;
 namespace Raptor
 {
     /// <summary>
-    /// Holds information about the <see cref="IEngineEvents.OnRender"/> event.
+    /// Holds information about the <see cref="IGameEvents.OnRender"/> event.
     /// </summary>
     public class OnRenderEventArgs : EventArgs
     {

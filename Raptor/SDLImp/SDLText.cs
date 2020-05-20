@@ -65,7 +65,7 @@ namespace Raptor.SDLImp
                     _sdl.DestroyTexture(_texturePointer);
 
                 //Create a texture from the surface
-                _texturePointer = _sdl.CreateTextureFromSurface(SDLEngineCore.RendererPointer, surfacePtr);
+                _texturePointer = _sdl.CreateTextureFromSurface(SDLGameCore.RendererPointer, surfacePtr);
 
                 _sdl.FreeSurface(surfacePtr);
             }

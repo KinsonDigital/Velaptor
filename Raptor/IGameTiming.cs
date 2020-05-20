@@ -3,20 +3,20 @@
 namespace Raptor
 {
     /// <summary>
-    /// Represents the timing of a game engine.
+    /// Holds timing information for a game loop.
     /// </summary>
-    public interface IEngineTiming
+    public interface IGameTiming
     {
         #region Props
         /// <summary>
-        /// The total engine time that has passed.
+        /// The total time that has passed.
         /// </summary>
-        TimeSpan TotalEngineTime { get; set; }
+        TimeSpan TotalTime { get; set; }
 
         /// <summary>
         /// The total time that has passed for the current frame.
         /// </summary>
-        TimeSpan ElapsedEngineTime { get; set; }
+        TimeSpan ElapsedTime { get; set; }
         #endregion
     }
 }

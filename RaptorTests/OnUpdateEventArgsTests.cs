@@ -14,7 +14,7 @@ namespace RaptorTests
         public void Ctor_WhenInvoking_SetsRendererProp()
         {
             //Arrange
-            var mockRenderer = new Mock<IEngineTiming>();
+            var mockRenderer = new Mock<IGameTiming>();
             var expected = mockRenderer.Object;
             var eventArgs = new OnUpdateEventArgs(mockRenderer.Object);
 
@@ -32,9 +32,9 @@ namespace RaptorTests
         public void Renderer_WhenGettingAndSettingValue_ReturnsCorrectValue()
         {
             //Arrange
-            var mockRendererForCtor = new Mock<IEngineTiming>();
+            var mockRendererForCtor = new Mock<IGameTiming>();
             var eventArgs = new OnUpdateEventArgs(mockRendererForCtor.Object);
-            var mockRendererForProp = new Mock<IEngineTiming>();
+            var mockRendererForProp = new Mock<IGameTiming>();
             var expected = mockRendererForProp.Object;
 
             //Act

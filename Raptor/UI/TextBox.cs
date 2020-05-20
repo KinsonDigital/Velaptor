@@ -107,7 +107,7 @@ namespace Raptor.UI
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Update(EngineTime engineTime)
+        public void Update(GameTime engineTime)
         {
             if (engineTime is null)
                 throw new ArgumentNullException(nameof(engineTime), "The engine time must not be null.");
@@ -116,7 +116,7 @@ namespace Raptor.UI
 
             ProcessKeys();
 
-            _cursorElapsedMilliseconds += engineTime.ElapsedEngineTime.Milliseconds;
+            _cursorElapsedMilliseconds += engineTime.ElapsedTime.Milliseconds;
 
             if (_cursorElapsedMilliseconds >= 500)
             {

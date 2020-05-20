@@ -14,7 +14,7 @@ namespace Raptor.SDLImp
     /// Provides the core of a game engine which facilitates how the engine starts, stops,
     /// manages time and how the game loop runs.
     /// </summary>
-    internal class SDLEngineCore : IEngineCore
+    internal class SDLGameCore : IGameCore
     {
         #region Public Events
         public event EventHandler<OnUpdateEventArgs>? OnUpdate;
@@ -38,9 +38,9 @@ namespace Raptor.SDLImp
 
         #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="SDLEngineCore"/>.
+        /// Creates a new instance of <see cref="SDLGameCore"/>.
         /// </summary>
-        public SDLEngineCore()
+        public SDLGameCore()
         {
             //TODO: Add code here to load the SDL libraries using library loaders
         }
@@ -155,9 +155,9 @@ namespace Raptor.SDLImp
 
         #region Public Methods
         /// <summary>
-        /// Starts the engine.
+        /// Starts the core.
         /// </summary>
-        public void StartEngine()
+        public void StartCore()
         {
             InitEngine();
             OnInitialize?.Invoke(this, new EventArgs());
@@ -166,9 +166,9 @@ namespace Raptor.SDLImp
 
 
         /// <summary>
-        /// Stops the engine.
+        /// Stops the core.
         /// </summary>
-        public void StopEngine()
+        public void StopCore()
         {
             _timer.Stop();
             _isRunning = false;
@@ -219,7 +219,7 @@ namespace Raptor.SDLImp
             }
             else
             {
-                throw new Exception($"Incorrect {nameof(option)} parameter in '{nameof(SDLEngineCore)}.{nameof(GetData)}()'");
+                throw new Exception($"Incorrect {nameof(option)} parameter in '{nameof(SDLGameCore)}.{nameof(GetData)}()'");
             }
 
 
@@ -228,7 +228,7 @@ namespace Raptor.SDLImp
 
 
         /// <summary>
-        /// Disposes of the <see cref="SDLEngineCore"/>.
+        /// Disposes of the <see cref="SDLGameCore"/>.
         /// </summary>
         public void Dispose()
         {
@@ -347,10 +347,10 @@ namespace Raptor.SDLImp
                 {
                     if (_timer.Elapsed.TotalMilliseconds >= _targetFrameRate)
                     {
-                        var engineTime = new EngineTime()
+                        var engineTime = new GameTime()
                         {
-                            ElapsedEngineTime = _timer.Elapsed,
-                            TotalEngineTime = _timer.Elapsed
+                            ElapsedTime = _timer.Elapsed,
+                            TotalTime = _timer.Elapsed
                         };
 
                         OnUpdate?.Invoke(this, new OnUpdateEventArgs(engineTime));
@@ -377,10 +377,10 @@ namespace Raptor.SDLImp
 
                     _lastFrameTime = currentFrameTime;
 
-                    var engineTime = new EngineTime()
+                    var engineTime = new GameTime()
                     {
-                        ElapsedEngineTime = _timer.Elapsed,
-                        TotalEngineTime = _timer.Elapsed
+                        ElapsedTime = _timer.Elapsed,
+                        TotalTime = _timer.Elapsed
                     };
 
                     OnUpdate?.Invoke(this, new OnUpdateEventArgs(engineTime));

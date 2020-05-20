@@ -3,9 +3,9 @@
 namespace Raptor
 {
     /// <summary>
-    /// Adds various game loop events for a game engine.
+    /// Adds various game related events for a game.
     /// </summary>
-    public interface IEngineEvents
+    public interface IGameEvents
     {
         #region Events
         /// <summary>

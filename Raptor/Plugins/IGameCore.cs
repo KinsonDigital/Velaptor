@@ -3,10 +3,10 @@
 namespace Raptor.Plugins
 {
     /// <summary>
-    /// Provides the core of a game engine which facilitates how the engine starts, stops,
+    /// Provides the core of a game which facilitates how the engine starts, stops,
     /// manages time and how the game loop runs.
     /// </summary>
-    public interface IEngineCore : IDisposable, IEngineEvents
+    public interface IGameCore : IDisposable, IGameEvents
     {
         #region Props
         /// <summary>
@@ -28,15 +28,15 @@ namespace Raptor.Plugins
 
         #region Methods
         /// <summary>
-        /// Starts the engine.
+        /// Starts the core.
         /// </summary>
-        void StartEngine();
+        void StartCore();
 
 
         /// <summary>
-        /// Stops the engine.
+        /// Stops the core.
         /// </summary>
-        void StopEngine();
+        void StopCore();
 
 
         /// <summary>

@@ -212,12 +212,12 @@ namespace Raptor.UI
         /// </summary>
         /// <param name="gameTime">The game time of the last frame.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Update(IEngineTiming gameTime)
+        public void Update(IGameTiming gameTime)
         {
             if (gameTime is null)
                 throw new ArgumentNullException(nameof(gameTime), "The game time must not be null.");
 
-            _elapsedTime += gameTime.ElapsedEngineTime.Milliseconds;
+            _elapsedTime += gameTime.ElapsedTime.Milliseconds;
 
             if (_elapsedTime >= UpdateFrequency)
             {

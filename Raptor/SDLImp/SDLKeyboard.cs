@@ -71,7 +71,7 @@ namespace Raptor.SDLImp
         public void UpdateCurrentState()
         {
             _currentStateKeys.Clear();
-            _currentStateKeys.AddRange(SDLEngineCore.CurrentKeyboardState);
+            _currentStateKeys.AddRange(SDLGameCore.CurrentKeyboardState);
         }
 
 
@@ -81,7 +81,7 @@ namespace Raptor.SDLImp
         public void UpdatePreviousState()
         {
             _prevStateKeys.Clear();
-            _prevStateKeys.AddRange(SDLEngineCore.PreviousKeyboardState);
+            _prevStateKeys.AddRange(SDLGameCore.PreviousKeyboardState);
         }
 
 

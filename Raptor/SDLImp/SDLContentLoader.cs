@@ -66,7 +66,7 @@ namespace Raptor.SDLImp
             else
             {
                 //Create texture from surface pixels
-                newTexturePtr = _sdl.CreateTextureFromSurface(SDLEngineCore.RendererPointer, loadedSurface);
+                newTexturePtr = _sdl.CreateTextureFromSurface(SDLGameCore.RendererPointer, loadedSurface);
 
                 if (newTexturePtr == IntPtr.Zero)
                     throw new Exception($"Unable to create texture from {texturePath}! \n\nSDL Error: {_sdl.GetError()}");

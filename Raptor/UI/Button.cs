@@ -125,7 +125,7 @@ namespace Raptor.UI
         /// Updates the <see cref="Button"/>.
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
-        public void Update(EngineTime engineTime)
+        public void Update(GameTime engineTime)
         {
             ProcessMouse();
 

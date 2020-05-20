@@ -35,7 +35,7 @@ namespace Raptor.SDLImp
         /// </summary>
         public int X
         {
-            get => (int)SDLEngineCore.MousePosition.X;
+            get => (int)SDLGameCore.MousePosition.X;
             set => SetPosition(value, Y);
         }
 
@@ -44,7 +44,7 @@ namespace Raptor.SDLImp
         /// </summary>
         public int Y
         {
-            get => (int)SDLEngineCore.MousePosition.Y;
+            get => (int)SDLGameCore.MousePosition.Y;
             set => SetPosition(X, value);
         }
         #endregion
@@ -56,9 +56,9 @@ namespace Raptor.SDLImp
         /// </summary>
         public void UpdateCurrentState()
         {
-            _currentLeftButtonState = SDLEngineCore.CurrentLeftMouseButtonState;
-            _currentRightButtonState = SDLEngineCore.CurrentRightMouseButtonState;
-            _currentMiddleButtonState = SDLEngineCore.CurrentMiddleMouseButtonState;
+            _currentLeftButtonState = SDLGameCore.CurrentLeftMouseButtonState;
+            _currentRightButtonState = SDLGameCore.CurrentRightMouseButtonState;
+            _currentMiddleButtonState = SDLGameCore.CurrentMiddleMouseButtonState;
         }
 
 
@@ -83,7 +83,7 @@ namespace Raptor.SDLImp
             if (_sdl is null)
                 return;
 
-            _sdl.WarpMouseInWindow(SDLEngineCore.WindowPtr, x, y);
+            _sdl.WarpMouseInWindow(SDLGameCore.WindowPtr, x, y);
         }
 
 
