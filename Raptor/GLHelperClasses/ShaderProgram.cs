@@ -12,7 +12,6 @@ namespace Raptor.GLHelperClasses
     {
         #region Private Fields
         private readonly Dictionary<string, int> _uniformLocations = new Dictionary<string, int>();
-        private readonly ITextFile _file;
         private bool _disposedValue;
         #endregion
 
@@ -21,48 +20,27 @@ namespace Raptor.GLHelperClasses
         /// <summary>
         /// Creates a new instance of <see cref="ShaderProgram"/>.
         /// </summary>
-        /// <param name="gl">Provides access to OpenGL funtionality.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
         /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
+        /// <param name="file">Loads the shader source code from the given shader paths.</param>
         public ShaderProgram(string vertexShaderPath, string fragmentShaderPath, ITextFile file)
         {
-            _file = file;
-            var shaderSource = _file.Load(vertexShaderPath);
-            VertexShaderId = CreateShader(ShaderType.VertexShader, shaderSource);
+            //Load the vertex and fragment shader source code
+            var vertexShaderSrc = file.Load(vertexShaderPath);
+            var fragmentShaderSrc = file.Load(fragmentShaderPath);
 
-            //We do the same for the fragment shader
-            shaderSource = _file.Load(fragmentShaderPath);
-            FragmentShaderId = CreateShader(ShaderType.FragmentShader, shaderSource);
+            SetupProgram(vertexShaderSrc, fragmentShaderSrc);
+        }
 
-            //Merge both shaders into a shader program, which can then be used by OpenGL.
-            ProgramId = SetupShaderProgram(VertexShaderId, FragmentShaderId);
 
-            //When the shader program is linked, it no longer needs the individual shaders attacked to it.
-            //The compiled code is copied into the shader program.
-            //Detach and then delete them.
-            DestroyShader(ProgramId, VertexShaderId);
-            DestroyShader(ProgramId, FragmentShaderId);
-
-            //This is for the purpose of caching the locations of the uniforms.
-            //The reason is because GetUniformLocation() is a slow call.
-            //Get the number of active uniforms in the shader.
-            GL.GetProgram(ProgramId, GetProgramParameterName.ActiveUniforms, out int totalActiveUniforms);
-
-            //Loop over all the uniforms
-            for (var i = 0; i < totalActiveUniforms; i++)
-            {
-                //get the name of this uniform,
-                var key = GL.GetActiveUniform(ProgramId, i, out _, out _);
-
-                //Get the location of the uniform on the GPU
-                var location = GL.GetUniformLocation(ProgramId, key);
-
-                if (location == -1)
-                    throw new Exception($"The uniform with the name '{key}' does not exist.");
-
-                //Cache it
-                _uniformLocations.Add(key, location);
-            }
+        /// <summary>
+        /// Creates a new instance of <see cref="ShaderProgram"/>.
+        /// </summary>
+        /// <param name="vertexShaderSrc">The vertex shader source code.</param>
+        /// <param name="fragmentShaderSrc">The fragment shader source code.</param>
+        public ShaderProgram(string vertexShaderSrc, string fragmentShaderSrc)
+        {
+            SetupProgram(vertexShaderSrc, fragmentShaderSrc);
         }
         #endregion
 
@@ -126,26 +104,47 @@ namespace Raptor.GLHelperClasses
 
 
         #region Private Methods
-        /// <summary>
-        /// Creates a shader program using the given vertex and fragment shader ID numbers.
-        /// </summary>
-        /// <param name="vertexShaderId">The ID of the vertex shader.</param>
-        /// <param name="fragmentShaderId">The ID of the fragment shader.</param>
-        /// <returns></returns>
-        private int SetupShaderProgram(int vertexShaderId, int fragmentShaderId)
+        private void SetupProgram(string vertexShaderSrc, string fragmentShaderSrc)
         {
-            var programHandle = GL.CreateProgram();
+            VertexShaderId = CreateShader(ShaderType.VertexShader, vertexShaderSrc);
+            FragmentShaderId = CreateShader(ShaderType.FragmentShader, fragmentShaderSrc);
 
-            //Attach both shaders...
-            GL.AttachShader(programHandle, vertexShaderId);
+            //Create a program ID
+            ProgramId = GL.CreateProgram();
 
-            GL.AttachShader(programHandle, fragmentShaderId);
+            //Attach both shaders
+            GL.AttachShader(ProgramId, VertexShaderId);
+            GL.AttachShader(ProgramId, FragmentShaderId);
 
             //Link them together
-            LinkProgram(programHandle);
+            LinkProgram(ProgramId);
 
+            //When the shader program is linked, it no longer needs the individual shaders attacked to it.
+            //The compiled code is copied into the shader program.
+            //Detach and then delete them.
+            DestroyShader(ProgramId, VertexShaderId);
+            DestroyShader(ProgramId, FragmentShaderId);
 
-            return programHandle;
+            //This is for the purpose of caching the locations of the uniforms.
+            //The reason is because GetUniformLocation() is a slow call.
+            //Get the number of active uniforms in the shader.
+            GL.GetProgram(ProgramId, GetProgramParameterName.ActiveUniforms, out int totalActiveUniforms);
+
+            //Loop over all the uniforms
+            for (var i = 0; i < totalActiveUniforms; i++)
+            {
+                //get the name of this uniform,
+                var key = GL.GetActiveUniform(ProgramId, i, out _, out _);
+
+                //Get the location of the uniform on the GPU
+                var location = GL.GetUniformLocation(ProgramId, key);
+
+                if (location == -1)
+                    throw new Exception($"The uniform with the name '{key}' does not exist.");
+
+                //Cache it
+                _uniformLocations.Add(key, location);
+            }
         }
 
 
@@ -153,7 +152,7 @@ namespace Raptor.GLHelperClasses
         /// Links the program using the given <paramref name="shaderProgramId"/>.
         /// </summary>
         /// <param name="shaderProgramId">The ID of the shader program.</param>
-        private void LinkProgram(int shaderProgramId)
+        private static void LinkProgram(int shaderProgramId)
         {
             // We link the program
             GL.LinkProgram(shaderProgramId);
@@ -176,7 +175,7 @@ namespace Raptor.GLHelperClasses
         /// <param name="shaderType">The type of shader to create.</param>
         /// <param name="shaderSrc">The shader source code to use for the shader program.</param>
         /// <returns></returns>
-        private int CreateShader(ShaderType shaderType, string shaderSrc)
+        private static int CreateShader(ShaderType shaderType, string shaderSrc)
         {
             var shaderId = GL.CreateShader(shaderType);
 
@@ -194,7 +193,7 @@ namespace Raptor.GLHelperClasses
         /// </summary>
         /// <param name="shaderProgramId">The program ID of the shader.</param>
         /// <param name="shaderId">The shader ID of the shader.</param>
-        private void DestroyShader(int shaderProgramId, int shaderId)
+        private static void DestroyShader(int shaderProgramId, int shaderId)
         {
             GL.DetachShader(shaderProgramId, shaderId);
             GL.DeleteShader(shaderId);
@@ -205,7 +204,7 @@ namespace Raptor.GLHelperClasses
         /// Compiles the currently set shader source code on the GPU.
         /// </summary>
         /// <param name="shaderId">The shader ID.</param>
-        private void CompileShader(int shaderId)
+        private static void CompileShader(int shaderId)
         {
             // Try to compile the shader
             GL.CompileShader(shaderId);
