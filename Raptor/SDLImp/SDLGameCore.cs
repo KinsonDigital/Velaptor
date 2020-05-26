@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using RaptorKeyCode = Raptor.Input.KeyCode;
 using SDLKeyCode = SDLCore.KeyCode;
 
 namespace Raptor.SDLImp

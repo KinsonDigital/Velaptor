@@ -1,9 +1,6 @@
 ﻿using Raptor.Graphics;
 using Raptor.Plugins;
-using SDLCore;
 using System;
-using System.Globalization;
-using System.IO;
 
 namespace Raptor.SDLImp
 {

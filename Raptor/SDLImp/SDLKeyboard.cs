@@ -1,5 +1,4 @@
-﻿using Raptor.Input;
-using Raptor.Plugins;
+﻿using Raptor.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;

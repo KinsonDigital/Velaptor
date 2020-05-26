@@ -1,9 +1,4 @@
-﻿using Moq;
-using Raptor.Content;
-using Raptor.Graphics;
-using Raptor.Plugins;
-using Raptor;
-using Xunit;
+﻿using Raptor.Content;
 
 namespace RaptorTests.Content
 {

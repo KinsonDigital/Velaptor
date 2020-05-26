@@ -1,9 +1,4 @@
-﻿using Raptor;
-using Raptor.OpenGLImp;
-using Raptor.Plugins;
-using System;
-
-namespace RaptorSandBox
+﻿namespace RaptorSandBox
 {
     public class Program
     {

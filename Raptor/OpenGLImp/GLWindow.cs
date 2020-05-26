@@ -4,9 +4,6 @@ using OpenToolkit.Windowing.Common;
 using OpenToolkit.Windowing.Desktop;
 using Raptor.Plugins;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 
 namespace Raptor.OpenGLImp
 {
