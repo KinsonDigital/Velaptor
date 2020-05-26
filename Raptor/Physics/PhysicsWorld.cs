@@ -21,8 +21,8 @@ namespace Raptor.Physics
         /// control the physics of those bodies. Used for testing.
         /// USED FOR UNIT TESTING.
         /// </summary>
-        /// <param name="mockedPhysicsWorld">The mocked world to inject.</param>
-        public PhysicsWorld(IPhysicsWorld mockedPhysicsWorld) => _internalWorld = mockedPhysicsWorld;
+        /// <param name="physicsWorld">The physics world implementation.</param>
+        public PhysicsWorld(IPhysicsWorld physicsWorld) => _internalWorld = physicsWorld;
 
 
         /// <summary>
@@ -35,7 +35,6 @@ namespace Raptor.Physics
         public PhysicsWorld(Vector2 gravity)
         {
             var otherGravity = gravity.X;
-            //TODO: Figure out how to get the proper implementation inside of this class
         }
         #endregion
 

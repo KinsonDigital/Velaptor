@@ -11,7 +11,7 @@ namespace Raptor
         /// <summary>
         /// Holds elapsed time information of when the game loop last ran.
         /// </summary>
-        public IGameTiming EngineTime { get; set; }
+        public FrameTime EngineTime { get; set; }
         #endregion
 
 
@@ -20,7 +20,7 @@ namespace Raptor
         /// Creates a new instance of <see cref="OnUpdateEventArgs"/>.
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
-        public OnUpdateEventArgs(IGameTiming engineTime) => EngineTime = engineTime;
+        public OnUpdateEventArgs(FrameTime engineTime) => EngineTime = engineTime;
         #endregion
     }
 }

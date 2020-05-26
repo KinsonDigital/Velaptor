@@ -1,53 +1,49 @@
-﻿using Raptor.Graphics;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using Raptor.Graphics;
 using Raptor.Plugins;
-using System.Diagnostics.CodeAnalysis;
+using FileIO.Core;
 
 namespace Raptor.Content
 {
     /// <summary>
-    /// Loads graphical and soud content for rendering and playback.
+    /// Loads content.
     /// </summary>
-    public class ContentLoader
+    public class ContentLoader : IContentLoader
     {
         #region Private Fields
-        private readonly IContentLoader? _internalLoader;
+        private readonly string _baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private readonly string _graphicsDir;
+        private readonly IImageFile _file;
+        private string _contentDir;
         #endregion
 
 
         #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="ContentLoader"/>.
-        /// USED FOR UNIT TESTING.
-        /// </summary>
-        /// <param name="contentLoader">The mocked content loader to inject.</param>
-        public ContentLoader(IContentLoader contentLoader) => _internalLoader = contentLoader;
-
-
-        /// <summary>
         /// Creates a new instace of <see cref="ContentLoader"/>.
         /// </summary>
-        [ExcludeFromCodeCoverage]
-        public ContentLoader()
+        public ContentLoader(IImageFile file)
         {
-            //TODO: Figure out how to get the proper implementation inside of this class
+            _file = file;
+            _contentDir = $@"{_baseDir}Content\";
+            _graphicsDir = @$"{_contentDir}Graphics\";
         }
         #endregion
 
 
         #region Props
         /// <summary>
-        /// The path to the executable game consuming the content being loaded.
-        /// </summary>
-        public string GamePath => _internalLoader is null ? string.Empty : _internalLoader.GamePath;
-
-
-        /// <summary>
-        /// Gets or sets the root directory for the game's content.
+        /// Gets or sets the root directory for the content.
         /// </summary>
         public string ContentRootDirectory
         {
-            get => _internalLoader is null ? string.Empty : _internalLoader.ContentRootDirectory;
-            set { if (!(_internalLoader is null)) _internalLoader.ContentRootDirectory = value; }
+            get => _contentDir;
+            set => _contentDir = $@"{value}Content\";
         }
         #endregion
 
@@ -56,36 +52,16 @@ namespace Raptor.Content
         /// <summary>
         /// Loads a texture that has the given <paramref name="name"/>.
         /// </summary>
-        /// <typeparam name="T">The type of texture to render.</typeparam>
-        /// <param name="name">The name of the texture object to render.</param>
+        /// <param name="name">The name of the texture to load.</param>
         /// <returns></returns>
-        public Texture? LoadTexture(string textureName)
+        public Texture? LoadTexture(string name)
         {
-            if (_internalLoader is null)
-                return null;
-
-            var loadedTexture = _internalLoader.LoadTexture<ITexture>(textureName);
+            var textureImagePath = $"{_graphicsDir}{name}";
 
 
-            return loadedTexture is null ? null : new Texture(loadedTexture);
-        }
+            var (pixels, width, height) = _file.Load(textureImagePath);
 
-
-        /// <summary>
-        /// Loads a text objec to render that has the given <paramref name="name"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of text object to render.</typeparam>
-        /// <param name="name">The name of the text object to render.</param>
-        /// <returns></returns>
-        public GameText? LoadText(string textName)
-        {
-            if (_internalLoader is null)
-                return null;
-
-            return new GameText()
-            {
-                InternalText = _internalLoader.LoadText<IText>(textName)
-            };
+            return new Texture(pixels, width, height);
         }
         #endregion
     }

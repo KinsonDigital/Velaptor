@@ -4,7 +4,6 @@
 layout(location = 0) in vec3 aPosition;
 layout(location = 1) in vec2 aTexCoord;
 layout(location = 2) in vec4 aTintColor;
-layout(location = 5) in float aTexIndex;
 
 
 //Uniforms are vars that can dynamically take in data
@@ -23,7 +22,6 @@ void main()
 {
     v_TintClr = aTintColor;
     v_TexCoord = aTexCoord;
-    v_TexIndex = aTexIndex;
 
     gl_Position = vec4(aPosition, 1.0) * u_Transform;
 }

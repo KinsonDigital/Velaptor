@@ -1,16 +1,27 @@
-﻿namespace Raptor.Graphics
+﻿using Raptor.OpenGLImp;
+
+namespace Raptor.Graphics
 {
     /// <summary>
     /// The texture to render to the screen.
     /// </summary>
     public class Texture
     {
-        #region Props
-        /// <summary>
-        /// Gets the internal texture plugin.
-        /// </summary>
-        public ITexture InternalTexture { get; set; }
+        #region Constructors
+        public Texture(ITexture texture)
+        {
+            InternalTexture = texture;
+        }
 
+
+        public Texture(byte[] imageData, int width, int height)
+        {
+            InternalTexture = new GLTexture(imageData, width, height);
+        }
+        #endregion
+
+
+        #region Props
         /// <summary>
         /// Gets the width of the texture.
         /// </summary>
@@ -20,15 +31,9 @@
         /// Gets the height of the texture.
         /// </summary>
         public int Height => InternalTexture.Height;
-        #endregion
 
 
-        #region Constructors
-        /// <summary>
-        /// Creates a new instance of <see cref="Texture"/>.
-        /// </summary>
-        /// <param name="texture">The mocked texture to inject.</param>
-        public Texture(ITexture texture) => InternalTexture = texture;
+        internal ITexture InternalTexture { get; private set; }
         #endregion
     }
 }

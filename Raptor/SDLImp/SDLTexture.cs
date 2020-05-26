@@ -76,6 +76,21 @@ namespace Raptor.SDLImp
 
             throw new Exception($"The option '{option}' is not a valid option.");
         }
+
+        public void Bind()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unbind()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }

@@ -7,7 +7,6 @@ Src: https://stackoverflow.com/questions/746899/how-to-calculate-an-rgb-colour-b
 
 in vec2 v_TexCoord;
 in vec4 v_TintClr;
-in float v_TexIndex;
 
 
 out vec4 o_OutputColor;

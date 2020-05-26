@@ -94,8 +94,8 @@ namespace Raptor.UI
             //One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
             //This is not ideal.  Try to figure out a way to measure text without the use of another GameText object.  This is
             //not best for performance as well as taking extra memory.
-            _visibleText = contentLoader.LoadText(FontName);
-            _textRuler = contentLoader.LoadText(FontName);
+            //_visibleText = contentLoader.LoadText(FontName);
+            //_textRuler = contentLoader.LoadText(FontName);
 
             _deferredActions.ExecuteAll();
         }
@@ -107,11 +107,8 @@ namespace Raptor.UI
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Update(GameTime engineTime)
+        public void Update(FrameTime engineTime)
         {
-            if (engineTime is null)
-                throw new ArgumentNullException(nameof(engineTime), "The engine time must not be null.");
-
             UpdateSideLocations();
 
             ProcessKeys();

@@ -210,14 +210,11 @@ namespace Raptor.UI
         /// <summary>
         /// Updates the text item. This helps keep the update frequency up to date.
         /// </summary>
-        /// <param name="gameTime">The game time of the last frame.</param>
+        /// <param name="frameTime">The game time of the last frame.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Update(IGameTiming gameTime)
+        public void Update(FrameTime frameTime)
         {
-            if (gameTime is null)
-                throw new ArgumentNullException(nameof(gameTime), "The game time must not be null.");
-
-            _elapsedTime += gameTime.ElapsedTime.Milliseconds;
+            _elapsedTime += frameTime.ElapsedTime.Milliseconds;
 
             if (_elapsedTime >= UpdateFrequency)
             {

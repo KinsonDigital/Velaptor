@@ -10,7 +10,7 @@
         /// Updates the object.
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
-        void Update(GameTime engineTime);
+        void Update(FrameTime engineTime);
         #endregion
     }
 }

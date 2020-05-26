@@ -59,7 +59,7 @@ namespace Raptor.GLHelperClasses
         /// <summary>
         /// Gets the shader program ID on the GPU.
         /// </summary>
-        public int ProgramId { get; private set; }
+        public int ID { get; private set; }
         #endregion
 
 
@@ -67,7 +67,7 @@ namespace Raptor.GLHelperClasses
         /// <summary>
         /// Sets the active shader program to use on the GPU.
         /// </summary>
-        public void UseProgram() => GL.UseProgram(ProgramId);
+        public void UseProgram() => GL.UseProgram(ID);
 
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Raptor.GLHelperClasses
                 _uniformLocations.Clear();
 
             //Delete unmanaged resources
-            GL.DeleteProgram(ProgramId);
+            GL.DeleteProgram(ID);
 
             _disposedValue = true;
         }
@@ -110,34 +110,34 @@ namespace Raptor.GLHelperClasses
             FragmentShaderId = CreateShader(ShaderType.FragmentShader, fragmentShaderSrc);
 
             //Create a program ID
-            ProgramId = GL.CreateProgram();
+            ID = GL.CreateProgram();
 
             //Attach both shaders
-            GL.AttachShader(ProgramId, VertexShaderId);
-            GL.AttachShader(ProgramId, FragmentShaderId);
+            GL.AttachShader(ID, VertexShaderId);
+            GL.AttachShader(ID, FragmentShaderId);
 
             //Link them together
-            LinkProgram(ProgramId);
+            LinkProgram(ID);
 
             //When the shader program is linked, it no longer needs the individual shaders attacked to it.
             //The compiled code is copied into the shader program.
             //Detach and then delete them.
-            DestroyShader(ProgramId, VertexShaderId);
-            DestroyShader(ProgramId, FragmentShaderId);
+            DestroyShader(ID, VertexShaderId);
+            DestroyShader(ID, FragmentShaderId);
 
             //This is for the purpose of caching the locations of the uniforms.
             //The reason is because GetUniformLocation() is a slow call.
             //Get the number of active uniforms in the shader.
-            GL.GetProgram(ProgramId, GetProgramParameterName.ActiveUniforms, out int totalActiveUniforms);
+            GL.GetProgram(ID, GetProgramParameterName.ActiveUniforms, out int totalActiveUniforms);
 
             //Loop over all the uniforms
             for (var i = 0; i < totalActiveUniforms; i++)
             {
                 //get the name of this uniform,
-                var key = GL.GetActiveUniform(ProgramId, i, out _, out _);
+                var key = GL.GetActiveUniform(ID, i, out _, out _);
 
                 //Get the location of the uniform on the GPU
-                var location = GL.GetUniformLocation(ProgramId, key);
+                var location = GL.GetUniformLocation(ID, key);
 
                 if (location == -1)
                     throw new Exception($"The uniform with the name '{key}' does not exist.");

@@ -21,13 +21,12 @@ namespace Raptor.Physics
 
         #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="PhysicsBody"/> and
-        /// injects the given <paramref name="mockedBody"/> for mocking and unit testing.
+        /// Creates a new instance of <see cref="PhysicsBody"/>.
         /// </summary>
-        /// <param name="mockedBody">The mocked body to inject.</param>
-        public PhysicsBody(IPhysicsBody mockedBody)
+        /// <param name="physicsBody">The physics body.</param>
+        public PhysicsBody(IPhysicsBody physicsBody)
         {
-            InternalPhysicsBody = mockedBody;
+            InternalPhysicsBody = physicsBody;
             Setup(new Vector2[1] { Vector2.Zero }, Vector2.Zero, 0, 1, 0.2f, 0, false);
         }
 

@@ -147,7 +147,6 @@ namespace Raptor.SDLImp
         public void InjectData<T>(T data) where T : class => throw new NotImplementedException();
 
 
-
         /// <summary>
         /// Gets the data as the given type <typeparamref name="T"/>.
         /// </summary>

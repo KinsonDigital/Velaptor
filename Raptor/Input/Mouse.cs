@@ -46,17 +46,15 @@ namespace Raptor.Input
         #region Constructors
         /// <summary>
         /// Creates a new instance of <see cref="Mouse"/>.
-        /// USED FOR UNIT TESTING.
         /// </summary>
-        /// <param name="mockedMouse">The mocked mouse to inject.</param>
-        public Mouse(IMouse mockedMouse) => InternalMouse = mockedMouse;
+        /// <param name="mouse">The mouse implementation.</param>
+        public Mouse(IMouse mouse) => InternalMouse = mouse;
 
 
         /// <summary>
         /// Creates a new instance of <see cref="Mouse"/>.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        //TODO: Figure out how to get the proper implementation inside of this class
         public Mouse() { }
         #endregion
 

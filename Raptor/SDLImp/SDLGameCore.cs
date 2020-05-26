@@ -14,16 +14,8 @@ namespace Raptor.SDLImp
     /// Provides the core of a game engine which facilitates how the engine starts, stops,
     /// manages time and how the game loop runs.
     /// </summary>
-    internal class SDLGameCore : IGameCore
+    internal class SDLGameCore : IWindow
     {
-        #region Public Events
-        public event EventHandler<OnUpdateEventArgs>? OnUpdate;
-        public event EventHandler<OnRenderEventArgs>? OnRender;
-        public event EventHandler? OnInitialize;
-        public event EventHandler? OnLoadContent;
-        #endregion
-
-
         #region Private Fields
         private readonly SDL? _sdl = null;
         private readonly SDLImage? _sdlImage = null;
@@ -51,7 +43,7 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Gets or sets the width of the game window.
         /// </summary>
-        public int WindowWidth
+        public int Width
         {
             get
             {
@@ -75,7 +67,7 @@ namespace Raptor.SDLImp
         /// <summary>
         /// Gets or sets the height of the game window.
         /// </summary>
-        public int WindowHeight
+        public int Height
         {
             get
             {
@@ -100,6 +92,14 @@ namespace Raptor.SDLImp
         /// Gets or sets the renderer that renders graphics to the window.
         /// </summary>
         public IRenderer? Renderer { get; private set; }
+
+        public Action OnInitialize { get; set; }
+
+        public Action OnLoadContent { get; set; }
+
+        public Action<FrameTime> OnUpdate { get; set; }
+
+        public Action<FrameTime> OnRender { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the type of game loop to run.
@@ -150,6 +150,15 @@ namespace Raptor.SDLImp
         /// Gets the current position of the mouse cursur in the game window.
         /// </summary>
         internal static Vector2 MousePosition { get; private set; }
+        public Action? Update { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Title { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Action? Load { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Action? Draw { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Action<FrameTime>? IWindow.Update { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Action<FrameTime>? IWindow.Draw { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Action? Init { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public int UpdateFreq { get; set; }
         #endregion
 
 
@@ -160,7 +169,7 @@ namespace Raptor.SDLImp
         public void StartCore()
         {
             InitEngine();
-            OnInitialize?.Invoke(this, new EventArgs());
+            OnInitialize?.Invoke();
             Run();
         }
 
@@ -347,15 +356,15 @@ namespace Raptor.SDLImp
                 {
                     if (_timer.Elapsed.TotalMilliseconds >= _targetFrameRate)
                     {
-                        var engineTime = new GameTime()
+                        var engineTime = new FrameTime()
                         {
                             ElapsedTime = _timer.Elapsed,
                             TotalTime = _timer.Elapsed
                         };
 
-                        OnUpdate?.Invoke(this, new OnUpdateEventArgs(engineTime));
+                        OnUpdate?.Invoke(engineTime);
 
-                        OnRender?.Invoke(this, new OnRenderEventArgs(Renderer));
+                        OnRender?.Invoke(engineTime);
 
                         //Add the frame time to the list of previous frame times
                         _frameTimes.Enqueue((float)_timer.Elapsed.TotalMilliseconds);
@@ -377,15 +386,15 @@ namespace Raptor.SDLImp
 
                     _lastFrameTime = currentFrameTime;
 
-                    var engineTime = new GameTime()
+                    var gameTime = new FrameTime()
                     {
                         ElapsedTime = _timer.Elapsed,
                         TotalTime = _timer.Elapsed
                     };
 
-                    OnUpdate?.Invoke(this, new OnUpdateEventArgs(engineTime));
+                    OnUpdate?.Invoke(gameTime);
 
-                    OnRender?.Invoke(this, new OnRenderEventArgs(Renderer));
+                    OnRender?.Invoke(gameTime);
 
                     _timer.Stop();
 
@@ -455,6 +464,16 @@ namespace Raptor.SDLImp
                     MousePosition = new Vector2(e.button.x, e.button.y);
                 }
             }
+        }
+
+        public void Show()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Close()
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

@@ -102,17 +102,15 @@ namespace Raptor.Input
         #region Constructors
         /// <summary>
         /// Creates a new instance of <see cref="Keyboard"/>.
-        /// USED FOR UNIT TESTING.
         /// </summary>
-        /// <param name="mockedKeyboard">The mocked keyboard to inject.</param>
-        public Keyboard(IKeyboard mockedKeyboard) => InternalKeyboard = mockedKeyboard;
+        /// <param name="keyboard">The keyboard implementation..</param>
+        public Keyboard(IKeyboard keyboard) => InternalKeyboard = keyboard;
 
 
         /// <summary>
         /// Creates a new instance of <see cref="Keyboard"/>.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        //TODO: Figure out how to get the proper implementation inside of this class
         public Keyboard() { }
         #endregion
 

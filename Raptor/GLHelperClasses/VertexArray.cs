@@ -3,6 +3,10 @@ using OpenToolkit.Graphics.OpenGL4;
 
 namespace Raptor.GLHelperClasses
 {
+    /// <summary>
+    /// A VAO (Vertex Array Object) in OpenGL
+    /// </summary>
+    /// <typeparam name="T">The the data structure of the vertex buffer that the VAO will bind to.</typeparam>
     internal class VertexArray<T> : IDisposable where T : struct
     {
         #region Private Fields
@@ -28,28 +32,23 @@ namespace Raptor.GLHelperClasses
 
             Bind();
 
-            //TODO: Disable these and check if this still works
             GL.BindBuffer(BufferTarget.ArrayBuffer, vb.ID);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ib.ID);
 
-            //Setup aPosition attribute
+
+            //Setup vertex shader aPosition attribute
             GL.EnableVertexArrayAttrib(ID, 0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 10 * sizeof(float), 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 9 * sizeof(float), 0);
 
 
-            //Setup aTexCoord attribute
+            //Setup vertex shader aTexCoord attribute
             GL.EnableVertexArrayAttrib(ID, 1);
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 10 * sizeof(float), 3 * sizeof(float));
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 9 * sizeof(float), 3 * sizeof(float));
 
 
-            //Setup u_TintClr attribute
+            //Setup fragment shader u_TintClr attribute
             GL.EnableVertexArrayAttrib(ID, 2);
-            GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, 10 * sizeof(float), 5 * sizeof(float));
-
-
-            //Setup aTexIndex attribute
-            GL.EnableVertexArrayAttrib(ID, 5);
-            GL.VertexAttribPointer(5, 1, VertexAttribPointerType.Float, false, 10 * sizeof(float), 9 * sizeof(float));
+            GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, 9 * sizeof(float), 5 * sizeof(float));
         }
         #endregion
 
@@ -66,10 +65,7 @@ namespace Raptor.GLHelperClasses
         /// <summary>
         /// Binds the <see cref="VertexArray"/>.
         /// </summary>
-        public void Bind()
-        {
-            GL.BindVertexArray(ID);
-        }
+        public void Bind() => GL.BindVertexArray(ID);
 
 
         /// <summary>

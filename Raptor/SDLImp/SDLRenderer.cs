@@ -17,6 +17,9 @@ namespace Raptor.SDLImp
         private readonly SDL? _sdl = null;
         private bool _beginInvoked = false;
         private IntPtr _rendererPtr;
+
+        public int ViewportWidth { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int ViewportHeight { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         #endregion
 
 
@@ -87,7 +90,6 @@ namespace Raptor.SDLImp
         /// <param name="y">The Y coordinate location on the screen to render.</param>
         /// <param name="angle">The angle in degrees to rotate the texture to.</param>
         public void Render(ITexture texture, float x, float y, float angle) => Render(texture, x, y, angle, 1f, new GameColor(255, 255, 255, 255));
-
 
 
         /// <summary>
@@ -456,6 +458,11 @@ namespace Raptor.SDLImp
         {
             if (_rendererPtr == IntPtr.Zero)
                 throw new Exception("The SDL renderer does not have an intialized renderer pointer.");
+        }
+
+        public void Render(ITexture texture, float x, float y, float angle, float size)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

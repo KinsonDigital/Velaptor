@@ -2,9 +2,23 @@
 using System.Collections.Generic;
 using Raptor.Graphics;
 using OpenToolkit.Graphics.OpenGL4;
+using OpenToolkit;
 
 namespace Raptor.OpenGLImp
 {
+    /// <summary>
+    /// Here just for reference.  This is how you render to another window.
+    /// //This will be for particle maker
+    /// </summary>
+    public class MyBindings : IBindingsContext
+    {
+        public IntPtr GetProcAddress(string procName)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     /// <summary>
     /// An OpenGL texture that can be rendered to a render target.
     /// </summary>
@@ -13,7 +27,7 @@ namespace Raptor.OpenGLImp
         #region Private Fields
         private static readonly List<int> _boundTextures = new List<int>();
         private bool _disposedValue = false;
-        private int ID;
+        private readonly int _id;
         #endregion
 
 
@@ -28,7 +42,10 @@ namespace Raptor.OpenGLImp
         {
             //TODO: Maybe expose this ID as property for the other GL helper classes to use?
             //This will depend on how the render can be implemented
-            ID = GL.GenTexture();
+            _id = GL.GenTexture();
+
+            Width = width;
+            Height = height;
 
             Bind();
 
@@ -40,9 +57,15 @@ namespace Raptor.OpenGLImp
 
 
         #region Props
-        public int Width => throw new NotImplementedException();
+        /// <summary>
+        /// Gets the width of the texture.
+        /// </summary>
+        public int Width { get; }
 
-        public int Height => throw new NotImplementedException();
+        /// <summary>
+        /// Gets the height of the texture.
+        /// </summary>
+        public int Height { get; }
         #endregion
 
 
@@ -52,11 +75,11 @@ namespace Raptor.OpenGLImp
         /// </summary>
         public void Bind()
         {
-            if (_boundTextures.Contains(ID))
+            if (_boundTextures.Contains(_id))
                 return;
 
-            GL.BindTexture(TextureTarget.Texture2D, ID);
-            _boundTextures.Add(ID);
+            GL.BindTexture(TextureTarget.Texture2D, _id);
+            _boundTextures.Add(_id);
         }
 
 
@@ -65,14 +88,18 @@ namespace Raptor.OpenGLImp
         /// </summary>
         public void Unbind()
         {
-            if (!_boundTextures.Contains(ID))
+            if (!_boundTextures.Contains(_id))
                 return;
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
-            _boundTextures.Remove(ID);
+            _boundTextures.Remove(_id);
         }
 
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting
+        /// unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -81,6 +108,11 @@ namespace Raptor.OpenGLImp
 
 
         #region Protected Methods
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting
+        /// unmanaged resources.
+        /// <paramref name="disposing">True if other managed resources need to be disposed of.</paramref>
+        /// </summary>
         protected virtual void Dispose(bool disposing)
         {
             if (_disposedValue)
@@ -92,7 +124,7 @@ namespace Raptor.OpenGLImp
             //manually for anything using these objects where they contain GL calls in there
             //Dispose() methods
             Unbind();
-            GL.DeleteTexture(ID);
+            GL.DeleteTexture(_id);
 
             _disposedValue = true;
         }
