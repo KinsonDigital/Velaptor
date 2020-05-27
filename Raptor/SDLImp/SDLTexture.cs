@@ -44,6 +44,8 @@ namespace Raptor.SDLImp
         /// Gets the height of the texture.
         /// </summary>
         public int Height => _height;
+
+        public int ID => throw new NotImplementedException();
         #endregion
 
 

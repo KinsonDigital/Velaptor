@@ -9,6 +9,11 @@ namespace Raptor.Graphics
     {
         #region Props
         /// <summary>
+        /// Gets or sets the ID of the texture.
+        /// </summary>
+        int ID { get; }
+
+        /// <summary>
         /// Gets the width of the texture.
         /// </summary>
         int Width { get; }

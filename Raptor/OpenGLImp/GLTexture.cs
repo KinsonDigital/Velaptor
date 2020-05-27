@@ -27,7 +27,6 @@ namespace Raptor.OpenGLImp
         #region Private Fields
         private static readonly List<int> _boundTextures = new List<int>();
         private bool _disposedValue = false;
-        private readonly int _id;
         #endregion
 
 
@@ -42,7 +41,7 @@ namespace Raptor.OpenGLImp
         {
             //TODO: Maybe expose this ID as property for the other GL helper classes to use?
             //This will depend on how the render can be implemented
-            _id = GL.GenTexture();
+            ID = GL.GenTexture();
 
             Width = width;
             Height = height;
@@ -57,6 +56,11 @@ namespace Raptor.OpenGLImp
 
 
         #region Props
+        /// <summary>
+        /// Gets the ID of the texture.
+        /// </summary>
+        public int ID { get; private set; }
+
         /// <summary>
         /// Gets the width of the texture.
         /// </summary>
@@ -75,11 +79,11 @@ namespace Raptor.OpenGLImp
         /// </summary>
         public void Bind()
         {
-            if (_boundTextures.Contains(_id))
+            if (_boundTextures.Contains(ID))
                 return;
 
-            GL.BindTexture(TextureTarget.Texture2D, _id);
-            _boundTextures.Add(_id);
+            GL.BindTexture(TextureTarget.Texture2D, ID);
+            _boundTextures.Add(ID);
         }
 
 
@@ -88,11 +92,11 @@ namespace Raptor.OpenGLImp
         /// </summary>
         public void Unbind()
         {
-            if (!_boundTextures.Contains(_id))
+            if (!_boundTextures.Contains(ID))
                 return;
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
-            _boundTextures.Remove(_id);
+            _boundTextures.Remove(ID);
         }
 
 
@@ -124,7 +128,7 @@ namespace Raptor.OpenGLImp
             //manually for anything using these objects where they contain GL calls in there
             //Dispose() methods
             Unbind();
-            GL.DeleteTexture(_id);
+            GL.DeleteTexture(ID);
 
             _disposedValue = true;
         }

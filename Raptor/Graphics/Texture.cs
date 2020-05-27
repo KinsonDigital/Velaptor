@@ -23,6 +23,11 @@ namespace Raptor.Graphics
 
         #region Props
         /// <summary>
+        /// Gets or sets the ID of the texture.
+        /// </summary>
+        public int ID => InternalTexture.ID;
+
+        /// <summary>
         /// Gets the width of the texture.
         /// </summary>
         public int Width => InternalTexture.Width;
@@ -31,6 +36,9 @@ namespace Raptor.Graphics
         /// Gets the height of the texture.
         /// </summary>
         public int Height => InternalTexture.Height;
+
+
+        public int Layer { get; set; }
 
 
         internal ITexture InternalTexture { get; private set; }

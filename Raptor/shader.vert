@@ -8,7 +8,7 @@ layout(location = 2) in vec4 aTintColor;
 
 //Uniforms are vars that can dynamically take in data
 //from the CPU side at will
-uniform mat4 u_Transform;
+layout(location = 3) uniform mat4 u_Transform;
 
 
 //These are vars that send data out and can be

@@ -1,6 +1,7 @@
 using Raptor.OpenGLImp;
 using Raptor.Plugins;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
@@ -14,6 +15,8 @@ namespace Raptor.Graphics
         #region Private Fields
         private readonly IDebugDraw? _debugDraw = null;
         private readonly IRenderer _renderer;
+        private bool _hasBegun;
+        private readonly List<TextureData> _texturesToRender = new List<TextureData>();
         #endregion
 
 
@@ -67,6 +70,12 @@ namespace Raptor.Graphics
                 return;
 
             _renderer.Clear(color);
+        }
+
+
+        public void Begin()
+        {
+            _hasBegun = true;
         }
 
 
@@ -125,7 +134,55 @@ namespace Raptor.Graphics
             if (_renderer is null)
                 return;
 
-            _renderer.Render(texture.InternalTexture, x, y, angle, size, color);
+
+            var textureData = new TextureData()
+            {
+                ID = texture.ID,
+                Layer = texture.Layer,
+                X = x,
+                Y = y,
+                Width = texture.Width,
+                Height = texture.Height,
+                Angle = angle,
+                Size = size,
+                TintColorAlpha = color.Alpha,
+                TintColorRed = color.Red,
+                TintColorGreen = color.Green,
+                TintColorBlue = color.Blue
+            };
+
+
+            _texturesToRender.Add(textureData);
+        }
+
+
+        private static bool Contains<T>(Memory<T> memory, Predicate<T> predicate) where T : struct
+        {
+            var items = memory.Span;
+
+            for (int i = 0; i < memory.Length; i++)
+            {
+                if (predicate.Invoke(items[i]))
+                    return true;
+            }
+
+
+            return false;
+        }
+
+
+        private static int IndexOf<T>(Memory<T> memory, Predicate<T> predicate) where T : struct
+        {
+            var items = memory.Span;
+
+            for (int i = 0; i < memory.Length; i++)
+            {
+                if (predicate.Invoke(items[i]))
+                    return i;
+            }
+
+
+            return -1;
         }
 
 
@@ -257,6 +314,23 @@ namespace Raptor.Graphics
                 return;
 
             _debugDraw.Draw(_renderer, body, color);
+        }
+
+
+        public void End()
+        {
+            if (!_hasBegun)
+                throw new Exception($"The '{nameof(Renderer)}.{nameof(Begin)}()' method must be invoke first.");
+
+            //First sort the textures to render by layer
+            //Lower layer values will render before higher layer numbers
+            _texturesToRender.Sort();
+
+            foreach (var textureData in _texturesToRender)
+                _renderer.Render(textureData);
+
+            _texturesToRender.Clear();
+            _hasBegun = false;
         }
         #endregion
     }

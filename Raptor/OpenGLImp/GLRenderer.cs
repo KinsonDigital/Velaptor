@@ -19,8 +19,9 @@ namespace Raptor.OpenGLImp
         private readonly IndexBuffer _indexBuffer;
         private readonly VertexArray<QuadBufferData> _vertexArray;
         private readonly ShaderProgram _shaderProgram;
-        private QuadBufferData[] _vertexBufferData = Array.Empty< QuadBufferData>();
+        private QuadBufferData[] _vertexBufferData = Array.Empty<QuadBufferData>();
         private bool _disposedValue = false;
+        private const int TRANSFORM_DATA_LOCATION = 3;
         #endregion
 
 
@@ -90,17 +91,46 @@ namespace Raptor.OpenGLImp
 
             UpdateGPUColorData(color);
             UpdateGPUTransform(x,
-                y,
-                texture.Width,
-                texture.Height,
-                angle,
-                size);
+                               y,
+                               texture.Width,
+                               texture.Height,
+                               angle,
+                               size);
 
 
             //TODO: Try and use 4 instead of 8
             GL.DrawElements(PrimitiveType.Triangles, 8, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
             texture.Unbind();
+        }
+
+
+        /// <summary>
+        /// Renders a texture using the given <paramref name="textureData"/>.
+        /// </summary>
+        /// <param name="textureData">The texture data used to render a texture.</param>
+        public void Render(TextureData textureData)
+        {
+            //NOTE: If every single texture uses the same vertex array, you only need to bind it once
+            _vertexArray.Bind();
+            GL.BindTexture(TextureTarget.Texture2D, textureData.ID);
+
+            UpdateGPUColorData(textureData.TintColorAlpha,
+                               textureData.TintColorRed,
+                               textureData.TintColorGreen,
+                               textureData.TintColorBlue);
+
+            UpdateGPUTransform(textureData.X,
+                               textureData.Y,
+                               textureData.Width,
+                               textureData.Height,
+                               textureData.Angle,
+                               textureData.Size);
+
+            GL.DrawElements(PrimitiveType.Triangles, 8, DrawElementsType.UnsignedInt, IntPtr.Zero);
+
+            //Unbind the currently bound texture
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
 
@@ -278,6 +308,22 @@ namespace Raptor.OpenGLImp
         }
 
 
+        private void UpdateGPUColorData(byte tintClrAlpha, byte tintClrRed, byte tintClrGreen, byte tintClrBlue)
+        {
+            for (int i = 0; i < _vertexBufferData.Length; i++)
+            {
+                _vertexBufferData[i].TintColor = new Vector4(tintClrRed.MapValue(0, 255, 0, 1),
+                                                             tintClrGreen.MapValue(0, 255, 0, 1),
+                                                             tintClrBlue.MapValue(0, 255, 0, 1),
+                                                             tintClrAlpha.MapValue(0, 255, 0, 1));
+            }
+
+            var dataSize = 48 * sizeof(float);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBuffer.ID);
+            GL.BufferData(BufferTarget.ArrayBuffer, dataSize, _vertexBufferData, BufferUsageHint.DynamicDraw);
+        }
+
+
         /// <summary>
         /// Updates the transformation matrix data in the GPU using the given information.
         /// </summary>
@@ -297,8 +343,7 @@ namespace Raptor.OpenGLImp
                                                angle,
                                                size);
 
-            var transDataLocation = GL.GetUniformLocation(_shaderProgram.ID, "u_Transform");
-            GL.UniformMatrix4(transDataLocation, true, ref transMatrix);
+            GL.UniformMatrix4(TRANSFORM_DATA_LOCATION, true, ref transMatrix);
         }
 
 

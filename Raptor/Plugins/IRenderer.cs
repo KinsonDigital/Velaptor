@@ -37,6 +37,13 @@ namespace Raptor.Plugins
 
 
         /// <summary>
+        /// Renders a texture using the given <paramref name="textureData"/>.
+        /// </summary>
+        /// <param name="textureData">The texture data used to render a texture.</param>
+        void Render(TextureData textureData);
+
+
+        /// <summary>
         /// Renders the given text at the given <paramref name="x"/> and <paramref name="y"/>
         /// location and using the given <paramref name="color"/>.
         /// </summary>

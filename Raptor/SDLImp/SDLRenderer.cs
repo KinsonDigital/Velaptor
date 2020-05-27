@@ -464,6 +464,11 @@ namespace Raptor.SDLImp
         {
             throw new NotImplementedException();
         }
+
+        public void Render(TextureData textureData)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }

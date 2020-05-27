@@ -2,6 +2,9 @@
 using Raptor;
 using Raptor.Content;
 using Raptor.Graphics;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace RaptorSandBox
 {
@@ -20,6 +23,7 @@ namespace RaptorSandBox
         {
             _contentLoader = new ContentLoader(new ImageFile());
             _renderer = new Renderer();
+
             Width = 1020;
             Height = 800;
         }
@@ -29,6 +33,9 @@ namespace RaptorSandBox
         {
             _bgTexture = _contentLoader.LoadTexture("Dungeon.png");
             _linkTexture = _contentLoader.LoadTexture("Link.png");
+
+
+            _linkTexture.Layer = 1;
             
             base.OnLoad();
         }
@@ -52,10 +59,43 @@ namespace RaptorSandBox
         }
 
 
+        List<double> _perfTimes = new List<double>();
+
         public override void OnDraw(FrameTime frameTime)
         {
-            _renderer.Render(_bgTexture, Width / 2, Height / 2);
+            var timer = new Stopwatch();
+
+            timer.Start();
+            //------TEST 1------
+            _renderer.Begin();
             _renderer.Render(_linkTexture, _textureX, 300, 0, 1f, new GameColor(255, 255, 255, 255));
+            _renderer.Render(_bgTexture, Width / 2, Height / 2, 0, 1, new GameColor(255, 255, 255, 255));
+            _renderer.End();
+            /*Results:
+                0.0416
+                0.0338
+            */
+            //------------------
+
+
+
+            //------TEST 2------
+            //_renderer.Render_OLD(_bgTexture, Width / 2, Height / 2, 0, 1, new GameColor(255, 255, 255, 255));
+            //_renderer.Render_OLD(_linkTexture, _textureX, 300, 0, 1f, new GameColor(255, 255, 255, 255));
+            //Result: 0.0291
+            //------------------
+            timer.Stop();
+
+            _perfTimes.Add(timer.Elapsed.TotalMilliseconds);
+
+
+            if (_perfTimes.Count >= 500)
+            {
+                var perfResult = _perfTimes.Average();
+
+                Debugger.Break();
+            }
+
 
             base.OnDraw(frameTime);
         }

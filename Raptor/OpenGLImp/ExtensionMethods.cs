@@ -9,6 +9,9 @@ namespace Raptor.OpenGLImp
         public static float MapValue(this float value, float fromStart, float fromStop, float toStart, float toStop) =>
             toStart + (toStop - toStart) * ((value - fromStart) / (fromStop - fromStart));
 
+        public static byte MapValue(this byte value, byte fromStart, byte fromStop, byte toStart, byte toStop) =>
+            (byte)(toStart + (toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
+            
 
         public static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
         {
