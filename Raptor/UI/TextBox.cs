@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.Numerics;
+using OpenToolkit.Graphics.OpenGL;
 using Raptor.Content;
 using Raptor.Graphics;
 using Raptor.Input;
@@ -143,7 +145,7 @@ namespace Raptor.UI
             if (!(_visibleText is null))
             {
                 _visibleText.Text = ClipText(Text);
-                renderer.Render(_visibleText, _textPosition, new Color(255, 0, 0, 0));
+                renderer.Render(_visibleText, _textPosition, Color.FromArgb(255, 0, 0, 0));
             }
 
             //Render the end to cover any text that has passed the end of the render area
@@ -151,7 +153,8 @@ namespace Raptor.UI
 
             var areaWidth = Width - (_rightSide - topLeftCorner.X);
 
-            var coverArea = new Rect(Width - areaWidth, 0, areaWidth, Height);
+            var coverArea = new Rectangle((int)(Width - areaWidth), 0, (int)areaWidth, (int)Height);
+
             var coverPosition = new Vector2(454, 250);// new Vector2(_rightSide, Position.Y);
 
             renderer.RenderTextureArea(BackgroundTexture, coverArea, coverPosition);
@@ -160,16 +163,16 @@ namespace Raptor.UI
             //TODO: Figure out is the code in the debugging comment section below is needed and if not, remove it
             //DEBUGGING
             //Render the dot at the right side line
-            renderer.FillCircle(new Vector2(_rightSide, Position.Y - Height / 2), 5, new Color(255, 125, 125, 0));
+            renderer.FillCircle(new Vector2(_rightSide, Position.Y - Height / 2), 5, Color.FromArgb(255, 125, 125, 0));
 
             //Render the margins for visual debugging
             var leftMarginStart = new Vector2(_leftSide, Position.Y - 50);
             var leftMarginStop = new Vector2(_leftSide, Position.Y + 50);
-            renderer.Line(leftMarginStart, leftMarginStop, new Color(255, 0, 255, 0));
+            renderer.Line(leftMarginStart, leftMarginStop, Color.FromArgb(255, 0, 255, 0));
 
             var rightMarginStart = new Vector2(_rightSide, Position.Y - 50);
             var rightMarginStop = new Vector2(_rightSide, Position.Y + 50);
-            renderer.Line(rightMarginStart, rightMarginStop, new Color(255, 0, 255, 0));
+            renderer.Line(rightMarginStart, rightMarginStop, Color.FromArgb(255, 0, 255, 0));
             ///////////
 
             //Render the blinking cursor
@@ -180,7 +183,7 @@ namespace Raptor.UI
             lineStop.X = lineStop.X > _rightSide ? _rightSide : lineStop.X;
 
             if (_cursorVisible)
-                renderer.Line(lineStart, lineStop, new Color(255, 255, 0, 0));//TODO: Change to black when finished with testing
+                renderer.Line(lineStart, lineStop, Color.FromArgb(255, 255, 0, 0));//TODO: Change to black when finished with testing
         }
         #endregion
 

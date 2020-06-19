@@ -3,6 +3,7 @@ using Raptor.Graphics;
 using Raptor.Input;
 using System;
 using System.Numerics;
+using System.Drawing;
 
 namespace Raptor.UI
 {
@@ -21,7 +22,7 @@ namespace Raptor.UI
 
         #region Private Fields
         private readonly Mouse _mouse;
-        private Rect _rect = new Rect();
+        private Rectangle _rect = new Rectangle();
         private bool _isMouseDown;
         #endregion
 
@@ -129,8 +130,8 @@ namespace Raptor.UI
         {
             ProcessMouse();
 
-            _rect.X = Position.X - Width / 2f;
-            _rect.Y = Position.Y - Height / 2f;
+            _rect.X = (int)(Position.X - Width / 2f);
+            _rect.Y = (int)(Position.Y - Height / 2f);
             _rect.Width = Width;
             _rect.Height = Height;
         }
@@ -172,7 +173,7 @@ namespace Raptor.UI
             };
 
             if(ButtonText != null)
-                renderer.Render(ButtonText, textPosition, new Color(255, 0, 0, 0));
+                renderer.Render(ButtonText, textPosition, Color.FromArgb(255, 0, 0, 0));
         }
         #endregion
 

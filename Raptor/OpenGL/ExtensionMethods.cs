@@ -27,18 +27,7 @@ namespace Raptor.OpenGL
 
         public static Vector4 ToVector4(this System.Drawing.Color clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
 
-
-        public static Vector4 ToVector4(this Graphics.Color clr) => new Vector4(clr.Red, clr.Green, clr.Blue, clr.Alpha);
-
-
-        public static Vector4 ToGLColor(this System.Drawing.Color value)
-        {
-            var vec4 = value.ToVector4();
-            return vec4.MapValues(0, 255, 0, 1);
-        }
-
-
-        public static Vector4 ToGLColor(this Graphics.Color value)
+        public static Vector4 ToGLColor(this Color value)
         {
             var vec4 = value.ToVector4();
             return vec4.MapValues(0, 255, 0, 1);

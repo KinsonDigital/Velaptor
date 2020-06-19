@@ -1,5 +1,6 @@
 ﻿using Raptor.Graphics;
 using System;
+using System.Drawing;
 using System.Numerics;
 
 namespace Raptor.UI
@@ -49,7 +50,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the selected color of the text item.
         /// </summary>
-        public Color SelectedColor { get; set; } = new Color(255, 255, 255, 0);
+        public Color SelectedColor { get; set; } = Color.FromArgb(255, 255, 255, 0);
 
         /// <summary>
         /// Gets or sets the name of the text item.
@@ -157,12 +158,12 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the color of the label section of the text.
         /// </summary>
-        public Color LabelColor { get; set; } = new Color(255, 0, 0, 0);
+        public Color LabelColor { get; set; } = Color.FromArgb(255, 0, 0, 0);
 
         /// <summary>
         /// Gets or sets the color of the value section of the text.
         /// </summary>
-        public Color ValueColor { get; set; } = new Color(255, 0, 0, 0);
+        public Color ValueColor { get; set; } = Color.FromArgb(255, 0, 0, 0);
 
         /// <summary>
         /// Gets or sets a value indicating if the <see cref="UIText"/> item will render in the
@@ -173,7 +174,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the forecolor of the <see cref="UIText"/> item when disabled.
         /// </summary>
-        public Color DisabledForecolor { get; set; } = new Color(255, 100, 100, 100);
+        public Color DisabledForecolor { get; set; } = Color.FromArgb(255, 100, 100, 100);
         #endregion
 
 

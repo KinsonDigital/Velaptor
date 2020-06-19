@@ -1,4 +1,6 @@
-﻿namespace Raptor.Graphics
+﻿using System.Drawing;
+
+namespace Raptor.Graphics
 {
     /// <summary>
     /// Provides game text that can be rendered to a graphics surface.
@@ -20,7 +22,7 @@
 
         public Color Color
         {
-            get => InternalText is null ? new Color(0, 0, 0, 0) : InternalText.Color;
+            get => InternalText is null ? Color.FromArgb(0, 0, 0, 0) : InternalText.Color;
             set { if (!(InternalText is null)) InternalText.Color = value; }
         }
         #endregion

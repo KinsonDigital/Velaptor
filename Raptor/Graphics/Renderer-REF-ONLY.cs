@@ -2,6 +2,7 @@ using Raptor.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Numerics;
 
 namespace Raptor.Graphics
@@ -51,7 +52,7 @@ namespace Raptor.Graphics
         /// <param name="red">The red component of the color.</param>
         /// <param name="green">The green component of the color.</param>
         /// <param name="blue">The blue component of the color.</param>
-        public void Clear(byte alpha, byte red, byte green, byte blue) => Clear(new Color(alpha, red, green, blue));
+        public void Clear(byte alpha, byte red, byte green, byte blue) => Clear(Color.FromArgb(alpha, red, green, blue));
 
 
         /// <summary>
@@ -78,7 +79,7 @@ namespace Raptor.Graphics
         /// <param name="y">The Y coordinate location on the screen to render.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(Texture texture, float x, float y)
-            => Render(texture, x, y, 0, 1, new Color(255, 255, 255, 255));
+            => Render(texture, x, y, 0, 1, Color.FromArgb(255, 255, 255, 255));
 
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace Raptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="position">The position on the surface to render.</param>
         public void Render(Texture texture, Vector2 position)
-            => Render(texture, position.X, position.Y, 0, 1, new Color(255, 255, 255, 255));
+            => Render(texture, position.X, position.Y, 0, 1, Color.FromArgb(255, 255, 255, 255));
 
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace Raptor.Graphics
         /// <param name="angle">The angle in degrees to rotate the texture to.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(Texture texture, float x, float y, float angle)
-            => Render(texture, x, y, angle, 1, new Color(255, 255, 255, 255));
+            => Render(texture, x, y, angle, 1, Color.FromArgb(255, 255, 255, 255));
 
 
         /// <summary>
@@ -131,10 +132,10 @@ namespace Raptor.Graphics
                 Height = texture.Height,
                 Angle = angle,
                 Size = size,
-                TintColorAlpha = color.Alpha,
-                TintColorRed = color.Red,
-                TintColorGreen = color.Green,
-                TintColorBlue = color.Blue
+                TintColorAlpha = color.A,
+                TintColorRed = color.R,
+                TintColorGreen = color.G,
+                TintColorBlue = color.B
             };
 
 
@@ -181,7 +182,7 @@ namespace Raptor.Graphics
         /// <param name="y">The Y coordinate position on the surface to render.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(RenderText text, float x, float y)
-            => Render(text, x, y, new Color(255, 0, 0, 0));
+            => Render(text, x, y, Color.FromArgb(255, 0, 0, 0));
 
 
         /// <summary>
@@ -191,7 +192,7 @@ namespace Raptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="position">The position on the surface to render.</param>
         public void Render(RenderText text, Vector2 position)
-            => Render(text, position.X, position.Y, new Color(255, 0, 0, 0));
+            => Render(text, position.X, position.Y, Color.FromArgb(255, 0, 0, 0));
 
 
         /// <summary>
@@ -228,7 +229,7 @@ namespace Raptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="area">The area/section of the texture to render.</param>
         /// <param name="position">The position on the surface to render.</param>
-        public void RenderTextureArea(Texture texture, Rect area, Vector2 position)
+        public void RenderTextureArea(Texture texture, Rectangle area, Vector2 position)
         {
         }
 
@@ -252,7 +253,7 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="rect">The rectangle to render.</param>
         /// <param name="color">The color of the rectangle.</param>
-        public void FillRect(Rect rect, Color color)
+        public void FillRect(Rectangle rect, Color color)
         {
         }
 

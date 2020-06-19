@@ -4,6 +4,7 @@ using Raptor.Content;
 using Raptor.Graphics;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 
 namespace RaptorSandBox
@@ -68,8 +69,8 @@ namespace RaptorSandBox
             timer.Start();
             //------TEST 1------
             _renderer.Begin();
-            _renderer.Render(_linkTexture, _textureX, 300, 0, 1f, new Color(255, 255, 255, 255));
-            _renderer.Render(_bgTexture, Width / 2, Height / 2, 0, 1, new Color(255, 255, 255, 255));
+            _renderer.Render(_linkTexture, _textureX, 300, 0, 1f, Color.FromArgb(255, 255, 255, 255));
+            _renderer.Render(_bgTexture, Width / 2, Height / 2, 0, 1, Color.FromArgb(255, 255, 255, 255));
             _renderer.End();
             /*Results:
                 0.0416

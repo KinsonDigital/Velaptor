@@ -2,6 +2,7 @@
 using Raptor.Graphics;
 using Raptor;
 using Xunit;
+using System.Drawing;
 
 namespace RaptorTests.Graphics
 {
@@ -79,15 +80,15 @@ namespace RaptorTests.Graphics
         {
             //Arrange
             var mockInternalText = new Mock<IText>();
-            mockInternalText.SetupProperty(m => m.Color, new Color(0, 0, 0, 0));
+            mockInternalText.SetupProperty(m => m.Color, Color.FromArgb(0, 0, 0, 0));
             var gameText = new RenderText()
             {
                 InternalText = mockInternalText.Object
             };
-            var expected = new Color(44, 11, 22, 33);
+            var expected = Color.FromArgb(44, 11, 22, 33);
 
             //Act
-            gameText.Color = new Color(44, 11, 22, 33);
+            gameText.Color = Color.FromArgb(44, 11, 22, 33);
             var actual = gameText.Color;
 
             //Assert
@@ -99,8 +100,8 @@ namespace RaptorTests.Graphics
         public void Color_WhenComparingColorsThatAreNotEqual_ReturnsFalse()
         {
             //Arrange
-            var colorA = new Color(4, 1, 2, 3);
-            var colorB = new Color(44, 11, 22, 33);
+            var colorA = Color.FromArgb(4, 1, 2, 3);
+            var colorB = Color.FromArgb(44, 11, 22, 33);
 
             //Act & Assert
             Assert.NotEqual(colorA, colorB);
