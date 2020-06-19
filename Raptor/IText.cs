@@ -26,7 +26,7 @@ namespace Raptor
         /// <summary>
         /// Gets or sets the color of the text.
         /// </summary>
-        GameColor Color { get; set; }
+        Color Color { get; set; }
         #endregion
     }
 }

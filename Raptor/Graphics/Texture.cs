@@ -1,4 +1,4 @@
-﻿using Raptor.OpenGLImp;
+﻿using Raptor.OpenGL;
 
 namespace Raptor.Graphics
 {
@@ -8,15 +8,8 @@ namespace Raptor.Graphics
     public class Texture
     {
         #region Constructors
-        public Texture(ITexture texture)
-        {
-            InternalTexture = texture;
-        }
-
-
         public Texture(byte[] imageData, int width, int height)
         {
-            InternalTexture = new GLTexture(imageData, width, height);
         }
         #endregion
 
@@ -25,23 +18,20 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets or sets the ID of the texture.
         /// </summary>
-        public int ID => InternalTexture.ID;
+        public int ID { get; set; }
 
         /// <summary>
         /// Gets the width of the texture.
         /// </summary>
-        public int Width => InternalTexture.Width;
+        public int Width { get; set; }
 
         /// <summary>
         /// Gets the height of the texture.
         /// </summary>
-        public int Height => InternalTexture.Height;
+        public int Height { get; set; }
 
 
         public int Layer { get; set; }
-
-
-        internal ITexture InternalTexture { get; private set; }
         #endregion
     }
 }

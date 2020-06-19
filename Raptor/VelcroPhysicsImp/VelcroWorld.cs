@@ -1,5 +1,4 @@
-﻿using Raptor.Plugins;
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using VelcroPhysics.Collision.Shapes;
 using VelcroPhysics.Dynamics;
@@ -13,7 +12,7 @@ namespace Raptor.VelcroPhysicsImp
     /// Represents a world with simulated physics.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class VelcroWorld : IPhysicsWorld
+    public class VelcroWorld
     {
         #region Constructors
         /// <summary>
@@ -66,7 +65,7 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         /// <typeparam name="T">The type of physics body to add.</typeparam>
         /// <param name="body">The body to add.</param>
-        public void AddBody<T>(T body) where T : IPhysicsBody
+        public void AddBody<T>(T body)
         {
             var velVertices = new Vertices();
 
@@ -91,7 +90,7 @@ namespace Raptor.VelcroPhysicsImp
             //body.InjectData(polyShape);
 
             //Execute any deferred actions if any exist
-            body.AfterAddedToWorldActions.ExecuteAll();
+            //body.AfterAddedToWorldActions.ExecuteAll();
         }
 
 

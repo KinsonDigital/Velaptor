@@ -1,5 +1,4 @@
-﻿using Raptor.Plugins;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -103,13 +102,6 @@ namespace Raptor.Input
         /// <summary>
         /// Creates a new instance of <see cref="Keyboard"/>.
         /// </summary>
-        /// <param name="keyboard">The keyboard implementation..</param>
-        public Keyboard(IKeyboard keyboard) => InternalKeyboard = keyboard;
-
-
-        /// <summary>
-        /// Creates a new instance of <see cref="Keyboard"/>.
-        /// </summary>
         [ExcludeFromCodeCoverage]
         public Keyboard() { }
         #endregion
@@ -117,49 +109,44 @@ namespace Raptor.Input
 
         #region Props
         /// <summary>
-        /// The internal keyboard plugin implementation.
-        /// </summary>
-        internal IKeyboard? InternalKeyboard { get; }
-
-        /// <summary>
         /// Gets a value indicating if the caps lock key is on.
         /// </summary>
-        public bool CapsLockOn => !(InternalKeyboard is null) && InternalKeyboard.CapsLockOn;
+        public bool CapsLockOn { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the numlock key is on.
         /// </summary>
-        public bool NumLockOn => !(InternalKeyboard is null) && InternalKeyboard.NumLockOn;
+        public bool NumLockOn { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the left shift key is being pressed down.
         /// </summary>
-        public bool IsLeftShiftDown => !(InternalKeyboard is null) && InternalKeyboard.IsLeftShiftDown;
+        public bool IsLeftShiftDown { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the right shift key is being pressed down.
         /// </summary>
-        public bool IsRightShiftDown => !(InternalKeyboard is null) && InternalKeyboard.IsRightShiftDown;
+        public bool IsRightShiftDown { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the left control key is being pressed down.
         /// </summary>
-        public bool IsLeftCtrlDown => !(InternalKeyboard is null) && InternalKeyboard.IsLeftCtrlDown;
+        public bool IsLeftCtrlDown { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the right control key is being pressed down.
         /// </summary>
-        public bool IsRightCtrlDown => !(InternalKeyboard is null) && InternalKeyboard.IsRightCtrlDown;
+        public bool IsRightCtrlDown { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the left alt key is being pressed down.
         /// </summary>
-        public bool IsLeftAltDown => !(InternalKeyboard is null) && InternalKeyboard.IsLeftAltDown;
+        public bool IsLeftAltDown { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the right alt key is being pressed down.
         /// </summary>
-        public bool IsRightAltDown => !(InternalKeyboard is null) && InternalKeyboard.IsRightAltDown;
+        public bool IsRightAltDown { get; set; }
         #endregion
 
 
@@ -170,11 +157,9 @@ namespace Raptor.Input
         /// <returns></returns>
         public KeyCode[] GetCurrentPressedKeys()
         {
-            if (InternalKeyboard is null)
-                return Array.Empty<KeyCode>();
-
-            return (from k in InternalKeyboard.GetCurrentPressedKeys()
-                    select k).ToArray();
+            throw new NotImplementedException();
+            //return (from k in InternalKeyboard.GetCurrentPressedKeys()
+            //        select k).ToArray();
         }
 
 
@@ -184,11 +169,9 @@ namespace Raptor.Input
         /// <returns></returns>
         public KeyCode[] GetPreviousPressedKeys()
         {
-            if (InternalKeyboard is null)
-                return Array.Empty<KeyCode>();
-
-            return (from k in InternalKeyboard.GetPreviousPressedKeys()
-                    select k).ToArray();
+            throw new NotImplementedException();
+            //return (from k in InternalKeyboard.GetPreviousPressedKeys()
+            //        select k).ToArray();
         }
 
 
@@ -196,7 +179,7 @@ namespace Raptor.Input
         /// Gets a value indicating if any keys are in the down position.
         /// </summary>
         /// <returns></returns>
-        public bool AreAnyKeysDown() => !(InternalKeyboard is null) && InternalKeyboard.AreAnyKeysDown();
+        public bool AreAnyKeysDown() { throw new NotImplementedException(); }
 
 
         /// <summary>
@@ -204,7 +187,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="keys">The list of key codes to check.</param>
         /// <returns></returns>
-        public bool IsAnyKeyDown(KeyCode[] keys) => !(InternalKeyboard is null) && InternalKeyboard.AreKeysDown(keys);
+        public bool IsAnyKeyDown(KeyCode[] keys) { throw new NotImplementedException(); }
 
 
         /// <summary>
@@ -212,7 +195,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyDown(KeyCode key) => !(InternalKeyboard is null) && InternalKeyboard.IsKeyDown(key);
+        public bool IsKeyDown(KeyCode key) { throw new NotImplementedException(); }
 
 
         /// <summary>
@@ -220,7 +203,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyUp(KeyCode key) => InternalKeyboard is null || InternalKeyboard.IsKeyUp(key);
+        public bool IsKeyUp(KeyCode key) { throw new NotImplementedException(); }
 
 
         /// <summary>
@@ -229,7 +212,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns></returns>
-        public bool IsKeyPressed(KeyCode key) => !(InternalKeyboard is null) && InternalKeyboard.IsKeyPressed(key);
+        public bool IsKeyPressed(KeyCode key) { throw new NotImplementedException(); }
 
 
         /// <summary>
@@ -259,17 +242,14 @@ namespace Raptor.Input
         {
             letterKey = KeyCode.None;
 
-            if (InternalKeyboard is null)
-                return false;
-
-            for (int i = 0; i < _letterKeys.Length; i++)
-            {
-                if (InternalKeyboard.IsKeyPressed(_letterKeys[i]))
-                {
-                    letterKey = _letterKeys[i];
-                    return true;
-                }
-            }
+            //for (int i = 0; i < _letterKeys.Length; i++)
+            //{
+            //    if (InternalKeyboard.IsKeyPressed(_letterKeys[i]))
+            //    {
+            //        letterKey = _letterKeys[i];
+            //        return true;
+            //    }
+            //}
 
 
             return false;
@@ -372,30 +352,27 @@ namespace Raptor.Input
         {
             numberKey = KeyCode.None;
 
-            if (InternalKeyboard is null)
-                return false;
+            ////Check standard number keys
+            //for (int i = 0; i < _standardNumberKeys.Length; i++)
+            //{
+            //    if (InternalKeyboard.IsKeyPressed(_standardNumberKeys[i]))
+            //    {
+            //        numberKey = _standardNumberKeys[i];
 
-            //Check standard number keys
-            for (int i = 0; i < _standardNumberKeys.Length; i++)
-            {
-                if (InternalKeyboard.IsKeyPressed(_standardNumberKeys[i]))
-                {
-                    numberKey = _standardNumberKeys[i];
+            //        return true;
+            //    }
+            //}
 
-                    return true;
-                }
-            }
+            ////Check numpad number keys
+            //for (int i = 0; i < _numpadNumberKeys.Length; i++)
+            //{
+            //    if (InternalKeyboard.IsKeyPressed(_numpadNumberKeys[i]))
+            //    {
+            //        numberKey = _numpadNumberKeys[i];
 
-            //Check numpad number keys
-            for (int i = 0; i < _numpadNumberKeys.Length; i++)
-            {
-                if (InternalKeyboard.IsKeyPressed(_numpadNumberKeys[i]))
-                {
-                    numberKey = _numpadNumberKeys[i];
-
-                    return true;
-                }
-            }
+            //        return true;
+            //    }
+            //}
 
 
             return false;
@@ -451,23 +428,22 @@ namespace Raptor.Input
         /// Returns a value indicating if any of the shift keys are being pressed down.
         /// </summary>
         /// <returns></returns>
-        public bool IsAnyShiftKeyDown() =>
-            !(InternalKeyboard is null) && (InternalKeyboard.IsKeyDown(KeyCode.LeftShift) || InternalKeyboard.IsKeyDown(KeyCode.RightShift));
+            
+        public bool IsAnyShiftKeyDown() { throw new NotImplementedException(); }
 
 
         /// <summary>
         /// Returns a value indicating if any of the control keys are being pressed down.
         /// </summary>
         /// <returns></returns>
-        public bool IsAnyCtrlKeyDown() => !(InternalKeyboard is null) && (InternalKeyboard.IsLeftCtrlDown || InternalKeyboard.IsRightCtrlDown);
+        public bool IsAnyCtrlKeyDown() { throw new NotImplementedException(); }
 
 
         /// <summary>
         /// Returns a value indicating if the any of the delete keys have been fully pressed.
         /// </summary>
         /// <returns></returns>
-        public bool IsDeleteKeyPressed() =>
-            IsKeyPressed(KeyCode.Delete) || (IsAnyShiftKeyDown() && IsKeyPressed(KeyCode.Decimal));
+        public bool IsDeleteKeyPressed() { throw new NotImplementedException(); }
 
 
         /// <summary>
@@ -483,10 +459,7 @@ namespace Raptor.Input
         /// </summary>
         public void UpdateCurrentState()
         {
-            if (InternalKeyboard is null)
-                return;
-
-            InternalKeyboard.UpdateCurrentState();
+            //InternalKeyboard.UpdateCurrentState();
         }
 
 
@@ -495,10 +468,7 @@ namespace Raptor.Input
         /// </summary>
         public void UpdatePreviousState()
         {
-            if (InternalKeyboard is null)
-                return;
-
-            InternalKeyboard.UpdatePreviousState();
+            //InternalKeyboard.UpdatePreviousState();
         }
         #endregion
     }

@@ -13,7 +13,7 @@ namespace RaptorSandBox
         private Texture _linkTexture;
         private Texture _bgTexture;
         private readonly ContentLoader _contentLoader;
-        private Renderer _renderer;
+        private RendererREFONLY _renderer;
         private double _timeElapsed;
         private int _textureX = 200;
         private int _speed = 2;
@@ -22,7 +22,7 @@ namespace RaptorSandBox
         public MyWindow()
         {
             _contentLoader = new ContentLoader(new ImageFile());
-            _renderer = new Renderer();
+            _renderer = new RendererREFONLY();
 
             Width = 1020;
             Height = 800;
@@ -68,8 +68,8 @@ namespace RaptorSandBox
             timer.Start();
             //------TEST 1------
             _renderer.Begin();
-            _renderer.Render(_linkTexture, _textureX, 300, 0, 1f, new GameColor(255, 255, 255, 255));
-            _renderer.Render(_bgTexture, Width / 2, Height / 2, 0, 1, new GameColor(255, 255, 255, 255));
+            _renderer.Render(_linkTexture, _textureX, 300, 0, 1f, new Color(255, 255, 255, 255));
+            _renderer.Render(_bgTexture, Width / 2, Height / 2, 0, 1, new Color(255, 255, 255, 255));
             _renderer.End();
             /*Results:
                 0.0416
@@ -80,8 +80,8 @@ namespace RaptorSandBox
 
 
             //------TEST 2------
-            //_renderer.Render_OLD(_bgTexture, Width / 2, Height / 2, 0, 1, new GameColor(255, 255, 255, 255));
-            //_renderer.Render_OLD(_linkTexture, _textureX, 300, 0, 1f, new GameColor(255, 255, 255, 255));
+            //_renderer.Render_OLD(_bgTexture, Width / 2, Height / 2, 0, 1, new Color(255, 255, 255, 255));
+            //_renderer.Render_OLD(_linkTexture, _textureX, 300, 0, 1f, new Color(255, 255, 255, 255));
             //Result: 0.0291
             //------------------
             timer.Stop();

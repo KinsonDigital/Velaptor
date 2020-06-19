@@ -13,7 +13,7 @@ namespace Raptor.UI
         #region Private Fields
         private int _elapsedTime;//The amount of time that has elapsed since the last frame in miliseconds.
         private bool _updateText;//Indicates if the text can be updated.  Only updated if the UpdateFrequency value is >= to the elapsed time
-        private GameText? _labelText;
+        private RenderText? _labelText;
         #endregion
 
 
@@ -49,7 +49,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the selected color of the text item.
         /// </summary>
-        public GameColor SelectedColor { get; set; } = new GameColor(255, 255, 255, 0);
+        public Color SelectedColor { get; set; } = new Color(255, 255, 255, 0);
 
         /// <summary>
         /// Gets or sets the name of the text item.
@@ -61,7 +61,7 @@ namespace Raptor.UI
         /// Gets or sets the label section of the text item.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public GameText? LabelText
+        public RenderText? LabelText
         {
             get => _labelText;
             set
@@ -77,7 +77,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the value section of the text.
         /// </summary>
-        public GameText? ValueText { get; set; }
+        public RenderText? ValueText { get; set; }
 
         /// <summary>
         /// Gets or sets the position of the text on the graphics surface.
@@ -157,12 +157,12 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the color of the label section of the text.
         /// </summary>
-        public GameColor LabelColor { get; set; } = new GameColor(255, 0, 0, 0);
+        public Color LabelColor { get; set; } = new Color(255, 0, 0, 0);
 
         /// <summary>
         /// Gets or sets the color of the value section of the text.
         /// </summary>
-        public GameColor ValueColor { get; set; } = new GameColor(255, 0, 0, 0);
+        public Color ValueColor { get; set; } = new Color(255, 0, 0, 0);
 
         /// <summary>
         /// Gets or sets a value indicating if the <see cref="UIText"/> item will render in the
@@ -173,7 +173,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the forecolor of the <see cref="UIText"/> item when disabled.
         /// </summary>
-        public GameColor DisabledForecolor { get; set; } = new GameColor(255, 100, 100, 100);
+        public Color DisabledForecolor { get; set; } = new Color(255, 100, 100, 100);
         #endregion
 
 
@@ -229,7 +229,7 @@ namespace Raptor.UI
         /// </summary>
         /// <param name="renderer">The renderer to use to render the <see cref="UIText"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Render(Renderer renderer)
+        public void Render(RendererREFONLY renderer)
         {
             if (renderer is null)
                 throw new Exception($"The renderer cannot be null.");

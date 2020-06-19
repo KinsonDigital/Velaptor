@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Raptor.Plugins
+namespace Raptor
 {
     /// <summary>
     /// Provides the core of a game which facilitates how the engine starts, stops,

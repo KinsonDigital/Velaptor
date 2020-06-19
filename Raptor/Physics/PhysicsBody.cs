@@ -1,4 +1,3 @@
-using Raptor.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,23 +13,11 @@ namespace Raptor.Physics
     public class PhysicsBody
     {
         #region Private Fields
-        private IPhysicsBody? _internalPhysicsBody;
         private object[]? _ctorParams;
         #endregion
 
 
         #region Constructors
-        /// <summary>
-        /// Creates a new instance of <see cref="PhysicsBody"/>.
-        /// </summary>
-        /// <param name="physicsBody">The physics body.</param>
-        public PhysicsBody(IPhysicsBody physicsBody)
-        {
-            InternalPhysicsBody = physicsBody;
-            Setup(new Vector2[1] { Vector2.Zero }, Vector2.Zero, 0, 1, 0.2f, 0, false);
-        }
-
-
         /// <summary>
         /// Creates a new instance of a <see cref="PhysicsBody"/>.
         /// </summary>
@@ -49,143 +36,76 @@ namespace Raptor.Physics
 
         #region Props
         /// <summary>
-        /// The internal physics engine body.
-        /// </summary>
-        internal IPhysicsBody? InternalPhysicsBody
-        {
-            [ExcludeFromCodeCoverage]
-            get
-            {
-                //TODO: Figure out how to get the proper implementation inside of this class
-                return _internalPhysicsBody;
-            }
-            private set
-            {
-                if (value is null)
-                    return;
-
-                _internalPhysicsBody = value;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the vertices that maake up the shape of the body.
         /// </summary>
-        public ReadOnlyCollection<Vector2> Vertices
-        {
-            get
-            {
-                var result = new List<Vector2>();
+        public ReadOnlyCollection<Vector2> Vertices { get; set; }
+        //{
+        //    get
+        //    {
+        //        var result = new List<Vector2>();
 
-                if (InternalPhysicsBody is null || InternalPhysicsBody.XVertices == null || InternalPhysicsBody.YVertices == null)
-                    return new ReadOnlyCollection<Vector2>(Array.Empty<Vector2>());
+        //        if (InternalPhysicsBody is null || InternalPhysicsBody.XVertices == null || InternalPhysicsBody.YVertices == null)
+        //            return new ReadOnlyCollection<Vector2>(Array.Empty<Vector2>());
 
-                for (int i = 0; i < InternalPhysicsBody.XVertices.Count; i++)
-                {
-                    result.Add(new Vector2(InternalPhysicsBody.XVertices[i], InternalPhysicsBody.YVertices[i]));
-                }
+        //        for (int i = 0; i < InternalPhysicsBody.XVertices.Count; i++)
+        //        {
+        //            result.Add(new Vector2(InternalPhysicsBody.XVertices[i], InternalPhysicsBody.YVertices[i]));
+        //        }
 
 
-                return new ReadOnlyCollection<Vector2>(result);
-            }
-        }
+        //        return new ReadOnlyCollection<Vector2>(result);
+        //    }
+        //}
 
         /// <summary>
         /// The X coordinate of the body's location.
         /// </summary>
-        public float X
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.X;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.X = value; }
-        }
+        public float X { get; set; }
 
         /// <summary>
         /// The Y coordinate of the body's location.
         /// </summary>
-        public float Y
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Y;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Y = value; }
-        }
+        public float Y { get; set; }
 
         /// <summary>
         /// Gets or sets the angle of the body in degrees.
         /// </summary>
-        public float Angle
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Angle;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Angle = value; }
-        }
+        public float Angle { get; set; }
 
         /// <summary>
         /// Gets or sets the density of the body.
         /// </summary>
-        public float Density
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Density;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Density = value; }
-        }
+        public float Density { get; set; }
 
         /// <summary>
         /// Gets or sets the friction of the body.
         /// </summary>
-        public float Friction
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Friction;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Friction = value; }
-        }
+        public float Friction { get; set; }
 
         /// <summary>
         /// Gets or sets the restitution(bounciness) of the body.
         /// </summary>
-        public float Restitution
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.Restitution;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.Restitution = value; }
-        }
+        public float Restitution { get; set; }
 
         /// <summary>
         /// Gets or sets the linear velocity in the Y plane.
         /// </summary>
-        public Vector2 LinearVelocity
-        {
-            get => new Vector2(InternalPhysicsBody is null ? 0 : InternalPhysicsBody.LinearVelocityX, InternalPhysicsBody is null ? 0 : InternalPhysicsBody.LinearVelocityY);
-            set
-            {
-                if (InternalPhysicsBody is null)
-                    return;
-
-                InternalPhysicsBody.LinearVelocityX = value.X;
-                InternalPhysicsBody.LinearVelocityY = value.Y;
-            }
-        }
+        public Vector2 LinearVelocity { get; set; }
 
         /// <summary>
         /// Gets or sets the angular velocity.
         /// </summary>
-        public float AngularVelocity
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.AngularVelocity;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.AngularVelocity = value; }
-        }
+        public float AngularVelocity { get; set; }
 
         /// <summary>
         /// Gets or sets the linear deceleration.
         /// </summary>
-        public float LinearDeceleration
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.LinearDeceleration;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.LinearDeceleration = value; }
-        }
+        public float LinearDeceleration { get; set; }
 
         /// <summary>
         /// Gets or sets the angular desceleration.
         /// </summary>
-        public float AngularDeceleration
-        {
-            get => InternalPhysicsBody is null ? 0 : InternalPhysicsBody.AngularDeceleration;
-            set { if (!(InternalPhysicsBody is null)) InternalPhysicsBody.AngularDeceleration = value; }
-        }
+        public float AngularDeceleration { get; set; }
         #endregion
 
 

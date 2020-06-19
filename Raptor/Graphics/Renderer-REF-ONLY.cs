@@ -1,5 +1,4 @@
-using Raptor.OpenGLImp;
-using Raptor.Plugins;
+using Raptor.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -7,14 +6,16 @@ using System.Numerics;
 
 namespace Raptor.Graphics
 {
+    //!!NOTE!! - This is only going to be used as a reference for creating the SpriteBatch class
+
+
+
     /// <summary>
     /// Used to render graphics to the graphics surface.
     /// </summary>
-    public class Renderer
+    public class RendererREFONLY
     {
         #region Private Fields
-        private readonly IDebugDraw? _debugDraw = null;
-        private readonly IRenderer _renderer;
         private bool _hasBegun;
         private readonly List<TextureData> _texturesToRender = new List<TextureData>();
         #endregion
@@ -22,17 +23,10 @@ namespace Raptor.Graphics
 
         #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="Renderer"/>.
-        /// </summary>
-        /// <param name="renderer">The renderer implementation.</param>
-        public Renderer(IRenderer renderer) => _renderer = renderer;
-
-
-        /// <summary>
-        /// Creates a new instance of <see cref="Renderer"/>.
+        /// Creates a new instance of <see cref="RendererREFONLY"/>.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public Renderer() => _renderer = new GLRenderer(800, 600);
+        public RendererREFONLY() { }
         #endregion
 
 
@@ -40,12 +34,12 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets or sets the width of the viewport.
         /// </summary>
-        public int ViewportWidth { get => _renderer.ViewportWidth; set => _renderer.ViewportWidth = value; }
+        public int ViewportWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the height of the viewport.
         /// </summary>
-        public int ViewportHeight { get => _renderer.ViewportHeight; set => _renderer.ViewportHeight = value; }
+        public int ViewportHeight { get; set; }
         #endregion
 
 
@@ -57,19 +51,15 @@ namespace Raptor.Graphics
         /// <param name="red">The red component of the color.</param>
         /// <param name="green">The green component of the color.</param>
         /// <param name="blue">The blue component of the color.</param>
-        public void Clear(byte alpha, byte red, byte green, byte blue) => Clear(new GameColor(alpha, red, green, blue));
+        public void Clear(byte alpha, byte red, byte green, byte blue) => Clear(new Color(alpha, red, green, blue));
 
 
         /// <summary>
         /// Clears the graphics surface to the given <paramref name="color"/>.
         /// </summary>
         /// <param name="color">The color to clear the surface to.</param>
-        public void Clear(GameColor color)
+        public void Clear(Color color)
         {
-            if (_renderer is null)
-                return;
-
-            _renderer.Clear(color);
         }
 
 
@@ -88,7 +78,7 @@ namespace Raptor.Graphics
         /// <param name="y">The Y coordinate location on the screen to render.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(Texture texture, float x, float y)
-            => Render(texture, x, y, 0, 1, new GameColor(255, 255, 255, 255));
+            => Render(texture, x, y, 0, 1, new Color(255, 255, 255, 255));
 
 
         /// <summary>
@@ -98,7 +88,7 @@ namespace Raptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="position">The position on the surface to render.</param>
         public void Render(Texture texture, Vector2 position)
-            => Render(texture, position.X, position.Y, 0, 1, new GameColor(255, 255, 255, 255));
+            => Render(texture, position.X, position.Y, 0, 1, new Color(255, 255, 255, 255));
 
 
         /// <summary>
@@ -112,7 +102,7 @@ namespace Raptor.Graphics
         /// <param name="angle">The angle in degrees to rotate the texture to.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Render(Texture texture, float x, float y, float angle)
-            => Render(texture, x, y, angle, 1, new GameColor(255, 255, 255, 255));
+            => Render(texture, x, y, angle, 1, new Color(255, 255, 255, 255));
 
 
         /// <summary>
@@ -126,14 +116,10 @@ namespace Raptor.Graphics
         /// <param name="angle">The angle in degrees to rotate the texture to.</param>
         /// <param name="color">The color to apply to the texture.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Render(Texture texture, float x, float y, float angle, float size, GameColor color)
+        public void Render(Texture texture, float x, float y, float angle, float size, Color color)
         {
             if (texture is null)
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
-
-            if (_renderer is null)
-                return;
-
 
             var textureData = new TextureData()
             {
@@ -194,8 +180,8 @@ namespace Raptor.Graphics
         /// <param name="x">The X coordinate position on the surface to render.</param>
         /// <param name="y">The Y coordinate position on the surface to render.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Render(GameText text, float x, float y)
-            => Render(text, x, y, new GameColor(255, 0, 0, 0));
+        public void Render(RenderText text, float x, float y)
+            => Render(text, x, y, new Color(255, 0, 0, 0));
 
 
         /// <summary>
@@ -204,8 +190,8 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="texture">The texture to render.</param>
         /// <param name="position">The position on the surface to render.</param>
-        public void Render(GameText text, Vector2 position)
-            => Render(text, position.X, position.Y, new GameColor(255, 0, 0, 0));
+        public void Render(RenderText text, Vector2 position)
+            => Render(text, position.X, position.Y, new Color(255, 0, 0, 0));
 
 
         /// <summary>
@@ -217,15 +203,10 @@ namespace Raptor.Graphics
         /// <param name="y">The Y coordinate location of where to render the text.</param>
         /// <param name="color">The color to render the text.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Render(GameText text, float x, float y, GameColor color)
+        public void Render(RenderText text, float x, float y, Color color)
         {
             if (text is null)
                 throw new ArgumentNullException(nameof(text), "The text must not be null.");
-
-            if (_renderer is null || text.InternalText is null)
-                return;
-
-            _renderer.Render(text.InternalText, x, y, color);
         }
 
 
@@ -236,7 +217,7 @@ namespace Raptor.Graphics
         /// <param name="text">The text to render.</param>
         /// <param name="position">The position on the surface to render.</param>
         /// <param name="color">The color to render the text.</param>
-        public void Render(GameText text, Vector2 position, GameColor color)
+        public void Render(RenderText text, Vector2 position, Color color)
             => Render(text, position.X, position.Y, color);
 
 
@@ -249,10 +230,6 @@ namespace Raptor.Graphics
         /// <param name="position">The position on the surface to render.</param>
         public void RenderTextureArea(Texture texture, Rect area, Vector2 position)
         {
-            if (_renderer is null || texture is null)
-                return;
-
-            _renderer.RenderTextureArea(texture.InternalTexture, area, position.X, position.Y);
         }
 
 
@@ -264,12 +241,8 @@ namespace Raptor.Graphics
         /// <param name="position">The position on the surface to render.</param>
         /// <param name="radius">The radius of the circle.</param>
         /// <param name="color">The color of the circle.</param>
-        public void FillCircle(Vector2 position, float radius, GameColor color)
+        public void FillCircle(Vector2 position, float radius, Color color)
         {
-            if (_renderer is null)
-                return;
-
-            _renderer.FillCircle(position.X, position.Y, radius, color);
         }
 
 
@@ -279,12 +252,8 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="rect">The rectangle to render.</param>
         /// <param name="color">The color of the rectangle.</param>
-        public void FillRect(Rect rect, GameColor color)
+        public void FillRect(Rect rect, Color color)
         {
-            if (_renderer is null)
-                return;
-
-            _renderer.FillRect(rect, color);
         }
 
 
@@ -294,12 +263,8 @@ namespace Raptor.Graphics
         /// <param name="start">The starting position of the line.</param>
         /// <param name="end">The ending position of the line.</param>
         /// <param name="color">The color of the line.</param>
-        public void Line(Vector2 start, Vector2 end, GameColor color)
+        public void Line(Vector2 start, Vector2 end, Color color)
         {
-            if (_renderer is null)
-                return;
-
-            _renderer.RenderLine(start.X, start.Y, end.X, end.Y, color);
         }
 
 
@@ -308,28 +273,16 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="body">The physics body to render.</param>
         /// <param name="color">The color to render the outline/frame.</param>
-        public void RenderDebugDraw(IPhysicsBody body, GameColor color)
+        public void RenderDebugDraw(Color color)
         {
-            if (_debugDraw is null || _renderer is null)
-                return;
-
-            _debugDraw.Draw(_renderer, body, color);
         }
 
 
         public void End()
         {
             if (!_hasBegun)
-                throw new Exception($"The '{nameof(Renderer)}.{nameof(Begin)}()' method must be invoke first.");
+                throw new Exception($"The '{nameof(RendererREFONLY)}.{nameof(Begin)}()' method must be invoke first.");
 
-            //First sort the textures to render by layer
-            //Lower layer values will render before higher layer numbers
-            _texturesToRender.Sort();
-
-            foreach (var textureData in _texturesToRender)
-                _renderer.Render(textureData);
-
-            _texturesToRender.Clear();
             _hasBegun = false;
         }
         #endregion

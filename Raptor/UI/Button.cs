@@ -103,7 +103,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the text of the button.
         /// </summary>
-        public GameText? ButtonText { get; set; }
+        public RenderText? ButtonText { get; set; }
         #endregion
 
 
@@ -142,7 +142,7 @@ namespace Raptor.UI
         /// </summary>
         /// <param name="renderer">Renders the <see cref="Button"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Render(Renderer renderer)
+        public void Render(RendererREFONLY renderer)
         {
             if (renderer is null)
                 throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
@@ -172,7 +172,7 @@ namespace Raptor.UI
             };
 
             if(ButtonText != null)
-                renderer.Render(ButtonText, textPosition, new GameColor(255, 0, 0, 0));
+                renderer.Render(ButtonText, textPosition, new Color(255, 0, 0, 0));
         }
         #endregion
 

@@ -1,7 +1,6 @@
 ﻿using OpenToolkit.Mathematics;
 using OpenToolkit.Windowing.Desktop;
-using Raptor.OpenGLImp;
-using Raptor.Plugins;
+using Raptor.OpenGL;
 using System;
 
 namespace Raptor

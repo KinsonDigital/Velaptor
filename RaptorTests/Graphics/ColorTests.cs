@@ -4,16 +4,16 @@ using Xunit;
 namespace RaptorTests.Graphics
 {
     /// <summary>
-    /// Unit tests to test the <see cref="GameColor"/> class.
+    /// Unit tests to test the <see cref="Color"/> class.
     /// </summary>
-    public class GameColorTests
+    public class ColorTests
     {
         #region Prop Tests
         [Fact]
         public void Red_WhenGettingValue_ReturnsCorrectValue()
         {
             //Arrange
-            var gameColor = new GameColor(0, 11, 0, 0);
+            var gameColor = new Color(0, 11, 0, 0);
             var expected = 11;
 
             //Act
@@ -28,7 +28,7 @@ namespace RaptorTests.Graphics
         public void Green_WhenGettingValue_ReturnsCorrectValue()
         {
             //Arrange
-            var gameColor = new GameColor(0, 0, 22, 0);
+            var gameColor = new Color(0, 0, 22, 0);
             var expected = 22;
 
             //Act
@@ -43,7 +43,7 @@ namespace RaptorTests.Graphics
         public void Blue_WhenGettingValue_ReturnsCorrectValue()
         {
             //Arrange
-            var gameColor = new GameColor(0, 0, 0, 33);
+            var gameColor = new Color(0, 0, 0, 33);
             var expected = 33;
 
             //Act
@@ -58,7 +58,7 @@ namespace RaptorTests.Graphics
         public void Alpha_WhenGettingValue_ReturnsCorrectValue()
         {
             //Arrange
-            var gameColor = new GameColor(44, 0, 0, 0);
+            var gameColor = new Color(44, 0, 0, 0);
             var expected = 44;
 
             //Act
@@ -75,7 +75,7 @@ namespace RaptorTests.Graphics
         public void GetHashCode_WhenInvoking_ReturnsCorrectCode()
         {
             //Arrange
-            var color = new GameColor(4, 1, 2, 3);
+            var color = new Color(4, 1, 2, 3);
 
             //Act & Assert
             Assert.Equal(10, color.GetHashCode());

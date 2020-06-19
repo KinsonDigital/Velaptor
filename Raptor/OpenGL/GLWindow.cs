@@ -2,10 +2,9 @@
 using OpenToolkit.Mathematics;
 using OpenToolkit.Windowing.Common;
 using OpenToolkit.Windowing.Desktop;
-using Raptor.Plugins;
 using System;
 
-namespace Raptor.OpenGLImp
+namespace Raptor.OpenGL
 {
     internal class GLWindow : GameWindow, IWindow
     {

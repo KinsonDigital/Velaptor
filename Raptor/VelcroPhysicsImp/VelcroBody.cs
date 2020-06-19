@@ -1,5 +1,4 @@
-﻿using Raptor.Plugins;
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using VelcroPhysics.Collision.Shapes;
@@ -14,7 +13,7 @@ namespace Raptor.VelcroPhysicsImp
     /// Represents a body in a world that obeys physics.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class VelcroBody : IPhysicsBody
+    public class VelcroBody
     {
         #region Private Fields
         private readonly PhysicsBodySettings _tempSettings = new PhysicsBodySettings();

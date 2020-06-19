@@ -6,9 +6,9 @@ using Xunit;
 namespace RaptorTests.Graphics
 {
     /// <summary>
-    /// Unit tests to test the <see cref="GameText"/> class.
+    /// Unit tests to test the <see cref="Text"/> class.
     /// </summary>
-    public class GameTextTests
+    public class RenderTextTests
     {
         #region Prop Tests
         [Fact]
@@ -18,7 +18,7 @@ namespace RaptorTests.Graphics
             var mockInternalText = new Mock<IText>();
             mockInternalText.SetupProperty(m => m.Text);
 
-            var gameText = new GameText()
+            var gameText = new RenderText()
             {
                 InternalText = mockInternalText.Object
             };
@@ -40,7 +40,7 @@ namespace RaptorTests.Graphics
             //Arrange
             var mockInternalText = new Mock<IText>();
             mockInternalText.Setup(m => m.Width).Returns(40);
-            var gameText = new GameText()
+            var gameText = new RenderText()
             {
                 InternalText = mockInternalText.Object
             };
@@ -60,7 +60,7 @@ namespace RaptorTests.Graphics
             //Arrange
             var mockInternalText = new Mock<IText>();
             mockInternalText.Setup(m => m.Height).Returns(40);
-            var gameText = new GameText()
+            var gameText = new RenderText()
             {
                 InternalText = mockInternalText.Object
             };
@@ -79,15 +79,15 @@ namespace RaptorTests.Graphics
         {
             //Arrange
             var mockInternalText = new Mock<IText>();
-            mockInternalText.SetupProperty(m => m.Color, new GameColor(0, 0, 0, 0));
-            var gameText = new GameText()
+            mockInternalText.SetupProperty(m => m.Color, new Color(0, 0, 0, 0));
+            var gameText = new RenderText()
             {
                 InternalText = mockInternalText.Object
             };
-            var expected = new GameColor(44, 11, 22, 33);
+            var expected = new Color(44, 11, 22, 33);
 
             //Act
-            gameText.Color = new GameColor(44, 11, 22, 33);
+            gameText.Color = new Color(44, 11, 22, 33);
             var actual = gameText.Color;
 
             //Assert
@@ -99,8 +99,8 @@ namespace RaptorTests.Graphics
         public void Color_WhenComparingColorsThatAreNotEqual_ReturnsFalse()
         {
             //Arrange
-            var colorA = new GameColor(4, 1, 2, 3);
-            var colorB = new GameColor(44, 11, 22, 33);
+            var colorA = new Color(4, 1, 2, 3);
+            var colorB = new Color(44, 11, 22, 33);
 
             //Act & Assert
             Assert.NotEqual(colorA, colorB);
@@ -114,7 +114,7 @@ namespace RaptorTests.Graphics
         [InlineData(null, "World", "World")]
         [InlineData("Hello ", null, "Hello ")]
         [InlineData(null, null, "")]
-        public void AddOperator_WhenAddingTwoGameTexts_ReturnsCorrectValue(string stringA, string stringB, string expected)
+        public void AddOperator_WhenAddingTwoRenderTexts_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
             //Arrange
             var mockTextA = new Mock<IText>();
@@ -123,12 +123,12 @@ namespace RaptorTests.Graphics
             var mockTextB = new Mock<IText>();
             mockTextB.SetupProperty(m => m.Text);
 
-            var textA = new GameText()
+            var textA = new RenderText()
             {
                 InternalText = mockTextA.Object,
                 Text = stringA
             };
-            var textB = new GameText()
+            var textB = new RenderText()
             {
                 InternalText = mockTextB.Object,
                 Text = stringB
@@ -147,13 +147,13 @@ namespace RaptorTests.Graphics
         [InlineData(null, "World", "World")]
         [InlineData("Hello ", null, "Hello ")]
         [InlineData(null, null, "")]
-        public void AddOperator_WhenAddingGameTextAndString_ReturnsCorrectValue(string stringA, string stringB, string expected)
+        public void AddOperator_WhenAddingRenderTextAndString_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
             //Arrange
             var mockText = new Mock<IText>();
             mockText.SetupProperty(m => m.Text);
 
-            var textA = new GameText()
+            var textA = new RenderText()
             {
                 InternalText = mockText.Object,
                 Text = stringA
@@ -172,13 +172,13 @@ namespace RaptorTests.Graphics
         [InlineData(null, "World", "World")]
         [InlineData("Hello ", null, "Hello ")]
         [InlineData(null, null, "")]
-        public void AddOperator_WhenAddingStringAndGameText_ReturnsCorrectValue(string stringA, string stringB, string expected)
+        public void AddOperator_WhenAddingStringAndRenderText_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
             //Arrange
             var mockText = new Mock<IText>();
             mockText.SetupProperty(m => m.Text);
 
-            var textB = new GameText()
+            var textB = new RenderText()
             {
                 InternalText = mockText.Object,
                 Text = stringB

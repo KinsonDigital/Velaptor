@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides game text that can be rendered to a graphics surface.
     /// </summary>
-    public class GameText
+    public class RenderText
     {
         #region Props
         public IText? InternalText { get; set; }
@@ -18,9 +18,9 @@
 
         public int Height => InternalText is null ? 0 : InternalText.Height;
 
-        public GameColor Color
+        public Color Color
         {
-            get => InternalText is null ? new GameColor(0, 0, 0, 0) : InternalText.Color;
+            get => InternalText is null ? new Color(0, 0, 0, 0) : InternalText.Color;
             set { if (!(InternalText is null)) InternalText.Color = value; }
         }
         #endregion
@@ -28,41 +28,41 @@
 
         #region Public Methods
         /// <summary>
-        /// Concatenates the text of 2 <see cref="GameText"/> objects.
+        /// Concatenates the text of 2 <see cref="RenderText"/> objects.
         /// </summary>
         /// <param name="textA">The first object.</param>
         /// <param name="textB">The second object.</param>
         /// <returns></returns>
-        public static string Add(GameText textA, GameText textB) => textA + textB;
+        public static string Add(RenderText textA, RenderText textB) => textA + textB;
 
 
         /// <summary>
-        /// Concatenates a <see cref="GameText"/> object and a string.
+        /// Concatenates a <see cref="RenderText"/> object and a string.
         /// </summary>
         /// <param name="textA">The game text object to combine.</param>
         /// <param name="textB">The string to combine.</param>
         /// <returns></returns>
-        public static string Add(GameText textA, string textB) => textA + textB;
+        public static string Add(RenderText textA, string textB) => textA + textB;
 
 
         /// <summary>
-        /// Concatenates a string and a <see cref="GameText"/> object.
+        /// Concatenates a string and a <see cref="RenderText"/> object.
         /// </summary>
         /// <param name="textA">The string to combine.</param>
         /// <param name="textB">The game text object to combine.</param>
         /// <returns></returns>
-        public static string Add(string textA, GameText textB) => textA + textB;
+        public static string Add(string textA, RenderText textB) => textA + textB;
         #endregion
 
 
         #region Overloaded Operators
         /// <summary>
-        /// Concatenates the text of 2 <see cref="GameText"/> objects.
+        /// Concatenates the text of 2 <see cref="RenderText"/> objects.
         /// </summary>
         /// <param name="textA">The first object.</param>
         /// <param name="textB">The second object.</param>
         /// <returns></returns>
-        public static string operator +(GameText textA, GameText textB)
+        public static string operator +(RenderText textA, RenderText textB)
         {
             var textAResult = string.Empty;
             var textBResult = string.Empty;
@@ -79,12 +79,12 @@
 
 
         /// <summary>
-        /// Concatenates a <see cref="GameText"/> object and a string.
+        /// Concatenates a <see cref="RenderText"/> object and a string.
         /// </summary>
         /// <param name="textA">The game text object to combine.</param>
         /// <param name="textB">The string to combine.</param>
         /// <returns></returns>
-        public static string operator +(GameText textA, string textB)
+        public static string operator +(RenderText textA, string textB)
         {
             var textAResult = string.Empty;
 
@@ -97,12 +97,12 @@
 
 
         /// <summary>
-        /// Concatenates a string and a <see cref="GameText"/> object.
+        /// Concatenates a string and a <see cref="RenderText"/> object.
         /// </summary>
         /// <param name="textA">The string to combine.</param>
         /// <param name="textB">The game text object to combine.</param>
         /// <returns></returns>
-        public static string operator +(string textA, GameText textB)
+        public static string operator +(string textA, RenderText textB)
         {
             var textBResult = string.Empty;
 

@@ -14,8 +14,8 @@ namespace Raptor.UI
     {
         #region Private Fields
         private readonly Keyboard _keyboard = new Keyboard();
-        private GameText? _visibleText;
-        private static GameText? _textRuler;//Used for measuring text with and height
+        private RenderText? _visibleText;
+        private static RenderText? _textRuler;//Used for measuring text with and height
         private int _visibleTextCharPosition;
         private int _charPosDelta;
         private Vector2 _textPosition;
@@ -90,9 +90,9 @@ namespace Raptor.UI
             if (contentLoader is null)
                 throw new ArgumentNullException(nameof(contentLoader), "The content loader must not be null.");
 
-            //TODO: Currently for every single instance of this class TextBox, there will be 2 GameText objects created.
+            //TODO: Currently for every single instance of this class TextBox, there will be 2 RenderText objects created.
             //One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
-            //This is not ideal.  Try to figure out a way to measure text without the use of another GameText object.  This is
+            //This is not ideal.  Try to figure out a way to measure text without the use of another RenderText object.  This is
             //not best for performance as well as taking extra memory.
             //_visibleText = contentLoader.LoadText(FontName);
             //_textRuler = contentLoader.LoadText(FontName);
@@ -129,7 +129,7 @@ namespace Raptor.UI
         /// </summary>
         /// <param name="renderer">The renderer used to render the <see cref="TextBox"/>.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Render(Renderer renderer)
+        public void Render(RendererREFONLY renderer)
         {
             if (renderer is null)
                 throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
@@ -143,7 +143,7 @@ namespace Raptor.UI
             if (!(_visibleText is null))
             {
                 _visibleText.Text = ClipText(Text);
-                renderer.Render(_visibleText, _textPosition, new GameColor(255, 0, 0, 0));
+                renderer.Render(_visibleText, _textPosition, new Color(255, 0, 0, 0));
             }
 
             //Render the end to cover any text that has passed the end of the render area
@@ -160,16 +160,16 @@ namespace Raptor.UI
             //TODO: Figure out is the code in the debugging comment section below is needed and if not, remove it
             //DEBUGGING
             //Render the dot at the right side line
-            renderer.FillCircle(new Vector2(_rightSide, Position.Y - Height / 2), 5, new GameColor(255, 125, 125, 0));
+            renderer.FillCircle(new Vector2(_rightSide, Position.Y - Height / 2), 5, new Color(255, 125, 125, 0));
 
             //Render the margins for visual debugging
             var leftMarginStart = new Vector2(_leftSide, Position.Y - 50);
             var leftMarginStop = new Vector2(_leftSide, Position.Y + 50);
-            renderer.Line(leftMarginStart, leftMarginStop, new GameColor(255, 0, 255, 0));
+            renderer.Line(leftMarginStart, leftMarginStop, new Color(255, 0, 255, 0));
 
             var rightMarginStart = new Vector2(_rightSide, Position.Y - 50);
             var rightMarginStop = new Vector2(_rightSide, Position.Y + 50);
-            renderer.Line(rightMarginStart, rightMarginStop, new GameColor(255, 0, 255, 0));
+            renderer.Line(rightMarginStart, rightMarginStop, new Color(255, 0, 255, 0));
             ///////////
 
             //Render the blinking cursor
@@ -180,7 +180,7 @@ namespace Raptor.UI
             lineStop.X = lineStop.X > _rightSide ? _rightSide : lineStop.X;
 
             if (_cursorVisible)
-                renderer.Line(lineStart, lineStop, new GameColor(255, 255, 0, 0));//TODO: Change to black when finished with testing
+                renderer.Line(lineStart, lineStop, new Color(255, 255, 0, 0));//TODO: Change to black when finished with testing
         }
         #endregion
 

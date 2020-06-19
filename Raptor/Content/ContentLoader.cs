@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
 using Raptor.Graphics;
-using Raptor.Plugins;
 using FileIO.Core;
 
 namespace Raptor.Content
