@@ -2,6 +2,9 @@
 using System.Reflection;
 using Raptor.Graphics;
 using FileIO.Core;
+using System.Collections.Generic;
+using SixLabors.ImageSharp;
+using System.Text.Json;
 
 namespace Raptor.Content
 {
@@ -57,6 +60,26 @@ namespace Raptor.Content
             var (pixels, width, height) = _file.Load(textureImagePath);
 
             return new Texture(pixels, width, height);
+        }
+
+
+        public Dictionary<string, AtlasSubRect> LoadAtlasData(string fileName)
+        {
+            var result = new Dictionary<string, AtlasSubRect>();
+
+            var contentDir = $@"{_baseDir}Content\";
+            var graphicsContent = $@"{contentDir}Graphics\";
+
+            var rawData = File.ReadAllText($"{graphicsContent}{fileName}");
+
+            var rectItems = JsonSerializer.Deserialize<AtlasSubRect[]>(rawData);
+
+            foreach (var item in rectItems)
+            {
+                result.Add(item.Name, item);
+            }
+
+            return result;
         }
         #endregion
     }

@@ -1,6 +1,6 @@
 ﻿using Raptor.Graphics;
 
-namespace Raptor
+namespace Raptor.Content
 {
     /// <summary>
     /// Represents a loader that can load content for rendering or sound.
