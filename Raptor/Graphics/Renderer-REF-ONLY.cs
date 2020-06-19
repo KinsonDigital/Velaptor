@@ -125,7 +125,6 @@ namespace Raptor.Graphics
             var textureData = new TextureData()
             {
                 ID = texture.ID,
-                Layer = texture.Layer,
                 X = x,
                 Y = y,
                 Width = texture.Width,

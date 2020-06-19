@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using System.Xml;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
     using Raptor.OpenGL;
@@ -49,6 +50,23 @@
         }
 
         public void Begin() => this.hasBegun = true;
+
+        public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
+
+        public void Render(ITexture texture, int x, int y, Color tintColor)
+        {
+            var srcRect = new Rectangle()
+            {
+                X = 0,
+                Y = 0,
+                Width = texture.Width,
+                Height = texture.Height
+            };
+
+            var destRect = new Rectangle(x, y, texture.Width, texture.Height);
+
+            Render(texture, srcRect, destRect, 1, 0, tintColor);
+        }
 
         /// <summary>
         /// Renders the given <see cref="Texture"/> using the given parametters.

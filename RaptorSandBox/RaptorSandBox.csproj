@@ -21,4 +21,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  
+  
+    <!--COPY SHADER FILES TO OUTPUT FOLDER-->
+    <Target Name="Copy-Shaders-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
+      <Copy SourceFiles="$(SolutionDir)Raptor\OpenGL\shader.vert" DestinationFolder="$(TargetDir)" />
+      <Copy SourceFiles="$(SolutionDir)Raptor\OpenGL\shader.frag" DestinationFolder="$(TargetDir)" />
+    </Target>
 </Project>

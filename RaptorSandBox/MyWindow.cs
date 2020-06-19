@@ -11,20 +11,12 @@ namespace RaptorSandBox
 {
     public class MyWindow : Window
     {
-        private Texture _linkTexture;
-        private Texture _bgTexture;
-        private readonly ContentLoader _contentLoader;
-        private RendererREFONLY _renderer;
-        private double _timeElapsed;
-        private int _textureX = 200;
-        private int _speed = 2;
+        private Texture linkTexture;
+        private SpriteBatch spriteBatch;
 
 
         public MyWindow()
         {
-            _contentLoader = new ContentLoader(new ImageFile());
-            _renderer = new RendererREFONLY();
-
             Width = 1020;
             Height = 800;
         }
@@ -32,6 +24,8 @@ namespace RaptorSandBox
 
         public override void OnLoad()
         {
+            this.linkTexture = ContentLoader.LoadTexture("Link.png");
+            this.spriteBatch = new SpriteBatch(Width, Height);
             base.OnLoad();
         }
 
@@ -44,6 +38,12 @@ namespace RaptorSandBox
 
         public override void OnDraw(FrameTime frameTime)
         {
+            this.spriteBatch.Begin();
+
+            this.spriteBatch.Render(this.linkTexture, 400, 400);
+
+            this.spriteBatch.End();
+
             base.OnDraw(frameTime);
         }
 

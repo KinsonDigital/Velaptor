@@ -65,7 +65,7 @@
   <Target Name="Copy-SDLCore-Lib-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
     <Copy SourceFiles="$(SDLCoreLibPath)" DestinationFolder="$(TargetDir)" />
   </Target>
-  
+
   
   <!--COPY NATIVE SDL LIBRARIES FROM LOCAL KinsonDigital.SDLCore.Windows NUGET CACHE TO OUTPUT FOLDER-->
   <Target Name="Copy-Nuget-Package-Native-Libs-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
@@ -116,10 +116,10 @@
 
 
   <ItemGroup>
-    <None Update="shader.frag">
+    <None Update="OpenGL\shader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="shader.vert">
+    <None Update="OpenGL\shader.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

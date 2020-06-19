@@ -1,5 +1,6 @@
 ﻿using OpenToolkit.Mathematics;
 using OpenToolkit.Windowing.Desktop;
+using Raptor.Content;
 using Raptor.OpenGL;
 using System;
 
@@ -28,6 +29,8 @@ namespace Raptor
 
             _window = window;
             UpdateFrequency = 60;
+
+            ContentLoader = new ContentLoader();
         }
 
 
@@ -50,6 +53,8 @@ namespace Raptor
                 Resize = OnResize
             };
             UpdateFrequency = 60;
+
+            ContentLoader = new ContentLoader();
         }
         #endregion
 
@@ -94,6 +99,9 @@ namespace Raptor
             get => _window.UpdateFreq;
             set => _window.UpdateFreq = value;
         }
+
+
+        public IContentLoader ContentLoader { get; private set; }
         #endregion
 
 
