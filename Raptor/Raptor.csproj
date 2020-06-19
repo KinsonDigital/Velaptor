@@ -123,11 +123,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Plugins\" />
-  </ItemGroup>
   
 
   <Target Name="Print-Paths" AfterTargets="Build">

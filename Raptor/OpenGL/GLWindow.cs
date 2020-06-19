@@ -1,8 +1,10 @@
-﻿using OpenToolkit.Graphics.ES11;
+﻿using System;
+using System.Runtime.InteropServices;
 using OpenToolkit.Mathematics;
 using OpenToolkit.Windowing.Common;
 using OpenToolkit.Windowing.Desktop;
-using System;
+using OpenToolkit.Graphics.OpenGL4;
+using NETColor = System.Drawing.Color;
 
 namespace Raptor.OpenGL
 {
@@ -10,6 +12,7 @@ namespace Raptor.OpenGL
     {
         #region Private Fields
         private int _fps;
+        private bool isShuttingDown;
         #endregion
 
 
@@ -22,6 +25,13 @@ namespace Raptor.OpenGL
         public GLWindow(GameWindowSettings gameWinSettings, NativeWindowSettings nativeWinSettings)
             : base(gameWinSettings, nativeWinSettings)
         {
+            if (nativeWinSettings is null)
+                throw new ArgumentNullException(nameof(nativeWinSettings), "The argument must not be null");
+
+            GL.Enable(EnableCap.DebugOutput);
+            GL.Enable(EnableCap.DebugOutputSynchronous);
+            GL.DebugMessageCallback(DebugCallback, Marshal.StringToHGlobalAnsi(""));
+
             Title = "Raptor Application";
             UpdateFrequency = 60;
             RenderFrequency = 60;
@@ -118,6 +128,9 @@ namespace Raptor.OpenGL
         /// <param name="args">The event arguments for this frame.</param>
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
+            if (this.isShuttingDown)
+                return;
+
             var frameTime = new FrameTime()
             {
                 ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(args.Time * 1000.0))
@@ -135,7 +148,8 @@ namespace Raptor.OpenGL
         /// <param name="args">The event arguments for this frame.</param>
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            if (this.isShuttingDown)
+                return;
 
             var frameTime = new FrameTime()
             {
@@ -162,6 +176,32 @@ namespace Raptor.OpenGL
 
             base.OnResize(e);
         }
+
+
+        protected override void OnUnload()
+        {
+            this.isShuttingDown = true;
+            base.OnUnload();
+        }
         #endregion
+
+
+        private void DebugCallback(DebugSource src, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        {
+            var errorMessage = Marshal.PtrToStringAnsi(message);
+
+            errorMessage += errorMessage;
+            errorMessage += $"\n\tSrc: {src}";
+            errorMessage += $"\n\tType: {type}";
+            errorMessage += $"\n\tID: {id}";
+            errorMessage += $"\n\tSeverity: {severity}";
+            errorMessage += $"\n\tLength: {length}";
+            errorMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
+
+            if (severity != DebugSeverity.DebugSeverityNotification)
+            {
+                throw new Exception(errorMessage);
+            }
+        }
     }
 }
