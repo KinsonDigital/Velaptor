@@ -13,60 +13,6 @@ namespace RaptorTests.Graphics
     {
         #region Prop Tests
         [Fact]
-        public void Text_WhenGettingAndSettingValue_ProperlyReturnsAndSetsInternalValue()
-        {
-            //Arrange
-            var mockInternalText = new Mock<IText>();
-            mockInternalText.SetupProperty(m => m.Text);
-
-            var gameText = new RenderText();
-            var expected = "Hello World";
-
-            //Act
-            gameText.Text = "Hello World";
-            var actual = gameText.Text;
-
-            //Assert
-            Assert.Equal(expected, actual);
-            mockInternalText.VerifySet(p => p.Text = "Hello World", Times.Once());
-        }
-
-
-        [Fact]
-        public void Width_WhenSettingValue_ProperlyReturnsInternalValue()
-        {
-            //Arrange
-            var mockInternalText = new Mock<IText>();
-            mockInternalText.Setup(m => m.Width).Returns(40);
-            var gameText = new RenderText();
-            var expected = 40;
-
-            //Act
-            var actual = gameText.Width;
-
-            //Assert
-            Assert.Equal(expected, actual);
-        }
-
-
-        [Fact]
-        public void Height_WhenSettingValue_ProperlyReturnsInternalValue()
-        {
-            //Arrange
-            var mockInternalText = new Mock<IText>();
-            mockInternalText.Setup(m => m.Height).Returns(40);
-            var gameText = new RenderText();
-            var expected = 40;
-
-            //Act
-            var actual = gameText.Height;
-
-            //Assert
-            Assert.Equal(expected, actual);
-        }
-
-
-        [Fact]
         public void Color_WhenSettingValue_ProperlySetsInternalValue()
         {
             //Arrange
