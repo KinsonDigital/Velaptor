@@ -23,4 +23,4 @@ namespace RaptorTests
             Assert.Equal(pointer, pointerContainer.UnpackPointer());
         }
     }
-}
+}  

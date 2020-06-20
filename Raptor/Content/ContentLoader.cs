@@ -1,92 +1,96 @@
-﻿using Raptor.Graphics;
-using Raptor.Plugins;
-using System.Diagnostics.CodeAnalysis;
+﻿// <copyright file="ContentLoader.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.Content
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
+    using System.Text.Json;
+    using FileIO.Core;
+    using FileIO.File;
+    using Raptor.Graphics;
+    using SixLabors.ImageSharp;
+
     /// <summary>
-    /// Loads graphical and soud content for rendering and playback.
+    /// Loads content.
     /// </summary>
-    public class ContentLoader
+    public class ContentLoader : IContentLoader
     {
-        #region Private Fields
-        private readonly IContentLoader? _internalLoader;
-        #endregion
+        private readonly string baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private readonly IImageFile imageFile;
+        private readonly ITextFile textFile;
+        private string? graphicsDir;
+        private string? contentDir;
 
-
-        #region Constructors
-        /// <summary>
-        /// Creates a new instance of <see cref="ContentLoader"/>.
-        /// USED FOR UNIT TESTING.
-        /// </summary>
-        /// <param name="contentLoader">The mocked content loader to inject.</param>
-        public ContentLoader(IContentLoader contentLoader) => _internalLoader = contentLoader;
-
+        public ContentLoader()
+        {
+            this.imageFile = new ImageFile();
+            this.textFile = new TextFile();
+            SetupPaths();
+        }
 
         /// <summary>
         /// Creates a new instace of <see cref="ContentLoader"/>.
         /// </summary>
-        [ExcludeFromCodeCoverage]
-        public ContentLoader()
+        public ContentLoader(IImageFile imageFile, ITextFile textFile)
         {
-            //TODO: Figure out how to get the proper implementation inside of this class
+            this.imageFile = imageFile;
+            this.textFile = textFile;
+            SetupPaths();
         }
-        #endregion
-
-
-        #region Props
-        /// <summary>
-        /// The path to the executable game consuming the content being loaded.
-        /// </summary>
-        public string GamePath => _internalLoader is null ? string.Empty : _internalLoader.GamePath;
-
 
         /// <summary>
-        /// Gets or sets the root directory for the game's content.
+        /// Gets or sets the root directory for the content.
         /// </summary>
         public string ContentRootDirectory
         {
-            get => _internalLoader is null ? string.Empty : _internalLoader.ContentRootDirectory;
-            set { if (!(_internalLoader is null)) _internalLoader.ContentRootDirectory = value; }
+            get => this.contentDir is null ? string.Empty : this.contentDir;
+            set => this.contentDir = $@"{value}Content\";
         }
-        #endregion
 
-
-        #region Public Methods
         /// <summary>
         /// Loads a texture that has the given <paramref name="name"/>.
         /// </summary>
-        /// <typeparam name="T">The type of texture to render.</typeparam>
-        /// <param name="name">The name of the texture object to render.</param>
+        /// <param name="name">The name of the texture to load.</param>
         /// <returns></returns>
-        public Texture? LoadTexture(string textureName)
+        public Texture? LoadTexture(string name)
         {
-            if (_internalLoader is null)
-                return null;
+            var textureImagePath = $"{this.graphicsDir}{name}";
 
-            var loadedTexture = _internalLoader.LoadTexture<ITexture>(textureName);
+            var (pixels, width, height) = this.imageFile.Load(textureImagePath);
 
-
-            return loadedTexture is null ? null : new Texture(loadedTexture);
+            return new Texture(pixels, width, height, name);
         }
 
+        public Dictionary<string, AtlasSubRect> LoadAtlasData(string fileName)
+        {
+            var result = new Dictionary<string, AtlasSubRect>();
+
+            var contentDir = $@"{this.baseDir}Content\";
+            var graphicsContent = $@"{contentDir}Graphics\";
+
+            var rawData = this.textFile.Load($"{graphicsContent}{fileName}");
+
+            var rectItems = JsonSerializer.Deserialize<AtlasSubRect[]>(rawData);
+
+            foreach (var item in rectItems)
+            {
+                result.Add(item.Name, item);
+            }
+
+            return result;
+        }
 
         /// <summary>
-        /// Loads a text objec to render that has the given <paramref name="name"/>.
+        /// Sets up the pathing variables for the content location on disk.
         /// </summary>
-        /// <typeparam name="T">The type of text object to render.</typeparam>
-        /// <param name="name">The name of the text object to render.</param>
-        /// <returns></returns>
-        public GameText? LoadText(string textName)
+        private void SetupPaths()
         {
-            if (_internalLoader is null)
-                return null;
-
-            return new GameText()
-            {
-                InternalText = _internalLoader.LoadText<IText>(textName)
-            };
+            this.contentDir = $@"{this.baseDir}Content\";
+            this.graphicsDir = @$"{this.contentDir}Graphics\";
         }
-        #endregion
     }
 }

@@ -1,36 +1,28 @@
-﻿using Raptor.Plugins;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using VelcroPhysics.Collision.Shapes;
-using VelcroPhysics.Dynamics;
-using VelcroPhysics.Primitives;
-using System.Diagnostics.CodeAnalysis;
-using System.Collections.ObjectModel;
+﻿// <copyright file="VelcroBody.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.VelcroPhysicsImp
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using VelcroPhysics.Collision.Shapes;
+    using VelcroPhysics.Dynamics;
+    using VelcroPhysics.Primitives;
+
     /// <summary>
     /// Represents a body in a world that obeys physics.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class VelcroBody : IPhysicsBody
+    public class VelcroBody
     {
-        #region Private Fields
-        private readonly PhysicsBodySettings _tempSettings = new PhysicsBodySettings();
-        #endregion
-
-
-        #region Constructors
-        /// <summary>
-        /// Creates a new instance of <see cref="VelcroBody"/>.
-        /// NOTE: Required for the plugin system to work. The IoC container must have a parameterless constructor.
-        /// </summary>
-        public VelcroBody() { }
-
+        private readonly PhysicsBodySettings tempSettings = new PhysicsBodySettings();
 
         /// <summary>
-        /// Creates a new instance of <see cref="VelcroBody"/>.
+        /// Initializes a new instance of the <see cref="VelcroBody"/> class.
         /// </summary>
         /// <param name="xVertices">The X vertices of the body's shape.</param>
         /// <param name="yVertices">The Y vertices of the body's shape.</param>
@@ -41,7 +33,7 @@ namespace Raptor.VelcroPhysicsImp
         /// <param name="friction">The friction of the body.</param>
         /// <param name="restitution">The restituion(bounciness) of the body.</param>
         /// <param name="isStatic">True if the body is a static body.  False for dynamice.</param>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception messages only used in method.")]
         public VelcroBody(float[] xVertices, float[] yVertices, float xPosition, float yPosition, float angle, float density = 1, float friction = 0.2f, float restitution = 0, bool isStatic = false)
         {
             if (xVertices is null)
@@ -53,99 +45,83 @@ namespace Raptor.VelcroPhysicsImp
             if (xVertices.Length != yVertices.Length)
                 throw new ArgumentOutOfRangeException($"The params {nameof(xVertices)} and {nameof(yVertices)} must have the same number of elements.");
 
-            _tempSettings.SetXVertices(xVertices);
-            _tempSettings.SetYVertices(yVertices);
-            _tempSettings.XPosition = xPosition;
-            _tempSettings.YPosition = yPosition;
-            _tempSettings.Angle = angle;
-            _tempSettings.Density = density;
-            _tempSettings.Friction = friction;
-            _tempSettings.Restitution = restitution;
-            _tempSettings.IsStatic = isStatic;
+            this.tempSettings.SetXVertices(xVertices);
+            this.tempSettings.SetYVertices(yVertices);
+            this.tempSettings.XPosition = xPosition;
+            this.tempSettings.YPosition = yPosition;
+            this.tempSettings.Angle = angle;
+            this.tempSettings.Density = density;
+            this.tempSettings.Friction = friction;
+            this.tempSettings.Restitution = restitution;
+            this.tempSettings.IsStatic = isStatic;
         }
-        #endregion
-
-
-        #region Props
-        /// <summary>
-        /// Gets or sets the velcro body for internal use.
-        /// </summary>
-        internal Body? PolygonBody { get; set; }
 
         /// <summary>
-        /// Gets or sets the shape of the polygon body for internal use.
-        /// </summary>
-        internal PolygonShape? PolygonShape { get; set; }
-
-        /// <summary>
-        /// The list of <see cref="DeferredActionsCollection"/> that will execute after the body has been added to a <see cref="World"/>.
+        /// Gets the list of <see cref="DeferredActionsCollection"/> that will execute after the body has been added to a <see cref="World"/>.
         /// </summary>
         public DeferredActionsCollection AfterAddedToWorldActions { get; } = new DeferredActionsCollection();
 
         /// <summary>
-        /// The X vertices of the body's shape.
+        /// Gets the X vertices of the body's shape.
         /// </summary>
         public ReadOnlyCollection<float> XVertices
         {
             get
             {
                 var result = new List<float>();
-                var positionX = PolygonBody is null ? 0 : PolygonBody.Position.X;//In physics units
+                var positionX = PolygonBody is null ? 0 : PolygonBody.Position.X; // In physics units
 
                 if (PolygonShape == null)
                 {
-                    result.AddRange(_tempSettings.XVertices);
+                    result.AddRange(this.tempSettings.XVertices);
                 }
                 else
                 {
-                    //This gets the vertices as world vertices
+                    // This gets the vertices as world vertices
                     var xVertices = (from v in PolygonShape.Vertices
                                      select v.X + positionX).ToArray();
 
                     result.AddRange(xVertices.ToPixels());
                 }
 
-
                 return new ReadOnlyCollection<float>(result);
             }
         }
 
         /// <summary>
-        /// The X vertices of the body's shape.
+        /// Gets the X vertices of the body's shape.
         /// </summary>
         public ReadOnlyCollection<float> YVertices
         {
             get
             {
                 var result = new List<float>();
-                var positionY = PolygonBody is null ? 0 : PolygonBody.Position.Y;//In physics units
+                var positionY = PolygonBody is null ? 0 : PolygonBody.Position.Y; // In physics units
 
                 if (PolygonShape == null)
                 {
-                    result.AddRange(_tempSettings.YVertices);
+                    result.AddRange(this.tempSettings.YVertices);
                 }
                 else
                 {
-                    //This gets the vertices as world vertices
+                    // This gets the vertices as world vertices
                     var yVertices = (from v in PolygonShape.Vertices
                                      select v.Y + positionY).ToArray();
 
                     result.AddRange(yVertices.ToPixels());
                 }
 
-
                 return new ReadOnlyCollection<float>(result);
             }
         }
 
-
         /// <summary>
-        /// The X coordinate of the body's location.
+        /// Gets or sets the X coordinate of the body's location.
         /// </summary>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public float X
         {
-            get => PolygonBody == null ? _tempSettings.XPosition : PolygonBody.Position.X.ToPixels();
+            get => PolygonBody == null ? this.tempSettings.XPosition : PolygonBody.Position.X.ToPixels();
             set
             {
                 if (PolygonBody == null)
@@ -156,12 +132,12 @@ namespace Raptor.VelcroPhysicsImp
         }
 
         /// <summary>
-        /// The Y coordinate of the body's location.
+        /// Gets or sets the Y coordinate of the body's location.
         /// </summary>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public float Y
         {
-            get => PolygonBody == null ? _tempSettings.YPosition : PolygonBody.Position.Y.ToPixels();
+            get => PolygonBody == null ? this.tempSettings.YPosition : PolygonBody.Position.Y.ToPixels();
             set
             {
                 if (PolygonBody == null)
@@ -176,7 +152,7 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public float Angle
         {
-            get => PolygonBody == null ? _tempSettings.Angle : PolygonBody.Rotation.ToDegrees();
+            get => PolygonBody == null ? this.tempSettings.Angle : PolygonBody.Rotation.ToDegrees();
             set
             {
                 if (PolygonBody == null)
@@ -192,21 +168,22 @@ namespace Raptor.VelcroPhysicsImp
                     PolygonBody.Rotation = value.ToRadians();
                 }
 
-                _tempSettings.Angle = value;//Degrees
+                this.tempSettings.Angle = value; // Degrees
             }
         }
 
         /// <summary>
         /// Gets or sets the density of the body.
         /// </summary>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public float Density
         {
-            get => PolygonShape == null ? _tempSettings.Density : PolygonShape.Density;
+            get => PolygonShape == null ? this.tempSettings.Density : PolygonShape.Density;
             set
             {
-                _tempSettings.Density = value;
-                //TODO: We might be able to change the density after its been added, look into this.
+                this.tempSettings.Density = value;
+
+                // TODO: We might be able to change the density after its been added, look into this.
                 throw new Exception("Cannot set the density after the body has been added to the world");
             }
         }
@@ -216,7 +193,7 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public float Friction
         {
-            get => _tempSettings.Friction;
+            get => this.tempSettings.Friction;
             set
             {
                 if (PolygonBody is null)
@@ -231,7 +208,7 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public float Restitution
         {
-            get => _tempSettings.Restitution;
+            get => this.tempSettings.Restitution;
             set
             {
                 if (PolygonBody == null)
@@ -247,7 +224,7 @@ namespace Raptor.VelcroPhysicsImp
                     PolygonBody.Restitution = value;
                 }
 
-                _tempSettings.Restitution = value;
+                this.tempSettings.Restitution = value;
             }
         }
 
@@ -341,10 +318,17 @@ namespace Raptor.VelcroPhysicsImp
                 }
             }
         }
-        #endregion
 
+        /// <summary>
+        /// Gets or sets the velcro body for internal use.
+        /// </summary>
+        internal Body? PolygonBody { get; set; }
 
-        #region Public Methods
+        /// <summary>
+        /// Gets or sets the shape of the polygon body for internal use.
+        /// </summary>
+        internal PolygonShape? PolygonShape { get; set; }
+
         /// <summary>
         /// Applies a linear impulse to the body using the
         /// the given <paramref name="x"/> and <paramref name="y"/>.
@@ -359,13 +343,11 @@ namespace Raptor.VelcroPhysicsImp
             PolygonBody.ApplyLinearImpulse(new Vector2(x.ToPhysics(), y.ToPhysics()));
         }
 
-
         /// <summary>
         /// Applies an angular impulse to the body using
         /// the given <paramref name="x"/> and <paramref name="y"/>.
         /// </summary>
-        /// <param name="x">The X coordinate of the location to apply the impulse.</param>
-        /// <param name="y">The Y coordinate of the location to apply the impulse.</param>
+        /// <param name="value">The impulse value to apply.</param>
         public void ApplyAngularImpulse(float value)
         {
             if (PolygonBody is null)
@@ -374,14 +356,13 @@ namespace Raptor.VelcroPhysicsImp
             PolygonBody.ApplyAngularImpulse(value.ToPhysics());
         }
 
-
         /// <summary>
         /// Applies a force to the body in the X and Y planes at the given world location.
         /// </summary>
         /// <param name="forceX">The force to apply in the X direction.</param>
         /// <param name="forceY">The force to apply in the Y direction.</param>
-        /// <param name="worldLocationX">The location in the world of where to apply this force.</param>
-        /// <param name="worldLocationY">The location in the world of where to apply this force.</param>
+        /// <param name="worldLocationX">The X location in the world of where to apply this force.</param>
+        /// <param name="worldLocationY">The Y location in the world of where to apply this force.</param>
         public void ApplyForce(float forceX, float forceY, float worldLocationX, float worldLocationY)
         {
             if (PolygonBody is null)
@@ -391,55 +372,15 @@ namespace Raptor.VelcroPhysicsImp
         }
 
         /// <summary>
-        /// Injects any arbitrary data into the plugin for use.  Must be a class.
+        /// Sets all of the X vertices to the given <paramref name="xVertices"/> param.
         /// </summary>
-        /// <typeparam name="T">The type of data to inject.</typeparam>
-        /// <param name="data">The data to inject.</param>
-        /// <exception cref="Exception">Thrown if the '<paramref name="data"/>' parameter is not of type <see cref="Body"/> or <see cref="PolygonShape"/>.</exception>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void InjectData<T>(T data) where T : class
-        {
-            if (data is null)
-                throw new ArgumentNullException(nameof(data), "The incoming data must not be null.");
-
-            if (data.GetType() == typeof(Body))
-            {
-                if (!(!(data is Body body)))
-                    PolygonBody = body;
-            }
-            else if (data.GetType() == typeof(PolygonShape))
-            {
-                if (!(!(data is PolygonShape shape)))
-                    PolygonShape = shape;
-            }
-            else
-            {
-                throw new Exception($"Data getting injected into {nameof(VelcroBody)} is not of type {nameof(Body)} or {nameof(PolygonShape)}.  Incorrect type is '{data.GetType().ToString()}'");
-            }
-        }
-
-
-        /// <summary>
-        /// Gets the data as the given type <typeparamref name="T"/>.
-        /// </summary>
-        /// <param name="option">Used to pass in options for the <see cref="GetData{T}(int)"/> implementation to process.</param>
-        /// <typeparam name="T">The type of data to get.</typeparam>
-        /// <exception cref="Exception">Thrown if the <paramref name="option"/> value is not the value of
-        /// type '1' for the type <see cref="PhysicsBodySettings"/>.</exception>
-        public T? GetData<T>(int option) where T : class
-        {
-            if (option == 1)
-                return _tempSettings as T;
-
-
-            throw new Exception($"Do not recognize the option '{option}'");
-        }
-
-
+        /// <param name="xVertices">The list of X vertices.</param>
         public void SetXVertices(float[] xVertices) => throw new NotImplementedException();
 
-
+        /// <summary>
+        /// Sets all of the Y vertices to the given <paramref name="xVertices"/> param.
+        /// </summary>
+        /// <param name="yVertices">The list of Y vertices.</param>
         public void SetYVertices(float[] yVertices) => throw new NotImplementedException();
-        #endregion
     }
 }

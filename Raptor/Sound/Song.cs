@@ -1,4 +1,6 @@
-﻿//using SFML.Audio;
+﻿// <copyright file="Song.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.Sound
 {
@@ -7,64 +9,59 @@ namespace Raptor.Sound
     /// </summary>
     public class Song
     {
-        //#region Private Fields
-        //private Music _song;
-        //#endregion
+        // #region Private Fields
+        // private Music _song;
+        // #endregion
 
-
-        //#region Constructors
-        //public Song(string songName)
-        //{
+        // #region Constructors
+        // public Song(string songName)
+        // {
         //    _song = new Music(songName);
-        //}
-        //#endregion
+        // }
+        // #endregion
 
-
-        //#region Props
+        // #region Props
         ///// <summary>
         ///// Gets or sets a value indicating if the song will start playing at the begining after the song has reached its end.
         ///// </summary>
-        //public bool Loop
-        //{
+        // public bool Loop
+        // {
         //    get { return _song.Loop; } set { _song.Loop = value; }
-        //}
+        // }
 
         ///// <summary>
         ///// Gets or sets the volume of the song.
         ///// </summary>
-        //public float Volume
-        //{
+        // public float Volume
+        // {
         //    get { return _song.Volume; } set { _song.Volume = value; }
-        //}
-        //#endregion
+        // }
+        // #endregion
 
-
-        //#region Public Methods
+        // #region Public Methods
         ///// <summary>
         ///// Plays the song.
         ///// </summary>
-        //public void Play()
-        //{
+        // public void Play()
+        // {
         //    _song.Play();
-        //}
-
+        // }
 
         ///// <summary>
         ///// Pauses the song while playing.
         ///// </summary>
-        //public void Pause()
-        //{
+        // public void Pause()
+        // {
         //    _song.Pause();
-        //}
-
+        // }
 
         ///// <summary>
         ///// Stops the song.
         ///// </summary>
-        //public void Stop()
-        //{
+        // public void Stop()
+        // {
         //    _song.Stop();
-        //}
-        //#endregion
+        // }
+        // #endregion
     }
 }
