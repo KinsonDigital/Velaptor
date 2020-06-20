@@ -1,47 +1,50 @@
-﻿using System;
-using System.Drawing;
-using System.Globalization;
-using System.Numerics;
-using OpenToolkit.Graphics.OpenGL;
-using Raptor.Content;
-using Raptor.Graphics;
-using Raptor.Input;
+﻿// <copyright file="TextBox.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.UI
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Drawing;
+    using System.Globalization;
+    using System.Numerics;
+    using OpenToolkit.Graphics.OpenGL;
+    using Raptor.Content;
+    using Raptor.Graphics;
+    using Raptor.Input;
+
     /// <summary>
     /// Provides the ability to enter text into a box.
     /// </summary>
     public class TextBox : IControl
     {
-        #region Private Fields
-        private readonly Keyboard _keyboard = new Keyboard();
-        private RenderText? _visibleText;
-        private static RenderText? _textRuler;//Used for measuring text with and height
-        private int _visibleTextCharPosition;
-        private int _charPosDelta;
-        private Vector2 _textPosition;
-        private int _characterPosition;
-        private int _cursorElapsedMilliseconds;
-        private bool _cursorVisible;
-        private const int LEFT_MARGIN = 5;
-        private const int RIGHT_MARGIN = 5;
-        private int _rightSide;
-        private int _leftSide;
-        private int _lastDirectionOfTravel = 0;
-        private readonly DeferredActionsCollection _deferredActions = new DeferredActionsCollection();
-        #endregion
+        private const int LEFTMARGIN = 5;
+        private const int RIGHTMARGIN = 5;
+        private readonly RenderText? textRuler; // Used for measuring text with and height
+        private readonly Keyboard keyboard = new Keyboard();
+        private readonly RenderText? visibleText;
+        private readonly DeferredActionsCollection deferredActions = new DeferredActionsCollection();
+        private int visibleTextCharPosition;
+        private int charPosDelta;
+        private int characterPosition;
+        private int cursorElapsedMilliseconds;
+        private bool cursorVisible;
+        private int rightSide;
+        private int leftSide;
+        private int lastDirectionOfTravel = 0;
 
-
-        #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="TextBox"/>.
+        /// Initializes a new instance of the <see cref="TextBox"/> class.
         /// </summary>
-        public TextBox(Texture backgroundTexture) => BackgroundTexture = backgroundTexture;
-        #endregion
+        /// <param name="backgroundTexture">The background texture to be displayed in the text box.</param>
+        public TextBox(Texture backgroundTexture)
+        {
+            BackgroundTexture = backgroundTexture;
+            this.textRuler = new RenderText();
+            this.visibleText = new RenderText();
+        }
 
-
-        #region Props
         /// <summary>
         /// Gets or sets the position of the text box.
         /// </summary>
@@ -71,124 +74,111 @@ namespace Raptor.UI
         /// Gets or sets the text in the <see cref="TextBox"/>.
         /// </summary>
         public string Text { get; set; } = string.Empty;
-        #endregion
 
-
-        #region Public Methods
         /// <summary>
         /// Initializes the <see cref="TextBox"/>.
         /// </summary>
-        public void Initialize() { }
-
-
+        public void Initialize()
+        {
+        }
 
         /// <summary>
         /// Loads the content of the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="contentLoader">The content loader used to load the content.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public void LoadContent(ContentLoader contentLoader)
         {
             if (contentLoader is null)
                 throw new ArgumentNullException(nameof(contentLoader), "The content loader must not be null.");
 
-            //TODO: Currently for every single instance of this class TextBox, there will be 2 RenderText objects created.
-            //One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
-            //This is not ideal.  Try to figure out a way to measure text without the use of another RenderText object.  This is
-            //not best for performance as well as taking extra memory.
-            //_visibleText = contentLoader.LoadText(FontName);
-            //_textRuler = contentLoader.LoadText(FontName);
-
-            _deferredActions.ExecuteAll();
+            // TODO: Currently for every single instance of this class TextBox, there will be 2 RenderText objects created.
+            // One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
+            // This is not ideal.  Try to figure out a way to measure text without the use of another RenderText object.  This is
+            // not best for performance as well as taking extra memory.
+            // _visibleText = contentLoader.LoadText(FontName);
+            // _textRuler = contentLoader.LoadText(FontName);
+            this.deferredActions.ExecuteAll();
         }
-
-
 
         /// <summary>
         /// Updates the texbox.
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
         public void Update(FrameTime engineTime)
         {
             UpdateSideLocations();
 
             ProcessKeys();
 
-            _cursorElapsedMilliseconds += engineTime.ElapsedTime.Milliseconds;
+            this.cursorElapsedMilliseconds += engineTime.ElapsedTime.Milliseconds;
 
-            if (_cursorElapsedMilliseconds >= 500)
+            if (this.cursorElapsedMilliseconds >= 500)
             {
-                _cursorElapsedMilliseconds = 0;
-                _cursorVisible = !_cursorVisible;
+                this.cursorElapsedMilliseconds = 0;
+                this.cursorVisible = !this.cursorVisible;
             }
         }
-
-
 
         /// <summary>
         /// Renders the <see cref="TextBox"/> to the graphics surface.
         /// </summary>
         /// <param name="renderer">The renderer used to render the <see cref="TextBox"/>.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>")]
-        public void Render(RendererREFONLY renderer)
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
+        public void Render(object renderer)
         {
-            if (renderer is null)
-                throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
+            // if (renderer is null)
+            //    throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
 
-            renderer.Render(BackgroundTexture, Position);
+            // renderer.Render(BackgroundTexture, Position);
 
-            //Update the X position of the text
-            _textPosition = new Vector2(_leftSide, Position.Y - (_visibleText is null ? 0 : _visibleText.Height / 2f));
+            ////Update the X position of the text
+            // _textPosition = new Vector2(_leftSide, Position.Y - (_visibleText is null ? 0 : _visibleText.Height / 2f));
 
-            //Render the text inside of the text box
-            if (!(_visibleText is null))
-            {
-                _visibleText.Text = ClipText(Text);
-                renderer.Render(_visibleText, _textPosition, Color.FromArgb(255, 0, 0, 0));
-            }
+            ////Render the text inside of the text box
+            // if (!(_visibleText is null))
+            // {
+            //    _visibleText.Text = ClipText(Text);
+            //    renderer.Render(_visibleText, _textPosition, Color.FromArgb(255, 0, 0, 0));
+            // }
 
-            //Render the end to cover any text that has passed the end of the render area
-            var topLeftCorner = new Vector2(Position.X - Width / 2, Position.Y - Height / 2);
+            ////Render the end to cover any text that has passed the end of the render area
+            // var topLeftCorner = new Vector2(Position.X - Width / 2, Position.Y - Height / 2);
 
-            var areaWidth = Width - (_rightSide - topLeftCorner.X);
+            // var areaWidth = Width - (_rightSide - topLeftCorner.X);
 
-            var coverArea = new Rectangle((int)(Width - areaWidth), 0, (int)areaWidth, (int)Height);
+            // var coverArea = new Rectangle((int)(Width - areaWidth), 0, (int)areaWidth, (int)Height);
 
-            var coverPosition = new Vector2(454, 250);// new Vector2(_rightSide, Position.Y);
+            // var coverPosition = new Vector2(454, 250);// new Vector2(_rightSide, Position.Y);
 
-            renderer.RenderTextureArea(BackgroundTexture, coverArea, coverPosition);
+            // renderer.RenderTextureArea(BackgroundTexture, coverArea, coverPosition);
 
+            ////TODO: Figure out is the code in the debugging comment section below is needed and if not, remove it
+            ////DEBUGGING
+            ////Render the dot at the right side line
+            // renderer.FillCircle(new Vector2(_rightSide, Position.Y - Height / 2), 5, Color.FromArgb(255, 125, 125, 0));
 
-            //TODO: Figure out is the code in the debugging comment section below is needed and if not, remove it
-            //DEBUGGING
-            //Render the dot at the right side line
-            renderer.FillCircle(new Vector2(_rightSide, Position.Y - Height / 2), 5, Color.FromArgb(255, 125, 125, 0));
+            ////Render the margins for visual debugging
+            // var leftMarginStart = new Vector2(_leftSide, Position.Y - 50);
+            // var leftMarginStop = new Vector2(_leftSide, Position.Y + 50);
+            // renderer.Line(leftMarginStart, leftMarginStop, Color.FromArgb(255, 0, 255, 0));
 
-            //Render the margins for visual debugging
-            var leftMarginStart = new Vector2(_leftSide, Position.Y - 50);
-            var leftMarginStop = new Vector2(_leftSide, Position.Y + 50);
-            renderer.Line(leftMarginStart, leftMarginStop, Color.FromArgb(255, 0, 255, 0));
+            // var rightMarginStart = new Vector2(_rightSide, Position.Y - 50);
+            // var rightMarginStop = new Vector2(_rightSide, Position.Y + 50);
+            // renderer.Line(rightMarginStart, rightMarginStop, Color.FromArgb(255, 0, 255, 0));
+            /////////////
 
-            var rightMarginStart = new Vector2(_rightSide, Position.Y - 50);
-            var rightMarginStop = new Vector2(_rightSide, Position.Y + 50);
-            renderer.Line(rightMarginStart, rightMarginStop, Color.FromArgb(255, 0, 255, 0));
-            ///////////
+            ////Render the blinking cursor
+            // var lineStart = CalcCursorStart();// new Vector2(cursorPositionX, Position.Y - (Background.Height / 2) + 3);
+            // var lineStop = CalcCursorStop();// new Vector2(cursorPositionX, Position.Y + (Background.Height / 2) - 3);
 
-            //Render the blinking cursor
-            var lineStart = CalcCursorStart();// new Vector2(cursorPositionX, Position.Y - (Background.Height / 2) + 3);
-            var lineStop = CalcCursorStop();// new Vector2(cursorPositionX, Position.Y + (Background.Height / 2) - 3);
+            // lineStart.X = lineStart.X > _rightSide ? _rightSide : lineStart.X;
+            // lineStop.X = lineStop.X > _rightSide ? _rightSide : lineStop.X;
 
-            lineStart.X = lineStart.X > _rightSide ? _rightSide : lineStart.X;
-            lineStop.X = lineStop.X > _rightSide ? _rightSide : lineStop.X;
-
-            if (_cursorVisible)
-                renderer.Line(lineStart, lineStop, Color.FromArgb(255, 255, 0, 0));//TODO: Change to black when finished with testing
+            // if (_cursorVisible)
+            //    renderer.Line(lineStart, lineStop, Color.FromArgb(255, 255, 0, 0));//TODO: Change to black when finished with testing
         }
-        #endregion
 
-
-        #region Private Methods
         /// <summary>
         /// Updates the locations of the left and right side of the <see cref="TextBox"/>.
         /// </summary>
@@ -196,196 +186,187 @@ namespace Raptor.UI
         {
             var halfWidth = Width / 2;
 
-            _leftSide = (int)Position.X - halfWidth + LEFT_MARGIN;
-            _rightSide = (int)Position.X + halfWidth - RIGHT_MARGIN;
+            this.leftSide = (int)Position.X - halfWidth + LEFTMARGIN;
+            this.rightSide = (int)Position.X + halfWidth - RIGHTMARGIN;
         }
-
 
         /// <summary>
         /// Processess any keyboard input inside of the <see cref="TextBox"/>.
         /// </summary>
         private void ProcessKeys()
         {
-            _keyboard.UpdateCurrentState();
+            this.keyboard.UpdateCurrentState();
 
-            if (_keyboard.IsKeyPressed(KeyCode.Right))
+            if (this.keyboard.IsKeyPressed(KeyCode.Right))
             {
-                _lastDirectionOfTravel = 1;
+                this.lastDirectionOfTravel = 1;
 
-                _characterPosition = _characterPosition > Text.Length - 1 ?
-                    _characterPosition :
-                    _characterPosition + 1;
+                this.characterPosition = this.characterPosition > Text.Length - 1 ?
+                    this.characterPosition :
+                    this.characterPosition + 1;
 
-                _visibleTextCharPosition = _visibleTextCharPosition > (_visibleText is null ? 0 : _visibleText.Text.Length - 1) ?
-                    _visibleTextCharPosition :
-                    _visibleTextCharPosition + 1;
+                this.visibleTextCharPosition = this.visibleTextCharPosition > (this.visibleText is null ? 0 : this.visibleText.Text.Length - 1) ?
+                    this.visibleTextCharPosition :
+                    this.visibleTextCharPosition + 1;
 
-                _charPosDelta = Math.Abs(_characterPosition - _visibleTextCharPosition);
+                this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
 
-                _keyboard.UpdatePreviousState();
+                this.keyboard.UpdatePreviousState();
                 return;
             }
 
-            if (_keyboard.IsKeyPressed(KeyCode.Left))
+            if (this.keyboard.IsKeyPressed(KeyCode.Left))
             {
-                _lastDirectionOfTravel = -1;
+                this.lastDirectionOfTravel = -1;
 
-                _characterPosition = _characterPosition <= 0 ?
-                    _characterPosition :
-                    _characterPosition - 1;
+                this.characterPosition = this.characterPosition <= 0 ?
+                    this.characterPosition :
+                    this.characterPosition - 1;
 
-                _visibleTextCharPosition = _visibleTextCharPosition == 0 ?
-                    _visibleTextCharPosition :
-                    _visibleTextCharPosition - 1;
+                this.visibleTextCharPosition = this.visibleTextCharPosition == 0 ?
+                    this.visibleTextCharPosition :
+                    this.visibleTextCharPosition - 1;
 
-                _charPosDelta = Math.Abs(_characterPosition - _visibleTextCharPosition);
+                this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
 
-                _keyboard.UpdatePreviousState();
+                this.keyboard.UpdatePreviousState();
                 return;
             }
 
-            var isShiftDown = _keyboard.IsKeyDown(KeyCode.LeftShift) || _keyboard.IsKeyDown(KeyCode.RightShift);
+            var isShiftDown = this.keyboard.IsKeyDown(KeyCode.LeftShift) || this.keyboard.IsKeyDown(KeyCode.RightShift);
 
-            if (!(_visibleText is null) && !string.IsNullOrEmpty(_visibleText.Text))
+            if (!(this.visibleText is null) && !string.IsNullOrEmpty(this.visibleText.Text))
             {
-                //The delete keys. This is the standard one and the numpad one
-                if(_keyboard.IsDeleteKeyPressed())
+                // The delete keys. This is the standard one and the numpad one
+                if (this.keyboard.IsDeleteKeyPressed())
                 {
-                    _visibleText.Text = _visibleText.Text.Remove(_characterPosition, 1);
+                    this.visibleText.Text = this.visibleText.Text.Remove(this.characterPosition, 1);
                 }
 
-                if (_keyboard.IsKeyPressed(KeyCode.Back) && _characterPosition > 0)
+                if (this.keyboard.IsKeyPressed(KeyCode.Back) && this.characterPosition > 0)
                 {
                     RemoveCharacterUsingBackspace();
                 }
             }
 
-            //If a letter is pressed, add it to the <see cref="TextBox"/>
-            if (_keyboard.AnyLettersPressed(out KeyCode letter))
-            {
-                string letterText;
+            // TODO: Need to change how we can check for pressed letters AND to return the letter itself.  Tuples?
+            // If a letter is pressed, add it to the <see cref="TextBox"/>
+            // if (this.keyboard.AnyLettersPressed(out var letter))
+            // {
+            //    string letterText;
 
-                if (letter == KeyCode.Space)
-                {
-                    letterText = " ";
-                }
-                else
-                {
-                    letterText = isShiftDown || _keyboard.CapsLockOn ?
-                        letter.ToString() :
-                        letter.ToString().ToUpperInvariant();
-                }
+            // if (letter == KeyCode.Space)
+            //    {
+            //        letterText = " ";
+            //    }
+            //    else
+            //    {
+            //        letterText = isShiftDown || this.keyboard.CapsLockOn ?
+            //            letter.ToString() :
+            //            letter.ToString().ToUpperInvariant();
+            //    }
 
-                if (!(_visibleText is null))
-                    _visibleText.Text = _visibleText.Text.Insert(_characterPosition, letterText);
+            // if (!(this.visibleText is null))
+            //        this.visibleText.Text = this.visibleText.Text.Insert(this.characterPosition, letterText);
 
-                _characterPosition += 1;
-            }
+            // this.characterPosition += 1;
+            // }
 
-            //If a number was pressed on the keyboard
-            if (_keyboard.AnyNumbersPressed(out KeyCode number))
-            {
-                var character = _keyboard.KeyToChar(number).ToString(CultureInfo.InvariantCulture);
+            // TODO: Need to change how we can check for pressed numbers AND to return the number itself.  Tuples?
+            //// If a number was pressed on the keyboard
+            // if (this.keyboard.AnyNumbersPressed(out var number))
+            // {
+            //    var character = this.keyboard.KeyToChar(number).ToString(CultureInfo.InvariantCulture);
 
-                if (!(_visibleText is null))
-                    _visibleText.Text = _visibleText.Text.Insert(_characterPosition, character);
+            // if (!(this.visibleText is null))
+            //        this.visibleText.Text = this.visibleText.Text.Insert(this.characterPosition, character);
 
-                _characterPosition += 1;
-            }
+            // this.characterPosition += 1;
+            // }
 
-
-            _keyboard.UpdatePreviousState();
+            // this.keyboard.UpdatePreviousState();
         }
-
 
         /// <summary>
         /// Calculates the starting position of the cursor inside of the <see cref="TextBox"/>.
         /// </summary>
-        /// <returns></returns>
-        private Vector2 CalcCursorStart() => new Vector2(_leftSide + CalcCursorXPos(), Position.Y - (BackgroundTexture.Height / 2) + 3);
-
+        /// <returns>Result of the calculated start position of the textbox cursor.</returns>
+        private Vector2 CalcCursorStart() => new Vector2(this.leftSide + CalcCursorXPos(), Position.Y - (BackgroundTexture.Height / 2) + 3);
 
         /// <summary>
         /// Calculates the stopping position of the cursor insdie of the <see cref="TextBox"/>.
         /// </summary>
-        /// <returns></returns>
-        private Vector2 CalcCursorStop() => new Vector2(_leftSide + CalcCursorXPos(), Position.Y + (BackgroundTexture.Height / 2) - 3);
-
+        /// <returns>Result of the calcualted end position of the textbox cursor.</returns>
+        private Vector2 CalcCursorStop() => new Vector2(this.leftSide + CalcCursorXPos(), Position.Y + (BackgroundTexture.Height / 2) - 3);
 
         /// <summary>
         /// Removes the characters using the backspace key.
         /// </summary>
         private void RemoveCharacterUsingBackspace()
         {
-            if (_visibleText is null)
+            if (this.visibleText is null)
                 return;
 
-            Text = Text.Remove(Text.IndexOf(_visibleText.Text, StringComparison.Ordinal) + _characterPosition - 1, 1);
+            Text = Text.Remove(Text.IndexOf(this.visibleText.Text, StringComparison.Ordinal) + this.characterPosition - 1, 1);
         }
-
 
         /// <summary>
         /// Calculates the cursor position inside of the <see cref="TextBox"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The calculated X position of the cursor.</returns>
         private int CalcCursorXPos()
         {
-            if (_textRuler is null)
+            if (this.textRuler is null)
                 return 0;
 
-            _textRuler.Text = string.Empty;
+            this.textRuler.Text = string.Empty;
 
-            //Update the text that is from the first letter up to the cursor position
-            _textRuler.Text = Text.Substring(_charPosDelta, Math.Abs(_characterPosition - _charPosDelta));
+            // Update the text that is from the first letter up to the cursor position
+            this.textRuler.Text = Text.Substring(this.charPosDelta, Math.Abs(this.characterPosition - this.charPosDelta));
 
-            var result = _textRuler.Width;
+            var result = this.textRuler.Width;
 
-            _textRuler.Text = string.Empty;
-
+            this.textRuler.Text = string.Empty;
 
             return result;
         }
-
 
         /// <summary>
         /// The amount of text to be clipped from the text box that is past
         /// the right side of the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="text">The text of the <see cref="TextBox"/>.</param>
-        /// <returns></returns>
+        /// <returns>The text that is clipped.</returns>
         private string ClipText(string text)
         {
-            if (_textRuler is null)
+            if (this.textRuler is null)
                 return string.Empty;
 
-            _textRuler.Text = string.Empty;
+            this.textRuler.Text = string.Empty;
 
-            var textAreaWidth = _rightSide - _leftSide;
+            var textAreaWidth = this.rightSide - this.leftSide;
 
-            var startIndex = _charPosDelta == 0 ?
+            var startIndex = this.charPosDelta == 0 ?
                 0 :
-                _charPosDelta + _lastDirectionOfTravel;
+                this.charPosDelta + this.lastDirectionOfTravel;
 
-            for (int i = startIndex; i < text.Length; i++)
+            for (var i = startIndex; i < text.Length; i++)
             {
-                _textRuler.Text += Text[i].ToString(CultureInfo.InvariantCulture);
+                this.textRuler.Text += Text[i].ToString(CultureInfo.InvariantCulture);
 
-                //If the text is currently too wide to fit, remove one character
-                if (_textRuler.Width > textAreaWidth)
+                // If the text is currently too wide to fit, remove one character
+                if (this.textRuler.Width > textAreaWidth)
                 {
-                    _textRuler.Text = _textRuler.Text.Substring(0, _textRuler.Text.Length - 1);
+                    this.textRuler.Text = this.textRuler.Text[0..^1];
                     break;
                 }
             }
 
+            var result = this.textRuler.Text;
 
-            var result = _textRuler.Text;
-
-            _textRuler.Text = string.Empty;
-
+            this.textRuler.Text = string.Empty;
 
             return result;
         }
-        #endregion
     }
 }

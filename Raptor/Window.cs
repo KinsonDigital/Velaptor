@@ -1,94 +1,89 @@
-﻿using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Desktop;
-using Raptor.Content;
-using Raptor.OpenGL;
-using System;
+﻿// <copyright file="Window.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using OpenToolkit.Mathematics;
+    using OpenToolkit.Windowing.Desktop;
+    using Raptor.Content;
+    using Raptor.OpenGL;
+
     /// <summary>
     /// A system window that graphics can be rendered to.
     /// </summary>
     public abstract class Window : IDisposable
     {
-        #region Private Fields
-        private readonly IWindow _window;
-        private bool _isDisposed;
-        #endregion
+        private readonly IWindow window;
+        private bool isDisposed;
 
-
-        #region Constructors
         /// <summary>
-        /// Creates a new <see cref="Window"/>.
+        /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="window">The internal window implementation that manages a window.</param>
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of constructor.")]
         public Window(IWindow window)
         {
             if (window is null)
                 throw new ArgumentNullException(nameof(window), "IWindow must not be null");
 
-            _window = window;
+            this.window = window;
             UpdateFrequency = 60;
 
             ContentLoader = new ContentLoader();
         }
 
-
         /// <summary>
-        /// Creates a new instance of <see cref="Window"/>.
+        /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         public Window()
         {
             var gameWindowSettings = new GameWindowSettings();
             var nativeWindowSettings = new NativeWindowSettings()
             {
-                Size = new Vector2i(800, 600)
+                Size = new Vector2i(800, 600),
             };
 
-            _window = new GLWindow(gameWindowSettings, nativeWindowSettings)
+            this.window = new GLWindow(gameWindowSettings, nativeWindowSettings)
             {
                 Update = OnUpdate,
                 Draw = OnDraw,
                 Init = OnLoad,
-                Resize = OnResize
+                WinResize = OnResize,
             };
             UpdateFrequency = 60;
 
             ContentLoader = new ContentLoader();
         }
-        #endregion
 
-
-        #region Props
         /// <summary>
         /// Gets or sets the title of the window.
         /// </summary>
         public string Title
         {
-            get => _window.Title;
-            set => _window.Title = value;
+            get => this.window.Title;
+            set => this.window.Title = value;
         }
-
 
         /// <summary>
         /// Gets or sets the width of the window.
         /// </summary>
         public int Width
         {
-            get => _window.Width;
-            set => _window.Width = value;
+            get => this.window.Width;
+            set => this.window.Width = value;
         }
-
 
         /// <summary>
         /// Gets or sets the height of the window.
         /// </summary>
         public int Height
         {
-            get => _window.Height;
-            set => _window.Height = value;
+            get => this.window.Height;
+            set => this.window.Height = value;
         }
-
 
         /// <summary>
         /// Gets or sets the frequency of how often the window updates and draws
@@ -96,65 +91,74 @@ namespace Raptor
         /// </summary>
         public int UpdateFrequency
         {
-            get => _window.UpdateFreq;
-            set => _window.UpdateFreq = value;
+            get => this.window.UpdateFreq;
+            set => this.window.UpdateFreq = value;
         }
 
+        /// <summary>
+        /// Gets the content loader for loading content.
+        /// </summary>
+        public IContentLoader? ContentLoader { get; private set; }
 
-        public IContentLoader ContentLoader { get; private set; }
-        #endregion
-
-
-        #region Public Methods
         /// <summary>
         /// Shows the window.
         /// </summary>
-        public void Show() => _window.Show();
-
+        public void Show() => this.window.Show();
 
         /// <summary>
         /// Invoked when the window is loaded.
         /// </summary>
-        public virtual void OnLoad() { }
-
+        public virtual void OnLoad()
+        {
+        }
 
         /// <summary>
         /// Invoked when the window is updated.
         /// </summary>
-        public virtual void OnUpdate(FrameTime frameTime) { }
-
+        /// <param name="frameTime">The amount of time since the last frame.</param>
+        public virtual void OnUpdate(FrameTime frameTime)
+        {
+        }
 
         /// <summary>
         /// Invoked when the window renders its content.
         /// </summary>
-        public virtual void OnDraw(FrameTime frameTime) { }
-
+        /// <param name="frameTime">The amount of time since the last frame.</param>
+        public virtual void OnDraw(FrameTime frameTime)
+        {
+        }
 
         /// <summary>
         /// Invoked when the window size changes.
         /// </summary>
-        public virtual void OnResize() { }
-        
+        public virtual void OnResize()
+        {
+        }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing,
+        /// releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        #endregion
 
-
-        #region Protected Methods
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing,
+        /// releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!_isDisposed)
+            if (!this.isDisposed)
             {
                 if (disposing)
-                    _window.Dispose();
+                    this.window.Dispose();
 
-                _isDisposed = true;
+                this.isDisposed = true;
             }
         }
-        #endregion
     }
 }

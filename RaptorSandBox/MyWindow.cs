@@ -2,6 +2,7 @@
 using Raptor;
 using Raptor.Content;
 using Raptor.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -11,8 +12,8 @@ namespace RaptorSandBox
 {
     public class MyWindow : Window
     {
-        private Texture linkTexture;
-        private SpriteBatch spriteBatch;
+        private Texture? linkTexture;
+        private SpriteBatch? spriteBatch;
 
 
         public MyWindow()
@@ -24,6 +25,9 @@ namespace RaptorSandBox
 
         public override void OnLoad()
         {
+            if (ContentLoader is null)
+                throw new NullReferenceException($"The ContentLoader must not be null.");
+
             this.linkTexture = ContentLoader.LoadTexture("Link.png");
             this.spriteBatch = new SpriteBatch(Width, Height);
             base.OnLoad();
@@ -38,11 +42,11 @@ namespace RaptorSandBox
 
         public override void OnDraw(FrameTime frameTime)
         {
-            this.spriteBatch.Begin();
+            this.spriteBatch?.Begin();
 
-            this.spriteBatch.Render(this.linkTexture, 400, 400);
+            this.spriteBatch?.Render(this.linkTexture, 400, 400);
 
-            this.spriteBatch.End();
+            this.spriteBatch?.End();
 
             base.OnDraw(frameTime);
         }

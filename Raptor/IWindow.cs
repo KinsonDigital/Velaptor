@@ -1,14 +1,17 @@
-﻿using System;
+﻿// <copyright file="IWindow.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor
 {
+    using System;
+
     /// <summary>
     /// Provides the core of a game which facilitates how the engine starts, stops,
     /// manages time and how the game loop runs.
     /// </summary>
     public interface IWindow : IDisposable
     {
-        #region Props
         /// <summary>
         /// Gets or sets the width of the game window.
         /// </summary>
@@ -28,10 +31,7 @@ namespace Raptor
         Action? Init { get; set; }
 
         int UpdateFreq { get; set; }
-        #endregion
 
-
-        #region Methods
         /// <summary>
         /// Shows the window.
         /// </summary>
@@ -41,6 +41,5 @@ namespace Raptor
         /// Closes the window.
         /// </summary>
         void Close();
-        #endregion
     }
 }

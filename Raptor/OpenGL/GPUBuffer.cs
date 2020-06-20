@@ -1,4 +1,8 @@
-﻿namespace Raptor.OpenGL
+﻿// <copyright file="GPUBuffer.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
@@ -7,6 +11,10 @@
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
 
+    /// <summary>
+    /// Represents GPU vertex buffer memory.
+    /// </summary>
+    /// <typeparam name="T">The type of data to send to the GPU.</typeparam>
     internal class GPUBuffer<T>
         where T : struct
     {
@@ -16,6 +24,10 @@
         private int totalVertexBytes;
         private int totalQuadSizeInBytes;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GPUBuffer{T}"/> class.
+        /// </summary>
+        /// <param name="totalQuads">The total number or quads to render per batch.</param>
         public GPUBuffer(int totalQuads)
         {
             CreateVertexBuffer(totalQuads);
@@ -31,11 +43,19 @@
             SetupAttribPointers(this.vertexArrayID);
         }
 
+        /// <summary>
+        /// Updates the given quad using the given information for a particular quad item in the GPU.
+        /// </summary>
+        /// <param name="quadID">The ID of the quad to update.</param>
+        /// <param name="srcRect">The area within the texture to update.</param>
+        /// <param name="textureWidth">The width of the texture.</param>
+        /// <param name="textureHeight">The height of the texture.</param>
+        /// <param name="tintColor">The color to apply to the texture area being rendered.</param>
         public void UpdateQuad(int quadID, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor)
         {
             var quadData = CreateQuad();
 
-            UpdateTextureCoordinates(ref quadData, srcRect, textureWidth, textureHeight);
+            CalculateTextureCoordinates(ref quadData, srcRect, textureWidth, textureHeight);
 
             // Update the color
             quadData.Vertex1.TintColor = tintColor.ToGLColor();
@@ -53,6 +73,10 @@
             GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, ref quadData);
         }
 
+        /// <summary>
+        /// Creates a single quad of data to be sent to the GPU.
+        /// </summary>
+        /// <returns>The quad data.</returns>
         private static QuadData CreateQuad() => new QuadData
         {
             Vertex1 = new VertexData()
@@ -80,7 +104,15 @@
             },
         };
 
-        private static void UpdateTextureCoordinates(ref QuadData quad, Rectangle srcRect, int textureWidth, int textureHeight)
+        /// <summary>
+        /// Calculates the texture coordinates in the given <paramref name="quad"/> based on the area of the texture
+        /// to render and the texture size.
+        /// </summary>
+        /// <param name="quad">The quad to update.</param>
+        /// <param name="srcRect">The area of the rectangle used to calculate the texture coordinates.</param>
+        /// <param name="textureWidth">The with of the texture.</param>
+        /// <param name="textureHeight">The height of the texture.</param>
+        private static void CalculateTextureCoordinates(ref QuadData quad, Rectangle srcRect, int textureWidth, int textureHeight)
         {
             // TODO: Cache this value to avoid reflection for perf boost
             var topLeftCornerX = srcRect.Left.MapValue(0, textureWidth, 0, 1);
@@ -105,10 +137,20 @@
             quad.Vertex4.TextureCoord = bottomLeftCoord;
         }
 
+        /// <summary>
+        /// Unbinds the index buffer that is attached to the vertex array.
+        /// </summary>
         private static void UnbindIndexBuffer() => GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
+        /// <summary>
+        /// Unbinds the vertex buffer.
+        /// </summary>
         private static void UnbindVertexBuffer() => GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
+        /// <summary>
+        /// Sets up the attribute pointers in the vertex buffer to hold vertex buffer data for each pixel.
+        /// </summary>
+        /// <param name="vertexArrayID">The ID of the vertex array.</param>
         private void SetupAttribPointers(int vertexArrayID)
         {
             var props = typeof(T).GetFields();
@@ -140,6 +182,11 @@
             }
         }
 
+        /// <summary>
+        /// Creates a vertex buffer large enough to hold the total number of quads
+        /// in the the <paramref name="totalQuads"/> param.
+        /// </summary>
+        /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
         private void CreateVertexBuffer(int totalQuads)
         {
             this.totalVertexBytes = VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
@@ -154,9 +201,14 @@
                 quadData.Add(CreateQuad());
             }
 
-            AllocateBuffer(quadData.ToArray());
+            AllocateVertexBufferMemory(totalQuads);
         }
 
+        /// <summary>
+        /// Creates an index buffer that is large enough to hold enough indices for the
+        /// total number quads in the <paramref name="totalQuads"/> param.
+        /// </summary>
+        /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
         private void CreateIndexBuffer(int totalQuads)
         {
             this.indexBufferID = GL.GenBuffer();
@@ -181,15 +233,22 @@
             UploadIndexBufferData(indexData.ToArray());
         }
 
-        private void AllocateBuffer(QuadData[] data)
+        /// <summary>
+        /// Allocates enough memory for the vertex buffer to hold the given quad <paramref name="totalQUads"/> items.
+        /// </summary>
+        /// <param name="totalQUads">The total number of quads that the vertex buffer can hold.</param>
+        private void AllocateVertexBufferMemory(int totalQUads)
         {
-            var sizeInBytes = this.totalQuadSizeInBytes * data.Length;
+            var sizeInBytes = this.totalQuadSizeInBytes * totalQUads;
 
             BindVertexBuffer();
             GL.BufferData(BufferTarget.ArrayBuffer, sizeInBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw);
             UnbindVertexBuffer();
         }
 
+        /// <summary>
+        /// Binds the vertex buffer.
+        /// </summary>
         private void BindVertexBuffer() => GL.BindBuffer(BufferTarget.ArrayBuffer, this.vertexBufferID);
 
         /// <summary>
@@ -209,9 +268,14 @@
             UnbindIndexBuffer();
         }
 
+        /// <summary>
+        /// Binds the index buffer.
+        /// </summary>
         private void BindIndexBuffer() => GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.indexBufferID);
 
+        /// <summary>
+        /// Binds the vertex array.
+        /// </summary>
         private void BindVertexArray() => GL.BindVertexArray(this.vertexArrayID);
     }
-
 }

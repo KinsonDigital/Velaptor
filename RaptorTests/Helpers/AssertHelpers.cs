@@ -18,7 +18,10 @@ namespace RaptorTests.Helpers
         /// <typeparam name="T">The type of exception that the test is verifying.</typeparam>
         /// <param name="testCode">The code that will be be throwing the expected exception.</param>
         /// <param name="expectedMessage">The expected message of the exception.</param>
-        public static void ThrowsWithMessage<T>(Action testCode, string expectedMessage) where T : Exception => Assert.Equal(expectedMessage, Assert.Throws<T>(testCode).Message);
+        public static void ThrowsWithMessage<T>(Action testCode, string expectedMessage) where T : Exception
+        {
+            Assert.Equal(expectedMessage, Assert.Throws<T>(testCode).Message);
+        }
         #endregion
     }
 }

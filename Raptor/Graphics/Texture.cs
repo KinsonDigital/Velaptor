@@ -1,9 +1,13 @@
-﻿using OpenToolkit.Graphics.OpenGL4;
-using System.IO;
-using System;
+﻿// <copyright file="Texture.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.Graphics
 {
+    using System;
+    using System.IO;
+    using OpenToolkit.Graphics.OpenGL4;
+
     /// <summary>
     /// The texture to render to the screen.
     /// </summary>
@@ -24,16 +28,20 @@ namespace Raptor.Graphics
 
             UploadDataToGPU(pixelData, width, height, name);
 
-            //Unbind
+            // Unbind
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
+        /// <inheritdoc/>
         public int ID { get; protected set; }
 
+        /// <inheritdoc/>
         public string Name { get; private set; }
 
+        /// <inheritdoc/>
         public int Width { get; protected set; }
 
+        /// <inheritdoc/>
         public int Height { get; protected set; }
 
         /// <summary>

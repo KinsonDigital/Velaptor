@@ -1,7 +1,12 @@
-﻿namespace Raptor.Graphics
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor.Graphics
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
     using System.Xml;
@@ -53,14 +58,18 @@
 
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of method.")]
         public void Render(ITexture texture, int x, int y, Color tintColor)
         {
+            if (texture is null)
+                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
+
             var srcRect = new Rectangle()
             {
                 X = 0,
                 Y = 0,
                 Width = texture.Width,
-                Height = texture.Height
+                Height = texture.Height,
             };
 
             var destRect = new Rectangle(x, y, texture.Width, texture.Height);
@@ -77,7 +86,7 @@
         /// <param name="size">The size to render the texture at. 1 is for 100%/normal size.</param>
         /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
         /// <param name="tintColor">The color to apply to the rendering.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside method.")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside method.")]
         public void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor)
         {
             if (!this.hasBegun)
@@ -86,7 +95,7 @@
             bool HasSwitchedTexture() => texture.ID != this.previousTextureID && !this.firstRender;
 
             // var totalBatchItems = _batchItems.Count(i => !i.Value.IsEmpty);
-            var totalBatchItems = this.batchItems.Values.ToArray().CountKD<SpriteBatchItem>(i => !i.IsEmpty);
+            var totalBatchItems = this.batchItems.Values.ToArray().CountKD(i => !i.IsEmpty);
 
             // Has the textures switched
             if (HasSwitchedTexture() || totalBatchItems >= this.maxBatchSize)

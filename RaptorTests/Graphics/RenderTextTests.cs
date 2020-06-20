@@ -19,10 +19,7 @@ namespace RaptorTests.Graphics
             var mockInternalText = new Mock<IText>();
             mockInternalText.SetupProperty(m => m.Text);
 
-            var gameText = new RenderText()
-            {
-                InternalText = mockInternalText.Object
-            };
+            var gameText = new RenderText();
             var expected = "Hello World";
 
             //Act
@@ -41,10 +38,7 @@ namespace RaptorTests.Graphics
             //Arrange
             var mockInternalText = new Mock<IText>();
             mockInternalText.Setup(m => m.Width).Returns(40);
-            var gameText = new RenderText()
-            {
-                InternalText = mockInternalText.Object
-            };
+            var gameText = new RenderText();
             var expected = 40;
 
             //Act
@@ -61,10 +55,7 @@ namespace RaptorTests.Graphics
             //Arrange
             var mockInternalText = new Mock<IText>();
             mockInternalText.Setup(m => m.Height).Returns(40);
-            var gameText = new RenderText()
-            {
-                InternalText = mockInternalText.Object
-            };
+            var gameText = new RenderText();
             var expected = 40;
 
             //Act
@@ -81,10 +72,7 @@ namespace RaptorTests.Graphics
             //Arrange
             var mockInternalText = new Mock<IText>();
             mockInternalText.SetupProperty(m => m.Color, Color.FromArgb(0, 0, 0, 0));
-            var gameText = new RenderText()
-            {
-                InternalText = mockInternalText.Object
-            };
+            var gameText = new RenderText();
             var expected = Color.FromArgb(44, 11, 22, 33);
 
             //Act
@@ -126,12 +114,10 @@ namespace RaptorTests.Graphics
 
             var textA = new RenderText()
             {
-                InternalText = mockTextA.Object,
                 Text = stringA
             };
             var textB = new RenderText()
             {
-                InternalText = mockTextB.Object,
                 Text = stringB
             };
 
@@ -156,7 +142,6 @@ namespace RaptorTests.Graphics
 
             var textA = new RenderText()
             {
-                InternalText = mockText.Object,
                 Text = stringA
             };
 
@@ -181,7 +166,6 @@ namespace RaptorTests.Graphics
 
             var textB = new RenderText()
             {
-                InternalText = mockText.Object,
                 Text = stringB
             };
 

@@ -1,6 +1,11 @@
-﻿namespace Raptor.OpenGL
+﻿// <copyright file="VertexData.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor.OpenGL
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using OpenToolkit.Mathematics;
 
@@ -10,25 +15,25 @@
         /// <summary>
         /// The position of the vertex in NDC (normal device coordinate) coordinates.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
+        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
         public Vector3 Vertex; // Location 0 | aPosition
 
         /// <summary>
         /// The point in a texture that corresponds to this structures <see cref="Vertex"/>.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
+        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
         public Vector2 TextureCoord; // Location 1 | aTexCoord
 
         /// <summary>
         /// The color of the current vertex.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
+        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
         public Vector4 TintColor; // Location 2 | aTintColor
 
         /// <summary>
         /// The index of the transform to use to apply to this vertex.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
+        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
         public float TransformIndex; // Location 3 | aTransformIndex
 
         /// <summary>
@@ -52,7 +57,7 @@
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns>True if the specified object is equal to the current object; otherwise, false.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is VertexData data))
                 return false;

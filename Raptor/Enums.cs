@@ -1,4 +1,8 @@
-﻿namespace Raptor
+﻿// <copyright file="Enums.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor
 {
     /// <summary>
     /// Represents different ways that a scene should run.
@@ -13,6 +17,6 @@
         /// <summary>
         /// This gives fine control to run the game a set amount of frames at a time.
         /// </summary>
-        FrameStack = 2
+        FrameStack = 2,
     }
 }

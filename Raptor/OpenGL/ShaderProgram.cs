@@ -1,4 +1,8 @@
-﻿namespace Raptor.OpenGL
+﻿// <copyright file="ShaderProgram.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
@@ -215,7 +219,7 @@
                 {
                     var line = reader.ReadLine();
 
-                    line = ProcessLine(line);
+                    line = ProcessLine(line is null ? string.Empty : line);
 
                     result.AppendLine(line);
                 }

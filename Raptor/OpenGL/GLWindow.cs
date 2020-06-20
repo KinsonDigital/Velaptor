@@ -1,27 +1,28 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Windowing.Common;
-using OpenToolkit.Windowing.Desktop;
-using OpenToolkit.Graphics.OpenGL4;
-using NETColor = System.Drawing.Color;
+﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.OpenGL
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
+    using OpenToolkit.Graphics.OpenGL4;
+    using OpenToolkit.Mathematics;
+    using OpenToolkit.Windowing.Common;
+    using OpenToolkit.Windowing.Desktop;
+    using NETColor = System.Drawing.Color;
+
     internal class GLWindow : GameWindow, IWindow
     {
-        #region Private Fields
-        private int _fps;
         private bool isShuttingDown;
-        #endregion
 
-
-        #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="GLWindow"/>.
+        /// Initializes a new instance of the <see cref="GLWindow"/> class.
         /// </summary>
         /// <param name="gameWinSettings">The game window settings.</param>
         /// <param name="nativeWinSettings">The native window settings.</param>
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in constructor.")]
         public GLWindow(GameWindowSettings gameWinSettings, NativeWindowSettings nativeWinSettings)
             : base(gameWinSettings, nativeWinSettings)
         {
@@ -30,16 +31,13 @@ namespace Raptor.OpenGL
 
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
-            GL.DebugMessageCallback(DebugCallback, Marshal.StringToHGlobalAnsi(""));
+            GL.DebugMessageCallback(DebugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
 
             Title = "Raptor Application";
             UpdateFrequency = 60;
             RenderFrequency = 60;
         }
-        #endregion
 
-
-        #region Props
         /// <summary>
         /// Gets or sets the width of the game window.
         /// </summary>
@@ -71,7 +69,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Invoked when the window is resized.
         /// </summary>
-        public Action? Resize { get; set; }
+        public Action? WinResize { get; set; }
 
         /// <summary>
         /// Invoked once to initialize.
@@ -82,13 +80,13 @@ namespace Raptor.OpenGL
         /// Gets or sets the value of how often the <see cref="Update"/>
         /// and <see cref="Draw"/> actions are invoked in hertz.
         /// </summary>
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of property.")]
         public int UpdateFreq
         {
             get
             {
                 if (UpdateFrequency != RenderFrequency)
                     throw new Exception($"The update and render frequencies must match for this '{nameof(GLWindow)}' implementation.");
-
 
                 return (int)UpdateFrequency;
             }
@@ -98,18 +96,11 @@ namespace Raptor.OpenGL
                 RenderFrequency = value;
             }
         }
-        #endregion
 
-
-        #region Public Methods
         /// <summary>
         /// Shows the window.
         /// </summary>
-        public void Show()
-        {
-            Run();
-        }
-
+        public void Show() => Run();
 
         /// <summary>
         /// Run immediately after Run() is called.
@@ -120,7 +111,6 @@ namespace Raptor.OpenGL
 
             base.OnLoad();
         }
-
 
         /// <summary>
         /// Run when the window is ready to update.
@@ -133,14 +123,13 @@ namespace Raptor.OpenGL
 
             var frameTime = new FrameTime()
             {
-                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(args.Time * 1000.0))
+                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(args.Time * 1000.0)),
             };
 
             Update?.Invoke(frameTime);
-            
+
             base.OnUpdateFrame(args);
         }
-
 
         /// <summary>
         /// Run when the window is ready to update.
@@ -153,7 +142,7 @@ namespace Raptor.OpenGL
 
             var frameTime = new FrameTime()
             {
-                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(args.Time * 1000.0))
+                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(args.Time * 1000.0)),
             };
 
             Draw?.Invoke(frameTime);
@@ -163,28 +152,25 @@ namespace Raptor.OpenGL
             base.OnRenderFrame(args);
         }
 
-
         /// <summary>
-        /// Raises the <see cref="Resize"/> event.
+        /// Raises the <see cref="WinResize"/> event.
         /// </summary>
         /// <param name="e">A <see cref="ResizeEventArgs"/> that contains the event data.</param>
         protected override void OnResize(ResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
 
-            Resize?.Invoke();
+            WinResize?.Invoke();
 
             base.OnResize(e);
         }
 
-
+        /// <inheritdoc/>
         protected override void OnUnload()
         {
             this.isShuttingDown = true;
             base.OnUnload();
         }
-        #endregion
-
 
         private void DebugCallback(DebugSource src, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
         {

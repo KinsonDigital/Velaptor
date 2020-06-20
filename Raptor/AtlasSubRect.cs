@@ -1,4 +1,8 @@
-﻿namespace Raptor
+﻿// <copyright file="AtlasSubRect.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor
 {
     public struct AtlasSubRect : System.IEquatable<AtlasSubRect>
     {
@@ -25,9 +29,11 @@
 
         public static bool operator !=(AtlasSubRect left, AtlasSubRect right) => !(left == right);
 
+        /// <inheritdoc/>
         public bool Equals(AtlasSubRect other) => other == this;
 
-        public override bool Equals(object obj)
+        /// <inheritdoc/>
+        public override bool Equals(object? obj)
         {
             if (!(obj is AtlasSubRect rect))
                 return false;
@@ -35,6 +41,7 @@
             return rect == this;
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode() => System.HashCode.Combine(Name, X, Y, Width, Height);
     }
 }

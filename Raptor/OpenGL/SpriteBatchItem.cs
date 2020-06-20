@@ -1,7 +1,11 @@
-﻿using System.Drawing;
+﻿// <copyright file="SpriteBatchItem.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.OpenGL
 {
+    using System.Drawing;
+
     internal struct SpriteBatchItem
     {
         public int TextureID;

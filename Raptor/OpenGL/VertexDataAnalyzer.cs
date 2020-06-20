@@ -1,7 +1,12 @@
-﻿namespace Raptor.OpenGL
+﻿// <copyright file="VertexDataAnalyzer.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
 
@@ -66,7 +71,7 @@
             { typeof(Vector4), VertexAttribPointerType.Float },
         };
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception text not used outside of method.")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception text not used outside of method.")]
         public static int GetTotalBytesForStruct(Type structType)
         {
             if (structType is null)
@@ -94,7 +99,7 @@
 
         public static int TotalItemsForType(Type type) => TotalItemsForTypes[type];
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception text not used outside of method.")]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception text not used outside of method.")]
         public static int GetVertexSubDataOffset(Type structType, string subDataName)
         {
             if (structType is null)

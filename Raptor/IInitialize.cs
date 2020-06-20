@@ -1,15 +1,17 @@
-﻿namespace Raptor
+﻿// <copyright file="IInitialize.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor
 {
     /// <summary>
     /// Provides the ability to initialize and object.
     /// </summary>
     public interface IInitialize
     {
-        #region Methods
         /// <summary>
         /// Initializes the object.
         /// </summary>
         void Initialize();
-        #endregion
     }
 }

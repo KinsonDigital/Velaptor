@@ -1,63 +1,56 @@
-﻿using System.IO;
-using System.Reflection;
-using Raptor.Graphics;
-using FileIO.Core;
-using System.Collections.Generic;
-using SixLabors.ImageSharp;
-using System.Text.Json;
-using System;
-using FileIO.File;
+﻿// <copyright file="ContentLoader.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.Content
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
+    using System.Text.Json;
+    using FileIO.Core;
+    using FileIO.File;
+    using Raptor.Graphics;
+    using SixLabors.ImageSharp;
+
     /// <summary>
     /// Loads content.
     /// </summary>
     public class ContentLoader : IContentLoader
     {
-        #region Private Fields
-        private readonly string _baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-        private readonly IImageFile _file;
-        private readonly ITextFile _textFile;
-        private string _graphicsDir;
-        private string _contentDir;
-        #endregion
+        private readonly string baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private readonly IImageFile imageFile;
+        private readonly ITextFile textFile;
+        private string? graphicsDir;
+        private string? contentDir;
 
-
-        #region Constructors
         public ContentLoader()
         {
-            _file = new ImageFile();
-            _textFile = new TextFile();
+            this.imageFile = new ImageFile();
+            this.textFile = new TextFile();
             SetupPaths();
         }
-
 
         /// <summary>
         /// Creates a new instace of <see cref="ContentLoader"/>.
         /// </summary>
         public ContentLoader(IImageFile imageFile, ITextFile textFile)
         {
-            _file = imageFile;
-            _textFile = textFile;
+            this.imageFile = imageFile;
+            this.textFile = textFile;
             SetupPaths();
         }
-        #endregion
 
-
-        #region Props
         /// <summary>
         /// Gets or sets the root directory for the content.
         /// </summary>
         public string ContentRootDirectory
         {
-            get => _contentDir;
-            set => _contentDir = $@"{value}Content\";
+            get => this.contentDir is null ? string.Empty : this.contentDir;
+            set => this.contentDir = $@"{value}Content\";
         }
-        #endregion
 
-
-        #region Public Methods
         /// <summary>
         /// Loads a texture that has the given <paramref name="name"/>.
         /// </summary>
@@ -65,23 +58,21 @@ namespace Raptor.Content
         /// <returns></returns>
         public Texture? LoadTexture(string name)
         {
-            var textureImagePath = $"{_graphicsDir}{name}";
+            var textureImagePath = $"{this.graphicsDir}{name}";
 
-
-            var (pixels, width, height) = _file.Load(textureImagePath);
+            var (pixels, width, height) = this.imageFile.Load(textureImagePath);
 
             return new Texture(pixels, width, height, name);
         }
-
 
         public Dictionary<string, AtlasSubRect> LoadAtlasData(string fileName)
         {
             var result = new Dictionary<string, AtlasSubRect>();
 
-            var contentDir = $@"{_baseDir}Content\";
+            var contentDir = $@"{this.baseDir}Content\";
             var graphicsContent = $@"{contentDir}Graphics\";
 
-            var rawData = _textFile.Load($"{graphicsContent}{fileName}");
+            var rawData = this.textFile.Load($"{graphicsContent}{fileName}");
 
             var rectItems = JsonSerializer.Deserialize<AtlasSubRect[]>(rawData);
 
@@ -92,15 +83,14 @@ namespace Raptor.Content
 
             return result;
         }
-        #endregion
 
         /// <summary>
         /// Sets up the pathing variables for the content location on disk.
         /// </summary>
         private void SetupPaths()
         {
-            _contentDir = $@"{_baseDir}Content\";
-            _graphicsDir = @$"{_contentDir}Graphics\";
+            this.contentDir = $@"{this.baseDir}Content\";
+            this.graphicsDir = @$"{this.contentDir}Graphics\";
         }
     }
 }
