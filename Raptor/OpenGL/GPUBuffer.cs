@@ -60,9 +60,7 @@ namespace Raptor.OpenGL
         /// <param name="tintColor">The color to apply to the texture area being rendered.</param>
         public void UpdateQuad(int quadID, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor)
         {
-            var quadData = CreateQuad();
-
-            CalculateTextureCoordinates(ref quadData, srcRect, textureWidth, textureHeight);
+            var quadData = CreateQuadWithTextureCoordinates(srcRect, textureWidth, textureHeight);
 
             // Update the color
             quadData.Vertex1.TintColor = tintColor.ToGLColor();
@@ -142,8 +140,10 @@ namespace Raptor.OpenGL
         /// <param name="srcRect">The area of the rectangle used to calculate the texture coordinates.</param>
         /// <param name="textureWidth">The with of the texture.</param>
         /// <param name="textureHeight">The height of the texture.</param>
-        private static void CalculateTextureCoordinates(ref QuadData quad, Rectangle srcRect, int textureWidth, int textureHeight)
+        private static QuadData CreateQuadWithTextureCoordinates(Rectangle srcRect, int textureWidth, int textureHeight)
         {
+            var quad = CreateQuad();
+
             // TODO: Condense this code down
             var topLeftCornerX = srcRect.Left.MapValue(0, textureWidth, 0, 1);
             var topLeftCornerY = srcRect.Top.MapValue(0, textureHeight, 1, 0);
@@ -165,6 +165,8 @@ namespace Raptor.OpenGL
             quad.Vertex2.TextureCoord = topRightCoord;
             quad.Vertex3.TextureCoord = bottomRightCoord;
             quad.Vertex4.TextureCoord = bottomLeftCoord;
+
+            return quad;
         }
 
         /// <summary>

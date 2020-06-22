@@ -113,6 +113,9 @@ namespace Raptor.Graphics
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside method.")]
         public void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor)
         {
+            if (texture is null)
+                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
+
             if (!this.hasBegun)
                 throw new Exception("Must call begin() first");
 

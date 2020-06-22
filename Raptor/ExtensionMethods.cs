@@ -49,6 +49,7 @@ namespace Raptor
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="origin">The origin to rotate the <paramref name="vector"/> around.</param>
         /// <param name="angle">The angle in degress to rotate <paramref name="vector"/>.  Value must be positive.</param>
+        /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/></param>
         /// <returns></returns>
         public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
         {
