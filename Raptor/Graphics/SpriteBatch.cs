@@ -119,7 +119,7 @@ namespace Raptor.Graphics
             bool HasSwitchedTexture() => texture.ID != this.previousTextureID && !this.firstRender;
 
             // var totalBatchItems = _batchItems.Count(i => !i.Value.IsEmpty);
-            var totalBatchItems = this.batchItems.Values.ToArray().CountKD(i => !i.IsEmpty);
+            var totalBatchItems = this.batchItems.Values.ToArray().Count(i => !i.IsEmpty);
 
             // Has the textures switched
             if (HasSwitchedTexture() || totalBatchItems >= this.maxBatchSize)

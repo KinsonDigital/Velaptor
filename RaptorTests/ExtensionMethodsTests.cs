@@ -1,5 +1,7 @@
-﻿using Raptor;
-using System.Numerics;
+﻿using OpenToolkit.Mathematics;
+using Raptor;
+using Raptor.OpenGL;
+using System.Drawing;
 using Xunit;
 
 namespace RaptorTests
@@ -84,6 +86,78 @@ namespace RaptorTests
             Assert.Equal(expected.X, actual.X);
             Assert.Equal(expected.Y, actual.Y);
         }
-        #endregion
-    }
+
+
+        [Fact]
+        public void ToVector4_WhenInvoked_ReturnsCorrectResult()
+        {
+            //Arrange
+            var color = Color.FromArgb(11, 22, 33, 44);
+            var expected = new Vector4(22, 33, 44, 11);
+
+            //Act
+            var actual = color.ToVector4();
+
+            //Assert
+            Assert.Equal(expected, actual);
+        }
+
+
+        [Fact]
+        public void ToGLColor_WhenInvoked_ReturnsCorrectResult()
+        {
+            //Arrange
+            var color = Color.FromArgb(11, 22, 33, 44);
+            var expected = new Vector4(0.08627451f, 0.12941177f, 0.17254902f, 0.043137256f);
+
+            //Act
+            var actual = color.ToGLColor();
+
+            //Assert
+            Assert.Equal(expected, actual);
+        }
+
+
+        [Fact]
+        public void MapValue_WhenUsingFloatType_ReturnsCorrectResult()
+        {
+            //Arrange
+            var testValue = 5f;
+
+            //Act
+            var actual = testValue.MapValue(0f, 10f, 0f, 21f);
+
+            //Assert
+            Assert.Equal(10.5f, actual);
+        }
+
+
+        [Fact]
+        public void MapValue_WhenUsingByteValues_ReturnsCorrectResult()
+        {
+            //Arrange
+            byte testValue = 5;
+
+            //Act
+            var actual = testValue.MapValue(0, 10, 0, 20);
+
+            //Assert
+            Assert.Equal(10, actual);
+        }
+
+
+        [Fact]
+        public void MapValue_WhenInvokedWithIntegerType_ReturnsCorrectResult()
+        {
+            //Arrange
+            var testValue = 500;
+
+            //Act
+            var actual = testValue.MapValue(0, 1_000, 0, 100_000);
+
+            //Assert
+            Assert.Equal(50_000, actual);
+        }
+    #endregion
+}
 }

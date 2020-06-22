@@ -5,7 +5,8 @@
 namespace Raptor
 {
     using System;
-    using System.Numerics;
+    using System.Drawing;
+    using OpenToolkit.Mathematics;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.
@@ -13,19 +14,6 @@ namespace Raptor
     public static class ExtensionMethods
     {
         private const float PI = 3.1415926535897931f;
-
-        public static int CountKD<T>(this T[] items, Predicate<T> predicate)
-        {
-            var result = 0;
-
-            for (var i = 0; i < items.Length; i++)
-            {
-                if (predicate(items[i]))
-                    result += 1;
-            }
-
-            return result;
-        }
 
         /// <summary>
         /// Converts the given <paramref name="radians"/> value into degrees.
@@ -81,12 +69,76 @@ namespace Raptor
             return new Vector2(x, y);
         }
 
+        /// <summary>
+        /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>
+        /// with each component holding the color component values.
+        /// </summary>
+        /// <param name="clr">The color to convert.</param>
+        /// <returns>
+        /// A 4 component vector of color values.
+        /// X = red.
+        /// Y = green.
+        /// Z = blue.
+        /// W = alpha.
+        /// </returns>
+        public static Vector4 ToVector4(this Color clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
+
+        /// <summary>
+        /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>A color represented by a 4 component vector.</returns>
+        public static Vector4 ToGLColor(this Color value)
+        {
+            var vec4 = value.ToVector4();
+            return vec4.MapValues(0, 255, 0, 1);
+        }
+
+        /// <summary>
+        /// Maps the given <paramref name="value"/> from one range to another.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="fromStart">The from starting range value.</param>
+        /// <param name="fromStop">The from ending range value.</param>
+        /// <param name="toStart">The to starting range value.</param>
+        /// <param name="toStop">The to ending range value.</param>
+        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
         public static float MapValue(this int value, float fromStart, float fromStop, float toStart, float toStop)
             => MapValue((float)value, fromStart, fromStop, toStart, toStop);
 
+        /// <summary>
+        /// Maps the given <paramref name="value"/> from one range to another.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="fromStart">The from starting range value.</param>
+        /// <param name="fromStop">The from ending range value.</param>
+        /// <param name="toStart">The to starting range value.</param>
+        /// <param name="toStop">The to ending range value.</param>
+        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
         public static float MapValue(this float value, float fromStart, float fromStop, float toStart, float toStop)
             => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
 
+        /// <summary>
+        /// Maps the given <paramref name="value"/> from one range to another.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="fromStart">The from starting range value.</param>
+        /// <param name="fromStop">The from ending range value.</param>
+        /// <param name="toStart">The to starting range value.</param>
+        /// <param name="toStop">The to ending range value.</param>
+        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
+        public static byte MapValue(this byte value, byte fromStart, byte fromStop, byte toStart, byte toStop)
+            => (byte)(toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart))));
+
+        /// <summary>
+        /// Maps each component of the vector to from one range to another.
+        /// </summary>
+        /// <param name="value">The 4 component vector component to map.</param>
+        /// <param name="fromStart">The from starting range value.</param>
+        /// <param name="fromStop">The from ending range value.</param>
+        /// <param name="toStart">The to starting range value.</param>
+        /// <param name="toStop">The to ending range value.</param>
+        /// <returns>A 4 component vector with each value mapped from one range to another.</returns>
         public static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
             => new Vector4
             {
