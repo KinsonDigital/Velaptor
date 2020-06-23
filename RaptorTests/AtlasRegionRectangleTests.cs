@@ -7,13 +7,13 @@ using Xunit;
 
 namespace RaptorTests
 {
-    public class AtlasSubRectTests
+    public class AtlasRegionRectangleTests
     {
         [Fact]
         public void Ctor_WhenInvoked_SetsNameProp()
         {
             //Act
-            var rect = new AtlasSubRect("test-name", It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
+            var rect = new AtlasRegionRectangle("test-name", It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
 
             //Assert
             Assert.Equal("test-name", rect.Name);
@@ -24,7 +24,7 @@ namespace RaptorTests
         public void Ctor_WhenInvoked_SetsXProp()
         {
             //Act
-            var rect = new AtlasSubRect(It.IsAny<string>(), 1234, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
+            var rect = new AtlasRegionRectangle(It.IsAny<string>(), 1234, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
 
             //Assert
             Assert.Equal(1234, rect.X);
@@ -35,7 +35,7 @@ namespace RaptorTests
         public void Ctor_WhenInvoked_SetsYProp()
         {
             //Act
-            var rect = new AtlasSubRect(It.IsAny<string>(), It.IsAny<int>(), 1234, It.IsAny<int>(), It.IsAny<int>());
+            var rect = new AtlasRegionRectangle(It.IsAny<string>(), It.IsAny<int>(), 1234, It.IsAny<int>(), It.IsAny<int>());
             //Assert
             Assert.Equal(1234, rect.Y);
         }
@@ -45,7 +45,7 @@ namespace RaptorTests
         public void Ctor_WhenInvoked_SetsWidthProp()
         {
             //Act
-            var rect = new AtlasSubRect(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), 1234, It.IsAny<int>());
+            var rect = new AtlasRegionRectangle(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), 1234, It.IsAny<int>());
             //Assert
             Assert.Equal(1234, rect.Width);
         }
@@ -55,7 +55,7 @@ namespace RaptorTests
         public void Ctor_WhenInvoked_SetsHeightProp()
         {
             //Act
-            var rect = new AtlasSubRect(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), 1234);
+            var rect = new AtlasRegionRectangle(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), 1234);
             //Assert
             Assert.Equal(1234, rect.Height);
         }
@@ -65,8 +65,8 @@ namespace RaptorTests
         public void EqualsOperator_WhenInvoked_ReturnTrue()
         {
             //Arrange
-            var rectA = new AtlasSubRect("rect", 11, 22, 33, 44);
-            var rectB = new AtlasSubRect("rect", 11, 22, 33, 44);
+            var rectA = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
+            var rectB = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
 
             //Act
             var actual = rectA == rectB;
@@ -80,8 +80,8 @@ namespace RaptorTests
         public void NotEqualsOperator_WhenInvoked_ReturnTrue()
         {
             //Arrange
-            var rectA = new AtlasSubRect("rect-A", 11, 22, 33, 44);
-            var rectB = new AtlasSubRect("rect-B", 55, 66, 77, 88);
+            var rectA = new AtlasRegionRectangle("rect-A", 11, 22, 33, 44);
+            var rectB = new AtlasRegionRectangle("rect-B", 55, 66, 77, 88);
 
             //Act
             var actual = rectA != rectB;
@@ -95,7 +95,7 @@ namespace RaptorTests
         public void Equals_WhenParamObjectIsDifferentType_ReturnFalse()
         {
             //Arrange
-            var rectA = new AtlasSubRect("rect-A", 11, 22, 33, 44);
+            var rectA = new AtlasRegionRectangle("rect-A", 11, 22, 33, 44);
             object differentObject = new object();
 
             //Act
@@ -110,8 +110,8 @@ namespace RaptorTests
         public void Equals_WhenParamObjectSameType_ReturnFalse()
         {
             //Arrange
-            var rectA = new AtlasSubRect("rect", 11, 22, 33, 44);
-            object rectB = new AtlasSubRect("rect", 11, 22, 33, 44);
+            var rectA = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
+            object rectB = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
 
             //Act
             var actual = rectA.Equals(rectB);

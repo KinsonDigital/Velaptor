@@ -12,7 +12,7 @@ namespace RaptorSandBox
 {
     public class MyWindow : Window
     {
-        private Texture? linkTexture;
+        private ITexture? linkTexture;
         private SpriteBatch? spriteBatch;
 
 

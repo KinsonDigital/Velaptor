@@ -12,10 +12,22 @@ namespace Raptor.Content
     public interface IContentLoader
     {
         /// <summary>
-        /// Gets the root directory for the game's content.
+        /// Gets or sets the root directory for the game's content.
         /// </summary>
-        string ContentRootDirectory { get; }
+        string ContentRootDirectory { get; set; }
 
-        Texture? LoadTexture(string name);
+        /// <summary>
+        /// Loads a texture with the given <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of the texture to load.</param>
+        /// <returns>A texture to render.</returns>
+        ITexture? LoadTexture(string name);
+
+        /// <summary>
+        /// Loads atlas data with the given <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of the atlas data file to load.</param>
+        /// <returns>The atlas data.</returns>
+        AtlasRegionRectangle[] LoadAtlasData(string name);
     }
 }

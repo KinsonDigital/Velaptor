@@ -9,17 +9,17 @@ namespace Raptor
     /// <summary>
     /// Represents a rectangular region of a texture atlas.
     /// </summary>
-    public struct AtlasSubRect : System.IEquatable<AtlasSubRect>
+    public struct AtlasRegionRectangle : System.IEquatable<AtlasRegionRectangle>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AtlasSubRect"/> struct.
+        /// Initializes a new instance of the <see cref="AtlasRegionRectangle"/> struct.
         /// </summary>
         /// <param name="name">The name of the rectangle.</param>
         /// <param name="x">The X position of the rectangle..</param>
         /// <param name="y">The Y position of the rectangle.</param>
         /// <param name="width">The width of the rectangle.</param>
         /// <param name="height">The height of the rectangle.</param>
-        public AtlasSubRect(string name, int x, int y, int width, int height)
+        public AtlasRegionRectangle(string name, int x, int y, int width, int height)
         {
             Name = name;
             X = x;
@@ -54,23 +54,23 @@ namespace Raptor
         public int Height { get; set; }
 
         /// <summary>
-        /// Returns a value indicating if both <see cref="AtlasSubRect"/>s are equal.
+        /// Returns a value indicating if both <see cref="AtlasRegionRectangle"/>s are equal.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>True if both are equal to eachother.</returns>
-        public static bool operator ==(AtlasSubRect left, AtlasSubRect right) => left.Equals(right);
+        public static bool operator ==(AtlasRegionRectangle left, AtlasRegionRectangle right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating if both <see cref="AtlasSubRect"/>s are not equal.
+        /// Returns a value indicating if both <see cref="AtlasRegionRectangle"/>s are not equal.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>True if both are not equal to eachother.</returns>
-        public static bool operator !=(AtlasSubRect left, AtlasSubRect right) => !(left == right);
+        public static bool operator !=(AtlasRegionRectangle left, AtlasRegionRectangle right) => !(left == right);
 
         /// <inheritdoc/>
-        public bool Equals(AtlasSubRect other)
+        public bool Equals(AtlasRegionRectangle other)
             => other.Name == Name &&
                other.X == X &&
                other.Y == Y &&
@@ -80,7 +80,7 @@ namespace Raptor
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is AtlasSubRect rect))
+            if (!(obj is AtlasRegionRectangle rect))
                 return false;
 
             return rect == this;
