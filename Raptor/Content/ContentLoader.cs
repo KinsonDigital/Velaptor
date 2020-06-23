@@ -32,9 +32,9 @@ namespace Raptor.Content
         {
             this.imageFile = new ImageFile();
             this.textFile = new TextFile();
-            SetupPaths();
             this.textureLoader = new TextureLoader(this.imageFile);
             this.atlasDataLoader = new AtlasDataLoader(this.textFile);
+            SetupPaths();
         }
 
         /// <summary>

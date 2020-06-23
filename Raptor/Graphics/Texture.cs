@@ -26,7 +26,7 @@ namespace Raptor.Graphics
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
         [ExcludeFromCodeCoverage]
-        public Texture(byte[] pixelData, string name, int width, int height)
+        public Texture(string name, byte[] pixelData, int width, int height)
         {
             this.gl = new GLInvoker();
             Init(name, pixelData, width, height);
