@@ -16,46 +16,51 @@ namespace Raptor
     /// </summary>
     public abstract class Window : IDisposable
     {
-        private readonly IWindow window;
+        private IWindow window;
         private bool isDisposed;
+
+        public Window(IWindow? window, IContentLoader? contentLoader)
+        {
+            if (window is null)
+                throw new ArgumentNullException(nameof(window), "Window must not be null.");
+
+            if (contentLoader is null)
+                throw new ArgumentNullException(nameof(contentLoader), "Content loader must not be null.");
+
+            this.window = window;
+            ContentLoader = contentLoader;
+        }
+
+        [ExcludeFromCodeCoverage]
+        public Window(IContentLoader contentLoader, int width = 800, int height = 600)
+        {
+            if (contentLoader is null)
+                throw new ArgumentNullException(nameof(contentLoader), "Content loader must not be null.");
+
+            ContentLoader = contentLoader;
+            InitWindow(width, height);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="window">The internal window implementation that manages a window.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of constructor.")]
+        [ExcludeFromCodeCoverage]
         public Window(IWindow window)
         {
             if (window is null)
-                throw new ArgumentNullException(nameof(window), "IWindow must not be null");
+                throw new ArgumentNullException(nameof(window), "Window must not be null.");
 
             this.window = window;
-            UpdateFrequency = 60;
-
             ContentLoader = new ContentLoader();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Window"/> class.
-        /// </summary>
-        public Window()
+        [ExcludeFromCodeCoverage]
+        public Window(int width = 800, int height = 600)
         {
-            var gameWindowSettings = new GameWindowSettings();
-            var nativeWindowSettings = new NativeWindowSettings()
-            {
-                Size = new Vector2i(800, 600),
-            };
-
-            this.window = new GLWindow(gameWindowSettings, nativeWindowSettings)
-            {
-                Update = OnUpdate,
-                Draw = OnDraw,
-                Init = OnLoad,
-                WinResize = OnResize,
-            };
-            UpdateFrequency = 60;
-
             ContentLoader = new ContentLoader();
+            InitWindow(width, height);
         }
 
         /// <summary>
@@ -108,6 +113,7 @@ namespace Raptor
         /// <summary>
         /// Invoked when the window is loaded.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public virtual void OnLoad()
         {
         }
@@ -116,6 +122,7 @@ namespace Raptor
         /// Invoked when the window is updated.
         /// </summary>
         /// <param name="frameTime">The amount of time since the last frame.</param>
+        [ExcludeFromCodeCoverage]
         public virtual void OnUpdate(FrameTime frameTime)
         {
         }
@@ -124,6 +131,7 @@ namespace Raptor
         /// Invoked when the window renders its content.
         /// </summary>
         /// <param name="frameTime">The amount of time since the last frame.</param>
+        [ExcludeFromCodeCoverage]
         public virtual void OnDraw(FrameTime frameTime)
         {
         }
@@ -131,6 +139,7 @@ namespace Raptor
         /// <summary>
         /// Invoked when the window size changes.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public virtual void OnResize()
         {
         }
@@ -159,6 +168,30 @@ namespace Raptor
 
                 this.isDisposed = true;
             }
+        }
+
+        /// <summary>
+        /// Initializes the window.
+        /// </summary>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
+        [ExcludeFromCodeCoverage]
+        private void InitWindow(int width, int height)
+        {
+            var gameWindowSettings = new GameWindowSettings();
+            var nativeWindowSettings = new NativeWindowSettings()
+            {
+                Size = new Vector2i(width, height),
+            };
+
+            this.window = new GLWindow(gameWindowSettings, nativeWindowSettings)
+            {
+                Update = OnUpdate,
+                Draw = OnDraw,
+                Init = OnLoad,
+                WinResize = OnResize,
+                UpdateFrequency = 60,
+            };
         }
     }
 }
