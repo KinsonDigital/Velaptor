@@ -33,7 +33,7 @@ namespace Raptor.Content
             this.imageFile = new ImageFile();
             this.textFile = new TextFile();
             this.textureLoader = new TextureLoader(this.imageFile);
-            this.atlasDataLoader = new AtlasDataLoader(this.textFile);
+            this.atlasDataLoader = new AtlasDataLoader<AtlasRegionRectangle>(this.textFile);
             SetupPaths();
         }
 
