@@ -120,5 +120,23 @@ namespace Raptor.OpenGL
 
         /// <inheritdoc/>
         public void BindVertexArray(int array) => GL.BindVertexArray(array);
+
+        /// <inheritdoc/>
+        public int GenTexture() => GL.GenTexture();
+
+        /// <inheritdoc/>
+        public void DeleteTexture(int textures) => GL.DeleteTexture(textures);
+
+        /// <inheritdoc/>
+        public void ObjectLabel(ObjectLabelIdentifier identifier, int name, int length, string label)
+            => GL.ObjectLabel(identifier, name, length, label);
+
+        /// <inheritdoc/>
+        public void TexParameter(TextureTarget target, TextureParameterName pname, int param)
+            => GL.TexParameter(target, pname, param);
+
+        /// <inheritdoc/>
+        public void TexImage2D<T8>(TextureTarget target, int level, PixelInternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, T8[] pixels)
+            where T8 : struct => GL.TexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
     }
 }

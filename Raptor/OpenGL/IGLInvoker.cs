@@ -348,5 +348,91 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="array">Specifies the name of the vertex array to bind.</param>
         void BindVertexArray(int array);
+
+        /// <summary>
+        /// [requires: v1.1] Generate texture names.
+        /// </summary>
+        /// <returns>The ID of the texture.</returns>
+        int GenTexture();
+
+        /// <summary>
+        /// [requires: v1.1] Delete named textures.
+        /// </summary>
+        /// <param name="textures">[length: n] Specifies an array of textures to be deleted.</param>
+        void DeleteTexture(int textures);
+
+        /// <summary>
+        /// [requires: v4.3 or KHR_debug|VERSION_4_3] Label a named object identified within a namespace.
+        /// </summary>
+        /// <param name="identifier">The namespace from which the name of the object is allocated.</param>
+        /// <param name="name">The name of the object to label.</param>
+        /// <param name="length">The length of the label to be used for the object.</param>
+        /// <param name="label">[length: COMPSIZE(label,length)] The address of a string containing the label to assign to the object.</param>
+        void ObjectLabel(ObjectLabelIdentifier identifier, int name, int length, string label);
+
+        /// <summary>
+        /// [requires: v1.0] Set texture parameters.
+        /// </summary>
+        /// <param name="target">
+        ///     Specifies the target texture, which must be either Texture1D, Texture2D, Texture3D,
+        ///     Texture1DArray, Texture2DArray, TextureRectangle, or TextureCubeMap.
+        /// </param>
+        /// <param name="pname">
+        ///     Specifies the symbolic name of a single-valued texture parameter. pname can be
+        ///     one of the following: DepthStencilTextureMode, TextureBaseLevel, TextureCompareFunc,
+        ///     TextureCompareMode, TextureLodBias, TextureMinFilter, TextureMagFilter, TextureMinLod,
+        ///     TextureMaxLod, TextureMaxLevel, TextureSwizzleR, TextureSwizzleG, TextureSwizzleB,
+        ///     TextureSwizzleA, TextureWrapS, TextureWrapT, or TextureWrapR. For the vector
+        ///     commands (glTexParameter*v), pname can also be one of TextureBorderColor or TextureSwizzleRgba.
+        /// </param>
+        /// <param name="param">For the scalar commands, specifies the value of pname.</param>
+        void TexParameter(TextureTarget target, TextureParameterName pname, int param);
+
+        /// <summary>
+        /// [requires: v1.0] Specify a two-dimensional texture image.
+        /// </summary>
+        /// <typeparam name="T8">The type of data to load to the GPU vertex buffer.</typeparam>
+        /// <param name="target">
+        ///     Specifies the target texture. Must be Texture2D, ProxyTexture2D, Texture1DArray,
+        ///     ProxyTexture1DArray, TextureRectangle, ProxyTextureRectangle, TextureCubeMapPositiveX,
+        ///     TextureCubeMapNegativeX, TextureCubeMapPositiveY, TextureCubeMapNegativeY, TextureCubeMapPositiveZ,
+        ///     TextureCubeMapNegativeZ, or ProxyTextureCubeMap.
+        /// </param>
+        /// <param name="level">
+        ///     Specifies the level-of-detail number. Level 0 is the base image level. Level
+        ///     n is the nth mipmap reduction image. If target is TextureRectangle or ProxyTextureRectangle,
+        ///     level must be 0.
+        /// </param>
+        /// <param name="internalformat">
+        ///     Specifies the number of color components in the texture. Must be one of base
+        ///     internal formats given in Table 1, one of the sized internal formats given in
+        ///     Table 2, or one of the compressed internal formats given in Table 3, below.
+        /// </param>
+        /// <param name="width">
+        ///     Specifies the width of the texture image. All implementations support texture
+        ///     images that are at least 1024 texels wide.
+        /// </param>
+        /// <param name="height">
+        ///     Specifies the height of the texture image, or the number of layers in a texture
+        ///     array, in the case of the Texture1DArray and ProxyTexture1DArray targets. All
+        ///     implementations support 2D texture images that are at least 1024 texels high,
+        ///     and texture arrays that are at least 256 layers deep.
+        /// </param>
+        /// <param name="border">This value must be 0.</param>
+        /// <param name="format">
+        ///     Specifies the format of the pixel data. The following symbolic values are accepted:
+        ///     Red, Rg, Rgb, Bgr, Rgba, Bgra, RedInteger, RgInteger, RgbInteger, BgrInteger,
+        ///     RgbaInteger, BgraInteger, StencilIndex, DepthComponent, DepthStencil.
+        /// </param>
+        /// <param name="type">
+        ///     Specifies the data type of the pixel data. The following symbolic values are
+        ///     accepted: UnsignedByte, Byte, UnsignedShort, Short, UnsignedInt, Int, Float,
+        ///     UnsignedByte332, UnsignedByte233Rev, UnsignedShort565, UnsignedShort565Rev, UnsignedShort4444,
+        ///     UnsignedShort4444Rev, UnsignedShort5551, UnsignedShort1555Rev, UnsignedInt8888,
+        ///     UnsignedInt8888Rev, UnsignedInt1010102, and UnsignedInt2101010Rev.
+        /// </param>
+        /// <param name="pixels">[length: COMPSIZE(format,type,width,height)] Specifies a pointer to the image data in memory.</param>
+        void TexImage2D<T8>(TextureTarget target, int level, PixelInternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, T8[] pixels)
+            where T8 : struct;
     }
 }
