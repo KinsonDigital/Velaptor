@@ -31,6 +31,7 @@ namespace Raptor.OpenGL
         /// Initializes a new instance of the <see cref="GPUBuffer{T}"/> class.
         /// </summary>
         /// <param name="totalQuads">The total number or quads to render per batch.</param>
+        [ExcludeFromCodeCoverage]
         public GPUBuffer(int totalQuads)
         {
             this.gl = new GLInvoker();
@@ -43,18 +44,11 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="totalQuads">The total number or quads to render per batch.</param>
-        [ExcludeFromCodeCoverage]
         internal GPUBuffer(IGLInvoker gl, int totalQuads)
         {
             this.gl = gl;
             Init(totalQuads);
         }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="GPUBuffer{T}"/> class.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        ~GPUBuffer() => Dispose(false);
 
         /// <summary>
         /// Updates the given quad using the given information for a particular quad item in the GPU.
@@ -83,7 +77,7 @@ namespace Raptor.OpenGL
             quadData.Vertex4.TransformIndex = quadID;
 
             var offset = this.totalQuadSizeInBytes * quadID;
-            this.gl.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, ref quadData);
+            this.gl.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, quadData);
         }
 
         /// <inheritdoc/>
@@ -150,7 +144,7 @@ namespace Raptor.OpenGL
         /// <param name="textureHeight">The height of the texture.</param>
         private static void CalculateTextureCoordinates(ref QuadData quad, Rectangle srcRect, int textureWidth, int textureHeight)
         {
-            // TODO: Cache this value to avoid reflection for perf boost
+            // TODO: Condense this code down
             var topLeftCornerX = srcRect.Left.MapValue(0, textureWidth, 0, 1);
             var topLeftCornerY = srcRect.Top.MapValue(0, textureHeight, 1, 0);
             var topLeftCoord = new Vector2(topLeftCornerX, topLeftCornerY);
@@ -256,7 +250,7 @@ namespace Raptor.OpenGL
                 quadData.Add(CreateQuad());
             }
 
-            AllocateVertexBufferMemory(totalQuads);
+            AllocateVertexBuffer(totalQuads);
         }
 
         /// <summary>
@@ -292,7 +286,7 @@ namespace Raptor.OpenGL
         /// Allocates enough memory for the vertex buffer to hold the given quad <paramref name="totalQUads"/> items.
         /// </summary>
         /// <param name="totalQUads">The total number of quads that the vertex buffer can hold.</param>
-        private void AllocateVertexBufferMemory(int totalQUads)
+        private void AllocateVertexBuffer(int totalQUads)
         {
             var sizeInBytes = this.totalQuadSizeInBytes * totalQUads;
 

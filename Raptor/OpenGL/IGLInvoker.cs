@@ -227,7 +227,7 @@ namespace Raptor.OpenGL
         /// <param name="offset">Specifies the offset into the buffer object's data store where data replacement will begin, measured in bytes.</param>
         /// <param name="size">Specifies the size in bytes of the data store region being replaced.</param>
         /// <param name="data">[length: size] Specifies a pointer to the new data that will be copied into the data store.</param>
-        void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, ref T3 data)
+        void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, T3 data)
             where T3 : struct;
 
         /// <summary>

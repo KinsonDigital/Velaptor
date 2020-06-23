@@ -83,8 +83,13 @@ namespace Raptor.OpenGL
         public int GenVertexArray() => GL.GenVertexArray();
 
         /// <inheritdoc/>
-        public void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, ref T3 data)
-            where T3 : struct => GL.BufferSubData(target, offset, size, ref data);
+        public void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, T3 data)
+            where T3 : struct
+        {
+            T3 refData = data;
+
+            GL.BufferSubData(target, offset, size, ref refData);
+        }
 
         /// <inheritdoc/>
         public void DeleteVertexArray(int arrays) => GL.DeleteVertexArray(arrays);
