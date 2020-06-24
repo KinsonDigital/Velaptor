@@ -16,12 +16,12 @@ namespace Raptor.OpenGL
     /// <summary>
     /// A shader program consisting of a vertex and fragment shader.
     /// </summary>
-    public class ShaderProgram : IDisposable
+    internal class ShaderProgram : IDisposable
     {
         private readonly IGLInvoker gl;
         private readonly ITextFile textFile;
         private int batchSize;
-        private bool disposedValue;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
@@ -90,13 +90,13 @@ namespace Raptor.OpenGL
         /// <param name="disposing">True if managed resources should be disposed of.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.disposedValue)
+            if (this.isDisposed)
                 return;
 
             // Delete unmanaged resources
             this.gl.DeleteProgram(ProgramId);
 
-            this.disposedValue = true;
+            this.isDisposed = true;
         }
 
         /// <summary>
@@ -157,9 +157,7 @@ namespace Raptor.OpenGL
             this.gl.LinkProgram(shaderProgramId);
 
             // Check for linking errors
-            this.gl.GetProgram(shaderProgramId, GetProgramParameterName.LinkStatus, out var statusCode);
-
-            if (statusCode != (int)All.True)
+            if (!this.gl.LinkProgramSuccess(shaderProgramId))
             {
                 // We can use `this.gl.GetProgramInfoLog(program)` to get information about the error.
                 var programInfoLog = this.gl.GetProgramInfoLog(shaderProgramId);
@@ -207,9 +205,7 @@ namespace Raptor.OpenGL
             this.gl.CompileShader(shaderId);
 
             // Check for compilation errors
-            this.gl.GetShader(shaderId, ShaderParameter.CompileStatus, out var statusCode);
-
-            if (statusCode != (int)All.True)
+            if (!this.gl.ShaderCompileSuccess(shaderId))
             {
                 var errorInfo = this.gl.GetShaderInfoLog(shaderId);
 

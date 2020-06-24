@@ -1,4 +1,4 @@
-﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
+// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -41,6 +41,14 @@ namespace Raptor.OpenGL
         public void GetProgram(int program, GetProgramParameterName pname, out int programParams) => GL.GetProgram(program, pname, out programParams);
 
         /// <inheritdoc/>
+        public bool LinkProgramSuccess(int program)
+        {
+            GetProgram(program, GetProgramParameterName.LinkStatus, out var statusCode);
+
+            return statusCode >= 1;
+        }
+
+        /// <inheritdoc/>
         public void UseProgram(int program) => GL.UseProgram(program);
 
         /// <inheritdoc/>
@@ -72,6 +80,14 @@ namespace Raptor.OpenGL
 
         /// <inheritdoc/>
         public void GetShader(int shader, ShaderParameter pname, out int shaderParams) => GL.GetShader(shader, pname, out shaderParams);
+
+        /// <inheritdoc/>
+        public bool ShaderCompileSuccess(int shaderID)
+        {
+            GetShader(shaderID, ShaderParameter.CompileStatus, out var statusCode);
+
+            return statusCode >= 1;
+        }
 
         /// <inheritdoc/>
         public string GetShaderInfoLog(int shader) => GL.GetShaderInfoLog(shader);

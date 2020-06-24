@@ -1,4 +1,4 @@
-﻿using Raptor.OpenGL;
+using Raptor.OpenGL;
 using Moq;
 using FileIO.Core;
 using OpenToolkit.Graphics.OpenGL4;
@@ -36,6 +36,9 @@ namespace RaptorTests.OpenGL
             _mockGL.Setup(m => m.GetShader(It.IsAny<int>(), ShaderParameter.CompileStatus, out getShaderStatusCode));
             _mockGL.Setup(m => m.GetProgram(It.IsAny<int>(), GetProgramParameterName.LinkStatus, out getProgramStatusCode));
             _mockGL.Setup(m => m.CreateProgram()).Returns(_shaderProgramID);
+
+            _mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<int>())).Returns(true);
+            _mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<int>())).Returns(true);
         }
 
         [Fact]
@@ -124,6 +127,8 @@ namespace RaptorTests.OpenGL
             int statusCode = 0;
             _mockGL.Setup(m => m.GetShader(_vertextShaderID, ShaderParameter.CompileStatus, out statusCode));
             _mockGL.Setup(m => m.GetShaderInfoLog(_vertextShaderID)).Returns("Vertex Shader Compile Error");
+            _mockGL.Setup(m => m.ShaderCompileSuccess(_vertextShaderID)).Returns(false);
+
             SetupVertexShaderFileMock();
             SetupFragmentShaderFileMock();
 
@@ -142,6 +147,8 @@ namespace RaptorTests.OpenGL
             int statusCode = 0;
             _mockGL.Setup(m => m.GetProgram(_shaderProgramID, GetProgramParameterName.LinkStatus, out statusCode));
             _mockGL.Setup(m => m.GetProgramInfoLog(_shaderProgramID)).Returns("Program Linking Error");
+            _mockGL.Setup(m => m.LinkProgramSuccess(_shaderProgramID)).Returns(false);
+
             SetupVertexShaderFileMock();
             SetupFragmentShaderFileMock();
 

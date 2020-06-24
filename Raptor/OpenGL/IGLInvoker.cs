@@ -1,4 +1,4 @@
-﻿// <copyright file="IGLInvoker.cs" company="KinsonDigital">
+// <copyright file="IGLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -114,6 +114,13 @@ namespace Raptor.OpenGL
         void GetProgram(int program, GetProgramParameterName pname, out int programParams);
 
         /// <summary>
+        /// Returns a value indicating if the program linking process was successful.
+        /// </summary>
+        /// <param name="program">The ID of the program to check.</param>
+        /// <returns>True if the linking was successful.</returns>
+        bool LinkProgramSuccess(int program);
+
+        /// <summary>
         /// [requires: v2.0] Installs a program object as part of current rendering state.
         /// </summary>
         /// <param name="program">Specifies the handle of the program object whose executables are to be used as part of current rendering state.</param>
@@ -194,6 +201,13 @@ namespace Raptor.OpenGL
         /// </param>
         /// <param name="shaderParams">[length: COMPSIZE(pname)] Returns the requested object parameter.</param>
         void GetShader(int shader, ShaderParameter pname, out int shaderParams);
+
+        /// <summary>
+        /// Returns a value indicating if the shader was compiled successfully.
+        /// </summary>
+        /// <param name="shaderID">The ID of the shader to check.</param>
+        /// <returns>True if the shader compiled successfully.</returns>
+        bool ShaderCompileSuccess(int shaderID);
 
         /// <summary>
         /// [requires: v2.0] Returns the information log for a shader object.
