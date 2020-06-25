@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using OpenToolkit.Mathematics;
 
 namespace RaptorTests
 {
@@ -61,6 +62,20 @@ namespace RaptorTests
                 return foundField.GetValue(fieldContainer) == null;
             }
         }
+
+
+        public static bool IsEmpty(this Vector4 vector) =>
+            vector.X == 0 &&
+            vector.Y == 0 &&
+            vector.Z == 0 &&
+            vector.W == 0;
+
+
+        public static bool IsEmpty(this Matrix4 matrix) =>
+            matrix.Column0.IsEmpty() &&
+            matrix.Column1.IsEmpty() &&
+            matrix.Column2.IsEmpty() &&
+            matrix.Column3.IsEmpty();
         #endregion
     }
 }

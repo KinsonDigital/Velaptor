@@ -16,7 +16,7 @@ namespace Raptor.Graphics
     public class Texture : ITexture
     {
         private readonly IGLInvoker gl;
-        private bool disposedValue = false;
+        private bool isDisposed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
@@ -76,12 +76,12 @@ namespace Raptor.Graphics
         /// <param name="disposing">True if managed resources should be disposed of.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.disposedValue)
+            if (this.isDisposed)
                 return;
 
             this.gl.DeleteTexture(ID);
 
-            this.disposedValue = true;
+            this.isDisposed = true;
         }
 
         /// <summary>

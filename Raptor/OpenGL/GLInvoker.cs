@@ -1,4 +1,4 @@
-// <copyright file="GLInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -36,6 +36,9 @@ namespace Raptor.OpenGL
 
         /// <inheritdoc/>
         public void UniformMatrix4(int location, bool transpose, ref Matrix4 matrix) => GL.UniformMatrix4(location, transpose, ref matrix);
+
+        /// <inheritdoc/>
+        public void UniformMatrix4(int location, bool transpose, Matrix4 matrix) => GL.UniformMatrix4(location, transpose, ref matrix);
 
         /// <inheritdoc/>
         public void GetProgram(int program, GetProgramParameterName pname, out int programParams) => GL.GetProgram(program, pname, out programParams);

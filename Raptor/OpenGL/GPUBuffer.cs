@@ -1,4 +1,4 @@
-﻿// <copyright file="GPUBuffer.cs" company="KinsonDigital">
+// <copyright file="GPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -25,7 +25,7 @@ namespace Raptor.OpenGL
         private int indexBufferID = -1;
         private int totalVertexBytes;
         private int totalQuadSizeInBytes;
-        private bool disposedValue;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBuffer{T}"/> class.
@@ -91,13 +91,13 @@ namespace Raptor.OpenGL
         /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposedValue)
+            if (!this.isDisposed)
             {
                 this.gl.DeleteVertexArray(this.vertexArrayID);
                 this.gl.DeleteBuffer(this.vertexBufferID);
                 this.gl.DeleteBuffer(this.indexBufferID);
 
-                this.disposedValue = true;
+                this.isDisposed = true;
             }
         }
 

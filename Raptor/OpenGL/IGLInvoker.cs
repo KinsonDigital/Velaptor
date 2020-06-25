@@ -1,4 +1,4 @@
-// <copyright file="IGLInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="IGLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -97,6 +97,14 @@ namespace Raptor.OpenGL
         /// <param name="transpose">For the matrix commands, specifies whether to transpose the matrix as the values are loaded into the uniform variable.</param>
         /// <param name="matrix">The matrix data to send to the GPU.</param>
         void UniformMatrix4(int location, bool transpose, ref Matrix4 matrix);
+
+        /// <summary>
+        /// [requires: v4.0 or ARB_gpu_shader_fp64|VERSION_4_0].
+        /// </summary>
+        /// <param name="location">Specifies the location of the uniform variable to be modified.</param>
+        /// <param name="transpose">For the matrix commands, specifies whether to transpose the matrix as the values are loaded into the uniform variable.</param>
+        /// <param name="matrix">The matrix data to send to the GPU.</param>
+        void UniformMatrix4(int location, bool transpose, Matrix4 matrix);
 
         /// <summary>
         /// [requires: v2.0] Returns a parameter from a program object.

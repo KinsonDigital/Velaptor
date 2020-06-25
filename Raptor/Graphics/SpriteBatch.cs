@@ -10,6 +10,8 @@ namespace Raptor.Graphics
     using System.Drawing;
     using System.Linq;
     using System.Xml;
+    using FileIO.Core;
+    using FileIO.File;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
     using Raptor.OpenGL;
@@ -21,27 +23,29 @@ namespace Raptor.Graphics
     {
         private readonly Dictionary<int, SpriteBatchItem> batchItems = new Dictionary<int, SpriteBatchItem>();
         private readonly IGLInvoker gl;
-        private readonly int maxBatchSize = 48;
+        private readonly int batchSize;
         private int renderSurfaceWidth;
         private int renderSurfaceHeight;
         private int transDataLocation;
         private GPUBuffer<VertexData>? gpuBuffer;
         private ShaderProgram? shader;
-        private bool disposedValue = false;
+        private bool isDisposed = false;
         private bool hasBegun;
         private int currentBatchItem = 0;
         private int previousTextureID = -1;
-        private bool firstRender;
+        private bool firstRender = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatch"/> class.
         /// </summary>
         /// <param name="renderSurfaceWidth">The width of the render surface.</param>
         /// <param name="renderSurfaceHeight">The height of the render surface.</param>
-        public SpriteBatch(int renderSurfaceWidth, int renderSurfaceHeight)
+        /// <param name="batchSize">The size of a batch before rendering occurs.</param>
+        public SpriteBatch(int renderSurfaceWidth, int renderSurfaceHeight, int batchSize = 10)
         {
             this.gl = new GLInvoker();
-            Init(renderSurfaceWidth, renderSurfaceHeight);
+            this.batchSize = batchSize;
+            Init(new TextFile(), renderSurfaceWidth, renderSurfaceHeight);
         }
 
         /// <summary>
@@ -49,13 +53,16 @@ namespace Raptor.Graphics
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="textFile">Loads text files.</param>
         /// <param name="renderSurfaceWidth">The width of the render surface.</param>
         /// <param name="renderSurfaceHeight">The height of the render surface.</param>
+        /// <param name="batchSize">The size of a batch before rendering occurs.</param>
         [ExcludeFromCodeCoverage]
-        internal SpriteBatch(IGLInvoker gl, int renderSurfaceWidth, int renderSurfaceHeight)
+        internal SpriteBatch(IGLInvoker gl, ITextFile textFile, int renderSurfaceWidth, int renderSurfaceHeight, int batchSize = 10)
         {
             this.gl = gl;
-            Init(renderSurfaceWidth, renderSurfaceHeight);
+            this.batchSize = batchSize;
+            Init(textFile, renderSurfaceWidth, renderSurfaceHeight);
         }
 
         /// <summary>
@@ -84,6 +91,9 @@ namespace Raptor.Graphics
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of method.")]
         public void Render(ITexture texture, int x, int y, Color tintColor)
         {
+            if (!this.hasBegun)
+                throw new Exception($"The '{nameof(SpriteBatch.Begin)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
+
             if (texture is null)
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
 
@@ -113,11 +123,11 @@ namespace Raptor.Graphics
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside method.")]
         public void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor)
         {
+            if (!this.hasBegun)
+                throw new Exception($"The '{nameof(SpriteBatch.Begin)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
+
             if (texture is null)
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
-
-            if (!this.hasBegun)
-                throw new Exception("Must call begin() first");
 
             bool HasSwitchedTexture() => texture.ID != this.previousTextureID && !this.firstRender;
 
@@ -125,14 +135,14 @@ namespace Raptor.Graphics
             var totalBatchItems = this.batchItems.Values.ToArray().Count(i => !i.IsEmpty);
 
             // Has the textures switched
-            if (HasSwitchedTexture() || totalBatchItems >= this.maxBatchSize)
+            if (HasSwitchedTexture() || totalBatchItems >= this.batchSize)
             {
                 RenderBatch();
                 this.currentBatchItem = 0;
                 this.previousTextureID = 0;
             }
 
-            this.currentBatchItem = this.currentBatchItem >= this.maxBatchSize ? 0 : this.currentBatchItem;
+            this.currentBatchItem = this.currentBatchItem >= this.batchSize ? 0 : this.currentBatchItem;
 
             var batchItem = this.batchItems[this.currentBatchItem];
             batchItem.TextureID = texture.ID;
@@ -159,6 +169,7 @@ namespace Raptor.Graphics
                 return;
 
             RenderBatch();
+
             this.currentBatchItem = 0;
             this.previousTextureID = 0;
             this.hasBegun = false;
@@ -181,28 +192,30 @@ namespace Raptor.Graphics
         /// <param name="disposing">True if managed resources should be disposed of.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.disposedValue)
+            if (this.isDisposed)
                 return;
 
             if (disposing)
             {
+                this.batchItems.Clear();
                 this.shader?.Dispose();
                 this.gpuBuffer?.Dispose();
             }
 
-            this.disposedValue = true;
+            this.isDisposed = true;
         }
 
         /// <summary>
         /// Initializes the sprite batch.
         /// </summary>
+        /// <param name="textFile">Loads text files.</param>
         /// <param name="renderSurfaceWidth">The width of the render surface.</param>
         /// <param name="renderSurfaceHeight">The height of the render surface.</param>
-        private void Init(int renderSurfaceWidth, int renderSurfaceHeight)
+        private void Init(ITextFile textFile, int renderSurfaceWidth, int renderSurfaceHeight)
         {
-            this.shader = new ShaderProgram(this.maxBatchSize, "shader.vert", "shader.frag");
+            this.shader = new ShaderProgram(this.gl, textFile, this.batchSize, "shader.vert", "shader.frag");
 
-            for (var i = 0; i < this.maxBatchSize; i++)
+            for (var i = 0; i < this.batchSize; i++)
             {
                 this.batchItems.Add(i, SpriteBatchItem.Empty);
             }
@@ -218,7 +231,7 @@ namespace Raptor.Graphics
 
             this.shader.UseProgram();
 
-            this.gpuBuffer = new GPUBuffer<VertexData>(this.maxBatchSize);
+            this.gpuBuffer = new GPUBuffer<VertexData>(this.gl, this.batchSize);
 
             this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
         }
@@ -289,7 +302,7 @@ namespace Raptor.Graphics
                 size,
                 angle);
 
-            this.gl.UniformMatrix4(this.transDataLocation + quadID, true, ref transMatrix);
+            this.gl.UniformMatrix4(this.transDataLocation + quadID, true, transMatrix);
         }
 
         /// <summary>
