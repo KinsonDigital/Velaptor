@@ -13,7 +13,7 @@ namespace RaptorSandBox
     public class MyWindow : Window
     {
         private ITexture? linkTexture;
-        private SpriteBatch? spriteBatch;
+        private ISpriteBatch? spriteBatch;
 
 
         public MyWindow()
@@ -29,7 +29,7 @@ namespace RaptorSandBox
                 throw new NullReferenceException($"The ContentLoader must not be null.");
 
             this.linkTexture = ContentLoader.LoadTexture("Link.png");
-            this.spriteBatch = new SpriteBatch(Width, Height);
+            this.spriteBatch = RaptorFactory.CreateSpriteBatch(Width, Height);
             base.OnLoad();
         }
 
@@ -42,11 +42,11 @@ namespace RaptorSandBox
 
         public override void OnDraw(FrameTime frameTime)
         {
-            this.spriteBatch?.Begin();
+            this.spriteBatch?.BeginBatch();
 
             this.spriteBatch?.Render(this.linkTexture, 400, 400);
 
-            this.spriteBatch?.End();
+            this.spriteBatch?.EndBatch();
 
             base.OnDraw(frameTime);
         }

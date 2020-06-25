@@ -16,8 +16,9 @@ namespace RaptorTests.OpenGL
     {
         private readonly Mock<ITextFile> _mockTextFile;
         private readonly Mock<IGLInvoker> _mockGL;
-        private string _vertexShaderPath = $@"C:\temp\vertex-shader.vert";
-        private string _fragShaderPath = $@"C:\temp\frag-shader.frag";
+        //TODO: This might have to be used somewhere else to make it work
+        private string _vertexShaderPath = $@"shader.vert";
+        private string _fragShaderPath = $@"shader.frag";
         private readonly int _vertextShaderID = 1234;
         private readonly int _fragShaderID = 5678;
         private readonly int _shaderProgramID = 1928;
@@ -48,7 +49,7 @@ namespace RaptorTests.OpenGL
             _mockTextFile.Setup(m => m.LoadAsLines(It.IsAny<string>())).Returns(() => new[] { "line-1", null });
 
             //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, It.IsAny<int>(), _vertexShaderPath, _fragShaderPath);
+            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             //Assert
             _mockTextFile.Verify(m => m.LoadAsLines(It.IsAny<string>()), Times.Exactly(2));
@@ -59,10 +60,10 @@ namespace RaptorTests.OpenGL
         {
             //Arrange
             SetupVertexShaderFileMock();
-            var expected = "layout(location = 3) in float aTransformIndex;\r\nuniform mat4 uTransform[2];//MODIFIED_DURING_COMPILE_TIME\r\n";
+            var expected = "layout(location = 3) in float aTransformIndex;\r\nuniform mat4 uTransform[10];//MODIFIED_DURING_COMPILE_TIME\r\n";
 
             //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, _batchSize, _vertexShaderPath, _fragShaderPath);
+            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             //Assert
             _mockGL.Verify(m => m.CreateShader(ShaderType.VertexShader), Times.Once());
@@ -78,7 +79,7 @@ namespace RaptorTests.OpenGL
             var expected = "in vec2 v_TexCoord;\r\nin vec4 v_TintClr;\r\n";
 
             //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, _batchSize, _vertexShaderPath, _fragShaderPath);
+            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             //Assert
             _mockGL.Verify(m => m.CreateShader(ShaderType.FragmentShader), Times.Once());
@@ -94,7 +95,7 @@ namespace RaptorTests.OpenGL
             SetupFragmentShaderFileMock();
 
             //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, _batchSize, _vertexShaderPath, _fragShaderPath);
+            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             //Assert
             _mockGL.Verify(m => m.CreateProgram(), Times.Once());
@@ -111,7 +112,7 @@ namespace RaptorTests.OpenGL
             SetupFragmentShaderFileMock();
 
             //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, _batchSize, _vertexShaderPath, _fragShaderPath);
+            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             //Assert
             _mockGL.Verify(m => m.DetachShader(_shaderProgramID, _vertextShaderID), Times.Once());
@@ -135,7 +136,7 @@ namespace RaptorTests.OpenGL
             //Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, _batchSize, _vertexShaderPath, _fragShaderPath);
+                var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             }, $"Error occurred while compiling shader with ID '{_vertextShaderID}'\nVertex Shader Compile Error");
         }
@@ -155,7 +156,7 @@ namespace RaptorTests.OpenGL
             //Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, _batchSize, _vertexShaderPath, _fragShaderPath);
+                var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             }, $"Error occurred while linking program with ID '{_shaderProgramID}'\nProgram Linking Error");
         }
@@ -164,7 +165,7 @@ namespace RaptorTests.OpenGL
         public void UseProgram_WhenInvoked_SetsProgramForUse()
         {
             //Arrange
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, _batchSize, _vertexShaderPath, _fragShaderPath);
+            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             //Act
             program.UseProgram();
@@ -177,7 +178,7 @@ namespace RaptorTests.OpenGL
         public void Dispose_WithUnmanagedResourcesToDispose_DeletesProgram()
         {
             //Arrange
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object, _batchSize, _vertexShaderPath, _fragShaderPath);
+            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
 
             //Act
             program.Dispose();

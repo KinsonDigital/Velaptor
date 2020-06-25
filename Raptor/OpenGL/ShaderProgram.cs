@@ -5,37 +5,18 @@
 namespace Raptor.OpenGL
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
     using System.Text;
     using FileIO.Core;
     using FileIO.File;
     using OpenToolkit.Graphics.OpenGL4;
 
-    /// <summary>
-    /// A shader program consisting of a vertex and fragment shader.
-    /// </summary>
-    internal class ShaderProgram : IDisposable
+    /// <inheritdoc/>
+    public class ShaderProgram : IShaderProgram
     {
         private readonly IGLInvoker gl;
         private readonly ITextFile textFile;
-        private int batchSize;
         private bool isDisposed;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
-        /// </summary>
-        /// <param name="batchSize">The batch size that the shader will support.</param>
-        /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
-        /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        [ExcludeFromCodeCoverage]
-        public ShaderProgram(int batchSize, string vertexShaderPath, string fragmentShaderPath)
-        {
-            this.gl = new GLInvoker();
-            this.textFile = new TextFile();
-            Init(batchSize, vertexShaderPath, fragmentShaderPath);
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
@@ -46,37 +27,29 @@ namespace Raptor.OpenGL
         /// <param name="batchSize">The batch size that the shader will support.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
         /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        internal ShaderProgram(IGLInvoker gl, ITextFile textFile, int batchSize, string vertexShaderPath, string fragmentShaderPath)
+        public ShaderProgram(IGLInvoker gl, ITextFile textFile)
         {
             this.gl = gl;
             this.textFile = textFile;
-            Init(batchSize, vertexShaderPath, fragmentShaderPath);
+            Init();
         }
 
-        /// <summary>
-        /// Gets the ID of the vertex shader.
-        /// </summary>
+        /// <inheritdoc/>
         public int VertexShaderId { get; private set; }
 
-        /// <summary>
-        /// Gets the ID of the fragment shader on the GPU.
-        /// </summary>
+        /// <inheritdoc/>
         public int FragmentShaderId { get; private set; }
 
-        /// <summary>
-        /// Gets the shader program ID on the GPU.
-        /// </summary>
+        /// <inheritdoc/>
         public int ProgramId { get; private set; }
 
-        /// <summary>
-        /// Sets the active shader program to use on the GPU.
-        /// </summary>
+        /// <inheritdoc/>
+        public int BatchSize { get; set; } = 10;
+
+        /// <inheritdoc/>
         public void UseProgram() => this.gl.UseProgram(ProgramId);
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting
-        /// unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
@@ -84,10 +57,9 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting
-        /// unmanaged resources.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <param name="disposing">True if managed resources should be disposed of.</param>
+        /// <param name="disposing">True if managed resources are to be disposed.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)
@@ -105,15 +77,13 @@ namespace Raptor.OpenGL
         /// <param name="batchSize">The batch size that the shader will support.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
         /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        private void Init(int batchSize, string vertexShaderPath, string fragmentShaderPath)
+        private void Init()
         {
-            this.batchSize = batchSize;
-
-            var shaderSource = LoadShaderSourceCode(vertexShaderPath);
+            var shaderSource = LoadShaderSourceCode("shader.vert");
             VertexShaderId = CreateShader(ShaderType.VertexShader, shaderSource);
 
             // We do the same for the fragment shader
-            shaderSource = LoadShaderSourceCode(fragmentShaderPath);
+            shaderSource = LoadShaderSourceCode("shader.frag");
             FragmentShaderId = CreateShader(ShaderType.FragmentShader, shaderSource);
 
             // Merge both shaders into a shader program, which can then be used by Openthis.gl.
@@ -255,7 +225,7 @@ namespace Raptor.OpenGL
                 {
                     if (sections[i].Contains('[', StringComparison.Ordinal) && sections[i].Contains(']', StringComparison.Ordinal))
                     {
-                        result += $"{sections[i].Split('[')[0]}[{this.batchSize}];//MODIFIED_DURING_COMPILE_TIME";
+                        result += $"{sections[i].Split('[')[0]}[{BatchSize}];//MODIFIED_DURING_COMPILE_TIME";
                     }
                     else
                     {
