@@ -187,7 +187,7 @@ namespace RaptorTests.Graphics
             batch.EndBatch();
 
             //Assert
-            AssertBatchRendered(1, 1, 1);
+            AssertBatchRendered(1, 1, 1, 1);
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace RaptorTests.Graphics
                 It.IsAny<Color>());
 
             //Assert
-            AssertBatchRendered(1, 2, 2);
+            AssertBatchRendered(1, 2, 1, 1);
         }
 
         [Fact]
@@ -278,7 +278,7 @@ namespace RaptorTests.Graphics
             };
 
             //Assert
-            AssertBatchRendered(1, 1, 1, transMatrix);
+            AssertBatchRendered(1, 1, 1, 2, transMatrix);
         }
 
         [Fact]
@@ -300,7 +300,7 @@ namespace RaptorTests.Graphics
             batch.Render(this.mockTextureOne.Object, It.IsAny<int>(), It.IsAny<int>());
 
             //Assert
-            AssertBatchRendered(2, batchSize, 1);
+            AssertBatchRendered(2, batchSize, 1, 1);
         }
 
         [Fact]
@@ -326,7 +326,7 @@ namespace RaptorTests.Graphics
             batch.EndBatch();
 
             //Assert
-            AssertBatchRendered(1, 1, 1);
+            AssertBatchRendered(1, 1, 1, 1);
         }
 
         [Fact]
@@ -349,8 +349,8 @@ namespace RaptorTests.Graphics
         /// </summary>
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
-        private void AssertBatchRendered(int totalItemsInBatch, int totalBatchUpdates, int totalDrawCalls)
-            => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalDrawCalls, new Matrix4());
+        private void AssertBatchRendered(int totalItemsInBatch, int totalBatchUpdates, int totalTextureBinds, int totalDrawCalls)
+            => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, new Matrix4());
 
         /// <summary>
         /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
@@ -358,10 +358,10 @@ namespace RaptorTests.Graphics
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
         /// <param name="transform">The transform that was sent to the GPU.  An empty transform means any transform data would assert true.</param>
-        private void AssertBatchRendered(int totalItemsInBatch, int totalBatchUpdates, int totalDrawCalls, Matrix4 transform)
+        private void AssertBatchRendered(int totalItemsInBatch, int totalBatchUpdates, int totalTextureBinds, int totalDrawCalls, Matrix4 transform)
         {
             this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<int>()),
-                Times.Exactly(totalBatchUpdates),
+                Times.Exactly(totalTextureBinds),
                 "Did not bind texture");
 
             if (transform.IsEmpty())

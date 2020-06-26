@@ -119,6 +119,21 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
+        public void TotalQuads_WhenSettingValue_ReturnsCorrectValue()
+        {
+            //Arrange
+#pragma warning disable IDE0017 // Simplify object initialization
+            var buffer = new GPUBuffer<VertexData>(_mockGL.Object);
+#pragma warning restore IDE0017 // Simplify object initialization
+
+            //Act
+            buffer.TotalQuads = 5;
+
+            //Assert
+            Assert.Equal(5, buffer.TotalQuads);
+        }
+
+        [Fact]
         public void UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer()
         {
             //Arrange

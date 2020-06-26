@@ -4,6 +4,7 @@
 
 namespace Raptor
 {
+    using System.Diagnostics.CodeAnalysis;
     using FileIO.Core;
     using FileIO.File;
     using Raptor.Graphics;
@@ -11,11 +12,18 @@ namespace Raptor
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
 
+    /// <summary>
+    /// Provides dependency injection for the applcation.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static class IoC
     {
         private static readonly Container IocContainer = new Container();
         private static bool isInitialized;
 
+        /// <summary>
+        /// The inversion of control container used to get instances of objects.
+        /// </summary>
         public static Container Container
         {
             get
@@ -27,6 +35,9 @@ namespace Raptor
             }
         }
 
+        /// <summary>
+        /// Sets up the IoC container.
+        /// </summary>
         private static void SetupContainer()
         {
 

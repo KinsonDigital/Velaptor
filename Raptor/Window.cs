@@ -57,7 +57,7 @@ namespace Raptor
         }
 
         [ExcludeFromCodeCoverage]
-        public Window(int width = 800, int height = 600)
+        public Window(int width, int height)
         {
             ContentLoader = new ContentLoader();
             InitWindow(width, height);

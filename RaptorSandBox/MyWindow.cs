@@ -13,13 +13,13 @@ namespace RaptorSandBox
     public class MyWindow : Window
     {
         private ITexture? linkTexture;
+        private ITexture? atlasTexture;
+        private AtlasRegionRectangle[] atlasData;
         private ISpriteBatch? spriteBatch;
 
 
-        public MyWindow()
+        public MyWindow() : base(1020, 800)
         {
-            Width = 1020;
-            Height = 800;
         }
 
 
@@ -28,8 +28,12 @@ namespace RaptorSandBox
             if (ContentLoader is null)
                 throw new NullReferenceException($"The ContentLoader must not be null.");
 
-            this.linkTexture = ContentLoader.LoadTexture("Link.png");
             this.spriteBatch = RaptorFactory.CreateSpriteBatch(Width, Height);
+
+            this.linkTexture = ContentLoader.LoadTexture("Link.png");
+            this.atlasTexture = ContentLoader.LoadTexture("main-atlas.png");
+            //this.atlasData = ContentLoader.LoadAtlasData("main-atlas.json");
+
             base.OnLoad();
         }
 

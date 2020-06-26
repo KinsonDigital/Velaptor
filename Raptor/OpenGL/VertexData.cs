@@ -8,6 +8,8 @@ namespace Raptor.OpenGL
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using OpenToolkit.Mathematics;
+    using Raptor.Graphics;
+    using VelcroPhysics.Shared;
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct VertexData : IEquatable<VertexData>
@@ -42,7 +44,7 @@ namespace Raptor.OpenGL
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>True if both <see cref="VertexData"/> objects are not equal.</returns>
-        public static bool operator !=(VertexData left, VertexData right) => !(left == right);
+        public static bool operator !=(VertexData left, VertexData right) => !left.Equals(right);
 
         /// <summary>
         /// Returns a value indicating if the left and right side of the not equals operator are equal.
@@ -62,7 +64,7 @@ namespace Raptor.OpenGL
             if (!(obj is VertexData data))
                 return false;
 
-            return data == this;
+            return this == data;
         }
 
         /// <summary>
@@ -70,7 +72,11 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
-        public bool Equals(VertexData other) => other == this;
+        public bool Equals(VertexData other)
+            => other.Vertex == this.Vertex &&
+               other.TextureCoord == this.TextureCoord &&
+               other.TintColor == this.TintColor &&
+               other.TransformIndex == this.TransformIndex;
 
         /// <summary>
         /// Serves as the default hash function.

@@ -29,7 +29,8 @@ namespace Raptor.Graphics
         private int batchSize = 10;
         private int currentBatchItem = 0;
         private int previousTextureID = -1;
-        private bool firstRender = true;
+        private int currentTextureID;
+        private bool firstRenderMethodInvoke = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatch"/> class.
@@ -113,13 +114,13 @@ namespace Raptor.Graphics
             if (texture is null)
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
 
-            bool HasSwitchedTexture() => texture.ID != this.previousTextureID && !this.firstRender;
+            this.currentTextureID = texture.ID;
 
-            // var totalBatchItems = _batchItems.Count(i => !i.Value.IsEmpty);
+            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID && !this.firstRenderMethodInvoke;
             var batchIsFull = this.batchItems.Values.ToArray().All(i => !i.IsEmpty);
 
             // Has the textures switched
-            if (HasSwitchedTexture() || batchIsFull)
+            if (hasSwitchedTexture || batchIsFull)
             {
                 RenderBatch();
                 this.currentBatchItem = 0;
@@ -137,8 +138,8 @@ namespace Raptor.Graphics
             this.batchItems[this.currentBatchItem] = batchItem;
 
             this.currentBatchItem += 1;
-            this.previousTextureID = texture.ID;
-            this.firstRender = false;
+            this.previousTextureID = this.currentTextureID;
+            this.firstRenderMethodInvoke = false;
         }
 
         /// <inheritdoc/>
@@ -152,6 +153,7 @@ namespace Raptor.Graphics
             this.currentBatchItem = 0;
             this.previousTextureID = 0;
             this.hasBegun = false;
+            this.firstRenderMethodInvoke = false;
         }
 
         /// <inheritdoc/>
