@@ -16,9 +16,15 @@ namespace Raptor
     /// </summary>
     public abstract class Window : IDisposable
     {
-        private IWindow window;
+        private IWindow? window;
         private bool isDisposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Window"/> class.
+        /// </summary>
+        /// <param name="window">The window implementation that contains the window functionality.</param>
+        /// <param name="contentLoader">Loads content.</param>
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception messages only used inside constructor.")]
         public Window(IWindow? window, IContentLoader? contentLoader)
         {
             if (window is null)
@@ -31,7 +37,14 @@ namespace Raptor
             ContentLoader = contentLoader;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Window"/> class.
+        /// </summary>
+        /// <param name="contentLoader">Loads content.</param>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception messages only used inside constructor.")]
         public Window(IContentLoader contentLoader, int width = 800, int height = 600)
         {
             if (contentLoader is null)
@@ -56,6 +69,11 @@ namespace Raptor
             ContentLoader = new ContentLoader();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Window"/> class.
+        /// </summary>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
         [ExcludeFromCodeCoverage]
         public Window(int width, int height)
         {
@@ -68,8 +86,14 @@ namespace Raptor
         /// </summary>
         public string Title
         {
-            get => this.window.Title;
-            set => this.window.Title = value;
+            get => this.window is null ? string.Empty : this.window.Title;
+            set
+            {
+                if (this.window is null)
+                    return;
+
+                this.window.Title = value;
+            }
         }
 
         /// <summary>
@@ -77,8 +101,14 @@ namespace Raptor
         /// </summary>
         public int Width
         {
-            get => this.window.Width;
-            set => this.window.Width = value;
+            get => this.window is null ? 0 : this.window.Width;
+            set
+            {
+                if (this.window is null)
+                    return;
+
+                this.window.Width = value;
+            }
         }
 
         /// <summary>
@@ -86,8 +116,14 @@ namespace Raptor
         /// </summary>
         public int Height
         {
-            get => this.window.Height;
-            set => this.window.Height = value;
+            get => this.window is null ? 0 : this.window.Height;
+            set
+            {
+                if (this.window is null)
+                    return;
+
+                this.window.Height = value;
+            }
         }
 
         /// <summary>
@@ -96,8 +132,14 @@ namespace Raptor
         /// </summary>
         public int UpdateFrequency
         {
-            get => this.window.UpdateFreq;
-            set => this.window.UpdateFreq = value;
+            get => this.window is null ? 0 : this.window.UpdateFreq;
+            set
+            {
+                if (this.window is null)
+                    return;
+
+                this.window.UpdateFreq = value;
+            }
         }
 
         /// <summary>
@@ -108,7 +150,14 @@ namespace Raptor
         /// <summary>
         /// Shows the window.
         /// </summary>
-        public void Show() => this.window.Show();
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of method.")]
+        public void Show()
+        {
+            if (this.window is null)
+                throw new Exception("Internal window implementation not set.");
+
+            this.window.Show();
+        }
 
         /// <summary>
         /// Invoked when the window is loaded.
@@ -164,7 +213,7 @@ namespace Raptor
             if (!this.isDisposed)
             {
                 if (disposing)
-                    this.window.Dispose();
+                    this.window?.Dispose();
 
                 this.isDisposed = true;
             }

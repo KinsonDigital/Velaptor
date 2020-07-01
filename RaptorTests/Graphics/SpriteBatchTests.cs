@@ -6,11 +6,8 @@ using Raptor.OpenGL;
 using RaptorTests.Helpers;
 using System.Drawing;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 using OpenToolkit.Mathematics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace RaptorTests.Graphics
 {
@@ -214,7 +211,7 @@ namespace RaptorTests.Graphics
                 It.IsAny<Color>());
 
             //Assert
-            AssertBatchRendered(1, 2, 1, 1);
+            AssertBatchRendered(1, 1, 1, 1);
         }
 
         [Fact]
@@ -244,19 +241,21 @@ namespace RaptorTests.Graphics
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 batch.BeginBatch();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 batch.Render(null, It.IsAny<Rectangle>(), It.IsAny<Rectangle>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<Color>());
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "The texture must not be null. (Parameter 'texture')");
         }
 
         [Fact]
-        public void Render_WhenSwitchingTextures_RendersBatch()
+        public void Render_WhenSwitchingTextures_RendersBatchOnce()
         {
             //Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object)
             {
                 RenderSurfaceWidth = 10,
                 RenderSurfaceHeight = 20,
-                BatchSize = 1
+                BatchSize = 3
             };
 
 
@@ -278,7 +277,7 @@ namespace RaptorTests.Graphics
             };
 
             //Assert
-            AssertBatchRendered(1, 1, 1, 2, transMatrix);
+            AssertBatchRendered(1, 1, 1, 1, transMatrix);
         }
 
         [Fact]
@@ -390,10 +389,12 @@ namespace RaptorTests.Graphics
                 $"Expected total draw calls of {totalDrawCalls} not reached.");
         }
 
+        //private Action<int, bool, ref Matrix4> UniformMatrixAction;
+
         private void AssertTransformUpdate(int times)
         {
             //Verify with any transform
-            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, It.IsAny<Matrix4>()),
+            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, ref It.Ref<Matrix4>.IsAny),
                 Times.Exactly(times),
                 "Transformation matrix not updated on GPU");
         }
@@ -401,7 +402,7 @@ namespace RaptorTests.Graphics
         private void AssertTransformUpdate(int times, Matrix4 transform)
         {
             //Verify with given transform
-            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, transform),
+            this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, ref transform),
                 Times.Exactly(times),
                 "Transformation matrix not updated on GPU");
         }

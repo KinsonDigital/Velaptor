@@ -9,9 +9,6 @@ namespace Raptor.Graphics
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
-    using System.Xml;
-    using FileIO.Core;
-    using FileIO.File;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
     using Raptor.OpenGL;
@@ -153,7 +150,6 @@ namespace Raptor.Graphics
             this.currentBatchItem = 0;
             this.previousTextureID = 0;
             this.hasBegun = false;
-            this.firstRenderMethodInvoke = false;
         }
 
         /// <inheritdoc/>
@@ -211,13 +207,18 @@ namespace Raptor.Graphics
         private void RenderBatch()
         {
             var batchAmountToRender = this.batchItems.Count(i => !i.Value.IsEmpty);
+            var textureIsBound = false;
 
             for (var i = 0; i < this.batchItems.Values.Count; i++)
             {
                 if (this.batchItems[i].IsEmpty)
                     continue;
 
-                this.gl.BindTexture(TextureTarget.Texture2D, this.batchItems[i].TextureID);
+                if (!textureIsBound)
+                {
+                    this.gl.BindTexture(TextureTarget.Texture2D, this.batchItems[i].TextureID);
+                    textureIsBound = true;
+                }
 
                 UpdateGPUTransform(
                     i,
@@ -269,7 +270,7 @@ namespace Raptor.Graphics
                 size,
                 angle);
 
-            this.gl.UniformMatrix4(this.transDataLocation + quadID, true, transMatrix);
+            this.gl.UniformMatrix4(this.transDataLocation + quadID, true, ref transMatrix);
         }
 
         /// <summary>

@@ -4,8 +4,6 @@
 
 namespace Raptor.Input
 {
-    using System.Diagnostics.CodeAnalysis;
-
     /// <summary>
     /// Represents the keys on a keyboard.
     /// </summary>

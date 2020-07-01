@@ -21,7 +21,7 @@ namespace Raptor.Content
         private readonly ITextFile? textFile;
         private readonly ILoader<ITexture> textureLoader;
         private readonly ILoader<AtlasRegionRectangle[]> atlasDataLoader;
-        private string? contentRootDirectory = @$"{BaseDir}Content\";
+        private string contentRootDirectory = @$"{BaseDir}Content\";
         private string? graphicsDir;
 
         /// <summary>

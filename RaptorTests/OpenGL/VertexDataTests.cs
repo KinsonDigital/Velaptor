@@ -1,8 +1,5 @@
 ﻿using OpenToolkit.Mathematics;
 using Raptor.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace RaptorTests.OpenGL

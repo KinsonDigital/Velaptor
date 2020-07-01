@@ -1,20 +1,14 @@
-﻿using FileIO.File;
 using Raptor;
-using Raptor.Content;
 using Raptor.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 
 namespace RaptorSandBox
 {
     public class MyWindow : Window
     {
         private ITexture? linkTexture;
-        private ITexture? atlasTexture;
-        private AtlasRegionRectangle[] atlasData;
+        private ITexture? dungeonTexture;
+        private readonly AtlasRegionRectangle[] atlasData;
         private ISpriteBatch? spriteBatch;
 
 
@@ -30,9 +24,8 @@ namespace RaptorSandBox
 
             this.spriteBatch = RaptorFactory.CreateSpriteBatch(Width, Height);
 
+            this.dungeonTexture = ContentLoader.LoadTexture("dungeon.png");
             this.linkTexture = ContentLoader.LoadTexture("Link.png");
-            this.atlasTexture = ContentLoader.LoadTexture("main-atlas.png");
-            //this.atlasData = ContentLoader.LoadAtlasData("main-atlas.json");
 
             base.OnLoad();
         }
@@ -48,6 +41,7 @@ namespace RaptorSandBox
         {
             this.spriteBatch?.BeginBatch();
 
+            this.spriteBatch?.Render(this.dungeonTexture, 0, 0);
             this.spriteBatch?.Render(this.linkTexture, 400, 400);
 
             this.spriteBatch?.EndBatch();

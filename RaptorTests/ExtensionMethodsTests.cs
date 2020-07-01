@@ -1,6 +1,5 @@
 ﻿using OpenToolkit.Mathematics;
 using Raptor;
-using Raptor.OpenGL;
 using System.Drawing;
 using Xunit;
 

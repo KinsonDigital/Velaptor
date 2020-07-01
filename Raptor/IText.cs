@@ -5,7 +5,6 @@
 namespace Raptor
 {
     using System.Drawing;
-    using Raptor.Graphics;
 
     /// <summary>
     /// Text that can be rendered to the graphics surface.

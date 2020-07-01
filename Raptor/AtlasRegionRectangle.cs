@@ -1,4 +1,4 @@
-﻿// <copyright file="AtlasSubRect.cs" company="KinsonDigital">
+﻿// <copyright file="AtlasRegionRectangle.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

@@ -1,4 +1,8 @@
-﻿namespace Raptor.Content
+﻿// <copyright file="ILoader.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor.Content
 {
     /// <summary>
     /// Loads data of type <typeparamref name="T"/>.

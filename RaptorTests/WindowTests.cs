@@ -4,8 +4,6 @@ using Raptor.Content;
 using RaptorTests.Fakes;
 using RaptorTests.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace RaptorTests

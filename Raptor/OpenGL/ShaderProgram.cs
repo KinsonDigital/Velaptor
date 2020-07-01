@@ -5,10 +5,8 @@
 namespace Raptor.OpenGL
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Text;
     using FileIO.Core;
-    using FileIO.File;
     using OpenToolkit.Graphics.OpenGL4;
 
     /// <inheritdoc/>

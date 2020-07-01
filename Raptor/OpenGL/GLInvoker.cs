@@ -38,9 +38,6 @@ namespace Raptor.OpenGL
         public void UniformMatrix4(int location, bool transpose, ref Matrix4 matrix) => GL.UniformMatrix4(location, transpose, ref matrix);
 
         /// <inheritdoc/>
-        public void UniformMatrix4(int location, bool transpose, Matrix4 matrix) => GL.UniformMatrix4(location, transpose, ref matrix);
-
-        /// <inheritdoc/>
         public void GetProgram(int program, GetProgramParameterName pname, out int programParams) => GL.GetProgram(program, pname, out programParams);
 
         /// <inheritdoc/>
@@ -102,13 +99,8 @@ namespace Raptor.OpenGL
         public int GenVertexArray() => GL.GenVertexArray();
 
         /// <inheritdoc/>
-        public void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, T3 data)
-            where T3 : struct
-        {
-            T3 refData = data;
-
-            GL.BufferSubData(target, offset, size, ref refData);
-        }
+        public void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, ref T3 data)
+            where T3 : struct => GL.BufferSubData(target, offset, size, ref data);
 
         /// <inheritdoc/>
         public void DeleteVertexArray(int arrays) => GL.DeleteVertexArray(arrays);

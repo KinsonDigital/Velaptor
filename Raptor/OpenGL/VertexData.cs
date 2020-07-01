@@ -8,9 +8,10 @@ namespace Raptor.OpenGL
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using OpenToolkit.Mathematics;
-    using Raptor.Graphics;
-    using VelcroPhysics.Shared;
 
+    /// <summary>
+    /// Represents a single vertex of data for a quad.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal struct VertexData : IEquatable<VertexData>
     {

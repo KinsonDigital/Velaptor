@@ -99,14 +99,6 @@ namespace Raptor.OpenGL
         void UniformMatrix4(int location, bool transpose, ref Matrix4 matrix);
 
         /// <summary>
-        /// [requires: v4.0 or ARB_gpu_shader_fp64|VERSION_4_0].
-        /// </summary>
-        /// <param name="location">Specifies the location of the uniform variable to be modified.</param>
-        /// <param name="transpose">For the matrix commands, specifies whether to transpose the matrix as the values are loaded into the uniform variable.</param>
-        /// <param name="matrix">The matrix data to send to the GPU.</param>
-        void UniformMatrix4(int location, bool transpose, Matrix4 matrix);
-
-        /// <summary>
         /// [requires: v2.0] Returns a parameter from a program object.
         /// </summary>
         /// <param name="program">Specifies the program object to be queried.</param>
@@ -249,7 +241,7 @@ namespace Raptor.OpenGL
         /// <param name="offset">Specifies the offset into the buffer object's data store where data replacement will begin, measured in bytes.</param>
         /// <param name="size">Specifies the size in bytes of the data store region being replaced.</param>
         /// <param name="data">[length: size] Specifies a pointer to the new data that will be copied into the data store.</param>
-        void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, T3 data)
+        void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, ref T3 data)
             where T3 : struct;
 
         /// <summary>

@@ -6,20 +6,20 @@ namespace Raptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
 
     /// <inheritdoc/>
-    internal class GPUBuffer<T> : IGPUBuffer where T : struct
+    internal class GPUBuffer<T> : IGPUBuffer
+        where T : struct
     {
         private readonly IGLInvoker gl;
         private int vertexArrayID = -1;
         private int vertexBufferID = -1;
         private int indexBufferID = -1;
-        private int totalQuads = 10;
+        private int totalQuads = 2;
         private int totalVertexBytes;
         private int totalQuadSizeInBytes;
         private bool isDisposed;
@@ -65,7 +65,8 @@ namespace Raptor.OpenGL
             quadData.Vertex4.TransformIndex = quadID;
 
             var offset = this.totalQuadSizeInBytes * quadID;
-            this.gl.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, quadData);
+
+            this.gl.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, ref quadData);
         }
 
         /// <inheritdoc/>
@@ -126,7 +127,6 @@ namespace Raptor.OpenGL
         /// Calculates the texture coordinates in the given <paramref name="quad"/> based on the area of the texture
         /// to render and the texture size.
         /// </summary>
-        /// <param name="quad">The quad to update.</param>
         /// <param name="srcRect">The area of the rectangle used to calculate the texture coordinates.</param>
         /// <param name="textureWidth">The with of the texture.</param>
         /// <param name="textureHeight">The height of the texture.</param>
@@ -235,7 +235,7 @@ namespace Raptor.OpenGL
 
             this.vertexBufferID = this.gl.GenBuffer();
 
-            AllocateVertexBuffer(this.totalQuads);
+            AllocateVertexBuffer();
         }
 
         /// <summary>
@@ -271,9 +271,9 @@ namespace Raptor.OpenGL
         /// Allocates enough memory for the vertex buffer to hold the given quad <paramref name="totalQuads"/> items.
         /// </summary>
         /// <param name="totalQuads">The total number of quads that the vertex buffer can hold.</param>
-        private void AllocateVertexBuffer(int totalQuads)
+        private void AllocateVertexBuffer()
         {
-            var sizeInBytes = this.totalQuadSizeInBytes * totalQuads;
+            var sizeInBytes = this.totalQuadSizeInBytes * this.totalQuads;
 
             BindVertexBuffer();
             this.gl.BufferData(BufferTarget.ArrayBuffer, sizeInBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw);

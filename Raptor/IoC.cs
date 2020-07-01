@@ -40,23 +40,26 @@ namespace Raptor
         /// </summary>
         private static void SetupContainer()
         {
-
             IocContainer.Register<ITextFile, TextFile>();
             IocContainer.Register<IImageFile, ImageFile>();
             IocContainer.Register<IGLInvoker, GLInvoker>();
 
+            /*NOTE:
+             * The suppression of the SimpleInjector warning of DiagnosticType.DisposableTransientComponent is for
+             * classes that are disposable.  This tells simple injector that the disposing of the object will be
+             * handled manually by the application/library instead of by simple injector.
+             */
             IocContainer.Register<IGPUBuffer, GPUBuffer<VertexData>>();
-
             var bufferRegistration = IocContainer.GetRegistration(typeof(IGPUBuffer))?.Registration;
-            bufferRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "asdf");
+            bufferRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
 
             IocContainer.Register<IShaderProgram, ShaderProgram>();
             var shaderRegistration = IocContainer.GetRegistration(typeof(IShaderProgram))?.Registration;
-            shaderRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "asdf");
+            shaderRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
 
             IocContainer.Register<ISpriteBatch, SpriteBatch>();
             var spriteBatchRegistration = IocContainer.GetRegistration(typeof(ISpriteBatch))?.Registration;
-            spriteBatchRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "asdf");
+            spriteBatchRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
 
             isInitialized = true;
         }

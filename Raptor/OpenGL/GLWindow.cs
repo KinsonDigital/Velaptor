@@ -11,10 +11,13 @@ namespace Raptor.OpenGL
     using OpenToolkit.Mathematics;
     using OpenToolkit.Windowing.Common;
     using OpenToolkit.Windowing.Desktop;
-    using NETColor = System.Drawing.Color;
 
-    internal class GLWindow : GameWindow, IWindow
+    /// <summary>
+    /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
+    /// </summary>
+    internal sealed class GLWindow : GameWindow, IWindow
     {
+        private readonly DebugProc debugProc;
         private bool isShuttingDown;
 
         /// <summary>
@@ -28,10 +31,19 @@ namespace Raptor.OpenGL
         {
             if (nativeWinSettings is null)
                 throw new ArgumentNullException(nameof(nativeWinSettings), "The argument must not be null");
+            this.debugProc = DebugCallback;
+
+            /*NOTE:
+             * This is here to help prevent an issue with an obscure System.ExecutionException from occuring.
+             * The garbage collector performas a collect on the delegate passed into GL.DebugMesageCallback()
+             * without the native system knowing about it which causes this acception. The GC.KeepAlive()
+             * method tells the garbage collector to not collect the delgate to prevent this from happening.
+             */
+            GC.KeepAlive(this.debugProc);
 
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
-            GL.DebugMessageCallback(DebugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
+            GL.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
 
             Title = "Raptor Application";
             UpdateFrequency = 60;
@@ -57,22 +69,22 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked at a particular frame rate to run update logic.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked per frame for updating.
         /// </summary>
         public Action<FrameTime>? Update { get; set; }
 
         /// <summary>
-        /// Invoked at a particular frame rate to render graphics.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked per frame for rendering.
         /// </summary>
         public Action<FrameTime>? Draw { get; set; }
 
         /// <summary>
-        /// Invoked when the window is resized.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked every time the window is resized.
         /// </summary>
         public Action? WinResize { get; set; }
 
         /// <summary>
-        /// Invoked once to initialize.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize.
         /// </summary>
         public Action? Init { get; set; }
 
