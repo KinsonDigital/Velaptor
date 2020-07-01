@@ -194,32 +194,32 @@ namespace Raptor.OpenGL
         /// <param name="vertexArrayID">The ID of the vertex array.</param>
         private void SetupAttribPointers(int vertexArrayID)
         {
-            var props = typeof(T).GetFields();
+            var fields = typeof(T).GetFields();
 
             /*TODO:
              * 3. Possibly use an custom attribute to set the shader location of a field
              * 4. Need to check if type is a struct and throw exception if it is not
              */
 
-            var offset = 0;
-            var previousSize = 0; // The element size of the previous field
+            var offset = 0u;
+            var previousSize = 0u; // The element size of the previous field
 
-            for (var i = 0; i < props.Length; i++)
+            for (var i = 0; i < fields.Length; i++)
             {
                 var stride = this.totalVertexBytes;
 
                 // The number of float elements in the field. Ex: Vector3 has a size of 3
-                var size = VertexDataAnalyzer.TotalItemsForType(props[i].FieldType);
+                var totalElements = VertexDataAnalyzer.TotalDataElementsForType(fields[i].FieldType);
 
                 // The type of OpenGL VertexAttribPointerType based on the field type
-                var attribType = VertexDataAnalyzer.GetVertexPointerType(props[i].FieldType);
+                var attribType = VertexDataAnalyzer.GetVertexPointerType(fields[i].FieldType);
 
                 this.gl.EnableVertexArrayAttrib(vertexArrayID, i);
 
-                offset = i == 0 ? 0 : offset + (previousSize * VertexDataAnalyzer.GetTypeByteSize(typeof(float)));
-                this.gl.VertexAttribPointer(i, size, attribType, false, stride, offset);
+                offset = i == 0 ? 0 : offset + (previousSize * VertexDataAnalyzer.GetPrimitiveByteSize(typeof(float)));
+                this.gl.VertexAttribPointer(i, (int)totalElements, attribType, false, stride, (int)offset);
 
-                previousSize = size;
+                previousSize = (uint)totalElements;
             }
         }
 
@@ -230,7 +230,8 @@ namespace Raptor.OpenGL
         /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
         private void CreateVertexBuffer()
         {
-            this.totalVertexBytes = VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
+            //TODO: Convert values that should be uint to uint
+            this.totalVertexBytes = (int)VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
             this.totalQuadSizeInBytes = this.totalVertexBytes * 4;
 
             this.vertexBufferID = this.gl.GenBuffer();
