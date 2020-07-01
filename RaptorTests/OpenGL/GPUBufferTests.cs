@@ -5,6 +5,7 @@ using Moq;
 using Raptor.OpenGL;
 using Xunit;
 using System.Linq;
+using System.Drawing;
 
 namespace RaptorTests.OpenGL
 {
@@ -130,19 +131,19 @@ namespace RaptorTests.OpenGL
             Assert.Equal(5, buffer.TotalQuads);
         }
 
-        //[Fact]
-        //public void UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer()
-        //{
-        //    //Arrange
-        //    var buffer = new GPUBuffer<VertexData>(_mockGL.Object);
-        //    var srcRect = new Rectangle();
+        [Fact]
+        public void UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer()
+        {
+            //Arrange
+            var buffer = new GPUBuffer<VertexData>(_mockGL.Object);
+            var srcRect = new Rectangle();
 
-        //    //Act
-        //    buffer.UpdateQuad(0, srcRect, 50, 50, Color.White);
-            
-        //    //Assert
-        //    _mockGL.Verify(m => m.BufferSubData(BufferTarget.ArrayBuffer, It.IsAny<IntPtr>(), It.IsAny<int>(), It.IsAny<QuadData>()));
-        //}
+            //Act
+            buffer.UpdateQuad(0, srcRect, 50, 50, Color.White);
+
+            //Assert
+            _mockGL.Verify(m => m.BufferSubData(BufferTarget.ArrayBuffer, It.IsAny<IntPtr>(), It.IsAny<int>(), ref It.Ref<QuadData>.IsAny));
+        }
 
         [Fact]
         public void Dispose_WithUnmanagedResourcesToDispose_DisposesOfUnmanagedResources()
