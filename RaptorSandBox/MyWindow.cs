@@ -1,4 +1,5 @@
 using Raptor;
+using Raptor.Content;
 using Raptor.Graphics;
 using System;
 
@@ -12,7 +13,7 @@ namespace RaptorSandBox
         private ISpriteBatch? spriteBatch;
 
 
-        public MyWindow() : base(1020, 800)
+        public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
         }
 

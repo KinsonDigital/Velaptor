@@ -10,8 +10,5 @@ namespace RaptorTests.Fakes
     {
         public WindowFake(IWindow window, IContentLoader contentLoader)
             : base(window, contentLoader) { }
-
-        public WindowFake(IWindow window)
-            : base(window) { }
     }
 }

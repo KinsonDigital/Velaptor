@@ -24,11 +24,13 @@ namespace Raptor
 
         string Title { get; set; }
 
+        Action? Init { get; set; }
+
         Action<FrameTime>? Update { get; set; }
 
         Action<FrameTime>? Draw { get; set; }
 
-        Action? Init { get; set; }
+        Action? WinResize { get; set; }
 
         int UpdateFreq { get; set; }
 

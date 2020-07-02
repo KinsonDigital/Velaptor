@@ -7,6 +7,7 @@ namespace Raptor
     using System.Diagnostics.CodeAnalysis;
     using FileIO.Core;
     using FileIO.File;
+    using Raptor.Content;
     using Raptor.Graphics;
     using Raptor.OpenGL;
     using SimpleInjector;
@@ -43,6 +44,8 @@ namespace Raptor
             IocContainer.Register<ITextFile, TextFile>();
             IocContainer.Register<IImageFile, ImageFile>();
             IocContainer.Register<IGLInvoker, GLInvoker>();
+            IocContainer.Register<ILoader<ITexture>, TextureLoader>();
+            IocContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
 
             /*NOTE:
              * The suppression of the SimpleInjector warning of DiagnosticType.DisposableTransientComponent is for

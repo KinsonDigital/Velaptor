@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using Raptor;
 using Raptor.Content;
 using RaptorTests.Fakes;
@@ -122,7 +122,7 @@ namespace RaptorTests
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                var window = new WindowFake(window: null);
+                var window = new WindowFake(window: null, contentLoader: null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "Window must not be null. (Parameter 'window')");
         }
