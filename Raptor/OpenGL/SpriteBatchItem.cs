@@ -6,23 +6,66 @@ namespace Raptor.OpenGL
 {
     using System.Drawing;
 
+    /// <summary>
+    /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.
+    /// </summary>
     internal struct SpriteBatchItem
     {
+        /// <summary>
+        /// The ID of the texture.
+        /// </summary>
         public int TextureID;
 
+        /// <summary>
+        /// The source rectangle of the area to render of the texture.
+        /// </summary>
         public Rectangle SrcRect;
 
+        /// <summary>
+        /// The destination rectangle on the screen of where to render the texture.
+        /// </summary>
         public Rectangle DestRect;
 
+        /// <summary>
+        /// The size of the texture.
+        /// </summary>
+        /// <remarks>Needs to be a value between 0 and 1.</remarks>
         public float Size;
 
+        /// <summary>
+        /// The angle in degress of the texture.
+        /// </summary>
+        /// <remarks>Needs to be a value between 0 and 360.</remarks>
         public float Angle;
 
+        /// <summary>
+        /// The color to apply to the entire textrue.
+        /// </summary>
         public Color TintColor;
 
-        public static SpriteBatchItem Empty => new SpriteBatchItem() { TextureID = -1 };
+        /// <summary>
+        /// Gets an empty <see cref="SpriteBatchItem"/>.
+        /// </summary>
+        public static SpriteBatchItem Empty
+        {
+            get
+            {
+                SpriteBatchItem result;
+                result.TextureID = 0;
+                result.Size = 0f;
+                result.Angle = 0f;
+                result.SrcRect = Rectangle.Empty;
+                result.DestRect = Rectangle.Empty;
+                result.TintColor = Color.Empty;
 
-        public bool IsEmpty => this.TextureID == -1 &&
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating if the item is empty.
+        /// </summary>
+        public bool IsEmpty => this.TextureID == 0 &&
                     this.SrcRect.IsEmpty &&
                     this.DestRect.IsEmpty &&
                     this.Size == 0f &&

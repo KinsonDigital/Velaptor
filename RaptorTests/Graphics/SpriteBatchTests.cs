@@ -316,11 +316,11 @@ namespace RaptorTests.Graphics
 
             batch.Render(
                 this.mockTextureOne.Object,
-                It.IsAny<Rectangle>(),
-                It.IsAny<Rectangle>(),
-                It.IsAny<float>(),
-                It.IsAny<float>(),
-                It.IsAny<Color>());
+                new Rectangle(1, 2, 3, 4),
+                new Rectangle(5, 6, 7, 8),
+                9f,
+                10f,
+                Color.FromArgb(11, 22, 33, 44));
 
             batch.EndBatch();
 
