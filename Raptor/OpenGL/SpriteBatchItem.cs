@@ -7,12 +7,12 @@ namespace Raptor.OpenGL
     using System.Drawing;
 
     /// <summary>
-    /// Represents a single texture to be rendered to the screen as part of a batch.
+    /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.
     /// </summary>
     internal struct SpriteBatchItem
     {
         /// <summary>
-        /// The texture ID of the texture to be rendered.
+        /// The ID of the texture.
         /// </summary>
         public uint TextureID;
 
@@ -33,17 +33,18 @@ namespace Raptor.OpenGL
         public float Size;
 
         /// <summary>
-        /// The angle of the texture to be rendered.
+        /// The angle in degress of the texture.
         /// </summary>
+        /// <remarks>Needs to be a value between 0 and 360.</remarks>
         public float Angle;
 
         /// <summary>
-        /// The color to tint the entire texture to be rendered.
+        /// The color to apply to the entire textrue.
         /// </summary>
         public Color TintColor;
 
         /// <summary>
-        /// Gets an empty sprite batch item.
+        /// Gets an empty <see cref="SpriteBatchItem"/>.
         /// </summary>
         /// <returns>An empty sprite batch item.</returns>
         public static SpriteBatchItem Empty
@@ -51,10 +52,9 @@ namespace Raptor.OpenGL
             get
             {
                 SpriteBatchItem result;
-
                 result.TextureID = 0;
-                result.Angle = 0;
-                result.Size = 0;
+                result.Size = 0f;
+                result.Angle = 0f;
                 result.SrcRect = Rectangle.Empty;
                 result.DestRect = Rectangle.Empty;
                 result.TintColor = Color.Empty;

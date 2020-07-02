@@ -319,11 +319,11 @@ namespace RaptorTests.Graphics
 
             batch.Render(
                 this.mockTextureOne.Object,
-                new Rectangle(11, 22, 33, 44),
-                new Rectangle(55, 66, 77, 88),
-                99f,
-                100f,
-                Color.FromArgb(110, 120, 130, 140));
+                new Rectangle(1, 2, 3, 4),
+                new Rectangle(5, 6, 7, 8),
+                9f,
+                10f,
+                Color.FromArgb(11, 22, 33, 44));
 
             batch.EndBatch();
 
