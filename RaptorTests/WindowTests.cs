@@ -1,13 +1,17 @@
-﻿using Moq;
-using Raptor;
-using Raptor.Content;
-using RaptorTests.Fakes;
-using RaptorTests.Helpers;
-using System;
-using Xunit;
+﻿// <copyright file="WindowTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests
 {
+    using System;
+    using Moq;
+    using Raptor;
+    using Raptor.Content;
+    using RaptorTests.Fakes;
+    using RaptorTests.Helpers;
+    using Xunit;
+
     public class WindowTests
     {
         private readonly Mock<IWindow> mockWindow;
@@ -23,82 +27,81 @@ namespace RaptorTests
         [Fact]
         public void Title_WhenSettingValue_ReturnsCorrectValue()
         {
-            //Arrange
+            // Arrange
             this.mockWindow.SetupProperty(p => p.Title);
 
             var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object)
             {
-                Title = "test-title"
+                Title = "test-title",
             };
 
-            //Act
+            // Act
             var actual = window.Title;
 
-            //Assert
+            // Assert
             Assert.Equal("test-title", actual);
         }
 
         [Fact]
         public void Width_WhenSettingValue_ReturnsCorrectValue()
         {
-            //Arrange
+            // Arrange
             this.mockWindow.SetupProperty(p => p.Width);
 
             var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object)
             {
-                Width = 1234
+                Width = 1234,
             };
 
-            //Act
+            // Act
             var actual = window.Width;
 
-            //Assert
+            // Assert
             Assert.Equal(1234, actual);
         }
 
         [Fact]
         public void Height_WhenSettingValue_ReturnsCorrectValue()
         {
-            //Arrange
+            // Arrange
             this.mockWindow.SetupProperty(p => p.Height);
 
             var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object)
             {
-                Height = 1234
+                Height = 1234,
             };
 
-            //Act
+            // Act
             var actual = window.Height;
 
-            //Assert
+            // Assert
             Assert.Equal(1234, actual);
         }
 
         [Fact]
         public void UpdateFrequency_WhenSettingValue_ReturnsCorrectValue()
         {
-            //Arrange
+            // Arrange
             this.mockWindow.SetupProperty(p => p.UpdateFreq);
 
             var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object)
             {
-                UpdateFrequency = 1234
+                UpdateFrequency = 1234,
             };
 
-            //Act
+            // Act
             var actual = window.UpdateFrequency;
 
-            //Assert
+            // Assert
             Assert.Equal(1234, actual);
         }
         #endregion
-
 
         #region Method tests
         [Fact]
         public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullWindow_ThrowsException()
         {
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -110,7 +113,7 @@ namespace RaptorTests
         [Fact]
         public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullLoader_ThrowsException()
         {
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -122,7 +125,7 @@ namespace RaptorTests
         [Fact]
         public void Ctor_WhenUsingOverloadWithLoaderAndWidthAndHeightWithNullLoader_ThrowsException()
         {
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -134,48 +137,48 @@ namespace RaptorTests
         [Fact]
         public void Ctor_WhenInvokedWithWindowAndContentLoader_SetsWindowAndContentLoader()
         {
-            //Act
+            // Act
             var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object);
 
-            //Assert
+            // Assert
             Assert.Equal(this.mockContentLoader.Object, window.ContentLoader);
         }
 
         [Fact]
         public void Show_WhenInvoked_ShowsWindow()
         {
-            //Arrange
+            // Arrange
             var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object);
 
-            //Act
+            // Act
             window.Show();
 
-            //Assert
+            // Assert
             this.mockWindow.Verify(m => m.Show(), Times.Once());
         }
 
         [Fact]
         public void Dispose_WhenInvoked_DisposesOfMangedResources()
         {
-            //Arrange
+            // Arrange
             var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object);
 
-            //Act
+            // Act
             window.Dispose();
             window.Dispose();
 
-            //Assert
+            // Assert
             this.mockWindow.Verify(m => m.Dispose(), Times.Once());
         }
 
         [Fact]
         public void Dispose_WithNullWindow_Expectation()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
 
-            //Assert
+            // Assert
         }
         #endregion
     }

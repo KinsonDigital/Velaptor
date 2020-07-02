@@ -1,87 +1,91 @@
-﻿using OpenToolkit.Mathematics;
-using Raptor.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿// <copyright file="QuadDataTesting.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.OpenGL
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using OpenToolkit.Mathematics;
+    using Raptor.OpenGL;
+    using Xunit;
+
     public class QuadDataTesting
     {
         [Fact]
         public void Equals_WithEqualParam_ReturnsTrue()
         {
-            //Arrange
-            var quadA = new QuadData();
-            var quadB = new QuadData();
+            // Arrange
+            var quadA = default(QuadData);
+            var quadB = default(QuadData);
 
-            //Act
+            // Act
             var actual = quadA.Equals(quadB);
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
 
         [Fact]
         public void EqualsOperator_WithBothOperandsEqual_ReturnsTrue()
         {
-            //Arrange
-            var quadA = new QuadData();
-            var quadB = new QuadData();
+            // Arrange
+            var quadA = default(QuadData);
+            var quadB = default(QuadData);
 
-            //Act
+            // Act
             var actual = quadA == quadB;
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
 
         [Fact]
         public void EqualsOperator_WithBothOperandsNotEqual_ReturnsFalse()
         {
-            //Arrange
-            var quadA = new QuadData();
+            // Arrange
+            var quadA = default(QuadData);
             var quadB = new QuadData()
             {
                 Vertex1 = new VertexData()
                 {
-                    Vertex = new Vector3(11, 22, 33)
-                }
+                    Vertex = new Vector3(11, 22, 33),
+                },
             };
 
-            //Act
+            // Act
             var actual = quadA != quadB;
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
 
         [Fact]
         public void Equals_WhenInvokedWithParamOfDifferentType_ReturnsFalse()
         {
-            //Arrange
-            var quadA = new QuadData();
+            // Arrange
+            var quadA = default(QuadData);
             var quadB = new object();
 
-            //Act
+            // Act
             var actual = quadA.Equals(quadB);
 
-            //Assert
+            // Assert
             Assert.False(actual);
         }
 
         [Fact]
         public void Equals_WhenInvokedWithEqualParamOfSameType_ReturnsTrue()
         {
-            //Arrange
-            var quadA = new QuadData();
-            object quadB = new QuadData();
+            // Arrange
+            var quadA = default(QuadData);
+            object quadB = default(QuadData);
 
-            //Act
+            // Act
             var actual = quadA.Equals(quadB);
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
     }

@@ -1,16 +1,20 @@
-﻿using FileIO.Core;
-using Moq;
-using OpenToolkit.Graphics.OpenGL4;
-using Raptor.Graphics;
-using Raptor.OpenGL;
-using RaptorTests.Helpers;
-using System.Drawing;
-using System;
-using Xunit;
-using OpenToolkit.Mathematics;
+﻿// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.Graphics
 {
+    using System;
+    using System.Drawing;
+    using FileIO.Core;
+    using Moq;
+    using OpenToolkit.Graphics.OpenGL4;
+    using OpenToolkit.Mathematics;
+    using Raptor.Graphics;
+    using Raptor.OpenGL;
+    using RaptorTests.Helpers;
+    using Xunit;
+
     public class SpriteBatchTests
     {
         private readonly Mock<ITexture> mockTextureOne;
@@ -40,7 +44,7 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Ctor_WhenInvokedWithNullGLInvoker_ThrowsException()
         {
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -52,7 +56,7 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Ctor_WhenInvokedWithNullShader_ThrowsException()
         {
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -64,7 +68,7 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Ctor_WhenInvokedWithNullGPUBuffer_ThrowsException()
         {
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -76,70 +80,70 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Ctor_WhenInvoked_SetsUpShaderProgram()
         {
-            //Act
+            // Act
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Assert
+            // Assert
             this.mockShader.Verify(m => m.UseProgram(), Times.Once());
         }
 
         [Fact]
         public void Ctor_WhenInvoked_EnablesBlending()
         {
-            //Act
+            // Act
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Assert
+            // Assert
             this.mockGL.Verify(m => m.Enable(EnableCap.Blend), Times.Once());
         }
 
         [Fact]
         public void Ctor_WhenInvoked_SetsUpBlending()
         {
-            //Act
+            // Act
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Assert
+            // Assert
             this.mockGL.Verify(m => m.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha), Times.Once());
         }
 
         [Fact]
         public void Ctor_WhenInvoked_SetsUpClearColor()
         {
-            //Act
+            // Act
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Assert
+            // Assert
             this.mockGL.Verify(m => m.ClearColor(0.2f, 0.3f, 0.3f, 1.0f), Times.Once());
         }
 
         [Fact]
         public void Ctor_WhenInvoked_SetsTextureUnitToSlot0()
         {
-            //Act
+            // Act
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Assert
+            // Assert
             this.mockGL.Verify(m => m.ActiveTexture(TextureUnit.Texture0), Times.Once());
         }
 
         [Fact]
         public void Ctor_WhenInvoked_GetTransformLocation()
         {
-            //Act
+            // Act
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Assert
+            // Assert
             this.mockGL.Verify(m => m.GetUniformLocation(It.IsAny<int>(), "uTransform"), Times.Once());
         }
 
         [Fact]
         public void Render_WhenUsingOverloadWithFourParamsAndWithoutCallingBeginFirst_ThrowsException()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
                 batch.Render(this.mockTextureOne.Object, 10, 20);
@@ -149,10 +153,10 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Render_WhenUsingOverloadWithFourParamsAndNullTexture_ThrowsException()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
-            
-            //Act & Assert
+
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 batch.BeginBatch();
@@ -165,15 +169,15 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Render_WhenUsingOverloadWithFourParams_RendersBatch()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object)
             {
-                BatchSize = 1
+                BatchSize = 1,
             };
 
             batch.BeginBatch();
 
-            //Act
+            // Act
             batch.Render(
                 this.mockTextureOne.Object,
                 It.IsAny<int>(),
@@ -183,21 +187,21 @@ namespace RaptorTests.Graphics
             batch.EndBatch();
             batch.EndBatch();
 
-            //Assert
+            // Assert
             AssertBatchRendered(1, 1, 1, 1);
         }
 
         [Fact]
         public void Render_WhenExcedingBatchSize_RendersBatchTwoTimes()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object)
             {
-                BatchSize = 1
+                BatchSize = 1,
             };
             batch.BeginBatch();
 
-            //Act
+            // Act
             batch.Render(
                 this.mockTextureOne.Object,
                 It.IsAny<int>(),
@@ -210,17 +214,17 @@ namespace RaptorTests.Graphics
                 It.IsAny<int>(),
                 It.IsAny<Color>());
 
-            //Assert
+            // Assert
             AssertBatchRendered(1, 1, 1, 1);
         }
 
         [Fact]
         public void Render_WhenUsingOverloadWithSixParamsAndWithoutCallingBeginFirst_ThrowsException()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
                 var srcRect = new Rectangle(1, 2, 3, 4);
@@ -234,10 +238,10 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Render_WhenUsingOverloadWithSixParamsAndWithNullTexture_ThrowsException()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 batch.BeginBatch();
@@ -250,17 +254,16 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Render_WhenSwitchingTextures_RendersBatchOnce()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object)
             {
                 RenderSurfaceWidth = 10,
                 RenderSurfaceHeight = 20,
-                BatchSize = 3
+                BatchSize = 3,
             };
 
-
-            //Act
-            //WARNING - Changing these values will change the trans matrix
+            // Act
+            // WARNING - Changing these values will change the trans matrix
             var srcRect = new Rectangle(1, 2, 3, 4);
             var destRect = new Rectangle(5, 6, 7, 8);
             var tintClr = Color.FromArgb(11, 22, 33, 44);
@@ -273,45 +276,45 @@ namespace RaptorTests.Graphics
                 Column0 = new Vector4(-6.5567085E-09f, 0.15f, 0f, 0f),
                 Column1 = new Vector4(-0.1f, -4.371139E-09F, 0f, 0.39999998f),
                 Column2 = new Vector4(0f, 0f, 1f, 0f),
-                Column3 = new Vector4(0f, 0f, 0f, 1f)
+                Column3 = new Vector4(0f, 0f, 0f, 1f),
             };
 
-            //Assert
+            // Assert
             AssertBatchRendered(1, 1, 1, 1, transMatrix);
         }
 
         [Fact]
         public void Render_WhenBatchIsFull_RendersBatch()
         {
-            //Arrange
+            // Arrange
             var batchSize = 2;
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object)
             {
                 RenderSurfaceWidth = 10,
                 RenderSurfaceHeight = 20,
-                BatchSize = batchSize
+                BatchSize = batchSize,
             };
 
-            //Act
+            // Act
             batch.BeginBatch();
             batch.Render(this.mockTextureOne.Object, It.IsAny<int>(), It.IsAny<int>());
             batch.Render(this.mockTextureOne.Object, It.IsAny<int>(), It.IsAny<int>());
             batch.Render(this.mockTextureOne.Object, It.IsAny<int>(), It.IsAny<int>());
 
-            //Assert
+            // Assert
             AssertBatchRendered(2, batchSize, 1, 1);
         }
 
         [Fact]
         public void Render_WhenBatchIsNotFull_OnlyRendersRequiredItems()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object)
             {
-                BatchSize = 2
+                BatchSize = 2,
             };
 
-            //Act
+            // Act
             batch.BeginBatch();
 
             batch.Render(
@@ -324,21 +327,21 @@ namespace RaptorTests.Graphics
 
             batch.EndBatch();
 
-            //Assert
+            // Assert
             AssertBatchRendered(1, 1, 1, 1);
         }
 
         [Fact]
         public void Dispose_WhenInvoked_DisposesOfMangedResources()
         {
-            //Arrange
+            // Arrange
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
-            //Act
+            // Act
             batch.Dispose();
             batch.Dispose();
 
-            //Assert
+            // Assert
             this.mockShader.Verify(m => m.Dispose(), Times.Once());
             this.mockBuffer.Verify(m => m.Dispose(), Times.Once());
         }
@@ -349,7 +352,7 @@ namespace RaptorTests.Graphics
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
         private void AssertBatchRendered(int totalItemsInBatch, int totalBatchUpdates, int totalTextureBinds, int totalDrawCalls)
-            => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, new Matrix4());
+            => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, default);
 
         /// <summary>
         /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
@@ -365,16 +368,16 @@ namespace RaptorTests.Graphics
 
             if (transform.IsEmpty())
             {
-                //Verify with any transform
+                // Verify with any transform
                 AssertTransformUpdate(totalBatchUpdates);
             }
             else
             {
-                //Verify with given transform
+                // Verify with given transform
                 AssertTransformUpdate(totalBatchUpdates, transform);
             }
 
-            //Invoked in the GPUBuffer.UpdateQuad() method
+            // Invoked in the GPUBuffer.UpdateQuad() method
             this.mockBuffer.Verify(m => m.UpdateQuad(It.IsAny<int>(),
                                                      It.IsAny<Rectangle>(),
                                                      It.IsAny<int>(),
@@ -383,17 +386,17 @@ namespace RaptorTests.Graphics
                 Times.Exactly(totalBatchUpdates),
                 "Quad was not updated on GPU.");
 
-            this.mockGL.Verify(m => m.DrawElements(PrimitiveType.Triangles, 6 * totalItemsInBatch,
-                                                   DrawElementsType.UnsignedInt, IntPtr.Zero),
+            this.mockGL.Verify(m => m.DrawElements(PrimitiveType.Triangles,
+                    6 * totalItemsInBatch,
+                    DrawElementsType.UnsignedInt,
+                    IntPtr.Zero),
                 Times.Exactly(totalDrawCalls),
                 $"Expected total draw calls of {totalDrawCalls} not reached.");
         }
 
-        //private Action<int, bool, ref Matrix4> UniformMatrixAction;
-
         private void AssertTransformUpdate(int times)
         {
-            //Verify with any transform
+            // Verify with any transform
             this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, ref It.Ref<Matrix4>.IsAny),
                 Times.Exactly(times),
                 "Transformation matrix not updated on GPU");
@@ -401,7 +404,7 @@ namespace RaptorTests.Graphics
 
         private void AssertTransformUpdate(int times, Matrix4 transform)
         {
-            //Verify with given transform
+            // Verify with given transform
             this.mockGL.Verify(m => m.UniformMatrix4(It.IsAny<int>(), true, ref transform),
                 Times.Exactly(times),
                 "Transformation matrix not updated on GPU");
