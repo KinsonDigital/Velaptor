@@ -1,12 +1,12 @@
-﻿using Raptor.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using Xunit;
-
-namespace RaptorTests.OpenGL
+﻿namespace RaptorTests.OpenGL
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Text;
+    using Raptor.OpenGL;
+    using Xunit;
+
     public class SpriteBatchItemTests
     {
         [Fact]
