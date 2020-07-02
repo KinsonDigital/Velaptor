@@ -48,7 +48,7 @@ namespace Raptor.Graphics
         }
 
         /// <inheritdoc/>
-        public int ID { get; protected set; }
+        public uint ID { get; protected set; }
 
         /// <inheritdoc/>
         public string Name { get; private set; } = string.Empty;

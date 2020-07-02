@@ -14,7 +14,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// The texture ID of the texture to be rendered.
         /// </summary>
-        public int TextureID;
+        public uint TextureID;
 
         /// <summary>
         /// The source rectangle inside of the texture to render.
@@ -52,7 +52,7 @@ namespace Raptor.OpenGL
             {
                 SpriteBatchItem result;
 
-                result.TextureID = -1;
+                result.TextureID = 0;
                 result.Angle = 0;
                 result.Size = 0;
                 result.SrcRect = Rectangle.Empty;
@@ -66,7 +66,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Gets a value indicating whether the current <see cref="SpriteBatchItem"/> is empty.
         /// </summary>
-        public bool IsEmpty => this.TextureID == -1 &&
+        public bool IsEmpty => this.TextureID == 0 &&
                     this.SrcRect.IsEmpty &&
                     this.DestRect.IsEmpty &&
                     this.Size == 0f &&

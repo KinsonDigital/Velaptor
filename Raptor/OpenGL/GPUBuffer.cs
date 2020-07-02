@@ -16,12 +16,12 @@ namespace Raptor.OpenGL
         where T : struct
     {
         private readonly IGLInvoker gl;
-        private int vertexArrayID = -1;
-        private int vertexBufferID = -1;
-        private int indexBufferID = -1;
-        private int totalQuads = 2;
-        private int totalVertexBytes;
-        private int totalQuadSizeInBytes;
+        private uint vertexArrayID = 0;
+        private uint vertexBufferID = 0;
+        private uint indexBufferID = 0;
+        private uint totalQuads = 2;
+        private uint totalVertexBytes;
+        private uint totalQuadSizeInBytes;
         private bool isDisposed;
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public int TotalQuads
+        public uint TotalQuads
         {
             get => this.totalQuads;
             set
@@ -48,7 +48,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public void UpdateQuad(int quadID, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor)
+        public void UpdateQuad(uint quadID, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor)
         {
             var quadData = CreateQuadWithTextureCoordinates(srcRect, textureWidth, textureHeight);
 
@@ -192,7 +192,7 @@ namespace Raptor.OpenGL
         /// Sets up the attribute pointers in the vertex buffer to hold vertex buffer data for each pixel.
         /// </summary>
         /// <param name="vertexArrayID">The ID of the vertex array.</param>
-        private void SetupAttribPointers(int vertexArrayID)
+        private void SetupAttribPointers(uint vertexArrayID)
         {
             var fields = typeof(T).GetFields();
 
@@ -204,7 +204,7 @@ namespace Raptor.OpenGL
             var offset = 0u;
             var previousSize = 0u; // The element size of the previous field
 
-            for (var i = 0; i < fields.Length; i++)
+            for (uint i = 0; i < fields.Length; i++)
             {
                 var stride = this.totalVertexBytes;
 
@@ -217,9 +217,9 @@ namespace Raptor.OpenGL
                 this.gl.EnableVertexArrayAttrib(vertexArrayID, i);
 
                 offset = i == 0 ? 0 : offset + (previousSize * VertexDataAnalyzer.GetPrimitiveByteSize(typeof(float)));
-                this.gl.VertexAttribPointer(i, (int)totalElements, attribType, false, stride, (int)offset);
+                this.gl.VertexAttribPointer(i, totalElements, attribType, false, stride, offset);
 
-                previousSize = (uint)totalElements;
+                previousSize = totalElements;
             }
         }
 
@@ -231,7 +231,7 @@ namespace Raptor.OpenGL
         private void CreateVertexBuffer()
         {
             // TODO: Convert values that should be uint to uint
-            this.totalVertexBytes = (int)VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
+            this.totalVertexBytes = VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
             this.totalQuadSizeInBytes = this.totalVertexBytes * 4;
 
             this.vertexBufferID = this.gl.GenBuffer();
@@ -296,7 +296,7 @@ namespace Raptor.OpenGL
 
             this.gl.BufferData(
                 BufferTarget.ElementArrayBuffer,
-                data.Length * sizeof(uint),
+                (uint)data.Length * sizeof(uint),
                 data,
                 BufferUsageHint.DynamicDraw);
 

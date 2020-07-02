@@ -37,7 +37,7 @@ namespace RaptorTests.Content
             // Assert
             Assert.NotNull(actual);
             this.mockGL.Verify(m => m.GenTexture(), Times.Once());
-            this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<int>()), Times.Exactly(2));
+            this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets he ID of the texture.
         /// </summary>
-        int ID { get; }
+        uint ID { get; }
 
         /// <summary>
         /// Gets the name of the texture.

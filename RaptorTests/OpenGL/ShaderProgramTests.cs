@@ -24,9 +24,9 @@ namespace RaptorTests.OpenGL
         // TODO: This might have to be used somewhere else to make it work
         private readonly string vertexShaderPath = $@"shader.vert";
         private readonly string fragShaderPath = $@"shader.frag";
-        private readonly int vertextShaderID = 1234;
-        private readonly int fragShaderID = 5678;
-        private readonly int shaderProgramID = 1928;
+        private readonly uint vertextShaderID = 1234;
+        private readonly uint fragShaderID = 5678;
+        private readonly uint shaderProgramID = 1928;
 
         public ShaderProgramTests()
         {
@@ -38,12 +38,12 @@ namespace RaptorTests.OpenGL
             var getProgramStatusCode = 1;
             this.mockGL.Setup(m => m.CreateShader(ShaderType.VertexShader)).Returns(this.vertextShaderID);
             this.mockGL.Setup(m => m.CreateShader(ShaderType.FragmentShader)).Returns(this.fragShaderID);
-            this.mockGL.Setup(m => m.GetShader(It.IsAny<int>(), ShaderParameter.CompileStatus, out getShaderStatusCode));
-            this.mockGL.Setup(m => m.GetProgram(It.IsAny<int>(), GetProgramParameterName.LinkStatus, out getProgramStatusCode));
+            this.mockGL.Setup(m => m.GetShader(It.IsAny<uint>(), ShaderParameter.CompileStatus, out getShaderStatusCode));
+            this.mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GetProgramParameterName.LinkStatus, out getProgramStatusCode));
             this.mockGL.Setup(m => m.CreateProgram()).Returns(this.shaderProgramID);
 
-            this.mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<int>())).Returns(true);
-            this.mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<int>())).Returns(true);
+            this.mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
         }
 
         [Fact]

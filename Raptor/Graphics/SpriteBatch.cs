@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,17 +16,17 @@ namespace Raptor.Graphics
     /// <inheritdoc/>
     public class SpriteBatch : ISpriteBatch
     {
-        private readonly Dictionary<int, SpriteBatchItem> batchItems = new Dictionary<int, SpriteBatchItem>();
+        private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
         private readonly IGLInvoker gl;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
-        private int transDataLocation;
+        private uint transDataLocation;
         private bool isDisposed = false;
         private bool hasBegun;
-        private int batchSize = 10;
-        private int currentBatchItem = 0;
-        private int previousTextureID = -1;
-        private int currentTextureID;
+        private uint batchSize = 10;
+        private uint currentBatchItem = 0;
+        private uint currentTextureID;
+        private uint previousTextureID = 0;
         private bool firstRenderMethodInvoke = true;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Raptor.Graphics
         }
 
         /// <inheritdoc/>
-        public int BatchSize
+        public uint BatchSize
         {
             get => this.batchSize;
             set
@@ -120,8 +120,8 @@ namespace Raptor.Graphics
             if (hasSwitchedTexture || batchIsFull)
             {
                 RenderBatch();
-                this.currentBatchItem = 0;
-                this.previousTextureID = 0;
+                this.currentBatchItem = 0u;
+                this.previousTextureID = 0u;
             }
 
             var batchItem = this.batchItems[this.currentBatchItem];
@@ -185,7 +185,7 @@ namespace Raptor.Graphics
         private void Init()
         {
             this.batchItems.Clear();
-            for (var i = 0; i < BatchSize; i++)
+            for (uint i = 0; i < BatchSize; i++)
             {
                 this.batchItems.Add(i, SpriteBatchItem.Empty);
             }
@@ -206,10 +206,10 @@ namespace Raptor.Graphics
         /// </summary>
         private void RenderBatch()
         {
-            var batchAmountToRender = this.batchItems.Count(i => !i.Value.IsEmpty);
+            var batchAmountToRender = (uint)this.batchItems.Count(i => !i.Value.IsEmpty);
             var textureIsBound = false;
 
-            for (var i = 0; i < this.batchItems.Values.Count; i++)
+            for (uint i = 0; i < this.batchItems.Values.Count; i++)
             {
                 if (this.batchItems[i].IsEmpty)
                     continue;
@@ -243,7 +243,7 @@ namespace Raptor.Graphics
                 this.gl.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
             // Empty the batch items
-            for (var i = 0; i < this.batchItems.Count; i++)
+            for (uint i = 0; i < this.batchItems.Count; i++)
             {
                 this.batchItems[i] = SpriteBatchItem.Empty;
             }
@@ -259,7 +259,7 @@ namespace Raptor.Graphics
         /// <param name="height">The height of the quad.</param>
         /// <param name="size">The size of the quad. 1 represents normal size of 100%.</param>
         /// <param name="angle">The angle of the quad in degrees.</param>
-        private void UpdateGPUTransform(int quadID, float x, float y, int width, int height, float size, float angle)
+        private void UpdateGPUTransform(uint quadID, float x, float y, int width, int height, float size, float angle)
         {
             // Create and send the transformation data to the GPU
             var transMatrix = BuildTransformationMatrix(

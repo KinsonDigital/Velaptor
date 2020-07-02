@@ -14,22 +14,22 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Gets the shader program ID on the GPU.
         /// </summary>
-        int ProgramId { get; }
+        uint ProgramId { get; }
 
         /// <summary>
         /// Gets the ID of the fragment shader on the GPU.
         /// </summary>
-        int FragmentShaderId { get; }
+        uint FragmentShaderId { get; }
 
         /// <summary>
         /// Gets the ID of the vertex shader.
         /// </summary>
-        int VertexShaderId { get; }
+        uint VertexShaderId { get; }
 
         /// <summary>
         /// Gets or sets the size of the batch.
         /// </summary>
-        int BatchSize { get; set; }
+        uint BatchSize { get; set; }
 
         /// <summary>
         /// Sets the active shader program to use on the GPU.
