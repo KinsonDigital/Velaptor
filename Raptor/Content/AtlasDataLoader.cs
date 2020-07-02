@@ -9,8 +9,8 @@ namespace Raptor.Content
 
     /// <summary>
     /// Loads atlas data.
-    /// <typeparamref name="T">The type of data to load.</typeparamref>
     /// </summary>
+    /// <typeparam name="T">The type of data to load.</typeparam>
     public class AtlasDataLoader<T> : ILoader<T[]>
     {
         private readonly ITextFile textFile;
