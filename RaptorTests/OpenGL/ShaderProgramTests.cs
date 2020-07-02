@@ -1,199 +1,202 @@
-using Raptor.OpenGL;
-using Moq;
-using FileIO.Core;
-using OpenToolkit.Graphics.OpenGL4;
-using Xunit;
-using RaptorTests.Helpers;
-using System;
-using System.Diagnostics.CodeAnalysis;
+﻿// <copyright file="ShaderProgramTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.OpenGL
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using FileIO.Core;
+    using Moq;
+    using OpenToolkit.Graphics.OpenGL4;
+    using Raptor.OpenGL;
+    using RaptorTests.Helpers;
+    using Xunit;
+
     /// <summary>
     /// Initializes a new instance of <see cref="ShaderProgramTests"/>.
     /// </summary>
     public class ShaderProgramTests
     {
-        private readonly Mock<ITextFile> _mockTextFile;
-        private readonly Mock<IGLInvoker> _mockGL;
-        //TODO: This might have to be used somewhere else to make it work
-        private string _vertexShaderPath = $@"shader.vert";
-        private string _fragShaderPath = $@"shader.frag";
-        private readonly int _vertextShaderID = 1234;
-        private readonly int _fragShaderID = 5678;
-        private readonly int _shaderProgramID = 1928;
+        private readonly Mock<ITextFile> mockTextFile;
+        private readonly Mock<IGLInvoker> mockGL;
+
+        // TODO: This might have to be used somewhere else to make it work
+        private readonly string vertexShaderPath = $@"shader.vert";
+        private readonly string fragShaderPath = $@"shader.frag";
+        private readonly uint vertextShaderID = 1234;
+        private readonly uint fragShaderID = 5678;
+        private readonly uint shaderProgramID = 1928;
 
         public ShaderProgramTests()
         {
-            _mockTextFile = new Mock<ITextFile>();
+            this.mockTextFile = new Mock<ITextFile>();
 
-            _mockGL = new Mock<IGLInvoker>();
+            this.mockGL = new Mock<IGLInvoker>();
 
-            int getShaderStatusCode = 1;
-            int getProgramStatusCode = 1;
-            _mockGL.Setup(m => m.CreateShader(ShaderType.VertexShader)).Returns(_vertextShaderID);
-            _mockGL.Setup(m => m.CreateShader(ShaderType.FragmentShader)).Returns(_fragShaderID);
-            _mockGL.Setup(m => m.GetShader(It.IsAny<int>(), ShaderParameter.CompileStatus, out getShaderStatusCode));
-            _mockGL.Setup(m => m.GetProgram(It.IsAny<int>(), GetProgramParameterName.LinkStatus, out getProgramStatusCode));
-            _mockGL.Setup(m => m.CreateProgram()).Returns(_shaderProgramID);
+            var getShaderStatusCode = 1;
+            var getProgramStatusCode = 1;
+            this.mockGL.Setup(m => m.CreateShader(ShaderType.VertexShader)).Returns(this.vertextShaderID);
+            this.mockGL.Setup(m => m.CreateShader(ShaderType.FragmentShader)).Returns(this.fragShaderID);
+            this.mockGL.Setup(m => m.GetShader(It.IsAny<uint>(), ShaderParameter.CompileStatus, out getShaderStatusCode));
+            this.mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GetProgramParameterName.LinkStatus, out getProgramStatusCode));
+            this.mockGL.Setup(m => m.CreateProgram()).Returns(this.shaderProgramID);
 
-            _mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<int>())).Returns(true);
-            _mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<int>())).Returns(true);
+            this.mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
         }
 
         [Fact]
         public void Ctor_WhenInvoked_LoadsShaderSourceCode()
         {
-            //Arrange
-            _mockTextFile.Setup(m => m.LoadAsLines(It.IsAny<string>())).Returns(() => new[] { "line-1", null });
+            // Arrange
+            this.mockTextFile.Setup(m => m.LoadAsLines(It.IsAny<string>())).Returns(() => new[] { "line-1", null });
 
-            //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
+            // Act
+            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
 
-            //Assert
-            _mockTextFile.Verify(m => m.LoadAsLines(It.IsAny<string>()), Times.Exactly(2));
+            // Assert
+            this.mockTextFile.Verify(m => m.LoadAsLines(It.IsAny<string>()), Times.Exactly(2));
         }
 
         [Fact]
         public void Ctor_WhenInvoked_SuccessfullyCreatesVertexShader()
         {
-            //Arrange
+            // Arrange
             SetupVertexShaderFileMock();
             var expected = "layout(location = 3) in float aTransformIndex;\r\nuniform mat4 uTransform[10];//MODIFIED_DURING_COMPILE_TIME\r\n";
 
-            //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
+            // Act
+            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
 
-            //Assert
-            _mockGL.Verify(m => m.CreateShader(ShaderType.VertexShader), Times.Once());
-            _mockGL.Verify(m => m.ShaderSource(_vertextShaderID, expected), Times.Once());
-            _mockGL.Verify(m => m.CompileShader(_vertextShaderID), Times.Once());
+            // Assert
+            this.mockGL.Verify(m => m.CreateShader(ShaderType.VertexShader), Times.Once());
+            this.mockGL.Verify(m => m.ShaderSource(this.vertextShaderID, expected), Times.Once());
+            this.mockGL.Verify(m => m.CompileShader(this.vertextShaderID), Times.Once());
         }
 
         [Fact]
         public void Ctor_WhenInvoked_SuccessfullyCreatesFragmentShader()
         {
-            //Arrange
+            // Arrange
             SetupFragmentShaderFileMock();
             var expected = "in vec2 v_TexCoord;\r\nin vec4 v_TintClr;\r\n";
 
-            //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
+            // Act
+            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
 
-            //Assert
-            _mockGL.Verify(m => m.CreateShader(ShaderType.FragmentShader), Times.Once());
-            _mockGL.Verify(m => m.ShaderSource(_fragShaderID, expected), Times.Once());
-            _mockGL.Verify(m => m.CompileShader(_fragShaderID), Times.Once());
+            // Assert
+            this.mockGL.Verify(m => m.CreateShader(ShaderType.FragmentShader), Times.Once());
+            this.mockGL.Verify(m => m.ShaderSource(this.fragShaderID, expected), Times.Once());
+            this.mockGL.Verify(m => m.CompileShader(this.fragShaderID), Times.Once());
         }
 
         [Fact]
         public void Ctor_WhenInvoked_SuccessfullyCreatesProgram()
         {
-            //Arrange
+            // Arrange
             SetupVertexShaderFileMock();
             SetupFragmentShaderFileMock();
 
-            //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
+            // Act
+            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
 
-            //Assert
-            _mockGL.Verify(m => m.CreateProgram(), Times.Once());
-            _mockGL.Verify(m => m.AttachShader(_shaderProgramID, _vertextShaderID), Times.Once());
-            _mockGL.Verify(m => m.AttachShader(_shaderProgramID, _fragShaderID), Times.Once());
-            _mockGL.Verify(m => m.LinkProgram(_shaderProgramID), Times.Once());
+            // Assert
+            this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
+            this.mockGL.Verify(m => m.AttachShader(this.shaderProgramID, this.vertextShaderID), Times.Once());
+            this.mockGL.Verify(m => m.AttachShader(this.shaderProgramID, this.fragShaderID), Times.Once());
+            this.mockGL.Verify(m => m.LinkProgram(this.shaderProgramID), Times.Once());
         }
 
         [Fact]
         public void Ctor_WhenInvoked_DestroysVertexAndFragmentShader()
         {
-            //Arrange
+            // Arrange
             SetupVertexShaderFileMock();
             SetupFragmentShaderFileMock();
 
-            //Act
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
+            // Act
+            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
 
-            //Assert
-            _mockGL.Verify(m => m.DetachShader(_shaderProgramID, _vertextShaderID), Times.Once());
-            _mockGL.Verify(m => m.DeleteShader(_vertextShaderID), Times.Once());
-            _mockGL.Verify(m => m.DetachShader(_shaderProgramID, _fragShaderID), Times.Once());
-            _mockGL.Verify(m => m.DeleteShader(_fragShaderID), Times.Once());
+            // Assert
+            this.mockGL.Verify(m => m.DetachShader(this.shaderProgramID, this.vertextShaderID), Times.Once());
+            this.mockGL.Verify(m => m.DeleteShader(this.vertextShaderID), Times.Once());
+            this.mockGL.Verify(m => m.DetachShader(this.shaderProgramID, this.fragShaderID), Times.Once());
+            this.mockGL.Verify(m => m.DeleteShader(this.fragShaderID), Times.Once());
         }
 
         [Fact]
         public void Ctor_WithShaderCompileIssue_ThrowsException()
         {
-            //Arrange
-            int statusCode = 0;
-            _mockGL.Setup(m => m.GetShader(_vertextShaderID, ShaderParameter.CompileStatus, out statusCode));
-            _mockGL.Setup(m => m.GetShaderInfoLog(_vertextShaderID)).Returns("Vertex Shader Compile Error");
-            _mockGL.Setup(m => m.ShaderCompileSuccess(_vertextShaderID)).Returns(false);
+            // Arrange
+            var statusCode = 0;
+            this.mockGL.Setup(m => m.GetShader(this.vertextShaderID, ShaderParameter.CompileStatus, out statusCode));
+            this.mockGL.Setup(m => m.GetShaderInfoLog(this.vertextShaderID)).Returns("Vertex Shader Compile Error");
+            this.mockGL.Setup(m => m.ShaderCompileSuccess(this.vertextShaderID)).Returns(false);
 
             SetupVertexShaderFileMock();
             SetupFragmentShaderFileMock();
 
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
-
-            }, $"Error occurred while compiling shader with ID '{_vertextShaderID}'\nVertex Shader Compile Error");
+                var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            }, $"Error occurred while compiling shader with ID '{this.vertextShaderID}'\nVertex Shader Compile Error");
         }
 
         [Fact]
         public void Ctor_WithProgramLinkingIssue_ThrowsException()
         {
-            //Arrange
-            int statusCode = 0;
-            _mockGL.Setup(m => m.GetProgram(_shaderProgramID, GetProgramParameterName.LinkStatus, out statusCode));
-            _mockGL.Setup(m => m.GetProgramInfoLog(_shaderProgramID)).Returns("Program Linking Error");
-            _mockGL.Setup(m => m.LinkProgramSuccess(_shaderProgramID)).Returns(false);
+            // Arrange
+            var statusCode = 0;
+            this.mockGL.Setup(m => m.GetProgram(this.shaderProgramID, GetProgramParameterName.LinkStatus, out statusCode));
+            this.mockGL.Setup(m => m.GetProgramInfoLog(this.shaderProgramID)).Returns("Program Linking Error");
+            this.mockGL.Setup(m => m.LinkProgramSuccess(this.shaderProgramID)).Returns(false);
 
             SetupVertexShaderFileMock();
             SetupFragmentShaderFileMock();
 
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
-
-            }, $"Error occurred while linking program with ID '{_shaderProgramID}'\nProgram Linking Error");
+                var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            }, $"Error occurred while linking program with ID '{this.shaderProgramID}'\nProgram Linking Error");
         }
 
         [Fact]
         public void UseProgram_WhenInvoked_SetsProgramForUse()
         {
-            //Arrange
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
+            // Arrange
+            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
 
-            //Act
+            // Act
             program.UseProgram();
 
-            //Assert
-            _mockGL.Verify(m => m.UseProgram(_shaderProgramID), Times.Once());
+            // Assert
+            this.mockGL.Verify(m => m.UseProgram(this.shaderProgramID), Times.Once());
         }
 
         [Fact]
         public void Dispose_WithUnmanagedResourcesToDispose_DeletesProgram()
         {
-            //Arrange
-            var program = new ShaderProgram(_mockGL.Object, _mockTextFile.Object);
+            // Arrange
+            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
 
-            //Act
+            // Act
             program.Dispose();
             program.Dispose();
 
-            //Assert
-            _mockGL.Verify(m => m.DeleteProgram(_shaderProgramID), Times.Once());
+            // Assert
+            this.mockGL.Verify(m => m.DeleteProgram(this.shaderProgramID), Times.Once());
         }
 
         /// <summary>
-        /// Sets up the vertex shader file mock
+        /// Sets up the vertex shader file mock.
         /// </summary>
         [ExcludeFromCodeCoverage]
         private void SetupVertexShaderFileMock()
         {
-            _mockTextFile.Setup(m => m.LoadAsLines(_vertexShaderPath)).Returns(() =>
+            this.mockTextFile.Setup(m => m.LoadAsLines(this.vertexShaderPath)).Returns(() =>
             {
                 return new[] { "layout(location = 3) in float aTransformIndex;", "uniform mat4 uTransform[1];//$REPLACE_INDEX" };
             });
@@ -205,7 +208,7 @@ namespace RaptorTests.OpenGL
         [ExcludeFromCodeCoverage]
         private void SetupFragmentShaderFileMock()
         {
-            _mockTextFile.Setup(m => m.LoadAsLines(_fragShaderPath)).Returns(() =>
+            this.mockTextFile.Setup(m => m.LoadAsLines(this.fragShaderPath)).Returns(() =>
             {
                 return new[] { "in vec2 v_TexCoord;", "in vec4 v_TintClr;" };
             });

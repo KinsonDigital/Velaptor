@@ -64,7 +64,7 @@ namespace Raptor.OpenGL
         ///     name of the uniform variable whose location is to be queried.
         /// </param>
         /// <returns>The location/ID of the uniform.</returns>
-        int GetUniformLocation(int program, string name);
+        uint GetUniformLocation(uint program, string name);
 
         /// <summary>
         /// [requires: v1.1] Bind a named texture to a texturing target.
@@ -75,7 +75,7 @@ namespace Raptor.OpenGL
         ///     TextureCubeMapArray, TextureBuffer, Texture2DMultisample or Texture2DMultisampleArray.
         /// </param>
         /// <param name="texture">Specifies the name of a texture.</param>
-        void BindTexture(TextureTarget target, int texture);
+        void BindTexture(TextureTarget target, uint texture);
 
         /// <summary>
         /// [requires: v1.1] Render primitives from array data.
@@ -88,7 +88,7 @@ namespace Raptor.OpenGL
         /// <param name="count">Specifies the number of elements to be rendered.</param>
         /// <param name="type">Specifies the type of the values in indices. Must be one of UnsignedByte, UnsignedShort, or UnsignedInt.</param>
         /// <param name="indices">[length: COMPSIZE(count,type)] Specifies a pointer to the location where the indices are stored.</param>
-        void DrawElements(PrimitiveType mode, int count, DrawElementsType type, IntPtr indices);
+        void DrawElements(PrimitiveType mode, uint count, DrawElementsType type, IntPtr indices);
 
         /// <summary>
         /// [requires: v4.0 or ARB_gpu_shader_fp64|VERSION_4_0].
@@ -96,7 +96,7 @@ namespace Raptor.OpenGL
         /// <param name="location">Specifies the location of the uniform variable to be modified.</param>
         /// <param name="transpose">For the matrix commands, specifies whether to transpose the matrix as the values are loaded into the uniform variable.</param>
         /// <param name="matrix">The matrix data to send to the GPU.</param>
-        void UniformMatrix4(int location, bool transpose, ref Matrix4 matrix);
+        void UniformMatrix4(uint location, bool transpose, ref Matrix4 matrix);
 
         /// <summary>
         /// [requires: v2.0] Returns a parameter from a program object.
@@ -111,52 +111,52 @@ namespace Raptor.OpenGL
         ///     GeometryInputType, and GeometryOutputType.
         /// </param>
         /// <param name="programParams">[length: COMPSIZE(pname)] Returns the requested object parameter.</param>
-        void GetProgram(int program, GetProgramParameterName pname, out int programParams);
+        void GetProgram(uint program, GetProgramParameterName pname, out int programParams);
 
         /// <summary>
         /// Returns a value indicating if the program linking process was successful.
         /// </summary>
         /// <param name="program">The ID of the program to check.</param>
         /// <returns>True if the linking was successful.</returns>
-        bool LinkProgramSuccess(int program);
+        bool LinkProgramSuccess(uint program);
 
         /// <summary>
         /// [requires: v2.0] Installs a program object as part of current rendering state.
         /// </summary>
         /// <param name="program">Specifies the handle of the program object whose executables are to be used as part of current rendering state.</param>
-        void UseProgram(int program);
+        void UseProgram(uint program);
 
         /// <summary>
         /// [requires: v2.0] Deletes a program object.
         /// </summary>
         /// <param name="program">Specifies the program object to be deleted.</param>
-        void DeleteProgram(int program);
+        void DeleteProgram(uint program);
 
         /// <summary>
         /// [requires: v2.0] Creates a program object.
         /// </summary>
         /// <returns>The ID of the program.</returns>
-        int CreateProgram();
+        uint CreateProgram();
 
         /// <summary>
         /// [requires: v2.0] Attaches a shader object to a program object.
         /// </summary>
         /// <param name="program">Specifies the program object to which a shader object will be attached.</param>
         /// <param name="shader">Specifies the shader object that is to be attached.</param>
-        void AttachShader(int program, int shader);
+        void AttachShader(uint program, uint shader);
 
         /// <summary>
         /// [requires: v2.0] Links a program object.
         /// </summary>
         /// <param name="program">Specifies the handle of the program object to be linked.</param>
-        void LinkProgram(int program);
+        void LinkProgram(uint program);
 
         /// <summary>
         /// [requires: v2.0] Returns the information log for a program object.
         /// </summary>
         /// <param name="program">Specifies the program object whose information log is to be queried.</param>
         /// <returns>The log information.</returns>
-        string GetProgramInfoLog(int program);
+        string GetProgramInfoLog(uint program);
 
         /// <summary>
         /// [requires: v2.0] Creates a shader object.
@@ -166,7 +166,7 @@ namespace Raptor.OpenGL
         ///     TessControlShader, TessEvaluationShader, GeometryShader, or FragmentShader.
         /// </param>
         /// <returns>The ID of the shader.</returns>
-        int CreateShader(ShaderType type);
+        uint CreateShader(ShaderType type);
 
         /// <summary>
         /// [requires: v2.0] Replaces the source code in a shader object.
@@ -176,20 +176,20 @@ namespace Raptor.OpenGL
         ///     [length: count] Specifies an array of pointers to strings containing the source
         ///     code to be loaded into the shader.
         /// </param>
-        void ShaderSource(int shader, string sourceCode);
+        void ShaderSource(uint shader, string sourceCode);
 
         /// <summary>
         /// [requires: v2.0] Detaches a shader object from a program object to which it is.
         /// </summary>
         /// <param name="program">Specifies the program object from which to detach the shader object.</param>
         /// <param name="shader">Specifies the shader object to be detached.</param>
-        void DetachShader(int program, int shader);
+        void DetachShader(uint program, uint shader);
 
         /// <summary>
         /// [requires: v2.0] Compiles a shader object.
         /// </summary>
         /// <param name="shader">Specifies the shader object to be compiled.</param>
-        void CompileShader(int shader);
+        void CompileShader(uint shader);
 
         /// <summary>
         /// [requires: v2.0] Returns a parameter from a shader object.
@@ -200,33 +200,33 @@ namespace Raptor.OpenGL
         ///     CompileStatus, InfoLogLength, ShaderSourceLength.
         /// </param>
         /// <param name="shaderParams">[length: COMPSIZE(pname)] Returns the requested object parameter.</param>
-        void GetShader(int shader, ShaderParameter pname, out int shaderParams);
+        void GetShader(uint shader, ShaderParameter pname, out int shaderParams);
 
         /// <summary>
         /// Returns a value indicating if the shader was compiled successfully.
         /// </summary>
         /// <param name="shaderID">The ID of the shader to check.</param>
         /// <returns>True if the shader compiled successfully.</returns>
-        bool ShaderCompileSuccess(int shaderID);
+        bool ShaderCompileSuccess(uint shaderID);
 
         /// <summary>
         /// [requires: v2.0] Returns the information log for a shader object.
         /// </summary>
         /// <param name="shader">Specifies the shader object whose information log is to be queried.</param>
         /// <returns>The log information.</returns>
-        string GetShaderInfoLog(int shader);
+        string GetShaderInfoLog(uint shader);
 
         /// <summary>
         /// [requires: v2.0] Deletes a shader object.
         /// </summary>
         /// <param name="shader">Specifies the shader object to be deleted.</param>
-        void DeleteShader(int shader);
+        void DeleteShader(uint shader);
 
         /// <summary>
         /// [requires: v3.0 or ARB_vertex_array_object|VERSION_3_0] Generate vertex array object names.
         /// </summary>
         /// <returns>The vertex object name.</returns>
-        int GenVertexArray();
+        uint GenVertexArray();
 
         /// <summary>
         /// [requires: v1.5] Updates a subset of a buffer object's data store.
@@ -241,20 +241,20 @@ namespace Raptor.OpenGL
         /// <param name="offset">Specifies the offset into the buffer object's data store where data replacement will begin, measured in bytes.</param>
         /// <param name="size">Specifies the size in bytes of the data store region being replaced.</param>
         /// <param name="data">[length: size] Specifies a pointer to the new data that will be copied into the data store.</param>
-        void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, ref T3 data)
+        void BufferSubData<T3>(BufferTarget target, IntPtr offset, uint size, ref T3 data)
             where T3 : struct;
 
         /// <summary>
         /// [requires: v3.0 or ARB_vertex_array_object|VERSION_3_0] Delete vertex array objects.
         /// </summary>
         /// <param name="arrays">[length: n] Specifies the address of an array containing the n names of the objects to be deleted.</param>
-        void DeleteVertexArray(int arrays);
+        void DeleteVertexArray(uint arrays);
 
         /// <summary>
         /// [requires: v1.5] Delete named buffer objects.
         /// </summary>
         /// <param name="buffers">[length: n] Specifies an array of buffer objects to be deleted.</param>
-        void DeleteBuffer(int buffers);
+        void DeleteBuffer(uint buffers);
 
         /// <summary>
         /// [requires: v1.5] Bind a named buffer object.
@@ -267,14 +267,14 @@ namespace Raptor.OpenGL
         ///     UniformBuffer.
         /// </param>
         /// <param name="buffer">Specifies the name of a buffer object.</param>
-        void BindBuffer(BufferTarget target, int buffer);
+        void BindBuffer(BufferTarget target, uint buffer);
 
         /// <summary>
         /// [requires: v4.5 or ARB_direct_state_access|VERSION_4_5].
         /// </summary>
         /// <param name="vaobj">The ID of the vertex array object.</param>
         /// <param name="index">The index/location of the attribute.</param>
-        void EnableVertexArrayAttrib(int vaobj, int index);
+        void EnableVertexArrayAttrib(uint vaobj, uint index);
 
         /// <summary>
         /// [requires: v2.0] Define an array of generic vertex attribute data.
@@ -305,13 +305,13 @@ namespace Raptor.OpenGL
         ///     array. The initial value is 0.
         /// </param>
         /// <param name="offset">The byte offset into the buffer object's data store.</param>
-        void VertexAttribPointer(int index, int size, VertexAttribPointerType type, bool normalized, int stride, int offset);
+        void VertexAttribPointer(uint index, uint size, VertexAttribPointerType type, bool normalized, uint stride, uint offset);
 
         /// <summary>
         /// [requires: v1.5] Generate buffer object names.
         /// </summary>
         /// <returns>The ID of the buffer object.</returns>
-        int GenBuffer();
+        uint GenBuffer();
 
         /// <summary>
         /// [requires: v1.5] Creates and initializes a buffer object's data store.
@@ -332,7 +332,7 @@ namespace Raptor.OpenGL
         ///     must be StreamDraw, StreamRead, StreamCopy, StaticDraw, StaticRead, StaticCopy,
         ///     DynamicDraw, DynamicRead, or DynamicCopy.
         /// </param>
-        void BufferData(BufferTarget target, int size, IntPtr data, BufferUsageHint usage);
+        void BufferData(BufferTarget target, uint size, IntPtr data, BufferUsageHint usage);
 
         /// <summary>
         /// [requires: v1.5] Creates and initializes a buffer object's data store.
@@ -354,26 +354,26 @@ namespace Raptor.OpenGL
         ///     must be StreamDraw, StreamRead, StreamCopy, StaticDraw, StaticRead, StaticCopy,
         ///     DynamicDraw, DynamicRead, or DynamicCopy.
         /// </param>
-        void BufferData<T2>(BufferTarget target, int size, T2[] data, BufferUsageHint usage)
+        void BufferData<T2>(BufferTarget target, uint size, T2[] data, BufferUsageHint usage)
             where T2 : struct;
 
         /// <summary>
         /// [requires: v3.0 or ARB_vertex_array_object|VERSION_3_0] Bind a vertex array object.
         /// </summary>
         /// <param name="array">Specifies the name of the vertex array to bind.</param>
-        void BindVertexArray(int array);
+        void BindVertexArray(uint array);
 
         /// <summary>
         /// [requires: v1.1] Generate texture names.
         /// </summary>
         /// <returns>The ID of the texture.</returns>
-        int GenTexture();
+        uint GenTexture();
 
         /// <summary>
         /// [requires: v1.1] Delete named textures.
         /// </summary>
         /// <param name="textures">[length: n] Specifies an array of textures to be deleted.</param>
-        void DeleteTexture(int textures);
+        void DeleteTexture(uint textures);
 
         /// <summary>
         /// [requires: v4.3 or KHR_debug|VERSION_4_3] Label a named object identified within a namespace.
@@ -382,7 +382,7 @@ namespace Raptor.OpenGL
         /// <param name="name">The name of the object to label.</param>
         /// <param name="length">The length of the label to be used for the object.</param>
         /// <param name="label">[length: COMPSIZE(label,length)] The address of a string containing the label to assign to the object.</param>
-        void ObjectLabel(ObjectLabelIdentifier identifier, int name, int length, string label);
+        void ObjectLabel(ObjectLabelIdentifier identifier, uint name, int length, string label);
 
         /// <summary>
         /// [requires: v1.0] Set texture parameters.

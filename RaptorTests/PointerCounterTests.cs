@@ -1,9 +1,13 @@
-﻿using Raptor;
-using System;
-using Xunit;
+﻿// <copyright file="PointerCounterTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests
 {
+    using System;
+    using Raptor;
+    using Xunit;
+
     /// <summary>
     /// Unit tests to test the <see cref="PointerContainer"/> class.
     /// </summary>
@@ -12,15 +16,15 @@ namespace RaptorTests
         [Fact]
         public void PackPointerAndUnpackPointer_WhenInvoked_CorrectSetsPointer()
         {
-            //Arrange
+            // Arrange
             var pointerContainer = new PointerContainer();
             var pointer = new IntPtr(1234);
 
-            //Act
+            // Act
             pointerContainer.PackPointer(pointer);
 
-            //Assert
+            // Assert
             Assert.Equal(pointer, pointerContainer.UnpackPointer());
         }
     }
-}  
+}

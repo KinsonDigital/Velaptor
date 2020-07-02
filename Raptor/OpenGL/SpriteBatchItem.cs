@@ -14,22 +14,22 @@ namespace Raptor.OpenGL
         /// <summary>
         /// The ID of the texture.
         /// </summary>
-        public int TextureID;
+        public uint TextureID;
 
         /// <summary>
-        /// The source rectangle of the area to render of the texture.
+        /// The source rectangle inside of the texture to render.
         /// </summary>
         public Rectangle SrcRect;
 
         /// <summary>
-        /// The destination rectangle on the screen of where to render the texture.
+        /// The destination rectangular area of where to render the texture on the screen.
         /// </summary>
         public Rectangle DestRect;
 
         /// <summary>
-        /// The size of the texture.
+        /// The size of the texture to be rendered.
         /// </summary>
-        /// <remarks>Needs to be a value between 0 and 1.</remarks>
+        /// <remarks>This must be a value between 0 and 1.</remarks>
         public float Size;
 
         /// <summary>
@@ -46,6 +46,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Gets an empty <see cref="SpriteBatchItem"/>.
         /// </summary>
+        /// <returns>An empty sprite batch item.</returns>
         public static SpriteBatchItem Empty
         {
             get
@@ -63,7 +64,7 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Gets a value indicating if the item is empty.
+        /// Gets a value indicating whether the current <see cref="SpriteBatchItem"/> is empty.
         /// </summary>
         public bool IsEmpty => this.TextureID == 0 &&
                     this.SrcRect.IsEmpty &&

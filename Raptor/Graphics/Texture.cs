@@ -11,7 +11,7 @@ namespace Raptor.Graphics
     using Raptor.OpenGL;
 
     /// <summary>
-    /// The texture to render to the screen.
+    /// The texture to render to a screen.
     /// </summary>
     public class Texture : ITexture
     {
@@ -48,7 +48,7 @@ namespace Raptor.Graphics
         }
 
         /// <inheritdoc/>
-        public int ID { get; protected set; }
+        public uint ID { get; protected set; }
 
         /// <inheritdoc/>
         public string Name { get; private set; } = string.Empty;

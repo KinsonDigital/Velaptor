@@ -12,7 +12,7 @@ namespace Raptor.Input
     public class MouseEventArgs : EventArgs
     {
         /// <summary>
-        /// Creates a new instance of MouseEventArgs.
+        /// Initializes a new instance of the <see cref="MouseEventArgs"/> class.
         /// </summary>
         /// <param name="state">The state of the mouse.</param>
         public MouseEventArgs(MouseInputState state) => State = state;

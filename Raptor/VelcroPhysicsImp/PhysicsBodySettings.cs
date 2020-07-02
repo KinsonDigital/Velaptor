@@ -59,8 +59,16 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public bool IsStatic { get; set; }
 
+        /// <summary>
+        /// Sets all of the vertice's X component values.
+        /// </summary>
+        /// <param name="xVertices">The X components to use.</param>
         public void SetXVertices(float[] xVertices) => XVertices = new ReadOnlyCollection<float>(xVertices);
 
+        /// <summary>
+        /// Sets all of the vertice's Y component values.
+        /// </summary>
+        /// <param name="yVertices">The Y components to use.</param>
         public void SetYVertices(float[] yVertices) => YVertices = new ReadOnlyCollection<float>(yVertices);
     }
 }

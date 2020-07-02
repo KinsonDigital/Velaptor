@@ -1,61 +1,64 @@
-﻿using OpenToolkit.Mathematics;
-using Raptor.OpenGL;
-using Xunit;
+﻿// <copyright file="VertexDataTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.OpenGL
 {
+    using OpenToolkit.Mathematics;
+    using Raptor.OpenGL;
+    using Xunit;
+
     public class VertexDataTests
     {
         [Fact]
         public void NotEqualsOperator_WhenInvoked_ReturnsCorrectResult()
         {
-            //Arrange
+            // Arrange
             var dataA = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = new Vector4(6, 7, 8, 9),
-                TransformIndex = 10
+                TransformIndex = 10,
             };
             var dataB = new VertexData()
             {
                 Vertex = new Vector3(11, 22, 33),
                 TextureCoord = new Vector2(44, 55),
                 TintColor = new Vector4(66, 77, 88, 99),
-                TransformIndex = 10
+                TransformIndex = 10,
             };
 
-
-            //Act
+            // Act
             var actual = dataA != dataB;
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
 
         [Fact]
         public void EqualsOperator_WhenInvoked_ReturnsCorrectResult()
         {
-            //Arrange
+            // Arrange
             var dataA = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = new Vector4(6, 7, 8, 9),
-                TransformIndex = 10
+                TransformIndex = 10,
             };
             var dataB = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = new Vector4(6, 7, 8, 9),
-                TransformIndex = 10
+                TransformIndex = 10,
             };
 
-            //Act
+            // Act
             var actual = dataA == dataB;
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
 
@@ -63,72 +66,72 @@ namespace RaptorTests.OpenGL
         [ClassData(typeof(VertexDataTestData))]
         public void Equals_WhenInvoked_ReturnsCorrectResult(Vector3 vertex, Vector2 textureCoord, Vector4 tintClr, int transformIndex, bool expected)
         {
-            //Arrange
+            // Arrange
             var dataA = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = new Vector4(6, 7, 8, 9),
-                TransformIndex = 10
+                TransformIndex = 10,
             };
             var dataB = new VertexData()
             {
                 Vertex = vertex,
                 TextureCoord = textureCoord,
                 TintColor = tintClr,
-                TransformIndex = transformIndex
+                TransformIndex = transformIndex,
             };
 
-            //Act
+            // Act
             var actual = dataA.Equals(dataB);
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void Equals_WhenUsingOverloadWithObjectParamWithObjectOfDifferentType_ReturnsFalse()
         {
-            //Arrange
+            // Arrange
             var dataA = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = new Vector4(6, 7, 8, 9),
-                TransformIndex = 10
+                TransformIndex = 10,
             };
             var dataB = new object();
 
-            //Act
+            // Act
             var actual = dataA.Equals(dataB);
 
-            //Assert
+            // Assert
             Assert.False(actual);
         }
 
         [Fact]
         public void Equals_WhenUsingOverloadWithObjectParamWithObjectOfSameType_ReturnsTrue()
         {
-            //Arrange
+            // Arrange
             var dataA = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = new Vector4(6, 7, 8, 9),
-                TransformIndex = 10
+                TransformIndex = 10,
             };
             object dataB = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = new Vector4(6, 7, 8, 9),
-                TransformIndex = 10
+                TransformIndex = 10,
             };
 
-            //Act
+            // Act
             var actual = dataA.Equals(dataB);
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
     }

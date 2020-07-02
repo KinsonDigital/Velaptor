@@ -15,7 +15,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets or sets the size of the batch.
         /// </summary>
-        int BatchSize { get; set; }
+        uint BatchSize { get; set; }
 
         /// <summary>
         /// Gets or sets the render surface width.
