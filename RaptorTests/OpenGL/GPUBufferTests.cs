@@ -7,7 +7,6 @@ namespace RaptorTests.OpenGL
     using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.Linq;
     using Moq;
     using OpenToolkit.Graphics.OpenGL4;
     using Raptor.OpenGL;

@@ -4,9 +4,6 @@
 
 namespace RaptorTests.OpenGL
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using OpenToolkit.Mathematics;
     using Raptor.OpenGL;
     using Xunit;
