@@ -33,16 +33,16 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public int VertexShaderId { get; private set; }
+        public uint VertexShaderId { get; private set; }
 
         /// <inheritdoc/>
-        public int FragmentShaderId { get; private set; }
+        public uint FragmentShaderId { get; private set; }
 
         /// <inheritdoc/>
-        public int ProgramId { get; private set; }
+        public uint ProgramId { get; private set; }
 
         /// <inheritdoc/>
-        public int BatchSize { get; set; } = 10;
+        public uint BatchSize { get; set; } = 10;
 
         /// <inheritdoc/>
         public void UseProgram() => this.gl.UseProgram(ProgramId);
@@ -100,7 +100,7 @@ namespace Raptor.OpenGL
         /// <param name="vertexShaderId">The ID of the vertex shader.</param>
         /// <param name="fragmentShaderId">The ID of the fragment shader.</param>
         /// <returns>The shader program ID.</returns>
-        private int CreateShaderProgram(int vertexShaderId, int fragmentShaderId)
+        private uint CreateShaderProgram(uint vertexShaderId, uint fragmentShaderId)
         {
             var programHandle = this.gl.CreateProgram();
 
@@ -119,7 +119,7 @@ namespace Raptor.OpenGL
         /// Links the program using the given <paramref name="shaderProgramId"/>.
         /// </summary>
         /// <param name="shaderProgramId">The ID of the shader program.</param>
-        private void LinkProgram(int shaderProgramId)
+        private void LinkProgram(uint shaderProgramId)
         {
             // We link the program
             this.gl.LinkProgram(shaderProgramId);
@@ -141,7 +141,7 @@ namespace Raptor.OpenGL
         /// <param name="shaderType">The type of shader to create.</param>
         /// <param name="shaderSrc">The shader source code to use for the shader program.</param>
         /// <returns>The OpenGL shader ID.</returns>
-        private int CreateShader(ShaderType shaderType, string shaderSrc)
+        private uint CreateShader(ShaderType shaderType, string shaderSrc)
         {
             var shaderId = this.gl.CreateShader(shaderType);
 
@@ -157,7 +157,7 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="shaderProgramId">The program ID of the shader.</param>
         /// <param name="shaderId">The shader ID of the shader.</param>
-        private void DestroyShader(int shaderProgramId, int shaderId)
+        private void DestroyShader(uint shaderProgramId, uint shaderId)
         {
             this.gl.DetachShader(shaderProgramId, shaderId);
             this.gl.DeleteShader(shaderId);
@@ -167,7 +167,7 @@ namespace Raptor.OpenGL
         /// Compiles the currently set shader source code on the GPU.
         /// </summary>
         /// <param name="shaderId">The shader ID.</param>
-        private void CompileShader(int shaderId)
+        private void CompileShader(uint shaderId)
         {
             // Try to compile the shader
             this.gl.CompileShader(shaderId);

@@ -17,11 +17,11 @@ namespace RaptorTests.OpenGL
         private readonly Mock<ITextFile> _mockTextFile;
         private readonly Mock<IGLInvoker> _mockGL;
         //TODO: This might have to be used somewhere else to make it work
-        private string _vertexShaderPath = $@"shader.vert";
-        private string _fragShaderPath = $@"shader.frag";
-        private readonly int _vertextShaderID = 1234;
-        private readonly int _fragShaderID = 5678;
-        private readonly int _shaderProgramID = 1928;
+        private readonly string _vertexShaderPath = $@"shader.vert";
+        private readonly string _fragShaderPath = $@"shader.frag";
+        private readonly uint _vertextShaderID = 1234;
+        private readonly uint _fragShaderID = 5678;
+        private readonly uint _shaderProgramID = 1928;
 
         public ShaderProgramTests()
         {
@@ -33,12 +33,12 @@ namespace RaptorTests.OpenGL
             int getProgramStatusCode = 1;
             _mockGL.Setup(m => m.CreateShader(ShaderType.VertexShader)).Returns(_vertextShaderID);
             _mockGL.Setup(m => m.CreateShader(ShaderType.FragmentShader)).Returns(_fragShaderID);
-            _mockGL.Setup(m => m.GetShader(It.IsAny<int>(), ShaderParameter.CompileStatus, out getShaderStatusCode));
-            _mockGL.Setup(m => m.GetProgram(It.IsAny<int>(), GetProgramParameterName.LinkStatus, out getProgramStatusCode));
+            _mockGL.Setup(m => m.GetShader(It.IsAny<uint>(), ShaderParameter.CompileStatus, out getShaderStatusCode));
+            _mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GetProgramParameterName.LinkStatus, out getProgramStatusCode));
             _mockGL.Setup(m => m.CreateProgram()).Returns(_shaderProgramID);
 
-            _mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<int>())).Returns(true);
-            _mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<int>())).Returns(true);
+            _mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            _mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
         }
 
         [Fact]

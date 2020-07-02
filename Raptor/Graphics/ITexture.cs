@@ -8,7 +8,7 @@ namespace Raptor.Graphics
 
     public interface ITexture : IDisposable
     {
-        int ID { get; }
+        uint ID { get; }
 
         string Name { get; }
 

@@ -15,7 +15,7 @@
     {
         private readonly Mock<IGLInvoker> mockGL;
         private readonly byte[] pixelData;
-        private readonly int textureID = 1234;
+        private readonly uint textureID = 1234;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureTests"/> class.

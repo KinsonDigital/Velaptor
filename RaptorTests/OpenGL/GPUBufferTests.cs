@@ -15,9 +15,9 @@ namespace RaptorTests.OpenGL
     public class GPUBufferTests
     {
         private readonly Mock<IGLInvoker> _mockGL;
-        private readonly int _vertexArrayID = 1256;
-        private readonly int _vertexBufferID = 1234;
-        private readonly int _indexBufferID = 5678;
+        private readonly uint _vertexArrayID = 1256;
+        private readonly uint _vertexBufferID = 1234;
+        private readonly uint _indexBufferID = 5678;
         private bool _vertexBufferCreated;
         private bool _indexBufferCreated;
 
@@ -38,7 +38,7 @@ namespace RaptorTests.OpenGL
                     return _indexBufferID;
                 }
 
-                return -1;
+                return 0;
             });
             _mockGL.Setup(m => m.GenVertexArray()).Returns(_vertexArrayID);
         }
@@ -47,7 +47,7 @@ namespace RaptorTests.OpenGL
         public void Ctor_WhenInvoked_CreatesVertexBuffer()
         {
             //Arrange
-            var totalQuadBytes = 320;//160 bytes per quad * 2 quads = 320 bytes
+            var totalQuadBytes = 320u;//160 bytes per quad * 2 quads = 320 bytes
 
             //Act
             var buffer = new GPUBuffer<VertexData>(_mockGL.Object)
@@ -84,13 +84,13 @@ namespace RaptorTests.OpenGL
         {
             //Arrange
             var invokeCount = typeof(VertexData).GetFields().Count();
-            var actualIndices = new List<int>();
-            var actualSizes = new List<int>();
-            var actualOffsets = new List<int>();
+            var actualIndices = new List<uint>();
+            var actualSizes = new List<uint>();
+            var actualOffsets = new List<uint>();
 
             //Collect the various parameter values for assert comparisons later
-            _mockGL.Setup(m => m.VertexAttribPointer(It.IsAny<int>(), It.IsAny<int>(), VertexAttribPointerType.Float, false, It.IsAny<int>(), It.IsAny<int>()))
-                .Callback<int, int, VertexAttribPointerType, bool, int, int>((index, size, type, normalized, stride, offset) =>
+            _mockGL.Setup(m => m.VertexAttribPointer(It.IsAny<uint>(), It.IsAny<uint>(), VertexAttribPointerType.Float, false, It.IsAny<uint>(), It.IsAny<uint>()))
+                .Callback<uint, uint, VertexAttribPointerType, bool, uint, uint>((index, size, type, normalized, stride, offset) =>
                 {
                     actualIndices.Add(index);
                     actualSizes.Add(size);
@@ -101,19 +101,19 @@ namespace RaptorTests.OpenGL
             var buffer = new GPUBuffer<VertexData>(_mockGL.Object);
 
             //Assert
-            _mockGL.Verify(m => m.EnableVertexArrayAttrib(_vertexArrayID, It.IsAny<int>()), Times.Exactly(invokeCount));
+            _mockGL.Verify(m => m.EnableVertexArrayAttrib(_vertexArrayID, It.IsAny<uint>()), Times.Exactly(invokeCount));
             _mockGL.Verify(m => m.VertexAttribPointer(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
+                It.IsAny<uint>(),
+                It.IsAny<uint>(),
                 VertexAttribPointerType.Float,
                 false,
                 40,
-                It.IsAny<int>()),
+                It.IsAny<uint>()),
             Times.Exactly(invokeCount));
 
-            Assert.Equal(new[] { 0, 1, 2, 3 }, actualIndices.ToArray());
-            Assert.Equal(new[] { 3, 2, 4, 1 }, actualSizes.ToArray());
-            Assert.Equal(new[] { 0, 12, 20, 36 }, actualOffsets.ToArray());
+            Assert.Equal(new uint[] { 0, 1, 2, 3 }, actualIndices.ToArray());
+            Assert.Equal(new uint[] { 3, 2, 4, 1 }, actualSizes.ToArray());
+            Assert.Equal(new uint[] { 0, 12, 20, 36 }, actualOffsets.ToArray());
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace RaptorTests.OpenGL
             buffer.TotalQuads = 5;
 
             //Assert
-            Assert.Equal(5, buffer.TotalQuads);
+            Assert.Equal(5u, buffer.TotalQuads);
         }
 
         [Fact]
@@ -142,7 +142,7 @@ namespace RaptorTests.OpenGL
             buffer.UpdateQuad(0, srcRect, 50, 50, Color.White);
 
             //Assert
-            _mockGL.Verify(m => m.BufferSubData(BufferTarget.ArrayBuffer, It.IsAny<IntPtr>(), It.IsAny<int>(), ref It.Ref<QuadData>.IsAny));
+            _mockGL.Verify(m => m.BufferSubData(BufferTarget.ArrayBuffer, It.IsAny<IntPtr>(), It.IsAny<uint>(), ref It.Ref<QuadData>.IsAny));
         }
 
         [Fact]

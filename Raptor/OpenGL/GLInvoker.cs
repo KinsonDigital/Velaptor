@@ -26,22 +26,22 @@ namespace Raptor.OpenGL
         public void ActiveTexture(TextureUnit texture) => GL.ActiveTexture(texture);
 
         /// <inheritdoc/>
-        public int GetUniformLocation(int program, string name) => GL.GetUniformLocation(program, name);
+        public uint GetUniformLocation(uint program, string name) => (uint)GL.GetUniformLocation(program, name);
 
         /// <inheritdoc/>
-        public void BindTexture(TextureTarget target, int texture) => GL.BindTexture(target, texture);
+        public void BindTexture(TextureTarget target, uint texture) => GL.BindTexture(target, texture);
 
         /// <inheritdoc/>
-        public void DrawElements(PrimitiveType mode, int count, DrawElementsType type, IntPtr indices) => GL.DrawElements(mode, count, type, indices);
+        public void DrawElements(PrimitiveType mode, uint count, DrawElementsType type, IntPtr indices) => GL.DrawElements(mode, (int)count, type, indices);
 
         /// <inheritdoc/>
-        public void UniformMatrix4(int location, bool transpose, ref Matrix4 matrix) => GL.UniformMatrix4(location, transpose, ref matrix);
+        public void UniformMatrix4(uint location, bool transpose, ref Matrix4 matrix) => GL.UniformMatrix4((int)location, transpose, ref matrix);
 
         /// <inheritdoc/>
-        public void GetProgram(int program, GetProgramParameterName pname, out int programParams) => GL.GetProgram(program, pname, out programParams);
+        public void GetProgram(uint program, GetProgramParameterName pname, out int programParams) => GL.GetProgram(program, pname, out programParams);
 
         /// <inheritdoc/>
-        public bool LinkProgramSuccess(int program)
+        public bool LinkProgramSuccess(uint program)
         {
             GetProgram(program, GetProgramParameterName.LinkStatus, out var statusCode);
 
@@ -49,40 +49,40 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public void UseProgram(int program) => GL.UseProgram(program);
+        public void UseProgram(uint program) => GL.UseProgram(program);
 
         /// <inheritdoc/>
-        public void DeleteProgram(int program) => GL.DeleteProgram(program);
+        public void DeleteProgram(uint program) => GL.DeleteProgram(program);
 
         /// <inheritdoc/>
-        public int CreateProgram() => GL.CreateProgram();
+        public uint CreateProgram() => (uint)GL.CreateProgram();
 
         /// <inheritdoc/>
-        public void AttachShader(int program, int shader) => GL.AttachShader(program, shader);
+        public void AttachShader(uint program, uint shader) => GL.AttachShader(program, shader);
 
         /// <inheritdoc/>
-        public void LinkProgram(int program) => GL.LinkProgram(program);
+        public void LinkProgram(uint program) => GL.LinkProgram(program);
 
         /// <inheritdoc/>
-        public string GetProgramInfoLog(int program) => GL.GetProgramInfoLog(program);
+        public string GetProgramInfoLog(uint program) => GL.GetProgramInfoLog((int)program);
 
         /// <inheritdoc/>
-        public int CreateShader(ShaderType type) => GL.CreateShader(type);
+        public uint CreateShader(ShaderType type) => (uint)GL.CreateShader(type);
 
         /// <inheritdoc/>
-        public void ShaderSource(int shader, string sourceCode) => GL.ShaderSource(shader, sourceCode);
+        public void ShaderSource(uint shader, string sourceCode) => GL.ShaderSource((int)shader, sourceCode);
 
         /// <inheritdoc/>
-        public void DetachShader(int program, int shader) => GL.DetachShader(program, shader);
+        public void DetachShader(uint program, uint shader) => GL.DetachShader(program, shader);
 
         /// <inheritdoc/>
-        public void CompileShader(int shader) => GL.CompileShader(shader);
+        public void CompileShader(uint shader) => GL.CompileShader(shader);
 
         /// <inheritdoc/>
-        public void GetShader(int shader, ShaderParameter pname, out int shaderParams) => GL.GetShader(shader, pname, out shaderParams);
+        public void GetShader(uint shader, ShaderParameter pname, out int shaderParams) => GL.GetShader(shader, pname, out shaderParams);
 
         /// <inheritdoc/>
-        public bool ShaderCompileSuccess(int shaderID)
+        public bool ShaderCompileSuccess(uint shaderID)
         {
             GetShader(shaderID, ShaderParameter.CompileStatus, out var statusCode);
 
@@ -90,56 +90,56 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public string GetShaderInfoLog(int shader) => GL.GetShaderInfoLog(shader);
+        public string GetShaderInfoLog(uint shader) => GL.GetShaderInfoLog((int)shader);
 
         /// <inheritdoc/>
-        public void DeleteShader(int shader) => GL.DeleteShader(shader);
+        public void DeleteShader(uint shader) => GL.DeleteShader(shader);
 
         /// <inheritdoc/>
-        public int GenVertexArray() => GL.GenVertexArray();
+        public uint GenVertexArray() => (uint)GL.GenVertexArray();
 
         /// <inheritdoc/>
-        public void BufferSubData<T3>(BufferTarget target, IntPtr offset, int size, ref T3 data)
-            where T3 : struct => GL.BufferSubData(target, offset, size, ref data);
+        public void BufferSubData<T3>(BufferTarget target, IntPtr offset, uint size, ref T3 data)
+            where T3 : struct => GL.BufferSubData(target, offset, (int)size, ref data);
 
         /// <inheritdoc/>
-        public void DeleteVertexArray(int arrays) => GL.DeleteVertexArray(arrays);
+        public void DeleteVertexArray(uint arrays) => GL.DeleteVertexArray(arrays);
 
         /// <inheritdoc/>
-        public void DeleteBuffer(int buffers) => GL.DeleteBuffer(buffers);
+        public void DeleteBuffer(uint buffers) => GL.DeleteBuffer(buffers);
 
         /// <inheritdoc/>
-        public void BindBuffer(BufferTarget target, int buffer) => GL.BindBuffer(target, buffer);
+        public void BindBuffer(BufferTarget target, uint buffer) => GL.BindBuffer(target, buffer);
 
         /// <inheritdoc/>
-        public void EnableVertexArrayAttrib(int vaobj, int index) => GL.EnableVertexArrayAttrib(vaobj, index);
+        public void EnableVertexArrayAttrib(uint vaobj, uint index) => GL.EnableVertexArrayAttrib((int)vaobj, (int)index);
 
         /// <inheritdoc/>
-        public void VertexAttribPointer(int index, int size, VertexAttribPointerType type, bool normalized, int stride, int offset)
-            => GL.VertexAttribPointer(index, size, type, normalized, stride, offset);
+        public void VertexAttribPointer(uint index, uint size, VertexAttribPointerType type, bool normalized, uint stride, uint offset)
+            => GL.VertexAttribPointer(index, (int)size, type, normalized, (int)stride, (int)offset);
 
         /// <inheritdoc/>
-        public int GenBuffer() => GL.GenBuffer();
+        public uint GenBuffer() => (uint)GL.GenBuffer();
 
         /// <inheritdoc/>
-        public void BufferData(BufferTarget target, int size, IntPtr data, BufferUsageHint usage)
-            => GL.BufferData(target, size, data, usage);
+        public void BufferData(BufferTarget target, uint size, IntPtr data, BufferUsageHint usage)
+            => GL.BufferData(target, (int)size, data, usage);
 
         /// <inheritdoc/>
-        public void BufferData<T2>(BufferTarget target, int size, T2[] data, BufferUsageHint usage)
-            where T2 : struct => GL.BufferData(target, size, data, usage);
+        public void BufferData<T2>(BufferTarget target, uint size, T2[] data, BufferUsageHint usage)
+            where T2 : struct => GL.BufferData(target, (int)size, data, usage);
 
         /// <inheritdoc/>
-        public void BindVertexArray(int array) => GL.BindVertexArray(array);
+        public void BindVertexArray(uint array) => GL.BindVertexArray(array);
 
         /// <inheritdoc/>
-        public int GenTexture() => GL.GenTexture();
+        public uint GenTexture() => (uint)GL.GenTexture();
 
         /// <inheritdoc/>
-        public void DeleteTexture(int textures) => GL.DeleteTexture(textures);
+        public void DeleteTexture(uint textures) => GL.DeleteTexture(textures);
 
         /// <inheritdoc/>
-        public void ObjectLabel(ObjectLabelIdentifier identifier, int name, int length, string label)
+        public void ObjectLabel(ObjectLabelIdentifier identifier, uint name, int length, string label)
             => GL.ObjectLabel(identifier, name, length, label);
 
         /// <inheritdoc/>

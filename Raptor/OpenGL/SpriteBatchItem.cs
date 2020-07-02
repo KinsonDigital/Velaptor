@@ -8,7 +8,7 @@ namespace Raptor.OpenGL
 
     internal struct SpriteBatchItem
     {
-        public int TextureID;
+        public uint TextureID;
 
         public Rectangle SrcRect;
 
@@ -20,9 +20,9 @@ namespace Raptor.OpenGL
 
         public Color TintColor;
 
-        public static SpriteBatchItem Empty => new SpriteBatchItem() { TextureID = -1 };
+        public static SpriteBatchItem Empty => new SpriteBatchItem() { TextureID = 0 };
 
-        public bool IsEmpty => this.TextureID == -1 &&
+        public bool IsEmpty => this.TextureID == 0 &&
                     this.SrcRect.IsEmpty &&
                     this.DestRect.IsEmpty &&
                     this.Size == 0f &&
