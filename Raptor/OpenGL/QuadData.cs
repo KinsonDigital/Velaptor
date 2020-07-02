@@ -66,9 +66,14 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public bool Equals(QuadData other) => other == this;
+        public bool Equals(QuadData other)
+            => this.Vertex1 == other.Vertex1 &&
+               this.Vertex2 == other.Vertex2 &&
+               this.Vertex3 == other.Vertex3 &&
+               this.Vertex4 == other.Vertex4;
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode() => this.Vertex1.GetHashCode() + this.Vertex2.GetHashCode() + this.Vertex3.GetHashCode() + this.Vertex4.GetHashCode();
     }
 }
