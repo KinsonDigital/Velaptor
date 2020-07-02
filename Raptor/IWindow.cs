@@ -22,6 +22,9 @@ namespace Raptor
         /// </summary>
         int Height { get; set; }
 
+        /// <summary>
+        /// Gets or sets the title of the window.
+        /// </summary>
         string Title { get; set; }
 
         Action? Init { get; set; }

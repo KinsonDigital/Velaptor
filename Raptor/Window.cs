@@ -6,10 +6,7 @@ namespace Raptor
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using OpenToolkit.Mathematics;
-    using OpenToolkit.Windowing.Desktop;
     using Raptor.Content;
-    using Raptor.OpenGL;
 
     /// <summary>
     /// A system window that graphics can be rendered to.

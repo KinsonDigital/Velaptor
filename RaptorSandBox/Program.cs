@@ -1,5 +1,4 @@
-﻿using Raptor;
-using Raptor.Factories;
+﻿using Raptor.Factories;
 
 namespace RaptorSandBox
 {

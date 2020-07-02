@@ -149,5 +149,8 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public void TexImage2D<T8>(TextureTarget target, int level, PixelInternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, T8[] pixels)
             where T8 : struct => GL.TexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+
+        /// <inheritdoc/>
+        public void DebugMessageCallback(DebugProc callback, IntPtr userParam) => GL.DebugMessageCallback(callback, userParam);
     }
 }

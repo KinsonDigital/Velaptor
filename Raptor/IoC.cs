@@ -43,8 +43,8 @@ namespace Raptor
         {
             IocContainer.Register<ITextFile, TextFile>();
             IocContainer.Register<IImageFile, ImageFile>();
-            IocContainer.Register<IGLInvoker, GLInvoker>();
             IocContainer.Register<ILoader<ITexture>, TextureLoader>();
+            IocContainer.Register<IGLInvoker, GLInvoker>();
             IocContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
 
             /*NOTE:

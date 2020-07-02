@@ -15,22 +15,46 @@ namespace Raptor.OpenGL
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
     /// </summary>
-    internal sealed class GLWindow : GameWindow, IWindow
+    [ExcludeFromCodeCoverage]
+    internal sealed class GLWindow : IWindow
     {
+        private readonly GameWindow gameWindow;
         private readonly DebugProc debugProc;
+        private readonly IGLInvoker gl;
         private bool isShuttingDown;
+        private bool isDiposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
         /// </summary>
-        /// <param name="gameWinSettings">The game window settings.</param>
-        /// <param name="nativeWinSettings">The native window settings.</param>
+        /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in constructor.")]
-        public GLWindow(GameWindowSettings gameWinSettings, NativeWindowSettings nativeWinSettings)
-            : base(gameWinSettings, nativeWinSettings)
+        public GLWindow(int width, int height)
         {
-            if (nativeWinSettings is null)
-                throw new ArgumentNullException(nameof(nativeWinSettings), "The argument must not be null");
+            var gameWinSettings = new GameWindowSettings();
+            var nativeWinSettings = new NativeWindowSettings()
+            {
+                Size = new Vector2i(width, height),
+            };
+
+            this.gameWindow = new GameWindow(gameWinSettings, nativeWinSettings);
+
+            /*NOTE:
+             * The IoC container get instance must be called after the
+             * game window has been called.  This is because an OpenGL context
+             * must be created first before any GL calls can be made.
+             */
+            this.gl = IoC.Container.GetInstance<IGLInvoker>();
+
+            this.gameWindow.Load += GameWindow_Load;
+            this.gameWindow.UpdateFrame += GameWindow_UpdateFrame;
+            this.gameWindow.RenderFrame += GameWindow_RenderFrame;
+            this.gameWindow.Resize += GameWindow_Resize;
+            this.gameWindow.Unload += GameWindow_Unload;
+            this.gameWindow.UpdateFrequency = 60;
+
             this.debugProc = DebugCallback;
 
             /*NOTE:
@@ -41,13 +65,11 @@ namespace Raptor.OpenGL
              */
             GC.KeepAlive(this.debugProc);
 
-            GL.Enable(EnableCap.DebugOutput);
-            GL.Enable(EnableCap.DebugOutputSynchronous);
-            GL.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
+            this.gl.Enable(EnableCap.DebugOutput);
+            this.gl.Enable(EnableCap.DebugOutputSynchronous);
+            this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
 
             Title = "Raptor Application";
-            UpdateFrequency = 60;
-            RenderFrequency = 60;
         }
 
         /// <summary>
@@ -55,8 +77,8 @@ namespace Raptor.OpenGL
         /// </summary>
         public int Width
         {
-            get => Size.X;
-            set => Size = new Vector2i(value, Size.Y);
+            get => this.gameWindow.Size.X;
+            set => this.gameWindow.Size = new Vector2i(value, this.gameWindow.Size.Y);
         }
 
         /// <summary>
@@ -64,8 +86,8 @@ namespace Raptor.OpenGL
         /// </summary>
         public int Height
         {
-            get => Size.Y;
-            set => Size = new Vector2i(Size.X, value);
+            get => this.gameWindow.Size.Y;
+            set => this.gameWindow.Size = new Vector2i(this.gameWindow.Size.X, value);
         }
 
         /// <summary>
@@ -97,92 +119,115 @@ namespace Raptor.OpenGL
         {
             get
             {
-                if (UpdateFrequency != RenderFrequency)
+                if (this.gameWindow.UpdateFrequency != this.gameWindow.RenderFrequency)
                     throw new Exception($"The update and render frequencies must match for this '{nameof(GLWindow)}' implementation.");
 
-                return (int)UpdateFrequency;
+                return (int)this.gameWindow.UpdateFrequency;
             }
             set
             {
-                UpdateFrequency = value;
-                RenderFrequency = value;
+                this.gameWindow.UpdateFrequency = value;
+                this.gameWindow.RenderFrequency = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the title of the window.
+        /// </summary>
+        public string Title
+        {
+            get => this.gameWindow.Title;
+            set => this.gameWindow.Title = value;
         }
 
         /// <summary>
         /// Shows the window.
         /// </summary>
-        public void Show() => Run();
+        public void Show() => this.gameWindow.Run();
 
-        /// <summary>
-        /// Run immediately after Run() is called.
-        /// </summary>
-        protected override void OnLoad()
+        public void Close() => this.gameWindow.Close();
+
+        /// <inheritdoc/>
+        public void Dispose()
         {
-            Init?.Invoke();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            base.OnLoad();
+        private void Dispose(bool disposing)
+        {
+            if (!this.isDiposed)
+                return;
+
+            if (disposing)
+            {
+                this.gameWindow.Load -= GameWindow_Load;
+                this.gameWindow.UpdateFrame -= GameWindow_UpdateFrame;
+                this.gameWindow.RenderFrame -= GameWindow_RenderFrame;
+                this.gameWindow.Resize -= GameWindow_Resize;
+                this.gameWindow.Unload -= GameWindow_Unload;
+                this.gameWindow.Dispose();
+            }
+
+            this.isDiposed = true;
         }
 
         /// <summary>
-        /// Run when the window is ready to update.
+        /// Invokes the <see cref="Init"/> action property.
         /// </summary>
-        /// <param name="args">The event arguments for this frame.</param>
-        protected override void OnUpdateFrame(FrameEventArgs args)
+        private void GameWindow_Load() => Init?.Invoke();
+
+        /// <summary>
+        /// Invokes the <see cref="Update"/> action property.
+        /// </summary>
+        /// <param name="deltaTime">The frame event args.</param>
+        private void GameWindow_UpdateFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)
                 return;
 
             var frameTime = new FrameTime()
             {
-                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(args.Time * 1000.0)),
+                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(deltaTime.Time * 1000.0)),
             };
 
             Update?.Invoke(frameTime);
-
-            base.OnUpdateFrame(args);
         }
 
         /// <summary>
-        /// Run when the window is ready to update.
+        /// Invokes the <see cref="Draw"/> action property.
         /// </summary>
-        /// <param name="args">The event arguments for this frame.</param>
-        protected override void OnRenderFrame(FrameEventArgs args)
+        /// <param name="deltaTime">The frame event arges.</param>
+        private void GameWindow_RenderFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)
                 return;
 
             var frameTime = new FrameTime()
             {
-                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(args.Time * 1000.0)),
+                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(deltaTime.Time * 1000.0)),
             };
 
             Draw?.Invoke(frameTime);
 
-            SwapBuffers();
-
-            base.OnRenderFrame(args);
+            this.gameWindow.SwapBuffers();
         }
 
         /// <summary>
-        /// Raises the <see cref="WinResize"/> event.
+        /// Invokes the <see cref="WinResize"/> action property..
         /// </summary>
-        /// <param name="e">A <see cref="ResizeEventArgs"/> that contains the event data.</param>
-        protected override void OnResize(ResizeEventArgs e)
-        {
-            GL.Viewport(0, 0, e.Width, e.Height);
+        /// <param name="currentSize">Resize event args.</param>
 
+        private void GameWindow_Resize(ResizeEventArgs currentSize)
+        {
+            GL.Viewport(0, 0, currentSize.Width, currentSize.Height);
             WinResize?.Invoke();
-
-            base.OnResize(e);
         }
 
-        /// <inheritdoc/>
-        protected override void OnUnload()
-        {
-            this.isShuttingDown = true;
-            base.OnUnload();
-        }
+        /// <summary>
+        /// Sets the state of the window as shutting down.
+        /// </summary>
+        private void GameWindow_Unload() => this.isShuttingDown = true;
 
         private void DebugCallback(DebugSource src, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
         {

@@ -1,7 +1,4 @@
 ﻿using Raptor.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace RaptorTests.OpenGL
@@ -14,8 +11,6 @@ namespace RaptorTests.OpenGL
         [Fact]
         public void Ctor_WhenInvoked_CorrectlySetsPropertyValues()
         {
-            //Arrange
-
             //Act
             var attribute = new FieldDataAttribute(4, 3);
 

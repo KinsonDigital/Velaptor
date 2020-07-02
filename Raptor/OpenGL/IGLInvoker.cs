@@ -448,5 +448,13 @@ namespace Raptor.OpenGL
         /// <param name="pixels">[length: COMPSIZE(format,type,width,height)] Specifies a pointer to the image data in memory.</param>
         void TexImage2D<T8>(TextureTarget target, int level, PixelInternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, T8[] pixels)
             where T8 : struct;
+
+        /// <summary>
+        /// [requires: v4.3 or KHR_debug|VERSION_4_3] Specify a callback to receive debugging
+        /// messages from the GL.
+        /// </summary>
+        /// <param name="callback">The address of a callback function that will be called when a debug message is generated.</param>
+        /// <param name="userParam">A user supplied pointer that will be passed on each invocation of callback.</param>
+        void DebugMessageCallback(DebugProc callback, IntPtr userParam);
     }
 }

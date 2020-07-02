@@ -5,8 +5,6 @@
 namespace Raptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
-    using OpenToolkit.Mathematics;
-    using OpenToolkit.Windowing.Desktop;
     using Raptor.OpenGL;
 
     /// <summary>
@@ -23,13 +21,7 @@ namespace Raptor.Factories
         /// <returns>A raptor framework window implementation.</returns>
         public static IWindow CreateWindow(int width, int height)
         {
-            var gameWindowSettings = new GameWindowSettings();
-            var nativeWindowSettings = new NativeWindowSettings()
-            {
-                Size = new Vector2i(width, height),
-            };
-
-            return new GLWindow(gameWindowSettings, nativeWindowSettings);
+            return new GLWindow(width, height);
         }
     }
 }
