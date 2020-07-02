@@ -1,11 +1,15 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
-using OpenToolkit.Mathematics;
+﻿// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Reflection;
+    using OpenToolkit.Mathematics;
+
     /// <summary>
     /// Provides extensions to various things to help make better code.
     /// </summary>
@@ -14,20 +18,22 @@ namespace RaptorTests
     {
         #region Public Methods
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside method.")]
         public static FieldInfo GetField(this object value, string name)
         {
+            if (value is null)
+                throw new ArgumentNullException(nameof(value), "The parameter must not be null");
+
             var privateFields = (from f in value.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static)
                                  where f.Name == name
                                  select f).ToArray();
 
-            //If the list is not found throw not found exception
+            // If the list is not found throw not found exception
             if (privateFields == null || privateFields.Length <= 0)
                 throw new Exception($"Cannot find the field {name} on the given object of type {value.GetType()}");
 
-
             return privateFields.FirstOrDefault();
         }
-
 
         public static bool IsNullOrZeroField(this object fieldContainer, string name)
         {
@@ -63,13 +69,11 @@ namespace RaptorTests
             }
         }
 
-
         public static bool IsEmpty(this Vector4 vector) =>
             vector.X == 0 &&
             vector.Y == 0 &&
             vector.Z == 0 &&
             vector.W == 0;
-
 
         public static bool IsEmpty(this Matrix4 matrix) =>
             matrix.Column0.IsEmpty() &&

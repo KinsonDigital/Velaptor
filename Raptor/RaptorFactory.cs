@@ -18,7 +18,7 @@ namespace Raptor
         /// </summary>
         /// <param name="renderSurfaceWidth">The width of the render surface.</param>
         /// <param name="renderSurfaceHeight">The height of the render surface.</param>
-        /// <returns></returns>
+        /// <returns>A raptor implemented sprite batch.</returns>
         public static ISpriteBatch CreateSpriteBatch(int renderSurfaceWidth, int renderSurfaceHeight)
         {
             var result = IoC.Container.GetInstance<ISpriteBatch>();

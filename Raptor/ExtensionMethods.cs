@@ -19,28 +19,28 @@ namespace Raptor
         /// Converts the given <paramref name="radians"/> value into degrees.
         /// </summary>
         /// <param name="radians">The value to convert.</param>
-        /// <returns></returns>
+        /// <returns>The radians converted into degress.</returns>
         public static float ToDegrees(this float radians) => radians * 180.0f / PI;
 
         /// <summary>
         /// Converts the given <paramref name="degrees"/> value into radians.
         /// </summary>
         /// <param name="degrees">The value to convert.</param>
-        /// <returns></returns>
+        /// <returns>The degrees converted into radians.</returns>
         public static float ToRadians(this float degrees) => degrees * PI / 180f;
 
         /// <summary>
         /// Sets the value to positive if its negative.
         /// </summary>
         /// <param name="value">The value to force.</param>
-        /// <returns></returns>
+        /// <returns>The value as a positive number.</returns>
         public static float ForcePositive(this float value) => value < 0 ? value * -1 : value;
 
         /// <summary>
         /// Sets the value to negative if its positive.
         /// </summary>
         /// <param name="value">The value to force.</param>
-        /// <returns></returns>
+        /// <returns>The value as a negative number.</returns>
         public static float ForceNegative(this float value) => value > 0 ? value * -1 : value;
 
         /// <summary>
@@ -49,8 +49,8 @@ namespace Raptor
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="origin">The origin to rotate the <paramref name="vector"/> around.</param>
         /// <param name="angle">The angle in degress to rotate <paramref name="vector"/>.  Value must be positive.</param>
-        /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/></param>
-        /// <returns></returns>
+        /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/>.</param>
+        /// <returns>The <paramref name="vector"/> rotated around the <paramref name="origin"/>.</returns>
         public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
         {
             var angleRadians = clockWise ? angle.ToRadians() : angle.ToRadians() * -1;
@@ -71,16 +71,16 @@ namespace Raptor
         }
 
         /// <summary>
-        /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>
-        /// with each component holding the color component values.
+        ///     Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>
+        ///     with each component holding the color component values.
         /// </summary>
         /// <param name="clr">The color to convert.</param>
         /// <returns>
-        /// A 4 component vector of color values.
-        /// X = red.
-        /// Y = green.
-        /// Z = blue.
-        /// W = alpha.
+        ///     A 4 component vector of color values.
+        ///     X = red.
+        ///     Y = green.
+        ///     Z = blue.
+        ///     W = alpha.
         /// </returns>
         public static Vector4 ToVector4(this Color clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
 

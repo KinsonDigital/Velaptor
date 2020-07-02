@@ -1,11 +1,15 @@
-﻿using Moq;
-using Raptor.Graphics;
-using Raptor;
-using Xunit;
-using System.Drawing;
+﻿// <copyright file="RenderTextTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.Graphics
 {
+    using System.Drawing;
+    using Moq;
+    using Raptor;
+    using Raptor.Graphics;
+    using Xunit;
+
     /// <summary>
     /// Unit tests to test the <see cref="Text"/> class.
     /// </summary>
@@ -15,33 +19,31 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Color_WhenSettingValue_ProperlySetsInternalValue()
         {
-            //Arrange
+            // Arrange
             var mockInternalText = new Mock<IText>();
             mockInternalText.SetupProperty(m => m.Color, Color.FromArgb(0, 0, 0, 0));
             var gameText = new RenderText();
             var expected = Color.FromArgb(44, 11, 22, 33);
 
-            //Act
+            // Act
             gameText.Color = Color.FromArgb(44, 11, 22, 33);
             var actual = gameText.Color;
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
-
 
         [Fact]
         public void Color_WhenComparingColorsThatAreNotEqual_ReturnsFalse()
         {
-            //Arrange
+            // Arrange
             var colorA = Color.FromArgb(4, 1, 2, 3);
             var colorB = Color.FromArgb(44, 11, 22, 33);
 
-            //Act & Assert
+            // Act & Assert
             Assert.NotEqual(colorA, colorB);
         }
         #endregion
-
 
         #region Overloaded Operator Tests
         [Theory]
@@ -51,7 +53,7 @@ namespace RaptorTests.Graphics
         [InlineData(null, null, "")]
         public void AddOperator_WhenAddingTwoRenderTexts_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
-            //Arrange
+            // Arrange
             var mockTextA = new Mock<IText>();
             mockTextA.SetupProperty(m => m.Text);
 
@@ -60,20 +62,19 @@ namespace RaptorTests.Graphics
 
             var textA = new RenderText()
             {
-                Text = stringA
+                Text = stringA,
             };
             var textB = new RenderText()
             {
-                Text = stringB
+                Text = stringB,
             };
 
-            //Act
+            // Act
             var actual = textA + textB;
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
-
 
         [Theory]
         [InlineData("Hello ", "World", "Hello World")]
@@ -82,22 +83,21 @@ namespace RaptorTests.Graphics
         [InlineData(null, null, "")]
         public void AddOperator_WhenAddingRenderTextAndString_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
-            //Arrange
+            // Arrange
             var mockText = new Mock<IText>();
             mockText.SetupProperty(m => m.Text);
 
             var textA = new RenderText()
             {
-                Text = stringA
+                Text = stringA,
             };
 
-            //Act
+            // Act
             var actual = textA + stringB;
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
-
 
         [Theory]
         [InlineData("Hello ", "World", "Hello World")]
@@ -106,19 +106,19 @@ namespace RaptorTests.Graphics
         [InlineData(null, null, "")]
         public void AddOperator_WhenAddingStringAndRenderText_ReturnsCorrectValue(string stringA, string stringB, string expected)
         {
-            //Arrange
+            // Arrange
             var mockText = new Mock<IText>();
             mockText.SetupProperty(m => m.Text);
 
             var textB = new RenderText()
             {
-                Text = stringB
+                Text = stringB,
             };
 
-            //Act
+            // Act
             var actual = stringA + textB;
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
         #endregion

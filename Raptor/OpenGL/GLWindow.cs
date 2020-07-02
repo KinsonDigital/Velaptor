@@ -203,7 +203,6 @@ namespace Raptor.OpenGL
         /// Invokes the <see cref="WinResize"/> action property..
         /// </summary>
         /// <param name="currentSize">Resize event args.</param>
-
         private void GameWindow_Resize(ResizeEventArgs currentSize)
         {
             GL.Viewport(0, 0, currentSize.Width, currentSize.Height);
