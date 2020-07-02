@@ -100,7 +100,7 @@ namespace RaptorTests.OpenGL
         public void GetVertexPointerType_WhenInvoked_ReturnsCorrectResult(Type type)
         {
             //Act
-            var actual = VertexDataAnalyzer.GetVertexPointerType(typeof(float));
+            var actual = VertexDataAnalyzer.GetVertexPointerType(type);
 
             //Assert
             Assert.Equal(VertexAttribPointerType.Float, actual);

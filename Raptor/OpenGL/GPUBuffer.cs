@@ -230,7 +230,7 @@ namespace Raptor.OpenGL
         /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
         private void CreateVertexBuffer()
         {
-            //TODO: Convert values that should be uint to uint
+            // TODO: Convert values that should be uint to uint
             this.totalVertexBytes = (int)VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
             this.totalQuadSizeInBytes = this.totalVertexBytes * 4;
 

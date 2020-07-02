@@ -23,7 +23,7 @@ namespace Raptor
         private static bool isInitialized;
 
         /// <summary>
-        /// The inversion of control container used to get instances of objects.
+        /// Gets the inversion of control container used to get instances of objects.
         /// </summary>
         public static Container Container
         {

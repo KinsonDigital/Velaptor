@@ -19,9 +19,6 @@ namespace Raptor.Factories
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <returns>A raptor framework window implementation.</returns>
-        public static IWindow CreateWindow(int width, int height)
-        {
-            return new GLWindow(width, height);
-        }
+        public static IWindow CreateWindow(int width, int height) => new GLWindow(width, height);
     }
 }

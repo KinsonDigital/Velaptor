@@ -72,48 +72,40 @@ namespace Raptor.OpenGL
             Title = "Raptor Application";
         }
 
-        /// <summary>
-        /// Gets or sets the width of the game window.
-        /// </summary>
+        /// <inheritdoc/>
+        public string Title
+        {
+            get => this.gameWindow.Title;
+            set => this.gameWindow.Title = value;
+        }
+
+        /// <inheritdoc/>
         public int Width
         {
             get => this.gameWindow.Size.X;
             set => this.gameWindow.Size = new Vector2i(value, this.gameWindow.Size.Y);
         }
 
-        /// <summary>
-        /// Gets or sets the height of the game window.
-        /// </summary>
+        /// <inheritdoc/>
         public int Height
         {
             get => this.gameWindow.Size.Y;
             set => this.gameWindow.Size = new Vector2i(this.gameWindow.Size.X, value);
         }
 
-        /// <summary>
-        /// Gets or sets the <see cref="Action"/> delegate to be invoked per frame for updating.
-        /// </summary>
+        /// <inheritdoc/>
         public Action<FrameTime>? Update { get; set; }
 
-        /// <summary>
-        /// Gets or sets the <see cref="Action"/> delegate to be invoked per frame for rendering.
-        /// </summary>
+        /// <inheritdoc/>
         public Action<FrameTime>? Draw { get; set; }
 
-        /// <summary>
-        /// Gets or sets the <see cref="Action"/> delegate to be invoked every time the window is resized.
-        /// </summary>
+        /// <inheritdoc/>
         public Action? WinResize { get; set; }
 
-        /// <summary>
-        /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize.
-        /// </summary>
+        /// <inheritdoc/>
         public Action? Init { get; set; }
 
-        /// <summary>
-        /// Gets or sets the value of how often the <see cref="Update"/>
-        /// and <see cref="Draw"/> actions are invoked in hertz.
-        /// </summary>
+        /// <inheritdoc/>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of property.")]
         public int UpdateFreq
         {
@@ -131,20 +123,10 @@ namespace Raptor.OpenGL
             }
         }
 
-        /// <summary>
-        /// Gets or sets the title of the window.
-        /// </summary>
-        public string Title
-        {
-            get => this.gameWindow.Title;
-            set => this.gameWindow.Title = value;
-        }
-
-        /// <summary>
-        /// Shows the window.
-        /// </summary>
+        /// <inheritdoc/>
         public void Show() => this.gameWindow.Run();
 
+        /// <inheritdoc/>
         public void Close() => this.gameWindow.Close();
 
         /// <inheritdoc/>
@@ -154,6 +136,10 @@ namespace Raptor.OpenGL
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">True to release managed resources.</param>
         private void Dispose(bool disposing)
         {
             if (!this.isDiposed)

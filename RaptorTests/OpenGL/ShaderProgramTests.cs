@@ -22,7 +22,6 @@ namespace RaptorTests.OpenGL
         private readonly int _vertextShaderID = 1234;
         private readonly int _fragShaderID = 5678;
         private readonly int _shaderProgramID = 1928;
-        private readonly int _batchSize = 2;
 
         public ShaderProgramTests()
         {

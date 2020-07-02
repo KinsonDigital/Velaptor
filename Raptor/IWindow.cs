@@ -13,6 +13,11 @@ namespace Raptor
     public interface IWindow : IDisposable
     {
         /// <summary>
+        /// Gets or sets the title of the window.
+        /// </summary>
+        string Title { get; set; }
+
+        /// <summary>
         /// Gets or sets the width of the game window.
         /// </summary>
         int Width { get; set; }
@@ -23,18 +28,29 @@ namespace Raptor
         int Height { get; set; }
 
         /// <summary>
-        /// Gets or sets the title of the window.
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize the window.
         /// </summary>
-        string Title { get; set; }
-
         Action? Init { get; set; }
 
+        /// <summary>
+        /// Gets or sets the <see cref="Action"/> delegate that is invoked per frame for updating.
+        /// </summary>
         Action<FrameTime>? Update { get; set; }
 
+        /// <summary>
+        /// Gets or sets the <see cref="Action"/> delegate that is invoked per frame for rendering.
+        /// </summary>
         Action<FrameTime>? Draw { get; set; }
 
+        /// <summary>
+        /// Gets or sets the <see cref="Action"/> delegate that is invoked every time the window is resized.
+        /// </summary>
         Action? WinResize { get; set; }
 
+        /// <summary>
+        /// Gets or sets the value of how often the <see cref="Update"/>
+        /// and <see cref="Draw"/> actions are invoked in the value of hertz.
+        /// </summary>
         int UpdateFreq { get; set; }
 
         /// <summary>
