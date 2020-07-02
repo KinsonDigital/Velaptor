@@ -12,6 +12,7 @@ namespace RaptorTests.OpenGL
     /// </summary>
     public class FieldDataAttributeTests
     {
+        #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvoked_CorrectlySetsPropertyValues()
         {
@@ -23,5 +24,6 @@ namespace RaptorTests.OpenGL
             Assert.Equal(3u, attribute.TotalElements);
             Assert.Equal(12u, attribute.TotalBytes);
         }
+        #endregion
     }
 }

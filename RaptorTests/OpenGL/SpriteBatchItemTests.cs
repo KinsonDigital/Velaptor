@@ -10,6 +10,7 @@ namespace RaptorTests.OpenGL
 
     public class SpriteBatchItemTests
     {
+        #region Prop Tests
         [Fact]
         public void Empty_WhenGettingValue_ReturnsCorrectResult()
         {
@@ -37,5 +38,6 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.True(actual);
         }
+        #endregion
     }
 }

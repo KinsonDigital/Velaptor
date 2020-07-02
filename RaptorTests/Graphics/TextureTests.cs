@@ -56,6 +56,7 @@ namespace RaptorTests.Graphics
             this.mockGL.Setup(m => m.GenTexture()).Returns(this.textureID);
         }
 
+        #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvoked_UploadsTextureDataToGPU()
         {
@@ -95,7 +96,9 @@ namespace RaptorTests.Graphics
                 PixelType.UnsignedByte,
                 this.pixelData));
         }
+        #endregion
 
+        #region Method Tests
         [Fact]
         public void Dispose_WhenUnmanagedResourcesIsNotDisposed_DisposesOfUnmanagedResources()
         {
@@ -109,6 +112,7 @@ namespace RaptorTests.Graphics
             // Assert
             this.mockGL.Verify(m => m.DeleteTexture(this.textureID), Times.Once());
         }
+        #endregion
 
         private static byte[] ToByteArray(Color clr) => new[] { clr.A, clr.R, clr.G, clr.B };
     }

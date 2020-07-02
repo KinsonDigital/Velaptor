@@ -13,6 +13,7 @@ namespace RaptorTests
     /// </summary>
     public class PointerCounterTests
     {
+        #region Method Tests
         [Fact]
         public void PackPointerAndUnpackPointer_WhenInvoked_CorrectSetsPointer()
         {
@@ -26,5 +27,6 @@ namespace RaptorTests
             // Assert
             Assert.Equal(pointer, pointerContainer.UnpackPointer());
         }
+        #endregion
     }
 }

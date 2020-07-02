@@ -29,6 +29,7 @@ namespace RaptorTests.Content
             this.contentLoader = new ContentLoader(this.mockTextureLoader.Object, this.mockAtlasDataLoader.Object);
         }
 
+        #region Prop Tests
         [Theory]
         [InlineData(@"C:\temp\", @"C:\temp\Content\")]
         [InlineData(@"C:\temp", @"C:\temp\Content\")]
@@ -48,7 +49,9 @@ namespace RaptorTests.Content
             // Assert
             Assert.Equal(expected, actual);
         }
+        #endregion
 
+        #region Method Tests
         [Fact]
         public void LoadTexture_WhenInvoked_LoadsTexture()
         {
@@ -68,5 +71,6 @@ namespace RaptorTests.Content
             // Assert
             this.mockAtlasDataLoader.Verify(m => m.Load($@"{this.baseDir}Content\Graphics\test-atlas.json"), Times.Once());
         }
+        #endregion
     }
 }

@@ -15,7 +15,6 @@ namespace RaptorTests.Helpers
     public static class AssertHelpers
     {
         #region Public Methods
-
         /// <summary>
         /// Verifies that the exact exception is thrown (and not a derived exception type) and that
         /// the exception message matches the given <paramref name="expectedMessage"/>.

@@ -13,7 +13,7 @@ namespace Raptor.Sound
         // private Music _song;
         // #endregion
 
-        // #region Constructors
+        // #region Constructor
         // public Song(string songName)
         // {
         //    _song = new Music(songName);

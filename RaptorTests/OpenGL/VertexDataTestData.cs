@@ -8,12 +8,15 @@ namespace RaptorTests.OpenGL
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using OpenToolkit.Mathematics;
+    using Raptor.OpenGL;
 
     /// <summary>
-    /// Provides test data for testing the VertexData struct.
+    /// Initializes a new instance of <see cref="VertexDataTestData"/>.
     /// </summary>
+    /// <remarks>This is used to provide test data for some of the tests for the <see cref="VertexDataAnalyzer"/> class.</remarks>
     public class VertexDataTestData : IEnumerable<object[]>
     {
+        /// <inheritdoc/>
         public IEnumerator<object[]> GetEnumerator()
         {
             // Vertex          Texture Coord           Tint Color          Texture Index   Expected Result
@@ -24,6 +27,7 @@ namespace RaptorTests.OpenGL
             yield return new object[] { new Vector3(1, 2, 3), new Vector2(4, 5), new Vector4(6, 7, 8, 9),       100,            false };
         }
 
+        /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

@@ -46,6 +46,7 @@ namespace RaptorTests.OpenGL
             this.mockGL.Setup(m => m.GenVertexArray()).Returns(this.vertexArrayID);
         }
 
+        #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvoked_CreatesVertexBuffer()
         {
@@ -118,7 +119,9 @@ namespace RaptorTests.OpenGL
             Assert.Equal(new uint[] { 3, 2, 4, 1 }, actualSizes.ToArray());
             Assert.Equal(new uint[] { 0, 12, 20, 36 }, actualOffsets.ToArray());
         }
+        #endregion
 
+        #region Props Tests
         [Fact]
         public void TotalQuads_WhenSettingValue_ReturnsCorrectValue()
         {
@@ -133,7 +136,9 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.Equal(5u, buffer.TotalQuads);
         }
+        #endregion
 
+        #region Method Tets
         [Fact]
         public void UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer()
         {
@@ -163,5 +168,6 @@ namespace RaptorTests.OpenGL
             this.mockGL.Verify(m => m.DeleteBuffer(this.vertexBufferID), Times.Once());
             this.mockGL.Verify(m => m.DeleteBuffer(this.indexBufferID), Times.Once());
         }
+        #endregion
     }
 }

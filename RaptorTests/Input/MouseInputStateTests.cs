@@ -13,6 +13,7 @@ namespace RaptorTests.Input
     /// </summary>
     public class MouseInputStateTests
     {
+        #region Props Tests
         [Fact]
         public void Position_WhenSettingAndGettingValue_GetsAndSetsCorrectValue()
         {
@@ -117,5 +118,6 @@ namespace RaptorTests.Input
             // Assert
             Assert.Equal(expected, actual);
         }
+        #endregion
     }
 }

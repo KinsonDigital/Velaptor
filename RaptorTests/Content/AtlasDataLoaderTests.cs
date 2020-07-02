@@ -30,6 +30,7 @@ namespace RaptorTests.Content
             });
         }
 
+        #region Method Tests
         [Fact]
         public void Load_WhenInvoked_LoadsTextureAtlasData()
         {
@@ -47,5 +48,6 @@ namespace RaptorTests.Content
             // Assert
             Assert.Equal(expected, actual);
         }
+        #endregion
     }
 }

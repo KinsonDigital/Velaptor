@@ -12,6 +12,12 @@ namespace RaptorTests.Fakes
     /// </summary>
     public class WindowFake : Window
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowFake"/> class.
+        /// </summary>
+        /// <param name="window">Window implementation.</param>
+        /// <param name="contentLoader">Content loader implementation.</param>
+        /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
         public WindowFake(IWindow window, IContentLoader contentLoader)
             : base(window, contentLoader)
         {
