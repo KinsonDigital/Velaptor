@@ -1,10 +1,14 @@
-﻿namespace RaptorTests.Content
+﻿// <copyright file="AtlasDataLoaderTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace RaptorTests.Content
 {
+    using System.Drawing;
+    using System.Text.Json;
     using FileIO.Core;
     using Moq;
     using Raptor.Content;
-    using System.Drawing;
-    using System.Text.Json;
     using Xunit;
 
     public class AtlasDataLoaderTests
@@ -29,7 +33,7 @@
         [Fact]
         public void Load_WhenInvoked_LoadsTextureAtlasData()
         {
-            //Arrange
+            // Arrange
             var loader = new AtlasDataLoader<Rectangle>(this.mockTextFile.Object);
             var expected = new Rectangle[]
             {
@@ -37,10 +41,10 @@
                 new Rectangle(55, 66, 77, 88),
             };
 
-            //Act
+            // Act
             var actual = loader.Load("test-file");
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
     }

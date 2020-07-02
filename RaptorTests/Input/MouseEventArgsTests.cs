@@ -1,9 +1,13 @@
-﻿using Xunit;
-using Raptor.Input;
-using System.Numerics;
+﻿// <copyright file="MouseEventArgsTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.Input
 {
+    using System.Numerics;
+    using Raptor.Input;
+    using Xunit;
+
     /// <summary>
     /// Unit tests to test the <see cref="MouseEventArgs"/> class.
     /// </summary>
@@ -12,14 +16,14 @@ namespace RaptorTests.Input
         [Fact]
         public void Ctor_WhenInvoking_SetsMouseInputStatePropValue()
         {
-            //Arrange
+            // Arrange
             var mouseEventArgs = new MouseEventArgs(new MouseInputState()
             {
                 LeftButtonDown = true,
                 RightButtonDown = true,
                 MiddleButtonDown = true,
                 Position = new Vector2(11, 22),
-                ScrollWheelValue = 4
+                ScrollWheelValue = 4,
             });
 
             var expected = new MouseInputState()
@@ -28,13 +32,13 @@ namespace RaptorTests.Input
                 RightButtonDown = true,
                 MiddleButtonDown = true,
                 Position = new Vector2(11, 22),
-                ScrollWheelValue = 4
+                ScrollWheelValue = 4,
             };
 
-            //Act
+            // Act
             var actual = mouseEventArgs.State;
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
     }

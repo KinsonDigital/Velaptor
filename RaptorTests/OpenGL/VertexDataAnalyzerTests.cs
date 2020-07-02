@@ -1,19 +1,23 @@
-﻿using Raptor.OpenGL;
-using RaptorTests.Helpers;
-using System.Drawing;
-using System;
-using Xunit;
-using OpenToolkit.Mathematics;
-using OpenToolkit.Graphics.OpenGL4;
+﻿// <copyright file="VertexDataAnalyzerTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.OpenGL
 {
+    using System;
+    using System.Drawing;
+    using OpenToolkit.Graphics.OpenGL4;
+    using OpenToolkit.Mathematics;
+    using Raptor.OpenGL;
+    using RaptorTests.Helpers;
+    using Xunit;
+
     public class VertexDataAnalyzerTests
     {
         [Fact]
         public void GetTotalBytesForStruct_WithNullParam_ThrowsException()
         {
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
@@ -25,17 +29,17 @@ namespace RaptorTests.OpenGL
         [Fact]
         public void GetTotalBytesForStruct_WhenInvoked_ReturnsCorrectResult()
         {
-            //Act
+            // Act
             var actual = VertexDataAnalyzer.GetTotalBytesForStruct(typeof(VertexData));
 
-            //Assert
+            // Assert
             Assert.Equal(40u, actual);
         }
 
         [Fact]
         public void GetPrimitiveByteSize_WhenUsingNonPrimitiveType_ThrowsException()
         {
-            //Act & Assert
+            // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
             {
                 VertexDataAnalyzer.GetPrimitiveByteSize(typeof(Rectangle));
@@ -55,10 +59,10 @@ namespace RaptorTests.OpenGL
         [InlineData(typeof(double), sizeof(double))]
         public void GePrimitiveByteSize_WhenInvoked_ReturnsCorrectValue(Type type, uint expected)
         {
-            //Act
+            // Act
             var actual = VertexDataAnalyzer.GetPrimitiveByteSize(type);
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
 
@@ -85,10 +89,10 @@ namespace RaptorTests.OpenGL
         [InlineData(typeof(Matrix4), 16)]
         public void TotalDataElementsForType_WhenInvoked_ReturnsCorrectResult(Type type, uint expected)
         {
-            //Act
+            // Act
             var actual = VertexDataAnalyzer.TotalDataElementsForType(type);
 
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
 
@@ -99,10 +103,10 @@ namespace RaptorTests.OpenGL
         [InlineData(typeof(Vector4))]
         public void GetVertexPointerType_WhenInvoked_ReturnsCorrectResult(Type type)
         {
-            //Act
+            // Act
             var actual = VertexDataAnalyzer.GetVertexPointerType(type);
 
-            //Assert
+            // Assert
             Assert.Equal(VertexAttribPointerType.Float, actual);
         }
     }

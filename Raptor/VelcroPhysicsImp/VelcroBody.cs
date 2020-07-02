@@ -81,7 +81,7 @@ namespace Raptor.VelcroPhysicsImp
                     var xVertices = (from v in PolygonShape.Vertices
                                      select v.X + positionX).ToArray();
 
-                    result.AddRange(xVertices.ToPixels());
+                    result.AddRange(xVertices.ToScreenUnit());
                 }
 
                 return new ReadOnlyCollection<float>(result);
@@ -108,7 +108,7 @@ namespace Raptor.VelcroPhysicsImp
                     var yVertices = (from v in PolygonShape.Vertices
                                      select v.Y + positionY).ToArray();
 
-                    result.AddRange(yVertices.ToPixels());
+                    result.AddRange(yVertices.ToScreenUnit());
                 }
 
                 return new ReadOnlyCollection<float>(result);
@@ -121,13 +121,13 @@ namespace Raptor.VelcroPhysicsImp
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public float X
         {
-            get => PolygonBody == null ? this.tempSettings.XPosition : PolygonBody.Position.X.ToPixels();
+            get => PolygonBody == null ? this.tempSettings.XPosition : PolygonBody.Position.X.ToScreenUnits();
             set
             {
                 if (PolygonBody == null)
                     throw new Exception("Body must be added to a world first");
 
-                PolygonBody.Position = new Vector2(value.ToPhysics(), PolygonBody.Position.Y);
+                PolygonBody.Position = new Vector2(value.ToPhysicsUnit(), PolygonBody.Position.Y);
             }
         }
 
@@ -137,13 +137,13 @@ namespace Raptor.VelcroPhysicsImp
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public float Y
         {
-            get => PolygonBody == null ? this.tempSettings.YPosition : PolygonBody.Position.Y.ToPixels();
+            get => PolygonBody == null ? this.tempSettings.YPosition : PolygonBody.Position.Y.ToScreenUnits();
             set
             {
                 if (PolygonBody == null)
                     throw new Exception("Body must be added to a world first");
 
-                PolygonBody.Position = new Vector2(PolygonBody.Position.X, value.ToPhysics());
+                PolygonBody.Position = new Vector2(PolygonBody.Position.X, value.ToPhysicsUnit());
             }
         }
 
@@ -233,13 +233,13 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public float LinearVelocityX
         {
-            get => PolygonBody is null ? 0 : PolygonBody.LinearVelocity.X.ToPixels();
+            get => PolygonBody is null ? 0 : PolygonBody.LinearVelocity.X.ToScreenUnits();
             set
             {
                 if (PolygonBody is null)
                     return;
 
-                PolygonBody.LinearVelocity = new Vector2(value.ToPhysics(), PolygonBody.LinearVelocity.Y);
+                PolygonBody.LinearVelocity = new Vector2(value.ToPhysicsUnit(), PolygonBody.LinearVelocity.Y);
             }
         }
 
@@ -248,13 +248,13 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public float LinearVelocityY
         {
-            get => PolygonBody is null ? 0 : PolygonBody.LinearVelocity.Y.ToPixels();
+            get => PolygonBody is null ? 0 : PolygonBody.LinearVelocity.Y.ToScreenUnits();
             set
             {
                 if (PolygonBody is null)
                     return;
 
-                PolygonBody.LinearVelocity = new Vector2(PolygonBody.LinearVelocity.X, value.ToPhysics());
+                PolygonBody.LinearVelocity = new Vector2(PolygonBody.LinearVelocity.X, value.ToPhysicsUnit());
             }
         }
 
@@ -263,7 +263,7 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public float LinearDeceleration
         {
-            get => PolygonBody is null ? 0 : PolygonBody.LinearDamping.ToPixels();
+            get => PolygonBody is null ? 0 : PolygonBody.LinearDamping.ToScreenUnits();
             set
             {
                 if (PolygonBody == null)
@@ -271,12 +271,12 @@ namespace Raptor.VelcroPhysicsImp
                     AfterAddedToWorldActions.Add(() =>
                     {
                         if (!(PolygonBody is null))
-                            PolygonBody.LinearDamping = value.ToPhysics();
+                            PolygonBody.LinearDamping = value.ToPhysicsUnit();
                     });
                 }
                 else
                 {
-                    PolygonBody.LinearDamping = value.ToPhysics();
+                    PolygonBody.LinearDamping = value.ToPhysicsUnit();
                 }
             }
         }
@@ -286,13 +286,13 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public float AngularVelocity
         {
-            get => PolygonBody is null ? 0 : PolygonBody.AngularVelocity.ToPixels();
+            get => PolygonBody is null ? 0 : PolygonBody.AngularVelocity.ToScreenUnits();
             set
             {
                 if (PolygonBody is null)
                     return;
 
-                PolygonBody.AngularVelocity = value.ToPhysics();
+                PolygonBody.AngularVelocity = value.ToPhysicsUnit();
             }
         }
 
@@ -301,7 +301,7 @@ namespace Raptor.VelcroPhysicsImp
         /// </summary>
         public float AngularDeceleration
         {
-            get => PolygonBody is null ? 0 : PolygonBody.AngularDamping.ToPixels();
+            get => PolygonBody is null ? 0 : PolygonBody.AngularDamping.ToScreenUnits();
             set
             {
                 if (PolygonBody == null)
@@ -309,12 +309,12 @@ namespace Raptor.VelcroPhysicsImp
                     AfterAddedToWorldActions.Add(() =>
                     {
                         if (!(PolygonBody is null))
-                            PolygonBody.AngularDamping = value.ToPhysics();
+                            PolygonBody.AngularDamping = value.ToPhysicsUnit();
                     });
                 }
                 else
                 {
-                    PolygonBody.AngularDamping = value.ToPhysics();
+                    PolygonBody.AngularDamping = value.ToPhysicsUnit();
                 }
             }
         }
@@ -340,7 +340,7 @@ namespace Raptor.VelcroPhysicsImp
             if (PolygonBody is null)
                 return;
 
-            PolygonBody.ApplyLinearImpulse(new Vector2(x.ToPhysics(), y.ToPhysics()));
+            PolygonBody.ApplyLinearImpulse(new Vector2(x.ToPhysicsUnit(), y.ToPhysicsUnit()));
         }
 
         /// <summary>
@@ -353,7 +353,7 @@ namespace Raptor.VelcroPhysicsImp
             if (PolygonBody is null)
                 return;
 
-            PolygonBody.ApplyAngularImpulse(value.ToPhysics());
+            PolygonBody.ApplyAngularImpulse(value.ToPhysicsUnit());
         }
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace Raptor.VelcroPhysicsImp
             if (PolygonBody is null)
                 return;
 
-            PolygonBody.ApplyForce(new Vector2(forceX.ToPhysics(), forceY.ToPhysics()), new Vector2(worldLocationX.ToPhysics(), worldLocationY.ToPhysics()));
+            PolygonBody.ApplyForce(new Vector2(forceX.ToPhysicsUnit(), forceY.ToPhysicsUnit()), new Vector2(worldLocationX.ToPhysicsUnit(), worldLocationY.ToPhysicsUnit()));
         }
 
         /// <summary>

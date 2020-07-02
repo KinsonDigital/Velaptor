@@ -11,7 +11,7 @@ namespace Raptor.Graphics
     using Raptor.OpenGL;
 
     /// <summary>
-    /// The texture to render to the screen.
+    /// The texture to render to a screen.
     /// </summary>
     public class Texture : ITexture
     {

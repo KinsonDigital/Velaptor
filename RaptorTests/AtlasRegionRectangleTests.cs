@@ -1,120 +1,123 @@
-﻿using Moq;
-using Raptor;
-using Xunit;
+﻿// <copyright file="AtlasRegionRectangleTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests
 {
+    using Moq;
+    using Raptor;
+    using Xunit;
+
     public class AtlasRegionRectangleTests
     {
+        #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvoked_SetsNameProp()
         {
-            //Act
+            // Act
             var rect = new AtlasRegionRectangle("test-name", It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
 
-            //Assert
+            // Assert
             Assert.Equal("test-name", rect.Name);
         }
-
 
         [Fact]
         public void Ctor_WhenInvoked_SetsXProp()
         {
-            //Act
+            // Act
             var rect = new AtlasRegionRectangle(It.IsAny<string>(), 1234, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>());
 
-            //Assert
+            // Assert
             Assert.Equal(1234, rect.X);
         }
-
 
         [Fact]
         public void Ctor_WhenInvoked_SetsYProp()
         {
-            //Act
+            // Act
             var rect = new AtlasRegionRectangle(It.IsAny<string>(), It.IsAny<int>(), 1234, It.IsAny<int>(), It.IsAny<int>());
-            //Assert
+
+            // Assert
             Assert.Equal(1234, rect.Y);
         }
-
 
         [Fact]
         public void Ctor_WhenInvoked_SetsWidthProp()
         {
-            //Act
+            // Act
             var rect = new AtlasRegionRectangle(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), 1234, It.IsAny<int>());
-            //Assert
+
+            // Assert
             Assert.Equal(1234, rect.Width);
         }
-
 
         [Fact]
         public void Ctor_WhenInvoked_SetsHeightProp()
         {
-            //Act
+            // Act
             var rect = new AtlasRegionRectangle(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), 1234);
-            //Assert
+
+            // Assert
             Assert.Equal(1234, rect.Height);
         }
+        #endregion
 
-
+        #region Method tests
         [Fact]
         public void EqualsOperator_WhenInvoked_ReturnTrue()
         {
-            //Arrange
+            // Arrange
             var rectA = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
             var rectB = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
 
-            //Act
+            // Act
             var actual = rectA == rectB;
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
-
 
         [Fact]
         public void NotEqualsOperator_WhenInvoked_ReturnTrue()
         {
-            //Arrange
+            // Arrange
             var rectA = new AtlasRegionRectangle("rect-A", 11, 22, 33, 44);
             var rectB = new AtlasRegionRectangle("rect-B", 55, 66, 77, 88);
 
-            //Act
+            // Act
             var actual = rectA != rectB;
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
-
 
         [Fact]
         public void Equals_WhenParamObjectIsDifferentType_ReturnFalse()
         {
-            //Arrange
+            // Arrange
             var rectA = new AtlasRegionRectangle("rect-A", 11, 22, 33, 44);
-            object differentObject = new object();
+            var differentObject = new object();
 
-            //Act
+            // Act
             var actual = rectA.Equals(differentObject);
 
-            //Assert
+            // Assert
             Assert.False(actual);
         }
-
 
         [Fact]
         public void Equals_WhenParamObjectSameType_ReturnFalse()
         {
-            //Arrange
+            // Arrange
             var rectA = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
             object rectB = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
 
-            //Act
+            // Act
             var actual = rectA.Equals(rectB);
 
-            //Assert
+            // Assert
             Assert.True(actual);
         }
+        #endregion
     }
 }
