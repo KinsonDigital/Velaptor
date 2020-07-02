@@ -9,58 +9,82 @@ namespace Raptor.Graphics
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
-    using System.Xml;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
     using Raptor.OpenGL;
 
-    public class SpriteBatch : IDisposable
+    /// <inheritdoc/>
+    public class SpriteBatch : ISpriteBatch
     {
-        private readonly int renderSurfaceWidth;
-        private readonly int renderSurfaceHeight;
-        private readonly GPUBuffer<VertexData> gpuBuffer;
-        private readonly int transDataLocation;
         private readonly Dictionary<int, SpriteBatchItem> batchItems = new Dictionary<int, SpriteBatchItem>();
-        private readonly ShaderProgram shader;
-        private readonly int maxBatchSize = 48;
-        private bool disposedValue = false;
+        private readonly IGLInvoker gl;
+        private readonly IShaderProgram shader;
+        private readonly IGPUBuffer gpuBuffer;
+        private int transDataLocation;
+        private bool isDisposed = false;
         private bool hasBegun;
+        private int batchSize = 10;
         private int currentBatchItem = 0;
         private int previousTextureID = -1;
-        private bool firstRender;
+        private int currentTextureID;
+        private bool firstRenderMethodInvoke = true;
 
-        public SpriteBatch(int renderSurfaceWidth, int renderSurfaceHeight)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpriteBatch"/> class.
+        /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
+        /// </summary>
+        /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="shader">The shader used for rendering.</param>
+        /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
+        [ExcludeFromCodeCoverage]
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message not used outside of class.")]
+        public SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
         {
-            this.shader = new ShaderProgram(this.maxBatchSize, "shader.vert", "shader.frag");
+            if (gl is null)
+                throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
 
-            for (var i = 0; i < this.maxBatchSize; i++)
-            {
-                this.batchItems.Add(i, SpriteBatchItem.Empty);
-            }
+            if (shader is null)
+                throw new ArgumentNullException(nameof(shader), $"The '{nameof(IShaderProgram)}' must not be null.");
 
-            this.renderSurfaceWidth = renderSurfaceWidth;
-            this.renderSurfaceHeight = renderSurfaceHeight;
+            if (gpuBuffer is null)
+                throw new ArgumentNullException(nameof(gpuBuffer), $"The '{nameof(IGPUBuffer)}' must not be null.");
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f); // TODO: Allow changing of this
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-
-            this.shader.UseProgram();
-
-            this.gpuBuffer = new GPUBuffer<VertexData>(this.maxBatchSize);
-
-            this.transDataLocation = GL.GetUniformLocation(this.shader.ProgramId, "uTransform");
+            this.gl = gl;
+            this.shader = shader;
+            this.gpuBuffer = gpuBuffer;
+            Init();
         }
 
-        public void Begin() => this.hasBegun = true;
+        /// <inheritdoc/>
+        public int BatchSize
+        {
+            get => this.batchSize;
+            set
+            {
+                this.batchSize = value;
+                Init();
+            }
+        }
 
+        /// <inheritdoc/>
+        public int RenderSurfaceWidth { get; set; } = 800;
+
+        /// <inheritdoc/>
+        public int RenderSurfaceHeight { get; set; } = 600;
+
+        /// <inheritdoc/>
+        public void BeginBatch() => this.hasBegun = true;
+
+        /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 
+        /// <inheritdoc/>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of method.")]
         public void Render(ITexture texture, int x, int y, Color tintColor)
         {
+            if (!this.hasBegun)
+                throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
+
             if (texture is null)
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
 
@@ -77,35 +101,28 @@ namespace Raptor.Graphics
             Render(texture, srcRect, destRect, 1, 0, tintColor);
         }
 
-        /// <summary>
-        /// Renders the given <see cref="Texture"/> using the given parametters.
-        /// </summary>
-        /// <param name="texture">The texture to render.</param>
-        /// <param name="srcRect">The rectangle of the sub texture within the texture to render.</param>
-        /// <param name="destRect">The destination rectangle of rendering.</param>
-        /// <param name="size">The size to render the texture at. 1 is for 100%/normal size.</param>
-        /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
-        /// <param name="tintColor">The color to apply to the rendering.</param>
+        /// <inheritdoc/>
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside method.")]
         public void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor)
         {
             if (!this.hasBegun)
-                throw new Exception("Must call begin() first");
+                throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
 
-            bool HasSwitchedTexture() => texture.ID != this.previousTextureID && !this.firstRender;
+            if (texture is null)
+                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
 
-            // var totalBatchItems = _batchItems.Count(i => !i.Value.IsEmpty);
-            var totalBatchItems = this.batchItems.Values.ToArray().CountKD(i => !i.IsEmpty);
+            this.currentTextureID = texture.ID;
+
+            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID && !this.firstRenderMethodInvoke;
+            var batchIsFull = this.batchItems.Values.ToArray().All(i => !i.IsEmpty);
 
             // Has the textures switched
-            if (HasSwitchedTexture() || totalBatchItems >= this.maxBatchSize)
+            if (hasSwitchedTexture || batchIsFull)
             {
                 RenderBatch();
                 this.currentBatchItem = 0;
                 this.previousTextureID = 0;
             }
-
-            this.currentBatchItem = this.currentBatchItem >= this.maxBatchSize ? 0 : this.currentBatchItem;
 
             var batchItem = this.batchItems[this.currentBatchItem];
             batchItem.TextureID = texture.ID;
@@ -118,25 +135,24 @@ namespace Raptor.Graphics
             this.batchItems[this.currentBatchItem] = batchItem;
 
             this.currentBatchItem += 1;
-            this.previousTextureID = texture.ID;
-            this.firstRender = true;
+            this.previousTextureID = this.currentTextureID;
+            this.firstRenderMethodInvoke = false;
         }
 
-        public void End()
+        /// <inheritdoc/>
+        public void EndBatch()
         {
             if (this.batchItems.All(i => i.Value.IsEmpty))
                 return;
 
             RenderBatch();
+
             this.currentBatchItem = 0;
             this.previousTextureID = 0;
             this.hasBegun = false;
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting
-        /// unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
@@ -150,31 +166,59 @@ namespace Raptor.Graphics
         /// <param name="disposing">True if managed resources should be disposed of.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.disposedValue)
+            if (this.isDisposed)
                 return;
 
             if (disposing)
             {
+                this.batchItems.Clear();
                 this.shader.Dispose();
-
-                // _vertexBuffer.Dispose();
-                // _indexBuffer.Dispose();
-                // _vertexArray.Dispose();
+                this.gpuBuffer.Dispose();
             }
 
-            this.disposedValue = true;
+            this.isDisposed = true;
         }
 
+        /// <summary>
+        /// Initializes the sprite batch.
+        /// </summary>
+        private void Init()
+        {
+            this.batchItems.Clear();
+            for (var i = 0; i < BatchSize; i++)
+            {
+                this.batchItems.Add(i, SpriteBatchItem.Empty);
+            }
+
+            this.gl.Enable(EnableCap.Blend);
+            this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            this.gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f); // TODO: Allow changing of this
+
+            this.gl.ActiveTexture(TextureUnit.Texture0);
+
+            this.shader.UseProgram();
+
+            this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
+        }
+
+        /// <summary>
+        /// Renders the current batch of textures.
+        /// </summary>
         private void RenderBatch()
         {
             var batchAmountToRender = this.batchItems.Count(i => !i.Value.IsEmpty);
+            var textureIsBound = false;
 
             for (var i = 0; i < this.batchItems.Values.Count; i++)
             {
                 if (this.batchItems[i].IsEmpty)
                     continue;
 
-                GL.BindTexture(TextureTarget.Texture2D, this.batchItems[i].TextureID);
+                if (!textureIsBound)
+                {
+                    this.gl.BindTexture(TextureTarget.Texture2D, this.batchItems[i].TextureID);
+                    textureIsBound = true;
+                }
 
                 UpdateGPUTransform(
                     i,
@@ -191,26 +235,30 @@ namespace Raptor.Graphics
                     this.batchItems[i].DestRect.Width,
                     this.batchItems[i].DestRect.Height,
                     this.batchItems[i].TintColor);
-
-                batchAmountToRender += 1;
             }
 
             // Only render the amount of elements for the amount of batch items to render.
             // 6 = the number of vertices/quad and each batch is a quad. batchAmontToRender is the total quads to render
             if (batchAmountToRender > 0)
-                GL.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.gl.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero);
 
-            EmptyBatchItems();
-        }
-
-        private void EmptyBatchItems()
-        {
+            // Empty the batch items
             for (var i = 0; i < this.batchItems.Count; i++)
             {
                 this.batchItems[i] = SpriteBatchItem.Empty;
             }
         }
 
+        /// <summary>
+        /// Updates the transform for the quad using the given data that matches the given <paramref name="quadID"/>.
+        /// </summary>
+        /// <param name="quadID">The ID of the quad to update.</param>
+        /// <param name="x">The X location of the quad.</param>
+        /// <param name="y">The Y location of the quad.</param>
+        /// <param name="width">The width of the quad.</param>
+        /// <param name="height">The height of the quad.</param>
+        /// <param name="size">The size of the quad. 1 represents normal size of 100%.</param>
+        /// <param name="angle">The angle of the quad in degrees.</param>
         private void UpdateGPUTransform(int quadID, float x, float y, int width, int height, float size, float angle)
         {
             // Create and send the transformation data to the GPU
@@ -222,7 +270,7 @@ namespace Raptor.Graphics
                 size,
                 angle);
 
-            GL.UniformMatrix4(this.transDataLocation + quadID, true, ref transMatrix);
+            this.gl.UniformMatrix4(this.transDataLocation + quadID, true, ref transMatrix);
         }
 
         /// <summary>
@@ -236,14 +284,14 @@ namespace Raptor.Graphics
         /// <param name="angle">The angle of the texture.</param>
         private Matrix4 BuildTransformationMatrix(float x, float y, int width, int height, float size, float angle)
         {
-            var scaleX = (float)width / this.renderSurfaceWidth;
-            var scaleY = (float)height / this.renderSurfaceHeight;
+            var scaleX = (float)width / RenderSurfaceWidth;
+            var scaleY = (float)height / RenderSurfaceHeight;
 
             scaleX *= size;
             scaleY *= size;
 
-            var ndcX = x.MapValue(0f, this.renderSurfaceWidth, -1f, 1f);
-            var ndcY = y.MapValue(0f, this.renderSurfaceHeight, 1f, -1f);
+            var ndcX = x.MapValue(0f, RenderSurfaceWidth, -1f, 1f);
+            var ndcY = y.MapValue(0f, RenderSurfaceHeight, 1f, -1f);
 
             // NOTE: (+ degrees) rotates CCW and (- degress) rotates CW
             var angleRadians = MathHelper.DegreesToRadians(angle);

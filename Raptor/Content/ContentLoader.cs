@@ -4,93 +4,81 @@
 
 namespace Raptor.Content
 {
-    using System;
-    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
-    using System.Text.Json;
     using FileIO.Core;
     using FileIO.File;
     using Raptor.Graphics;
-    using SixLabors.ImageSharp;
 
     /// <summary>
     /// Loads content.
     /// </summary>
     public class ContentLoader : IContentLoader
     {
-        private readonly string baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-        private readonly IImageFile imageFile;
-        private readonly ITextFile textFile;
+        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private readonly IImageFile? imageFile;
+        private readonly ITextFile? textFile;
+        private readonly ILoader<ITexture> textureLoader;
+        private readonly ILoader<AtlasRegionRectangle[]> atlasDataLoader;
+        private string contentRootDirectory = @$"{BaseDir}Content\";
         private string? graphicsDir;
-        private string? contentDir;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentLoader"/> class.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
         public ContentLoader()
         {
             this.imageFile = new ImageFile();
             this.textFile = new TextFile();
+            this.textureLoader = new TextureLoader(this.imageFile);
+            this.atlasDataLoader = new AtlasDataLoader<AtlasRegionRectangle>(this.textFile);
             SetupPaths();
         }
 
         /// <summary>
-        /// Creates a new instace of <see cref="ContentLoader"/>.
+        /// Initializes a new instance of the <see cref="ContentLoader"/> class.
         /// </summary>
-        public ContentLoader(IImageFile imageFile, ITextFile textFile)
+        /// <param name="textureLoader">The loader used to load textures.</param>
+        /// <param name="atlasDataLoader">The loader used to load atlas data.</param>
+        public ContentLoader(ILoader<ITexture> textureLoader, ILoader<AtlasRegionRectangle[]> atlasDataLoader)
         {
-            this.imageFile = imageFile;
-            this.textFile = textFile;
+            this.textureLoader = textureLoader;
+            this.atlasDataLoader = atlasDataLoader;
             SetupPaths();
         }
 
-        /// <summary>
-        /// Gets or sets the root directory for the content.
-        /// </summary>
+        /// <inheritdoc/>
         public string ContentRootDirectory
         {
-            get => this.contentDir is null ? string.Empty : this.contentDir;
-            set => this.contentDir = $@"{value}Content\";
+            get => this.contentRootDirectory;
+            set
+            {
+                value = value is null ? BaseDir : value;
+
+                // If the value ends with a backslash, leave as is, else add one
+                value = value.EndsWith('\\') ? value : $@"{value}\";
+
+                this.contentRootDirectory = $@"{value}Content\";
+            }
         }
 
-        /// <summary>
-        /// Loads a texture that has the given <paramref name="name"/>.
-        /// </summary>
-        /// <param name="name">The name of the texture to load.</param>
-        /// <returns></returns>
-        public Texture? LoadTexture(string name)
+        /// <inheritdoc/>
+        public ITexture? LoadTexture(string name)
         {
             var textureImagePath = $"{this.graphicsDir}{name}";
 
-            var (pixels, width, height) = this.imageFile.Load(textureImagePath);
-
-            return new Texture(pixels, width, height, name);
+            return this.textureLoader.Load(textureImagePath);
         }
 
-        public Dictionary<string, AtlasSubRect> LoadAtlasData(string fileName)
-        {
-            var result = new Dictionary<string, AtlasSubRect>();
-
-            var contentDir = $@"{this.baseDir}Content\";
-            var graphicsContent = $@"{contentDir}Graphics\";
-
-            var rawData = this.textFile.Load($"{graphicsContent}{fileName}");
-
-            var rectItems = JsonSerializer.Deserialize<AtlasSubRect[]>(rawData);
-
-            foreach (var item in rectItems)
-            {
-                result.Add(item.Name, item);
-            }
-
-            return result;
-        }
+        /// <inheritdoc/>
+        public AtlasRegionRectangle[] LoadAtlasData(string name)
+            => this.atlasDataLoader.Load($@"{this.graphicsDir}{name}");
 
         /// <summary>
         /// Sets up the pathing variables for the content location on disk.
         /// </summary>
-        private void SetupPaths()
-        {
-            this.contentDir = $@"{this.baseDir}Content\";
-            this.graphicsDir = @$"{this.contentDir}Graphics\";
-        }
+        private void SetupPaths() => this.graphicsDir = @$"{this.contentRootDirectory}Graphics\";
     }
 }

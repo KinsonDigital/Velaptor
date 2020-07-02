@@ -6,8 +6,6 @@ namespace Raptor.VelcroPhysicsImp
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
-    using VelcroPhysics.Collision.Shapes;
     using VelcroPhysics.Dynamics;
     using VelcroPhysics.Factories;
     using VelcroPhysics.Primitives;

@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "link",
+    "X": 0,
+    "Y": 0,
+    "Width": 88,
+    "Height": 110
+  },
+  {
+    "Name": "shooter",
+    "X": 88,
+    "Y": 0,
+    "Width": 92,
+    "Height": 81
+  }
+]

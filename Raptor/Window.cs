@@ -6,10 +6,7 @@ namespace Raptor
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using OpenToolkit.Mathematics;
-    using OpenToolkit.Windowing.Desktop;
     using Raptor.Content;
-    using Raptor.OpenGL;
 
     /// <summary>
     /// A system window that graphics can be rendered to.
@@ -22,40 +19,25 @@ namespace Raptor
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
-        /// <param name="window">The internal window implementation that manages a window.</param>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of constructor.")]
-        public Window(IWindow window)
+        /// <param name="window">The window implementation that contains the window functionality.</param>
+        /// <param name="contentLoader">Loads content.</param>
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception messages only used inside constructor.")]
+        public Window(IWindow window, IContentLoader? contentLoader)
         {
             if (window is null)
-                throw new ArgumentNullException(nameof(window), "IWindow must not be null");
+                throw new ArgumentNullException(nameof(window), "Window must not be null.");
+
+            if (contentLoader is null)
+                throw new ArgumentNullException(nameof(contentLoader), "Content loader must not be null.");
 
             this.window = window;
-            UpdateFrequency = 60;
+            this.window.Init = OnLoad;
+            this.window.Update = OnUpdate;
+            this.window.Draw = OnDraw;
+            this.window.WinResize = OnResize;
+            this.window.UpdateFreq = 60;
 
-            ContentLoader = new ContentLoader();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Window"/> class.
-        /// </summary>
-        public Window()
-        {
-            var gameWindowSettings = new GameWindowSettings();
-            var nativeWindowSettings = new NativeWindowSettings()
-            {
-                Size = new Vector2i(800, 600),
-            };
-
-            this.window = new GLWindow(gameWindowSettings, nativeWindowSettings)
-            {
-                Update = OnUpdate,
-                Draw = OnDraw,
-                Init = OnLoad,
-                WinResize = OnResize,
-            };
-            UpdateFrequency = 60;
-
-            ContentLoader = new ContentLoader();
+            ContentLoader = contentLoader;
         }
 
         /// <summary>
@@ -103,11 +85,13 @@ namespace Raptor
         /// <summary>
         /// Shows the window.
         /// </summary>
+        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of method.")]
         public void Show() => this.window.Show();
 
         /// <summary>
         /// Invoked when the window is loaded.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public virtual void OnLoad()
         {
         }
@@ -116,6 +100,7 @@ namespace Raptor
         /// Invoked when the window is updated.
         /// </summary>
         /// <param name="frameTime">The amount of time since the last frame.</param>
+        [ExcludeFromCodeCoverage]
         public virtual void OnUpdate(FrameTime frameTime)
         {
         }
@@ -124,6 +109,7 @@ namespace Raptor
         /// Invoked when the window renders its content.
         /// </summary>
         /// <param name="frameTime">The amount of time since the last frame.</param>
+        [ExcludeFromCodeCoverage]
         public virtual void OnDraw(FrameTime frameTime)
         {
         }
@@ -131,6 +117,7 @@ namespace Raptor
         /// <summary>
         /// Invoked when the window size changes.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public virtual void OnResize()
         {
         }

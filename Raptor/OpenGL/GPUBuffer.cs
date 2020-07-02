@@ -11,51 +11,46 @@ namespace Raptor.OpenGL
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
 
-    /// <summary>
-    /// Represents GPU vertex buffer memory.
-    /// </summary>
-    /// <typeparam name="T">The type of data to send to the GPU.</typeparam>
-    internal class GPUBuffer<T>
+    /// <inheritdoc/>
+    internal class GPUBuffer<T> : IGPUBuffer
         where T : struct
     {
-        private readonly int vertexArrayID = -1;
+        private readonly IGLInvoker gl;
+        private int vertexArrayID = -1;
         private int vertexBufferID = -1;
         private int indexBufferID = -1;
+        private int totalQuads = 2;
         private int totalVertexBytes;
         private int totalQuadSizeInBytes;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBuffer{T}"/> class.
+        /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
+        /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="totalQuads">The total number or quads to render per batch.</param>
-        public GPUBuffer(int totalQuads)
+        public GPUBuffer(IGLInvoker gl)
         {
-            CreateVertexBuffer(totalQuads);
-            CreateIndexBuffer(totalQuads);
-
-            this.vertexArrayID = GL.GenVertexArray();
-
-            // Bind the buffers to setup the attrib pointers
-            BindVertexArray();
-            BindVertexBuffer();
-            BindIndexBuffer();
-
-            SetupAttribPointers(this.vertexArrayID);
+            this.gl = gl;
+            Init();
         }
 
-        /// <summary>
-        /// Updates the given quad using the given information for a particular quad item in the GPU.
-        /// </summary>
-        /// <param name="quadID">The ID of the quad to update.</param>
-        /// <param name="srcRect">The area within the texture to update.</param>
-        /// <param name="textureWidth">The width of the texture.</param>
-        /// <param name="textureHeight">The height of the texture.</param>
-        /// <param name="tintColor">The color to apply to the texture area being rendered.</param>
+        /// <inheritdoc/>
+        public int TotalQuads
+        {
+            get => this.totalQuads;
+            set
+            {
+                this.totalQuads = value;
+                Init();
+            }
+        }
+
+        /// <inheritdoc/>
         public void UpdateQuad(int quadID, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor)
         {
-            var quadData = CreateQuad();
-
-            CalculateTextureCoordinates(ref quadData, srcRect, textureWidth, textureHeight);
+            var quadData = CreateQuadWithTextureCoordinates(srcRect, textureWidth, textureHeight);
 
             // Update the color
             quadData.Vertex1.TintColor = tintColor.ToGLColor();
@@ -70,7 +65,31 @@ namespace Raptor.OpenGL
             quadData.Vertex4.TransformIndex = quadID;
 
             var offset = this.totalQuadSizeInBytes * quadID;
-            GL.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, ref quadData);
+
+            this.gl.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, ref quadData);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.isDisposed)
+            {
+                this.gl.DeleteVertexArray(this.vertexArrayID);
+                this.gl.DeleteBuffer(this.vertexBufferID);
+                this.gl.DeleteBuffer(this.indexBufferID);
+
+                this.isDisposed = true;
+            }
         }
 
         /// <summary>
@@ -108,13 +127,14 @@ namespace Raptor.OpenGL
         /// Calculates the texture coordinates in the given <paramref name="quad"/> based on the area of the texture
         /// to render and the texture size.
         /// </summary>
-        /// <param name="quad">The quad to update.</param>
         /// <param name="srcRect">The area of the rectangle used to calculate the texture coordinates.</param>
         /// <param name="textureWidth">The with of the texture.</param>
         /// <param name="textureHeight">The height of the texture.</param>
-        private static void CalculateTextureCoordinates(ref QuadData quad, Rectangle srcRect, int textureWidth, int textureHeight)
+        private static QuadData CreateQuadWithTextureCoordinates(Rectangle srcRect, int textureWidth, int textureHeight)
         {
-            // TODO: Cache this value to avoid reflection for perf boost
+            var quad = CreateQuad();
+
+            // TODO: Condense this code down
             var topLeftCornerX = srcRect.Left.MapValue(0, textureWidth, 0, 1);
             var topLeftCornerY = srcRect.Top.MapValue(0, textureHeight, 1, 0);
             var topLeftCoord = new Vector2(topLeftCornerX, topLeftCornerY);
@@ -135,17 +155,38 @@ namespace Raptor.OpenGL
             quad.Vertex2.TextureCoord = topRightCoord;
             quad.Vertex3.TextureCoord = bottomRightCoord;
             quad.Vertex4.TextureCoord = bottomLeftCoord;
+
+            return quad;
+        }
+
+        /// <summary>
+        /// Initializes the <see cref="GPUBuffer{T}"/>.
+        /// </summary>
+        /// <param name="totalQuads">The total number or quads to render per batch.</param>
+        private void Init()
+        {
+            CreateVertexBuffer();
+            CreateIndexBuffer();
+
+            this.vertexArrayID = this.gl.GenVertexArray();
+
+            // Bind the buffers to setup the attrib pointers
+            BindVertexArray();
+            BindVertexBuffer();
+            BindIndexBuffer();
+
+            SetupAttribPointers(this.vertexArrayID);
         }
 
         /// <summary>
         /// Unbinds the index buffer that is attached to the vertex array.
         /// </summary>
-        private static void UnbindIndexBuffer() => GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+        private void UnbindIndexBuffer() => this.gl.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
         /// <summary>
         /// Unbinds the vertex buffer.
         /// </summary>
-        private static void UnbindVertexBuffer() => GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        private void UnbindVertexBuffer() => this.gl.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
         /// <summary>
         /// Sets up the attribute pointers in the vertex buffer to hold vertex buffer data for each pixel.
@@ -153,32 +194,32 @@ namespace Raptor.OpenGL
         /// <param name="vertexArrayID">The ID of the vertex array.</param>
         private void SetupAttribPointers(int vertexArrayID)
         {
-            var props = typeof(T).GetFields();
+            var fields = typeof(T).GetFields();
 
             /*TODO:
              * 3. Possibly use an custom attribute to set the shader location of a field
              * 4. Need to check if type is a struct and throw exception if it is not
              */
 
-            var offset = 0;
-            var previousSize = 0; // The element size of the previous field
+            var offset = 0u;
+            var previousSize = 0u; // The element size of the previous field
 
-            for (var i = 0; i < props.Length; i++)
+            for (var i = 0; i < fields.Length; i++)
             {
                 var stride = this.totalVertexBytes;
 
                 // The number of float elements in the field. Ex: Vector3 has a size of 3
-                var size = VertexDataAnalyzer.TotalItemsForType(props[i].FieldType);
+                var totalElements = VertexDataAnalyzer.TotalDataElementsForType(fields[i].FieldType);
 
                 // The type of OpenGL VertexAttribPointerType based on the field type
-                var attribType = VertexDataAnalyzer.GetVertexPointerType(props[i].FieldType);
+                var attribType = VertexDataAnalyzer.GetVertexPointerType(fields[i].FieldType);
 
-                GL.EnableVertexArrayAttrib(vertexArrayID, i);
+                this.gl.EnableVertexArrayAttrib(vertexArrayID, i);
 
-                offset = i == 0 ? 0 : offset + (previousSize * VertexDataAnalyzer.GetTypeByteSize(typeof(float)));
-                GL.VertexAttribPointer(i, size, attribType, false, stride, offset);
+                offset = i == 0 ? 0 : offset + (previousSize * VertexDataAnalyzer.GetPrimitiveByteSize(typeof(float)));
+                this.gl.VertexAttribPointer(i, (int)totalElements, attribType, false, stride, (int)offset);
 
-                previousSize = size;
+                previousSize = (uint)totalElements;
             }
         }
 
@@ -187,21 +228,15 @@ namespace Raptor.OpenGL
         /// in the the <paramref name="totalQuads"/> param.
         /// </summary>
         /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
-        private void CreateVertexBuffer(int totalQuads)
+        private void CreateVertexBuffer()
         {
-            this.totalVertexBytes = VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
+            // TODO: Convert values that should be uint to uint
+            this.totalVertexBytes = (int)VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
             this.totalQuadSizeInBytes = this.totalVertexBytes * 4;
 
-            this.vertexBufferID = GL.GenBuffer();
+            this.vertexBufferID = this.gl.GenBuffer();
 
-            var quadData = new List<QuadData>();
-
-            for (var i = 0; i < totalQuads; i++)
-            {
-                quadData.Add(CreateQuad());
-            }
-
-            AllocateVertexBufferMemory(totalQuads);
+            AllocateVertexBuffer();
         }
 
         /// <summary>
@@ -209,13 +244,13 @@ namespace Raptor.OpenGL
         /// total number quads in the <paramref name="totalQuads"/> param.
         /// </summary>
         /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
-        private void CreateIndexBuffer(int totalQuads)
+        private void CreateIndexBuffer()
         {
-            this.indexBufferID = GL.GenBuffer();
+            this.indexBufferID = this.gl.GenBuffer();
 
             var indexData = new List<uint>();
 
-            for (uint i = 0; i < totalQuads; i++)
+            for (uint i = 0; i < this.totalQuads; i++)
             {
                 var maxIndex = indexData.Count <= 0 ? 0 : indexData.Max() + 1;
 
@@ -234,22 +269,22 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Allocates enough memory for the vertex buffer to hold the given quad <paramref name="totalQUads"/> items.
+        /// Allocates enough memory for the vertex buffer to hold the given quad <paramref name="totalQuads"/> items.
         /// </summary>
-        /// <param name="totalQUads">The total number of quads that the vertex buffer can hold.</param>
-        private void AllocateVertexBufferMemory(int totalQUads)
+        /// <param name="totalQuads">The total number of quads that the vertex buffer can hold.</param>
+        private void AllocateVertexBuffer()
         {
-            var sizeInBytes = this.totalQuadSizeInBytes * totalQUads;
+            var sizeInBytes = this.totalQuadSizeInBytes * this.totalQuads;
 
             BindVertexBuffer();
-            GL.BufferData(BufferTarget.ArrayBuffer, sizeInBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            this.gl.BufferData(BufferTarget.ArrayBuffer, sizeInBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw);
             UnbindVertexBuffer();
         }
 
         /// <summary>
         /// Binds the vertex buffer.
         /// </summary>
-        private void BindVertexBuffer() => GL.BindBuffer(BufferTarget.ArrayBuffer, this.vertexBufferID);
+        private void BindVertexBuffer() => this.gl.BindBuffer(BufferTarget.ArrayBuffer, this.vertexBufferID);
 
         /// <summary>
         /// Uploads the given <paramref name="data"/> to the GPU.
@@ -259,7 +294,7 @@ namespace Raptor.OpenGL
         {
             BindIndexBuffer();
 
-            GL.BufferData(
+            this.gl.BufferData(
                 BufferTarget.ElementArrayBuffer,
                 data.Length * sizeof(uint),
                 data,
@@ -271,11 +306,11 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Binds the index buffer.
         /// </summary>
-        private void BindIndexBuffer() => GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.indexBufferID);
+        private void BindIndexBuffer() => this.gl.BindBuffer(BufferTarget.ElementArrayBuffer, this.indexBufferID);
 
         /// <summary>
         /// Binds the vertex array.
         /// </summary>
-        private void BindVertexArray() => GL.BindVertexArray(this.vertexArrayID);
+        private void BindVertexArray() => this.gl.BindVertexArray(this.vertexArrayID);
     }
 }

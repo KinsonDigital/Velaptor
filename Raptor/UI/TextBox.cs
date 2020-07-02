@@ -6,10 +6,8 @@ namespace Raptor.UI
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
     using System.Globalization;
     using System.Numerics;
-    using OpenToolkit.Graphics.OpenGL;
     using Raptor.Content;
     using Raptor.Graphics;
     using Raptor.Input;

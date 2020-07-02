@@ -1,25 +1,20 @@
-﻿using FileIO.File;
 using Raptor;
 using Raptor.Content;
 using Raptor.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 
 namespace RaptorSandBox
 {
     public class MyWindow : Window
     {
-        private Texture? linkTexture;
-        private SpriteBatch? spriteBatch;
+        private ITexture? linkTexture;
+        private ITexture? dungeonTexture;
+        private readonly AtlasRegionRectangle[] atlasData;
+        private ISpriteBatch? spriteBatch;
 
 
-        public MyWindow()
+        public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
-            Width = 1020;
-            Height = 800;
         }
 
 
@@ -28,8 +23,11 @@ namespace RaptorSandBox
             if (ContentLoader is null)
                 throw new NullReferenceException($"The ContentLoader must not be null.");
 
+            this.spriteBatch = RaptorFactory.CreateSpriteBatch(Width, Height);
+
+            this.dungeonTexture = ContentLoader.LoadTexture("dungeon.png");
             this.linkTexture = ContentLoader.LoadTexture("Link.png");
-            this.spriteBatch = new SpriteBatch(Width, Height);
+
             base.OnLoad();
         }
 
@@ -42,11 +40,12 @@ namespace RaptorSandBox
 
         public override void OnDraw(FrameTime frameTime)
         {
-            this.spriteBatch?.Begin();
+            this.spriteBatch?.BeginBatch();
 
+            this.spriteBatch?.Render(this.dungeonTexture, 0, 0);
             this.spriteBatch?.Render(this.linkTexture, 400, 400);
 
-            this.spriteBatch?.End();
+            this.spriteBatch?.EndBatch();
 
             base.OnDraw(frameTime);
         }
