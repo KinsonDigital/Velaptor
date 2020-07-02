@@ -1,4 +1,8 @@
-﻿namespace RaptorTests.OpenGL
+﻿// <copyright file="SpriteBatchItemTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace RaptorTests.OpenGL
 {
     using System;
     using System.Collections.Generic;
