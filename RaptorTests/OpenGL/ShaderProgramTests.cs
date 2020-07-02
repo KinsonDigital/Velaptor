@@ -20,19 +20,13 @@ namespace RaptorTests.OpenGL
     {
         private readonly Mock<ITextFile> mockTextFile;
         private readonly Mock<IGLInvoker> mockGL;
-        //TODO: This might have to be used somewhere else to make it work
+
+        // TODO: This might have to be used somewhere else to make it work
         private readonly string vertexShaderPath = $@"shader.vert";
         private readonly string fragShaderPath = $@"shader.frag";
         private readonly uint vertextShaderID = 1234;
         private readonly uint fragShaderID = 5678;
         private readonly uint shaderProgramID = 1928;
-
-        // TODO: This might have to be used somewhere else to make it work
-        private readonly string vertexShaderPath = $@"shader.vert";
-        private readonly string fragShaderPath = $@"shader.frag";
-        private readonly int vertextShaderID = 1234;
-        private readonly int fragShaderID = 5678;
-        private readonly int shaderProgramID = 1928;
 
         public ShaderProgramTests()
         {
@@ -40,8 +34,8 @@ namespace RaptorTests.OpenGL
 
             this.mockGL = new Mock<IGLInvoker>();
 
-            int getShaderStatusCode = 1;
-            int getProgramStatusCode = 1;
+            var getShaderStatusCode = 1;
+            var getProgramStatusCode = 1;
             this.mockGL.Setup(m => m.CreateShader(ShaderType.VertexShader)).Returns(this.vertextShaderID);
             this.mockGL.Setup(m => m.CreateShader(ShaderType.FragmentShader)).Returns(this.fragShaderID);
             this.mockGL.Setup(m => m.GetShader(It.IsAny<uint>(), ShaderParameter.CompileStatus, out getShaderStatusCode));

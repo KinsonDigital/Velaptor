@@ -52,7 +52,7 @@ namespace Raptor.OpenGL
             {
                 SpriteBatchItem result;
 
-                result.TextureID = -1;
+                result.TextureID = 0;
                 result.Angle = 0;
                 result.Size = 0;
                 result.SrcRect = Rectangle.Empty;

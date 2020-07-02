@@ -352,7 +352,7 @@ namespace RaptorTests.Graphics
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
         private void AssertBatchRendered(uint totalItemsInBatch, uint totalBatchUpdates, uint totalTextureBinds, uint totalDrawCalls)
-            => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, new Matrix4());
+            => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, default);
 
         /// <summary>
         /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
@@ -390,7 +390,7 @@ namespace RaptorTests.Graphics
                     6 * totalItemsInBatch,
                     DrawElementsType.UnsignedInt,
                     IntPtr.Zero),
-                Times.Exactly(totalDrawCalls),
+                Times.Exactly((int)totalDrawCalls),
                 $"Expected total draw calls of {totalDrawCalls} not reached.");
         }
 
