@@ -170,16 +170,6 @@ namespace RaptorTests
             // Assert
             this.mockWindow.Verify(m => m.Dispose(), Times.Once());
         }
-
-        [Fact]
-        public void Dispose_WithNullWindow_Expectation()
-        {
-            // Arrange
-
-            // Act
-
-            // Assert
-        }
         #endregion
     }
 }
