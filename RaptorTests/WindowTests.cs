@@ -1,4 +1,4 @@
-using Moq;
+﻿using Moq;
 using Raptor;
 using Raptor.Content;
 using RaptorTests.Fakes;
@@ -19,6 +19,7 @@ namespace RaptorTests
             this.mockContentLoader = new Mock<IContentLoader>();
         }
 
+        #region Prop Tests
         [Fact]
         public void Title_WhenSettingValue_ReturnsCorrectValue()
         {
@@ -90,7 +91,10 @@ namespace RaptorTests
             //Assert
             Assert.Equal(1234, actual);
         }
+        #endregion
 
+
+        #region Method tests
         [Fact]
         public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullWindow_ThrowsException()
         {
@@ -163,5 +167,16 @@ namespace RaptorTests
             //Assert
             this.mockWindow.Verify(m => m.Dispose(), Times.Once());
         }
+
+        [Fact]
+        public void Dispose_WithNullWindow_Expectation()
+        {
+            //Arrange
+
+            //Act
+
+            //Assert
+        }
+        #endregion
     }
 }
