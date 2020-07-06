@@ -13,7 +13,7 @@ namespace Raptor.Sound
         // private Sound _sound;
         // #endregion
 
-        // #region Constructors
+        // #region Constructor
         // public SoundEffect(string soundEffectName)
         // {
         //    SoundBuffer buffer = new SoundBuffer(soundEffectName);

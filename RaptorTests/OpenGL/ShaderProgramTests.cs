@@ -46,6 +46,7 @@ namespace RaptorTests.OpenGL
             this.mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
         }
 
+        #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvoked_LoadsShaderSourceCode()
         {
@@ -162,7 +163,9 @@ namespace RaptorTests.OpenGL
                 var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
             }, $"Error occurred while linking program with ID '{this.shaderProgramID}'\nProgram Linking Error");
         }
+        #endregion
 
+        #region Method Tests
         [Fact]
         public void UseProgram_WhenInvoked_SetsProgramForUse()
         {
@@ -213,5 +216,6 @@ namespace RaptorTests.OpenGL
                 return new[] { "in vec2 v_TexCoord;", "in vec4 v_TintClr;" };
             });
         }
+        #endregion
     }
 }

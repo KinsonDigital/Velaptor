@@ -13,6 +13,7 @@ namespace RaptorTests.Input
     /// </summary>
     public class MouseEventArgsTests
     {
+        #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvoking_SetsMouseInputStatePropValue()
         {
@@ -41,5 +42,6 @@ namespace RaptorTests.Input
             // Assert
             Assert.Equal(expected, actual);
         }
+        #endregion
     }
 }

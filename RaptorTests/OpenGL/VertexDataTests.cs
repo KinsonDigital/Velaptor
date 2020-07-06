@@ -10,6 +10,7 @@ namespace RaptorTests.OpenGL
 
     public class VertexDataTests
     {
+        #region Overloaded Operator Tests
         [Fact]
         public void NotEqualsOperator_WhenInvoked_ReturnsCorrectResult()
         {
@@ -61,7 +62,9 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.True(actual);
         }
+        #endregion
 
+        #region Method Tests
         [Theory]
         [ClassData(typeof(VertexDataTestData))]
         public void Equals_WhenInvoked_ReturnsCorrectResult(Vector3 vertex, Vector2 textureCoord, Vector4 tintClr, int transformIndex, bool expected)
@@ -134,5 +137,6 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.True(actual);
         }
+        #endregion
     }
 }

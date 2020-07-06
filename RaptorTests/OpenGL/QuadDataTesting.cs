@@ -4,29 +4,13 @@
 
 namespace RaptorTests.OpenGL
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using OpenToolkit.Mathematics;
     using Raptor.OpenGL;
     using Xunit;
 
     public class QuadDataTesting
     {
-        [Fact]
-        public void Equals_WithEqualParam_ReturnsTrue()
-        {
-            // Arrange
-            var quadA = default(QuadData);
-            var quadB = default(QuadData);
-
-            // Act
-            var actual = quadA.Equals(quadB);
-
-            // Assert
-            Assert.True(actual);
-        }
-
+        #region Overloaded Operator Tests
         [Fact]
         public void EqualsOperator_WithBothOperandsEqual_ReturnsTrue()
         {
@@ -60,6 +44,22 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.True(actual);
         }
+        #endregion
+
+        #region Method Tests
+        [Fact]
+        public void Equals_WithEqualParam_ReturnsTrue()
+        {
+            // Arrange
+            var quadA = default(QuadData);
+            var quadB = default(QuadData);
+
+            // Act
+            var actual = quadA.Equals(quadB);
+
+            // Assert
+            Assert.True(actual);
+        }
 
         [Fact]
         public void Equals_WhenInvokedWithParamOfDifferentType_ReturnsFalse()
@@ -88,5 +88,6 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.True(actual);
         }
+        #endregion
     }
 }

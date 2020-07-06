@@ -41,6 +41,7 @@ namespace RaptorTests.Graphics
             this.mockTextFile = new Mock<ITextFile>();
         }
 
+        #region Constructor Tets
         [Fact]
         public void Ctor_WhenInvokedWithNullGLInvoker_ThrowsException()
         {
@@ -136,7 +137,9 @@ namespace RaptorTests.Graphics
             // Assert
             this.mockGL.Verify(m => m.GetUniformLocation(It.IsAny<uint>(), "uTransform"), Times.Once());
         }
+        #endregion
 
+        #region Method Tests
         [Fact]
         public void Render_WhenUsingOverloadWithFourParamsAndWithoutCallingBeginFirst_ThrowsException()
         {
@@ -345,6 +348,7 @@ namespace RaptorTests.Graphics
             this.mockShader.Verify(m => m.Dispose(), Times.Once());
             this.mockBuffer.Verify(m => m.Dispose(), Times.Once());
         }
+        #endregion
 
         /// <summary>
         /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.

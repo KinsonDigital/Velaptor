@@ -14,6 +14,7 @@ namespace RaptorTests.OpenGL
 
     public class VertexDataAnalyzerTests
     {
+        #region Method tests
         [Fact]
         public void GetTotalBytesForStruct_WithNullParam_ThrowsException()
         {
@@ -109,5 +110,6 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.Equal(VertexAttribPointerType.Float, actual);
         }
+        #endregion
     }
 }

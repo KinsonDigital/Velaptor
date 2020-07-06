@@ -1,14 +1,16 @@
-﻿using Raptor.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using Xunit;
+﻿// <copyright file="SpriteBatchItemTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.OpenGL
 {
+    using System.Drawing;
+    using Raptor.OpenGL;
+    using Xunit;
+
     public class SpriteBatchItemTests
     {
+        #region Prop Tests
         [Fact]
         public void Empty_WhenGettingValue_ReturnsCorrectResult()
         {
@@ -36,5 +38,6 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.True(actual);
         }
+        #endregion
     }
 }
