@@ -12,7 +12,7 @@ namespace Raptor.OpenGL
     using OpenToolkit.Mathematics;
 
     /// <inheritdoc/>
-    internal class GPUBuffer<T> : IGPUBuffer
+    public class GPUBuffer<T> : IGPUBuffer
         where T : struct
     {
         private readonly IGLInvoker gl;
@@ -30,7 +30,7 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="totalQuads">The total number or quads to render per batch.</param>
-        public GPUBuffer(IGLInvoker gl)
+        internal GPUBuffer(IGLInvoker gl)
         {
             this.gl = gl;
             Init();

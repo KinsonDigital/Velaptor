@@ -1,5 +1,6 @@
 using Raptor;
 using Raptor.Content;
+using Raptor.Factories;
 using Raptor.Graphics;
 using System;
 
@@ -23,7 +24,7 @@ namespace RaptorSandBox
             if (ContentLoader is null)
                 throw new NullReferenceException($"The ContentLoader must not be null.");
 
-            this.spriteBatch = RaptorFactory.CreateSpriteBatch(Width, Height);
+            this.spriteBatch = SpriteBatchFactory.CreateSpriteBatch(Width, Height);
 
             this.dungeonTexture = ContentLoader.LoadTexture("dungeon.png");
             this.linkTexture = ContentLoader.LoadTexture("Link.png");

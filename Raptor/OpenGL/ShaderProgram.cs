@@ -25,7 +25,7 @@ namespace Raptor.OpenGL
         /// <param name="batchSize">The batch size that the shader will support.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
         /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        public ShaderProgram(IGLInvoker gl, ITextFile textFile)
+        internal ShaderProgram(IGLInvoker gl, ITextFile textFile)
         {
             this.gl = gl;
             this.textFile = textFile;
