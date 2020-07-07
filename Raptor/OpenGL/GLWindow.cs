@@ -11,6 +11,8 @@ namespace Raptor.OpenGL
     using OpenToolkit.Mathematics;
     using OpenToolkit.Windowing.Common;
     using OpenToolkit.Windowing.Desktop;
+    using OpenToolkit.Windowing.GraphicsLibraryFramework;
+    using Raptor.Input;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -18,7 +20,7 @@ namespace Raptor.OpenGL
     [ExcludeFromCodeCoverage]
     internal sealed class GLWindow : IWindow
     {
-        private readonly GameWindow gameWindow;
+        private readonly InternalGLWindow gameWindow;
         private readonly DebugProc debugProc;
         private readonly IGLInvoker gl;
         private bool isShuttingDown;
@@ -39,7 +41,7 @@ namespace Raptor.OpenGL
                 Size = new Vector2i(width, height),
             };
 
-            this.gameWindow = new GameWindow(gameWinSettings, nativeWinSettings);
+            this.gameWindow = new InternalGLWindow(gameWinSettings, nativeWinSettings);
 
             /*NOTE:
              * The IoC container get instance must be called after the
@@ -53,6 +55,8 @@ namespace Raptor.OpenGL
             this.gameWindow.RenderFrame += GameWindow_RenderFrame;
             this.gameWindow.Resize += GameWindow_Resize;
             this.gameWindow.Unload += GameWindow_Unload;
+            this.gameWindow.KeyDown += GameWindow_KeyDown;
+            this.gameWindow.KeyUp += GameWindow_KeyUp;
             this.gameWindow.UpdateFrequency = 60;
 
             this.debugProc = DebugCallback;
@@ -136,6 +140,14 @@ namespace Raptor.OpenGL
             GC.SuppressFinalize(this);
         }
 
+        private void GameWindow_KeyDown(KeyboardKeyEventArgs e)
+        {
+        }
+
+        private void GameWindow_KeyUp(KeyboardKeyEventArgs e)
+        {
+        }
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -167,7 +179,7 @@ namespace Raptor.OpenGL
         /// Invokes the <see cref="Update"/> action property.
         /// </summary>
         /// <param name="deltaTime">The frame event args.</param>
-        private void GameWindow_UpdateFrame(FrameEventArgs deltaTime)
+        private unsafe void GameWindow_UpdateFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)
                 return;
