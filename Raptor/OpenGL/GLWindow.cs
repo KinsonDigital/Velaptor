@@ -12,7 +12,6 @@ namespace Raptor.OpenGL
     using OpenToolkit.Windowing.Common;
     using OpenToolkit.Windowing.Desktop;
     using OpenToolkit.Windowing.GraphicsLibraryFramework;
-    using Raptor.Input;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.

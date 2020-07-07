@@ -10,7 +10,6 @@ namespace Raptor.UI
     using System.Numerics;
     using Raptor.Content;
     using Raptor.Graphics;
-    using Raptor.Input;
 
     /// <summary>
     /// Provides the ability to enter text into a box.
