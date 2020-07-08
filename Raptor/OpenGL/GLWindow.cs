@@ -12,6 +12,7 @@ namespace Raptor.OpenGL
     using OpenToolkit.Windowing.Common;
     using OpenToolkit.Windowing.Desktop;
     using OpenToolkit.Windowing.GraphicsLibraryFramework;
+    using Raptor.Input;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -141,10 +142,16 @@ namespace Raptor.OpenGL
 
         private void GameWindow_KeyDown(KeyboardKeyEventArgs e)
         {
+            var mappedKey = (KeyCode)e.Key;
+
+            Keyboard.SetKeyState(mappedKey, true);
         }
 
         private void GameWindow_KeyUp(KeyboardKeyEventArgs e)
         {
+            var mappedKey = (KeyCode)e.Key;
+
+            Keyboard.SetKeyState(mappedKey, false);
         }
 
         /// <summary>
