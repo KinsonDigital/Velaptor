@@ -10,7 +10,6 @@ namespace RaptorTests.Input
     using System.Collections.Generic;
     using System.Linq;
     using Raptor.Input;
-    using RaptorTests.Helpers;
     using Xunit;
 
     public class KeyboadStateTests
@@ -33,27 +32,27 @@ namespace RaptorTests.Input
 #pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
 #pragma warning restore SA1005 // Single line comments should begin with single space
-                new object[] { KeyCode.D0,          true },
-                new object[] { KeyCode.D1,          true },
-                new object[] { KeyCode.D2,          true },
-                new object[] { KeyCode.D3,          true },
-                new object[] { KeyCode.D4,          true },
-                new object[] { KeyCode.D5,          true },
-                new object[] { KeyCode.D6,          true },
-                new object[] { KeyCode.D7,          true },
-                new object[] { KeyCode.D8,          true },
-                new object[] { KeyCode.D9,          true },
+                new object[] { KeyCode.Number0,          true },
+                new object[] { KeyCode.Number1,          true },
+                new object[] { KeyCode.Number2,          true },
+                new object[] { KeyCode.Number3,          true },
+                new object[] { KeyCode.Number4,          true },
+                new object[] { KeyCode.Number5,          true },
+                new object[] { KeyCode.Number6,          true },
+                new object[] { KeyCode.Number7,          true },
+                new object[] { KeyCode.Number8,          true },
+                new object[] { KeyCode.Number9,          true },
 
-                new object[] { KeyCode.NumPad0,     false },
-                new object[] { KeyCode.NumPad1,     false },
-                new object[] { KeyCode.NumPad2,     false },
-                new object[] { KeyCode.NumPad3,     false },
-                new object[] { KeyCode.NumPad4,     false },
-                new object[] { KeyCode.NumPad5,     false },
-                new object[] { KeyCode.NumPad6,     false },
-                new object[] { KeyCode.NumPad7,     false },
-                new object[] { KeyCode.NumPad8,     false },
-                new object[] { KeyCode.NumPad9,     false },
+                new object[] { KeyCode.Numpad0,     false },
+                new object[] { KeyCode.Numpad1,     false },
+                new object[] { KeyCode.Numpad2,     false },
+                new object[] { KeyCode.Numpad3,     false },
+                new object[] { KeyCode.Numpad4,     false },
+                new object[] { KeyCode.Numpad5,     false },
+                new object[] { KeyCode.Numpad6,     false },
+                new object[] { KeyCode.Numpad7,     false },
+                new object[] { KeyCode.Numpad8,     false },
+                new object[] { KeyCode.Numpad9,     false },
             };
 
         public static IEnumerable<object[]> StandardNumberKeysWithShiftDownCharacterData =>
@@ -62,16 +61,16 @@ namespace RaptorTests.Input
 #pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
 #pragma warning restore SA1005 // Single line comments should begin with single space
-                new object[] { KeyCode.D0,          ')' },
-                new object[] { KeyCode.D1,          '!' },
-                new object[] { KeyCode.D2,          '@' },
-                new object[] { KeyCode.D3,          '#' },
-                new object[] { KeyCode.D4,          '$' },
-                new object[] { KeyCode.D5,          '%' },
-                new object[] { KeyCode.D6,          '^' },
-                new object[] { KeyCode.D7,          '&' },
-                new object[] { KeyCode.D8,          '*' },
-                new object[] { KeyCode.D9,          '(' },
+                new object[] { KeyCode.Number0,          ')' },
+                new object[] { KeyCode.Number1,          '!' },
+                new object[] { KeyCode.Number2,          '@' },
+                new object[] { KeyCode.Number3,          '#' },
+                new object[] { KeyCode.Number4,          '$' },
+                new object[] { KeyCode.Number5,          '%' },
+                new object[] { KeyCode.Number6,          '^' },
+                new object[] { KeyCode.Number7,          '&' },
+                new object[] { KeyCode.Number8,          '*' },
+                new object[] { KeyCode.Number9,          '(' },
             };
 
         public static IEnumerable<object[]> StandardNumberKeysWithShiftUpCharacterData =>
@@ -80,16 +79,16 @@ namespace RaptorTests.Input
 #pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
 #pragma warning restore SA1005 // Single line comments should begin with single space
-                new object[] { KeyCode.D0,          '0' },
-                new object[] { KeyCode.D1,          '1' },
-                new object[] { KeyCode.D2,          '2' },
-                new object[] { KeyCode.D3,          '3' },
-                new object[] { KeyCode.D4,          '4' },
-                new object[] { KeyCode.D5,          '5' },
-                new object[] { KeyCode.D6,          '6' },
-                new object[] { KeyCode.D7,          '7' },
-                new object[] { KeyCode.D8,          '8' },
-                new object[] { KeyCode.D9,          '9' },
+                new object[] { KeyCode.Number0,          '0' },
+                new object[] { KeyCode.Number1,          '1' },
+                new object[] { KeyCode.Number2,          '2' },
+                new object[] { KeyCode.Number3,          '3' },
+                new object[] { KeyCode.Number4,          '4' },
+                new object[] { KeyCode.Number5,          '5' },
+                new object[] { KeyCode.Number6,          '6' },
+                new object[] { KeyCode.Number7,          '7' },
+                new object[] { KeyCode.Number8,          '8' },
+                new object[] { KeyCode.Number9,          '9' },
             };
 
         public static IEnumerable<object[]> NumpadNumberKeyCodeData =>
@@ -98,27 +97,27 @@ namespace RaptorTests.Input
 #pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
 #pragma warning restore SA1005 // Single line comments should begin with single space
-                new object[] { KeyCode.D0,          false },
-                new object[] { KeyCode.D1,          false },
-                new object[] { KeyCode.D2,          false },
-                new object[] { KeyCode.D3,          false },
-                new object[] { KeyCode.D4,          false },
-                new object[] { KeyCode.D5,          false },
-                new object[] { KeyCode.D6,          false },
-                new object[] { KeyCode.D7,          false },
-                new object[] { KeyCode.D8,          false },
-                new object[] { KeyCode.D9,          false },
+                new object[] { KeyCode.Number0,          false },
+                new object[] { KeyCode.Number1,          false },
+                new object[] { KeyCode.Number2,          false },
+                new object[] { KeyCode.Number3,          false },
+                new object[] { KeyCode.Number4,          false },
+                new object[] { KeyCode.Number5,          false },
+                new object[] { KeyCode.Number6,          false },
+                new object[] { KeyCode.Number7,          false },
+                new object[] { KeyCode.Number8,          false },
+                new object[] { KeyCode.Number9,          false },
 
-                new object[] { KeyCode.NumPad0,     true },
-                new object[] { KeyCode.NumPad1,     true },
-                new object[] { KeyCode.NumPad2,     true },
-                new object[] { KeyCode.NumPad3,     true },
-                new object[] { KeyCode.NumPad4,     true },
-                new object[] { KeyCode.NumPad5,     true },
-                new object[] { KeyCode.NumPad6,     true },
-                new object[] { KeyCode.NumPad7,     true },
-                new object[] { KeyCode.NumPad8,     true },
-                new object[] { KeyCode.NumPad9,     true },
+                new object[] { KeyCode.Numpad0,     true },
+                new object[] { KeyCode.Numpad1,     true },
+                new object[] { KeyCode.Numpad2,     true },
+                new object[] { KeyCode.Numpad3,     true },
+                new object[] { KeyCode.Numpad4,     true },
+                new object[] { KeyCode.Numpad5,     true },
+                new object[] { KeyCode.Numpad6,     true },
+                new object[] { KeyCode.Numpad7,     true },
+                new object[] { KeyCode.Numpad8,     true },
+                new object[] { KeyCode.Numpad9,     true },
             };
 
         public static IEnumerable<object[]> LetterKeyUpperCaseCharacterData =>
@@ -188,92 +187,53 @@ namespace RaptorTests.Input
         public static IEnumerable<object[]> SymbolKeyCharacterWithShiftUpData =>
             new List<object[]>
             {
-                new object[] { KeyCode.OemPlus, '=' },
-                new object[] { KeyCode.OemComma, ',' },
-                new object[] { KeyCode.OemMinus, '-' },
-                new object[] { KeyCode.OemPeriod, '.' },
-                new object[] { KeyCode.OemQuestion, '/' },
-                new object[] { KeyCode.OemTilde, '`' },
-                new object[] { KeyCode.OemPipe, '\\' },
-                new object[] { KeyCode.OemOpenBrackets, '[' },
-                new object[] { KeyCode.OemCloseBrackets, ']' },
-                new object[] { KeyCode.OemQuotes, '\'' },
-                new object[] { KeyCode.OemSemicolon, ';' },
-                new object[] { KeyCode.Decimal, '.' },
-                new object[] { KeyCode.Divide, '/' },
-                new object[] { KeyCode.Multiply, '*' },
-                new object[] { KeyCode.Subtract, '-' },
-                new object[] { KeyCode.Add, '+' },
+                new object[] { KeyCode.Plus, '=' },
+                new object[] { KeyCode.Comma, ',' },
+                new object[] { KeyCode.Minus, '-' },
+                new object[] { KeyCode.Period, '.' },
+                new object[] { KeyCode.ForwardSlash, '/' },
+                new object[] { KeyCode.Tilde, '`' },
+                new object[] { KeyCode.BackSlash, '\\' },
+                new object[] { KeyCode.LeftBracket, '[' },
+                new object[] { KeyCode.RightBracket, ']' },
+                new object[] { KeyCode.Quote, '\'' },
+                new object[] { KeyCode.Semicolon, ';' },
+                new object[] { KeyCode.Period, '.' },
+                new object[] { KeyCode.NumpadDivide, '/' },
+                new object[] { KeyCode.NumpadMultiply, '*' },
+                new object[] { KeyCode.NumpadMinus, '-' },
+                new object[] { KeyCode.NumpadPlus, '+' },
             };
 
         public static IEnumerable<object[]> SymbolKeyCharacterWithShiftDownData =>
             new List<object[]>
             {
-                new object[] { KeyCode.OemPlus, '+' },
-                new object[] { KeyCode.OemComma, '<' },
-                new object[] { KeyCode.OemMinus, '_' },
-                new object[] { KeyCode.OemPeriod, '>' },
-                new object[] { KeyCode.OemQuestion, '?' },
-                new object[] { KeyCode.OemTilde, '~' },
-                new object[] { KeyCode.OemPipe, '|' },
-                new object[] { KeyCode.OemOpenBrackets, '{' },
-                new object[] { KeyCode.OemCloseBrackets, '}' },
-                new object[] { KeyCode.OemQuotes, '\'' },
-                new object[] { KeyCode.OemSemicolon, ':' },
-                new object[] { KeyCode.D1, '!' },
-                new object[] { KeyCode.D2, '@' },
-                new object[] { KeyCode.D3, '#' },
-                new object[] { KeyCode.D4, '$' },
-                new object[] { KeyCode.D5, '%' },
-                new object[] { KeyCode.D6, '^' },
-                new object[] { KeyCode.D7, '&' },
-                new object[] { KeyCode.D8, '*' },
-                new object[] { KeyCode.D9, '(' },
-                new object[] { KeyCode.D0, ')' },
-                new object[] { KeyCode.Divide, '/' },
-                new object[] { KeyCode.Multiply, '*' },
-                new object[] { KeyCode.Subtract, '-' },
-                new object[] { KeyCode.Add, '+' },
+                new object[] { KeyCode.Plus, '+' },
+                new object[] { KeyCode.Comma, '<' },
+                new object[] { KeyCode.Minus, '_' },
+                new object[] { KeyCode.Period, '>' },
+                new object[] { KeyCode.ForwardSlash, '?' },
+                new object[] { KeyCode.Tilde, '~' },
+                new object[] { KeyCode.BackSlash, '|' },
+                new object[] { KeyCode.LeftBracket, '{' },
+                new object[] { KeyCode.RightBracket, '}' },
+                new object[] { KeyCode.Quote, '\'' },
+                new object[] { KeyCode.Semicolon, ':' },
+                new object[] { KeyCode.Number1, '!' },
+                new object[] { KeyCode.Number2, '@' },
+                new object[] { KeyCode.Number3, '#' },
+                new object[] { KeyCode.Number4, '$' },
+                new object[] { KeyCode.Number5, '%' },
+                new object[] { KeyCode.Number6, '^' },
+                new object[] { KeyCode.Number7, '&' },
+                new object[] { KeyCode.Number8, '*' },
+                new object[] { KeyCode.Number9, '(' },
+                new object[] { KeyCode.Number0, ')' },
+                new object[] { KeyCode.NumpadDivide, '/' },
+                new object[] { KeyCode.NumpadMultiply, '*' },
+                new object[] { KeyCode.NumpadMinus, '-' },
+                new object[] { KeyCode.Plus, '+' },
             };
-
-        #region Constructor Tests
-        [Theory]
-        [InlineData(null)]
-        [InlineData(new KeyCode[0])]
-        public void Ctor_WhenInvokedWithNullOrEmptyKeyCodeArray_ThrowsException(KeyCode[] keys)
-        {
-            // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var state = new KeyboardState(keys, this.keyStates.Values.ToArray());
-            }, "The parameter must not be null or empty. (Parameter 'keys')");
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData(new bool[0])]
-        public void Ctor_WhenInvokedWithNullOrEmptyKeyStatesCodeArray_ThrowsException(bool[] keyStates)
-        {
-            // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var state = new KeyboardState(this.keyStates.Keys.ToArray(), keyStates);
-            }, "The parameter must not be null or empty. (Parameter 'keyStates')");
-        }
-
-        [Fact]
-        public void Ctor_WhenInvokedWithKeysAndKeyStatesNotHavingSameQuantity_ThrowsException()
-        {
-            // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
-            {
-                var keys = this.keyStates.Keys.ToList();
-                keys.RemoveAt(0);
-
-                var state = new KeyboardState(keys.ToArray(), this.keyStates.Values.ToArray());
-            }, "The list of 'keys' and 'keyStates' must have the same number of items.");
-        }
-        #endregion
 
         #region Prop Tests
         /*TODO:
@@ -285,7 +245,7 @@ namespace RaptorTests.Input
         {
             // Arrange
             SetKeyState(KeyCode.CapsLock, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = new KeyboardState();
 
             // Act
             var actual = state.CapsLockOn;
@@ -299,7 +259,7 @@ namespace RaptorTests.Input
         {
             // Arrange
             SetKeyState(KeyCode.NumLock, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = new KeyboardState();
 
             // Act
             var actual = state.NumLockOn;
@@ -313,11 +273,11 @@ namespace RaptorTests.Input
         public void IsLeftShiftDown_WhenGettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            SetKeyState(KeyCode.LeftShift, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.LeftShift, true);
 
             // Act
-            var actual = state.IsLeftShiftDown;
+            var actual = state.IsLeftShiftDown();
 
             // Assert
             Assert.True(actual);
@@ -327,11 +287,11 @@ namespace RaptorTests.Input
         public void IsRightShiftDown_WhenGettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            SetKeyState(KeyCode.RightShift, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.RightShift, true);
 
             // Act
-            var actual = state.IsRightShiftDown;
+            var actual = state.IsRightShiftDown();
 
             // Assert
             Assert.True(actual);
@@ -341,11 +301,11 @@ namespace RaptorTests.Input
         public void IsLeftControlDown_WhenGettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            SetKeyState(KeyCode.LeftControl, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.LeftControl, true);
 
             // Act
-            var actual = state.IsLeftCtrlDown;
+            var actual = state.IsLeftCtrlDown();
 
             // Assert
             Assert.True(actual);
@@ -355,11 +315,11 @@ namespace RaptorTests.Input
         public void IsRightControlDown_WhenGettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            SetKeyState(KeyCode.RightControl, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.RightControl, true);
 
             // Act
-            var actual = state.IsRightCtrlDown;
+            var actual = state.IsRightCtrlDown();
 
             // Assert
             Assert.True(actual);
@@ -369,11 +329,11 @@ namespace RaptorTests.Input
         public void IsLeftAltDown_WhenGettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            SetKeyState(KeyCode.LeftAlt, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.LeftAlt, true);
 
             // Act
-            var actual = state.IsLeftAltDown;
+            var actual = state.IsLeftAltDown();
 
             // Assert
             Assert.True(actual);
@@ -383,11 +343,11 @@ namespace RaptorTests.Input
         public void IsRightAltDown_WhenGettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            SetKeyState(KeyCode.RightAlt, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.RightAlt, true);
 
             // Act
-            var actual = state.IsRightAltDown;
+            var actual = state.IsRightAltDown();
 
             // Assert
             Assert.True(actual);
@@ -404,13 +364,13 @@ namespace RaptorTests.Input
                 KeyCode.D, KeyCode.E, KeyCode.H, KeyCode.L, KeyCode.O,
             };
 
-            SetKeyState(KeyCode.D, true);
-            SetKeyState(KeyCode.E, true);
-            SetKeyState(KeyCode.H, true);
-            SetKeyState(KeyCode.L, true);
-            SetKeyState(KeyCode.O, true);
+            var state = default(KeyboardState);
 
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            state.SetKeyState(KeyCode.D, true);
+            state.SetKeyState(KeyCode.E, true);
+            state.SetKeyState(KeyCode.H, true);
+            state.SetKeyState(KeyCode.L, true);
+            state.SetKeyState(KeyCode.O, true);
 
             // Act
             var actual = state.GetDownKeys();
@@ -423,8 +383,8 @@ namespace RaptorTests.Input
         public void AnyKeysDown_WithNoArgumentsAndSingleDownKey_ReturnsTrue()
         {
             // Arrange
-            SetKeyState(KeyCode.C, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.H, true);
 
             // Act
             var actual = state.AnyKeysDown();
@@ -438,9 +398,9 @@ namespace RaptorTests.Input
         {
             // Arrange
             var downKeys = new[] { KeyCode.H, KeyCode.I };
-            SetKeyState(KeyCode.H, true);
 
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = Keyboard.GetState();
+            state.SetKeyState(KeyCode.H, true);
 
             // Act
             var actual = state.AnyKeysDown(downKeys);
@@ -455,7 +415,7 @@ namespace RaptorTests.Input
             // Arrange
             SetAllStatesTo(true);
             SetKeyState(KeyCode.C, false);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
 
             // Act
             var actual = state.IsKeyUp(KeyCode.C);
@@ -469,8 +429,8 @@ namespace RaptorTests.Input
         public void AnyStandardNumberKeysDown_WhenInvokedWithNumberKeyDown_ReturnsTrue(KeyCode key, bool expected)
         {
             // Arrange
-            SetKeyState(key, expected);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(key, expected);
 
             // Act
             var actual = state.AnyStandardNumberKeysDown();
@@ -484,8 +444,8 @@ namespace RaptorTests.Input
         public void AnyNumpadNumberKeysDown_WhenInvokedWithNumberKeyDown_ReturnsTrue(KeyCode key, bool expected)
         {
             // Arrange
-            SetKeyState(key, expected);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(key, expected);
 
             // Act
             var actual = state.AnyNumpadNumberKeysDown();
@@ -500,8 +460,8 @@ namespace RaptorTests.Input
         public void IsAnyShiftKeyDown_WhenInvoked_ReturnsCorrectValue(KeyCode key, bool expected)
         {
             // Arrange
-            SetKeyState(key, expected);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(key, expected);
 
             // Act
             var actual = state.IsAnyShiftKeyDown();
@@ -516,8 +476,8 @@ namespace RaptorTests.Input
         public void IsAnyCtrlKeyDown_WhenInvoked_ReturnsCorrectValue(KeyCode key, bool expected)
         {
             // Arrange
-            SetKeyState(key, expected);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(key, expected);
 
             // Act
             var actual = state.IsAnyCtrlKeyDown();
@@ -531,9 +491,9 @@ namespace RaptorTests.Input
         public void KeyToChar_WithShiftKeyDownAndLetterKeys_ReturnsCorrectResult(KeyCode key, char expected)
         {
             // Arrange
-            SetKeyState(KeyCode.LeftShift, true);
-            SetKeyState(key, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.LeftShift, true);
+            state.SetKeyState(key, true);
 
             // Act
             var actual = state.KeyToChar(key);
@@ -547,9 +507,9 @@ namespace RaptorTests.Input
         public void KeyToChar_WithShiftKeyDownAndStandardNumberAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
         {
             // Arrange
-            SetKeyState(KeyCode.LeftShift, true);
-            SetKeyState(key, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.LeftShift, true);
+            state.SetKeyState(key, true);
 
             // Act
             var actual = state.KeyToChar(key);
@@ -563,9 +523,9 @@ namespace RaptorTests.Input
         public void KeyToChar_WithShiftKeyDownAndSymbolKeys_ReturnsCorrectResult(KeyCode key, char expected)
         {
             // Arrange
-            SetKeyState(KeyCode.LeftShift, true);
-            SetKeyState(key, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
+            state.SetKeyState(KeyCode.LeftShift, true);
+            state.SetKeyState(key, true);
 
             // Act
             var actual = state.KeyToChar(key);
@@ -581,7 +541,7 @@ namespace RaptorTests.Input
             // Arrange
             SetKeyState(KeyCode.LeftShift, false);
             SetKeyState(key, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
 
             // Act
             var actual = state.KeyToChar(key);
@@ -597,7 +557,7 @@ namespace RaptorTests.Input
             // Arrange
             SetKeyState(KeyCode.LeftShift, false);
             SetKeyState(key, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
 
             // Act
             var actual = state.KeyToChar(key);
@@ -613,7 +573,7 @@ namespace RaptorTests.Input
             // Arrange
             SetKeyState(KeyCode.LeftShift, false);
             SetKeyState(key, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
 
             // Act
             var actual = state.KeyToChar(key);
@@ -628,7 +588,7 @@ namespace RaptorTests.Input
             // Arrange
             SetKeyState(KeyCode.LeftShift, false);
             SetKeyState(default, true);
-            var state = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var state = default(KeyboardState);
 
             // Act
             var actual = state.KeyToChar(default);
@@ -638,59 +598,25 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void Equals_WhenUsingOverloadWithSameParamTypeWhileOperandsHaveDifferentTotals_ReturnsFalse()
-        {
-            // Arrange
-            var stateA = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
-
-            var stateBKeys = this.keyStates.Keys.ToList();
-            stateBKeys.RemoveAt(0);
-
-            var stateBValues = this.keyStates.Values.ToList();
-            stateBValues.RemoveAt(0);
-
-            var stateB = new KeyboardState(stateBKeys.ToArray(), stateBValues.ToArray());
-
-            // Act
-            var actual = stateA.Equals(stateB);
-
-            // Assert
-            Assert.False(actual);
-        }
-
-        [Fact]
-        public void Equals_WhenUsingOverloadWithSameParamTypeWhileOperandsHaveDifferentStates_ReturnsFalse()
-        {
-            // Arrange
-            var stateAKeys = this.keyStates.Keys.ToList();
-            stateAKeys.RemoveAt(1);
-
-            var stateAValues = this.keyStates.Values.ToList();
-            stateAValues.RemoveAt(1);
-
-            var stateA = new KeyboardState(stateAKeys.ToArray(), stateAValues.ToArray());
-
-            var stateBKeys = this.keyStates.Keys.ToList();
-            stateBKeys.RemoveAt(0);
-
-            var stateBValues = this.keyStates.Values.ToList();
-            stateBValues.RemoveAt(0);
-
-            var stateB = new KeyboardState(stateBKeys.ToArray(), stateBValues.ToArray());
-
-            // Act
-            var actual = stateA.Equals(stateB);
-
-            // Assert
-            Assert.False(actual);
-        }
-
-        [Fact]
         public void Equals_WhenUsingOverloadWithSameParamTypeWhileEqual_ReturnsTrue()
         {
             // Arrange
-            var stateA = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
-            var stateB = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var stateA = default(KeyboardState);
+            var stateB = default(KeyboardState);
+
+            // Act
+            var actual = stateA.Equals(stateB);
+
+            // Assert
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void Equals_WhenUsingOverloadWithSameParamTypeWhileNotHavingSameKeys_ReturnsTrue()
+        {
+            // Arrange
+            var stateA = default(KeyboardState);
+            var stateB = default(KeyboardState);
 
             // Act
             var actual = stateA.Equals(stateB);
@@ -703,8 +629,8 @@ namespace RaptorTests.Input
         public void Equals_WhenUsingOverloadWithObjectParamWithSameEqualType_ReturnsTrue()
         {
             // Arrange
-            var stateA = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
-            object stateB = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var stateA = default(KeyboardState);
+            object stateB = default(KeyboardState);
 
             // Act
             var actual = stateA.Equals(stateB);
@@ -717,7 +643,7 @@ namespace RaptorTests.Input
         public void Equals_WhenUsingOverloadWithObjectParamWithSameUnequalType_ReturnsFalse()
         {
             // Arrange
-            var stateA = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var stateA = default(KeyboardState);
             var stateB = new object();
 
             // Act
@@ -731,8 +657,8 @@ namespace RaptorTests.Input
         public void EqualsOperator_WhenInvokedWithEqualOperands_ReturnsTrue()
         {
             // Arrange
-            var stateA = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
-            var stateB = new KeyboardState(this.keyStates.Keys.ToArray(), this.keyStates.Values.ToArray());
+            var stateA = default(KeyboardState);
+            var stateB = default(KeyboardState);
 
             // Act
             var actual = stateA == stateB;
