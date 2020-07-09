@@ -1,6 +1,7 @@
 using Raptor;
 using Raptor.Content;
 using Raptor.Graphics;
+using Raptor.Input;
 using System;
 
 namespace RaptorSandBox
@@ -11,7 +12,8 @@ namespace RaptorSandBox
         private ITexture? dungeonTexture;
         private readonly AtlasRegionRectangle[] atlasData;
         private ISpriteBatch? spriteBatch;
-
+        private MouseState currentMouseState;
+        private MouseState previousMouseState;
 
         public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
@@ -34,6 +36,15 @@ namespace RaptorSandBox
 
         public override void OnUpdate(FrameTime frameTime)
         {
+            this.currentMouseState = Mouse.GetMouseState();
+
+            if (currentMouseState.IsLeftButtonUp() && previousMouseState.IsLeftButtonDown())
+            {
+
+            }
+
+            this.previousMouseState = this.currentMouseState;
+
             base.OnUpdate(frameTime);
         }
 

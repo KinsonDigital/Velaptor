@@ -30,7 +30,7 @@ namespace RaptorTests.OpenGL
         public void IsEmpty_WhenBatchItemIsEmpty_ReturnsTrue()
         {
             // Arrange
-            var item = new SpriteBatchItem();
+            var item = default(SpriteBatchItem);
 
             // Act
             var actual = item.IsEmpty;

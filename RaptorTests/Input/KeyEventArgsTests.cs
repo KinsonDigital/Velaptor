@@ -7,6 +7,8 @@ namespace RaptorTests.Input
     using Raptor.Input;
     using Xunit;
 
+    // TODO: Remove this class/file
+
     /// <summary>
     /// Unit tests to test the <see cref="KeyEventArgs"/> class.
     /// </summary>
