@@ -5,3 +5,6 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo(assemblyName: "RaptorTests", AllInternalsVisible = true)]
+
+// Used to expose internal types to the Moq mocking framework
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2", AllInternalsVisible = true)]
