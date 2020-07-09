@@ -11,6 +11,8 @@ namespace Raptor.OpenGL
     using OpenToolkit.Mathematics;
     using OpenToolkit.Windowing.Common;
     using OpenToolkit.Windowing.Desktop;
+    using OpenToolkit.Windowing.GraphicsLibraryFramework;
+    using Raptor.Input;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -18,7 +20,7 @@ namespace Raptor.OpenGL
     [ExcludeFromCodeCoverage]
     internal sealed class GLWindow : IWindow
     {
-        private readonly GameWindow gameWindow;
+        private readonly InternalGLWindow gameWindow;
         private readonly DebugProc debugProc;
         private readonly IGLInvoker gl;
         private bool isShuttingDown;
@@ -39,7 +41,7 @@ namespace Raptor.OpenGL
                 Size = new Vector2i(width, height),
             };
 
-            this.gameWindow = new GameWindow(gameWinSettings, nativeWinSettings);
+            this.gameWindow = new InternalGLWindow(gameWinSettings, nativeWinSettings);
 
             /*NOTE:
              * The IoC container get instance must be called after the
@@ -53,6 +55,8 @@ namespace Raptor.OpenGL
             this.gameWindow.RenderFrame += GameWindow_RenderFrame;
             this.gameWindow.Resize += GameWindow_Resize;
             this.gameWindow.Unload += GameWindow_Unload;
+            this.gameWindow.KeyDown += GameWindow_KeyDown;
+            this.gameWindow.KeyUp += GameWindow_KeyUp;
             this.gameWindow.UpdateFrequency = 60;
 
             this.debugProc = DebugCallback;
@@ -134,6 +138,28 @@ namespace Raptor.OpenGL
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Occurs when a keyboard key is pressed into the down position.
+        /// </summary>
+        /// <param name="e">The keyboard info of the event.</param>
+        private void GameWindow_KeyDown(KeyboardKeyEventArgs e)
+        {
+            var mappedKey = (KeyCode)e.Key;
+
+            Keyboard.SetKeyState(mappedKey, true);
+        }
+
+        /// <summary>
+        /// Occurs when a keyboard key is released to the up position.
+        /// </summary>
+        /// <param name="e">The keyboard info of the event.</param>
+        private void GameWindow_KeyUp(KeyboardKeyEventArgs e)
+        {
+            var mappedKey = (KeyCode)e.Key;
+
+            Keyboard.SetKeyState(mappedKey, false);
         }
 
         /// <summary>

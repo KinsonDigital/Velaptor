@@ -2,6 +2,7 @@ using Raptor;
 using Raptor.Content;
 using Raptor.Factories;
 using Raptor.Graphics;
+using Raptor.Input;
 using System;
 
 namespace RaptorSandBox
@@ -12,7 +13,8 @@ namespace RaptorSandBox
         private ITexture? dungeonTexture;
         private readonly AtlasRegionRectangle[] atlasData;
         private ISpriteBatch? spriteBatch;
-
+        private KeyboardState currentKeyboardState;
+        private KeyboardState previousKeyboardState;
 
         public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
@@ -35,6 +37,18 @@ namespace RaptorSandBox
 
         public override void OnUpdate(FrameTime frameTime)
         {
+            this.currentKeyboardState = Keyboard.GetState();
+
+            var currentSpaceState = currentKeyboardState.IsKeyDown(KeyCode.Space);
+            var prevSpaceState = previousKeyboardState.IsKeyUp(KeyCode.Space);
+
+            if (currentKeyboardState.IsKeyUp(KeyCode.Space) && previousKeyboardState.IsKeyDown(KeyCode.Space))
+            {
+
+            }
+
+            this.previousKeyboardState =  this.currentKeyboardState;
+
             base.OnUpdate(frameTime);
         }
 
