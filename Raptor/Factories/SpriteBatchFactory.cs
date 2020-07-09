@@ -8,7 +8,7 @@ namespace Raptor.Factories
     using Raptor.Graphics;
 
     /// <summary>
-    /// Creates instances of a sprite batch.
+    /// Creates instances of the type <see cref="SpriteBatch"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public static class SpriteBatchFactory

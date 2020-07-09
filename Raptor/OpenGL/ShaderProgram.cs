@@ -10,7 +10,7 @@ namespace Raptor.OpenGL
     using OpenToolkit.Graphics.OpenGL4;
 
     /// <inheritdoc/>
-    public class ShaderProgram : IShaderProgram
+    internal class ShaderProgram : IShaderProgram
     {
         private readonly IGLInvoker gl;
         private readonly ITextFile textFile;
@@ -25,7 +25,7 @@ namespace Raptor.OpenGL
         /// <param name="batchSize">The batch size that the shader will support.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
         /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        internal ShaderProgram(IGLInvoker gl, ITextFile textFile)
+        public ShaderProgram(IGLInvoker gl, ITextFile textFile)
         {
             this.gl = gl;
             this.textFile = textFile;

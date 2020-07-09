@@ -14,7 +14,7 @@ namespace Raptor.Graphics
     using Raptor.OpenGL;
 
     /// <inheritdoc/>
-    public class SpriteBatch : ISpriteBatch
+    internal class SpriteBatch : ISpriteBatch
     {
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
         private readonly IGLInvoker gl;
@@ -38,7 +38,7 @@ namespace Raptor.Graphics
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
         [ExcludeFromCodeCoverage]
         [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message not used outside of class.")]
-        internal SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
+        public SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
         {
             if (gl is null)
                 throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
