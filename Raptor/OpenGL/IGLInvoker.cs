@@ -11,7 +11,7 @@ namespace Raptor.OpenGL
     /// <summary>
     /// Invokes OpenGL calls.
     /// </summary>
-    public interface IGLInvoker
+    internal interface IGLInvoker
     {
         /// <summary>
         /// [requires: v1.0] Enable or disable server-side GL capabilities.

@@ -11,7 +11,7 @@ namespace Raptor
     /// <summary>
     /// Provides extensions to various things to help make better code.
     /// </summary>
-    public static class ExtensionMethods
+    internal static class ExtensionMethods
     {
         private const float PI = 3.1415926535897931f;
 

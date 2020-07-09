@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,7 +14,7 @@ namespace Raptor.Graphics
     using Raptor.OpenGL;
 
     /// <inheritdoc/>
-    public class SpriteBatch : ISpriteBatch
+    internal class SpriteBatch : ISpriteBatch
     {
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
         private readonly IGLInvoker gl;

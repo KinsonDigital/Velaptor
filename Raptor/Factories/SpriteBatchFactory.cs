@@ -1,17 +1,17 @@
-﻿// <copyright file="RaptorFactory.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatchFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor
+namespace Raptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Graphics;
 
     /// <summary>
-    /// Creates instances of various objects.
+    /// Creates instances of the type <see cref="SpriteBatch"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class RaptorFactory
+    public static class SpriteBatchFactory
     {
         /// <summary>
         /// Initializes and instance of a <see cref="ISpriteBatch"/>.

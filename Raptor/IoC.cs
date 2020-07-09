@@ -41,10 +41,10 @@ namespace Raptor
         /// </summary>
         private static void SetupContainer()
         {
+            IocContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IocContainer.Register<ITextFile, TextFile>();
             IocContainer.Register<IImageFile, ImageFile>();
             IocContainer.Register<ILoader<ITexture>, TextureLoader>();
-            IocContainer.Register<IGLInvoker, GLInvoker>();
             IocContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
 
             /*NOTE:
@@ -52,15 +52,24 @@ namespace Raptor
              * classes that are disposable.  This tells simple injector that the disposing of the object will be
              * handled manually by the application/library instead of by simple injector.
              */
-            IocContainer.Register<IGPUBuffer, GPUBuffer<VertexData>>();
+            IocContainer.Register<IGPUBuffer>(() =>
+            {
+                return new GPUBuffer<VertexData>(IocContainer.GetInstance<IGLInvoker>());
+            });
             var bufferRegistration = IocContainer.GetRegistration(typeof(IGPUBuffer))?.Registration;
             bufferRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
 
-            IocContainer.Register<IShaderProgram, ShaderProgram>();
+            IocContainer.Register<IShaderProgram>(() =>
+            {
+                return new ShaderProgram(IocContainer.GetInstance<IGLInvoker>(), IocContainer.GetInstance<ITextFile>());
+            });
             var shaderRegistration = IocContainer.GetRegistration(typeof(IShaderProgram))?.Registration;
             shaderRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
 
-            IocContainer.Register<ISpriteBatch, SpriteBatch>();
+            IocContainer.Register<ISpriteBatch>(() =>
+            {
+                return new SpriteBatch(IocContainer.GetInstance<IGLInvoker>(), IocContainer.GetInstance<IShaderProgram>(), IocContainer.GetInstance<IGPUBuffer>());
+            });
             var spriteBatchRegistration = IocContainer.GetRegistration(typeof(ISpriteBatch))?.Registration;
             spriteBatchRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
 
