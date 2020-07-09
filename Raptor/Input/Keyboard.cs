@@ -42,7 +42,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to set.</param>
         /// <param name="state">The state to set the key to.</param>
-        /// <remarks>Using the value of true of the <paramref name="state"/> means the key is in the down position.</remarks>
+        /// <remarks>Using the value of true for the <paramref name="state"/> param means the key is in the down position.</remarks>
         internal static void SetKeyState(KeyCode key, bool state) => KeyStates[key] = state;
 
         /// <summary>

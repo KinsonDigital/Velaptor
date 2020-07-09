@@ -17,12 +17,14 @@ namespace RaptorTests
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Returns a value indicating whether the field that matches the given <paramref name="name"/>
-        /// in the given <paramref name="fieldContainer"/> is null or zero.
+        ///     Returns a value indicating whether a field that matches the given <paramref name="name"/>
+        ///     in the given <paramref name="fieldContainer"/> exists and if so checks to see if it is null or zero.
         /// </summary>
         /// <param name="fieldContainer">The object that contains the field with the tiven <paramref name="name"/>.</param>
         /// <param name="name">The name of the field to check for.</param>
-        /// <returns>True if the field is null or zero.</returns>
+        /// <returns>
+        ///     True if the field is null or zero and false if the field does not exist.
+        /// </returns>
         public static bool IsNullOrZeroField(this object fieldContainer, string name)
         {
             var foundField = fieldContainer.GetField(name);
@@ -71,7 +73,7 @@ namespace RaptorTests
         /// <summary>
         /// Returns a value indicating whether this <see cref="Matrix4"/> is empty.
         /// </summary>
-        /// <param name="matrix">The vector to check.</param>
+        /// <param name="matrix">The <see cref="Matrix4"/> to check.</param>
         /// <returns>True if empty.</returns>
         public static bool IsEmpty(this Matrix4 matrix) =>
             matrix.Column0.IsEmpty() &&

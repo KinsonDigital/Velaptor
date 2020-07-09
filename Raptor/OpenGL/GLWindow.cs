@@ -140,6 +140,10 @@ namespace Raptor.OpenGL
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Occurs when a keyboard key is pressed into the down position.
+        /// </summary>
+        /// <param name="e">The keyboard info of the event.</param>
         private void GameWindow_KeyDown(KeyboardKeyEventArgs e)
         {
             var mappedKey = (KeyCode)e.Key;
@@ -147,6 +151,10 @@ namespace Raptor.OpenGL
             Keyboard.SetKeyState(mappedKey, true);
         }
 
+        /// <summary>
+        /// Occurs when a keyboard key is released to the up position.
+        /// </summary>
+        /// <param name="e">The keyboard info of the event.</param>
         private void GameWindow_KeyUp(KeyboardKeyEventArgs e)
         {
             var mappedKey = (KeyCode)e.Key;
@@ -185,7 +193,7 @@ namespace Raptor.OpenGL
         /// Invokes the <see cref="Update"/> action property.
         /// </summary>
         /// <param name="deltaTime">The frame event args.</param>
-        private unsafe void GameWindow_UpdateFrame(FrameEventArgs deltaTime)
+        private void GameWindow_UpdateFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)
                 return;

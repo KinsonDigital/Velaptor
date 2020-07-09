@@ -8,6 +8,9 @@ namespace RaptorTests.Input
     using RaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="Keyboard"/> class.
+    /// </summary>
     public class KeyboardTests
     {
         #region Method Tests

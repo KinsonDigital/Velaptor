@@ -125,7 +125,7 @@ namespace Raptor.Input
         F12 = 22,
 
         /// <summary>
-        /// The F13  key.
+        /// The F13 key.
         /// </summary>
         F13 = 23,
 
@@ -265,7 +265,7 @@ namespace Raptor.Input
         Enter = 50,
 
         /// <summary>
-        /// The excape key.
+        /// The escape key.
         /// </summary>
         Escape = 51,
 
@@ -405,7 +405,7 @@ namespace Raptor.Input
         NumpadDivide = 78,
 
         /// <summary>
-        /// The numpad multiply  key.
+        /// The numpad multiply key.
         /// </summary>
         NumpadMultiply = 79,
 
@@ -665,7 +665,7 @@ namespace Raptor.Input
         BackSlash = 130,
 
         /// <summary>
-        /// The non US backslash key.
+        /// The non US backs lash key.
         /// </summary>
         NonUSBackSlash = 131,
     }

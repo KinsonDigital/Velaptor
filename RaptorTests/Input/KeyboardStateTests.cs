@@ -12,11 +12,17 @@ namespace RaptorTests.Input
     using Raptor.Input;
     using Xunit;
 
-    public class KeyboadStateTests
+    /// <summary>
+    /// Tests the <see cref="KeyboardState"/> struct.
+    /// </summary>
+    public class KeyboardStateTests
     {
         private readonly Dictionary<KeyCode, bool> keyStates = new Dictionary<KeyCode, bool>();
 
-        public KeyboadStateTests()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeyboardStateTests"/> class.
+        /// </summary>
+        public KeyboardStateTests()
         {
             var keyCodes = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 

@@ -62,7 +62,7 @@ namespace Raptor.Input
         };
 
         /// <summary>
-        /// The characters produced by the standard number keys when no shift modifier keys are pressed.
+        /// The characters produced by the standard number keys when no shift modifier keys are in the down position.
         /// </summary>
         private static readonly Dictionary<KeyCode, char> NoShiftStandardNumberCharacters = new Dictionary<KeyCode, char>()
         {
@@ -72,7 +72,7 @@ namespace Raptor.Input
         };
 
         /// <summary>
-        /// The symbol keys produced by the keyboard when no shift modifier keys are pressed.
+        /// The symbol keys produced by the keyboard when no shift modifier keys are in the down position..
         /// </summary>
         private static readonly Dictionary<KeyCode, char> NoShiftSymbolCharacters = new Dictionary<KeyCode, char>()
         {
@@ -84,7 +84,7 @@ namespace Raptor.Input
         };
 
         /// <summary>
-        /// The symbol keys produced by the keyboard when any shift modifier keys are pressed.
+        /// The symbol keys produced by the keyboard when any shift modifier keys are in the down position.
         /// </summary>
         private static readonly Dictionary<KeyCode, char> WithShiftSymbolCharacters = new Dictionary<KeyCode, char>()
         {
@@ -144,43 +144,43 @@ namespace Raptor.Input
         }
 
         /// <summary>
-        /// Gets a value indicating whether the left shift key is being pressed down.
+        /// Gets a value indicating whether the left shift key is in the down position.
         /// </summary>
         /// <returns>True if the left shift key is down.</returns>
         public bool IsLeftShiftDown() => IsKeyDown(KeyCode.LeftShift);
 
         /// <summary>
-        /// Gets a value indicating whether the right shift key is being pressed down.
+        /// Gets a value indicating whether the right shift key is in the down position.
         /// </summary>
         /// <returns>True if the right shift key is down.</returns>
         public bool IsRightShiftDown() => IsKeyDown(KeyCode.RightShift);
 
         /// <summary>
-        /// Gets a value indicating whether the left control key is being pressed down.
+        /// Gets a value indicating whether the left control key is in the down position.
         /// </summary>
         /// <returns>True if the left control key is down.</returns>
         public bool IsLeftCtrlDown() => IsKeyDown(KeyCode.LeftControl);
 
         /// <summary>
-        /// Gets a value indicating whether the right control key is being pressed down.
+        /// Gets a value indicating whether the right control key is in the down position.
         /// </summary>
         /// <returns>True if the right control key is down.</returns>
         public bool IsRightCtrlDown() => IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
-        /// Gets a value indicating whether the left alt key is being pressed down.
+        /// Gets a value indicating whether the left alt key is in the down position.
         /// </summary>
         /// <returns>True if the left alt key is down.</returns>
         public bool IsLeftAltDown() => IsKeyDown(KeyCode.LeftAlt);
 
         /// <summary>
-        /// Gets a value indicating whether the right alt key is being pressed down.
+        /// Gets a value indicating whether the right alt key is in the down position.
         /// </summary>
         /// <returns>True if the right alt key is down.</returns>
         public bool IsRightAltDown() => IsKeyDown(KeyCode.RightAlt);
 
         /// <summary>
-        /// Returns all of the currently pressed keys on the keyboard.
+        /// Returns all of the keys that are in the down position.
         /// </summary>
         /// <returns>A list of the currently pressed keys.</returns>
         public KeyCode[] GetDownKeys()
@@ -245,7 +245,7 @@ namespace Raptor.Input
         /// Returns true if the given key is in the up position.
         /// </summary>
         /// <param name="key">The key to check.</param>
-        /// <returns>True if the givne <paramref name="key"/> is in the up position.</returns>
+        /// <returns>True if the given <paramref name="key"/> is in the up position.</returns>
         public bool IsKeyUp(KeyCode key)
         {
             InitKeys();
@@ -290,21 +290,21 @@ namespace Raptor.Input
         }
 
         /// <summary>
-        /// Returns a value indicating if any of the shift keys are being pressed down.
+        /// Returns a value indicating if any of the shift keys are in the down position.
         /// </summary>
         /// <returns>True if any of the shift keys are down.</returns>
         public bool IsAnyShiftKeyDown() => IsKeyDown(KeyCode.LeftShift) || IsKeyDown(KeyCode.RightShift);
 
         /// <summary>
-        /// Returns a value indicating if any of the control keys are being pressed down.
+        /// Returns a value indicating if any of the control keys are in the down position.
         /// </summary>
         /// <returns>True if any of the control keys are down.</returns>
         public bool IsAnyCtrlKeyDown() => IsKeyDown(KeyCode.LeftControl) || IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
-        /// Returns the character equivalent of the given key if it was
-        /// a letter, number or symbol key.  The value of 0 will be returned if not
-        /// a letter, number or symbol.
+        /// Returns the character equivalent of the given key if it is
+        /// a letter, number or symbol key.  The value of 0 will be returned
+        /// if the key is not a letter, number or symbol.
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns>The character that matches the given key.</returns>
