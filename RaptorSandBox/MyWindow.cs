@@ -15,6 +15,8 @@ namespace RaptorSandBox
         private ISpriteBatch? spriteBatch;
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
+        private MouseState currentMouseState;
+        private MouseState previousMouseState;
 
         public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
@@ -38,16 +40,18 @@ namespace RaptorSandBox
         public override void OnUpdate(FrameTime frameTime)
         {
             this.currentKeyboardState = Keyboard.GetState();
-
-            var currentSpaceState = currentKeyboardState.IsKeyDown(KeyCode.Space);
-            var prevSpaceState = previousKeyboardState.IsKeyUp(KeyCode.Space);
+            this.currentMouseState = Mouse.GetMouseState();
 
             if (currentKeyboardState.IsKeyUp(KeyCode.Space) && previousKeyboardState.IsKeyDown(KeyCode.Space))
             {
-
             }
-
+            
+            if (currentMouseState.IsLeftButtonUp() && previousMouseState.IsLeftButtonDown())
+            {
+            }
+            
             this.previousKeyboardState =  this.currentKeyboardState;
+            this.previousMouseState = this.currentMouseState;
 
             base.OnUpdate(frameTime);
         }

@@ -10,14 +10,12 @@ namespace Raptor.UI
     using System.Numerics;
     using Raptor.Content;
     using Raptor.Graphics;
-    using Raptor.Input;
 
     /// <summary>
     /// A button that can be clicked and execute functionality.
     /// </summary>
     public class Button : IControl
     {
-        private readonly Mouse mouse;
         private Rectangle rect = default;
         private bool isMouseDown;
 
@@ -32,8 +30,6 @@ namespace Raptor.UI
             MouseOverTexture = mouseOverTexture;
             MouseNotOverTexture = mouseNotOverTexture;
             MouseDownTexture = mouseDownTexture;
-
-            this.mouse = new Mouse();
         }
 
         /// <summary>
@@ -176,16 +172,16 @@ namespace Raptor.UI
         /// </summary>
         private void ProcessMouse()
         {
-            this.mouse.UpdateCurrentState();
+            //this.mouse.UpdateCurrentState();
 
-            IsMouseOver = this.rect.Contains(this.mouse.X, this.mouse.Y);
+            //IsMouseOver = this.rect.Contains(this.mouse.X, this.mouse.Y);
 
-            this.isMouseDown = IsMouseOver && this.mouse.IsButtonDown(InputButton.LeftButton);
+            //this.isMouseDown = IsMouseOver && this.mouse.IsButtonDown(MouseButton.LeftButton);
 
-            if (this.isMouseDown)
-                Click?.Invoke(this, new EventArgs());
+            //if (this.isMouseDown)
+            //    Click?.Invoke(this, new EventArgs());
 
-            this.mouse.UpdatePreviousState();
+            //this.mouse.UpdatePreviousState();
         }
     }
 }

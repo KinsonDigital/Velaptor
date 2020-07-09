@@ -11,8 +11,9 @@ namespace Raptor.OpenGL
     using OpenToolkit.Mathematics;
     using OpenToolkit.Windowing.Common;
     using OpenToolkit.Windowing.Desktop;
-    using OpenToolkit.Windowing.GraphicsLibraryFramework;
     using Raptor.Input;
+    using GLMouseButton = OpenToolkit.Windowing.Common.Input.MouseButton;
+    using RaptorMouseButton = Raptor.Input.MouseButton;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -57,6 +58,9 @@ namespace Raptor.OpenGL
             this.gameWindow.Unload += GameWindow_Unload;
             this.gameWindow.KeyDown += GameWindow_KeyDown;
             this.gameWindow.KeyUp += GameWindow_KeyUp;
+            this.gameWindow.MouseDown += GameWindow_MouseDown;
+            this.gameWindow.MouseUp += GameWindow_MouseUp;
+            this.gameWindow.MouseMove += GameWindow_MouseMove;
             this.gameWindow.UpdateFrequency = 60;
 
             this.debugProc = DebugCallback;
@@ -141,6 +145,46 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
+        /// Maps the given OpenGL mouse button to a <see cref="Raptor.Input.MouseButton"/>.
+        /// </summary>
+        /// <param name="from">The OpenGL mouse button to map.</param>
+        /// <returns>The raptor mouse button.</returns>
+        private static RaptorMouseButton MapMouseButton(GLMouseButton from)
+        {
+            switch (from)
+            {
+                case GLMouseButton.Button1: // Same as LeftButton
+                    return RaptorMouseButton.LeftButton;
+                case GLMouseButton.Button2: // Same as RightButton
+                    return RaptorMouseButton.RightButton;
+                case GLMouseButton.Button3: // Same as MiddleButton
+                    return RaptorMouseButton.MiddleButton;
+                case GLMouseButton.LastButton:
+                    return RaptorMouseButton.None;
+            }
+
+            // By default, Button 1, 2 and 3 are fired for left, middle and right
+            // This is here just in case the OpenTK implementation changes.
+            switch (from)
+            {
+                case GLMouseButton.Left: // Same as Button1
+                    return RaptorMouseButton.LeftButton;
+                case GLMouseButton.Middle: // Same as Button3
+                    return RaptorMouseButton.MiddleButton;
+                case GLMouseButton.Right: // Same as Button2
+                    return RaptorMouseButton.RightButton;
+                case GLMouseButton.Button4:
+                case GLMouseButton.Button5:
+                case GLMouseButton.Button6:
+                case GLMouseButton.Button7:
+                case GLMouseButton.Button8:
+                    return RaptorMouseButton.None;
+            }
+
+            return RaptorMouseButton.None;
+        }
+
+        /// <summary>
         /// Occurs when a keyboard key is pressed into the down position.
         /// </summary>
         /// <param name="e">The keyboard info of the event.</param>
@@ -161,6 +205,32 @@ namespace Raptor.OpenGL
 
             Keyboard.SetKeyState(mappedKey, false);
         }
+
+        /// <summary>
+        /// Occurs every time any mouse is pressed into the down position.
+        /// </summary>
+        /// <param name="e">Information about the mouse event.</param>
+        private void GameWindow_MouseDown(MouseButtonEventArgs e)
+        {
+            var mappedButton = MapMouseButton(e.Button);
+            Mouse.SetButtonState(mappedButton, true);
+        }
+
+        /// <summary>
+        /// Occurs every time any mouse is released into the up position.
+        /// </summary>
+        /// <param name="e">Information about the mouse event.</param>
+        private void GameWindow_MouseUp(MouseButtonEventArgs e)
+        {
+            var mappedButton = MapMouseButton(e.Button);
+            Mouse.SetButtonState(mappedButton, false);
+        }
+
+        /// <summary>
+        /// Occurs every time the mouse is moved over the window.
+        /// </summary>
+        /// <param name="e">Information about the mouse move event.</param>
+        private void GameWindow_MouseMove(MouseMoveEventArgs e) => Mouse.SetPosition((int)e.X, (int)e.Y);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
