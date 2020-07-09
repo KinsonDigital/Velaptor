@@ -10,7 +10,7 @@ namespace Raptor.OpenGL
     using OpenToolkit.Graphics.OpenGL4;
 
     /// <inheritdoc/>
-    public class ShaderProgram : IShaderProgram
+    internal class ShaderProgram : IShaderProgram
     {
         private readonly IGLInvoker gl;
         private readonly ITextFile textFile;

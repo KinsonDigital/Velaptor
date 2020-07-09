@@ -10,7 +10,6 @@ namespace Raptor.UI
     using System.Numerics;
     using Raptor.Content;
     using Raptor.Graphics;
-    using Raptor.Input;
 
     /// <summary>
     /// Provides the ability to enter text into a box.
@@ -20,7 +19,6 @@ namespace Raptor.UI
         private const int LEFTMARGIN = 5;
         private const int RIGHTMARGIN = 5;
         private readonly RenderText? textRuler; // Used for measuring text with and height
-        private readonly Keyboard keyboard = new Keyboard();
         private readonly RenderText? visibleText;
         private readonly DeferredActionsCollection deferredActions = new DeferredActionsCollection();
         private int visibleTextCharPosition;
@@ -193,59 +191,60 @@ namespace Raptor.UI
         /// </summary>
         private void ProcessKeys()
         {
-            this.keyboard.UpdateCurrentState();
+            //TODO: Need to get this working with new Keyboard implementation using the KeyboardState struct
+            //this.keyboard.UpdateCurrentState();
 
-            if (this.keyboard.IsKeyPressed(KeyCode.Right))
-            {
-                this.lastDirectionOfTravel = 1;
+            //if (this.keyboard.IsKeyPressed(KeyCode.Right))
+            //{
+            //    this.lastDirectionOfTravel = 1;
 
-                this.characterPosition = this.characterPosition > Text.Length - 1 ?
-                    this.characterPosition :
-                    this.characterPosition + 1;
+            //    this.characterPosition = this.characterPosition > Text.Length - 1 ?
+            //        this.characterPosition :
+            //        this.characterPosition + 1;
 
-                this.visibleTextCharPosition = this.visibleTextCharPosition > (this.visibleText is null ? 0 : this.visibleText.Text.Length - 1) ?
-                    this.visibleTextCharPosition :
-                    this.visibleTextCharPosition + 1;
+            //    this.visibleTextCharPosition = this.visibleTextCharPosition > (this.visibleText is null ? 0 : this.visibleText.Text.Length - 1) ?
+            //        this.visibleTextCharPosition :
+            //        this.visibleTextCharPosition + 1;
 
-                this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
+            //    this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
 
-                this.keyboard.UpdatePreviousState();
-                return;
-            }
+            //    this.keyboard.UpdatePreviousState();
+            //    return;
+            //}
 
-            if (this.keyboard.IsKeyPressed(KeyCode.Left))
-            {
-                this.lastDirectionOfTravel = -1;
+            //if (this.keyboard.IsKeyPressed(KeyCode.Left))
+            //{
+            //    this.lastDirectionOfTravel = -1;
 
-                this.characterPosition = this.characterPosition <= 0 ?
-                    this.characterPosition :
-                    this.characterPosition - 1;
+            //    this.characterPosition = this.characterPosition <= 0 ?
+            //        this.characterPosition :
+            //        this.characterPosition - 1;
 
-                this.visibleTextCharPosition = this.visibleTextCharPosition == 0 ?
-                    this.visibleTextCharPosition :
-                    this.visibleTextCharPosition - 1;
+            //    this.visibleTextCharPosition = this.visibleTextCharPosition == 0 ?
+            //        this.visibleTextCharPosition :
+            //        this.visibleTextCharPosition - 1;
 
-                this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
+            //    this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
 
-                this.keyboard.UpdatePreviousState();
-                return;
-            }
+            //    this.keyboard.UpdatePreviousState();
+            //    return;
+            //}
 
-            var isShiftDown = this.keyboard.IsKeyDown(KeyCode.LeftShift) || this.keyboard.IsKeyDown(KeyCode.RightShift);
+            //var isShiftDown = this.keyboard.IsKeyDown(KeyCode.LeftShift) || this.keyboard.IsKeyDown(KeyCode.RightShift);
 
-            if (!(this.visibleText is null) && !string.IsNullOrEmpty(this.visibleText.Text))
-            {
-                // The delete keys. This is the standard one and the numpad one
-                if (this.keyboard.IsDeleteKeyPressed())
-                {
-                    this.visibleText.Text = this.visibleText.Text.Remove(this.characterPosition, 1);
-                }
+            //if (!(this.visibleText is null) && !string.IsNullOrEmpty(this.visibleText.Text))
+            //{
+            //    // The delete keys. This is the standard one and the numpad one
+            //    if (this.keyboard.IsDeleteKeyPressed())
+            //    {
+            //        this.visibleText.Text = this.visibleText.Text.Remove(this.characterPosition, 1);
+            //    }
 
-                if (this.keyboard.IsKeyPressed(KeyCode.Back) && this.characterPosition > 0)
-                {
-                    RemoveCharacterUsingBackspace();
-                }
-            }
+            //    if (this.keyboard.IsKeyPressed(KeyCode.Back) && this.characterPosition > 0)
+            //    {
+            //        RemoveCharacterUsingBackspace();
+            //    }
+            //}
 
             // TODO: Need to change how we can check for pressed letters AND to return the letter itself.  Tuples?
             // If a letter is pressed, add it to the <see cref="TextBox"/>

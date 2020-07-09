@@ -11,7 +11,7 @@ namespace Raptor.OpenGL
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public class GLInvoker : IGLInvoker
+    internal class GLInvoker : IGLInvoker
     {
         /// <inheritdoc/>
         public void Enable(EnableCap cap) => GL.Enable(cap);
