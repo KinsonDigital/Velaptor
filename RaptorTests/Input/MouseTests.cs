@@ -8,8 +8,14 @@ namespace RaptorTests.Input
     using Raptor.Input;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="Mouse"/> class.
+    /// </summary>
     public class MouseTests
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MouseTests"/> class.
+        /// </summary>
         [ExcludeFromCodeCoverage]
         public MouseTests()
         {

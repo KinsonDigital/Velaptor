@@ -54,7 +54,7 @@ namespace Raptor.Input
         public int GetY() => (int)this.position.Y;
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets the down state of the left mouse button.
+        /// Gets or sets a value indicating whether the left mouse button is in the down position.
         /// </summary>
         /// <returns>True if the button is down.</returns
         public bool IsLeftButtonDown() => this.isLeftButtonDown;
@@ -66,7 +66,7 @@ namespace Raptor.Input
         public bool IsLeftButtonUp() => !IsLeftButtonDown();
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets the down state of the middle mouse button.
+        /// Gets or sets a value indicating whether the middle mouse button is in the down position.
         /// </summary>
         /// <returns>True if the button is down.</returns
         public bool IsMiddleButtonDown() => this.isMiddleButtonDown;
@@ -78,7 +78,7 @@ namespace Raptor.Input
         public bool IsMiddleButtonUp() => !IsMiddleButtonDown();
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets the down state of the right mouse button.
+        /// Gets or sets a value indicating whether the right mouse button is in the down position.
         /// </summary>
         /// <returns>True if the button is down.</returns
         public bool IsRightButtonDown() => this.isRightButtonDown;
@@ -90,7 +90,7 @@ namespace Raptor.Input
         public bool IsRightButtonUp() => !IsRightButtonDown();
 
         /// <summary>
-        /// Returns a the state for the given <paramref name="mouseButton"/>.
+        /// Returns the state for the given <paramref name="mouseButton"/>.
         /// </summary>
         /// <param name="mouseButton">The button state to retrieve.</param>
         /// <returns>True if the button is down.</returns>
@@ -140,7 +140,7 @@ namespace Raptor.Input
                 this.isRightButtonDown);
 
         /// <summary>
-        /// Sets the position of the mouse using the given <paramref name="x"/> and <paramref name="y"/>.
+        /// Sets the position of the mouse using the given <paramref name="x"/> and <paramref name="y"/> values.
         /// </summary>
         /// <param name="x">The X position of the mouse.</param>
         /// <param name="y">The Y position of the mouse.</param>
@@ -157,7 +157,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
         /// <param name="state">The state to set the button to.</param>
-        /// <remarks>If the button is set to non, all buttons will be set to false/up.</remarks>
+        /// <remarks>If the button is set to <see cref="MouseButton.None"/>, all buttons will be set to false/up.</remarks>
         internal void SetButtonState(MouseButton mouseButton, bool state)
         {
             switch (mouseButton)

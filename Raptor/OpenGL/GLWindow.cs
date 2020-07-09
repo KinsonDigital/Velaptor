@@ -205,7 +205,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Occurs every time the mouse is moved over the window.
         /// </summary>
-        /// <param name="e">information about the mouse move event.</param>
+        /// <param name="e">Information about the mouse move event.</param>
         private void GameWindow_MouseMove(MouseMoveEventArgs e) => Mouse.SetPosition((int)e.X, (int)e.Y);
 
         /// <summary>

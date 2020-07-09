@@ -12,7 +12,7 @@ namespace RaptorTests.Input
     using Xunit;
 
     /// <summary>
-    /// Unit tests to test the <see cref="MouseState"/> class.
+    /// Unit tests to test the <see cref="MouseState"/> struct.
     /// </summary>
     public class MouseStateTests
     {
