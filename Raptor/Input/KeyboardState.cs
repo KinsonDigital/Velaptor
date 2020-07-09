@@ -302,9 +302,9 @@ namespace Raptor.Input
         public bool IsAnyCtrlKeyDown() => IsKeyDown(KeyCode.LeftControl) || IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
-        /// Returns the character equivalent of the given key if it is
-        /// a letter, number or symbol key.  The value of 0 will be returned
-        /// if the key is not a letter, number or symbol.
+        ///     Returns the character equivalent of the given key if it is
+        ///     a letter, number or symbol key.  The value of 0 will be returned
+        ///     if the key is not a letter, number or symbol.
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns>The character that matches the given key.</returns>

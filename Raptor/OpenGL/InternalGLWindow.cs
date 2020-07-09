@@ -16,8 +16,8 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalGLWindow"/> class.
         /// </summary>
-        /// <param name="gameWindowSettings">The OpenToolkit.Windowing.Desktop.GameWindow related settings.</param>
-        /// <param name="nativeWindowSettings">The OpenToolkit.Windowing.Desktop.NativeWindow related settings.</param>
+        /// <param name="gameWindowSettings">The game window related settings.</param>
+        /// <param name="nativeWindowSettings">The native window related settings.</param>
         public InternalGLWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
         {

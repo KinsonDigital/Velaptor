@@ -665,7 +665,7 @@ namespace Raptor.Input
         BackSlash = 130,
 
         /// <summary>
-        /// The non US backs lash key.
+        /// The non US back slash key.
         /// </summary>
         NonUSBackSlash = 131,
     }

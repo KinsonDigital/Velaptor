@@ -93,7 +93,7 @@ namespace RaptorTests.Helpers
         /// </summary>
         /// <typeparam name="T">The type of item in the lists.</typeparam>
         /// <param name="expectedItems">The list of expected items.</param>
-        /// <param name="actualItems">The list of actual items to compare to the expected.</param>
+        /// <param name="actualItems">The list of actual items to compare to the expected items.</param>
         /// <remarks>
         ///     Will fail assertion when one item is null and the other is not.
         ///     Will fail assertion when the total number of <paramref name="expectedItems"/> does not match the total number of <paramref name="actualItems"/>.
