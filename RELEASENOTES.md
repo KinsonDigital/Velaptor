@@ -1,5 +1,30 @@
 # **Raptor Release Notes**
 
+## **Version 0.9.0**
+
+### **New**
+
+1. Got the **Keyboard** functionality working.  Now the keyboard can be used!!
+2. Got the **Mouse** functionality working.  Now the mouse can be used!!
+
+### **Changes**
+
+1. Updated nuget packages below:
+   1. Unit Test Project:
+		* coverlet.msbuild - v2.6.3 to v2.9.0
+		* Microsoft.NET.Test.Sdk - v16.2.0 to v16.6.1
+		* Moq - v4.12.0	to v4.14.5
+		* xunit.runner.visualstudio - v2.4.1 to v2.4.2
+	2. Raptor Project:
+        * SimpleInjector - v5.0.1 to v5.0.2
+
+2. Removed old **SDL** related code from library/project/solution
+3. Refactored code to prevent **OpenGL** related code from being exposed to the public API of the Raptor library
+4. Refactored code to use unsigned integers instead of signed integers where it makes sense.
+   * Example: You cannot have a texture with a negative width.  This has been converted to an unsigned integer.
+5. Created unit tests where applicable.
+6. Implemented various analyzers for the purpose of better code.  This resulted in large amounts of refactoring of the code base to satisfy the analyzers.
+
 ## **Version 0.8.0**
 
 ### **New**
