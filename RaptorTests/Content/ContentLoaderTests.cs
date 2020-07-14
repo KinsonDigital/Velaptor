@@ -1,124 +1,75 @@
-﻿using Moq;
-using Raptor.Content;
-using Raptor.Graphics;
-using Raptor.Plugins;
-using Raptor;
-using Xunit;
+﻿// <copyright file="ContentLoaderTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.Content
 {
+    using System.IO;
+    using System.Reflection;
+    using Moq;
+    using Raptor;
+    using Raptor.Content;
+    using Raptor.Graphics;
+    using Xunit;
+
     /// <summary>
     /// Unit tests to test the <see cref="ContentLoader"/> class.
     /// </summary>
     public class ContentLoaderTests
     {
-        #region Private Fields
-        private IContentLoader _contentLoader;
-        private readonly Mock<IContentLoader> _mockCoreContentLoader = new Mock<IContentLoader>();
-        #endregion
+        private readonly string baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private readonly ContentLoader contentLoader;
+        private readonly Mock<ILoader<ITexture>> mockTextureLoader;
+        private readonly Mock<ILoader<AtlasRegionRectangle[]>> mockAtlasDataLoader;
 
-
-        #region Constructors
         public ContentLoaderTests()
         {
-            var mockTexture = new Mock<ITexture>();
-            var mockText = new Mock<IText>();
-
-            _mockCoreContentLoader = new Mock<IContentLoader>();
-            _mockCoreContentLoader.SetupProperty(m => m.ContentRootDirectory);
-            _mockCoreContentLoader.SetupGet(m => m.GamePath).Returns("GamePath");
-            _mockCoreContentLoader.Setup(m => m.LoadTexture<ITexture>(It.IsAny<string>())).Returns(() =>
-            {
-                return mockTexture.Object;
-            });
-            _mockCoreContentLoader.Setup(m => m.LoadText<IText>(It.IsAny<string>())).Returns(() =>
-            {
-                return mockText.Object;
-            });
-
-            _contentLoader = _mockCoreContentLoader.Object;
+            this.mockTextureLoader = new Mock<ILoader<ITexture>>();
+            this.mockAtlasDataLoader = new Mock<ILoader<AtlasRegionRectangle[]>>();
+            this.contentLoader = new ContentLoader(this.mockTextureLoader.Object, this.mockAtlasDataLoader.Object);
         }
-        #endregion
-
-
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WhenInvoking_SetsInternalLoader()
-        {
-            //Arrange
-            var loader = new ContentLoader(_contentLoader);
-            var expected = "RootDir";
-
-            //Act
-            loader.ContentRootDirectory = "RootDir";
-            var actual = loader.ContentRootDirectory;
-
-            //Assert
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
 
         #region Prop Tests
-        [Fact]
-        public void GamePath_WhenGettingValue_ReturnsCorrectValue()
+        [Theory]
+        [InlineData(@"C:\temp\", @"C:\temp\Content\")]
+        [InlineData(@"C:\temp", @"C:\temp\Content\")]
+        [InlineData(null, "")]
+        public void ContentRootDirectory_WhenSettingValue_ReturnsCorrectValue(string rootDirectory, string expected)
         {
-            //Arrange
-            var loader = new ContentLoader(_contentLoader);
-            var expected = "GamePath";
+            // Act
+            // If the root is null, use the base directory for the expected
+            if (rootDirectory is null)
+                expected = $@"{this.baseDir}Content\";
 
-            //Act
-            var actual = loader.GamePath;
+#pragma warning disable CS8601 // Possible null reference assignment.
+            this.contentLoader.ContentRootDirectory = rootDirectory;
+#pragma warning restore CS8601 // Possible null reference assignment.
+            var actual = this.contentLoader.ContentRootDirectory;
 
-            //Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void ContentRootDirectory_WhenGettingAndSettingValue_ReturnsCorrectValue()
-        {
-            //Arrange
-            var loader = new ContentLoader(_contentLoader);
-            var expected = "MyRootDir";
-
-            //Act
-            loader.ContentRootDirectory = "MyRootDir";
-            var actual = loader.ContentRootDirectory;
-
-            //Assert
+            // Assert
             Assert.Equal(expected, actual);
         }
         #endregion
 
-
-        #region Public Methods
+        #region Method Tests
         [Fact]
-        public void LoadTexture_WhenInvoked_ReturnsTexture()
+        public void LoadTexture_WhenInvoked_LoadsTexture()
         {
-            //Arrange
-            var loader = new ContentLoader(_contentLoader);
+            // Act
+            this.contentLoader.LoadTexture("test-texture.png");
 
-            //Act
-            var actual = loader.LoadTexture("TextureName");
-
-            //Assert
-            Assert.NotNull(actual);
-            _mockCoreContentLoader.Verify(m => m.LoadTexture<ITexture>(It.IsAny<string>()), Times.Once());
+            // Assert
+            this.mockTextureLoader.Verify(m => m.Load(@$"{this.baseDir}Content\Graphics\test-texture.png"), Times.Once());
         }
 
-
         [Fact]
-        public void LoadText_WhenInvoked_ReturnsText()
+        public void LoadAtlasData_WhenInvoked_LoadsAtlasData()
         {
-            //Arrange
-            var loader = new ContentLoader(_contentLoader);
+            // Act
+            this.contentLoader.LoadAtlasData("test-atlas.json");
 
-            //Act
-            var actual = loader.LoadText("TextName");
-
-            //Assert
-            Assert.NotNull(actual);
-            _mockCoreContentLoader.Verify(m => m.LoadText<IText>(It.IsAny<string>()), Times.Once());
+            // Assert
+            this.mockAtlasDataLoader.Verify(m => m.Load($@"{this.baseDir}Content\Graphics\test-atlas.json"), Times.Once());
         }
         #endregion
     }

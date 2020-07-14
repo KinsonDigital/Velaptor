@@ -1,78 +1,43 @@
-﻿using Raptor.Plugins;
-using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
+﻿// <copyright file="PhysicsWorld.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.Physics
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Numerics;
+
     /// <summary>
     /// Represents a world with simulated physics.
     /// </summary>
     public class PhysicsWorld
     {
-        #region Private Fields
-        private readonly IPhysicsWorld? _internalWorld;
-        #endregion
-
-
-        #region Constructors
         /// <summary>
-        /// Creates a new instance of <see cref="PhysicsWorld"/> that will
-        /// hold all instances of <see cref="PhysicsBody"/> objects and also
-        /// control the physics of those bodies. Used for testing.
-        /// USED FOR UNIT TESTING.
-        /// </summary>
-        /// <param name="mockedPhysicsWorld">The mocked world to inject.</param>
-        public PhysicsWorld(IPhysicsWorld mockedPhysicsWorld) => _internalWorld = mockedPhysicsWorld;
-
-
-        /// <summary>
-        /// Creates a new instance of <see cref="PhysicsWorld"/> that will
-        /// hold all instances of <see cref="PhysicsBody"/> objects and also
-        /// control the physics of those bodies.
+        /// Initializes a new instance of the <see cref="PhysicsWorld"/> class.
         /// </summary>
         /// <param name="gravity">The gravity of the world.</param>
         [ExcludeFromCodeCoverage]
         public PhysicsWorld(Vector2 gravity)
         {
-            var otherGravity = gravity.X;
-            //TODO: Figure out how to get the proper implementation inside of this class
         }
-        #endregion
 
-
-        #region Props
         /// <summary>
-        /// Gets the worlds gravity.
+        /// Gets or sets the worlds gravity.
         /// </summary>
-        public Vector2 Gravity => new Vector2(_internalWorld is null ? 0 : _internalWorld.GravityX, _internalWorld is null ? 0 : _internalWorld.GravityY);
-        #endregion
+        public Vector2 Gravity { get; set; }
 
-
-        #region Public Methods
         /// <summary>
         /// Adds the given <paramref name="body"/> to the world.
         /// </summary>
         /// <param name="body">The body to add.</param>
-        public void AddBody(IPhysicsBody body)
-        {
-            if (_internalWorld is null)
-                return;
-
-            _internalWorld.AddBody(body);
-        }
-
+        public void AddBody(object body) // TODO: Need to figure out what the body type is
+            => throw new NotImplementedException(); // _internalWorld.AddBody(body);
 
         /// <summary>
         /// Updates the physics world to keep the physics simulation moving ahead.
         /// </summary>
         /// <param name="dt">The time passed in milliseconds since the last frame.</param>
-        public void Update(float dt)
-        {
-            if (_internalWorld is null)
-                return;
-
-            _internalWorld.Update(dt);
-        }
-        #endregion
+        public void Update(float dt) => throw new NotImplementedException(); // _internalWorld.Update(dt);
     }
 }

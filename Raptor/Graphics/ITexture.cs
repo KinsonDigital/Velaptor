@@ -1,11 +1,26 @@
-﻿namespace Raptor.Graphics
+﻿// <copyright file="ITexture.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor.Graphics
 {
+    using System;
+
     /// <summary>
-    /// Represents a texture that can be renderered to a graphics surface.
+    /// The texture to render to a screen.
     /// </summary>
-    public interface ITexture
+    public interface ITexture : IDisposable
     {
-        #region Props
+        /// <summary>
+        /// Gets he ID of the texture.
+        /// </summary>
+        uint ID { get; }
+
+        /// <summary>
+        /// Gets the name of the texture.
+        /// </summary>
+        string Name { get; }
+
         /// <summary>
         /// Gets the width of the texture.
         /// </summary>
@@ -15,6 +30,5 @@
         /// Gets the height of the texture.
         /// </summary>
         int Height { get; }
-        #endregion
     }
 }

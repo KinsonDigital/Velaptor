@@ -1,13 +1,16 @@
-﻿using Raptor.Graphics;
+﻿// <copyright file="IText.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor
 {
+    using System.Drawing;
+
     /// <summary>
     /// Text that can be rendered to the graphics surface.
     /// </summary>
     public interface IText
     {
-        #region Props
         /// <summary>
         /// Gets the width of the text.
         /// </summary>
@@ -26,7 +29,6 @@ namespace Raptor
         /// <summary>
         /// Gets or sets the color of the text.
         /// </summary>
-        GameColor Color { get; set; }
-        #endregion
+        Color Color { get; set; }
     }
 }

@@ -1,33 +1,36 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
+﻿// <copyright file="PhysicsBodySettings.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.VelcroPhysicsImp
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// Holds settings for a <see cref="VelcroBody"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class PhysicsBodySettings
     {
-        #region Props
         /// <summary>
-        /// The X vertices of the body's shape.
+        /// Gets the X vertices of the body's shape.
         /// </summary>
         public ReadOnlyCollection<float> XVertices { get; private set; } = new ReadOnlyCollection<float>(Array.Empty<float>());
 
         /// <summary>
-        /// The X vertices of the body's shape.
+        /// Gets the X vertices of the body's shape.
         /// </summary>
         public ReadOnlyCollection<float> YVertices { get; private set; } = new ReadOnlyCollection<float>(Array.Empty<float>());
 
         /// <summary>
-        /// The X coordinate of the body's location.
+        /// Gets or sets the X coordinate of the body's location.
         /// </summary>
         public float XPosition { get; set; }
 
         /// <summary>
-        /// The Y coordinate of the body's location.
+        /// Gets or sets the Y coordinate of the body's location.
         /// </summary>
         public float YPosition { get; set; }
 
@@ -52,17 +55,20 @@ namespace Raptor.VelcroPhysicsImp
         public float Restitution { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating if the body is static and will not move.
+        /// Gets or sets a value indicating whether gets or sets a value indicating if the body is static and will not move.
         /// </summary>
         public bool IsStatic { get; set; }
-        #endregion
 
-
-        #region Public Methods
+        /// <summary>
+        /// Sets all of the vertice's X component values.
+        /// </summary>
+        /// <param name="xVertices">The X components to use.</param>
         public void SetXVertices(float[] xVertices) => XVertices = new ReadOnlyCollection<float>(xVertices);
 
-
+        /// <summary>
+        /// Sets all of the vertice's Y component values.
+        /// </summary>
+        /// <param name="yVertices">The Y components to use.</param>
         public void SetYVertices(float[] yVertices) => YVertices = new ReadOnlyCollection<float>(yVertices);
-        #endregion
     }
 }

@@ -12,44 +12,52 @@
     <Copyright>Copyright ©2020 Kinson Digital</Copyright>
     <PackageTags>raptor 2D game games framework</PackageTags>
     <Configurations>Debug-Win;Release-Win</Configurations>
-    <Version>0.8.0</Version>
-    <AssemblyVersion>0.8.0</AssemblyVersion>
-    <FileVersion>0.8.0</FileVersion>
+    <Version>0.9.0</Version>
+    <AssemblyVersion>0.9.0</AssemblyVersion>
+    <FileVersion>0.9.0</FileVersion>
   </PropertyGroup>
 
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Win|AnyCPU'">
     <Optimize>false</Optimize>
     <OSPlatform>Windows</OSPlatform>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Win|AnyCPU'">
     <Optimize>true</Optimize>
     <OSPlatform>Windows</OSPlatform>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
 
   <PropertyGroup>
     <PackageId>KinsonDigital.Raptor.$(OSPlatform)</PackageId>
-    <SDLPath>$(ProjectDir)Libs\SDL\$(OSPlatform)\</SDLPath>
     <Win32BitNativePath>\runtimes\win-x86\native</Win32BitNativePath>
     <Win64BitNativePath>\runtimes\win-x64\native</Win64BitNativePath>
-
-    <!-- Links that explain the Pkg<Package_Name> MSBuild property works
-        1. https://duanenewman.net/blog/post/a-better-way-to-override-references-with-packagereference/
-        2. https://www.patriksvensson.se/2019/09/how-to-find-a-nuget-package-path-from-msbuild
-     -->
-    
-    <SDLCorePackageDir>$(PkgKinsonDigital_SDLCore_Windows)\</SDLCorePackageDir>
-    <SDLCoreLibPath>$(SDLCorePackageDir)lib\$(TargetFramework)\SDLCore.dll</SDLCoreLibPath>
-    <SDLCoreRuntimesDir>$(SDLCorePackageDir)runtimes\</SDLCoreRuntimesDir>
   </PropertyGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="KinsonDigital.SDLCore.Windows" Version="0.3.0" GeneratePathProperty="true" />
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="KinsonDigital.FileIO" Version="1.6.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="OpenTK" Version="4.0.0-pre9.1" />
+    <PackageReference Include="SimpleInjector" Version="5.0.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -58,50 +66,10 @@
   
   <!--TODO: Need to find a way to have different nuget packages for other operating systems such as linux and MacOS-->
 
-  
-  <!--COPY THE SDLCore LIBRARY TO THE OUTPUT FOLDER-->
-  <Target Name="Copy-SDLCore-Lib-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
-    <Copy SourceFiles="$(SDLCoreLibPath)" DestinationFolder="$(TargetDir)" />
-  </Target>
-  
-  
-  <!--COPY NATIVE SDL LIBRARIES FROM LOCAL KinsonDigital.SDLCore.Windows NUGET CACHE TO OUTPUT FOLDER-->
-  <Target Name="Copy-Nuget-Package-Native-Libs-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
-    <!--If the runtimes directory does not exist, create one-->
-    <MakeDir Directories="$(TargetDir)\runtimes" Condition="!Exists('$(TargetDir)runtimes')" />
-
-    <Exec Command="xcopy &quot;$(SDLCoreRuntimesDir)*.dll&quot; &quot;$(TargetDir)runtimes&quot; /Y /E" />
-  </Target>
-
-
-  <!--ADD SDLCore LIBRARY TO NUGET PACKAGE-->
-  <Target Name="Add-SDLCore-Lib" AfterTargets="Build">
-    <ItemGroup>
-      <Content Include="$(TargetDir)SDLCore.dll" Pack="true" PackagePath="\lib\$(TargetFramework)" />
-    </ItemGroup>
-  </Target>
-  
-  
   <!--ADD VELCRO PHYSICS LIBRARY TO NUGET PACKAGE-->
   <Target Name="Add-Velcro-Physics-Lib" AfterTargets="Build">
     <ItemGroup>
       <Content Include="$(ProjectDir)Libs\VelcroPhysics.dll" Pack="true" PackagePath="\lib\$(TargetFramework)" />
-    </ItemGroup>
-  </Target>
-
-
-  <!--Add native x86 SDL libraries to nuget package-->
-  <Target Name="Add-Native-Windows-x86-SDL-Libraries" AfterTargets="Build">
-    <ItemGroup>
-      <Content Include="$(TargetDir)\runtimes\win-x86\native\*.dll" Pack="true" PackagePath="$(Win32BitNativePath)"/>
-    </ItemGroup>
-  </Target>
-
-
-  <!--Add native x64 SDL libraries to nuget package-->
-  <Target Name="Add-Native-Windows-x64-SDL-Libraries" AfterTargets="Build">
-    <ItemGroup>
-      <Content Include="$(TargetDir)\runtimes\win-x64\native\*.dll" Pack="true" PackagePath="$(Win64BitNativePath)" />
     </ItemGroup>
   </Target>
 
@@ -111,11 +79,14 @@
       <HintPath>Libs\VelcroPhysics.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
 
-  <Target Name="Print-Paths" AfterTargets="Build">
-    <Exec Command="echo &quot;Nuget Package Directory: ==&gt; $(SDLCorePackageDir)&quot;" />
-    <Exec Command="echo &quot;Nuget Package Lib: ==&gt; $(SDLCoreLibPath)&quot;" />
-    <Exec Command="echo &quot;Nuget Package Runtimes Directory: ==&gt; $(SDLCoreRuntimesDir)&quot;" />
-  </Target>
+
+  <ItemGroup>
+    <None Update="OpenGL\shader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="OpenGL\shader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
