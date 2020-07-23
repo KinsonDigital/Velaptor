@@ -2,15 +2,17 @@
 
 namespace Raptor.Audio
 {
-    internal interface IAudioDeviceManager : IDisposable
+    internal interface IAudioManager
     {
         event EventHandler? DeviceChanged;
 
-        Guid CreateSoundID(string fileName, Guid guid = default);
+        Guid CreateSoundID(string fileName);
 
-        bool IsSoundRepeating(Guid soundId);
+        Guid CreateSoundID(string fileName, Guid guid);
 
-        void RepeatSound(Guid soundId, bool value);
+        bool IsSoundLooping(Guid soundId);
+
+        void SetLooping(Guid soundId, bool value);
 
         void SetVolume(Guid soundId, float value);
 
@@ -32,8 +34,6 @@ namespace Raptor.Audio
 
         void ChangeDevice(string name);
 
-        void Dispose();
-
         void Init(string name = null);
 
         void PlaySound(Guid soundId);
@@ -43,5 +43,7 @@ namespace Raptor.Audio
         void StopSound(Guid soundId);
 
         void ResetSound(Guid soundId);
+
+        void OnDeviceChanged();
     }
 }

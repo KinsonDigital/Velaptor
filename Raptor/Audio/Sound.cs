@@ -1,8 +1,9 @@
-// <copyright file="Sound.cs" company="KinsonDigital">
+﻿// <copyright file="Sound.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
+#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
 namespace Raptor.Audio
 {
     using System;
@@ -18,13 +19,18 @@ namespace Raptor.Audio
     /// </summary>
     public class Sound : ISound
     {
-        private readonly IAudioDeviceManager audioManager;
+        private const string IsDisposedExceptionMessage = "The sound is disposed.  You must create another sound instance.";
+        private readonly IAudioManager audioManager;
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
         private readonly string fileName;
         private Guid soundId;
         private bool isDisposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sound"/> class.
+        /// </summary>
+        /// <param name="fileName">The path/name to the sound file to load.</param>
         [ExcludeFromCodeCoverage]
         public Sound(string fileName)
         {
@@ -39,107 +45,124 @@ namespace Raptor.Audio
             Init(fileName);
         }
 
-        internal Sound(IAudioDeviceManager audioManager, string fileName, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sound"/> class.
+        /// </summary>
+        /// <param name="audioManager">Manages audio related operations.</param>
+        /// <param name="fileName">The path/name to the sound file to load.</param>
+        /// <param name="oggDecoder">Decodes OGG audio files.</param>
+        /// <param name="mp3Decoder">Decodes MP3 audio files.</param>
+        internal Sound(IAudioManager audioManager, string fileName, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
         {
-            this.audioManager = audioManager;
             this.fileName = fileName;
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
 
+            this.audioManager = audioManager;
+            this.audioManager.DeviceChanged += AudioManager_DeviceChanged;
+
             Init(fileName);
         }
 
+        /// <inheritdoc/>
         public string Name => Path.GetFileNameWithoutExtension(this.fileName);
 
-        //TODO: Check that this is working
-        public bool IsLooping
-        {
-            get
-            {
-                if (isDisposed)
-                    throw new Exception("Object already disposed");
-
-                return this.audioManager.IsSoundRepeating(this.soundId);
-            }
-            set
-            {
-                if (isDisposed)
-                    throw new Exception("Object already disposed");
-
-                this.audioManager.RepeatSound(this.soundId, value);
-            }
-        }
-
+        /// <inheritdoc/>
         public float Volume
         {
             get
             {
-                if (isDisposed)
-                    throw new Exception("Object already disposed");
+                if (this.isDisposed)
+                    throw new Exception(IsDisposedExceptionMessage);
 
                 return this.audioManager.GetVolume(this.soundId);
             }
             set
             {
-                if (isDisposed)
-                    throw new Exception("Object already disposed");
+                if (this.isDisposed)
+                    throw new Exception(IsDisposedExceptionMessage);
 
                 this.audioManager.SetVolume(this.soundId, value);
             }
         }
 
+        /// <inheritdoc/>
         public float CurrentTimePosition
         {
             get
             {
-                if (isDisposed)
-                    throw new Exception("Object already disposed");
+                if (this.isDisposed)
+                    throw new Exception(IsDisposedExceptionMessage);
 
                 return this.audioManager.GetTimePosition(this.soundId);
             }
         }
 
-        public void Play()
+        /// <inheritdoc/>
+        public bool IsLooping
         {
-            if (isDisposed)
-                throw new Exception("Object already disposed");
+            get
+            {
+                if (this.isDisposed)
+                    throw new Exception(IsDisposedExceptionMessage);
+
+                return this.audioManager.IsSoundLooping(this.soundId);
+            }
+            set
+            {
+                if (this.isDisposed)
+                    throw new Exception(IsDisposedExceptionMessage);
+
+                this.audioManager.SetLooping(this.soundId, value);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void PlaySound()
+        {
+            if (this.isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
 
             this.audioManager.PlaySound(this.soundId);
         }
 
-        public void Pause()
+        /// <inheritdoc/>
+        public void PauseSound()
         {
-            if (isDisposed)
-                throw new Exception("Object already disposed");
+            if (this.isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
 
             this.audioManager.PauseSound(this.soundId);
         }
 
-        public void Stop()
+        /// <inheritdoc/>
+        public void StopSound()
         {
-            if (isDisposed)
-                throw new Exception("Object already disposed");
+            if (this.isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
 
             this.audioManager.StopSound(this.soundId);
         }
 
+        /// <inheritdoc/>
         public void Reset()
         {
-            if (isDisposed)
-                throw new Exception("Object already disposed");
+            if (this.isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
 
             this.audioManager.ResetSound(this.soundId);
         }
 
-        //TODO: Create overloads that take TimeSpan, milliseconds, minutes, and combination of those
+        /// <inheritdoc/>
         public void SetTimePosition(float seconds)
         {
-            if (isDisposed)
-                throw new Exception("Object already disposed");
+            if (this.isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
 
-            this.audioManager.SetSoundTimePosition(this.soundId, seconds);
+            this.audioManager.SetTimePosition(this.soundId, seconds);
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -147,31 +170,16 @@ namespace Raptor.Audio
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)
             {
-                //AL.Source(_sourceId, ALSourcei.Buffer, 0);
-
-                // Delete the buffer
-                //AL.SourceUnqueueBuffers(_sourceId, new[] { _bufferId });
-
                 this.audioManager.UnloadSoundData(this.soundId);
                 this.audioManager.DeviceChanged -= AudioManager_DeviceChanged;
-
-                //if (this.audioDevices.CurrentContext != ALContext.Null)
-                //{
-                //    ALC.MakeContextCurrent(ALContext.Null);
-                //    ALC.DestroyContext(_context);
-                //}
-
-                //_context = ALContext.Null;
-
-                //if (_device != IntPtr.Zero)
-                //    ALC.CloseDevice(_device);
-
-                //_device = ALDevice.Null;
-
                 this.isDisposed = true;
             }
         }
@@ -199,13 +207,15 @@ namespace Raptor.Audio
 
                     break;
                 default:
-                    throw new Exception($"The file extension '{extension}' is not supported.");
+                    throw new Exception($"The file extension '{extension}' is not supported file type.");
             }
         }
 
-        private void AudioManager_DeviceChanged(object? sender, EventArgs e)
-        {
-            Init(this.fileName);
-        }
+        /// <summary>
+        /// Invoked when the audio device has been changed.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">Contains various event related information.</param>
+        private void AudioManager_DeviceChanged(object? sender, EventArgs e) => Init(this.fileName);
     }
 }

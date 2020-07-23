@@ -23,7 +23,7 @@ namespace Raptor.Content
             var mp3Decoder = new MP3SoundDecoder();
 
             return new Sound(
-                AudioDeviceManager.GetInstance(alInvoker, alcInvoker),
+                AudioManager.GetInstance(alInvoker, alcInvoker),
                 filePath,
                 oggDecoder,
                 mp3Decoder);

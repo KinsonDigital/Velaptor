@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -13,9 +13,9 @@ using Raptor.OpenAL;
 
 namespace Raptor.Audio
 {
-    internal sealed class AudioDeviceManager : IAudioDeviceManager
+    internal sealed class AudioManager : IAudioManager
     {
-        private static readonly AudioDeviceManager _instance = new AudioDeviceManager();
+        private static readonly AudioManager _instance = new AudioManager();
         private const string DeviceNamePrefix = "OpenAL Soft on ";// All device names returned are prefixed with this
         private static readonly Dictionary<Guid, SoundSource> _soundSources = new Dictionary<Guid, SoundSource>();
         private static readonly List<SoundState> _continuePlaybackCache = new List<SoundState>();
@@ -27,7 +27,7 @@ namespace Raptor.Audio
         private bool isDisposed;
         public event EventHandler? DeviceChanged;
         
-        private AudioDeviceManager()
+        private AudioManager()
         {
             _instance?.Init();
         }
@@ -40,7 +40,7 @@ namespace Raptor.Audio
             get
             {
                 if (this.isDisposed)
-                    throw new Exception($"The '{nameof(AudioDeviceManager)}' has already been destroyed.\nUse the '{nameof(AudioDeviceManagerFactory)}' to create another '{nameof(AudioDeviceManager)}'.");
+                    throw new Exception($"The '{nameof(AudioManager)}' has already been destroyed.\nUse the '{nameof(AudioDeviceManagerFactory)}' to create another '{nameof(AudioManager)}'.");
 
                 var result = _alcInvoker.GetString(_device, AlcGetStringList.AllDevicesSpecifier)
                     .Select(n => n.Replace(DeviceNamePrefix, "")).ToArray();
@@ -121,7 +121,12 @@ namespace Raptor.Audio
             }
         }
 
-        public Guid CreateSoundID(string fileName, Guid guid = default)
+        public Guid CreateSoundID(string fileName)
+        {
+            return CreateSoundID(fileName, Guid.Empty);
+        }
+
+        public Guid CreateSoundID(string fileName, Guid guid)
         {
             Guid newId;
 
@@ -142,7 +147,7 @@ namespace Raptor.Audio
             return newId;
         }
 
-        public bool IsSoundRepeating(Guid soundId)
+        public bool IsSoundLooping(Guid soundId)
         {
             // TODO:  Check if the soundId exists first and if not, throw an exception
             var soundSrc = _soundSources[soundId];
@@ -150,7 +155,7 @@ namespace Raptor.Audio
             return _alInvoker.GetSource(soundSrc.SourceId, ALSourceb.Looping);
         }
 
-        public void RepeatSound(Guid soundId, bool value)
+        public void SetLooping(Guid soundId, bool value)
         {
             // TODO: Check if guid exists and if it does not, throw an exceptoin
 
@@ -271,7 +276,7 @@ namespace Raptor.Audio
             _alInvoker.Source(soundSrc.SourceId, ALSourcef.SecOffset, seconds);
         }
 
-        internal static AudioDeviceManager GetInstance(IALInvoker alInvoker, IALCInvoker alcInvoker)
+        internal static AudioManager GetInstance(IALInvoker alInvoker, IALCInvoker alcInvoker)
         {
             if (_instance.IsInitialized)
                 return _instance;
@@ -315,44 +320,6 @@ namespace Raptor.Audio
                 _context = _alcInvoker.CreateContext(_device, _attributes);
 
             _alcInvoker.MakeContextCurrent(_context);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        protected void Dispose(bool disposing)
-        {
-            if (!this.isDisposed)
-            {
-                if (disposing)
-                {
-                    _alcInvoker.ErrorCallback = null;
-                    _alcInvoker = null;
-
-                    _alInvoker.ErrorCallback = null;
-                    _alInvoker = null;
-
-                    _attributes = null;
-
-                    _soundSources.Clear();
-
-                    // Unregister any delegates that might be subscribed to the event
-                    var eventList = DeviceChanged?.GetInvocationList();
-
-                    if (!(eventList is null))
-                    {
-                        foreach (var eventItem in eventList)
-                        {
-                            DeviceChanged -= (EventHandler)eventItem;
-                        }
-                    }
-                }
-
-                DestroyDevice();
-                this.isDisposed = true;
-            }
         }
 
         private bool AudioIsNull() => _device == ALDevice.Null && _context == ALContext.Null && _attributes is null;
@@ -434,5 +401,7 @@ namespace Raptor.Audio
 
             _alInvoker.SourceRewind(soundSrc.SourceId);
         }
+
+        public void OnDeviceChanged() => DeviceChanged?.Invoke(this, new EventArgs());
     }
 }

@@ -43,7 +43,7 @@ namespace RaptorSandBox
 
             this.quietPlaceMusic = ContentLoader.LoadSound("thequietplace.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
-            this.quietPlaceMusic.Play();
+            this.quietPlaceMusic.PlaySound();
 
             base.OnLoad();
         }
@@ -63,7 +63,7 @@ namespace RaptorSandBox
 
             if (currentKeyboardState.IsKeyUp(KeyCode.P) && previousKeyboardState.IsKeyDown(KeyCode.P))
             {
-                this.quietPlaceMusic.Play();
+                this.quietPlaceMusic.PlaySound();
             }
 
 
