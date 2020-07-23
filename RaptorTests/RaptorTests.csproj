@@ -16,6 +16,9 @@
     <Configurations>Debug-Win;Release-Win</Configurations>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Fakes\AudioManagerFake.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
