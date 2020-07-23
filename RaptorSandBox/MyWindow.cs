@@ -1,9 +1,12 @@
+using OpenToolkit.Audio.OpenAL;
 using Raptor;
+using Raptor.Audio;
 using Raptor.Content;
 using Raptor.Factories;
 using Raptor.Graphics;
 using Raptor.Input;
 using System;
+using System.Linq;
 
 namespace RaptorSandBox
 {
@@ -17,11 +20,15 @@ namespace RaptorSandBox
         private KeyboardState previousKeyboardState;
         private MouseState currentMouseState;
         private MouseState previousMouseState;
+        private ISound zapSound;
+        private ISound deadShipsMusic;
+        private ISound quietPlaceMusic;
+        private IAudioDeviceManager audioManager;
 
         public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
+            audioManager = AudioDeviceManagerFactory.CreateManager();
         }
-
 
         public override void OnLoad()
         {
@@ -32,6 +39,13 @@ namespace RaptorSandBox
 
             this.dungeonTexture = ContentLoader.LoadTexture("dungeon.png");
             this.linkTexture = ContentLoader.LoadTexture("Link.png");
+            //this.zapSound = ContentLoader.LoadSound("zap.ogg");
+            this.deadShipsMusic = ContentLoader.LoadSound("deadships.ogg");
+            this.deadShipsMusic.SetTimePosition(60);
+
+            this.quietPlaceMusic = ContentLoader.LoadSound("thequietplace.ogg");
+            this.quietPlaceMusic.SetTimePosition(50);
+            this.quietPlaceMusic.Play();
 
             base.OnLoad();
         }
@@ -44,12 +58,17 @@ namespace RaptorSandBox
 
             if (currentKeyboardState.IsKeyUp(KeyCode.Space) && previousKeyboardState.IsKeyDown(KeyCode.Space))
             {
+                //var headPhones = audioManager.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
+                //this.audioManager.ChangeDevice(headPhones);
+                this.quietPlaceMusic.Dispose();
             }
-            
-            if (currentMouseState.IsLeftButtonUp() && previousMouseState.IsLeftButtonDown())
+
+            if (currentKeyboardState.IsKeyUp(KeyCode.P) && previousKeyboardState.IsKeyDown(KeyCode.P))
             {
+                this.quietPlaceMusic.Play();
             }
-            
+
+
             this.previousKeyboardState =  this.currentKeyboardState;
             this.previousMouseState = this.currentMouseState;
 

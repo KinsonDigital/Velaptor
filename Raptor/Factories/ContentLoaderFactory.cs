@@ -5,6 +5,7 @@
 namespace Raptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
+    using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
 
@@ -22,8 +23,9 @@ namespace Raptor.Factories
         {
             var textureLoader = IoC.Container.GetInstance<ILoader<ITexture>>();
             var atlasLoader = IoC.Container.GetInstance<ILoader<AtlasRegionRectangle[]>>();
+            var soundLoader = IoC.Container.GetInstance<ILoader<ISound>>();
 
-            return new ContentLoader(textureLoader, atlasLoader);
+            return new ContentLoader(textureLoader, atlasLoader, soundLoader);
         }
     }
 }

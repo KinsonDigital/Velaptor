@@ -8,6 +8,7 @@ namespace RaptorTests.Content
     using System.Reflection;
     using Moq;
     using Raptor;
+    using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
     using Xunit;
@@ -21,12 +22,17 @@ namespace RaptorTests.Content
         private readonly ContentLoader contentLoader;
         private readonly Mock<ILoader<ITexture>> mockTextureLoader;
         private readonly Mock<ILoader<AtlasRegionRectangle[]>> mockAtlasDataLoader;
+        private readonly Mock<ILoader<ISound>> mockSoundLoader;
 
         public ContentLoaderTests()
         {
             this.mockTextureLoader = new Mock<ILoader<ITexture>>();
             this.mockAtlasDataLoader = new Mock<ILoader<AtlasRegionRectangle[]>>();
-            this.contentLoader = new ContentLoader(this.mockTextureLoader.Object, this.mockAtlasDataLoader.Object);
+            this.mockSoundLoader = new Mock<ILoader<ISound>>();
+
+            this.contentLoader = new ContentLoader(this.mockTextureLoader.Object,
+                                                   this.mockAtlasDataLoader.Object,
+                                                   this.mockSoundLoader.Object);
         }
 
         #region Prop Tests

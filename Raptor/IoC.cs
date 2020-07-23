@@ -10,8 +10,10 @@ namespace Raptor
     using Raptor.Content;
     using Raptor.Graphics;
     using Raptor.OpenGL;
+    using Raptor.Audio;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
+    using Raptor.OpenAL;
 
     /// <summary>
     /// Provides dependency injection for the applcation.
@@ -45,6 +47,11 @@ namespace Raptor
             IocContainer.Register<ITextFile, TextFile>();
             IocContainer.Register<IImageFile, ImageFile>();
             IocContainer.Register<ILoader<ITexture>, TextureLoader>();
+            IocContainer.Register<ILoader<ISound>, SoundLoader>();
+            IocContainer.Register<IALInvoker, ALInvoker>();
+            IocContainer.Register<IALCInvoker, ALCInvoker>();
+            IocContainer.Register<ISoundDecoder<float>, OggSoundDecoder>();
+            IocContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>();
             IocContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
 
             /*NOTE:
