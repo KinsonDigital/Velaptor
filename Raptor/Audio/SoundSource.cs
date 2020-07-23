@@ -12,8 +12,6 @@ namespace Raptor.Audio
 
         public float TotalTime; // In seconds
 
-        public string FileName;
-
         public int SampleRate;
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -13,7 +13,7 @@ using Raptor.OpenAL;
 
 namespace Raptor.Audio
 {
-    public sealed class AudioDeviceManager : IAudioDeviceManager
+    internal sealed class AudioDeviceManager : IAudioDeviceManager
     {
         private static readonly AudioDeviceManager _instance = new AudioDeviceManager();
         private const string DeviceNamePrefix = "OpenAL Soft on ";// All device names returned are prefixed with this
@@ -24,8 +24,6 @@ namespace Raptor.Audio
         private static ALContextAttributes? _attributes;
         private static IALInvoker _alInvoker;
         private static IALCInvoker _alcInvoker;
-        private static ISoundDecoder<float> _oggDecoder;
-        private static ISoundDecoder<byte> _mp3Decoder;
         private bool isDisposed;
         public event EventHandler? DeviceChanged;
         
@@ -35,8 +33,7 @@ namespace Raptor.Audio
         }
 
         public bool IsInitialized => !AudioIsNull() &&
-            !InvokersAreNull() &&
-            !DecodersAreNull();
+            !InvokersAreNull();
 
         public string[] DeviceNames
         {
@@ -134,7 +131,6 @@ namespace Raptor.Audio
                 newId = guid;
 
             SoundSource soundSrc;
-            soundSrc.FileName = fileName;
             soundSrc.SampleRate = 0;
             soundSrc.TotalTime = -1f;
 
@@ -194,47 +190,47 @@ namespace Raptor.Audio
             return result * 100f;
         }
 
-        public void UploadData(string fileName, Guid soundId)
+        public void UploadOggData(SoundStats<float> data, Guid soundId)
         {
             //TODO: Check if the sourceId exists first and if not, throw an exception
 
             var soundSrc = _soundSources[soundId];
 
-            // If data is byte, use ALFormat.Stereo16. For float use ALFormat.StereoFloat32Ext
-            switch (Path.GetExtension(fileName))
-            {
-                case ".ogg":
-                    var oggSoundData = _oggDecoder.LoadData(fileName);
+            soundSrc.TotalTime = data.TotalSeconds;
 
-                    soundSrc.TotalTime = oggSoundData.TotalSeconds;
+            soundSrc.SampleRate = data.SampleRate;
 
-                    soundSrc.SampleRate = oggSoundData.SampleRate;
-
-                    _alInvoker.BufferData(soundSrc.BufferId,
-                                  MapFormat(oggSoundData.Format),
-                                  oggSoundData.BufferData,
-                                  oggSoundData.BufferData.Length * sizeof(float),
-                                  oggSoundData.SampleRate);
-                    break;
-                case ".mp3":
-                    var mp3SoundData = _mp3Decoder.LoadData(fileName);
-
-                    soundSrc.TotalTime = mp3SoundData.TotalSeconds;
-
-                    soundSrc.SampleRate = mp3SoundData.SampleRate;
-
-                    _alInvoker.BufferData(soundSrc.BufferId,
-                                  MapFormat(mp3SoundData.Format),
-                                  mp3SoundData.BufferData,
-                                  mp3SoundData.BufferData.Length,
-                                  mp3SoundData.SampleRate);
-                    break;
-            }
+            _alInvoker.BufferData(soundSrc.BufferId,
+                            MapFormat(data.Format),
+                            data.BufferData,
+                            data.BufferData.Length * sizeof(float),
+                            data.SampleRate);
 
             // Bind the buffer to the source
             _alInvoker.Source(soundSrc.SourceId, ALSourcei.Buffer, soundSrc.BufferId);
 
-            soundSrc.FileName = fileName;
+            _soundSources[soundId] = soundSrc;
+        }
+
+        public void UploadMp3Data(SoundStats<byte> data, Guid soundId)
+        {
+            //TODO: Check if the sourceId exists first and if not, throw an exception
+
+            var soundSrc = _soundSources[soundId];
+
+            soundSrc.TotalTime = data.TotalSeconds;
+
+            soundSrc.SampleRate = data.SampleRate;
+
+            _alInvoker.BufferData(soundSrc.BufferId,
+                            MapFormat(data.Format),
+                            data.BufferData,
+                            data.BufferData.Length,
+                            data.SampleRate);
+
+            // Bind the buffer to the source
+            _alInvoker.Source(soundSrc.SourceId, ALSourcei.Buffer, soundSrc.BufferId);
+
             _soundSources[soundId] = soundSrc;
         }
 
@@ -275,23 +271,22 @@ namespace Raptor.Audio
             _alInvoker.Source(soundSrc.SourceId, ALSourcef.SecOffset, seconds);
         }
 
-        internal static AudioDeviceManager GetInstance(
-            IALInvoker alInvoker,
-            IALCInvoker alcInvoker,
-            ISoundDecoder<float> oggDecoder,
-            ISoundDecoder<byte> mp3Decoder)
+        internal static AudioDeviceManager GetInstance(IALInvoker alInvoker, IALCInvoker alcInvoker)
         {
             if (_instance.IsInitialized)
                 return _instance;
 
-            _alInvoker = alInvoker;
-            _alInvoker.ErrorCallback = ALErrorCallback;
+            if (_alInvoker is null)
+            {
+                _alInvoker = alInvoker;
+                _alInvoker.ErrorCallback = ALErrorCallback;
+            }
 
-            _alcInvoker = alcInvoker;
-            _alcInvoker.ErrorCallback = ALCErrorCallback;
-
-            _oggDecoder = oggDecoder;
-            _mp3Decoder = mp3Decoder;
+            if (_alcInvoker is null)
+            {
+                _alcInvoker = alcInvoker;
+                _alcInvoker.ErrorCallback = ALCErrorCallback;
+            }
 
             _instance.Init();
 
@@ -310,9 +305,6 @@ namespace Raptor.Audio
 
         public void Init(string name = null)
         {
-            if (this.isDisposed)
-                throw new Exception($"The '{nameof(AudioDeviceManager)}' has already been destroyed.\nUse the '{nameof(AudioDeviceManagerFactory)}' to create another '{nameof(AudioDeviceManager)}'.");
-
             if (_device.Handle == IntPtr.Zero)
                 _device = _alcInvoker.OpenDevice(name == null ? null : $"{DeviceNamePrefix}{name}");
 
@@ -328,7 +320,6 @@ namespace Raptor.Audio
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         protected void Dispose(bool disposing)
@@ -367,8 +358,6 @@ namespace Raptor.Audio
         private bool AudioIsNull() => _device == ALDevice.Null && _context == ALContext.Null && _attributes is null;
 
         private bool InvokersAreNull() => _alInvoker is null && _alcInvoker is null;
-
-        private bool DecodersAreNull() => _oggDecoder is null && _mp3Decoder is null;
 
         private ALFormat MapFormat(AudioFormat format)
         {

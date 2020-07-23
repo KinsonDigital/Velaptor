@@ -23,11 +23,9 @@ namespace RaptorSandBox
         private ISound zapSound;
         private ISound deadShipsMusic;
         private ISound quietPlaceMusic;
-        private IAudioDeviceManager audioManager;
 
         public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
-            audioManager = AudioDeviceManagerFactory.CreateManager();
         }
 
         public override void OnLoad()

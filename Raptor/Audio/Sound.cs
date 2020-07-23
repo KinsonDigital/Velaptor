@@ -1,4 +1,4 @@
-﻿// <copyright file="Sound.cs" company="KinsonDigital">
+// <copyright file="Sound.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,19 +18,38 @@ namespace Raptor.Audio
     /// </summary>
     public class Sound : ISound
     {
-        private readonly IAudioDeviceManager audioManager = AudioDeviceManagerFactory.CreateManager();
+        private readonly IAudioDeviceManager audioManager;
+        private readonly ISoundDecoder<float> oggDecoder;
+        private readonly ISoundDecoder<byte> mp3Decoder;
         private readonly string fileName;
         private Guid soundId;
         private bool isDisposed;
 
-        internal Sound(string fileName)
+        [ExcludeFromCodeCoverage]
+        public Sound(string fileName)
         {
             this.fileName = fileName;
 
+            this.oggDecoder = new OggSoundDecoder();
+            this.mp3Decoder = new MP3SoundDecoder();
+
+            this.audioManager = AudioDeviceManagerFactory.CreateManager();
             this.audioManager.DeviceChanged += AudioManager_DeviceChanged;
 
             Init(fileName);
         }
+
+        internal Sound(IAudioDeviceManager audioManager, string fileName, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
+        {
+            this.audioManager = audioManager;
+            this.fileName = fileName;
+            this.oggDecoder = oggDecoder;
+            this.mp3Decoder = mp3Decoder;
+
+            Init(fileName);
+        }
+
+        public string Name => Path.GetFileNameWithoutExtension(this.fileName);
 
         //TODO: Check that this is working
         public bool IsLooping
@@ -157,8 +176,6 @@ namespace Raptor.Audio
             }
         }
 
-        ~Sound() => Dispose(false);
-
         private void Init(string fileName)
         {
             if (this.soundId == Guid.Empty)
@@ -166,7 +183,24 @@ namespace Raptor.Audio
             else
                 this.audioManager.CreateSoundID(fileName, this.soundId);
 
-            this.audioManager.UploadData(fileName, this.soundId);
+            var extension = Path.GetExtension(this.fileName);
+
+            switch (extension)
+            {
+                case ".ogg":
+                    var oggData = this.oggDecoder.LoadData(this.fileName);
+
+                    this.audioManager.UploadOggData(oggData, this.soundId);
+                    break;
+                case ".mp3":
+                    var mp3Data = this.mp3Decoder.LoadData(this.fileName);
+
+                    this.audioManager.UploadMp3Data(mp3Data, this.soundId);
+
+                    break;
+                default:
+                    throw new Exception($"The file extension '{extension}' is not supported.");
+            }
         }
 
         private void AudioManager_DeviceChanged(object? sender, EventArgs e)

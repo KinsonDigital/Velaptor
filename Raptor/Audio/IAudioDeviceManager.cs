@@ -2,7 +2,7 @@
 
 namespace Raptor.Audio
 {
-    public interface IAudioDeviceManager : IDisposable
+    internal interface IAudioDeviceManager : IDisposable
     {
         event EventHandler? DeviceChanged;
 
@@ -20,7 +20,9 @@ namespace Raptor.Audio
 
         void SetSoundTimePosition(Guid soundId, float seconds);
 
-        void UploadData(string fileName, Guid soundId);
+        void UploadOggData(SoundStats<float> data, Guid soundId);
+
+        void UploadMp3Data(SoundStats<byte> data, Guid soundId);
 
         void UnloadSoundData(Guid soundId, bool preserveSound = false);
 
