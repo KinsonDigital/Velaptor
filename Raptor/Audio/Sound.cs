@@ -20,7 +20,9 @@ namespace Raptor.Audio
     public class Sound : ISound
     {
         private const string IsDisposedExceptionMessage = "The sound is disposed.  You must create another sound instance.";
+#pragma warning disable CA2213 // Disposable fields should be disposed
         private readonly IAudioManager audioManager;
+#pragma warning restore CA2213 // Disposable fields should be disposed
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
         private readonly string fileName;

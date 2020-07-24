@@ -2,7 +2,7 @@
 
 namespace Raptor.Audio
 {
-    internal interface IAudioManager
+    internal interface IAudioManager : IDisposable
     {
         event EventHandler? DeviceChanged;
 

@@ -15,22 +15,20 @@ namespace Raptor.Audio
 {
     internal sealed class AudioManager : IAudioManager
     {
-        private static readonly AudioManager _instance = new AudioManager();
+        private static AudioManager _instance = new AudioManager();
         private const string DeviceNamePrefix = "OpenAL Soft on ";// All device names returned are prefixed with this
-        private static readonly Dictionary<Guid, SoundSource> _soundSources = new Dictionary<Guid, SoundSource>();
-        private static readonly List<SoundState> _continuePlaybackCache = new List<SoundState>();
+        private static readonly string IsDisposedExceptionMessage = $"The '{nameof(AudioManager)}' has already been destroyed.\nInvoked the '{nameof(AudioManager.Init)}()' to re-setup the device manager.";
+        private static Dictionary<Guid, SoundSource>? _soundSources = new Dictionary<Guid, SoundSource>();
+        private static List<SoundState>? _continuePlaybackCache = new List<SoundState>();
         private static ALDevice _device;
         private static ALContext _context;
         private static ALContextAttributes? _attributes;
-        private static IALInvoker _alInvoker;
-        private static IALCInvoker _alcInvoker;
-        private bool isDisposed;
+        private static IALInvoker? _alInvoker;
+        private static IALCInvoker? _alcInvoker;
+        private static bool isDisposed;
         public event EventHandler? DeviceChanged;
 
-        private AudioManager()
-        {
-            _instance?.Init();
-        }
+        private AudioManager() { }
 
         public bool IsInitialized => !AudioIsNull() &&
             !InvokersAreNull();
@@ -39,8 +37,8 @@ namespace Raptor.Audio
         {
             get
             {
-                if (this.isDisposed)
-                    throw new Exception($"The '{nameof(AudioManager)}' has already been destroyed.\nUse the '{nameof(AudioDeviceManagerFactory)}' to create another '{nameof(AudioManager)}'.");
+                if (isDisposed)
+                    throw new Exception(IsDisposedExceptionMessage);
 
                 var result = _alcInvoker.GetString(_device, AlcGetStringList.AllDevicesSpecifier)
                     .Select(n => n.Replace(DeviceNamePrefix, "")).ToArray();
@@ -61,15 +59,24 @@ namespace Raptor.Audio
                 _context = _alcInvoker.CreateContext(_device, _attributes);
 
             _alcInvoker.MakeContextCurrent(_context);
+
+            isDisposed = false;
         }
 
         public Guid CreateSoundID(string fileName)
         {
+            if (isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
+
+            // TODO: Add isDiposed check and throw exception
             return CreateSoundID(fileName, Guid.Empty);
         }
 
         public Guid CreateSoundID(string fileName, Guid guid)
         {
+            if (isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
+
             Guid newId;
 
             if (guid == Guid.Empty)
@@ -91,7 +98,11 @@ namespace Raptor.Audio
 
         public void UploadOggData(SoundStats<float> data, Guid soundId)
         {
-            //TODO: Check if the sourceId exists first and if not, throw an exception
+            if (isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
+
+            if (!_soundSources.Keys.Contains(soundId))
+                throw new Exception($"The sound id '{soundId}' does not exist.");
 
             var soundSrc = _soundSources[soundId];
 
@@ -113,7 +124,11 @@ namespace Raptor.Audio
 
         public void UploadMp3Data(SoundStats<byte> data, Guid soundId)
         {
-            //TODO: Check if the sourceId exists first and if not, throw an exception
+            if (isDisposed)
+                throw new Exception(IsDisposedExceptionMessage);
+
+            if (!_soundSources.Keys.Contains(soundId))
+                throw new Exception($"The sound id '{soundId}' does not exist.");
 
             var soundSrc = _soundSources[soundId];
 
@@ -135,6 +150,7 @@ namespace Raptor.Audio
 
         public void PlaySound(Guid soundId)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO: Check if guid exists and throw exception if it does not
             var soundSrc = _soundSources[soundId];
 
@@ -143,6 +159,7 @@ namespace Raptor.Audio
 
         public void PauseSound(Guid soundId)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO: Check if guid exists and throw exception if it does not
             var soundSrc = _soundSources[soundId];
 
@@ -151,6 +168,7 @@ namespace Raptor.Audio
 
         public void StopSound(Guid soundId)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO: Check if guid exists and throw exception if it does not
             var soundSrc = _soundSources[soundId];
 
@@ -159,6 +177,7 @@ namespace Raptor.Audio
 
         public void ResetSound(Guid soundId)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO: Check if guid exists and throw exception if it does not
             var soundSrc = _soundSources[soundId];
 
@@ -167,6 +186,7 @@ namespace Raptor.Audio
 
         public bool IsSoundLooping(Guid soundId)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO:  Check if the soundId exists first and if not, throw an exception
             var soundSrc = _soundSources[soundId];
 
@@ -175,6 +195,7 @@ namespace Raptor.Audio
 
         public void SetLooping(Guid soundId, bool value)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO: Check if guid exists and if it does not, throw an exceptoin
 
             var soundSrc = _soundSources[soundId];
@@ -184,6 +205,7 @@ namespace Raptor.Audio
 
         public float GetVolume(Guid soundId)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO:  Check if the soundId exists first and if not, throw an exception
             var soundSrc = _soundSources[soundId];
 
@@ -193,6 +215,7 @@ namespace Raptor.Audio
         }
 
         public void SetVolume(Guid soundId, float value)
+        // TODO: Add isDiposed check and throw exception
         {
             /*NOTE:
                 Indicate the gain (volume amplification) applied. Type: float. Range: [0.0f - ?]
@@ -215,6 +238,7 @@ namespace Raptor.Audio
 
         public float GetTimePosition(Guid soundId)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO: Check if the sourceId exists first and if not, throw an exception
             var soundSrc = _soundSources[soundId];
 
@@ -225,6 +249,7 @@ namespace Raptor.Audio
 
         public void SetTimePosition(Guid soundId, float seconds)
         {
+            // TODO: Add isDiposed check and throw exception
             //TODO: Check if the sourceId exists first and if not, throw an exception
 
             // Prevent negative number
@@ -239,6 +264,7 @@ namespace Raptor.Audio
 
         public void ChangeDevice(string name)
         {
+            // TODO: Add isDiposed check and throw exception
             if (!DeviceNames.Contains(name))
                 throw new AudioDeviceDoesNotExistException();
 
@@ -277,6 +303,7 @@ namespace Raptor.Audio
 
         public void UnloadSoundData(Guid soundId, bool preserveSound = false)
         {
+            // TODO: Add isDiposed check and throw exception
             // TODO: Check if the sourceId exists first and if not, throw an exception
 
             var soundSrc = _soundSources[soundId];
@@ -289,6 +316,7 @@ namespace Raptor.Audio
         }
 
         internal static AudioManager GetInstance(IALInvoker alInvoker, IALCInvoker alcInvoker)
+        // TODO: Add isDiposed check and throw exception
         {
             if (_instance.IsInitialized)
                 return _instance;
@@ -400,6 +428,22 @@ namespace Raptor.Audio
         private static void ALCErrorCallback(string errorMsg)
         {
             Debugger.Break();
+        }
+
+        public void Dispose()
+        {
+            _soundSources?.Clear();
+
+            _continuePlaybackCache?.Clear();
+
+            _device = ALDevice.Null;
+            _context = ALContext.Null;
+            _attributes = null;
+            _alInvoker = null;
+            _alcInvoker = null;
+
+            _instance = new AudioManager();
+            isDisposed = true;
         }
     }
 }

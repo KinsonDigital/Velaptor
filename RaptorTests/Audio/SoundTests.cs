@@ -404,12 +404,10 @@ namespace RaptorTests.Audio
         }
         #endregion
 
-        #region Public Methods
         public void Dispose()
         {
             this.sound?.Dispose();
             GC.SuppressFinalize(this);
         }
-        #endregion
     }
 }
