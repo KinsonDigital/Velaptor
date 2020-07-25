@@ -1,4 +1,4 @@
-﻿// <copyright file="IoC.cs" company="KinsonDigital">
+// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -48,9 +48,11 @@ namespace Raptor
             IocContainer.Register<IImageFile, ImageFile>();
             IocContainer.Register<ILoader<ITexture>, TextureLoader>();
             IocContainer.Register<ILoader<ISound>, SoundLoader>();
+            IocContainer.Register<IDirectory, Directory>();
             IocContainer.Register<IALInvoker, ALInvoker>();
             IocContainer.Register<ISoundDecoder<float>, OggSoundDecoder>();
             IocContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>();
+            IocContainer.Register<IContentSource, ContentSource>();
             IocContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
 
             /*NOTE:
