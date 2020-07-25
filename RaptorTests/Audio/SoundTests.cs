@@ -8,6 +8,7 @@ namespace RaptorTests.Audio
     using System;
     using Castle.DynamicProxy.Tokens;
     using Moq;
+    using OpenToolkit.Audio.OpenAL;
     using Raptor.Audio;
     using Raptor.OpenAL;
     using RaptorTests.Helpers;
@@ -18,29 +19,30 @@ namespace RaptorTests.Audio
     /// </summary>
     public class SoundTests : IDisposable
     {
-        private readonly Mock<IAudioManager> mockAudioManager;
+        private readonly Mock<IAudioDeviceManager> mockAudioManager;
         private readonly Mock<ISoundDecoder<float>> mockOggDecoder;
         private readonly Mock<ISoundDecoder<byte>> mockMp3Decoder;
+        private readonly Mock<IALInvoker> mockALInvoker;
         private readonly string oggSoundFileName = "sound.ogg";
         private readonly string mp3SoundFileName = "sound.mp3";
         private readonly float[] oggBufferData = new float[] { 11f, 22f, 33f, 44f };
         private readonly byte[] mp3BufferData = new byte[] { 55, 66, 77, 88 };
-        private readonly Guid soundId = new Guid("7d665c90-1ac9-43dd-8b8a-53643e5f0200");
         private Sound? sound;
+        private int srcId = 1234;
+        private int bufferId = 5678;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundTests"/> class.
         /// </summary>
         public SoundTests()
         {
-            this.mockAudioManager = new Mock<IAudioManager>();
-            this.mockAudioManager.Setup(m => m.CreateSoundID(It.IsAny<string>())).Returns(this.soundId);
-            this.mockAudioManager.Setup(m => m.CreateSoundID(It.IsAny<string>(), It.IsAny<Guid>())).Returns(this.soundId);
+            this.mockAudioManager = new Mock<IAudioDeviceManager>();
+            this.mockAudioManager.Setup(m => m.InitSound()).Returns((this.srcId, this.bufferId));
 
             this.mockOggDecoder = new Mock<ISoundDecoder<float>>();
             this.mockOggDecoder.Setup(m => m.LoadData(this.oggSoundFileName)).Returns(() =>
             {
-                return new SoundStats<float>()
+                return new SoundData<float>()
                 {
                     BufferData = oggBufferData,
                     Channels = 2,
@@ -53,7 +55,7 @@ namespace RaptorTests.Audio
             this.mockMp3Decoder = new Mock<ISoundDecoder<byte>>();
             this.mockMp3Decoder.Setup(m => m.LoadData(this.mp3SoundFileName)).Returns(() =>
             {
-                return new SoundStats<byte>()
+                return new SoundData<byte>()
                 {
                     BufferData = mp3BufferData,
                     Channels = 1,
@@ -69,7 +71,7 @@ namespace RaptorTests.Audio
         public void Ctor_WhenUsingOggFile_LoadsOggData()
         {
             // Act
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Assert
             this.mockOggDecoder.Verify(m => m.LoadData(this.oggSoundFileName), Times.Once());
@@ -79,7 +81,7 @@ namespace RaptorTests.Audio
         public void Ctor_WhenUsingMP3File_LoadsMP3Data()
         {
             // Act
-            this.sound = new Sound(this.mockAudioManager.Object, this.mp3SoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.mp3SoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Assert
             this.mockMp3Decoder.Verify(m => m.LoadData(this.mp3SoundFileName), Times.Once());
@@ -91,27 +93,27 @@ namespace RaptorTests.Audio
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                this.sound = new Sound(this.mockAudioManager.Object, "sound.wav", this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+                this.sound = new Sound("sound.wav", this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
             }, "The file extension '.wav' is not supported file type.");
         }
         #endregion
 
         #region Prop Tests
         [Fact]
-        public void Name_WhenGettingValue_ReturnsCorrectValue()
+        public void ContentName_WhenGettingValue_ReturnsCorrectValue()
         {
             // Act
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Assert
-            Assert.Equal("sound", this.sound.Name);
+            Assert.Equal("sound", this.sound.ContentName);
         }
 
         [Fact]
         public void IsLooping_WhenGettingValueWhileDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -123,23 +125,23 @@ namespace RaptorTests.Audio
         }
 
         [Fact]
-        public void IsLooping_WhenGettingValue_GetsIfSoundIsLooping()
+        public void IsLooping_WhenGettingValue_GetsSoundLoopingValue()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             _ = this.sound.IsLooping;
 
             // Assert
-            this.mockAudioManager.Verify(m => m.IsSoundLooping(this.soundId), Times.Once());
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourceb.Looping), Times.Once());
         }
 
         [Fact]
         public void IsLooping_WhenSettingValueWhileDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -151,23 +153,23 @@ namespace RaptorTests.Audio
         }
 
         [Fact]
-        public void IsLooping_WhenSettingValue_SetsSoundToProperLoopSetting()
+        public void IsLooping_WhenSettingValue_SetsSoundLoopingSetting()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             this.sound.IsLooping = true;
 
             // Assert
-            this.mockAudioManager.Verify(m => m.SetLooping(this.soundId, true), Times.Once());
+            this.mockALInvoker.Verify(m => m.Source(this.srcId, ALSourceb.Looping, true), Times.Once());
         }
 
         [Fact]
         public void Volume_WhenGettingValueWhileDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -182,20 +184,20 @@ namespace RaptorTests.Audio
         public void Volume_WhenGettingValue_GetsSoundVolume()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             _ = this.sound.Volume;
 
             // Assert
-            this.mockAudioManager.Verify(m => m.GetVolume(this.soundId), Times.Once());
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourcef.Gain), Times.Once());
         }
 
         [Fact]
         public void Volume_WhenSettingValueWhileDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -207,30 +209,30 @@ namespace RaptorTests.Audio
         }
 
         [Fact]
-        public void Volume_WhenSettingValue_setsSoundVolume()
+        public void Volume_WhenSettingValue_SetsSoundVolume()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             this.sound.Volume = 0.5f;
 
             // Assert
-            this.mockAudioManager.Verify(m => m.SetVolume(this.soundId, 0.5f), Times.Once());
+            this.mockALInvoker.Verify(m => m.Source(this.srcId, ALSourcef.Gain, 0.5f), Times.Once());
         }
 
         [Fact]
         public void CurrentTimePosition_WhenDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
 
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                _ = this.sound.CurrentTimePosition;
+                _ = this.sound.TimePosition;
             }, "The sound is disposed.  You must create another sound instance.");
         }
 
@@ -238,13 +240,13 @@ namespace RaptorTests.Audio
         public void CurrentTimePosition_WhenGettingValue_GetsSoundTimePosition()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
-            _ = this.sound.CurrentTimePosition;
+            _ = this.sound.TimePosition;
 
             // Assert
-            this.mockAudioManager.Verify(m => m.GetTimePosition(this.soundId), Times.Once());
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALGetSourcei.SampleOffset), Times.Once());
         }
         #endregion
 
@@ -253,7 +255,7 @@ namespace RaptorTests.Audio
         public void Play_WhenDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -268,20 +270,20 @@ namespace RaptorTests.Audio
         public void Play_WhenInvoked_PlaysSound()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             this.sound.PlaySound();
 
             // Assert
-            this.mockAudioManager.Verify(m => m.PlaySound(this.soundId), Times.Once());
+            this.mockALInvoker.Verify(m => m.SourcePlay(this.srcId), Times.Once());
         }
 
         [Fact]
         public void Pause_WhenDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -296,20 +298,20 @@ namespace RaptorTests.Audio
         public void Pause_WhenInvoked_PausesSound()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             this.sound.PauseSound();
 
             // Assert
-            this.mockAudioManager.Verify(m => m.PauseSound(this.soundId), Times.Once());
+            this.mockALInvoker.Verify(m => m.SourcePause(this.srcId), Times.Once());
         }
 
         [Fact]
         public void Stop_WhenDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -324,20 +326,20 @@ namespace RaptorTests.Audio
         public void Stop_WhenInvoked_StopsSound()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             this.sound.StopSound();
 
             // Assert
-            this.mockAudioManager.Verify(m => m.StopSound(this.soundId), Times.Once());
+            this.mockALInvoker.Verify(m => m.SourceStop(this.srcId), Times.Once());
         }
 
         [Fact]
         public void Reset_WhenDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -352,20 +354,20 @@ namespace RaptorTests.Audio
         public void Reset_WhenInvoked_ResetsSound()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             this.sound.Reset();
 
             // Assert
-            this.mockAudioManager.Verify(m => m.ResetSound(this.soundId), Times.Once());
+            this.mockALInvoker.Verify(m => m.SourceRewind(this.srcId), Times.Once());
         }
 
         [Fact]
         public void SetTimePosition_WhenDisposed_ThrowsException()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act & Assert
             this.sound.Dispose();
@@ -380,27 +382,33 @@ namespace RaptorTests.Audio
         public void SetTimePosition_WithOggFile_SetsTimePosition()
         {
             // Arrange
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
             this.sound.SetTimePosition(123f);
 
             // Assert
-            this.mockAudioManager.Verify(m => m.SetTimePosition(this.soundId, 123f), Times.Once());
+            this.mockALInvoker.Verify(m => m.Source(this.srcId, ALSourcef.SecOffset, 123f), Times.Once());
         }
 
         [Fact]
-        public void WhenChangingAudioDevices_ProperlyCreatesSoundID()
+        public void UploadOggData_WhenInvoked_ProperlyUploadsBufferData()
         {
-            // Arrange
-            this.mockAudioManager.Setup(m => m.CreateSoundID(this.oggSoundFileName)).Returns(this.soundId);
-            this.sound = new Sound(this.mockAudioManager.Object, this.oggSoundFileName, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
-
             // Act
-            this.mockAudioManager.Raise(obj => obj.DeviceChanged += null, new EventArgs());
+            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Assert
-            this.mockAudioManager.Verify(m => m.CreateSoundID(this.oggSoundFileName, this.soundId), Times.Once());
+            this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new[] { 1f, 2f }, 8, 44100), Times.Once());
+        }
+
+        [Fact]
+        public void UploadMp3Data_WhenInvoked_ProperlyUploadsBufferData()
+        {
+            // Act
+            this.sound = new Sound(this.mp3SoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+
+            // Assert
+            this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new[] { 1f, 2f }, 2, 44100), Times.Once());
         }
         #endregion
 

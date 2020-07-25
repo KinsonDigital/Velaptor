@@ -1,4 +1,4 @@
-// <copyright file="Sound.cs" company="KinsonDigital">
+﻿// <copyright file="Sound.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -84,7 +84,7 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
-        public string Name => Path.GetFileNameWithoutExtension(this.fileName);
+        public string ContentName => Path.GetFileNameWithoutExtension(this.fileName);
 
         /// <inheritdoc/>
         public float Volume
@@ -118,7 +118,7 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
-        public float CurrentTimePosition
+        public float TimePosition
         {
             get
             {
@@ -165,7 +165,7 @@ namespace Raptor.Audio
             if (this.isDisposed)
                 throw new Exception(IsDisposedExceptionMessage);
 
-            this.alInvoker.SourceStop(this.srcId);
+            this.alInvoker.SourcePause(this.srcId);
         }
 
         /// <inheritdoc/>
@@ -256,9 +256,6 @@ namespace Raptor.Audio
 
         private void UploadOggData(SoundData<float> data)
         {
-            if (isDisposed)
-                throw new Exception(IsDisposedExceptionMessage);
-
             SoundSource soundSrc;
             soundSrc.SourceId = this.srcId;
             soundSrc.TotalSeconds = data.TotalSeconds;
@@ -278,9 +275,6 @@ namespace Raptor.Audio
 
         private void UploadMp3Data(SoundData<byte> data)
         {
-            if (isDisposed)
-                throw new Exception(IsDisposedExceptionMessage);
-
             SoundSource soundSrc;
             soundSrc.SourceId = this.srcId;
             soundSrc.TotalSeconds = data.TotalSeconds;

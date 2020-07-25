@@ -14,7 +14,7 @@ namespace Raptor.Audio
         /// <summary>
         /// Gets the name of the sound.
         /// </summary>
-        string Name { get; }
+        string ContentName { get; }
 
         /// <summary>
         /// Gets or sets the volume of the sound.
@@ -28,7 +28,7 @@ namespace Raptor.Audio
         /// <summary>
         /// Gets the current time position of the sound in seconds.
         /// </summary>
-        public float CurrentTimePosition { get; }
+        public float TimePosition { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the sound loops back to the beginning once the end is reached.
