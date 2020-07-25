@@ -1,4 +1,4 @@
-﻿// <copyright file="Sound.cs" company="KinsonDigital">
+// <copyright file="Sound.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -263,7 +263,6 @@ namespace Raptor.Audio
             soundSrc.SourceId = this.srcId;
             soundSrc.TotalSeconds = data.TotalSeconds;
             soundSrc.SampleRate = data.SampleRate;
-            soundSrc.BufferId = this.bufferId;
 
             this.alInvoker.BufferData(this.bufferId,
                             MapFormat(data.Format),
@@ -286,7 +285,6 @@ namespace Raptor.Audio
             soundSrc.SourceId = this.srcId;
             soundSrc.TotalSeconds = data.TotalSeconds;
             soundSrc.SampleRate = data.SampleRate;
-            soundSrc.BufferId = this.bufferId;
 
             this.alInvoker.BufferData(this.bufferId,
                             MapFormat(data.Format),

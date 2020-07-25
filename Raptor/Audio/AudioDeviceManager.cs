@@ -72,11 +72,11 @@
             soundSrc.TotalSeconds = -1f;
 
             soundSrc.SourceId = _alInvoker.GenSource();
-            soundSrc.BufferId = _alInvoker.GenBuffer();
+            var bufferId = _alInvoker.GenBuffer();
 
             _soundSources.Add(soundSrc.SourceId, soundSrc);
 
-            return (soundSrc.SourceId, soundSrc.BufferId);
+            return (soundSrc.SourceId, bufferId);
         }
 
         public void ChangeDevice(string name)
@@ -215,15 +215,6 @@
         private static void ErrorCallback(string errorMsg)
         {
             Debugger.Break();
-        }
-
-        private static void ALCErrorCallback(string errorMsg)
-        {
-#if DEBUG
-#pragma warning disable IDE0022 // Use expression body for methods
-            Debugger.Break();
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
         }
 
         public void Dispose()

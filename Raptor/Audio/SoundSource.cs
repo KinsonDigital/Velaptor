@@ -8,7 +8,7 @@ namespace Raptor.Audio
     {
         public int SourceId;
 
-        public int BufferId;
+        //public int BufferId;
 
         public float TotalSeconds;
 
