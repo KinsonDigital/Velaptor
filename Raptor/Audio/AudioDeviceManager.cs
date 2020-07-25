@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using OpenToolkit.Audio.OpenAL;
-using Raptor.Factories;
-using Raptor.OpenAL;
-
-namespace Raptor.Audio
+﻿namespace Raptor.Audio
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+#if DEBUG
+    using System.Diagnostics;
+#endif
+    using System.Linq;
+    using OpenToolkit.Audio.OpenAL;
+    using Raptor.OpenAL;
+
     // TODO: Rename to AudioDevices
     internal sealed class AudioDeviceManager : IAudioDeviceManager
     {
@@ -136,15 +132,9 @@ namespace Raptor.Audio
             if (_alInvoker is null)
             {
                 _alInvoker = alInvoker;
-                _alInvoker.ErrorCallback = ALErrorCallback;
+                _alInvoker.ErrorCallback = ErrorCallback;
             }
-
-            if (_alInvoker is null)
-            {
-                _alInvoker = alInvoker;
-                _alInvoker.ErrorCallback = ALCErrorCallback;
-            }
-
+            
             _instance.InitDevice();
 
             return _instance;
@@ -222,14 +212,18 @@ namespace Raptor.Audio
             _alInvoker.Source(srcId, ALSourcef.SecOffset, seconds);
         }
 
-        private static void ALErrorCallback(string errorMsg)
+        private static void ErrorCallback(string errorMsg)
         {
             Debugger.Break();
         }
 
         private static void ALCErrorCallback(string errorMsg)
         {
+#if DEBUG
+#pragma warning disable IDE0022 // Use expression body for methods
             Debugger.Break();
+#pragma warning restore IDE0022 // Use expression body for methods
+#endif
         }
 
         public void Dispose()

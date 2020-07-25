@@ -22,6 +22,7 @@
     <Optimize>false</Optimize>
     <OSPlatform>Windows</OSPlatform>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   
 

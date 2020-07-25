@@ -7,6 +7,9 @@
 namespace Raptor.Audio
 {
     using System;
+#if DEBUG
+    using System.Diagnostics;
+#endif
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.IO.Enumeration;
@@ -33,8 +36,6 @@ namespace Raptor.Audio
         private float totalSeconds;
         private int sampleRate;
 
-        // TODO: Add ALInvoker error callbacks in here
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
         /// </summary>
@@ -48,6 +49,8 @@ namespace Raptor.Audio
             this.fileName = fileName;
 
             this.alInvoker = new ALInvoker();
+            this.alInvoker.ErrorCallback += ErrorCallback;
+
             this.oggDecoder = new OggSoundDecoder();
             this.mp3Decoder = new MP3SoundDecoder();
 
@@ -67,7 +70,10 @@ namespace Raptor.Audio
         internal Sound(string fileName, IALInvoker alInvoker, IAudioDeviceManager audioManager, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
         {
             this.fileName = fileName;
+
             this.alInvoker = alInvoker;
+            this.alInvoker.ErrorCallback += ErrorCallback;
+
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
 
@@ -197,7 +203,6 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -212,6 +217,10 @@ namespace Raptor.Audio
             {
                 UnloadSoundData();
                 this.audioManager.DeviceChanged -= AudioManager_DeviceChanged;
+
+                if (!(this.alInvoker is null))
+                    this.alInvoker.ErrorCallback -= ErrorCallback;
+
                 this.isDisposed = true;
             }
         }
@@ -245,7 +254,7 @@ namespace Raptor.Audio
             }
         }
 
-        public void UploadOggData(SoundData<float> data)
+        private void UploadOggData(SoundData<float> data)
         {
             if (isDisposed)
                 throw new Exception(IsDisposedExceptionMessage);
@@ -268,7 +277,7 @@ namespace Raptor.Audio
             this.audioManager.UpdateSoundSource(soundSrc);
         }
 
-        public void UploadMp3Data(SoundData<byte> data)
+        private void UploadMp3Data(SoundData<byte> data)
         {
             if (isDisposed)
                 throw new Exception(IsDisposedExceptionMessage);
@@ -327,5 +336,14 @@ namespace Raptor.Audio
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">Contains various event related information.</param>
         private void AudioManager_DeviceChanged(object? sender, EventArgs e) => Init();
+
+        private void ErrorCallback(string errorMsg)
+        {
+#if DEBUG
+#pragma warning disable IDE0022 // Use expression body for methods
+            Debugger.Break();
+#pragma warning restore IDE0022 // Use expression body for methods
+#endif
+        }
     }
 }
