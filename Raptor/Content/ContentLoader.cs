@@ -19,14 +19,15 @@ namespace Raptor.Content
     public class ContentLoader : IContentLoader
     {
         private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private static string contentRootDirectory = @$"{BaseDir}Content\";
+        private static string graphicsDirName = "Graphics";
+        private static string soundsDirName = "Sounds";
+        private static string atlasDirName = "AtlasData";
         private readonly IImageFile? imageFile;
         private readonly ITextFile? textFile;
         private readonly ILoader<ITexture> textureLoader;
         private readonly ILoader<AtlasRegionRectangle[]> atlasDataLoader;
         private readonly ILoader<ISound> soundLoader;
-        private string contentRootDirectory = @$"{BaseDir}Content\";
-        private string? graphicsDir;
-        private string? soundsDir;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoader"/> class.
@@ -39,7 +40,6 @@ namespace Raptor.Content
             this.textureLoader = new TextureLoader(this.imageFile);
             this.atlasDataLoader = new AtlasDataLoader<AtlasRegionRectangle>(this.textFile);
             this.soundLoader = new SoundLoader();
-            SetupPaths();
         }
 
         /// <summary>
@@ -52,13 +52,12 @@ namespace Raptor.Content
             this.textureLoader = textureLoader;
             this.atlasDataLoader = atlasDataLoader;
             this.soundLoader = soundLoader;
-            SetupPaths();
         }
 
         /// <inheritdoc/>
-        public string ContentRootDirectory
+        public static string ContentRootDirectory
         {
-            get => this.contentRootDirectory;
+            get => contentRootDirectory;
             set
             {
                 value = value is null ? BaseDir : value;
@@ -66,36 +65,80 @@ namespace Raptor.Content
                 // If the value ends with a backslash, leave as is, else add one
                 value = value.EndsWith('\\') ? value : $@"{value}\";
 
-                this.contentRootDirectory = $@"{value}Content\";
+                contentRootDirectory = $@"{value}Content\";
+            }
+        }
+
+        public static string GraphicsDirectoryName
+        {
+            get => graphicsDirName;
+            set
+            {
+                // TODO: Check if value is null or empty and throw exception
+                // TODO: If the value starts or ends with a \, remove it
+                graphicsDirName = value;
+            }
+        }
+
+        public static string SoundsDirectoryName
+        {
+            get => soundsDirName;
+            set
+            {
+                // TODO: Check if value is null or empty and throw exception
+                // TODO: If the value starts or ends with a \, remove it
+                soundsDirName = value;
+            }
+        }
+
+        public static string AtlasDirectoryName
+        {
+            get => atlasDirName;
+            set
+            {
+                // TODO: Check if value is null or empty and throw exception
+                // TODO: If the value starts or ends with a \, remove it
+                atlasDirName = value;
             }
         }
 
         /// <inheritdoc/>
         public ITexture? LoadTexture(string name)
         {
-            var textureImagePath = $"{this.graphicsDir}{name}";
+            var textureImagePath = $"{GetGraphicsPath()}{name}";
 
             return this.textureLoader.Load(textureImagePath);
         }
 
         /// <inheritdoc/>
-        public AtlasRegionRectangle[] LoadAtlasData(string name)
-            => this.atlasDataLoader.Load($@"{this.graphicsDir}{name}");
-
-        /// <summary>
-        /// Sets up the pathing variables for the content location on disk.
-        /// </summary>
-        private void SetupPaths()
-        {
-            this.graphicsDir = @$"{this.contentRootDirectory}Graphics\";
-            this.soundsDir = @$"{this.contentRootDirectory}Sounds\";
-        }
-
         public ISound LoadSound(string name)
         {
-            var soundPath = @$"{this.soundsDir}{name}";
+            var soundPath = @$"{GetSoundsPath()}{name}";
 
             return this.soundLoader.Load(soundPath);
+        }
+
+        /// <inheritdoc/>
+        public AtlasRegionRectangle[] LoadAtlasData(string name)
+        {
+            var atlasPath = $@"{GetAtlasPath()}{name}";
+
+            return this.atlasDataLoader.Load(atlasPath);
+        }
+
+        private string GetGraphicsPath()
+        {
+            return $@"{contentRootDirectory}{graphicsDirName}\";
+        }
+
+        private string GetSoundsPath()
+        {
+            return $@"{contentRootDirectory}{soundsDirName}\";
+        }
+
+        private string GetAtlasPath()
+        {
+            return $@"{contentRootDirectory}{atlasDirName}\";
         }
     }
 }

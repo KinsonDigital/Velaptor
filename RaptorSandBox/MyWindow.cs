@@ -56,9 +56,8 @@ namespace RaptorSandBox
 
             if (currentKeyboardState.IsKeyUp(KeyCode.Space) && previousKeyboardState.IsKeyDown(KeyCode.Space))
             {
-                //var headPhones = audioManager.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
-                //this.audioManager.ChangeDevice(headPhones);
-                this.quietPlaceMusic.Dispose();
+                var headPhones = AudioDevice.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
+                AudioDevice.ChangeDevice(headPhones);
             }
 
             if (currentKeyboardState.IsKeyUp(KeyCode.P) && previousKeyboardState.IsKeyDown(KeyCode.P))

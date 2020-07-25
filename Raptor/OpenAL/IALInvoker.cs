@@ -46,5 +46,19 @@ namespace Raptor.OpenAL
         void DeleteBuffer(int buffer);
 
         void DeleteSource(int source);
+
+        bool CloseDevice(ALDevice device);
+
+        ALContext CreateContext(ALDevice device, ALContextAttributes attributes);
+
+        void DestroyContext(ALContext context);
+
+        IList<string> GetString(ALDevice device, AlcGetStringList param);
+
+        string GetString(ALDevice device, AlcGetString param);
+
+        bool MakeContextCurrent(ALContext context);
+
+        ALDevice OpenDevice(string devicename);
     }
 }

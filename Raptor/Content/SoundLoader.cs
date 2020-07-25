@@ -18,13 +18,13 @@ namespace Raptor.Content
                 throw new Exception($"The extension $'{extension}' is not supported. Supported audio files are '.ogg' and '.mp3'.");
 
             var alInvoker = IoC.Container.GetInstance<IALInvoker>();
-            var alcInvoker = IoC.Container.GetInstance<IALCInvoker>();
             var oggDecoder = new OggSoundDecoder();
             var mp3Decoder = new MP3SoundDecoder();
 
             return new Sound(
-                AudioManager.GetInstance(alInvoker, alcInvoker),
                 filePath,
+                alInvoker,
+                AudioDeviceManager.GetInstance(alInvoker),
                 oggDecoder,
                 mp3Decoder);
         }

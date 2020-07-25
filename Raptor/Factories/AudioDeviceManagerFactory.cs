@@ -5,12 +5,11 @@ namespace Raptor.Factories
 {
     internal static class AudioDeviceManagerFactory
     {
-        public static IAudioManager CreateManager()
+        public static IAudioDeviceManager CreateManager()
         {
             var alInvoker = IoC.Container.GetInstance<IALInvoker>();
-            var alcInvoker = IoC.Container.GetInstance<IALCInvoker>();
 
-            return AudioManager.GetInstance(alInvoker, alcInvoker);
+            return AudioDeviceManager.GetInstance(alInvoker);
         }
     }
 }

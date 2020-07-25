@@ -49,7 +49,6 @@ namespace Raptor
             IocContainer.Register<ILoader<ITexture>, TextureLoader>();
             IocContainer.Register<ILoader<ISound>, SoundLoader>();
             IocContainer.Register<IALInvoker, ALInvoker>();
-            IocContainer.Register<IALCInvoker, ALCInvoker>();
             IocContainer.Register<ISoundDecoder<float>, OggSoundDecoder>();
             IocContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>();
             IocContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();

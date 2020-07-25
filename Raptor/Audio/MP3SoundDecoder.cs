@@ -8,10 +8,10 @@ namespace Raptor.Audio
 {
     internal class MP3SoundDecoder : ISoundDecoder<byte>
     {
-        public SoundStats<byte> LoadData(string fileName)
+        public SoundData<byte> LoadData(string fileName)
         {
             //NOTE: the Mp3Sharp decoder library only deals with 16bit mp3 files.  Which is 99% of what is used now days anyways
-            var result = new SoundStats<byte>();
+            var result = new SoundData<byte>();
 
             using var reader = new MP3Stream(fileName);
 

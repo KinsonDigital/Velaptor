@@ -8,9 +8,9 @@ namespace Raptor.Audio
 {
     internal class OggSoundDecoder : ISoundDecoder<float>
     {
-        public SoundStats<float> LoadData(string fileName)
+        public SoundData<float> LoadData(string fileName)
         {
-            var result = new SoundStats<float>();
+            var result = new SoundData<float>();
 
             using var reader = new VorbisReader(fileName);
 

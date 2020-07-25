@@ -10,7 +10,7 @@ namespace Raptor.Audio
 
         public int BufferId;
 
-        public float TotalTime; // In seconds
+        public float TotalSeconds;
 
         public int SampleRate;
     }

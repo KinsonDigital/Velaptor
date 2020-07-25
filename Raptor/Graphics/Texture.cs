@@ -100,7 +100,7 @@ namespace Raptor.Graphics
             Width = width;
             Height = height;
 
-            Name = Path.GetFileNameWithoutExtension(name);
+            Name = name;
 
             UploadDataToGPU(name, pixelData, width, height);
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Raptor.Audio
 {
-    public struct SoundStats<T>
+    public struct SoundData<T>
     {
         public T[] BufferData;
 

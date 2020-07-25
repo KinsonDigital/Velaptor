@@ -6,6 +6,6 @@ namespace Raptor.Audio
 {
     public interface ISoundDecoder<T>
     {
-        SoundStats<T> LoadData(string fileName);
+        SoundData<T> LoadData(string fileName);
     }
 }

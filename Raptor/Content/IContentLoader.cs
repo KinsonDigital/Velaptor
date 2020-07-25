@@ -15,7 +15,13 @@ namespace Raptor.Content
         /// <summary>
         /// Gets or sets the root directory for the game's content.
         /// </summary>
-        string ContentRootDirectory { get; set; }
+        static string ContentRootDirectory { get; set; }
+
+        public static string GraphicsDirectoryName { get; set; }
+
+        public static string SoundsDirectoryName { get; set; }
+
+        public static string AtlasDirectoryName { get; set; }
 
         /// <summary>
         /// Loads a texture with the given <paramref name="name"/>.
