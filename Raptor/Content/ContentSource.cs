@@ -28,7 +28,7 @@ namespace Raptor.Content
             get => contentRootDirectory;
             set
             {
-                value = value is null ? BaseDir : value;
+                value = string.IsNullOrEmpty(value) ? BaseDir : value;
 
                 // If the value ends with a backslash, leave as is, else add one
                 value = value.EndsWith('\\') ? value : $@"{value}\";
