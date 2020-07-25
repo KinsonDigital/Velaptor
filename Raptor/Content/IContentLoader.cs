@@ -17,12 +17,6 @@ namespace Raptor.Content
         /// </summary>
         static string ContentRootDirectory { get; set; }
 
-        public static string GraphicsDirectoryName { get; set; }
-
-        public static string SoundsDirectoryName { get; set; }
-
-        public static string AtlasDirectoryName { get; set; }
-
         /// <summary>
         /// Loads a texture with the given <paramref name="name"/>.
         /// </summary>

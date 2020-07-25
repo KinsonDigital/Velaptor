@@ -1,4 +1,4 @@
-// <copyright file="IoC.cs" company="KinsonDigital">
+﻿// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,6 +14,7 @@ namespace Raptor
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
     using Raptor.OpenAL;
+    using FileIO.Directory;
 
     /// <summary>
     /// Provides dependency injection for the applcation.
@@ -53,6 +54,7 @@ namespace Raptor
             IocContainer.Register<ISoundDecoder<float>, OggSoundDecoder>();
             IocContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>();
             IocContainer.Register<IContentSource, ContentSource>();
+            IocContainer.Register<IContentLoader, ContentLoader>();
             IocContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
 
             /*NOTE:
