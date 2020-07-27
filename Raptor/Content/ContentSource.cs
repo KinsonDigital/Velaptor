@@ -1,31 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using FileIO.Core;
+﻿// <copyright file="ContentSource.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.Content
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+    using FileIO.Core;
+
+    /// <summary>
+    /// Manages the content source.
+    /// </summary>
     public class ContentSource : IContentSource
     {
         private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private readonly IDirectory directory;
         private string contentRootDirectory = @$"{BaseDir}Content\";
         private string graphicsDirName = "Graphics";
         private string soundsDirName = "Sounds";
         private string atlasDirName = "AtlasData";
-        private readonly IDirectory directory;
 
-        public ContentSource(IDirectory directory)
-        {
-            this.directory = directory;
-        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentSource"/> class.
+        /// </summary>
+        /// <param name="directory">Gets information about directories.</param>
+        public ContentSource(IDirectory directory) => this.directory = directory;
 
         /// <inheritdoc/>
         public string ContentRootDirectory
         {
-            get => contentRootDirectory;
+            get => this.contentRootDirectory;
             set
             {
                 value = string.IsNullOrEmpty(value) ? BaseDir : value;
@@ -33,13 +41,14 @@ namespace Raptor.Content
                 // If the value ends with a backslash, leave as is, else add one
                 value = value.EndsWith('\\') ? value : $@"{value}\";
 
-                contentRootDirectory = $@"{value}Content\";
+                this.contentRootDirectory = $@"{value}Content\";
             }
         }
 
+        /// <inheritdoc/>
         public string GraphicsDirectoryName
         {
-            get => graphicsDirName;
+            get => this.graphicsDirName;
             set
             {
                 if (string.IsNullOrEmpty(value))
@@ -49,70 +58,67 @@ namespace Raptor.Content
                 value = value.Replace("\\", string.Empty);
 #pragma warning restore CA1307 // Specify StringComparison
 
-                graphicsDirName = value;
+                this.graphicsDirName = value;
             }
         }
 
+        /// <inheritdoc/>
         public string SoundsDirectoryName
         {
-            get => soundsDirName;
+            get => this.soundsDirName;
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    throw new Exception($"The '{nameof(GraphicsDirectoryName)}' must not be null or empty.");
+                    throw new Exception($"The '{nameof(SoundsDirectoryName)}' must not be null or empty.");
 
 #pragma warning disable CA1307 // Specify StringComparison
                 value = value.Replace("\\", string.Empty);
 #pragma warning restore CA1307 // Specify StringComparison
 
-                soundsDirName = value;
+                this.soundsDirName = value;
             }
         }
 
+        /// <inheritdoc/>
         public string AtlasDirectoryName
         {
-            get => atlasDirName;
+            get => this.atlasDirName;
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    throw new Exception($"The '{nameof(GraphicsDirectoryName)}' must not be null or empty.");
+                    throw new Exception($"The '{nameof(AtlasDirectoryName)}' must not be null or empty.");
 
 #pragma warning disable CA1307 // Specify StringComparison
                 value = value.Replace("\\", string.Empty);
 #pragma warning restore CA1307 // Specify StringComparison
 
-                atlasDirName = value;
+                this.atlasDirName = value;
             }
         }
 
-        public string GetGraphicsPath()
-        {
-            return $@"{contentRootDirectory}{graphicsDirName}\";
-        }
+        /// <inheritdoc/>
+        public string GetGraphicsPath() => $@"{this.contentRootDirectory}{this.graphicsDirName}\";
 
-        public string GetSoundsPath()
-        {
-            return $@"{contentRootDirectory}{soundsDirName}\";
-        }
+        /// <inheritdoc/>
+        public string GetSoundsPath() => $@"{this.contentRootDirectory}{this.soundsDirName}\";
 
-        public string GetAtlasPath()
-        {
-            return $@"{contentRootDirectory}{atlasDirName}\";
-        }
+        /// <inheritdoc/>
+        public string GetAtlasPath() => $@"{this.contentRootDirectory}{this.atlasDirName}\";
 
+        /// <inheritdoc/>
         public string GetContentPath(ContentType contentType, string name)
         {
             if (string.IsNullOrEmpty(name))
-                throw new ArgumentException(nameof(name), "The parameter must not be null or empty.");
+                throw new ArgumentException("The parameter must not be null or empty.", nameof(name));
 
-            // If the name ends with a \, throw ane exception
+                // If the name ends with a \, throw ane exception
             if (name.EndsWith('\\'))
                 throw new ArgumentException($"The '{name}' cannot end with folder.  It must end with a file name with or without the extension.");
 
             // If the name has an extension, remove it
             if (Path.HasExtension(name))
 #pragma warning disable CA1307 // Specify StringComparison
-                name = $@"{Path.GetDirectoryName(name)}\{Path.GetFileNameWithoutExtension(name)}".Replace(@"\", "");
+                name = $@"{Path.GetDirectoryName(name)}\{Path.GetFileNameWithoutExtension(name)}".Replace(@"\", string.Empty);
 #pragma warning restore CA1307 // Specify StringComparison
 
             var filePath = string.Empty;
@@ -128,8 +134,6 @@ namespace Raptor.Content
                 case ContentType.Atlas:
                     filePath = $@"{GetAtlasPath()}{name}";
                     break;
-                default:
-                    break;
             }
 
             var directory = Path.GetDirectoryName(filePath);
@@ -140,10 +144,22 @@ namespace Raptor.Content
                 .Where(f => Path.GetFileNameWithoutExtension(f).ToUpperInvariant() == fileNameNoExt).ToArray();
 
             if (files.Length <= 0)
-                throw new Exception($"Could not load texture '{Path.GetFileNameWithoutExtension(filePath)}'.  It does not exist.");
+                throw new Exception($"The content item '{Path.GetFileNameWithoutExtension(filePath)}' does not exist.");
 
             if (files.Length > 1)
-                throw new Exception($"Could not load texture '{Path.GetFileNameWithoutExtension(filePath)}'.\nThere are duplicate textures with that name.\nThe file name must be unique without the extension.");
+            {
+                var exceptionMsg = new StringBuilder();
+                exceptionMsg.AppendLine("Multiple items match the content item name.");
+                exceptionMsg.AppendLine("The content item name must be unique and the file extension is not taken into account.");
+
+                // Add the items to the exception message
+                foreach (var file in files)
+                {
+                    exceptionMsg.AppendLine($"\t{Path.GetFileName(file)}");
+                }
+
+                throw new Exception(exceptionMsg.ToString());
+            }
 
             return files[0];
         }
