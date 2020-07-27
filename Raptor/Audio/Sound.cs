@@ -113,7 +113,7 @@ namespace Raptor.Audio
                 // This is the excepted range by OpenAL
                 value /= 100f;
 
-                this.alInvoker.Source(this.srcId, ALSourcef.Gain, value);
+                this.alInvoker.Source(this.srcId, ALSourcef.Gain, (float)Math.Round(value, 4));
             }
         }
 

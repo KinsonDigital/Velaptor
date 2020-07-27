@@ -36,6 +36,10 @@ namespace RaptorTests.Audio
         /// </summary>
         public SoundTests()
         {
+            this.mockALInvoker = new Mock<IALInvoker>();
+            this.mockALInvoker.Setup(m => m.GenSource()).Returns(this.srcId);
+            this.mockALInvoker.Setup(m => m.GenBuffer()).Returns(this.bufferId);
+
             this.mockAudioManager = new Mock<IAudioDeviceManager>();
             this.mockAudioManager.Setup(m => m.InitSound()).Returns((this.srcId, this.bufferId));
 
@@ -68,23 +72,49 @@ namespace RaptorTests.Audio
 
         #region Constructor Tests
         [Fact]
-        public void Ctor_WhenUsingOggFile_LoadsOggData()
+        public void Ctor_WhenUsingOggSound_UploadsBufferData()
         {
             // Act
+            this.mockOggDecoder.Setup(m => m.LoadData(this.oggSoundFileName))
+                .Returns(() =>
+                {
+                    SoundData<float> result;
+                    result.TotalSeconds = 200f;
+                    result.Format = AudioFormat.Stereo16;
+                    result.Channels = 2;
+                    result.SampleRate = 44100;
+                    result.BufferData = new[] { 1f, 2f };
+
+                    return result;
+                });
             this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Assert
             this.mockOggDecoder.Verify(m => m.LoadData(this.oggSoundFileName), Times.Once());
+            this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new[] { 1f, 2f }, 8, 44100), Times.Once());
         }
 
         [Fact]
-        public void Ctor_WhenUsingMP3File_LoadsMP3Data()
+        public void Ctor_WhenUsingMp3Sound_UploadsBufferData()
         {
             // Act
+            this.mockMp3Decoder.Setup(m => m.LoadData(this.mp3SoundFileName))
+                .Returns(() =>
+                {
+                    SoundData<byte> result;
+                    result.TotalSeconds = 200f;
+                    result.Format = AudioFormat.Stereo16;
+                    result.Channels = 2;
+                    result.SampleRate = 44100;
+                    result.BufferData = new byte[] { 1, 2 };
+
+                    return result;
+                });
             this.sound = new Sound(this.mp3SoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Assert
             this.mockMp3Decoder.Verify(m => m.LoadData(this.mp3SoundFileName), Times.Once());
+            this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new byte[] { 1, 2 }, 2, 44100), Times.Once());
         }
 
         [Fact]
@@ -218,7 +248,7 @@ namespace RaptorTests.Audio
             this.sound.Volume = 0.5f;
 
             // Assert
-            this.mockALInvoker.Verify(m => m.Source(this.srcId, ALSourcef.Gain, 0.5f), Times.Once());
+            this.mockALInvoker.Verify(m => m.Source(this.srcId, ALSourcef.Gain, 0.00499999989f), Times.Once());
         }
 
         [Fact]
@@ -382,6 +412,18 @@ namespace RaptorTests.Audio
         public void SetTimePosition_WithOggFile_SetsTimePosition()
         {
             // Arrange
+            this.mockOggDecoder.Setup(m => m.LoadData(this.oggSoundFileName))
+                .Returns(() =>
+                {
+                    SoundData<float> result;
+                    result.TotalSeconds = 200f;
+                    result.Format = AudioFormat.Stereo16;
+                    result.Channels = 2;
+                    result.SampleRate = 441000;
+                    result.BufferData = new[] { 1f, 2f };
+
+                    return result;
+                });
             this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
 
             // Act
@@ -389,26 +431,6 @@ namespace RaptorTests.Audio
 
             // Assert
             this.mockALInvoker.Verify(m => m.Source(this.srcId, ALSourcef.SecOffset, 123f), Times.Once());
-        }
-
-        [Fact]
-        public void UploadOggData_WhenInvoked_ProperlyUploadsBufferData()
-        {
-            // Act
-            this.sound = new Sound(this.oggSoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
-
-            // Assert
-            this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new[] { 1f, 2f }, 8, 44100), Times.Once());
-        }
-
-        [Fact]
-        public void UploadMp3Data_WhenInvoked_ProperlyUploadsBufferData()
-        {
-            // Act
-            this.sound = new Sound(this.mp3SoundFileName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
-
-            // Assert
-            this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new[] { 1f, 2f }, 2, 44100), Times.Once());
         }
         #endregion
 

@@ -20,7 +20,6 @@ namespace RaptorTests.Content
     /// </summary>
     public class ContentLoaderTests
     {
-        private readonly string baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
         private readonly string RootDir = @"C:\Content\";
         private readonly string GraphicsDirName = "Graphics";
         private readonly string SoundsDirName = "Sounds";
