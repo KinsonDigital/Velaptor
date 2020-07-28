@@ -46,20 +46,10 @@ namespace Raptor.Content
         }
 
         /// <inheritdoc/>
-        public ITexture? LoadTexture(string name)
-        {
-            var texureFilePath = this.contentSource.GetContentPath(ContentType.Graphics, name);
-
-            return this.textureLoader.Load(texureFilePath);
-        }
+        public ITexture? LoadTexture(string name) => this.textureLoader.Load(name);
 
         /// <inheritdoc/>
-        public ISound LoadSound(string name)
-        {
-            var soundFilePath = this.contentSource.GetContentPath(ContentType.Sounds, name);
-
-            return this.soundLoader.Load(soundFilePath);
-        }
+        public ISound LoadSound(string name) => this.soundLoader.Load(name);
 
         /// <inheritdoc/>
         public AtlasRegionRectangle[] LoadAtlasData(string name)

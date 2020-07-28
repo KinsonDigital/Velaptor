@@ -14,6 +14,7 @@ namespace Raptor.Audio
     using System.IO;
     using System.IO.Enumeration;
     using OpenToolkit.Audio.OpenAL;
+    using Raptor.Content;
     using Raptor.Factories;
     using Raptor.OpenAL;
 
@@ -28,8 +29,9 @@ namespace Raptor.Audio
 #pragma warning restore CA2213 // Disposable fields should be disposed
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
-        private readonly string fileName;
         private readonly IALInvoker alInvoker;
+        private readonly IContentSource contentSource;
+        private readonly string name;
         private int srcId;
         private int bufferId;
         private bool isDisposed;
@@ -39,17 +41,19 @@ namespace Raptor.Audio
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
         /// </summary>
-        /// <param name="fileName">The path/name to the sound file to load.</param>
+        /// <param name="name">The name of the content item to load.</param>
         [ExcludeFromCodeCoverage]
         // TODO: Add static functionality to ContentLoader that can be used internally  in this
         // class to be able to load the path to the sound content by using the name only.  The name should not
         // have an extension.
-        public Sound(string fileName)
+        public Sound(string name)
         {
-            this.fileName = fileName;
+            this.name = name;
 
-            this.alInvoker = new ALInvoker();
-            this.alInvoker.ErrorCallback += ErrorCallback;
+            this.alInvoker = new ALInvoker
+            {
+                ErrorCallback = ErrorCallback,
+            };
 
             this.oggDecoder = new OggSoundDecoder();
             this.mp3Decoder = new MP3SoundDecoder();
@@ -57,22 +61,25 @@ namespace Raptor.Audio
             this.audioManager = AudioDeviceManagerFactory.CreateManager();
             this.audioManager.DeviceChanged += AudioManager_DeviceChanged;
 
+            this.contentSource = IoC.Container.GetInstance<IContentSource>();
             Init();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
         /// </summary>
+        /// <param name="name">The name of the content to load.</param>
+        /// <param name="alInvoker">Provides access to OpenAL.</param>
         /// <param name="audioManager">Manages audio related operations.</param>
-        /// <param name="fileName">The path/name to the sound file to load.</param>
         /// <param name="oggDecoder">Decodes OGG audio files.</param>
         /// <param name="mp3Decoder">Decodes MP3 audio files.</param>
-        internal Sound(string fileName, IALInvoker alInvoker, IAudioDeviceManager audioManager, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
+        /// <param name="contentSource">Provides access to the source of content.</param>
+        internal Sound(string name, IALInvoker alInvoker, IAudioDeviceManager audioManager, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder, IContentSource contentSource)
         {
-            this.fileName = fileName;
+            this.name = name;
 
             this.alInvoker = alInvoker;
-            this.alInvoker.ErrorCallback += ErrorCallback;
+            this.alInvoker.ErrorCallback = ErrorCallback;
 
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
@@ -80,11 +87,13 @@ namespace Raptor.Audio
             this.audioManager = audioManager;
             this.audioManager.DeviceChanged += AudioManager_DeviceChanged;
 
+            this.contentSource = contentSource;
+
             Init();
         }
 
         /// <inheritdoc/>
-        public string ContentName => Path.GetFileNameWithoutExtension(this.fileName);
+        public string ContentName => Path.GetFileNameWithoutExtension(this.name);
 
         /// <inheritdoc/>
         public float Volume
@@ -227,14 +236,19 @@ namespace Raptor.Audio
 
         private void Init()
         {
+            if (!this.audioManager.IsInitialized)
+                this.audioManager.InitDevice();
+
             (this.srcId, this.bufferId) = this.audioManager.InitSound();
 
-            var extension = Path.GetExtension(this.fileName);
+            var fileName = this.contentSource.GetContentPath(ContentType.Sounds, this.name);
+
+            var extension = Path.GetExtension(fileName);
 
             switch (extension)
             {
                 case ".ogg":
-                    var oggData = this.oggDecoder.LoadData(this.fileName);
+                    var oggData = this.oggDecoder.LoadData(fileName);
 
                     this.totalSeconds = oggData.TotalSeconds;
                     this.sampleRate = oggData.SampleRate;
@@ -242,7 +256,7 @@ namespace Raptor.Audio
                     UploadOggData(oggData);
                     break;
                 case ".mp3":
-                    var mp3Data = this.mp3Decoder.LoadData(this.fileName);
+                    var mp3Data = this.mp3Decoder.LoadData(fileName);
 
                     this.totalSeconds = mp3Data.TotalSeconds;
                     this.sampleRate = mp3Data.SampleRate;
@@ -292,26 +306,16 @@ namespace Raptor.Audio
             //TODO: Call audiomanager update sound source
         }
 
-        private ALFormat MapFormat(AudioFormat format)
+        private ALFormat MapFormat(AudioFormat format) => format switch
         {
-            switch (format)
-            {
-                case AudioFormat.Mono8:
-                    return ALFormat.Mono8;
-                case AudioFormat.Mono16:
-                    return ALFormat.Mono16;
-                case AudioFormat.Mono32Float:
-                    return ALFormat.MonoFloat32Ext;
-                case AudioFormat.Stereo8:
-                    return ALFormat.Stereo8;
-                case AudioFormat.Stereo16:
-                    return ALFormat.Stereo16;
-                case AudioFormat.StereoFloat32:
-                    return ALFormat.StereoFloat32Ext;
-                default:
-                    return default;
-            }
-        }
+            AudioFormat.Mono8 => ALFormat.Mono8,
+            AudioFormat.Mono16 => ALFormat.Mono16,
+            AudioFormat.Mono32Float => ALFormat.MonoFloat32Ext,
+            AudioFormat.Stereo8 => ALFormat.Stereo8,
+            AudioFormat.Stereo16 => ALFormat.Stereo16,
+            AudioFormat.StereoFloat32 => ALFormat.StereoFloat32Ext,
+            _ => throw new Exception("Invalid or unknown audio format."),
+        };
 
         private void UnloadSoundData()
         {

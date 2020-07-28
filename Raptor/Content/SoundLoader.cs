@@ -10,23 +10,28 @@ namespace Raptor.Content
 {
     public class SoundLoader : ILoader<ISound>
     {
-        public ISound Load(string filePath)
+        private readonly IContentSource contentSource;
+
+        public SoundLoader(IContentSource contentSource) => this.contentSource = contentSource;
+
+        public ISound Load(string name)
         {
-            var extension = Path.GetExtension(filePath);
+            var extension = Path.GetExtension(name);
 
             if (!new[] { ".ogg", ".mp3" }.Contains(extension))
                 throw new Exception($"The extension $'{extension}' is not supported. Supported audio files are '.ogg' and '.mp3'.");
 
             var alInvoker = IoC.Container.GetInstance<IALInvoker>();
-            var oggDecoder = new OggSoundDecoder();
-            var mp3Decoder = new MP3SoundDecoder();
+            var oggDecoder = IoC.Container.GetInstance<ISoundDecoder<float>>();
+            var mp3Decoder = IoC.Container.GetInstance<ISoundDecoder<byte>>();
 
             return new Sound(
-                filePath,
+                name,
                 alInvoker,
                 AudioDeviceManager.GetInstance(alInvoker),
                 oggDecoder,
-                mp3Decoder);
+                mp3Decoder,
+                this.contentSource);
         }
     }
 }

@@ -62,13 +62,10 @@ namespace RaptorTests.Content
         public void LoadTexture_WhenInvoked_LoadsTexture()
         {
             // Act
-            this.mockContentSrc.Setup(m => m.GetContentPath(ContentType.Graphics, "test-texture.png"))
-                .Returns("test-path");
-            this.contentLoader.LoadTexture("test-texture.png");
+            this.contentLoader.LoadTexture("test-texture");
 
             // Assert
-            this.mockContentSrc.Verify(m => m.GetContentPath(ContentType.Graphics, "test-texture.png"), Times.Once());
-            this.mockTextureLoader.Verify(m => m.Load("test-path"), Times.Once());
+            this.mockTextureLoader.Verify(m => m.Load("test-texture"), Times.Once());
         }
 
         [Fact]

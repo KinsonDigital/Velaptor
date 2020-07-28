@@ -38,8 +38,8 @@ namespace RaptorSandBox
             this.dungeonTexture = ContentLoader.LoadTexture("dungeon.png");
             this.linkTexture = ContentLoader.LoadTexture("Link.png");
             //this.zapSound = ContentLoader.LoadSound("zap.ogg");
-            this.deadShipsMusic = ContentLoader.LoadSound("deadships.ogg");
-            this.deadShipsMusic.SetTimePosition(60);
+            //this.deadShipsMusic = ContentLoader.LoadSound("deadships.ogg");
+            //this.deadShipsMusic.SetTimePosition(60);
 
             this.quietPlaceMusic = ContentLoader.LoadSound("thequietplace.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
