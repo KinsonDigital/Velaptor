@@ -237,9 +237,9 @@ namespace Raptor.OpenAL
             return closeResult;
         }
 
-        public ALDevice OpenDevice(string devicename)
+        public ALDevice OpenDevice(string? deviceName)
         {
-            var deviceResult = ALC.OpenDevice(devicename);
+            var deviceResult = ALC.OpenDevice(deviceName);
             var error = ALC.GetError(deviceResult);
 
             if (error != AlcError.NoError) ErrorCallback?.Invoke(Enum.GetName(typeof(AlcError), error));

@@ -59,6 +59,6 @@ namespace Raptor.OpenAL
 
         bool MakeContextCurrent(ALContext context);
 
-        ALDevice OpenDevice(string devicename);
+        ALDevice OpenDevice(string? deviceName);
     }
 }
