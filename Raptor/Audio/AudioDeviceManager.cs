@@ -13,6 +13,7 @@ namespace Raptor.Audio
     using System.Diagnostics.CodeAnalysis;
 #endif
     using System.Linq;
+    using System.Net.Mail;
     using OpenToolkit.Audio.OpenAL;
     using Raptor.Audio.Exceptions;
     using Raptor.OpenAL;
@@ -54,10 +55,15 @@ namespace Raptor.Audio
                 if (!IsInitialized)
                     throw new AudioDeviceManagerNotInitializedException(IsDisposedExceptionMessage);
 
-                var result = alInvoker?.GetString(device, AlcGetStringList.AllDevicesSpecifier)
-                    .Select(n => n.Replace(DeviceNamePrefix, string.Empty, StringComparison.Ordinal)).ToArray();
+                var result = Array.Empty<string>();
 
-                return result ?? Array.Empty<string>();
+                if (!(alInvoker is null))
+                {
+                    result = alInvoker.GetString(device, AlcGetStringList.AllDevicesSpecifier)
+                        .Select(n => n.Replace(DeviceNamePrefix, string.Empty, StringComparison.Ordinal)).ToArray();
+                }
+
+                return result;
             }
         }
 
@@ -65,17 +71,21 @@ namespace Raptor.Audio
         public void InitDevice(string? name = null)
         {
             var nameResult = name != null ? $"{DeviceNamePrefix}{name}" : name;
+            bool? setCurrentResult = null;
 
-            if (device.Handle == IntPtr.Zero)
-                device = alInvoker?.OpenDevice(nameResult) ?? ALDevice.Null;
+            if (!(alInvoker is null))
+            {
+                if (device.Handle == IntPtr.Zero)
+                    device = alInvoker.OpenDevice(nameResult);
 
-            if (attributes is null)
-                attributes = new ALContextAttributes();
+                if (attributes is null)
+                    attributes = new ALContextAttributes();
 
-            if (context.Handle == IntPtr.Zero)
-                context = alInvoker?.CreateContext(device, attributes) ?? ALContext.Null;
+                if (context.Handle == IntPtr.Zero)
+                    context = alInvoker.CreateContext(device, attributes);
 
-            var setCurrentResult = alInvoker?.MakeContextCurrent(context);
+                setCurrentResult = alInvoker.MakeContextCurrent(context);
+            }
 
             if (setCurrentResult == null || !(bool)setCurrentResult)
                 throw new SettingContextCurrentException();
@@ -90,9 +100,15 @@ namespace Raptor.Audio
             SoundSource soundSrc;
             soundSrc.SampleRate = 0;
             soundSrc.TotalSeconds = -1f;
+            soundSrc.SourceId = 0;
 
-            soundSrc.SourceId = alInvoker?.GenSource() ?? 0;
-            var bufferId = alInvoker?.GenBuffer() ?? 0;
+            var bufferId = 0;
+
+            if (!(alInvoker is null))
+            {
+                soundSrc.SourceId = alInvoker.GenSource();
+                bufferId = alInvoker.GenBuffer();
+            }
 
             SoundSources.Add(soundSrc.SourceId, soundSrc);
 
@@ -205,7 +221,10 @@ namespace Raptor.Audio
             context = ALContext.Null;
 
             if (device != ALDevice.Null)
-                alInvoker?.CloseDevice(device);
+            {
+                if (!(alInvoker is null))
+                    alInvoker.CloseDevice(device);
+            }
 
             device = ALDevice.Null;
 
@@ -266,9 +285,12 @@ namespace Raptor.Audio
         /// <returns>The position in seconds.</returns>
         private static float GetCurrentTimePosition(int srcId, float sampleRate)
         {
-            var sampleOffset = alInvoker?.GetSource(srcId, ALGetSourcei.SampleOffset) ?? 0;
+            var sampleOffset = 0;
 
-            return sampleOffset / sampleRate;
+            if (!(alInvoker is null))
+                sampleOffset = alInvoker.GetSource(srcId, ALGetSourcei.SampleOffset);
+
+            return sampleOffset / sampleRate == 0 ? 1 : sampleRate;
         }
 
         /// <summary>

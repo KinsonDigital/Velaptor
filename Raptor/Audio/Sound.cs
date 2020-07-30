@@ -55,8 +55,8 @@ namespace Raptor.Audio
                 ErrorCallback = ErrorCallback,
             };
 
-            this.oggDecoder = new OggSoundDecoder();
-            this.mp3Decoder = new MP3SoundDecoder();
+            this.oggDecoder = IoC.Container.GetInstance<ISoundDecoder<float>>();
+            this.mp3Decoder = IoC.Container.GetInstance<ISoundDecoder<byte>>();
 
             this.audioManager = AudioDeviceManagerFactory.CreateManager();
             this.audioManager.DeviceChanged += AudioManager_DeviceChanged;
@@ -333,6 +333,7 @@ namespace Raptor.Audio
         /// <param name="e">Contains various event related information.</param>
         private void AudioManager_DeviceChanged(object? sender, EventArgs e) => Init();
 
+        [ExcludeFromCodeCoverage]
         private void ErrorCallback(string errorMsg)
         {
 #if DEBUG

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Raptor.Audio
 {
-    public interface ISoundDecoder<T>
+    public interface ISoundDecoder<T> : IDisposable
     {
         SoundData<T> LoadData(string fileName);
     }

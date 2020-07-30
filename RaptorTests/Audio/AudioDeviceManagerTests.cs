@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using Moq;
 using OpenToolkit.Audio.OpenAL;
 using Raptor.Audio;
@@ -20,7 +21,6 @@ namespace RaptorTests.Audio
         private readonly Mock<IALInvoker> mockALInvoker;
         private readonly ALDevice device;
         private readonly ALContext context;
-        private readonly string soundFileName = "sound.ogg";
         private readonly int srcId = 4321;
         private readonly int bufferId = 9876;
         private IAudioDeviceManager? manager;
@@ -40,6 +40,18 @@ namespace RaptorTests.Audio
         }
 
         #region Method Tests
+        [Fact]
+        public void GetInstance_WithNullInvoker_ThrowsException()
+        {
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                this.manager = AudioDeviceManager.GetInstance(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            }, "Parameter must not be null. (Parameter 'alInvoker')");
+        }
+
         [Fact]
         public void GetInstance_WhenInvoked_InitializesAudioDevice()
         {
