@@ -83,8 +83,6 @@ namespace RaptorTests.Audio
             // Act
             var actual = decoder.LoadData("sound.mp3");
 
-            var result = expected == actual;
-
             // Assert
             Assert.Equal(expected, actual);
             this.mockDataStream.Verify(m => m.ReadSamples(new byte[] { 10, 20 }, 0, 2), Times.Exactly(2));

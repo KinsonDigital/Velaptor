@@ -10,7 +10,7 @@ namespace Raptor.Audio
     using System.IO;
 
     /// <summary>
-    /// Decodes MP3 audio data.
+    /// Decodes MP3 audio data files.
     /// </summary>
     internal class MP3SoundDecoder : ISoundDecoder<byte>
     {
@@ -20,14 +20,14 @@ namespace Raptor.Audio
         /// <summary>
         /// Initializes a new instance of the <see cref="MP3SoundDecoder"/> class.
         /// </summary>
-        /// <param name="dataStream">Streams the audio data in bytes.</param>
+        /// <param name="dataStream">Streams the audio data from the file as bytes.</param>
         public MP3SoundDecoder(IAudioDataStream<byte> dataStream) => this.audioDataStream = dataStream;
 
         /// <summary>
-        /// Loads the MP3 audio data from the given mp3 file.
+        /// Loads mp3 audio data from an mp3 file using the given <paramref name="fileName"/>.
         /// </summary>
-        /// <param name="fileName">The mp3 file to load.</param>
-        /// <returns>The mp3 file data and related information about the file.</returns>
+        /// <param name="fileName">The file name/path to the mp3 file.</param>
+        /// <returns>The sound and related audio data.</returns>
         public SoundData<byte> LoadData(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
