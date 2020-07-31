@@ -1,30 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Text;
-using MP3Sharp;
+﻿// <copyright file="Mp3AudioDataStream.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.Audio
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using MP3Sharp;
+    using Raptor.Exceptions;
+
+    /// <summary>
+    /// Streams mp3 audio data from a mp3 file.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class Mp3AudioDataStream : IAudioDataStream<byte>
     {
-        private MP3Stream mp3Reader;
-        private string fileName;
+        // NOTE: the Mp3Sharp decoder library only deals with 16bit mp3 files.  Which is 99% of what is used now days anyways
+        private MP3Stream? mp3Reader;
+        private string? fileName;
         private bool isDisposed;
 
-
-        public string FileName
+        /// <summary>
+        /// Gets or sets the name of the file.
+        /// </summary>
+        /// <remarks>
+        ///     The rest of the <see cref="Mp3AudioDataStream"/> data stream
+        ///     members cannot be used if this is null or empty.
+        /// </remarks>
+        public string Filename
         {
-            get => this.fileName;
+            get => this.fileName is null ? string.Empty : this.fileName;
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    throw new Exception("Empty File Name");
+                    throw new StringNullOrEmptyException();
 
                 if (!File.Exists(value))
-                    throw new FileNotFoundException("The file was not found.", value);
+                    throw new FileNotFoundException($"The file '{value}' was not found or does not exist.");
 
                 if (this.mp3Reader is null)
                 {
@@ -43,63 +56,56 @@ namespace Raptor.Audio
             }
         }
 
-        public int Channels
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(FileName))
-                    throw new Exception("Empty filename");
+        /// <inheritdoc/>
+        public int Channels => string.IsNullOrEmpty(this.fileName) ? 0 : this.mp3Reader?.ChannelCount ?? 0;
 
-                return mp3Reader.ChannelCount;
-            }
-        }
-
+        /// <inheritdoc/>
         public AudioFormat Format
         {
             get
             {
-                if (string.IsNullOrEmpty(FileName))
-                    throw new Exception("Empty filename");
+                if (string.IsNullOrEmpty(this.fileName) || this.mp3Reader is null)
+                    return default;
 
-                return this.mp3Reader.Format == SoundFormat.Pcm16BitMono ? AudioFormat.Mono16: AudioFormat.Stereo16;
+                return this.mp3Reader.Format == SoundFormat.Pcm16BitMono
+                    ? AudioFormat.Mono16
+                    : AudioFormat.Stereo16;
             }
         }
 
-        public int SampleRate
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(FileName))
-                    throw new Exception("Empty filename");
+        /// <inheritdoc/>
+        public int SampleRate => string.IsNullOrEmpty(this.fileName) ? 0 : this.mp3Reader?.Frequency ?? 0;
 
-                return this.mp3Reader.Frequency;
-            }
-        }
-
+        /// <inheritdoc/>
         public int ReadSamples(byte[] buffer, int offset, int count)
         {
-            if (string.IsNullOrEmpty(FileName))
-                throw new Exception("Empty filename");
+            if (string.IsNullOrEmpty(Filename))
+                throw new StringNullOrEmptyException();
 
-            return this.mp3Reader.Read(buffer, offset, count);
+            return this.mp3Reader?.Read(buffer, offset, count) ?? 0;
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!isDisposed)
-            {
-                if (disposing)
-                    this.mp3Reader?.Dispose();
-
-                isDisposed = true;
-            }
-        }
-
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.isDisposed)
+            {
+                if (disposing)
+                    this.mp3Reader?.Dispose();
+
+                this.isDisposed = true;
+            }
         }
     }
 }

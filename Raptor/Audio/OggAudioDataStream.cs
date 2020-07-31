@@ -14,7 +14,7 @@ namespace Raptor.Audio
         private string fileName;
         private bool isDisposed;
 
-        public string FileName
+        public string Filename
         {
             get => this.fileName;
             set
@@ -46,7 +46,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (string.IsNullOrEmpty(FileName))
+                if (string.IsNullOrEmpty(Filename))
                     throw new Exception("Empty filename");
 
                 return vorbisReader.Channels;
@@ -57,7 +57,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (string.IsNullOrEmpty(FileName))
+                if (string.IsNullOrEmpty(Filename))
                     throw new Exception("Empty filename");
 
                 return Channels == 1 ? AudioFormat.Mono32Float : AudioFormat.StereoFloat32;
@@ -68,7 +68,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (string.IsNullOrEmpty(FileName))
+                if (string.IsNullOrEmpty(Filename))
                     throw new Exception("Empty filename");
 
                 return this.vorbisReader.SampleRate;
@@ -77,7 +77,7 @@ namespace Raptor.Audio
 
         public int ReadSamples(float[] buffer, int offset, int count)
         {
-            if (string.IsNullOrEmpty(FileName))
+            if (string.IsNullOrEmpty(Filename))
                 throw new Exception("Empty filename");
 
             return this.vorbisReader.ReadSamples(buffer, offset, count);

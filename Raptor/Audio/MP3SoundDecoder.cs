@@ -1,25 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using MP3Sharp;
+﻿// <copyright file="MP3SoundDecoder.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.Audio
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+
+    /// <summary>
+    /// Decodes MP3 audio data.
+    /// </summary>
     internal class MP3SoundDecoder : ISoundDecoder<byte>
     {
         private readonly IAudioDataStream<byte> audioDataStream;
         private bool isDisposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MP3SoundDecoder"/> class.
+        /// </summary>
+        /// <param name="dataStream">Streams the audio data in bytes.</param>
         public MP3SoundDecoder(IAudioDataStream<byte> dataStream) => this.audioDataStream = dataStream;
 
+        /// <summary>
+        /// Loads the MP3 audio data from the given mp3 file.
+        /// </summary>
+        /// <param name="fileName">The mp3 file to load.</param>
+        /// <returns>The mp3 file data and related information about the file.</returns>
         public SoundData<byte> LoadData(string fileName)
         {
-            //NOTE: the Mp3Sharp decoder library only deals with 16bit mp3 files.  Which is 99% of what is used now days anyways
-            var result = new SoundData<byte>();
+            if (string.IsNullOrEmpty(fileName))
+                throw new ArgumentException("The param must not be null or empty.", nameof(fileName));
 
-            this.audioDataStream.FileName = fileName;
+            if (Path.GetExtension(fileName) != ".mp3")
+                throw new ArgumentException("The file name must have an mp3 file extension.", nameof(fileName));
+
+            SoundData<byte> result = default;
+
+            this.audioDataStream.Filename = fileName;
 
             result.SampleRate = this.audioDataStream.SampleRate;
             result.Channels = this.audioDataStream.Channels;
@@ -36,8 +55,8 @@ namespace Raptor.Audio
                 dataResult.AddRange(buffer);
             }
 
-            //This calculate is also not completely accurate.  It comes out to 1 second longer
-            //thent he sound actually is.
+            // This calculate is also not completely accurate.  It comes out to 1 second longer
+            // then the sound actually is.  This might not be the case every time due to depending on the values in the calculation.
             result.TotalSeconds = dataResult.Count / 4f / this.audioDataStream.SampleRate;
 
             result.Format = this.audioDataStream.Format;
@@ -47,33 +66,29 @@ namespace Raptor.Audio
             return result;
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!isDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects)
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                isDisposed = true;
-            }
-        }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~MP3SoundDecoder()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
-
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True if the managed resources should be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.isDisposed)
+            {
+                if (disposing)
+                {
+                    this.audioDataStream.Dispose();
+                }
+
+                this.isDisposed = true;
+            }
         }
     }
 }

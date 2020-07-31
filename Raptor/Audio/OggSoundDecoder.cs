@@ -19,7 +19,7 @@ namespace Raptor.Audio
         {
             var result = default(SoundData<float>);
 
-            this.audioDataStream.FileName = fileName;
+            this.audioDataStream.Filename = fileName;
 
             result.SampleRate = this.audioDataStream.SampleRate;
             result.Channels = this.audioDataStream.Channels;
