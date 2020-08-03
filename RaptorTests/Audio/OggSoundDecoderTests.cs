@@ -5,6 +5,7 @@
 namespace RaptorTests.Audio
 {
     using System;
+    using System.Collections.ObjectModel;
     using Moq;
     using Raptor.Audio;
     using RaptorTests.Helpers;
@@ -86,14 +87,16 @@ namespace RaptorTests.Audio
                 });
 
             var decoder = new OggSoundDecoder(this.mockDataStream.Object);
-            SoundData<float> expected;
-            expected.Channels = channels;
-            expected.Format = format;
-            expected.SampleRate = 1;
+            var expected = new SoundData<float>
+            {
+                BufferData = new ReadOnlyCollection<float>(bufferData),
+                Channels = channels,
+                Format = format,
+                SampleRate = 1,
 
-            // The total seconds of the sound changes depending on the number of channels
-            expected.TotalSeconds = channels == 1 ? 0.25f : 0.5f;
-            expected.BufferData = bufferData;
+                // The total seconds of the sound changes depending on the number of channels
+                TotalSeconds = channels == 1 ? 0.25f : 0.5f,
+            };
 
             // Act
             var actual = decoder.LoadData("sound.ogg");

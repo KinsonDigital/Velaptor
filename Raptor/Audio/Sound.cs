@@ -12,7 +12,7 @@ namespace Raptor.Audio
 #endif
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using System.IO.Enumeration;
+    using System.Linq;
     using OpenToolkit.Audio.OpenAL;
     using Raptor.Content;
     using Raptor.Factories;
@@ -277,8 +277,8 @@ namespace Raptor.Audio
 
             this.alInvoker.BufferData(this.bufferId,
                             MapFormat(data.Format),
-                            data.BufferData,
-                            data.BufferData.Length * sizeof(float),
+                            data.BufferData.ToArray(),
+                            data.BufferData.Count * sizeof(float),
                             data.SampleRate);
 
             // Bind the buffer to the source
@@ -296,8 +296,8 @@ namespace Raptor.Audio
 
             this.alInvoker.BufferData(this.bufferId,
                             MapFormat(data.Format),
-                            data.BufferData,
-                            data.BufferData.Length,
+                            data.BufferData.ToArray(),
+                            data.BufferData.Count,
                             data.SampleRate);
 
             // Bind the buffer to the source

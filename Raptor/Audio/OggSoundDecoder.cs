@@ -7,6 +7,7 @@ namespace Raptor.Audio
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.IO;
 
     /// <summary>
@@ -64,7 +65,7 @@ namespace Raptor.Audio
                     break;
             }
 
-            result.BufferData = dataResult.ToArray();
+            result.BufferData = new ReadOnlyCollection<float>(dataResult);
 
             return result;
         }

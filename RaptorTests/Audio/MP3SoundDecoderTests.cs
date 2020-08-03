@@ -5,6 +5,7 @@
 namespace RaptorTests.Audio
 {
     using System;
+    using System.Collections.ObjectModel;
     using Moq;
     using Raptor.Audio;
     using RaptorTests.Helpers;
@@ -73,12 +74,14 @@ namespace RaptorTests.Audio
                 });
 
             var decoder = new MP3SoundDecoder(this.mockDataStream.Object);
-            SoundData<byte> expected;
-            expected.Channels = 1;
-            expected.Format = AudioFormat.Stereo16;
-            expected.SampleRate = 1;
-            expected.TotalSeconds = 0.5f;
-            expected.BufferData = new byte[] { 10, 20 };
+            var expected = new SoundData<byte>
+            {
+                BufferData = new ReadOnlyCollection<byte>(new byte[] { 10, 20 }),
+                Channels = 1,
+                Format = AudioFormat.Stereo16,
+                SampleRate = 1,
+                TotalSeconds = 0.5f,
+            };
 
             // Act
             var actual = decoder.LoadData("sound.mp3");

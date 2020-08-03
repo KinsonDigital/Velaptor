@@ -6,8 +6,7 @@
 namespace RaptorTests.Audio
 {
     using System;
-    using Castle.DynamicProxy.Tokens;
-    using Microsoft.VisualStudio.TestPlatform.Utilities;
+    using System.Collections.ObjectModel;
     using Moq;
     using OpenToolkit.Audio.OpenAL;
     using Raptor.Audio;
@@ -52,14 +51,16 @@ namespace RaptorTests.Audio
             this.mockOggDecoder = new Mock<ISoundDecoder<float>>();
             this.mockOggDecoder.Setup(m => m.LoadData(this.oggContentFilePath)).Returns(() =>
             {
-                return new SoundData<float>()
+                var result = new SoundData<float>()
                 {
-                    BufferData = oggBufferData,
+                    BufferData = new ReadOnlyCollection<float>(this.oggBufferData),
                     Channels = 2,
                     Format = AudioFormat.Stereo16,
                     SampleRate = 44100,
                     TotalSeconds = 10,
                 };
+
+                return result;
             });
 
             this.mockMp3Decoder = new Mock<ISoundDecoder<byte>>();
@@ -93,12 +94,12 @@ namespace RaptorTests.Audio
             this.mockOggDecoder.Setup(m => m.LoadData(this.oggContentFilePath))
                 .Returns(() =>
                 {
-                    SoundData<float> result;
+                    var result = default(SoundData<float>);
                     result.TotalSeconds = 200f;
                     result.Format = format;
                     result.Channels = 2;
                     result.SampleRate = 44100;
-                    result.BufferData = new[] { 1f, 2f };
+                    result.BufferData = new ReadOnlyCollection<float>(new[] { 1f, 2f });
 
                     return result;
                 });
@@ -116,12 +117,12 @@ namespace RaptorTests.Audio
             this.mockOggDecoder.Setup(m => m.LoadData(this.oggContentFilePath))
                 .Returns(() =>
                 {
-                    SoundData<float> result;
+                    var result = default(SoundData<float>);
                     result.TotalSeconds = 200f;
                     result.Format = default;
                     result.Channels = 2;
                     result.SampleRate = 44100;
-                    result.BufferData = new[] { 1f, 2f };
+                    result.BufferData = new ReadOnlyCollection<float>(new[] { 1f, 2f });
 
                     return result;
                 });
@@ -142,12 +143,12 @@ namespace RaptorTests.Audio
             this.mockMp3Decoder.Setup(m => m.LoadData(this.mp3ContentFilePath))
                 .Returns(() =>
                 {
-                    SoundData<byte> result;
+                    var result = default(SoundData<byte>);
+                    result.BufferData = new ReadOnlyCollection<byte>(new byte[] { 1, 2 });
                     result.TotalSeconds = 200f;
                     result.Format = AudioFormat.Stereo16;
                     result.Channels = 2;
                     result.SampleRate = 44100;
-                    result.BufferData = new byte[] { 1, 2 };
 
                     return result;
                 });
@@ -467,12 +468,12 @@ namespace RaptorTests.Audio
             this.mockOggDecoder.Setup(m => m.LoadData(this.oggContentFilePath))
                 .Returns(() =>
                 {
-                    SoundData<float> result;
+                    var result = default(SoundData<float>);
                     result.TotalSeconds = 123f;
                     result.Format = AudioFormat.Stereo16;
                     result.Channels = 2;
                     result.SampleRate = 441000;
-                    result.BufferData = new[] { 1f, 2f };
+                    result.BufferData = new ReadOnlyCollection<float>(new[] { 1f, 2f });
 
                     return result;
                 });
@@ -499,12 +500,12 @@ namespace RaptorTests.Audio
             this.mockOggDecoder.Setup(m => m.LoadData(this.oggContentFilePath))
                 .Returns(() =>
                 {
-                    SoundData<float> result;
+                    var result = default(SoundData<float>);
                     result.TotalSeconds = 200f;
                     result.Format = AudioFormat.Stereo16;
                     result.Channels = 2;
                     result.SampleRate = 44100;
-                    result.BufferData = new[] { 1f, 2f };
+                    result.BufferData = new ReadOnlyCollection<float>(new[] { 1f, 2f });
 
                     return result;
                 });

@@ -7,6 +7,7 @@ namespace Raptor.Audio
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.IO;
 
     /// <summary>
@@ -61,7 +62,7 @@ namespace Raptor.Audio
 
             result.Format = this.audioDataStream.Format;
 
-            result.BufferData = dataResult.ToArray();
+            result.BufferData = new ReadOnlyCollection<byte>(dataResult);
 
             return result;
         }

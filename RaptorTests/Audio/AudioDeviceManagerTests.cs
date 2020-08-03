@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
+using System.Collections.ObjectModel;
 using Moq;
 using OpenToolkit.Audio.OpenAL;
 using Raptor.Audio;
 using Raptor.Audio.Exceptions;
 using Raptor.Content;
-using Raptor.Factories;
 using Raptor.OpenAL;
 using RaptorTests.Helpers;
 using Xunit;
@@ -315,12 +311,14 @@ namespace RaptorTests.Audio
             mockOggDecoder.Setup(m => m.LoadData(It.IsAny<string>()))
                 .Returns(() =>
                 {
-                    SoundData<float> oggData;
-                    oggData.Format = AudioFormat.Stereo16;
-                    oggData.Channels = 2;
-                    oggData.SampleRate = 44100;
-                    oggData.BufferData = new[] { 1f };
-                    oggData.TotalSeconds = 10;
+                    var oggData = new SoundData<float>
+                    {
+                        BufferData = new ReadOnlyCollection<float>(new[] { 1f }),
+                        Format = AudioFormat.Stereo16,
+                        Channels = 2,
+                        SampleRate = 44100,
+                        TotalSeconds = 10,
+                    };
 
                     return oggData;
                 });
