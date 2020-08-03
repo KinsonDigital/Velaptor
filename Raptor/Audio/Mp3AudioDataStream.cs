@@ -25,8 +25,8 @@ namespace Raptor.Audio
         /// Gets or sets the name of the file.
         /// </summary>
         /// <remarks>
-        ///     The rest of the <see cref="Mp3AudioDataStream"/> data stream
-        ///     members cannot be used if this is null or empty.
+        ///     The <see cref="ReadSamples(byte[], int, int)"/> method will 
+        ///     return 0 samples used if this is null or empty.
         /// </remarks>
         public string Filename
         {

@@ -1,29 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Text;
-using NVorbis;
+﻿// <copyright file="OggAudioDataStream.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Raptor.Audio
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using NVorbis;
+    using Raptor.Exceptions;
+
+    /// <summary>
+    /// Streams ogg audio data from a ogg file.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class OggAudioDataStream : IAudioDataStream<float>
     {
-        private VorbisReader vorbisReader;
-        private string fileName;
+        private VorbisReader? vorbisReader;
+        private string? fileName;
         private bool isDisposed;
 
+        /// <summary>
+        /// Gets or sets the name of the file.
+        /// </summary>
+        /// <remarks>
+        ///     The <see cref="ReadSamples(float[], int, int)"/> method will 
+        ///     return 0 samples used if this is null or empty.
+        /// </remarks>
         public string Filename
         {
-            get => this.fileName;
+            get => this.fileName is null ? string.Empty : this.fileName;
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    throw new Exception("Empty File Name");
+                    throw new StringNullOrEmptyException();
 
                 if (!File.Exists(value))
-                    throw new FileNotFoundException("The file was not found.", value);
+                    throw new FileNotFoundException($"The file '{value}' was not found or does not exist", value);
 
                 if (this.vorbisReader is null)
                 {
@@ -42,47 +55,34 @@ namespace Raptor.Audio
             }
         }
 
-        public int Channels
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Filename))
-                    throw new Exception("Empty filename");
+        /// <inheritdoc/>
+        public int Channels => string.IsNullOrEmpty(this.fileName) ? 0 : this.vorbisReader?.Channels ?? 0;
 
-                return vorbisReader.Channels;
-            }
-        }
-
+        /// <inheritdoc/>
         public AudioFormat Format
         {
             get
             {
-                if (string.IsNullOrEmpty(Filename))
-                    throw new Exception("Empty filename");
+                if (string.IsNullOrEmpty(this.fileName) || this.vorbisReader is null)
+                    return default;
 
                 return Channels == 1 ? AudioFormat.Mono32Float : AudioFormat.StereoFloat32;
             }
         }
 
-        public int SampleRate
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Filename))
-                    throw new Exception("Empty filename");
+        /// <inheritdoc/>
+        public int SampleRate => string.IsNullOrEmpty(this.fileName) ? 0 : this.vorbisReader?.SampleRate ?? 0;
 
-                return this.vorbisReader.SampleRate;
-            }
-        }
-
+        /// <inheritdoc/>
         public int ReadSamples(float[] buffer, int offset, int count)
         {
             if (string.IsNullOrEmpty(Filename))
-                throw new Exception("Empty filename");
+                throw new StringNullOrEmptyException();
 
-            return this.vorbisReader.ReadSamples(buffer, offset, count);
+            return this.vorbisReader?.ReadSamples(buffer, offset, count) ?? 0;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -90,14 +90,18 @@ namespace Raptor.Audio
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!isDisposed)
+            if (!this.isDisposed)
             {
                 if (disposing)
                     this.vorbisReader?.Dispose();
 
-                isDisposed = true;
+                this.isDisposed = true;
             }
         }
     }
