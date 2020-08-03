@@ -275,11 +275,12 @@ namespace Raptor.Audio
             soundSrc.TotalSeconds = data.TotalSeconds;
             soundSrc.SampleRate = data.SampleRate;
 
-            this.alInvoker.BufferData(this.bufferId,
-                            MapFormat(data.Format),
-                            data.BufferData.ToArray(),
-                            data.BufferData.Count * sizeof(float),
-                            data.SampleRate);
+            this.alInvoker.BufferData(
+                this.bufferId,
+                MapFormat(data.Format),
+                data.BufferData.ToArray(),
+                data.BufferData.Count * sizeof(float),
+                data.SampleRate);
 
             // Bind the buffer to the source
             this.alInvoker.Source(this.srcId, ALSourcei.Buffer, this.bufferId);
@@ -294,16 +295,17 @@ namespace Raptor.Audio
             soundSrc.TotalSeconds = data.TotalSeconds;
             soundSrc.SampleRate = data.SampleRate;
 
-            this.alInvoker.BufferData(this.bufferId,
-                            MapFormat(data.Format),
-                            data.BufferData.ToArray(),
-                            data.BufferData.Count,
-                            data.SampleRate);
+            this.alInvoker.BufferData(
+                this.bufferId,
+                MapFormat(data.Format),
+                data.BufferData.ToArray(),
+                data.BufferData.Count,
+                data.SampleRate);
 
             // Bind the buffer to the source
             this.alInvoker.Source(this.srcId, ALSourcei.Buffer, this.bufferId);
 
-            //TODO: Call audiomanager update sound source
+            // TODO: Call audiomanager update sound source
         }
 
         private ALFormat MapFormat(AudioFormat format) => format switch

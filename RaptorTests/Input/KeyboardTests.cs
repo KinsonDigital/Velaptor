@@ -4,11 +4,9 @@
 
 namespace RaptorTests.Input
 {
-    using System;
     using Raptor.Input;
     using RaptorTests.Helpers;
     using Xunit;
-    using Xunit.Abstractions;
 
     /// <summary>
     /// Tests the <see cref="Keyboard"/> class.
