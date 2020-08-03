@@ -130,6 +130,7 @@ namespace Raptor.Input
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>True if operands are not equal.</returns>
+        [ExcludeFromCodeCoverage]
         public static bool operator !=(KeyboardState left, KeyboardState right) => !left.Equals(right);
 
         /// <summary>

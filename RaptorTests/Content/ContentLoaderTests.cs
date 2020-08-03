@@ -4,7 +4,6 @@
 
 namespace RaptorTests.Content
 {
-    using FileIO.Core;
     using Moq;
     using Raptor;
     using Raptor.Audio;
@@ -17,52 +16,55 @@ namespace RaptorTests.Content
     /// </summary>
     public class ContentLoaderTests
     {
-        private readonly string RootDir = @"C:\Content\";
-        private readonly string GraphicsDirName = "Graphics";
-        private readonly string SoundsDirName = "Sounds";
-        private readonly string AtlasDirName = "Atlas";
-        private readonly ContentLoader contentLoader;
+        private readonly string rootDir = @"C:\Content\";
+        private readonly string graphicsDirName = "Graphics";
+        private readonly string soundsDirName = "Sounds";
+        private readonly string atlasDirName = "Atlas";
         private readonly Mock<ILoader<ITexture>> mockTextureLoader;
         private readonly Mock<ILoader<AtlasRegionRectangle[]>> mockAtlasDataLoader;
         private readonly Mock<ILoader<ISound>> mockSoundLoader;
         private readonly Mock<IContentSource> mockContentSrc;
-        private readonly Mock<IImageFile> mockImageFile;
-        private readonly Mock<ITextFile> mockTextFile;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentLoaderTests"/> class.
+        /// </summary>
         public ContentLoaderTests()
         {
             this.mockContentSrc = new Mock<IContentSource>();
-            this.mockContentSrc.SetupGet(p => p.ContentRootDirectory).Returns(this.RootDir);
-            this.mockContentSrc.SetupGet(p => p.GraphicsDirectoryName).Returns(this.GraphicsDirName);
-            this.mockContentSrc.SetupGet(p => p.SoundsDirectoryName).Returns(this.SoundsDirName);
-            this.mockContentSrc.SetupGet(p => p.AtlasDirectoryName).Returns(this.AtlasDirName);
+            this.mockContentSrc.SetupGet(p => p.ContentRootDirectory).Returns(this.rootDir);
+            this.mockContentSrc.SetupGet(p => p.GraphicsDirectoryName).Returns(this.graphicsDirName);
+            this.mockContentSrc.SetupGet(p => p.SoundsDirectoryName).Returns(this.soundsDirName);
+            this.mockContentSrc.SetupGet(p => p.AtlasDirectoryName).Returns(this.atlasDirName);
 
             this.mockTextureLoader = new Mock<ILoader<ITexture>>();
             this.mockAtlasDataLoader = new Mock<ILoader<AtlasRegionRectangle[]>>();
             this.mockSoundLoader = new Mock<ILoader<ISound>>();
-            this.mockImageFile = new Mock<IImageFile>();
-            this.mockTextFile = new Mock<ITextFile>();
-
-            this.contentLoader = new ContentLoader(this.mockContentSrc.Object,
-                                                   this.mockTextureLoader.Object,
-                                                   this.mockAtlasDataLoader.Object,
-                                                   this.mockSoundLoader.Object,
-                                                   this.mockImageFile.Object,
-                                                   this.mockTextFile.Object);
         }
-
-        #region Prop Tests
-        #endregion
 
         #region Method Tests
         [Fact]
         public void LoadTexture_WhenInvoked_LoadsTexture()
         {
             // Act
-            this.contentLoader.LoadTexture("test-texture");
+            var loader = CreateContentLoader();
+
+            loader.LoadTexture("test-texture");
 
             // Assert
             this.mockTextureLoader.Verify(m => m.Load("test-texture"), Times.Once());
+        }
+
+        [Fact]
+        public void LoadSound_WhenInvoked_LoadsSound()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+
+            // Act
+            loader.LoadSound("sound.ogg");
+
+            // Assert
+            this.mockSoundLoader.Verify(m => m.Load("sound.ogg"), Times.Once());
         }
 
         [Fact]
@@ -71,12 +73,23 @@ namespace RaptorTests.Content
             // Act
             this.mockContentSrc.Setup(m => m.GetContentPath(ContentType.Atlas, "test-atlas.json"))
                 .Returns("test-path");
-            this.contentLoader.LoadAtlasData("test-atlas.json");
+            var loader = CreateContentLoader();
+            loader.LoadAtlasData("test-atlas.json");
 
             // Assert
             this.mockContentSrc.Verify(m => m.GetContentPath(ContentType.Atlas, "test-atlas.json"), Times.Once());
             this.mockAtlasDataLoader.Verify(m => m.Load("test-path"), Times.Once());
         }
         #endregion
+
+        /// <summary>
+        /// Returns a new instance of a content loader.
+        /// </summary>
+        /// <returns>A content loader instance to use for testing.</returns>
+        private ContentLoader CreateContentLoader()
+            => new ContentLoader(this.mockContentSrc.Object,
+                                 this.mockTextureLoader.Object,
+                                 this.mockAtlasDataLoader.Object,
+                                 this.mockSoundLoader.Object);
     }
 }

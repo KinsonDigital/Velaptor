@@ -4,9 +4,11 @@
 
 namespace RaptorTests.Input
 {
+    using System;
     using Raptor.Input;
     using RaptorTests.Helpers;
     using Xunit;
+    using Xunit.Abstractions;
 
     /// <summary>
     /// Tests the <see cref="Keyboard"/> class.
@@ -14,6 +16,19 @@ namespace RaptorTests.Input
     public class KeyboardTests
     {
         #region Method Tests
+        [Fact]
+        public void GetState_WhenInvokedWithNoKeyStates_SetsUpKeyStates()
+        {
+            // Arrange
+            var state = Keyboard.GetState();
+
+            // Act
+            var actual = state.GetKeyStates();
+
+            // Assert
+            Assert.Equal(132, Keyboard.KeyStates.Count);
+        }
+
         [Fact]
         public void GetState_WhenInvoked_ReturnsCorrectResult()
         {
