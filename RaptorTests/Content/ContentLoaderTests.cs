@@ -4,9 +4,6 @@
 
 namespace RaptorTests.Content
 {
-    using System.IO;
-    using System.Reflection;
-    using System.Runtime.InteropServices.WindowsRuntime;
     using FileIO.Core;
     using Moq;
     using Raptor;

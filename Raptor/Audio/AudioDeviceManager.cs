@@ -13,7 +13,6 @@ namespace Raptor.Audio
     using System.Diagnostics.CodeAnalysis;
 #endif
     using System.Linq;
-    using System.Net.Mail;
     using OpenToolkit.Audio.OpenAL;
     using Raptor.Audio.Exceptions;
     using Raptor.OpenAL;

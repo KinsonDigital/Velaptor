@@ -6,12 +6,9 @@
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 namespace Raptor.Content
 {
-    using System.Diagnostics.CodeAnalysis;
     using FileIO.Core;
-    using FileIO.File;
     using Raptor.Audio;
     using Raptor.Graphics;
-    using FIODirectory = FileIO.Directory.Directory;
 
     /// <summary>
     /// Loads content.

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using OpenToolkit.Audio.OpenAL;
 
 namespace Raptor.OpenAL

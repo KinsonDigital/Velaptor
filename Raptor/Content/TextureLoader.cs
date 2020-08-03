@@ -5,7 +5,6 @@
 namespace Raptor.Content
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
     using FileIO.Core;
     using Raptor.Graphics;
     using Raptor.OpenGL;

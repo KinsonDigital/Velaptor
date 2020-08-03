@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Text;
 using OpenToolkit.Audio.OpenAL;
-using OpenToolkit.Graphics.OpenGL;
 
 namespace Raptor.OpenAL
 {
