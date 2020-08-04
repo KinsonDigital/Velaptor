@@ -43,9 +43,6 @@ namespace Raptor.Audio
         /// </summary>
         /// <param name="name">The name of the content item to load.</param>
         [ExcludeFromCodeCoverage]
-        // TODO: Add static functionality to ContentLoader that can be used internally  in this
-        // class to be able to load the path to the sound content by using the name only.  The name should not
-        // have an extension.
         public Sound(string name)
         {
             this.name = name;
@@ -58,7 +55,7 @@ namespace Raptor.Audio
             this.oggDecoder = IoC.Container.GetInstance<ISoundDecoder<float>>();
             this.mp3Decoder = IoC.Container.GetInstance<ISoundDecoder<byte>>();
 
-            this.audioManager = AudioDeviceManagerFactory.CreateManager();
+            this.audioManager = AudioDeviceManagerFactory.CreateDeviceManager();
             this.audioManager.DeviceChanged += AudioManager_DeviceChanged;
 
             this.contentSource = IoC.Container.GetInstance<IContentSource>();
@@ -148,7 +145,7 @@ namespace Raptor.Audio
                 if (this.isDisposed)
                     throw new Exception(IsDisposedExceptionMessage);
 
-                return this.alInvoker.GetSource(srcId, ALSourceb.Looping);
+                return this.alInvoker.GetSource(this.srcId, ALSourceb.Looping);
             }
             set
             {
@@ -165,7 +162,7 @@ namespace Raptor.Audio
             if (this.isDisposed)
                 throw new Exception(IsDisposedExceptionMessage);
 
-            alInvoker.SourcePlay(this.srcId);
+            this.alInvoker.SourcePlay(this.srcId);
         }
 
         /// <inheritdoc/>
@@ -224,16 +221,45 @@ namespace Raptor.Audio
         {
             if (!this.isDisposed)
             {
+                if (disposing)
+                {
+                    this.oggDecoder.Dispose();
+                    this.mp3Decoder.Dispose();
+                    this.audioManager.DeviceChanged -= AudioManager_DeviceChanged;
+                }
+
                 UnloadSoundData();
-                this.audioManager.DeviceChanged -= AudioManager_DeviceChanged;
 
-                if (!(this.alInvoker is null))
+                if (!(this.alInvoker.ErrorCallback is null) && !(this.alInvoker.ErrorCallback is null))
+                {
+#pragma warning disable CS8601 // Possible null reference assignment.
                     this.alInvoker.ErrorCallback -= ErrorCallback;
-
-                this.isDisposed = true;
+#pragma warning restore CS8601 // Possible null reference assignment.
+                }
             }
+
+            this.isDisposed = true;
         }
 
+        /// <summary>
+        /// Maps the given audio <paramref name="format"/> to the <see cref="ALFormat"/> type equivalent.
+        /// </summary>
+        /// <param name="format">The format to convert.</param>
+        /// <returns>The <see cref="ALFormat"/> result.</returns>
+        private static ALFormat MapFormat(AudioFormat format) => format switch
+        {
+            AudioFormat.Mono8 => ALFormat.Mono8,
+            AudioFormat.Mono16 => ALFormat.Mono16,
+            AudioFormat.Mono32Float => ALFormat.MonoFloat32Ext,
+            AudioFormat.Stereo8 => ALFormat.Stereo8,
+            AudioFormat.Stereo16 => ALFormat.Stereo16,
+            AudioFormat.StereoFloat32 => ALFormat.StereoFloat32Ext,
+            _ => throw new Exception("Invalid or unknown audio format."),
+        };
+
+        /// <summary>
+        /// Initializes the sound.
+        /// </summary>
         private void Init()
         {
             if (!this.audioManager.IsInitialized)
@@ -268,6 +294,10 @@ namespace Raptor.Audio
             }
         }
 
+        /// <summary>
+        /// Uploads Ogg audio data to the sound card.
+        /// </summary>
+        /// <param name="data">The ogg related sound data to upload.</param>
         private void UploadOggData(SoundData<float> data)
         {
             SoundSource soundSrc;
@@ -288,6 +318,10 @@ namespace Raptor.Audio
             this.audioManager.UpdateSoundSource(soundSrc);
         }
 
+        /// <summary>
+        /// Uploads MP3 audio data to the sound card.
+        /// </summary>
+        /// <param name="data">The mp3 related sound data to upload.</param>
         private void UploadMp3Data(SoundData<byte> data)
         {
             SoundSource soundSrc;
@@ -308,24 +342,21 @@ namespace Raptor.Audio
             // TODO: Call audiomanager update sound source
         }
 
-        private ALFormat MapFormat(AudioFormat format) => format switch
-        {
-            AudioFormat.Mono8 => ALFormat.Mono8,
-            AudioFormat.Mono16 => ALFormat.Mono16,
-            AudioFormat.Mono32Float => ALFormat.MonoFloat32Ext,
-            AudioFormat.Stereo8 => ALFormat.Stereo8,
-            AudioFormat.Stereo16 => ALFormat.Stereo16,
-            AudioFormat.StereoFloat32 => ALFormat.StereoFloat32Ext,
-            _ => throw new Exception("Invalid or unknown audio format."),
-        };
-
+        /// <summary>
+        /// Unloads the sound data from the card.
+        /// </summary>
         private void UnloadSoundData()
         {
-            // TODO: Add isDiposed check and throw exception
-            // TODO: Check if the sourceId exists first and if not, throw an exception
+            if (this.isDisposed)
+                return;
+
+            if (this.srcId <= 0)
+                return;
 
             this.alInvoker.DeleteSource(this.srcId);
-            this.alInvoker.DeleteBuffer(this.bufferId);
+
+            if (this.bufferId != 0)
+                this.alInvoker.DeleteBuffer(this.bufferId);
         }
 
         /// <summary>
@@ -335,6 +366,10 @@ namespace Raptor.Audio
         /// <param name="e">Contains various event related information.</param>
         private void AudioManager_DeviceChanged(object? sender, EventArgs e) => Init();
 
+        /// <summary>
+        /// The callback invoked when an OpenAL error occurs.
+        /// </summary>
+        /// <param name="errorMsg">The OpenAL message.</param>
         [ExcludeFromCodeCoverage]
         private void ErrorCallback(string errorMsg)
         {

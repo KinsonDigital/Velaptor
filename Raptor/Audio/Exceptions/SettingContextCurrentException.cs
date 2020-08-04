@@ -1,4 +1,8 @@
-﻿#pragma warning disable CA1303 // Do not pass literals as localized parameters
+﻿// <copyright file="SettingContextCurrentException.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.Audio.Exceptions
 {
     using System;

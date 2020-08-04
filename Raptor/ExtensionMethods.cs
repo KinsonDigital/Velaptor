@@ -149,17 +149,5 @@ namespace Raptor
                 Z = value.Z.MapValue(fromStart, fromStop, toStart, toStop),
                 W = value.W.MapValue(fromStart, fromStop, toStart, toStop),
             };
-
-        public static float[] ToFloat(this byte[] values)
-        {
-            var result = new List<float>();
-
-            foreach (var item in values)
-            {
-                result.Add(item);
-            }
-
-            return result.ToArray();
-        }
     }
 }
