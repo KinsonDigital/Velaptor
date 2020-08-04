@@ -7,8 +7,8 @@ namespace Raptor
     using System;
     using System.Diagnostics.CodeAnalysis;
     using FileIO.Core;
-    using FileIO.Directory;
-    using FileIO.File;
+    using FileIO.DirectoryManagement;
+    using FileIO.FileManagement;
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
