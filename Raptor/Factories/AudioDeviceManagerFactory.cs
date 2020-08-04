@@ -9,7 +9,7 @@ namespace Raptor.Factories
     using Raptor.OpenAL;
 
     /// <summary>
-    /// Creates an singleton instance of <see cref="AudioDeviceManager"/>.
+    /// Creates a singleton instance of <see cref="AudioDeviceManager"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal static class AudioDeviceManagerFactory

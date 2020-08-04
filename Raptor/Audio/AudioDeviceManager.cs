@@ -37,14 +37,15 @@ namespace Raptor.Audio
         /// </summary>
         private AudioDeviceManager()
         {
+            // NOTE: Do not remove this constructor.  This is left behind to 
+            // add the required singleton behavior of this class.
         }
 
         /// <inheritdoc/>
         public event EventHandler<EventArgs>? DeviceChanged;
 
         /// <inheritdoc/>
-        public bool IsInitialized => !AudioIsNull() &&
-            !(alInvoker is null);
+        public bool IsInitialized => !AudioIsNull() && !(alInvoker is null);
 
         /// <inheritdoc/>
         public string[] DeviceNames
@@ -141,14 +142,13 @@ namespace Raptor.Audio
                 SetTimePosition(cachedState.SourceId, cachedState.TimePosition, cachedState.TotalSeconds);
 
                 // Set the state of the sound
-                switch (cachedState.PlaybackState)
+                if (cachedState.PlaybackState == PlaybackState.Playing)
                 {
-                    case PlaybackState.Playing:
-                        alInvoker?.SourcePlay(cachedState.SourceId);
-                        break;
-                    case PlaybackState.Paused:
-                        alInvoker?.SourceStop(cachedState.SourceId);
-                        break;
+                    alInvoker?.SourcePlay(cachedState.SourceId);
+                }
+                else if (cachedState.PlaybackState == PlaybackState.Paused)
+                {
+                    alInvoker?.SourceStop(cachedState.SourceId);
                 }
             }
         }
@@ -204,9 +204,12 @@ namespace Raptor.Audio
         }
 
         /// <summary>
-        /// Destroys the current audio device.  To use another audio device, the
-        /// <see cref="AudioDeviceManager.InitDevice(string?)"/> will have to be invoked again.
+        /// Destroys the current audio device.
         /// </summary>
+        /// <remarks>
+        ///     To use another audio device, the <see cref="AudioDeviceManager.InitDevice(string?)"/>
+        ///     will have to be invoked again.
+        /// </remarks>
         private static void DestroyDevice()
         {
             if (context != ALContext.Null)
@@ -232,29 +235,32 @@ namespace Raptor.Audio
 
         /// <summary>
         /// Caches all of the current sound sources that are currently playing or paused.
-        /// These cached sounds sources are the state of the sounds and is used to bring
-        /// the state of the sounds back to where they were before changing to another audio device.
         /// </summary>
+        /// <remarks>
+        ///     These cached sounds sources are the state of the sounds and is used to bring
+        ///     the state of the sounds back to where they were before changing to another audio device.
+        /// </remarks>
         private static void CacheSoundSources()
         {
             // Create a cache of all the songs currently playing and record the current playback position
             // Cache only if the sound was currently playing or paused
 
-            // Guarentee that the cache is clear
+            // Guarantee that the cache is clear
             ContinuePlaybackCache.Clear();
+
+            if (alInvoker is null)
+                return;
 
             foreach (var soundSrcKVP in SoundSources)
             {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 var sourceState = alInvoker.GetSourceState(soundSrcKVP.Value.SourceId);
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 if (sourceState != ALSourceState.Playing && sourceState != ALSourceState.Paused)
                     continue;
                 SoundState soundState;
                 soundState.SourceId = soundSrcKVP.Value.SourceId;
                 soundState.PlaybackState = default;
-                soundState.TimePosition = GetCurrentTimePosition(soundSrcKVP.Value.SourceId, soundSrcKVP.Value.SampleRate);
+                soundState.TimePosition = GetCurrentTimePosition(soundSrcKVP.Value.SourceId);
                 soundState.TotalSeconds = soundSrcKVP.Value.TotalSeconds;
 
                 if (sourceState == ALSourceState.Playing)
@@ -280,17 +286,8 @@ namespace Raptor.Audio
         /// Gets the current position of the sound in the value of seconds.
         /// </summary>
         /// <param name="srcId">The OpenAL source id.</param>
-        /// <param name="sampleRate">The sample rate of the sound.</param>
         /// <returns>The position in seconds.</returns>
-        private static float GetCurrentTimePosition(int srcId, float sampleRate)
-        {
-            var sampleOffset = 0;
-
-            if (!(alInvoker is null))
-                sampleOffset = alInvoker.GetSource(srcId, ALGetSourcei.SampleOffset);
-
-            return sampleOffset / sampleRate == 0 ? 1 : sampleRate;
-        }
+        private static float GetCurrentTimePosition(int srcId) => alInvoker?.GetSource(srcId, ALSourcef.SecOffset) ?? 0;
 
         /// <summary>
         /// Sets the time position of the sound to the given <paramref name="seconds"/> value.
@@ -305,6 +302,8 @@ namespace Raptor.Audio
 
             seconds = seconds > totalSeconds ? totalSeconds : seconds;
 
+            // Warning Ignore Reason: Previous execution in this call stack
+            // this OpenAL call takes care of the null reference of alInvoker.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
             alInvoker.Source(srcId, ALSourcef.SecOffset, seconds);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.

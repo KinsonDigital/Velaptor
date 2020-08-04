@@ -14,6 +14,7 @@ namespace RaptorTests.Content
     using FileIO.Core;
     using Moq;
     using Raptor.Content;
+    using Raptor.Exceptions;
     using RaptorTests.Helpers;
     using Xunit;
 
@@ -190,10 +191,10 @@ namespace RaptorTests.Content
             var loader = new ContentSource(this.mockDirectory.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            AssertHelpers.ThrowsWithMessage<StringNullOrEmptyException>(() =>
             {
                 loader.GetContentPath(It.IsAny<ContentType>(), null);
-            }, "The parameter must not be null or empty. (Parameter 'name')");
+            }, "The string must not be null or empty.");
         }
 
         [Fact]

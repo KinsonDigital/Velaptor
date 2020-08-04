@@ -12,7 +12,7 @@ namespace RaptorTests.Audio
     using Xunit;
 
     /// <summary>
-    /// Runs tests for the <see cref="MP3SoundDecoder"/>.
+    /// Tests the <see cref="MP3SoundDecoder"/> class.
     /// </summary>
     public class MP3SoundDecoderTests
     {

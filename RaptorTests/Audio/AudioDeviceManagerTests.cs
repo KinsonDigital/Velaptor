@@ -1,16 +1,23 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using Moq;
-using OpenToolkit.Audio.OpenAL;
-using Raptor.Audio;
-using Raptor.Audio.Exceptions;
-using Raptor.Content;
-using Raptor.OpenAL;
-using RaptorTests.Helpers;
-using Xunit;
+﻿// <copyright file="AudioDeviceManagerTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.Audio
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using Moq;
+    using OpenToolkit.Audio.OpenAL;
+    using Raptor.Audio;
+    using Raptor.Audio.Exceptions;
+    using Raptor.Content;
+    using Raptor.OpenAL;
+    using RaptorTests.Helpers;
+    using Xunit;
+
+    /// <summary>
+    /// Tests the <see cref="AudioDeviceManager"/> class.
+    /// </summary>
     public class AudioDeviceManagerTests : IDisposable
     {
         private static readonly string IsDisposedExceptionMessage = $"The '{nameof(AudioDeviceManager)}' has not been initialized.\nInvoked the '{nameof(AudioDeviceManager.InitDevice)}()' to initialize the device manager.";
@@ -305,7 +312,7 @@ namespace RaptorTests.Audio
             this.mockALInvoker.Setup(m => m.GetSourceState(this.srcId))
                 .Returns(srcState);
             this.mockALInvoker.Setup(m => m.GetSource(this.srcId, ALGetSourcei.SampleOffset))
-                .Returns(sampleOffset); // End result will be calculated to the time position that the sound is currentl at
+                .Returns(sampleOffset); // End result will be calculated to the time position that the sound is currently at
 
             var mockOggDecoder = new Mock<ISoundDecoder<float>>();
             mockOggDecoder.Setup(m => m.LoadData(It.IsAny<string>()))
@@ -342,7 +349,7 @@ namespace RaptorTests.Audio
 
             // Assert
             this.mockALInvoker.Verify(m => m.GetSourceState(this.srcId), Times.Exactly(srcStateInvokeCount));
-            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALGetSourcei.SampleOffset), Times.Exactly(currentTimePositionInvokeCount));
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourcef.SecOffset), Times.Exactly(currentTimePositionInvokeCount));
         }
 
         [Fact]

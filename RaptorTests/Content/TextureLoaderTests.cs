@@ -11,6 +11,9 @@ namespace RaptorTests.Content
     using Raptor.OpenGL;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="TextureLoader"/> class.
+    /// </summary>
     public class TextureLoaderTests
     {
         private readonly Mock<IGLInvoker> mockGL;

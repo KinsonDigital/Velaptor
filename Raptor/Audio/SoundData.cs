@@ -10,7 +10,7 @@ namespace Raptor.Audio
     using System.Linq;
 
     /// <summary>
-    /// Holds data realted to a single sound.
+    /// Holds data related to a single sound.
     /// </summary>
     /// <typeparam name="T">The type of buffer data of the sound.</typeparam>
     public struct SoundData<T> : IEquatable<SoundData<T>>
@@ -21,7 +21,7 @@ namespace Raptor.Audio
         /// <param name="bufferData">The buffer data.</param>
         /// <param name="sampleRate">The sample rate.</param>
         /// <param name="channels">The total number of channels.</param>
-        /// <param name="format">The aduio format.</param>
+        /// <param name="format">The audio format.</param>
         /// <param name="totalSeconds">The total number of seconds of the sound.</param>
         public SoundData(T[] bufferData, int sampleRate, int channels, AudioFormat format, float totalSeconds)
             : this()
@@ -41,6 +41,9 @@ namespace Raptor.Audio
         /// <summary>
         /// Gets or sets the rate that samples are read in the audio file.
         /// </summary>
+        /// <remarks>
+        ///     This would the be frequency in Hz of how many samples are read per second.
+        /// </remarks>
         public int SampleRate { get; set; }
 
         /// <summary>
@@ -49,7 +52,7 @@ namespace Raptor.Audio
         public int Channels { get; set; }
 
         /// <summary>
-        /// Gets or sets the audio format of the audio fiel.
+        /// Gets or sets the audio format of the audio file.
         /// </summary>
         public AudioFormat Format { get; set; }
 

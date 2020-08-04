@@ -21,7 +21,7 @@ namespace Raptor.Audio
         /// </summary>
         /// <remarks>
         ///     The only valid value accepted is 0-100. If a value outside of
-        ///     that range is used, it will be set withing that range.
+        ///     this range is used, it will be set within that range.
         /// </remarks>
         public float Volume { get; set; }
 
@@ -46,7 +46,7 @@ namespace Raptor.Audio
         TimeSpan TimePosition { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the sound loops back to the beginning once the end is reached.
+        /// Gets or sets a value indicating whether the sound loops back to the beginning once the end has been reached.
         /// </summary>
         public bool IsLooping { get; set; }
 

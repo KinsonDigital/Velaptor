@@ -12,7 +12,7 @@ namespace RaptorTests.Content
     using Xunit;
 
     /// <summary>
-    /// Unit tests to test the <see cref="ContentLoader"/> class.
+    /// Tests the <see cref="ContentLoader"/> class.
     /// </summary>
     public class ContentLoaderTests
     {

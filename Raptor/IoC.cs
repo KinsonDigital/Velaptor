@@ -4,20 +4,21 @@
 
 namespace Raptor
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using FileIO.Core;
+    using FileIO.Directory;
     using FileIO.File;
+    using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
+    using Raptor.OpenAL;
     using Raptor.OpenGL;
-    using Raptor.Audio;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
-    using Raptor.OpenAL;
-    using FileIO.Directory;
 
     /// <summary>
-    /// Provides dependency injection for the applcation.
+    /// Provides dependency injection for the application.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal static class IoC
@@ -55,63 +56,62 @@ namespace Raptor
             // Register the proper data stream to be the implementation if the consumer is a certain decoder
             IoCContainer.RegisterConditional<IAudioDataStream<float>, OggAudioDataStream>(context =>
             {
-                return context.HasConsumer ? context.Consumer.ImplementationType == typeof(OggSoundDecoder) : true;
+                return !context.HasConsumer || context.Consumer.ImplementationType == typeof(OggSoundDecoder);
             });
-
-            var floatAudioDataStreamRegistration = IoCContainer.GetRegistration(typeof(IAudioDataStream<float>))?.Registration;
-            floatAudioDataStreamRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
+            SuppressDisposableTransientWarning<IAudioDataStream<float>>();
 
             IoCContainer.RegisterConditional<IAudioDataStream<byte>, Mp3AudioDataStream>(context =>
             {
-                return context.HasConsumer ? context.Consumer.ImplementationType == typeof(MP3SoundDecoder) : true;
+                return !context.HasConsumer || context.Consumer.ImplementationType == typeof(MP3SoundDecoder);
             });
-
-            var byteAudioDataStreamRegistration = IoCContainer.GetRegistration(typeof(IAudioDataStream<byte>))?.Registration;
-            byteAudioDataStreamRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
+            SuppressDisposableTransientWarning<IAudioDataStream<byte>>();
 
             IoCContainer.Register<ISoundDecoder<float>, OggSoundDecoder>();
-            var oggDecoderRegistration = IoCContainer.GetRegistration(typeof(ISoundDecoder<float>))?.Registration;
-            oggDecoderRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
+            SuppressDisposableTransientWarning<ISoundDecoder<float>>();
 
             IoCContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>();
-            var mp3DecoderRegistration = IoCContainer.GetRegistration(typeof(ISoundDecoder<byte>))?.Registration;
-            mp3DecoderRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
+            SuppressDisposableTransientWarning<ISoundDecoder<byte>>();
 
             IoCContainer.Register<IContentSource, ContentSource>();
             IoCContainer.Register<IContentLoader, ContentLoader>();
             IoCContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
 
+            IoCContainer.Register<IGPUBuffer>(() =>
+            {
+                return new GPUBuffer<VertexData>(IoCContainer.GetInstance<IGLInvoker>());
+            });
+            SuppressDisposableTransientWarning<IGPUBuffer>();
+
+            IoCContainer.Register<IShaderProgram>(() =>
+            {
+                return new ShaderProgram(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<ITextFile>());
+            });
+            SuppressDisposableTransientWarning<IShaderProgram>();
+
+            IoCContainer.Register<ISpriteBatch>(() =>
+            {
+                return new SpriteBatch(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IShaderProgram>(), IoCContainer.GetInstance<IGPUBuffer>());
+            });
+            SuppressDisposableTransientWarning<ISpriteBatch>();
+
+            isInitialized = true;
+        }
+
+        /// <summary>
+        /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
+        /// inherit from <see cref="IDisposable"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to suppress against.</typeparam>
+        private static void SuppressDisposableTransientWarning<T>()
+        {
             /*NOTE:
              * The suppression of the SimpleInjector warning of DiagnosticType.DisposableTransientComponent is for
              * classes that are disposable.  This tells simple injector that the disposing of the object will be
              * handled manually by the application/library instead of by simple injector.
              */
 
-            // TODO: Make this instandard registration
-            IoCContainer.Register<IGPUBuffer>(() =>
-            {
-                return new GPUBuffer<VertexData>(IoCContainer.GetInstance<IGLInvoker>());
-            });
-            var bufferRegistration = IoCContainer.GetRegistration(typeof(IGPUBuffer))?.Registration;
-            bufferRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
-
-            // TODO: Make this instandard registration
-            IoCContainer.Register<IShaderProgram>(() =>
-            {
-                return new ShaderProgram(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<ITextFile>());
-            });
-            var shaderRegistration = IoCContainer.GetRegistration(typeof(IShaderProgram))?.Registration;
-            shaderRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
-
-            // TODO: Make this instandard registration
-            IoCContainer.Register<ISpriteBatch>(() =>
-            {
-                return new SpriteBatch(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IShaderProgram>(), IoCContainer.GetInstance<IGPUBuffer>());
-            });
-            var spriteBatchRegistration = IoCContainer.GetRegistration(typeof(ISpriteBatch))?.Registration;
+            var spriteBatchRegistration = IoCContainer.GetRegistration(typeof(T))?.Registration;
             spriteBatchRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
-
-            isInitialized = true;
         }
     }
 }

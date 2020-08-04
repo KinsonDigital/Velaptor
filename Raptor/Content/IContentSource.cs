@@ -4,6 +4,8 @@
 
 namespace Raptor.Content
 {
+    using Raptor.Exceptions;
+
     /// <summary>
     /// Manages the content source.
     /// </summary>
@@ -78,6 +80,13 @@ namespace Raptor.Content
         ///     be taken into account when searching for the content.
         ///     Duplicate names of content items in the same location will throw an exception.
         /// </returns>
+        /// <exception cref="StringNullOrEmptyException">
+        ///     Thrown when the content <paramref name="name"/> is null or empty.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown if the content <paramref name="name"/> ends with a '\' character.
+        ///     The content name must not be treated like a directory or path.
+        /// </exception>
         string GetContentPath(ContentType contentType, string name);
     }
 }

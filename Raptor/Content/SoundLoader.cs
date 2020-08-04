@@ -43,7 +43,7 @@ namespace Raptor.Content
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
         /// <param name="alInvoker">Make calls to OpenAL.</param>
-        /// <param name="audioManager">Manges the audio devices.</param>
+        /// <param name="audioManager">Manages the audio devices.</param>
         /// <param name="contentSource">Manages the source of the content.</param>
         /// <param name="oggDecoder">Decodes ogg sound files.</param>
         /// <param name="mp3Decoder">Decodes mp3 sound files.</param>
@@ -65,12 +65,12 @@ namespace Raptor.Content
         ///     The content <see cref="name"/> can have or not have the extension of the content file to load.
         ///     Using the file extension has no effect and the content item is matched using the name without the extension.
         ///     The only sounds supported are .ogg and .mp3 files.
-        ///     Also, duplicate names are not aloud at the same location and this is matched agains the name without the extextsion.
+        ///     Also, duplicate names are not aloud in the same content source and this is matched against the name without the extension.
         ///
         ///     Example: sound.ogg and sound.mp3 will result in an exception.
         /// </remarks>
         /// <exception cref="UnsupportedSoundTypeException">
-        ///     Thrown when a sound file extension other then .ogg and .mp3 are used.
+        ///     Thrown when a sound file extension other then '.ogg' and '.mp3' are used.
         /// </exception>
         public ISound Load(string name)
         {

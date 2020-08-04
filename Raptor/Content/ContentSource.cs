@@ -11,6 +11,7 @@ namespace Raptor.Content
     using System.Reflection;
     using System.Text;
     using FileIO.Core;
+    using Raptor.Exceptions;
 
     /// <summary>
     /// Manages the content source.
@@ -54,6 +55,7 @@ namespace Raptor.Content
                 if (string.IsNullOrEmpty(value))
                     throw new Exception($"The '{nameof(GraphicsDirectoryName)}' must not be null or empty.");
 
+                // NOTE: No localization required
 #pragma warning disable CA1307 // Specify StringComparison
                 value = value.Replace("\\", string.Empty);
 #pragma warning restore CA1307 // Specify StringComparison
@@ -71,6 +73,7 @@ namespace Raptor.Content
                 if (string.IsNullOrEmpty(value))
                     throw new Exception($"The '{nameof(SoundsDirectoryName)}' must not be null or empty.");
 
+                // NOTE: No localization required
 #pragma warning disable CA1307 // Specify StringComparison
                 value = value.Replace("\\", string.Empty);
 #pragma warning restore CA1307 // Specify StringComparison
@@ -88,6 +91,7 @@ namespace Raptor.Content
                 if (string.IsNullOrEmpty(value))
                     throw new Exception($"The '{nameof(AtlasDirectoryName)}' must not be null or empty.");
 
+                // NOTE: No localization required
 #pragma warning disable CA1307 // Specify StringComparison
                 value = value.Replace("\\", string.Empty);
 #pragma warning restore CA1307 // Specify StringComparison
@@ -109,17 +113,20 @@ namespace Raptor.Content
         public string GetContentPath(ContentType contentType, string name)
         {
             if (string.IsNullOrEmpty(name))
-                throw new ArgumentException("The parameter must not be null or empty.", nameof(name));
+                throw new StringNullOrEmptyException();
 
-                // If the name ends with a \, throw ane exception
+            // If the name ends with a '\', throw and exception
             if (name.EndsWith('\\'))
                 throw new ArgumentException($"The '{name}' cannot end with folder.  It must end with a file name with or without the extension.");
 
             // If the name has an extension, remove it
             if (Path.HasExtension(name))
+            {
+                // NOTE: No localization required
 #pragma warning disable CA1307 // Specify StringComparison
                 name = $@"{Path.GetDirectoryName(name)}\{Path.GetFileNameWithoutExtension(name)}".Replace(@"\", string.Empty);
 #pragma warning restore CA1307 // Specify StringComparison
+            }
 
             var filePath = string.Empty;
 
