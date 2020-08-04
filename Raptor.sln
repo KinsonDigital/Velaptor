@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureDevOps", "AzureDevOps"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines-develop.yml = azure-pipelines-develop.yml
 		azure-pipelines-master.yml = azure-pipelines-master.yml
+		pull_request_template.md = pull_request_template.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}"
