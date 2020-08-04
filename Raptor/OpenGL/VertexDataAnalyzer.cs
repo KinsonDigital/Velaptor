@@ -2,15 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Reflection;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
 
+    /// <summary>
+    /// Analyzes vertex data.
+    /// </summary>
     internal static class VertexDataAnalyzer
     {
         private static readonly Dictionary<Type, uint> PrimitiveTypeSizes = new Dictionary<Type, uint>()
@@ -67,7 +70,6 @@ namespace Raptor.OpenGL
         /// <param name="type">The struct type to check.</param>
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="type"/> param is null.</exception>
         /// <returns>The total bytes.</returns>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception text not used outside of method.")]
         public static uint GetTotalBytesForStruct(Type type)
         {
             if (type is null)
@@ -94,7 +96,6 @@ namespace Raptor.OpenGL
         /// <param name="type">The type to check.</param>
         /// <exception cref="ArgumentException">Thrown if the given <paramref name="type"/> is not a primitive type.</exception>
         /// <returns>The number of bytes.</returns>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception text not used outside of method.")]
         public static uint GetPrimitiveByteSize(Type type)
         {
             if (!type.IsPrimitive)

@@ -24,26 +24,25 @@ namespace Raptor.VelcroPhysicsImp
         /// <summary>
         /// Initializes a new instance of the <see cref="VelcroBody"/> class.
         /// </summary>
-        /// <param name="xVertices">The X vertices of the body's shape.</param>
-        /// <param name="yVertices">The Y vertices of the body's shape.</param>
+        /// <param name="xVertices">The X vertices's of the body's shape.</param>
+        /// <param name="yVertices">The Y vertices's of the body's shape.</param>
         /// <param name="xPosition">The X location of the body.</param>
         /// <param name="yPosition">The Y location of the body.</param>
         /// <param name="angle">The angle of the body.</param>
         /// <param name="density">The density of the body.</param>
         /// <param name="friction">The friction of the body.</param>
-        /// <param name="restitution">The restituion(bounciness) of the body.</param>
-        /// <param name="isStatic">True if the body is a static body.  False for dynamice.</param>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception messages only used in method.")]
+        /// <param name="restitution">The restitution(bounciness) of the body.</param>
+        /// <param name="isStatic">True if the body is a static body.  False for dynamic.</param>
         public VelcroBody(float[] xVertices, float[] yVertices, float xPosition, float yPosition, float angle, float density = 1, float friction = 0.2f, float restitution = 0, bool isStatic = false)
         {
             if (xVertices is null)
-                throw new ArgumentNullException(nameof(xVertices), "The X vertices must not be null.");
+                throw new ArgumentNullException(nameof(xVertices), "The X vertices's must not be null.");
 
             if (yVertices is null)
-                throw new ArgumentNullException(nameof(yVertices), "The Y vertices must not be null.");
+                throw new ArgumentNullException(nameof(yVertices), "The Y vertices's must not be null.");
 
             if (xVertices.Length != yVertices.Length)
-                throw new ArgumentOutOfRangeException($"The params {nameof(xVertices)} and {nameof(yVertices)} must have the same number of elements.");
+                throw new ArgumentOutOfRangeException($"The parameters {nameof(xVertices)} and {nameof(yVertices)} must have the same number of elements.");
 
             this.tempSettings.SetXVertices(xVertices);
             this.tempSettings.SetYVertices(yVertices);
@@ -62,7 +61,7 @@ namespace Raptor.VelcroPhysicsImp
         public DeferredActionsCollection AfterAddedToWorldActions { get; } = new DeferredActionsCollection();
 
         /// <summary>
-        /// Gets the X vertices of the body's shape.
+        /// Gets the X vertices's of the body's shape.
         /// </summary>
         public ReadOnlyCollection<float> XVertices
         {
@@ -77,7 +76,7 @@ namespace Raptor.VelcroPhysicsImp
                 }
                 else
                 {
-                    // This gets the vertices as world vertices
+                    // This gets the vertices's as world vertices's
                     var xVertices = (from v in PolygonShape.Vertices
                                      select v.X + positionX).ToArray();
 
@@ -89,7 +88,7 @@ namespace Raptor.VelcroPhysicsImp
         }
 
         /// <summary>
-        /// Gets the X vertices of the body's shape.
+        /// Gets the X vertices's of the body's shape.
         /// </summary>
         public ReadOnlyCollection<float> YVertices
         {
@@ -118,7 +117,6 @@ namespace Raptor.VelcroPhysicsImp
         /// <summary>
         /// Gets or sets the X coordinate of the body's location.
         /// </summary>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public float X
         {
             get => PolygonBody == null ? this.tempSettings.XPosition : PolygonBody.Position.X.ToScreenUnits();
@@ -134,7 +132,6 @@ namespace Raptor.VelcroPhysicsImp
         /// <summary>
         /// Gets or sets the Y coordinate of the body's location.
         /// </summary>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public float Y
         {
             get => PolygonBody == null ? this.tempSettings.YPosition : PolygonBody.Position.Y.ToScreenUnits();
@@ -175,7 +172,6 @@ namespace Raptor.VelcroPhysicsImp
         /// <summary>
         /// Gets or sets the density of the body.
         /// </summary>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public float Density
         {
             get => PolygonShape == null ? this.tempSettings.Density : PolygonShape.Density;
@@ -297,7 +293,7 @@ namespace Raptor.VelcroPhysicsImp
         }
 
         /// <summary>
-        /// Gets or sets the angular desceleration.
+        /// Gets or sets the angular deceleration.
         /// </summary>
         public float AngularDeceleration
         {
@@ -372,15 +368,15 @@ namespace Raptor.VelcroPhysicsImp
         }
 
         /// <summary>
-        /// Sets all of the X vertices to the given <paramref name="xVertices"/> param.
+        /// Sets all of the X vertices's to the given <paramref name="xVertices"/> param.
         /// </summary>
-        /// <param name="xVertices">The list of X vertices.</param>
+        /// <param name="xVertices">The list of X vertices's.</param>
         public void SetXVertices(float[] xVertices) => throw new NotImplementedException();
 
         /// <summary>
-        /// Sets all of the Y vertices to the given <paramref name="xVertices"/> param.
+        /// Sets all of the Y vertices's to the given <paramref name="xVertices"/> param.
         /// </summary>
-        /// <param name="yVertices">The list of Y vertices.</param>
+        /// <param name="yVertices">The list of Y vertices's.</param>
         public void SetYVertices(float[] yVertices) => throw new NotImplementedException();
     }
 }
