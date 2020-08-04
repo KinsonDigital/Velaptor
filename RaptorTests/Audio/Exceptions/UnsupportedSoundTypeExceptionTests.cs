@@ -1,4 +1,4 @@
-﻿// <copyright file="AudioDeviceDoesNotExistExceptionTests.cs" company="KinsonDigital">
+﻿// <copyright file="UnsupportedSoundTypeExceptionTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,26 +11,26 @@ namespace RaptorTests.Audio.Exceptions
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="AudioDeviceDoesNotExistException"/> class.
+    /// Tests the <see cref="UnsupportedSoundTypeException"/> class.
     /// </summary>
-    public class AudioDeviceDoesNotExistExceptionTests
+    public class UnsupportedSoundTypeExceptionTests
     {
         #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvokedWithNoParam_CorrectlySetsMessage()
         {
             // Act
-            var exception = new AudioDeviceDoesNotExistException();
+            var exception = new UnsupportedSoundTypeException();
 
             // Assert
-            Assert.Equal("The audio device does not exist.", exception.Message);
+            Assert.Equal("Unsupported sound type.", exception.Message);
         }
 
         [Fact]
         public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMesage()
         {
             // Act
-            var exception = new AudioDeviceDoesNotExistException("test-message");
+            var exception = new UnsupportedSoundTypeException("test-message");
 
             // Assert
             Assert.Equal("test-message", exception.Message);
@@ -40,10 +40,10 @@ namespace RaptorTests.Audio.Exceptions
         public void Ctor_WhenInvokedWithMessageAndDeviceNameParams_CorrectlySetsMessage()
         {
             // Act
-            var exception = new AudioDeviceDoesNotExistException("test-message", "device");
+            var exception = new UnsupportedSoundTypeException("test-message", ".wav");
 
             // Assert
-            Assert.Equal("Device Name: device\ntest-message", exception.Message);
+            Assert.Equal("Unsupported sound type: '.wav'\ntest-message", exception.Message);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace RaptorTests.Audio.Exceptions
             var innerException = new Exception("inner-exception");
 
             // Act
-            var deviceException = new AudioDeviceDoesNotExistException("device-exception", innerException);
+            var deviceException = new UnsupportedSoundTypeException("device-exception", innerException);
 
             // Assert
             Assert.Equal("inner-exception", deviceException.InnerException.Message);
