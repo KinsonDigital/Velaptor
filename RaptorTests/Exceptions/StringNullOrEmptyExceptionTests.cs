@@ -4,7 +4,7 @@
 
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-namespace RaptorTests.Audio.Exceptions
+namespace RaptorTests.Exceptions
 {
     using System;
     using Raptor.Exceptions;
