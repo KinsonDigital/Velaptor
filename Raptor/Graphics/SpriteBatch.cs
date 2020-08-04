@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.Graphics
 {
     using System;
@@ -37,7 +38,6 @@ namespace Raptor.Graphics
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
         [ExcludeFromCodeCoverage]
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message not used outside of class.")]
         public SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
         {
             if (gl is null)
@@ -79,7 +79,6 @@ namespace Raptor.Graphics
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 
         /// <inheritdoc/>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of method.")]
         public void Render(ITexture texture, int x, int y, Color tintColor)
         {
             if (!this.hasBegun)
@@ -102,7 +101,6 @@ namespace Raptor.Graphics
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside method.")]
         public void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor)
         {
             if (!this.hasBegun)

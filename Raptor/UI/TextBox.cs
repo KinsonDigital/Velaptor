@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.UI
 {
     using System;
@@ -82,23 +83,22 @@ namespace Raptor.UI
         /// Loads the content of the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="contentLoader">The content loader used to load the content.</param>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public void LoadContent(ContentLoader contentLoader)
         {
             if (contentLoader is null)
                 throw new ArgumentNullException(nameof(contentLoader), "The content loader must not be null.");
 
-            // TODO: Currently for every single instance of this class TextBox, there will be 2 RenderText objects created.
-            // One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
-            // This is not ideal.  Try to figure out a way to measure text without the use of another RenderText object.  This is
-            // not best for performance as well as taking extra memory.
-            // _visibleText = contentLoader.LoadText(FontName);
-            // _textRuler = contentLoader.LoadText(FontName);
+                // TODO: Currently for every single instance of this class TextBox, there will be 2 RenderText objects created.
+                // One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
+                // This is not ideal.  Try to figure out a way to measure text without the use of another RenderText object.  This is
+                // not best for performance as well as taking extra memory.
+                // _visibleText = contentLoader.LoadText(FontName);
+                // _textRuler = contentLoader.LoadText(FontName);
             this.deferredActions.ExecuteAll();
         }
 
         /// <summary>
-        /// Updates the texbox.
+        /// Updates the text box.
         /// </summary>
         /// <param name="engineTime">The game engine time.</param>
         public void Update(FrameTime engineTime)
@@ -120,7 +120,6 @@ namespace Raptor.UI
         /// Renders the <see cref="TextBox"/> to the graphics surface.
         /// </summary>
         /// <param name="renderer">The renderer used to render the <see cref="TextBox"/>.</param>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public void Render(object renderer)
         {
             // if (renderer is null)

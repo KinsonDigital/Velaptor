@@ -17,29 +17,25 @@ namespace Raptor.OpenGL
         /// <summary>
         /// The top left corner vertex of the quad.
         /// </summary>
-        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Used for data layout for OpenGL vertex buffers.")]
         public VertexData Vertex1;
 
         /// <summary>
         /// The top right corner vertex of the quad.
         /// </summary>
-        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Used for data layout for OpenGL vertex buffers.")]
         public VertexData Vertex2;
 
         /// <summary>
         /// The bottom right corner vertex of the quad.
         /// </summary>
-        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Used for data layout for OpenGL vertex buffers.")]
         public VertexData Vertex3;
 
         /// <summary>
         /// The bottom left corner vertex of the quad.
         /// </summary>
-        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Used for data layout for OpenGL vertex buffers.")]
         public VertexData Vertex4;
 
         /// <summary>
-        /// Returns a value indicating if the left and right operands of an equalds comparison
+        /// Returns a value indicating if the left and right operands of an equals comparison
         /// operation is equal.
         /// </summary>
         /// <param name="left">The left operand.</param>
@@ -48,7 +44,7 @@ namespace Raptor.OpenGL
         public static bool operator ==(QuadData left, QuadData right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating if the left and right operands of a not equalds comparison
+        /// Returns a value indicating if the left and right operands of a not equals comparison
         /// operation is not equal.
         /// </summary>
         /// <param name="left">The left operand.</param>

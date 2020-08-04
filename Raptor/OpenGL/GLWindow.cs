@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.OpenGL
 {
     using System;
@@ -33,7 +34,6 @@ namespace Raptor.OpenGL
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in constructor.")]
         public GLWindow(int width, int height)
         {
             var gameWinSettings = new GameWindowSettings();
@@ -66,10 +66,10 @@ namespace Raptor.OpenGL
             this.debugProc = DebugCallback;
 
             /*NOTE:
-             * This is here to help prevent an issue with an obscure System.ExecutionException from occuring.
-             * The garbage collector performas a collect on the delegate passed into GL.DebugMesageCallback()
-             * without the native system knowing about it which causes this acception. The GC.KeepAlive()
-             * method tells the garbage collector to not collect the delgate to prevent this from happening.
+             * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
+             * The garbage collector performs a collect on the delegate passed into GL.DebugMesageCallback()
+             * without the native system knowing about it which causes this exception. The GC.KeepAlive()
+             * method tells the garbage collector to not collect the delegate to prevent this from happening.
              */
             GC.KeepAlive(this.debugProc);
 
@@ -114,7 +114,6 @@ namespace Raptor.OpenGL
         public Action? Init { get; set; }
 
         /// <inheritdoc/>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of property.")]
         public int UpdateFreq
         {
             get
@@ -279,7 +278,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Invokes the <see cref="Draw"/> action property.
         /// </summary>
-        /// <param name="deltaTime">The frame event arges.</param>
+        /// <param name="deltaTime">The frame event args.</param>
         private void GameWindow_RenderFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)

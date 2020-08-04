@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor
 {
     using System;
@@ -21,7 +22,6 @@ namespace Raptor
         /// </summary>
         /// <param name="window">The window implementation that contains the window functionality.</param>
         /// <param name="contentLoader">Loads content.</param>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception messages only used inside constructor.")]
         public Window(IWindow window, IContentLoader? contentLoader)
         {
             if (window is null)
@@ -85,7 +85,6 @@ namespace Raptor
         /// <summary>
         /// Shows the window.
         /// </summary>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside of method.")]
         public void Show() => this.window.Show();
 
         /// <summary>
