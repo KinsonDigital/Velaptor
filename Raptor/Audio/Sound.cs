@@ -36,7 +36,6 @@ namespace Raptor.Audio
         private int bufferId;
         private bool isDisposed;
         private float totalSeconds;
-        private int sampleRate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
@@ -124,16 +123,31 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
-        public float TimePosition
+        public float TimePositionMilliseconds => TimePositionSeconds * 1000f;
+
+        /// <inheritdoc/>
+        public float TimePositionSeconds
         {
             get
             {
                 if (this.isDisposed)
                     throw new Exception(IsDisposedExceptionMessage);
 
-                var sampleOffset = this.alInvoker.GetSource(this.srcId, ALGetSourcei.SampleOffset);
+                return this.alInvoker.GetSource(this.srcId, ALSourcef.SecOffset);
+            }
+        }
 
-                return sampleOffset / (float)this.sampleRate;
+        /// <inheritdoc/>
+        public float TimePositionMinutes => TimePositionSeconds / 60f;
+
+        /// <inheritdoc/>
+        public TimeSpan TimePosition
+        {
+            get
+            {
+                var seconds = TimePositionSeconds;
+
+                return new TimeSpan(0, 0, (int)seconds);
             }
         }
 
@@ -277,7 +291,6 @@ namespace Raptor.Audio
                     var oggData = this.oggDecoder.LoadData(fileName);
 
                     this.totalSeconds = oggData.TotalSeconds;
-                    this.sampleRate = oggData.SampleRate;
 
                     UploadOggData(oggData);
                     break;
@@ -285,7 +298,6 @@ namespace Raptor.Audio
                     var mp3Data = this.mp3Decoder.LoadData(fileName);
 
                     this.totalSeconds = mp3Data.TotalSeconds;
-                    this.sampleRate = mp3Data.SampleRate;
 
                     UploadMp3Data(mp3Data);
                     break;

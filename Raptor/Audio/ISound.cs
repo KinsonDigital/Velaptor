@@ -26,9 +26,24 @@ namespace Raptor.Audio
         public float Volume { get; set; }
 
         /// <summary>
+        /// Gets the current time position of the sound in milliseconds.
+        /// </summary>
+        public float TimePositionMilliseconds { get; }
+
+        /// <summary>
         /// Gets the current time position of the sound in seconds.
         /// </summary>
-        public float TimePosition { get; }
+        public float TimePositionSeconds { get; }
+
+        /// <summary>
+        /// Gets the current time position of the sound in minutes.
+        /// </summary>
+        float TimePositionMinutes { get; }
+
+        /// <summary>
+        /// Gets the current time position of the sound.
+        /// </summary>
+        TimeSpan TimePosition { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the sound loops back to the beginning once the end is reached.

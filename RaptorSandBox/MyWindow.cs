@@ -22,6 +22,7 @@ namespace RaptorSandBox
         private ISound zapSound;
         private ISound deadShipsMusic;
         private ISound quietPlaceMusic;
+        private float timeElapsed;
 
         public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
@@ -40,7 +41,7 @@ namespace RaptorSandBox
             //this.deadShipsMusic = ContentLoader.LoadSound("deadships.ogg");
             //this.deadShipsMusic.SetTimePosition(60);
 
-            this.quietPlaceMusic = ContentLoader.LoadSound("thequietplace.ogg");
+            this.quietPlaceMusic = ContentLoader.LoadSound("deadships.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
             this.quietPlaceMusic.PlaySound();
 
@@ -62,6 +63,16 @@ namespace RaptorSandBox
             if (currentKeyboardState.IsKeyUp(KeyCode.P) && previousKeyboardState.IsKeyDown(KeyCode.P))
             {
                 this.quietPlaceMusic.PlaySound();
+            }
+
+            if (timeElapsed < 1000)
+            {
+                timeElapsed += (float)frameTime.ElapsedTime.TotalMilliseconds;
+            }
+            else
+            {
+                this.Title = $"Time: {this.quietPlaceMusic.TimePositionSeconds}";
+                this.timeElapsed = 0;
             }
 
 

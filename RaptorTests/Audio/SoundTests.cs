@@ -302,7 +302,7 @@ namespace RaptorTests.Audio
         }
 
         [Fact]
-        public void CurrentTimePosition_WhenDisposed_ThrowsException()
+        public void TimePositionSeconds_WhenDisposed_ThrowsException()
         {
             // Arrange
             this.sound = new Sound(this.soundContentName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object, this.mockContentSrc.Object);
@@ -312,21 +312,67 @@ namespace RaptorTests.Audio
 
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                _ = this.sound.TimePosition;
+                _ = this.sound.TimePositionSeconds;
             }, "The sound is disposed.  You must create another sound instance.");
         }
 
         [Fact]
-        public void CurrentTimePosition_WhenGettingValue_GetsSoundTimePosition()
+        public void TimePositionMilliseconds_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            this.mockALInvoker.Setup(m => m.GetSource(this.srcId, ALSourcef.SecOffset)).Returns(90f);
+            this.sound = new Sound(this.soundContentName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object, this.mockContentSrc.Object);
+
+            // Act
+            var actual = this.sound.TimePositionMilliseconds;
+
+            // Assert
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourcef.SecOffset), Times.Once());
+            Assert.Equal(90_000f, actual);
+        }
+
+        [Fact]
+        public void TimePositionSeconds_WhenGettingValue_GetsSoundTimePosition()
         {
             // Arrange
             this.sound = new Sound(this.soundContentName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object, this.mockContentSrc.Object);
 
             // Act
-            _ = this.sound.TimePosition;
+            _ = this.sound.TimePositionSeconds;
 
             // Assert
-            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALGetSourcei.SampleOffset), Times.Once());
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourcef.SecOffset), Times.Once());
+        }
+
+        [Fact]
+        public void TimePositionMinutes_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            this.mockALInvoker.Setup(m => m.GetSource(this.srcId, ALSourcef.SecOffset)).Returns(90f);
+            this.sound = new Sound(this.soundContentName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object, this.mockContentSrc.Object);
+
+            // Act
+            var actual = this.sound.TimePositionMinutes;
+
+            // Assert
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourcef.SecOffset), Times.Once());
+            Assert.Equal(1.5f, actual);
+        }
+
+        [Fact]
+        public void TimePosition_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var expected = new TimeSpan(0, 0, 90);
+            this.mockALInvoker.Setup(m => m.GetSource(this.srcId, ALSourcef.SecOffset)).Returns(90f);
+            this.sound = new Sound(this.soundContentName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object, this.mockContentSrc.Object);
+
+            // Act
+            var actual = this.sound.TimePosition;
+
+            // Assert
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourcef.SecOffset), Times.Once());
+            Assert.Equal(expected, actual);
         }
         #endregion
 
