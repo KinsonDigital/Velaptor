@@ -6,7 +6,6 @@ namespace Raptor.Graphics
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
     using OpenToolkit.Graphics.OpenGL4;
     using Raptor.OpenGL;
 
@@ -100,7 +99,7 @@ namespace Raptor.Graphics
             Width = width;
             Height = height;
 
-            Name = Path.GetFileNameWithoutExtension(name);
+            Name = name;
 
             UploadDataToGPU(name, pixelData, width, height);
 

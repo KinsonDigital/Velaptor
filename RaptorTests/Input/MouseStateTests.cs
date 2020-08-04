@@ -7,7 +7,6 @@
 namespace RaptorTests.Input
 {
     using System.Numerics;
-    using System.Runtime.InteropServices;
     using Raptor.Input;
     using Xunit;
 

@@ -4,6 +4,7 @@
 
 namespace Raptor.OpenGL
 {
+    using System.Diagnostics.CodeAnalysis;
     using OpenToolkit.Windowing.Desktop;
     using OpenToolkit.Windowing.GraphicsLibraryFramework;
 
@@ -11,6 +12,7 @@ namespace Raptor.OpenGL
     /// The internal OpenGL window that extends the <see cref="GameWindow"/>
     /// for the purpose of getting access to the window's pointer.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal class InternalGLWindow : GameWindow
     {
         /// <summary>

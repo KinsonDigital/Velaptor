@@ -15,6 +15,19 @@ namespace RaptorTests.Input
     {
         #region Method Tests
         [Fact]
+        public void GetState_WhenInvokedWithNoKeyStates_SetsUpKeyStates()
+        {
+            // Arrange
+            var state = Keyboard.GetState();
+
+            // Act
+            var actual = state.GetKeyStates();
+
+            // Assert
+            Assert.Equal(132, Keyboard.KeyStates.Count);
+        }
+
+        [Fact]
         public void GetState_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange

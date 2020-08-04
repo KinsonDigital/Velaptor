@@ -15,6 +15,12 @@
     <RootNamespace>RaptorTests</RootNamespace>
     <Configurations>Debug-Win;Release-Win</Configurations>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Win|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Fakes\AudioManagerFake.cs" />
+  </ItemGroup>
   <ItemGroup>
     <None Remove="stylecop.json" />
   </ItemGroup>

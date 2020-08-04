@@ -4,73 +4,92 @@
 
 namespace RaptorTests.Content
 {
-    using System.IO;
-    using System.Reflection;
     using Moq;
     using Raptor;
+    using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
     using Xunit;
 
     /// <summary>
-    /// Unit tests to test the <see cref="ContentLoader"/> class.
+    /// Tests the <see cref="ContentLoader"/> class.
     /// </summary>
     public class ContentLoaderTests
     {
-        private readonly string baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-        private readonly ContentLoader contentLoader;
+        private readonly string rootDir = @"C:\Content\";
+        private readonly string graphicsDirName = "Graphics";
+        private readonly string soundsDirName = "Sounds";
+        private readonly string atlasDirName = "Atlas";
         private readonly Mock<ILoader<ITexture>> mockTextureLoader;
         private readonly Mock<ILoader<AtlasRegionRectangle[]>> mockAtlasDataLoader;
+        private readonly Mock<ILoader<ISound>> mockSoundLoader;
+        private readonly Mock<IContentSource> mockContentSrc;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentLoaderTests"/> class.
+        /// </summary>
         public ContentLoaderTests()
         {
+            this.mockContentSrc = new Mock<IContentSource>();
+            this.mockContentSrc.SetupGet(p => p.ContentRootDirectory).Returns(this.rootDir);
+            this.mockContentSrc.SetupGet(p => p.GraphicsDirectoryName).Returns(this.graphicsDirName);
+            this.mockContentSrc.SetupGet(p => p.SoundsDirectoryName).Returns(this.soundsDirName);
+            this.mockContentSrc.SetupGet(p => p.AtlasDirectoryName).Returns(this.atlasDirName);
+
             this.mockTextureLoader = new Mock<ILoader<ITexture>>();
             this.mockAtlasDataLoader = new Mock<ILoader<AtlasRegionRectangle[]>>();
-            this.contentLoader = new ContentLoader(this.mockTextureLoader.Object, this.mockAtlasDataLoader.Object);
+            this.mockSoundLoader = new Mock<ILoader<ISound>>();
         }
-
-        #region Prop Tests
-        [Theory]
-        [InlineData(@"C:\temp\", @"C:\temp\Content\")]
-        [InlineData(@"C:\temp", @"C:\temp\Content\")]
-        [InlineData(null, "")]
-        public void ContentRootDirectory_WhenSettingValue_ReturnsCorrectValue(string rootDirectory, string expected)
-        {
-            // Act
-            // If the root is null, use the base directory for the expected
-            if (rootDirectory is null)
-                expected = $@"{this.baseDir}Content\";
-
-#pragma warning disable CS8601 // Possible null reference assignment.
-            this.contentLoader.ContentRootDirectory = rootDirectory;
-#pragma warning restore CS8601 // Possible null reference assignment.
-            var actual = this.contentLoader.ContentRootDirectory;
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-        #endregion
 
         #region Method Tests
         [Fact]
         public void LoadTexture_WhenInvoked_LoadsTexture()
         {
             // Act
-            this.contentLoader.LoadTexture("test-texture.png");
+            var loader = CreateContentLoader();
+
+            loader.LoadTexture("test-texture");
 
             // Assert
-            this.mockTextureLoader.Verify(m => m.Load(@$"{this.baseDir}Content\Graphics\test-texture.png"), Times.Once());
+            this.mockTextureLoader.Verify(m => m.Load("test-texture"), Times.Once());
+        }
+
+        [Fact]
+        public void LoadSound_WhenInvoked_LoadsSound()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+
+            // Act
+            loader.LoadSound("sound.ogg");
+
+            // Assert
+            this.mockSoundLoader.Verify(m => m.Load("sound.ogg"), Times.Once());
         }
 
         [Fact]
         public void LoadAtlasData_WhenInvoked_LoadsAtlasData()
         {
             // Act
-            this.contentLoader.LoadAtlasData("test-atlas.json");
+            this.mockContentSrc.Setup(m => m.GetContentPath(ContentType.Atlas, "test-atlas.json"))
+                .Returns("test-path");
+            var loader = CreateContentLoader();
+            loader.LoadAtlasData("test-atlas.json");
 
             // Assert
-            this.mockAtlasDataLoader.Verify(m => m.Load($@"{this.baseDir}Content\Graphics\test-atlas.json"), Times.Once());
+            this.mockContentSrc.Verify(m => m.GetContentPath(ContentType.Atlas, "test-atlas.json"), Times.Once());
+            this.mockAtlasDataLoader.Verify(m => m.Load("test-path"), Times.Once());
         }
         #endregion
+
+        /// <summary>
+        /// Returns a new instance of a content loader.
+        /// </summary>
+        /// <returns>A content loader instance to use for testing.</returns>
+        private ContentLoader CreateContentLoader()
+            => new ContentLoader(this.mockContentSrc.Object,
+                                 this.mockTextureLoader.Object,
+                                 this.mockAtlasDataLoader.Object,
+                                 this.mockSoundLoader.Object);
     }
 }

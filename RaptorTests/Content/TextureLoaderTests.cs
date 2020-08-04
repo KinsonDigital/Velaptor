@@ -11,10 +11,14 @@ namespace RaptorTests.Content
     using Raptor.OpenGL;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="TextureLoader"/> class.
+    /// </summary>
     public class TextureLoaderTests
     {
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IImageFile> mockImageFile;
+        private readonly Mock<IContentSource> mockContentSource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
@@ -23,6 +27,7 @@ namespace RaptorTests.Content
         {
             this.mockGL = new Mock<IGLInvoker>();
             this.mockImageFile = new Mock<IImageFile>();
+            this.mockContentSource = new Mock<IContentSource>();
         }
 
         #region Method Tests
@@ -30,7 +35,7 @@ namespace RaptorTests.Content
         public void Load_WhenInvoked_LoadsTexture()
         {
             // Arrange
-            var loader = new TextureLoader(this.mockGL.Object, this.mockImageFile.Object);
+            var loader = new TextureLoader(this.mockGL.Object, this.mockImageFile.Object, this.mockContentSource.Object);
 
             // Act
             var actual = loader.Load("test-file");

@@ -35,6 +35,18 @@
     <None Update="Content\Graphics\main-atlas.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Sounds\dance.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Sounds\deadships.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Sounds\thequietplace.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Sounds\zap.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
   
@@ -42,5 +54,8 @@
     <Target Name="Copy-Shaders-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
       <Copy SourceFiles="$(SolutionDir)Raptor\OpenGL\shader.vert" DestinationFolder="$(TargetDir)" />
       <Copy SourceFiles="$(SolutionDir)Raptor\OpenGL\shader.frag" DestinationFolder="$(TargetDir)" />
+    </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="copy &quot;$(SolutionDir)Raptor\Libs\openal32.dll&quot; &quot;$(TargetDir)openal32.dll&quot; /Y" />
     </Target>
 </Project>
