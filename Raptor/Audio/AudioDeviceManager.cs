@@ -10,8 +10,8 @@ namespace Raptor.Audio
     using System.Data;
 #if DEBUG
     using System.Diagnostics;
-    using System.Diagnostics.CodeAnalysis;
 #endif
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using OpenToolkit.Audio.OpenAL;
     using Raptor.Audio.Exceptions;
@@ -314,6 +314,13 @@ namespace Raptor.Audio
         /// </summary>
         /// <param name="errorMsg">The error message from OpenAL.</param>
         [ExcludeFromCodeCoverage]
-        private static void ErrorCallback(string errorMsg) => Debugger.Break();
+        private static void ErrorCallback(string errorMsg)
+        {
+#if DEBUG
+#pragma warning disable IDE0022 // Use expression body for methods
+            Debugger.Break();
+#pragma warning restore IDE0022 // Use expression body for methods
+#endif
+        }
     }
 }
