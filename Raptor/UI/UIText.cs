@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.UI
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
     using Raptor.Graphics;
@@ -15,7 +15,7 @@ namespace Raptor.UI
     /// </summary>
     public class UIText
     {
-        private int elapsedTime; // The amount of time that has elapsed since the last frame in miliseconds.
+        private int elapsedTime; // The amount of time that has elapsed since the last frame in milliseconds.
         private bool updateText; // Indicates if the text can be updated.  Only updated if the UpdateFrequency value is >= to the elapsed time
         private RenderText? labelText;
 
@@ -55,7 +55,6 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the label section of the text item.
         /// </summary>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in property.")]
         public RenderText? LabelText
         {
             get => this.labelText;
@@ -164,7 +163,7 @@ namespace Raptor.UI
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the forecolor of the <see cref="UIText"/> item when disabled.
+        /// Gets or sets the fore color of the <see cref="UIText"/> item when disabled.
         /// </summary>
         public Color DisabledForecolor { get; set; } = Color.FromArgb(255, 100, 100, 100);
 

@@ -20,7 +20,7 @@ namespace RaptorTests
         ///     Returns a value indicating whether a field that matches the given <paramref name="name"/>
         ///     in the given <paramref name="fieldContainer"/> exists and if so checks to see if it is null or zero.
         /// </summary>
-        /// <param name="fieldContainer">The object that contains the field with the tiven <paramref name="name"/>.</param>
+        /// <param name="fieldContainer">The object that contains the field with the given <paramref name="name"/>.</param>
         /// <param name="name">The name of the field to check for.</param>
         /// <returns>
         ///     True if the field is null or zero and false if the field does not exist.
@@ -88,7 +88,6 @@ namespace RaptorTests
         /// <param name="name">The name of the field to retrieve.</param>
         /// <returns>The <see cref="FieldInfo"/> object in the <paramref name="value"/> param.</returns>
         [ExcludeFromCodeCoverage]
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used inside method.")]
         private static FieldInfo GetField(this object value, string name)
         {
             if (value is null)

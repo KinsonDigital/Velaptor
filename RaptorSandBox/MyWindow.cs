@@ -1,9 +1,11 @@
 using Raptor;
+using Raptor.Audio;
 using Raptor.Content;
 using Raptor.Factories;
 using Raptor.Graphics;
 using Raptor.Input;
 using System;
+using System.Linq;
 
 namespace RaptorSandBox
 {
@@ -17,11 +19,14 @@ namespace RaptorSandBox
         private KeyboardState previousKeyboardState;
         private MouseState currentMouseState;
         private MouseState previousMouseState;
+        private ISound zapSound;
+        private ISound deadShipsMusic;
+        private ISound quietPlaceMusic;
+        private float timeElapsed;
 
         public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
         {
         }
-
 
         public override void OnLoad()
         {
@@ -32,6 +37,13 @@ namespace RaptorSandBox
 
             this.dungeonTexture = ContentLoader.LoadTexture("dungeon.png");
             this.linkTexture = ContentLoader.LoadTexture("Link.png");
+            //this.zapSound = ContentLoader.LoadSound("zap.ogg");
+            //this.deadShipsMusic = ContentLoader.LoadSound("deadships.ogg");
+            //this.deadShipsMusic.SetTimePosition(60);
+
+            this.quietPlaceMusic = ContentLoader.LoadSound("deadships.ogg");
+            this.quietPlaceMusic.SetTimePosition(50);
+            this.quietPlaceMusic.PlaySound();
 
             base.OnLoad();
         }
@@ -44,12 +56,26 @@ namespace RaptorSandBox
 
             if (currentKeyboardState.IsKeyUp(KeyCode.Space) && previousKeyboardState.IsKeyDown(KeyCode.Space))
             {
+                var headPhones = AudioDevice.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
+                AudioDevice.ChangeDevice(headPhones);
             }
-            
-            if (currentMouseState.IsLeftButtonUp() && previousMouseState.IsLeftButtonDown())
+
+            if (currentKeyboardState.IsKeyUp(KeyCode.P) && previousKeyboardState.IsKeyDown(KeyCode.P))
             {
+                this.quietPlaceMusic.PlaySound();
             }
-            
+
+            if (timeElapsed < 1000)
+            {
+                timeElapsed += (float)frameTime.ElapsedTime.TotalMilliseconds;
+            }
+            else
+            {
+                this.Title = $"Time: {this.quietPlaceMusic.TimePositionSeconds}";
+                this.timeElapsed = 0;
+            }
+
+
             this.previousKeyboardState =  this.currentKeyboardState;
             this.previousMouseState = this.currentMouseState;
 

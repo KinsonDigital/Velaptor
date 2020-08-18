@@ -18,28 +18,24 @@ namespace Raptor.OpenGL
         /// <summary>
         /// The position of the vertex in NDC (normal device coordinate) coordinates.
         /// </summary>
-        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
         [FieldData(sizeof(float), 3)]
         public Vector3 Vertex; // Location 0 | aPosition
 
         /// <summary>
         /// The point in a texture that corresponds to this structures <see cref="Vertex"/>.
         /// </summary>
-        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
         [FieldData(sizeof(float), 2)]
         public Vector2 TextureCoord; // Location 1 | aTexCoord
 
         /// <summary>
         /// The color of the current vertex.
         /// </summary>
-        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
         [FieldData(sizeof(float), 4)]
         public Vector4 TintColor; // Location 2 | aTintColor
 
         /// <summary>
         /// The index of the transform to use to apply to this vertex.
         /// </summary>
-        [SuppressMessage("Design", "CA1051:Do not declare visible instance fields", Justification = "Needed for vertex buffer layout")]
         [FieldData(sizeof(float), 1)]
         public float TransformIndex; // Location 3 | aTransformIndex
 

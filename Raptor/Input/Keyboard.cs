@@ -16,7 +16,7 @@ namespace Raptor.Input
         /// <summary>
         /// The state for each key on the keyboard.
         /// </summary>
-        private static readonly Dictionary<KeyCode, bool> KeyStates = new Dictionary<KeyCode, bool>();
+        internal static readonly Dictionary<KeyCode, bool> KeyStates = new Dictionary<KeyCode, bool>();
 
         /// <summary>
         /// Gets the current state of the keyboard.

@@ -133,7 +133,6 @@ namespace Raptor.UI
         /// Renders the <see cref="Button"/> to the screen.
         /// </summary>
         /// <param name="renderer">Renders the <see cref="Button"/>.</param>
-        [SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception message only used in method.")]
         public void Render(object renderer)
         {
             // if (renderer is null)

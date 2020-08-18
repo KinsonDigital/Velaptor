@@ -5,6 +5,7 @@
 namespace Raptor.Content
 {
     using Raptor.Graphics;
+    using Raptor.Audio;
 
     /// <summary>
     /// Represents a loader that can load content for rendering or sound.
@@ -14,7 +15,7 @@ namespace Raptor.Content
         /// <summary>
         /// Gets or sets the root directory for the game's content.
         /// </summary>
-        string ContentRootDirectory { get; set; }
+        static string ContentRootDirectory { get; set; }
 
         /// <summary>
         /// Loads a texture with the given <paramref name="name"/>.
@@ -29,5 +30,7 @@ namespace Raptor.Content
         /// <param name="name">The name of the atlas data file to load.</param>
         /// <returns>The atlas data.</returns>
         AtlasRegionRectangle[] LoadAtlasData(string name);
+
+        ISound LoadSound(string name);
     }
 }
