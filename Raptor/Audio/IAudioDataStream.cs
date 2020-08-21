@@ -9,6 +9,7 @@ namespace Raptor.Audio
     /// <summary>
     /// Streams mp3 audio data from a mp3 file.
     /// </summary>
+    /// <typeparam name="T">The type of data from the audio stream.</typeparam>
     public interface IAudioDataStream<T> : IDisposable
     {
         /// <summary>

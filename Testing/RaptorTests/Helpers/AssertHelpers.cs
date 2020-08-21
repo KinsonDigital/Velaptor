@@ -135,6 +135,9 @@ namespace RaptorTests.Helpers
         /// <param name="arePredicate">Fails the assertion when returning false.</param>
         public static void AllItemsAre<T>(IEnumerable<T> items, Predicate<T> arePredicate)
         {
+            if (arePredicate is null)
+                throw new ArgumentNullException(nameof(arePredicate), "The parameter must not be null.");
+
             var itemsToCheck = items.ToArray();
 
             for (var i = 0; i < itemsToCheck.Length; i++)

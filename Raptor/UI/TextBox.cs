@@ -29,7 +29,7 @@ namespace Raptor.UI
         private bool cursorVisible;
         private int rightSide;
         private int leftSide;
-        private int lastDirectionOfTravel = 0;
+        private int lastDirectionOfTravel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextBox"/> class.
@@ -190,60 +190,60 @@ namespace Raptor.UI
         /// </summary>
         private void ProcessKeys()
         {
-            //TODO: Need to get this working with new Keyboard implementation using the KeyboardState struct
-            //this.keyboard.UpdateCurrentState();
+            // TODO: Need to get this working with new Keyboard implementation using the KeyboardState struct
+            // this.keyboard.UpdateCurrentState();
 
-            //if (this.keyboard.IsKeyPressed(KeyCode.Right))
-            //{
+            // if (this.keyboard.IsKeyPressed(KeyCode.Right))
+            // {
             //    this.lastDirectionOfTravel = 1;
 
-            //    this.characterPosition = this.characterPosition > Text.Length - 1 ?
+            // this.characterPosition = this.characterPosition > Text.Length - 1 ?
             //        this.characterPosition :
             //        this.characterPosition + 1;
 
-            //    this.visibleTextCharPosition = this.visibleTextCharPosition > (this.visibleText is null ? 0 : this.visibleText.Text.Length - 1) ?
+            // this.visibleTextCharPosition = this.visibleTextCharPosition > (this.visibleText is null ? 0 : this.visibleText.Text.Length - 1) ?
             //        this.visibleTextCharPosition :
             //        this.visibleTextCharPosition + 1;
 
-            //    this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
+            // this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
 
-            //    this.keyboard.UpdatePreviousState();
+            // this.keyboard.UpdatePreviousState();
             //    return;
-            //}
+            // }
 
-            //if (this.keyboard.IsKeyPressed(KeyCode.Left))
-            //{
+            // if (this.keyboard.IsKeyPressed(KeyCode.Left))
+            // {
             //    this.lastDirectionOfTravel = -1;
 
-            //    this.characterPosition = this.characterPosition <= 0 ?
+            // this.characterPosition = this.characterPosition <= 0 ?
             //        this.characterPosition :
             //        this.characterPosition - 1;
 
-            //    this.visibleTextCharPosition = this.visibleTextCharPosition == 0 ?
+            // this.visibleTextCharPosition = this.visibleTextCharPosition == 0 ?
             //        this.visibleTextCharPosition :
             //        this.visibleTextCharPosition - 1;
 
-            //    this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
+            // this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
 
-            //    this.keyboard.UpdatePreviousState();
+            // this.keyboard.UpdatePreviousState();
             //    return;
-            //}
+            // }
 
-            //var isShiftDown = this.keyboard.IsKeyDown(KeyCode.LeftShift) || this.keyboard.IsKeyDown(KeyCode.RightShift);
+            // var isShiftDown = this.keyboard.IsKeyDown(KeyCode.LeftShift) || this.keyboard.IsKeyDown(KeyCode.RightShift);
 
-            //if (!(this.visibleText is null) && !string.IsNullOrEmpty(this.visibleText.Text))
-            //{
+            // if (!(this.visibleText is null) && !string.IsNullOrEmpty(this.visibleText.Text))
+            // {
             //    // The delete keys. This is the standard one and the numpad one
             //    if (this.keyboard.IsDeleteKeyPressed())
             //    {
             //        this.visibleText.Text = this.visibleText.Text.Remove(this.characterPosition, 1);
             //    }
 
-            //    if (this.keyboard.IsKeyPressed(KeyCode.Back) && this.characterPosition > 0)
+            // if (this.keyboard.IsKeyPressed(KeyCode.Back) && this.characterPosition > 0)
             //    {
             //        RemoveCharacterUsingBackspace();
             //    }
-            //}
+            // }
 
             // TODO: Need to change how we can check for pressed letters AND to return the letter itself.  Tuples?
             // If a letter is pressed, add it to the <see cref="TextBox"/>

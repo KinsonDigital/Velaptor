@@ -16,7 +16,7 @@ namespace Raptor.UI
     /// </summary>
     public class Button : IControl
     {
-        private Rectangle rect = default;
+        private Rectangle rect;
         private bool isMouseDown;
 
         /// <summary>
@@ -171,16 +171,16 @@ namespace Raptor.UI
         /// </summary>
         private void ProcessMouse()
         {
-            //this.mouse.UpdateCurrentState();
+            // this.mouse.UpdateCurrentState();
 
-            //IsMouseOver = this.rect.Contains(this.mouse.X, this.mouse.Y);
+            // IsMouseOver = this.rect.Contains(this.mouse.X, this.mouse.Y);
 
-            //this.isMouseDown = IsMouseOver && this.mouse.IsButtonDown(MouseButton.LeftButton);
+            // this.isMouseDown = IsMouseOver && this.mouse.IsButtonDown(MouseButton.LeftButton);
 
-            //if (this.isMouseDown)
+            // if (this.isMouseDown)
             //    Click?.Invoke(this, new EventArgs());
 
-            //this.mouse.UpdatePreviousState();
+            // this.mouse.UpdatePreviousState();
         }
     }
 }

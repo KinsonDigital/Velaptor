@@ -16,9 +16,9 @@ namespace Raptor.OpenGL
         where T : struct
     {
         private readonly IGLInvoker gl;
-        private uint vertexArrayID = 0;
-        private uint vertexBufferID = 0;
-        private uint indexBufferID = 0;
+        private uint vertexArrayID;
+        private uint vertexBufferID;
+        private uint indexBufferID;
         private uint totalQuads = 2;
         private uint totalVertexBytes;
         private uint totalQuadSizeInBytes;

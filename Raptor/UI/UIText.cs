@@ -134,12 +134,12 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets an additional amount of space to the vertical position of the label section of the text.
         /// </summary>
-        public int VerticalLabelOffset { get; set; } = 0;
+        public int VerticalLabelOffset { get; set; }
 
         /// <summary>
         /// Gets or sets an additional amount of space to the vertical position of the value section of the text.
         /// </summary>
-        public int VerticalValueOffset { get; set; } = 0;
+        public int VerticalValueOffset { get; set; }
 
         /// <summary>
         /// Gets or sets the spacing between the label and value sections.

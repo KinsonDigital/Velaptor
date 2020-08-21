@@ -15,7 +15,7 @@ namespace Raptor.Graphics
     public class Texture : ITexture
     {
         private readonly IGLInvoker gl;
-        private bool isDisposed = false;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.

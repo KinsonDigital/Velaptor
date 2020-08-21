@@ -22,12 +22,12 @@ namespace Raptor.Graphics
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
         private uint transDataLocation;
-        private bool isDisposed = false;
+        private bool isDisposed;
         private bool hasBegun;
         private uint batchSize = 10;
-        private uint currentBatchItem = 0;
+        private uint currentBatchItem;
         private uint currentTextureID;
-        private uint previousTextureID = 0;
+        private uint previousTextureID;
         private bool firstRenderMethodInvoke = true;
 
         /// <summary>
