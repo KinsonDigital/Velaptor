@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Raptor.Audio
 {
+    using System;
+
     /// <summary>
     /// Streams mp3 audio data from a mp3 file.
     /// </summary>
