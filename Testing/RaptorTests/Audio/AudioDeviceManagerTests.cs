@@ -231,7 +231,7 @@ namespace RaptorTests.Audio
             {
                 var soundSrc = new SoundSource()
                 {
-                    SourceId = 1234
+                    SourceId = 1234,
                 };
                 this.manager.UpdateSoundSource(soundSrc);
             }, $"The sound source with the source id '1234' does not exist.");
