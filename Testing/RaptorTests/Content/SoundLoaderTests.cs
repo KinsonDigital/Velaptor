@@ -1,4 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿// <copyright file="SoundLoaderTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+using System.Collections.ObjectModel;
 using Moq;
 using OpenToolkit.Audio.OpenAL;
 using Raptor.Audio;

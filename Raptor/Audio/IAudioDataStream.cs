@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="IAudioDataStream.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+using System;
 
 namespace Raptor.Audio
 {
