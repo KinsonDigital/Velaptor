@@ -43,3 +43,6 @@ dotnet_style_object_initializer = true:none
 
 # CA1063: Implement IDisposable Correctly
 dotnet_diagnostic.CA1063.severity = none
+
+# CS8602: Dereference of a possibly null reference.
+dotnet_diagnostic.CS8602.severity = none
