@@ -1,5 +1,15 @@
 # **Raptor Release Notes**
 
+## **Version 0.11.0**
+
+### **Misc**
+
+1. Added rules to **editorconfig** files in solution to improve coding standards
+2. Adjusted **editorconfig** solution setup
+3. Updated **KinsonDigital.FileIO** nuget package from **v1.6.1** to **1.7.0**
+
+---
+
 ## **Version 0.10.0**
 
 ### **Additions**
