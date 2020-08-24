@@ -25,7 +25,7 @@ namespace Raptor.Audio
         /// Gets or sets the name of the file.
         /// </summary>
         /// <remarks>
-        ///     The <see cref="ReadSamples(byte[], int, int)"/> method will 
+        ///     The <see cref="ReadSamples(byte[], int, int)"/> method will
         ///     return 0 samples used if this is null or empty.
         /// </remarks>
         public string Filename

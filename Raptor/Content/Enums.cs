@@ -4,10 +4,24 @@
 
 namespace Raptor.Content
 {
+    /// <summary>
+    /// The type of content that can be loaded.
+    /// </summary>
     public enum ContentType
     {
+        /// <summary>
+        /// Graphic content.
+        /// </summary>
         Graphics,
+
+        /// <summary>
+        /// Sound content.
+        /// </summary>
         Sounds,
-        Atlas
+
+        /// <summary>
+        /// Texture atlas content.
+        /// </summary>
+        Atlas,
     }
 }

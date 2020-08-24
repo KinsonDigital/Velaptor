@@ -1,15 +1,19 @@
-﻿using System.Collections.ObjectModel;
-using Moq;
-using OpenToolkit.Audio.OpenAL;
-using Raptor.Audio;
-using Raptor.Audio.Exceptions;
-using Raptor.Content;
-using Raptor.OpenAL;
-using RaptorTests.Helpers;
-using Xunit;
+﻿// <copyright file="SoundLoaderTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace RaptorTests.Content
 {
+    using System.Collections.ObjectModel;
+    using Moq;
+    using OpenToolkit.Audio.OpenAL;
+    using Raptor.Audio;
+    using Raptor.Audio.Exceptions;
+    using Raptor.Content;
+    using Raptor.OpenAL;
+    using RaptorTests.Helpers;
+    using Xunit;
+
     /// <summary>
     /// Tests the <see cref="SoundLoader"/> class.
     /// </summary>

@@ -4,8 +4,8 @@
 
 namespace Raptor.Content
 {
-    using Raptor.Graphics;
     using Raptor.Audio;
+    using Raptor.Graphics;
 
     /// <summary>
     /// Represents a loader that can load content for rendering or sound.

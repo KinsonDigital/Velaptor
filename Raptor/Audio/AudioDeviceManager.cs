@@ -37,7 +37,7 @@ namespace Raptor.Audio
         /// </summary>
         private AudioDeviceManager()
         {
-            // NOTE: Do not remove this constructor.  This is left behind to 
+            // NOTE: Do not remove this constructor.  This is left behind to
             // add the required singleton behavior of this class.
         }
 

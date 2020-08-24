@@ -14,12 +14,12 @@ namespace Raptor.Audio
     [ExcludeFromCodeCoverage]
     public static class AudioDevice
     {
-        private static readonly IAudioDeviceManager deviceManager = AudioDeviceManager.GetInstance(new ALInvoker());
+        private static readonly IAudioDeviceManager DeviceManager = AudioDeviceManager.GetInstance(new ALInvoker());
 
         /// <summary>
         /// Gets a list of devices in the system.
         /// </summary>
-        public static ReadOnlyCollection<string> DeviceNames => new ReadOnlyCollection<string>(deviceManager.DeviceNames);
+        public static ReadOnlyCollection<string> DeviceNames => new ReadOnlyCollection<string>(DeviceManager.DeviceNames);
 
         /// <summary>
         /// Changes the device tot he given <paramref name="name"/>.
@@ -33,10 +33,10 @@ namespace Raptor.Audio
         /// </exception>
         public static void ChangeDevice(string name)
         {
-            if (!deviceManager.IsInitialized)
-                deviceManager.InitDevice();
+            if (!DeviceManager.IsInitialized)
+                DeviceManager.InitDevice();
 
-            deviceManager.ChangeDevice(name);
+            DeviceManager.ChangeDevice(name);
         }
     }
 }

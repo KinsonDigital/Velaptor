@@ -1,4 +1,4 @@
-using Raptor;
+﻿using Raptor;
 using Raptor.Audio;
 using Raptor.Content;
 using Raptor.Factories;
@@ -19,9 +19,9 @@ namespace RaptorSandBox
         private KeyboardState previousKeyboardState;
         private MouseState currentMouseState;
         private MouseState previousMouseState;
-        private ISound zapSound;
-        private ISound deadShipsMusic;
-        private ISound quietPlaceMusic;
+        private ISound? zapSound;
+        private ISound? deadShipsMusic;
+        private ISound? quietPlaceMusic;
         private float timeElapsed;
 
         public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
@@ -54,24 +54,24 @@ namespace RaptorSandBox
             this.currentKeyboardState = Keyboard.GetState();
             this.currentMouseState = Mouse.GetMouseState();
 
-            if (currentKeyboardState.IsKeyUp(KeyCode.Space) && previousKeyboardState.IsKeyDown(KeyCode.Space))
+            if (this.currentKeyboardState.IsKeyUp(KeyCode.Space) && this.previousKeyboardState.IsKeyDown(KeyCode.Space))
             {
                 var headPhones = AudioDevice.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
                 AudioDevice.ChangeDevice(headPhones);
             }
 
-            if (currentKeyboardState.IsKeyUp(KeyCode.P) && previousKeyboardState.IsKeyDown(KeyCode.P))
+            if (this.currentKeyboardState.IsKeyUp(KeyCode.P) && this.previousKeyboardState.IsKeyDown(KeyCode.P))
             {
                 this.quietPlaceMusic.PlaySound();
             }
 
-            if (timeElapsed < 1000)
+            if (this.timeElapsed < 1000)
             {
-                timeElapsed += (float)frameTime.ElapsedTime.TotalMilliseconds;
+                this.timeElapsed += (float)frameTime.ElapsedTime.TotalMilliseconds;
             }
             else
             {
-                this.Title = $"Time: {this.quietPlaceMusic.TimePositionSeconds}";
+                Title = $"Time: {this.quietPlaceMusic?.TimePositionSeconds ?? 0}";
                 this.timeElapsed = 0;
             }
 
@@ -85,6 +85,11 @@ namespace RaptorSandBox
 
         public override void OnDraw(FrameTime frameTime)
         {
+            if (this.dungeonTexture is null || this.linkTexture is null)
+            {
+                return;
+            }
+
             this.spriteBatch?.BeginBatch();
 
             this.spriteBatch?.Render(this.dungeonTexture, 0, 0);
@@ -96,9 +101,6 @@ namespace RaptorSandBox
         }
 
 
-        public override void OnResize()
-        {
-            base.OnResize();
-        }
+        public override void OnResize() => base.OnResize();
     }
 }
