@@ -1,4 +1,4 @@
-This PR merges everything related to release <span style="color:darkorange;font-weight:bold">v[version]</span> into the <span style="color:whitesmoke;/font-weight:bold">master</span> branch
+This <span style="color:whitesmoke;font-weight:bold">PR</span> merges everything related to release <span style="color:darkorange;font-weight:bold">v[version]</span> into the <span style="color:whitesmoke;/font-weight:bold">master</span> branch
 
 ---
 
@@ -23,10 +23,6 @@ This PR merges everything related to release <span style="color:darkorange;font-
 8. [ ] Update the release notes on the release branch
 	* <span style="color:whitesmoke;font-weight:bold">NOTE:</span> Make sure to browse through the card info and GIT commits to collect information for the release notes
 9. [ ] Verify that the code changes have been reviewed and checked off for the PR
-10. [ ] Verify the following:
-    * [ ] PR build policy has succeeded
-    * [ ] Merge conflicts have been resolved if any
-    * [ ] PR has been approved
 
 ---
 
@@ -40,3 +36,4 @@ This PR merges everything related to release <span style="color:darkorange;font-
    * <span style="color:whitesmoke;font-weight:bold">NOTE:</span> Create the tag <span style="color:whitesmoke;font-weight:bold">on</span> the <span style="color:whitesmoke;font-weight:bold">master</span> branch where the <span style="color:whitesmoke;font-weight:bold">release</span> branch has been merged into <span style="color:whitesmoke;font-weight:bold">master</span>
    * <span style="color:whitesmoke;font-weight:bold">Syntax:</span>: v[version]
    * <span style="color:whitesmoke;font-weight:bold">Example:</span>  v1.2.3
+3. Update the **Version** field for all related cards for the release.
