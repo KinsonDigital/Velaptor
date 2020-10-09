@@ -14,7 +14,7 @@ variables:
   - name: appName
     value: 'Raptor'
   - name: pool
-    value: 'KinsonDigital'
+    value: 'KinsonServer'
 
 
 stages:
