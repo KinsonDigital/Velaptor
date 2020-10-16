@@ -5,38 +5,18 @@
     <AssemblyName>Raptor</AssemblyName>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageId>KinsonDigital.Raptor.Windows</PackageId>
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Raptor</Product>
     <Description>2D game development framework that provides 2D rendering, keyboard and mouse input and sound</Description>
     <Copyright>Copyright ©2020 Kinson Digital</Copyright>
     <PackageTags>raptor 2D game games framework</PackageTags>
-    <Configurations>Debug-Win;Release-Win</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <Version>0.11.0</Version>
     <AssemblyVersion>0.11.0</AssemblyVersion>
     <FileVersion>0.11.0</FileVersion>
-  </PropertyGroup>
-
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Win|AnyCPU'">
-    <Optimize>false</Optimize>
-    <OSPlatform>Windows</OSPlatform>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>DEBUG</DefineConstants>
-  </PropertyGroup>
-  
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Win|AnyCPU'">
-    <Optimize>true</Optimize>
-    <OSPlatform>Windows</OSPlatform>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-
-  <PropertyGroup>
-    <PackageId>KinsonDigital.Raptor.$(OSPlatform)</PackageId>
-    <Win32BitNativePath>\runtimes\win-x86\native</Win32BitNativePath>
-    <Win64BitNativePath>\runtimes\win-x64\native</Win64BitNativePath>
   </PropertyGroup>
 
 
