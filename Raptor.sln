@@ -39,6 +39,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{D88293BA-31D7-46E3-A6FC-B8AEDDEF145D}"
+	ProjectSection(SolutionItems) = preProject
+		AzureDevOps\pipelines\templates\build-tasks-template.yml = AzureDevOps\pipelines\templates\build-tasks-template.yml
+		AzureDevOps\pipelines\templates\publish-tasks-template.yml = AzureDevOps\pipelines\templates\publish-tasks-template.yml
+		AzureDevOps\pipelines\templates\setup-nuget-tasks-template.yml = AzureDevOps\pipelines\templates\setup-nuget-tasks-template.yml
+		AzureDevOps\pipelines\templates\test-tasks-template.yml = AzureDevOps\pipelines\templates\test-tasks-template.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

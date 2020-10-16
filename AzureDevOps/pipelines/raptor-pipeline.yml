@@ -3,7 +3,6 @@ trigger:
     include:
     - develop # Development Environment
     - master # Production Environment
-    - feature/en-2324-improve-build-pipeline
 
 
 variables:
@@ -31,41 +30,38 @@ variables:
 
 
 stages:
-- stage: 'Build_Stage' #🟢
-  displayName: 'Build Stage'
+- stage: 'Main_Stage' #🟢
+  displayName: 'Main Stage'
   pool: '$(pool)'
   jobs:
-  - template: templates/build-job-template.yml
-    parameters:
-      projectName: $(projectName)
-      buildPlatform: $(buildPlatform)
-      buildConfiguration: $(buildConfiguration)
-      vstsFeed: '$(kinsonDigitalNugetFeed)'
+  - job: 'Build_Raptor_Job' #🟠
+    displayName: 'Build Raptor'
+    steps:
+    - template: templates/build-tasks-template.yml
+      parameters:
+        projectName: $(projectName)
+        buildPlatform: $(buildPlatform)
+        buildConfiguration: $(buildConfiguration)
+        vstsFeed: '$(kinsonDigitalNugetFeed)'
 
 
+  - job: 'Run_Raptor_Tests_Job' #🟠
+    displayName: 'Run Raptor Tests'
+    steps:
+    - template: templates/test-tasks-template.yml
+      parameters:
+        projectName: $(projectName)
+        buildPlatform: $(buildPlatform)      
+        buildConfiguration: $(buildConfiguration)
+        vstsFeed: '$(kinsonDigitalNugetFeed)'
 
 
-- stage: 'Testing_Stage' #🟢
-  displayName: 'Testing'
-  pool: '$(pool)'
-  jobs:
-  - template: templates/test-job-template.yml
-    parameters:
-      projectName: $(projectName)
-      buildPlatform: $(buildPlatform)      
-      buildConfiguration: $(buildConfiguration)
-      vstsFeed: '$(kinsonDigitalNugetFeed)'
-
-
-
-
-- stage: 'Publish_Artifacts_Stage' #🟢
-  displayName: 'Publish Artifacts'
-  pool: '$(pool)'
-  jobs:
-  - template: templates/publish-job-template.yml
-    parameters:
-      projectName: $(projectName)
-      buildPlatform: $(buildPlatform)
-      buildConfiguration: $(buildConfiguration)
-      vstsFeed: '$(kinsonDigitalNugetFeed)'
+  - job: 'Publish_Raptor_Artifacts_Job' #🟠
+    displayName: 'Publish Raptor Artifacts'
+    steps:
+    - template: templates/publish-tasks-template.yml
+      parameters:
+        projectName: $(projectName)
+        buildPlatform: $(buildPlatform)
+        buildConfiguration: $(buildConfiguration)
+        vstsFeed: '$(kinsonDigitalNugetFeed)'
