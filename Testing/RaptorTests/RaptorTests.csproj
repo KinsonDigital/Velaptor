@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Platforms>AnyCPU</Platforms>
     <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyTitle>ScorpionCoreTests</AssemblyTitle>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
@@ -13,17 +14,17 @@
     <Company>Kinson Digital</Company>
     <AssemblyName>RaptorTests</AssemblyName>
     <RootNamespace>RaptorTests</RootNamespace>
-    <Configurations>Debug-Win;Release-Win</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Win|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+  
   <ItemGroup>
     <Compile Remove="Fakes\AudioManagerFake.cs" />
   </ItemGroup>
+  
   <ItemGroup>
     <None Remove="stylecop.json" />
   </ItemGroup>
+  
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>

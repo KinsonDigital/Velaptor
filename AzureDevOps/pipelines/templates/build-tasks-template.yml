@@ -1,0 +1,24 @@
+parameters:
+- name: projectName
+  type: string
+- name: buildPlatform
+  type: string
+- name: buildConfiguration
+  type: string
+- name: vstsFeed
+  type: string
+
+
+steps:
+- template: setup-nuget-tasks-template.yml
+  parameters:
+    projectName: ${{parameters.projectName}}
+    vstsFeed: ${{parameters.vstsFeed}}
+
+
+- task: DotNetCoreCLI@2 #🟣
+  displayName: 'Build ${{parameters.projectName}}'
+  inputs:
+    command: 'build'
+    projects: '$(System.DefaultWorkingDirectory)/**/${{parameters.projectName}}.csproj'
+    arguments: '-c ${{parameters.buildConfiguration}} /p:Platform=${{parameters.buildPlatform}}'
