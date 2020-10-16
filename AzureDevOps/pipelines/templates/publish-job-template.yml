@@ -1,0 +1,33 @@
+parameters:
+- name: projectName
+  type: string
+- name: buildPlatform
+  type: string  
+- name: buildConfiguration
+  type: string  
+- name: vstsFeed
+  type: string
+
+
+jobs:
+- job: 'Publish_Raptor_Artifacts_Job' #🟠
+  displayName: 'Publish Raptor Artifacts'
+  steps:
+  - template: setup-nuget-task-template.yml
+    parameters:
+      projectName: ${{parameters.projectName}}
+      vstsFeed: ${{parameters.vstsFeed}}
+
+
+  - task: CmdLine@2
+    displayName: '🟣Create ${{parameters.projectName}} Nuget Package Artifact'
+    inputs:
+      script: "dotnet pack \"$(System.DefaultWorkingDirectory)\\${{parameters.projectName}}\\${{parameters.projectName}}.csproj\" -c ${{parameters.buildConfiguration}} /p:Platform=${{parameters.buildPlatform}} -o $(Build.ArtifactStagingDirectory)"
+
+
+  - task: PublishBuildArtifacts@1
+    displayName: '🟣Publish ${{parameters.projectName}} Build Artifacts'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'

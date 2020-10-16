@@ -1,103 +1,71 @@
-# .NET Desktop
-# Build and run tests for .NET Desktop or Windows classic desktop solutions.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
-
 trigger:
-- master
+  branches:
+    include:
+    - develop # Development Environment
+    - master # Production Environment
+    - feature/en-2324-improve-build-pipeline
 
 
 variables:
-  - name: solution
-    value: '**/*.sln'
-  - name: buildPlatform
-    value: 'AnyCPU'
-  - name: buildConfiguration
-    value: 'Release-Win'
-  - name: coverageReportDirName
-    value: 'CoverageReport'
-  - name: appName
-    value: 'Raptor'
-  - name: pool
-    value: 'KinsonServer'
+- name: solution
+  value: '**/*.sln'
+- name: buildPlatform
+  value: 'any'
+- name: buildConfiguration
+  ${{ if notIn(variables['Build.SourceBranchName'], 'develop', 'master')}}:
+    value: 'Debug'
+  ${{ if eq(variables['Build.SourceBranchName'], 'develop')}}:
+    value: 'Debug'
+  ${{ if eq(variables['Build.SourceBranchName'], 'master')}}:
+    value: 'Release'
+- name: coverageReportDirName
+  value: 'CoverageReport'
+- name: projectName
+  value: 'Raptor'
+- name: kinsonDigitalNugetFeed
+  value: '1020f331-f22a-4330-a69a-78abfe6f6372/4c644bf2-f1e8-4f28-a3df-3bc9d3283df9'    
+- name: pool
+  value: 'KinsonServer'
+
+
 
 
 stages:
-- stage: Init_Build_Stage
-  displayName: 'Init & Build'
+- stage: 'Build_Stage' #🟢
+  displayName: 'Build Stage'
   pool: '$(pool)'
   jobs:
-  - job: 'Init_Build_Job'
-    displayName: 'Init & Build Job'
-    steps:
-    - task: NuGetToolInstaller@1
-
-    - task: NuGetCommand@2
-      displayName: Restore $(appName) Solution Packages
-      inputs:
-        command: 'restore'
-        restoreSolution: '$(solution)'
-        feedsToUse: 'select'
-        vstsFeed: '1020f331-f22a-4330-a69a-78abfe6f6372/4c644bf2-f1e8-4f28-a3df-3bc9d3283df9'# KinsonDigitalFeed
-
-    - task: VSBuild@1
-      displayName: Build $(appName) Solution
-      inputs:
-        solution: '**\*.sln'
-        platform: 'any cpu'
-        configuration: '$(buildConfiguration)'
-        clean: true
+  - template: templates/build-job-template.yml
+    parameters:
+      projectName: $(projectName)
+      buildPlatform: $(buildPlatform)
+      buildConfiguration: $(buildConfiguration)
+      vstsFeed: '$(kinsonDigitalNugetFeed)'
 
 
-- stage: 'Testing_Stage'
+
+
+- stage: 'Testing_Stage' #🟢
   displayName: 'Testing'
   pool: '$(pool)'
   jobs:
-  - job: 'Testing_Job'
-    displayName: 'Testing'
-    steps:
-    - task: DotNetCoreCLI@2
-      displayName: "Run $(appName) Tests & Collect Code Coverage"
-      inputs:
-        command: 'test'
-        projects: '**\*[Tt]ests\*.csproj'
-        arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
-        publishTestResults: true
-        testRunTitle: '$(appName) Unit Test Results'
-
-    - task: reportgenerator@4
-      displayName: "Generate $(appName) Code Coverage Reports"
-      inputs:
-        reports: '**\*.cobertura.xml'
-        targetdir: 'CoverageReport'
-        sourcedirs: '$(System.DefaultWorkingDirectory)\$(appName)'
-
-    - task: PublishCodeCoverageResults@1
-      displayName: "Publish $(appName) Code Coverage Results"
-      inputs:
-        codeCoverageTool: 'Cobertura'
-        summaryFileLocation: '$(System.DefaultWorkingDirectory)\$(coverageReportDirName)\Cobertura.xml'
-        reportDirectory: '$(System.DefaultWorkingDirectory)\$(coverageReportDirName)'
+  - template: templates/test-job-template.yml
+    parameters:
+      projectName: $(projectName)
+      buildPlatform: $(buildPlatform)      
+      buildConfiguration: $(buildConfiguration)
+      vstsFeed: '$(kinsonDigitalNugetFeed)'
 
 
-- stage: 'Create_Build_Artifact_Stage'
-  displayName: 'Create Build Artifact'
+
+
+- stage: 'Publish_Artifacts_Stage' #🟢
+  displayName: 'Publish Artifacts'
   pool: '$(pool)'
   jobs:
-  - job: 'Create_Artifact_Job'
-    displayName: 'Create Artifact'
-    steps: 
-    - task: DotNetCoreCLI@2
-      displayName: 'Create $(appName) Nuget Package Artifact'
-      inputs:
-        command: 'pack'
-        packagesToPack: '$(System.DefaultWorkingDirectory)\$(appName)\$(appName).csproj'
-        configuration: '$(buildConfiguration)'
-        versioningScheme: 'off'
-
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish $(appName) Build Artifacts'
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
+  - template: templates/publish-job-template.yml
+    parameters:
+      projectName: $(projectName)
+      buildPlatform: $(buildPlatform)
+      buildConfiguration: $(buildConfiguration)
+      vstsFeed: '$(kinsonDigitalNugetFeed)'

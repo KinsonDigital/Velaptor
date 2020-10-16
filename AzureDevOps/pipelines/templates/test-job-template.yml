@@ -1,0 +1,45 @@
+parameters:
+- name: projectName
+  type: string
+- name: buildPlatform
+  type: string
+- name: buildConfiguration
+  type: string
+- name: vstsFeed
+  type: string
+
+
+jobs:
+- job: 'Run_Raptor_Tests_Job'
+  displayName: 'Run Raptor Tests'
+  steps:
+  - template: setup-nuget-task-template.yml
+    parameters:
+      projectName: ${{parameters.projectName}}
+      vstsFeed: ${{parameters.vstsFeed}}
+
+
+  - task: DotNetCoreCLI@2 #🟣
+    displayName: 'Run ${{parameters.projectName}} Tests & Collect Code Coverage'
+    inputs:
+      command: 'test'
+      projects: '$(System.DefaultWorkingDirectory)/**/${{parameters.projectName}}[Tt]ests.csproj'
+      arguments: '-c ${{parameters.buildConfiguration}} /p:Platform=${{parameters.buildPlatform}} /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+      publishTestResults: true
+      testRunTitle: 'Unit Test Results'
+
+
+  - task: reportgenerator@4 #🟣
+    displayName: 'Generate Code Coverage Reports'
+    inputs:
+      reports: '**/*.cobertura.xml'
+      targetdir: '$(Build.ArtifactStagingDirectory)'
+      sourcedirs: '$(System.DefaultWorkingDirectory)'
+
+
+  - task: PublishCodeCoverageResults@1 #🟣
+    displayName: 'Publish All Code Coverage Results'
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(Build.ArtifactStagingDirectory)/Cobertura.xml'
+      reportDirectory: '$(Build.ArtifactStagingDirectory)'

@@ -13,9 +13,9 @@
     <Company>Kinson Digital</Company>
     <AssemblyName>RaptorTests</AssemblyName>
     <RootNamespace>RaptorTests</RootNamespace>
-    <Configurations>Debug-Win;Release-Win</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Win|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
