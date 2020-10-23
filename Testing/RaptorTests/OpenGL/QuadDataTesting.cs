@@ -4,7 +4,7 @@
 
 namespace RaptorTests.OpenGL
 {
-    using OpenToolkit.Mathematics;
+    using OpenTK.Mathematics;
     using Raptor.OpenGL;
     using Xunit;
 

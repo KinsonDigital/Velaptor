@@ -6,8 +6,8 @@ namespace RaptorTests.OpenGL
 {
     using System;
     using System.Drawing;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
     using Raptor.OpenGL;
     using RaptorTests.Helpers;
     using Xunit;

@@ -6,8 +6,8 @@ namespace Raptor.OpenGL
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]

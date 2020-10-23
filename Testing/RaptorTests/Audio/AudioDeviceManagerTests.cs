@@ -7,7 +7,7 @@ namespace RaptorTests.Audio
     using System;
     using System.Collections.ObjectModel;
     using Moq;
-    using OpenToolkit.Audio.OpenAL;
+    using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
     using Raptor.Audio.Exceptions;
     using Raptor.Content;
@@ -161,7 +161,7 @@ namespace RaptorTests.Audio
         {
             // Arrange
             // The MakeContextCurrent call does not take nullable bool.  This fixes that issue
-            var contextResult = makeContextCurrentResult is null ? false : (bool)makeContextCurrentResult;
+            var contextResult = !(makeContextCurrentResult is null) && (bool)makeContextCurrentResult;
 
             this.mockALInvoker.Setup(m => m.MakeContextCurrent(this.context)).Returns(contextResult);
             this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);

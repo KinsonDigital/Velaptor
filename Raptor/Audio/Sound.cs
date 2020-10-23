@@ -13,7 +13,7 @@ namespace Raptor.Audio
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
-    using OpenToolkit.Audio.OpenAL;
+    using OpenTK.Audio.OpenAL;
     using Raptor.Content;
     using Raptor.Factories;
     using Raptor.OpenAL;

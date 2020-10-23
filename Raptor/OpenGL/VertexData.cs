@@ -7,7 +7,7 @@ namespace Raptor.OpenGL
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Mathematics;
 
     /// <summary>
     /// Represents a single vertex of data for a quad.

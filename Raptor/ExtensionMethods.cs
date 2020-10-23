@@ -6,7 +6,7 @@ namespace Raptor
 {
     using System;
     using System.Drawing;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Mathematics;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.
@@ -19,7 +19,7 @@ namespace Raptor
         /// Converts the given <paramref name="radians"/> value into degrees.
         /// </summary>
         /// <param name="radians">The value to convert.</param>
-        /// <returns>The radians converted into degress.</returns>
+        /// <returns>The radians converted into degrees.</returns>
         public static float ToDegrees(this float radians) => radians * 180.0f / PI;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Raptor
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="origin">The origin to rotate the <paramref name="vector"/> around.</param>
-        /// <param name="angle">The angle in degress to rotate <paramref name="vector"/>.  Value must be positive.</param>
+        /// <param name="angle">The angle in degrees to rotate <paramref name="vector"/>.  Value must be positive.</param>
         /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/>.</param>
         /// <returns>The <paramref name="vector"/> rotated around the <paramref name="origin"/>.</returns>
         public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)

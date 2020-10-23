@@ -5,7 +5,7 @@
 namespace RaptorTests.Content
 {
     using Moq;
-    using OpenToolkit.Graphics.OpenGL4;
+    using OpenTK.Graphics.OpenGL4;
     using Raptor.Content;
     using Raptor.OpenGL;
     using Raptor.Services;
