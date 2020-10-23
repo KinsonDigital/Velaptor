@@ -7,7 +7,7 @@ namespace Raptor.OpenAL
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using OpenToolkit.Audio.OpenAL;
+    using OpenTK.Audio.OpenAL;
 
     /// <summary>
     /// Invokes OpenAL functions.
@@ -202,7 +202,7 @@ namespace Raptor.OpenAL
         public void BufferData<TBuffer>(int bid, ALFormat format, TBuffer[] buffer, int size, int freq)
             where TBuffer : unmanaged
         {
-            AL.BufferData(bid, format, buffer, size, freq);
+            AL.BufferData(bid, format, buffer, freq);
 
             var error = GetError();
             var errorString = Enum.GetName(typeof(ALError), error);

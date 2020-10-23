@@ -8,7 +8,7 @@ namespace RaptorTests
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Reflection;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Mathematics;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.

@@ -8,12 +8,12 @@ namespace Raptor.OpenGL
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
-    using OpenToolkit.Windowing.Common;
-    using OpenToolkit.Windowing.Desktop;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
+    using OpenTK.Windowing.Common;
+    using OpenTK.Windowing.Desktop;
     using Raptor.Input;
-    using GLMouseButton = OpenToolkit.Windowing.Common.Input.MouseButton;
+    using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using RaptorMouseButton = Raptor.Input.MouseButton;
 
     /// <summary>
@@ -147,7 +147,7 @@ namespace Raptor.OpenGL
         /// Maps the given OpenGL mouse button to a <see cref="Raptor.Input.MouseButton"/>.
         /// </summary>
         /// <param name="from">The OpenGL mouse button to map.</param>
-        /// <returns>The raptor mouse button.</returns>
+        /// <returns>The mouse button.</returns>
         private static RaptorMouseButton MapMouseButton(GLMouseButton from)
         {
             switch (from)
@@ -158,7 +158,7 @@ namespace Raptor.OpenGL
                     return RaptorMouseButton.RightButton;
                 case GLMouseButton.Button3: // Same as MiddleButton
                     return RaptorMouseButton.MiddleButton;
-                case GLMouseButton.LastButton:
+                case GLMouseButton.Last:
                     return RaptorMouseButton.None;
             }
 

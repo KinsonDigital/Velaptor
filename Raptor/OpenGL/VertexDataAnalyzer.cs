@@ -8,8 +8,8 @@ namespace Raptor.OpenGL
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
 
     /// <summary>
     /// Analyzes vertex data.

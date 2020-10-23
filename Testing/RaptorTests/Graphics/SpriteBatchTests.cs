@@ -9,8 +9,8 @@ namespace RaptorTests.Graphics
     using System.Drawing;
     using System.IO.Abstractions;
     using Moq;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
     using Raptor.Graphics;
     using Raptor.OpenGL;
     using RaptorTests.Helpers;

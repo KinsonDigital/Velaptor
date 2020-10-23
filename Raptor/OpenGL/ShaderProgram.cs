@@ -7,7 +7,7 @@ namespace Raptor.OpenGL
     using System;
     using System.IO.Abstractions;
     using System.Text;
-    using OpenToolkit.Graphics.OpenGL4;
+    using OpenTK.Graphics.OpenGL4;
 
     /// <inheritdoc/>
     internal class ShaderProgram : IShaderProgram

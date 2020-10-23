@@ -5,7 +5,7 @@
 namespace RaptorTests
 {
     using System.Drawing;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Mathematics;
     using Raptor;
     using Xunit;
 
