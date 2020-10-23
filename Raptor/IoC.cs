@@ -49,6 +49,7 @@ namespace Raptor
             IoCContainer.Register(() => FileSystem.File);
             IoCContainer.Register(() => FileSystem.Directory);
             IoCContainer.Register<IImageFileService, ImageFileService>();
+            IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>();
             IoCContainer.Register<ILoader<ITexture>, TextureLoader>();
             IoCContainer.Register<ILoader<ISound>, SoundLoader>();
             IoCContainer.Register<IALInvoker, ALInvoker>();
@@ -84,7 +85,7 @@ namespace Raptor
 
             IoCContainer.Register<IShaderProgram>(() =>
             {
-                return new ShaderProgram(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IFile>());
+                return new ShaderProgram(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IEmbeddedResourceLoaderService>());
             });
             SuppressDisposableTransientWarning<IShaderProgram>();
 

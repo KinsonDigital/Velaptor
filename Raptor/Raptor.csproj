@@ -21,12 +21,24 @@
 
 
   <ItemGroup>
+    <None Remove="OpenGL\shader.frag" />
+    <None Remove="OpenGL\shader.vert" />
     <None Remove="stylecop.json" />
   </ItemGroup>
 
 
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <EmbeddedResource Include="OpenGL\shader.frag">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenGL\shader.vert">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 
@@ -67,12 +79,6 @@
 
   <ItemGroup>
     <None Update="Libs\openal32.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="OpenGL\shader.frag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="OpenGL\shader.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
