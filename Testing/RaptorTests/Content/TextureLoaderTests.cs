@@ -17,7 +17,7 @@ namespace RaptorTests.Content
     public class TextureLoaderTests
     {
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IImageFileService> mockImageFile;
+        private readonly Mock<IImageFileService> mockImageFileService;
         private readonly Mock<IContentSource> mockContentSource;
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace RaptorTests.Content
         public TextureLoaderTests()
         {
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockImageFile = new Mock<IImageFileService>();
+            this.mockImageFileService = new Mock<IImageFileService>();
             this.mockContentSource = new Mock<IContentSource>();
         }
 
@@ -35,7 +35,7 @@ namespace RaptorTests.Content
         public void Load_WhenInvoked_LoadsTexture()
         {
             // Arrange
-            var loader = new TextureLoader(this.mockGL.Object, this.mockImageFile.Object, this.mockContentSource.Object);
+            var loader = new TextureLoader(this.mockGL.Object, this.mockImageFileService.Object, this.mockContentSource.Object);
 
             // Act
             var actual = loader.Load("test-file");

@@ -16,18 +16,18 @@ namespace Raptor.Content
     public class TextureLoader : ILoader<ITexture>
     {
         private readonly IGLInvoker gl;
-        private readonly IImageFileService imageFile;
+        private readonly IImageFileService imageFileService;
         private readonly IContentSource contentSource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
-        /// <param name="imageFile">Loads an image file.</param>
+        /// <param name="imageFileService">Loads an image file.</param>
         [ExcludeFromCodeCoverage]
-        public TextureLoader(IImageFileService imageFile)
+        public TextureLoader(IImageFileService imageFileService)
         {
             this.gl = new GLInvoker();
-            this.imageFile = imageFile;
+            this.imageFileService = imageFileService;
             this.contentSource = new ContentSource(IoC.Container.GetInstance<IDirectory>());
         }
 
@@ -35,12 +35,12 @@ namespace Raptor.Content
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="imageFile">Loads an image file.</param>
+        /// <param name="imageFileService">Loads an image file.</param>
         /// <param name="contentSource">Provides access to the content source.</param>
-        internal TextureLoader(IGLInvoker gl, IImageFileService imageFile, IContentSource contentSource)
+        internal TextureLoader(IGLInvoker gl, IImageFileService imageFileService, IContentSource contentSource)
         {
             this.gl = gl;
-            this.imageFile = imageFile;
+            this.imageFileService = imageFileService;
             this.contentSource = contentSource;
         }
 
@@ -48,7 +48,7 @@ namespace Raptor.Content
         public ITexture Load(string name)
         {
             var filePath = this.contentSource.GetContentPath(ContentType.Graphics, name);
-            var (pixels, width, height) = this.imageFile.Load(filePath);
+            var (pixels, width, height) = this.imageFileService.Load(filePath);
 
             return new Texture(this.gl, name, pixels, width, height);
         }
