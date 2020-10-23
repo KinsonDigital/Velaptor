@@ -5,26 +5,33 @@
 namespace RaptorTests.Content
 {
     using System.Drawing;
+    using System.IO.Abstractions;
     using System.Text.Json;
-    using FileIO.Core;
     using Moq;
     using Raptor.Content;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="AtlasDataLoader{T}"/> class.
+    /// </summary>
     public class AtlasDataLoaderTests
     {
-        private readonly Mock<ITextFile> mockTextFile;
+        private readonly Mock<IFile> mockTextFile;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AtlasDataLoaderTests"/> class.
+        /// </summary>
         public AtlasDataLoaderTests()
         {
-            this.mockTextFile = new Mock<ITextFile>();
+            this.mockTextFile = new Mock<IFile>();
 
             var textFileData = new Rectangle[]
             {
                 new Rectangle(11, 22, 33, 44),
                 new Rectangle(55, 66, 77, 88),
             };
-            this.mockTextFile.Setup(m => m.Load(It.IsAny<string>())).Returns(() =>
+
+            this.mockTextFile.Setup(m => m.ReadAllText(It.IsAny<string>())).Returns(() =>
             {
                 return JsonSerializer.Serialize(textFileData);
             });

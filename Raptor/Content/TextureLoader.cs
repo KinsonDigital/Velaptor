@@ -5,9 +5,10 @@
 namespace Raptor.Content
 {
     using System.Diagnostics.CodeAnalysis;
-    using FileIO.Core;
+    using System.IO.Abstractions;
     using Raptor.Graphics;
     using Raptor.OpenGL;
+    using Raptor.Services;
 
     /// <summary>
     /// Loads textures.
@@ -15,18 +16,18 @@ namespace Raptor.Content
     public class TextureLoader : ILoader<ITexture>
     {
         private readonly IGLInvoker gl;
-        private readonly IImageFile imageFile;
+        private readonly IImageFileService imageFileService;
         private readonly IContentSource contentSource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
-        /// <param name="imageFile">Loads an image file.</param>
+        /// <param name="imageFileService">Loads an image file.</param>
         [ExcludeFromCodeCoverage]
-        public TextureLoader(IImageFile imageFile)
+        public TextureLoader(IImageFileService imageFileService)
         {
             this.gl = new GLInvoker();
-            this.imageFile = imageFile;
+            this.imageFileService = imageFileService;
             this.contentSource = new ContentSource(IoC.Container.GetInstance<IDirectory>());
         }
 
@@ -34,12 +35,12 @@ namespace Raptor.Content
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="imageFile">Loads an image file.</param>
+        /// <param name="imageFileService">Loads an image file.</param>
         /// <param name="contentSource">Provides access to the content source.</param>
-        internal TextureLoader(IGLInvoker gl, IImageFile imageFile, IContentSource contentSource)
+        internal TextureLoader(IGLInvoker gl, IImageFileService imageFileService, IContentSource contentSource)
         {
             this.gl = gl;
-            this.imageFile = imageFile;
+            this.imageFileService = imageFileService;
             this.contentSource = contentSource;
         }
 
@@ -47,7 +48,7 @@ namespace Raptor.Content
         public ITexture Load(string name)
         {
             var filePath = this.contentSource.GetContentPath(ContentType.Graphics, name);
-            var (pixels, width, height) = this.imageFile.Load(filePath);
+            var (pixels, width, height) = this.imageFileService.Load(filePath);
 
             return new Texture(this.gl, name, pixels, width, height);
         }

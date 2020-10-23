@@ -2,11 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 namespace RaptorTests.Graphics
 {
     using System;
     using System.Drawing;
-    using FileIO.Core;
+    using System.IO.Abstractions;
     using Moq;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
@@ -22,7 +23,7 @@ namespace RaptorTests.Graphics
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IShaderProgram> mockShader;
         private readonly Mock<IGPUBuffer> mockBuffer;
-        private readonly Mock<ITextFile> mockTextFile;
+        private readonly Mock<IFile> mockFile;
 
         public SpriteBatchTests()
         {
@@ -38,19 +39,17 @@ namespace RaptorTests.Graphics
 
             this.mockBuffer = new Mock<IGPUBuffer>();
 
-            this.mockTextFile = new Mock<ITextFile>();
+            this.mockFile = new Mock<IFile>();
         }
 
-        #region Constructor Tets
+        #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvokedWithNullGLInvoker_ThrowsException()
         {
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 var buffer = new SpriteBatch(null, this.mockShader.Object, this.mockBuffer.Object);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, $"The '{nameof(IGLInvoker)}' must not be null. (Parameter 'gl')");
         }
 
@@ -60,9 +59,7 @@ namespace RaptorTests.Graphics
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 var buffer = new SpriteBatch(this.mockGL.Object, null, this.mockBuffer.Object);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, $"The '{nameof(IShaderProgram)}' must not be null. (Parameter 'shader')");
         }
 
@@ -72,9 +69,7 @@ namespace RaptorTests.Graphics
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 var buffer = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, $"The '{nameof(IGPUBuffer)}' must not be null. (Parameter 'gpuBuffer')");
         }
 
@@ -163,9 +158,7 @@ namespace RaptorTests.Graphics
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 batch.BeginBatch();
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 batch.Render(null, 10, 20);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "The texture must not be null. (Parameter 'texture')");
         }
 
@@ -248,9 +241,7 @@ namespace RaptorTests.Graphics
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 batch.BeginBatch();
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 batch.Render(null, It.IsAny<Rectangle>(), It.IsAny<Rectangle>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<Color>());
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "The texture must not be null. (Parameter 'texture')");
         }
 
@@ -351,7 +342,7 @@ namespace RaptorTests.Graphics
         #endregion
 
         /// <summary>
-        /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
+        /// Assert that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
         /// </summary>
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
@@ -359,7 +350,7 @@ namespace RaptorTests.Graphics
             => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, default);
 
         /// <summary>
-        /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
+        /// Assert that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
         /// </summary>
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>

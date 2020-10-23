@@ -6,7 +6,7 @@ namespace RaptorTests.OpenGL
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using FileIO.Core;
+    using System.IO.Abstractions;
     using Moq;
     using OpenToolkit.Graphics.OpenGL4;
     using Raptor.OpenGL;
@@ -18,7 +18,7 @@ namespace RaptorTests.OpenGL
     /// </summary>
     public class ShaderProgramTests
     {
-        private readonly Mock<ITextFile> mockTextFile;
+        private readonly Mock<IFile> mockFile;
         private readonly Mock<IGLInvoker> mockGL;
 
         // TODO: This might have to be used somewhere else to make it work
@@ -30,7 +30,19 @@ namespace RaptorTests.OpenGL
 
         public ShaderProgramTests()
         {
-            this.mockTextFile = new Mock<ITextFile>();
+            this.mockFile = new Mock<IFile>();
+
+            // Sets up the vertex shader file mock.
+            this.mockFile.Setup(m => m.ReadAllText(this.vertexShaderPath)).Returns(() =>
+            {
+                return "layout(location = 3) in float aTransformIndex;\r\nuniform mat4 uTransform[1];//$REPLACE_INDEX";
+            });
+
+            // Sets up the fragment shader file mock.
+            this.mockFile.Setup(m => m.ReadAllText(this.fragShaderPath)).Returns(() =>
+            {
+                return "in vec2 v_TexCoord;\r\nin vec4 v_TintClr;";
+            });
 
             this.mockGL = new Mock<IGLInvoker>();
 
@@ -51,24 +63,23 @@ namespace RaptorTests.OpenGL
         public void Ctor_WhenInvoked_LoadsShaderSourceCode()
         {
             // Arrange
-            this.mockTextFile.Setup(m => m.LoadAsLines(It.IsAny<string>())).Returns(() => new[] { "line-1", null });
+            this.mockFile.Setup(m => m.ReadAllText(It.IsAny<string>())).Returns("line-1");
 
             // Act
-            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
 
             // Assert
-            this.mockTextFile.Verify(m => m.LoadAsLines(It.IsAny<string>()), Times.Exactly(2));
+            this.mockFile.Verify(m => m.ReadAllText(It.IsAny<string>()), Times.Exactly(2));
         }
 
         [Fact]
         public void Ctor_WhenInvoked_SuccessfullyCreatesVertexShader()
         {
             // Arrange
-            SetupVertexShaderFileMock();
-            var expected = "layout(location = 3) in float aTransformIndex;\r\nuniform mat4 uTransform[10];//MODIFIED_DURING_COMPILE_TIME\r\n";
+            var expected = "layout(location = 3) in float aTransformIndex;\r\n\r\nuniform mat4 uTransform[10];//MODIFIED_DURING_COMPILE_TIME\r\n";
 
             // Act
-            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
 
             // Assert
             this.mockGL.Verify(m => m.CreateShader(ShaderType.VertexShader), Times.Once());
@@ -80,11 +91,10 @@ namespace RaptorTests.OpenGL
         public void Ctor_WhenInvoked_SuccessfullyCreatesFragmentShader()
         {
             // Arrange
-            SetupFragmentShaderFileMock();
-            var expected = "in vec2 v_TexCoord;\r\nin vec4 v_TintClr;\r\n";
+            var expected = "in vec2 v_TexCoord;\r\n\r\nin vec4 v_TintClr;\r\n";
 
             // Act
-            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
 
             // Assert
             this.mockGL.Verify(m => m.CreateShader(ShaderType.FragmentShader), Times.Once());
@@ -95,12 +105,8 @@ namespace RaptorTests.OpenGL
         [Fact]
         public void Ctor_WhenInvoked_SuccessfullyCreatesProgram()
         {
-            // Arrange
-            SetupVertexShaderFileMock();
-            SetupFragmentShaderFileMock();
-
             // Act
-            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
 
             // Assert
             this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
@@ -112,12 +118,8 @@ namespace RaptorTests.OpenGL
         [Fact]
         public void Ctor_WhenInvoked_DestroysVertexAndFragmentShader()
         {
-            // Arrange
-            SetupVertexShaderFileMock();
-            SetupFragmentShaderFileMock();
-
             // Act
-            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
 
             // Assert
             this.mockGL.Verify(m => m.DetachShader(this.shaderProgramID, this.vertextShaderID), Times.Once());
@@ -135,13 +137,10 @@ namespace RaptorTests.OpenGL
             this.mockGL.Setup(m => m.GetShaderInfoLog(this.vertextShaderID)).Returns("Vertex Shader Compile Error");
             this.mockGL.Setup(m => m.ShaderCompileSuccess(this.vertextShaderID)).Returns(false);
 
-            SetupVertexShaderFileMock();
-            SetupFragmentShaderFileMock();
-
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+                var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
             }, $"Error occurred while compiling shader with ID '{this.vertextShaderID}'\nVertex Shader Compile Error");
         }
 
@@ -154,13 +153,10 @@ namespace RaptorTests.OpenGL
             this.mockGL.Setup(m => m.GetProgramInfoLog(this.shaderProgramID)).Returns("Program Linking Error");
             this.mockGL.Setup(m => m.LinkProgramSuccess(this.shaderProgramID)).Returns(false);
 
-            SetupVertexShaderFileMock();
-            SetupFragmentShaderFileMock();
-
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+                var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
             }, $"Error occurred while linking program with ID '{this.shaderProgramID}'\nProgram Linking Error");
         }
         #endregion
@@ -170,7 +166,7 @@ namespace RaptorTests.OpenGL
         public void UseProgram_WhenInvoked_SetsProgramForUse()
         {
             // Arrange
-            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
 
             // Act
             program.UseProgram();
@@ -183,7 +179,7 @@ namespace RaptorTests.OpenGL
         public void Dispose_WithUnmanagedResourcesToDispose_DeletesProgram()
         {
             // Arrange
-            var program = new ShaderProgram(this.mockGL.Object, this.mockTextFile.Object);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockFile.Object);
 
             // Act
             program.Dispose();
@@ -191,30 +187,6 @@ namespace RaptorTests.OpenGL
 
             // Assert
             this.mockGL.Verify(m => m.DeleteProgram(this.shaderProgramID), Times.Once());
-        }
-
-        /// <summary>
-        /// Sets up the vertex shader file mock.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        private void SetupVertexShaderFileMock()
-        {
-            this.mockTextFile.Setup(m => m.LoadAsLines(this.vertexShaderPath)).Returns(() =>
-            {
-                return new[] { "layout(location = 3) in float aTransformIndex;", "uniform mat4 uTransform[1];//$REPLACE_INDEX" };
-            });
-        }
-
-        /// <summary>
-        /// Sets up the fragment shader file mock.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        private void SetupFragmentShaderFileMock()
-        {
-            this.mockTextFile.Setup(m => m.LoadAsLines(this.fragShaderPath)).Returns(() =>
-            {
-                return new[] { "in vec2 v_TexCoord;", "in vec4 v_TintClr;" };
-            });
         }
         #endregion
     }
