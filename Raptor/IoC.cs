@@ -6,14 +6,13 @@ namespace Raptor
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using FileIO.Core;
-    using FileIO.DirectoryManagement;
-    using FileIO.FileManagement;
+    using System.IO.Abstractions;
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
     using Raptor.OpenAL;
     using Raptor.OpenGL;
+    using Raptor.Services;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
 
@@ -23,6 +22,7 @@ namespace Raptor
     [ExcludeFromCodeCoverage]
     internal static class IoC
     {
+        private static readonly FileSystem FileSystem;
         private static readonly Container IoCContainer = new Container();
         private static bool isInitialized;
 
@@ -46,11 +46,11 @@ namespace Raptor
         private static void SetupContainer()
         {
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<ITextFile, TextFile>();
-            IoCContainer.Register<IImageFile, ImageFile>();
+            IoCContainer.Register(() => FileSystem.File);
+            IoCContainer.Register(() => FileSystem.Directory);
+            IoCContainer.Register<IImageFileService, ImageFileService>();
             IoCContainer.Register<ILoader<ITexture>, TextureLoader>();
             IoCContainer.Register<ILoader<ISound>, SoundLoader>();
-            IoCContainer.Register<IDirectory, Directory>();
             IoCContainer.Register<IALInvoker, ALInvoker>();
 
             // Register the proper data stream to be the implementation if the consumer is a certain decoder
@@ -84,7 +84,7 @@ namespace Raptor
 
             IoCContainer.Register<IShaderProgram>(() =>
             {
-                return new ShaderProgram(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<ITextFile>());
+                return new ShaderProgram(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IFile>());
             });
             SuppressDisposableTransientWarning<IShaderProgram>();
 

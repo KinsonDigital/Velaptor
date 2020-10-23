@@ -4,11 +4,11 @@
 
 namespace RaptorTests.Content
 {
-    using FileIO.Core;
     using Moq;
     using OpenToolkit.Graphics.OpenGL4;
     using Raptor.Content;
     using Raptor.OpenGL;
+    using Raptor.Services;
     using Xunit;
 
     /// <summary>
@@ -17,7 +17,7 @@ namespace RaptorTests.Content
     public class TextureLoaderTests
     {
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IImageFile> mockImageFile;
+        private readonly Mock<IImageFileService> mockImageFile;
         private readonly Mock<IContentSource> mockContentSource;
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace RaptorTests.Content
         public TextureLoaderTests()
         {
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockImageFile = new Mock<IImageFile>();
+            this.mockImageFile = new Mock<IImageFileService>();
             this.mockContentSource = new Mock<IContentSource>();
         }
 

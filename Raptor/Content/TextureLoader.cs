@@ -5,9 +5,10 @@
 namespace Raptor.Content
 {
     using System.Diagnostics.CodeAnalysis;
-    using FileIO.Core;
+    using System.IO.Abstractions;
     using Raptor.Graphics;
     using Raptor.OpenGL;
+    using Raptor.Services;
 
     /// <summary>
     /// Loads textures.
@@ -15,7 +16,7 @@ namespace Raptor.Content
     public class TextureLoader : ILoader<ITexture>
     {
         private readonly IGLInvoker gl;
-        private readonly IImageFile imageFile;
+        private readonly IImageFileService imageFile;
         private readonly IContentSource contentSource;
 
         /// <summary>
@@ -23,7 +24,7 @@ namespace Raptor.Content
         /// </summary>
         /// <param name="imageFile">Loads an image file.</param>
         [ExcludeFromCodeCoverage]
-        public TextureLoader(IImageFile imageFile)
+        public TextureLoader(IImageFileService imageFile)
         {
             this.gl = new GLInvoker();
             this.imageFile = imageFile;
@@ -36,7 +37,7 @@ namespace Raptor.Content
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="imageFile">Loads an image file.</param>
         /// <param name="contentSource">Provides access to the content source.</param>
-        internal TextureLoader(IGLInvoker gl, IImageFile imageFile, IContentSource contentSource)
+        internal TextureLoader(IGLInvoker gl, IImageFileService imageFile, IContentSource contentSource)
         {
             this.gl = gl;
             this.imageFile = imageFile;

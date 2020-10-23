@@ -5,15 +5,15 @@
 namespace Raptor.OpenGL
 {
     using System;
+    using System.IO.Abstractions;
     using System.Text;
-    using FileIO.Core;
     using OpenToolkit.Graphics.OpenGL4;
 
     /// <inheritdoc/>
     internal class ShaderProgram : IShaderProgram
     {
         private readonly IGLInvoker gl;
-        private readonly ITextFile textFile;
+        private readonly IFile file;
         private bool isDisposed;
 
         /// <summary>
@@ -21,14 +21,14 @@ namespace Raptor.OpenGL
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="textFile">Loads text file data.</param>
+        /// <param name="file">Loads shader source code file.</param>
         /// <param name="batchSize">The batch size that the shader will support.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
         /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        public ShaderProgram(IGLInvoker gl, ITextFile textFile)
+        public ShaderProgram(IGLInvoker gl, IFile file)
         {
             this.gl = gl;
-            this.textFile = textFile;
+            this.file = file;
             Init();
         }
 
@@ -191,7 +191,9 @@ namespace Raptor.OpenGL
             // Load the source code from the shader files
             var result = new StringBuilder();
 
-            var sourceCodeLines = this.textFile.LoadAsLines(shaderFilePath);
+            var sourceCode = this.file.ReadAllText(shaderFilePath);
+
+            var sourceCodeLines = sourceCode.Split(new char[] { '\r', '\n' });
 
             foreach (var line in sourceCodeLines)
             {

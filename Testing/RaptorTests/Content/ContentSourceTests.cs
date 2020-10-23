@@ -9,9 +9,9 @@ namespace RaptorTests.Content
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Reflection;
     using System.Text;
-    using FileIO.Core;
     using Moq;
     using Raptor.Content;
     using Raptor.Exceptions;

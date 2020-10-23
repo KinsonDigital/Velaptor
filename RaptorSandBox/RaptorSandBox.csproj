@@ -57,7 +57,7 @@
   
   
     <!--COPY SHADER FILES TO OUTPUT FOLDER-->
-    <Target Name="Copy-Shaders-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
+    <Target Name="Copy-Shaders-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release|AnyCPU'" AfterTargets="Build">
       <Copy SourceFiles="$(SolutionDir)Raptor\OpenGL\shader.vert" DestinationFolder="$(TargetDir)" />
       <Copy SourceFiles="$(SolutionDir)Raptor\OpenGL\shader.frag" DestinationFolder="$(TargetDir)" />
     </Target>

@@ -6,7 +6,7 @@ namespace RaptorTests.Graphics
 {
     using System;
     using System.Drawing;
-    using FileIO.Core;
+    using System.IO.Abstractions;
     using Moq;
     using OpenToolkit.Graphics.OpenGL4;
     using OpenToolkit.Mathematics;
@@ -22,7 +22,7 @@ namespace RaptorTests.Graphics
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IShaderProgram> mockShader;
         private readonly Mock<IGPUBuffer> mockBuffer;
-        private readonly Mock<ITextFile> mockTextFile;
+        private readonly Mock<IFile> mockTextFile;
 
         public SpriteBatchTests()
         {
@@ -38,7 +38,7 @@ namespace RaptorTests.Graphics
 
             this.mockBuffer = new Mock<IGPUBuffer>();
 
-            this.mockTextFile = new Mock<ITextFile>();
+            this.mockTextFile = new Mock<IFile>();
         }
 
         #region Constructor Tets
@@ -351,7 +351,7 @@ namespace RaptorTests.Graphics
         #endregion
 
         /// <summary>
-        /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
+        /// Assert that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
         /// </summary>
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
@@ -359,7 +359,7 @@ namespace RaptorTests.Graphics
             => AssertBatchRendered(totalItemsInBatch, totalBatchUpdates, totalTextureBinds, totalDrawCalls, default);
 
         /// <summary>
-        /// Assserts that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
+        /// Assert that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
         /// </summary>
         /// <param name="totalItemsInBatch">The total amount of textures to be expected in the batch.</param>
         /// <param name="totalBatchUpdates">The total amount of batch data updates.</param>
