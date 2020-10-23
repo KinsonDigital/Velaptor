@@ -22,7 +22,7 @@ namespace Raptor
     [ExcludeFromCodeCoverage]
     internal static class IoC
     {
-        private static readonly FileSystem FileSystem;
+        private static readonly FileSystem FileSystem = new FileSystem();
         private static readonly Container IoCContainer = new Container();
         private static bool isInitialized;
 
