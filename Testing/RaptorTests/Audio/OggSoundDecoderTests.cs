@@ -65,7 +65,9 @@ namespace RaptorTests.Audio
                     // This prevents the while loop from continuing forever.
                     // This simulates that the data is finished being read
                     if (invokeCount == 1)
+                    {
                         return 0;
+                    }
 
                     fixed (float* pBuffer = buffer)
                     {

@@ -32,12 +32,11 @@ namespace RaptorTests.Input
             }
         }
 
+#pragma warning disable SA1005 // Single line comments should begin with single space
         public static IEnumerable<object[]> StandardNumberKeyCodeData =>
             new List<object[]>
             {
-#pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
-#pragma warning restore SA1005 // Single line comments should begin with single space
                 new object[] { KeyCode.D0,          true },
                 new object[] { KeyCode.D1,          true },
                 new object[] { KeyCode.D2,          true },
@@ -64,9 +63,7 @@ namespace RaptorTests.Input
         public static IEnumerable<object[]> StandardNumberKeysWithShiftDownCharacterData =>
             new List<object[]>
             {
-#pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
-#pragma warning restore SA1005 // Single line comments should begin with single space
                 new object[] { KeyCode.D0,          ')' },
                 new object[] { KeyCode.D1,          '!' },
                 new object[] { KeyCode.D2,          '@' },
@@ -82,9 +79,7 @@ namespace RaptorTests.Input
         public static IEnumerable<object[]> StandardNumberKeysWithShiftUpCharacterData =>
             new List<object[]>
             {
-#pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
-#pragma warning restore SA1005 // Single line comments should begin with single space
                 new object[] { KeyCode.D0,          '0' },
                 new object[] { KeyCode.D1,          '1' },
                 new object[] { KeyCode.D2,          '2' },
@@ -100,9 +95,7 @@ namespace RaptorTests.Input
         public static IEnumerable<object[]> NumpadNumberKeyCodeData =>
             new List<object[]>
             {
-#pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
-#pragma warning restore SA1005 // Single line comments should begin with single space
                 new object[] { KeyCode.D0,          false },
                 new object[] { KeyCode.D1,          false },
                 new object[] { KeyCode.D2,          false },
@@ -125,6 +118,7 @@ namespace RaptorTests.Input
                 new object[] { KeyCode.KeyPad8,     true },
                 new object[] { KeyCode.KeyPad9,     true },
             };
+#pragma warning restore SA1005 // Single line comments should begin with single space
 
         public static IEnumerable<object[]> LetterKeyUpperCaseCharacterData =>
             new List<object[]>
