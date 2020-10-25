@@ -6,7 +6,7 @@ namespace RaptorTests.Content
 {
     using System.Collections.ObjectModel;
     using Moq;
-    using OpenToolkit.Audio.OpenAL;
+    using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
     using Raptor.Audio.Exceptions;
     using Raptor.Content;

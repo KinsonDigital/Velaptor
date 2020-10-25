@@ -10,8 +10,8 @@ namespace Raptor.Graphics
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
     using Raptor.OpenGL;
 
     /// <inheritdoc/>
@@ -272,7 +272,7 @@ namespace Raptor.Graphics
         }
 
         /// <summary>
-        /// Builds a complete transformation matrix using the given params.
+        /// Builds a complete transformation matrix using the given parameters.
         /// </summary>
         /// <param name="x">The x position of a texture.</param>
         /// <param name="y">The y position of a texture.</param>
@@ -291,7 +291,7 @@ namespace Raptor.Graphics
             var ndcX = x.MapValue(0f, RenderSurfaceWidth, -1f, 1f);
             var ndcY = y.MapValue(0f, RenderSurfaceHeight, 1f, -1f);
 
-            // NOTE: (+ degrees) rotates CCW and (- degress) rotates CW
+            // NOTE: (+ degrees) rotates CCW and (- degrees) rotates CW
             var angleRadians = MathHelper.DegreesToRadians(angle);
 
             // Invert angle to rotate CW instead of CCW

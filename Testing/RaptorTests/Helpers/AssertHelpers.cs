@@ -33,7 +33,9 @@ namespace RaptorTests.Helpers
             where T : Exception
         {
             if (action is null)
+            {
                 throw new ArgumentNullException(nameof(action), "The parameter must not be null");
+            }
 
             try
             {
@@ -48,7 +50,9 @@ namespace RaptorTests.Helpers
         public static void DoesNotThrowNullReference(Action action)
         {
             if (action is null)
+            {
                 throw new ArgumentNullException(nameof(action), "The parameter must not be null");
+            }
 
             try
             {
@@ -100,13 +104,19 @@ namespace RaptorTests.Helpers
             where T : class
         {
             if (expectedItems is null && !(actualItems is null))
+            {
                 Assert.True(false, $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
+            }
 
             if (!(expectedItems is null) && actualItems is null)
+            {
                 Assert.True(false, $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
+            }
 
             if (expectedItems.Count() != actualItems.Count())
+            {
                 Assert.True(false, $"The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
+            }
 
             var expectedArrayItems = expectedItems.ToArray();
             var actualArrayItems = actualItems.ToArray();
@@ -114,13 +124,19 @@ namespace RaptorTests.Helpers
             for (var i = 0; i < expectedArrayItems.Length; i++)
             {
                 if ((expectedArrayItems[i] is null) && !(actualArrayItems[i] is null))
+                {
                     Assert.True(false, $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                }
 
                 if (!(expectedArrayItems[i] is null) && (actualArrayItems[i] is null))
+                {
                     Assert.True(false, $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                }
 
                 if (expectedArrayItems[i] != actualArrayItems[i])
+                {
                     Assert.True(false, $"The expected and actual item at index '{i}' are not equal.");
+                }
             }
 
             Assert.True(true);
@@ -136,14 +152,18 @@ namespace RaptorTests.Helpers
         public static void AllItemsAre<T>(IEnumerable<T> items, Predicate<T> arePredicate)
         {
             if (arePredicate is null)
+            {
                 throw new ArgumentNullException(nameof(arePredicate), "The parameter must not be null.");
+            }
 
             var itemsToCheck = items.ToArray();
 
             for (var i = 0; i < itemsToCheck.Length; i++)
             {
                 if (arePredicate(itemsToCheck[i]))
+                {
                     continue;
+                }
 
                 Assert.True(false, $"The item '{itemsToCheck[i]}' at index '{i}' returned false with the '{nameof(arePredicate)}'");
             }

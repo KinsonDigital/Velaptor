@@ -23,10 +23,9 @@ namespace RaptorSandBox
         private ISound? deadShipsMusic;
         private ISound? quietPlaceMusic;
         private float timeElapsed;
+        private int linkTexturePosX;
 
-        public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader)
-        {
-        }
+        public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader) => this.linkTexturePosX = 400;
 
         public override void OnLoad()
         {
@@ -53,6 +52,11 @@ namespace RaptorSandBox
         {
             this.currentKeyboardState = Keyboard.GetState();
             this.currentMouseState = Mouse.GetMouseState();
+
+            if (this.currentKeyboardState.IsKeyDown(KeyCode.Right))
+            {
+                this.linkTexturePosX += 1;
+            }
 
             if (this.currentKeyboardState.IsKeyUp(KeyCode.Space) && this.previousKeyboardState.IsKeyDown(KeyCode.Space))
             {
@@ -93,7 +97,7 @@ namespace RaptorSandBox
             this.spriteBatch?.BeginBatch();
 
             this.spriteBatch?.Render(this.dungeonTexture, 0, 0);
-            this.spriteBatch?.Render(this.linkTexture, 400, 400);
+            this.spriteBatch?.Render(this.linkTexture, this.linkTexturePosX, 400);
 
             this.spriteBatch?.EndBatch();
 

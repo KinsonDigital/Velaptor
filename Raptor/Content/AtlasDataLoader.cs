@@ -4,8 +4,8 @@
 
 namespace Raptor.Content
 {
+    using System.IO.Abstractions;
     using System.Text.Json;
-    using FileIO.Core;
 
     /// <summary>
     /// Loads atlas data.
@@ -13,18 +13,18 @@ namespace Raptor.Content
     /// <typeparam name="T">The type of data to load.</typeparam>
     public class AtlasDataLoader<T> : ILoader<T[]>
     {
-        private readonly ITextFile textFile;
+        private readonly IFile file;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasDataLoader{T}"/> class.
         /// </summary>
-        /// <param name="textFile">Loads text files.</param>
-        public AtlasDataLoader(ITextFile textFile) => this.textFile = textFile;
+        /// <param name="file">Used to load the texture atlas.</param>
+        public AtlasDataLoader(IFile file) => this.file = file;
 
         /// <inheritdoc/>
         public T[] Load(string filePath)
         {
-            var rawData = this.textFile.Load(filePath);
+            var rawData = this.file.ReadAllText(filePath);
 
             return JsonSerializer.Deserialize<T[]>(rawData);
         }

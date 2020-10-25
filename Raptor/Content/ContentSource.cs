@@ -7,10 +7,10 @@ namespace Raptor.Content
 {
     using System;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using System.Reflection;
     using System.Text;
-    using FileIO.Core;
     using Raptor.Exceptions;
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace Raptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentSource"/> class.
         /// </summary>
-        /// <param name="directory">Gets information about directories.</param>
+        /// <param name="directory">Manages directories.</param>
         public ContentSource(IDirectory directory) => this.directory = directory;
 
         /// <inheritdoc/>

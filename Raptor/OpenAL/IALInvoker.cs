@@ -6,7 +6,7 @@ namespace Raptor.OpenAL
 {
     using System;
     using System.Collections.Generic;
-    using OpenToolkit.Audio.OpenAL;
+    using OpenTK.Audio.OpenAL;
 
     /// <summary>
     /// Invokes OpenAL functions.
@@ -179,7 +179,7 @@ namespace Raptor.OpenAL
         IList<string> GetString(ALDevice device, AlcGetStringList param);
 
         /// <summary>
-        ///     This function fills a buffer with audio buffer. All the pre-defined formats are
+        ///     This function fills a buffer with audio buffer. All the predefined formats are
         ///     PCM buffer, but this function may be used by extensions to load other buffer
         ///     types as well.
         /// </summary>

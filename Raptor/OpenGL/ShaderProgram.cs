@@ -6,14 +6,14 @@ namespace Raptor.OpenGL
 {
     using System;
     using System.Text;
-    using FileIO.Core;
-    using OpenToolkit.Graphics.OpenGL4;
+    using OpenTK.Graphics.OpenGL4;
+    using Raptor.Services;
 
     /// <inheritdoc/>
     internal class ShaderProgram : IShaderProgram
     {
         private readonly IGLInvoker gl;
-        private readonly ITextFile textFile;
+        private readonly IEmbeddedResourceLoaderService resourceLoaderService;
         private bool isDisposed;
 
         /// <summary>
@@ -21,14 +21,14 @@ namespace Raptor.OpenGL
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="textFile">Loads text file data.</param>
+        /// <param name="resourceLoaderService">Loads embedded resources.</param>
         /// <param name="batchSize">The batch size that the shader will support.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
         /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        public ShaderProgram(IGLInvoker gl, ITextFile textFile)
+        public ShaderProgram(IGLInvoker gl, IEmbeddedResourceLoaderService resourceLoaderService)
         {
             this.gl = gl;
-            this.textFile = textFile;
+            this.resourceLoaderService = resourceLoaderService;
             Init();
         }
 
@@ -182,16 +182,18 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Loads the shader source code at the given <paramref name="shaderFilePath"/>.
+        /// Loads the shader source code at the given <paramref name="shaderFileName"/>.
         /// </summary>
-        /// <param name="shaderFilePath">The file path of the shader source code file.</param>
+        /// <param name="shaderFileName">The file name of the shader source code file.</param>
         /// <returns>The source code.</returns>
-        private string LoadShaderSourceCode(string shaderFilePath)
+        private string LoadShaderSourceCode(string shaderFileName)
         {
             // Load the source code from the shader files
             var result = new StringBuilder();
 
-            var sourceCodeLines = this.textFile.LoadAsLines(shaderFilePath);
+            var sourceCode = this.resourceLoaderService.LoadResource(shaderFileName);
+
+            var sourceCodeLines = sourceCode.Split(new char[] { '\r', '\n' });
 
             foreach (var line in sourceCodeLines)
             {

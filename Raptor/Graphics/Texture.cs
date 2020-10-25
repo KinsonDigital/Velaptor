@@ -6,7 +6,7 @@ namespace Raptor.Graphics
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using OpenToolkit.Graphics.OpenGL4;
+    using OpenTK.Graphics.OpenGL4;
     using Raptor.OpenGL;
 
     /// <summary>

@@ -17,14 +17,11 @@ namespace RaptorTests.Input
         [Fact]
         public void GetState_WhenInvokedWithNoKeyStates_SetsUpKeyStates()
         {
-            // Arrange
-            var state = Keyboard.GetState();
-
             // Act
-            var actual = state.GetKeyStates();
+            Keyboard.GetState();
 
             // Assert
-            Assert.Equal(132, Keyboard.KeyStates.Count);
+            Assert.Equal(119, Keyboard.KeyStates.Count);
         }
 
         [Fact]
@@ -40,9 +37,13 @@ namespace RaptorTests.Input
             AssertHelpers.AllItemsAre(actual.GetKeyStates(), state =>
             {
                 if (state.Key == KeyCode.T)
+                {
                     return state.Value;
+                }
                 else
+                {
                     return true;
+                }
             });
         }
 
@@ -57,9 +58,13 @@ namespace RaptorTests.Input
             AssertHelpers.AllItemsAre(actual.GetKeyStates(), state =>
             {
                 if (state.Key == KeyCode.F)
+                {
                     return state.Value;
+                }
                 else
+                {
                     return true;
+                }
             });
         }
         #endregion

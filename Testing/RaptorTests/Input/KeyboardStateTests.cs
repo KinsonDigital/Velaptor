@@ -32,99 +32,93 @@ namespace RaptorTests.Input
             }
         }
 
+#pragma warning disable SA1005 // Single line comments should begin with single space
         public static IEnumerable<object[]> StandardNumberKeyCodeData =>
             new List<object[]>
             {
-#pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
-#pragma warning restore SA1005 // Single line comments should begin with single space
-                new object[] { KeyCode.Number0,          true },
-                new object[] { KeyCode.Number1,          true },
-                new object[] { KeyCode.Number2,          true },
-                new object[] { KeyCode.Number3,          true },
-                new object[] { KeyCode.Number4,          true },
-                new object[] { KeyCode.Number5,          true },
-                new object[] { KeyCode.Number6,          true },
-                new object[] { KeyCode.Number7,          true },
-                new object[] { KeyCode.Number8,          true },
-                new object[] { KeyCode.Number9,          true },
+                new object[] { KeyCode.D0,          true },
+                new object[] { KeyCode.D1,          true },
+                new object[] { KeyCode.D2,          true },
+                new object[] { KeyCode.D3,          true },
+                new object[] { KeyCode.D4,          true },
+                new object[] { KeyCode.D5,          true },
+                new object[] { KeyCode.D6,          true },
+                new object[] { KeyCode.D7,          true },
+                new object[] { KeyCode.D8,          true },
+                new object[] { KeyCode.D9,          true },
 
-                new object[] { KeyCode.Numpad0,     false },
-                new object[] { KeyCode.Numpad1,     false },
-                new object[] { KeyCode.Numpad2,     false },
-                new object[] { KeyCode.Numpad3,     false },
-                new object[] { KeyCode.Numpad4,     false },
-                new object[] { KeyCode.Numpad5,     false },
-                new object[] { KeyCode.Numpad6,     false },
-                new object[] { KeyCode.Numpad7,     false },
-                new object[] { KeyCode.Numpad8,     false },
-                new object[] { KeyCode.Numpad9,     false },
+                new object[] { KeyCode.KeyPad0,     false },
+                new object[] { KeyCode.KeyPad1,     false },
+                new object[] { KeyCode.KeyPad2,     false },
+                new object[] { KeyCode.KeyPad3,     false },
+                new object[] { KeyCode.KeyPad4,     false },
+                new object[] { KeyCode.KeyPad5,     false },
+                new object[] { KeyCode.KeyPad6,     false },
+                new object[] { KeyCode.KeyPad7,     false },
+                new object[] { KeyCode.KeyPad8,     false },
+                new object[] { KeyCode.KeyPad9,     false },
             };
 
         public static IEnumerable<object[]> StandardNumberKeysWithShiftDownCharacterData =>
             new List<object[]>
             {
-#pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
-#pragma warning restore SA1005 // Single line comments should begin with single space
-                new object[] { KeyCode.Number0,          ')' },
-                new object[] { KeyCode.Number1,          '!' },
-                new object[] { KeyCode.Number2,          '@' },
-                new object[] { KeyCode.Number3,          '#' },
-                new object[] { KeyCode.Number4,          '$' },
-                new object[] { KeyCode.Number5,          '%' },
-                new object[] { KeyCode.Number6,          '^' },
-                new object[] { KeyCode.Number7,          '&' },
-                new object[] { KeyCode.Number8,          '*' },
-                new object[] { KeyCode.Number9,          '(' },
+                new object[] { KeyCode.D0,          ')' },
+                new object[] { KeyCode.D1,          '!' },
+                new object[] { KeyCode.D2,          '@' },
+                new object[] { KeyCode.D3,          '#' },
+                new object[] { KeyCode.D4,          '$' },
+                new object[] { KeyCode.D5,          '%' },
+                new object[] { KeyCode.D6,          '^' },
+                new object[] { KeyCode.D7,          '&' },
+                new object[] { KeyCode.D8,          '*' },
+                new object[] { KeyCode.D9,          '(' },
             };
 
         public static IEnumerable<object[]> StandardNumberKeysWithShiftUpCharacterData =>
             new List<object[]>
             {
-#pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
-#pragma warning restore SA1005 // Single line comments should begin with single space
-                new object[] { KeyCode.Number0,          '0' },
-                new object[] { KeyCode.Number1,          '1' },
-                new object[] { KeyCode.Number2,          '2' },
-                new object[] { KeyCode.Number3,          '3' },
-                new object[] { KeyCode.Number4,          '4' },
-                new object[] { KeyCode.Number5,          '5' },
-                new object[] { KeyCode.Number6,          '6' },
-                new object[] { KeyCode.Number7,          '7' },
-                new object[] { KeyCode.Number8,          '8' },
-                new object[] { KeyCode.Number9,          '9' },
+                new object[] { KeyCode.D0,          '0' },
+                new object[] { KeyCode.D1,          '1' },
+                new object[] { KeyCode.D2,          '2' },
+                new object[] { KeyCode.D3,          '3' },
+                new object[] { KeyCode.D4,          '4' },
+                new object[] { KeyCode.D5,          '5' },
+                new object[] { KeyCode.D6,          '6' },
+                new object[] { KeyCode.D7,          '7' },
+                new object[] { KeyCode.D8,          '8' },
+                new object[] { KeyCode.D9,          '9' },
             };
 
         public static IEnumerable<object[]> NumpadNumberKeyCodeData =>
             new List<object[]>
             {
-#pragma warning disable SA1005 // Single line comments should begin with single space
                 //              key param       expected param
-#pragma warning restore SA1005 // Single line comments should begin with single space
-                new object[] { KeyCode.Number0,          false },
-                new object[] { KeyCode.Number1,          false },
-                new object[] { KeyCode.Number2,          false },
-                new object[] { KeyCode.Number3,          false },
-                new object[] { KeyCode.Number4,          false },
-                new object[] { KeyCode.Number5,          false },
-                new object[] { KeyCode.Number6,          false },
-                new object[] { KeyCode.Number7,          false },
-                new object[] { KeyCode.Number8,          false },
-                new object[] { KeyCode.Number9,          false },
+                new object[] { KeyCode.D0,          false },
+                new object[] { KeyCode.D1,          false },
+                new object[] { KeyCode.D2,          false },
+                new object[] { KeyCode.D3,          false },
+                new object[] { KeyCode.D4,          false },
+                new object[] { KeyCode.D5,          false },
+                new object[] { KeyCode.D6,          false },
+                new object[] { KeyCode.D7,          false },
+                new object[] { KeyCode.D8,          false },
+                new object[] { KeyCode.D9,          false },
 
-                new object[] { KeyCode.Numpad0,     true },
-                new object[] { KeyCode.Numpad1,     true },
-                new object[] { KeyCode.Numpad2,     true },
-                new object[] { KeyCode.Numpad3,     true },
-                new object[] { KeyCode.Numpad4,     true },
-                new object[] { KeyCode.Numpad5,     true },
-                new object[] { KeyCode.Numpad6,     true },
-                new object[] { KeyCode.Numpad7,     true },
-                new object[] { KeyCode.Numpad8,     true },
-                new object[] { KeyCode.Numpad9,     true },
+                new object[] { KeyCode.KeyPad0,     true },
+                new object[] { KeyCode.KeyPad1,     true },
+                new object[] { KeyCode.KeyPad2,     true },
+                new object[] { KeyCode.KeyPad3,     true },
+                new object[] { KeyCode.KeyPad4,     true },
+                new object[] { KeyCode.KeyPad5,     true },
+                new object[] { KeyCode.KeyPad6,     true },
+                new object[] { KeyCode.KeyPad7,     true },
+                new object[] { KeyCode.KeyPad8,     true },
+                new object[] { KeyCode.KeyPad9,     true },
             };
+#pragma warning restore SA1005 // Single line comments should begin with single space
 
         public static IEnumerable<object[]> LetterKeyUpperCaseCharacterData =>
             new List<object[]>
@@ -193,52 +187,50 @@ namespace RaptorTests.Input
         public static IEnumerable<object[]> SymbolKeyCharacterWithShiftUpData =>
             new List<object[]>
             {
-                new object[] { KeyCode.Plus, '=' },
+                new object[] { KeyCode.Equal, '=' },
                 new object[] { KeyCode.Comma, ',' },
                 new object[] { KeyCode.Minus, '-' },
                 new object[] { KeyCode.Period, '.' },
-                new object[] { KeyCode.ForwardSlash, '/' },
-                new object[] { KeyCode.Tilde, '`' },
-                new object[] { KeyCode.BackSlash, '\\' },
+                new object[] { KeyCode.Slash, '/' },
+                new object[] { KeyCode.Backslash, '\\' },
                 new object[] { KeyCode.LeftBracket, '[' },
                 new object[] { KeyCode.RightBracket, ']' },
-                new object[] { KeyCode.Quote, '\'' },
+                new object[] { KeyCode.Apostrophe, '\'' },
                 new object[] { KeyCode.Semicolon, ';' },
                 new object[] { KeyCode.Period, '.' },
-                new object[] { KeyCode.NumpadDivide, '/' },
-                new object[] { KeyCode.NumpadMultiply, '*' },
-                new object[] { KeyCode.NumpadMinus, '-' },
-                new object[] { KeyCode.NumpadPlus, '+' },
+                new object[] { KeyCode.KeyPadDivide, '/' },
+                new object[] { KeyCode.KeyPadMultiply, '*' },
+                new object[] { KeyCode.KeyPadSubtract, '-' },
+                new object[] { KeyCode.KeyPadAdd, '+' },
             };
 
         public static IEnumerable<object[]> SymbolKeyCharacterWithShiftDownData =>
             new List<object[]>
             {
-                new object[] { KeyCode.Plus, '+' },
+                new object[] { KeyCode.Equal, '+' },
                 new object[] { KeyCode.Comma, '<' },
                 new object[] { KeyCode.Minus, '_' },
                 new object[] { KeyCode.Period, '>' },
-                new object[] { KeyCode.ForwardSlash, '?' },
-                new object[] { KeyCode.Tilde, '~' },
-                new object[] { KeyCode.BackSlash, '|' },
+                new object[] { KeyCode.Slash, '?' },
+                new object[] { KeyCode.Backslash, '|' },
                 new object[] { KeyCode.LeftBracket, '{' },
                 new object[] { KeyCode.RightBracket, '}' },
-                new object[] { KeyCode.Quote, '\'' },
+                new object[] { KeyCode.Apostrophe, '\'' },
                 new object[] { KeyCode.Semicolon, ':' },
-                new object[] { KeyCode.Number1, '!' },
-                new object[] { KeyCode.Number2, '@' },
-                new object[] { KeyCode.Number3, '#' },
-                new object[] { KeyCode.Number4, '$' },
-                new object[] { KeyCode.Number5, '%' },
-                new object[] { KeyCode.Number6, '^' },
-                new object[] { KeyCode.Number7, '&' },
-                new object[] { KeyCode.Number8, '*' },
-                new object[] { KeyCode.Number9, '(' },
-                new object[] { KeyCode.Number0, ')' },
-                new object[] { KeyCode.NumpadDivide, '/' },
-                new object[] { KeyCode.NumpadMultiply, '*' },
-                new object[] { KeyCode.NumpadMinus, '-' },
-                new object[] { KeyCode.Plus, '+' },
+                new object[] { KeyCode.D1, '!' },
+                new object[] { KeyCode.D2, '@' },
+                new object[] { KeyCode.D3, '#' },
+                new object[] { KeyCode.D4, '$' },
+                new object[] { KeyCode.D5, '%' },
+                new object[] { KeyCode.D6, '^' },
+                new object[] { KeyCode.D7, '&' },
+                new object[] { KeyCode.D8, '*' },
+                new object[] { KeyCode.D9, '(' },
+                new object[] { KeyCode.D0, ')' },
+                new object[] { KeyCode.KeyPadDivide, '/' },
+                new object[] { KeyCode.KeyPadMultiply, '*' },
+                new object[] { KeyCode.KeyPadSubtract, '-' },
+                new object[] { KeyCode.Equal, '+' },
             };
 
         #region Prop Tests

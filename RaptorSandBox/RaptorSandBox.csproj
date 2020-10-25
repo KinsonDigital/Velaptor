@@ -57,11 +57,11 @@
   
   
     <!--COPY SHADER FILES TO OUTPUT FOLDER-->
-    <Target Name="Copy-Shaders-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug-Win|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release-Win|AnyCPU'" AfterTargets="Build">
+    <Target Name="Copy-Shaders-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release|AnyCPU'" AfterTargets="Build">
       <Copy SourceFiles="$(SolutionDir)Raptor\OpenGL\shader.vert" DestinationFolder="$(TargetDir)" />
       <Copy SourceFiles="$(SolutionDir)Raptor\OpenGL\shader.frag" DestinationFolder="$(TargetDir)" />
     </Target>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="copy &quot;$(SolutionDir)Raptor\Libs\openal32.dll&quot; &quot;$(TargetDir)openal32.dll&quot; /Y" />
+      <Exec Command="copy &quot;$(SolutionDir)Raptor\Libs\win-x64\openal32.dll&quot; &quot;$(TargetDir)openal32.dll&quot; /Y" />
     </Target>
 </Project>

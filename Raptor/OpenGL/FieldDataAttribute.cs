@@ -5,7 +5,7 @@
 namespace Raptor.OpenGL
 {
     using System;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Mathematics;
 
     /// <summary>
     /// Describes the data layout of a field for setting up OpenGL attribute pointers.

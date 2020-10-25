@@ -8,8 +8,8 @@ namespace Raptor.OpenGL
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
 
     /// <inheritdoc/>
     internal class GPUBuffer<T> : IGPUBuffer
@@ -225,7 +225,7 @@ namespace Raptor.OpenGL
 
         /// <summary>
         /// Creates a vertex buffer large enough to hold the total number of quads
-        /// in the the <paramref name="totalQuads"/> param.
+        /// in the <paramref name="totalQuads"/> param.
         /// </summary>
         /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
         private void CreateVertexBuffer()

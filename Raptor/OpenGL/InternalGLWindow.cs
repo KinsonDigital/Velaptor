@@ -5,8 +5,8 @@
 namespace Raptor.OpenGL
 {
     using System.Diagnostics.CodeAnalysis;
-    using OpenToolkit.Windowing.Desktop;
-    using OpenToolkit.Windowing.GraphicsLibraryFramework;
+    using OpenTK.Windowing.Desktop;
+    using OpenTK.Windowing.GraphicsLibraryFramework;
 
     /// <summary>
     /// The internal OpenGL window that extends the <see cref="GameWindow"/>

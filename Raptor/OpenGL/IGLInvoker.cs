@@ -5,8 +5,8 @@
 namespace Raptor.OpenGL
 {
     using System;
-    using OpenToolkit.Graphics.OpenGL4;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Graphics.OpenGL4;
+    using OpenTK.Mathematics;
 
     /// <summary>
     /// Invokes OpenGL calls.

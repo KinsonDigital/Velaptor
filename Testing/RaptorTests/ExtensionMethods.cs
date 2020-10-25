@@ -8,7 +8,7 @@ namespace RaptorTests
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Reflection;
-    using OpenToolkit.Mathematics;
+    using OpenTK.Mathematics;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.
@@ -34,7 +34,9 @@ namespace RaptorTests
                 var fieldValue = foundField.GetValue(fieldContainer);
 
                 if (fieldValue is null)
+                {
                     return false;
+                }
 
                 return foundField.FieldType switch
                 {
@@ -91,7 +93,9 @@ namespace RaptorTests
         private static FieldInfo GetField(this object value, string name)
         {
             if (value is null)
+            {
                 throw new ArgumentNullException(nameof(value), "The parameter must not be null");
+            }
 
             var privateFields = (from f in value.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static)
                                  where f.Name == name
@@ -99,7 +103,9 @@ namespace RaptorTests
 
             // If the list is not found throw not found exception
             if (privateFields == null || privateFields.Length <= 0)
+            {
                 throw new Exception($"Cannot find the field {name} on the given object of type {value.GetType()}");
+            }
 
             return privateFields.FirstOrDefault();
         }

@@ -8,7 +8,7 @@ namespace RaptorTests.Audio
     using System;
     using System.Collections.ObjectModel;
     using Moq;
-    using OpenToolkit.Audio.OpenAL;
+    using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.OpenAL;
