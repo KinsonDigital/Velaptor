@@ -32,10 +32,10 @@ namespace Raptor.Input
         /// </summary>
         private static readonly KeyCode[] StandardNumberKeys = new[]
         {
-            KeyCode.Number0, KeyCode.Number1, KeyCode.Number2,
-            KeyCode.Number3, KeyCode.Number4, KeyCode.Number5,
-            KeyCode.Number6, KeyCode.Number7, KeyCode.Number8,
-            KeyCode.Number9,
+            KeyCode.D0, KeyCode.D1, KeyCode.D2,
+            KeyCode.D3, KeyCode.D4, KeyCode.D5,
+            KeyCode.D6, KeyCode.D7, KeyCode.D8,
+            KeyCode.D9,
         };
 
         /// <summary>
@@ -43,10 +43,10 @@ namespace Raptor.Input
         /// </summary>
         private static readonly KeyCode[] NumpadNumberKeys = new[]
         {
-            KeyCode.Numpad0, KeyCode.Numpad1, KeyCode.Numpad2,
-            KeyCode.Numpad3, KeyCode.Numpad4, KeyCode.Numpad5,
-            KeyCode.Numpad6, KeyCode.Numpad7, KeyCode.Numpad8,
-            KeyCode.Numpad9,
+            KeyCode.KeyPad0, KeyCode.KeyPad1, KeyCode.KeyPad2,
+            KeyCode.KeyPad3, KeyCode.KeyPad4, KeyCode.KeyPad5,
+            KeyCode.KeyPad6, KeyCode.KeyPad7, KeyCode.KeyPad8,
+            KeyCode.KeyPad9,
         };
 
         /// <summary>
@@ -54,11 +54,9 @@ namespace Raptor.Input
         /// </summary>
         private static readonly KeyCode[] SymbolKeys = new[]
         {
-            KeyCode.Semicolon, KeyCode.Plus, KeyCode.Comma,
-            KeyCode.Minus, KeyCode.Period, KeyCode.ForwardSlash,
-            KeyCode.Tilde, KeyCode.LeftBracket, KeyCode.RightBracket,
-            KeyCode.Quote, KeyCode.NumpadDivide, KeyCode.NumpadMultiply,
-            KeyCode.NumpadMinus, KeyCode.NumpadPlus, KeyCode.NumpadDecimal, KeyCode.BackSlash,
+            KeyCode.Semicolon, KeyCode.Equal, KeyCode.Comma, KeyCode.Minus, KeyCode.Period, KeyCode.Slash,
+            KeyCode.LeftBracket, KeyCode.RightBracket, KeyCode.Apostrophe, KeyCode.KeyPadDivide, KeyCode.KeyPadMultiply,
+            KeyCode.KeyPadSubtract, KeyCode.KeyPadAdd, KeyCode.KeyPadDecimal, KeyCode.Backslash,
         };
 
         /// <summary>
@@ -66,9 +64,9 @@ namespace Raptor.Input
         /// </summary>
         private static readonly Dictionary<KeyCode, char> NoShiftStandardNumberCharacters = new Dictionary<KeyCode, char>()
         {
-            { KeyCode.Number0, '0' }, { KeyCode.Number1, '1' }, { KeyCode.Number2, '2' },
-            { KeyCode.Number3, '3' }, { KeyCode.Number4, '4' }, { KeyCode.Number5, '5' },
-            { KeyCode.Number6, '6' }, { KeyCode.Number7, '7' }, { KeyCode.Number8, '8' }, { KeyCode.Number9, '9' },
+            { KeyCode.D0, '0' }, { KeyCode.D1, '1' }, { KeyCode.D2, '2' },
+            { KeyCode.D3, '3' }, { KeyCode.D4, '4' }, { KeyCode.D5, '5' },
+            { KeyCode.D6, '6' }, { KeyCode.D7, '7' }, { KeyCode.D8, '8' }, { KeyCode.D9, '9' },
         };
 
         /// <summary>
@@ -76,11 +74,10 @@ namespace Raptor.Input
         /// </summary>
         private static readonly Dictionary<KeyCode, char> NoShiftSymbolCharacters = new Dictionary<KeyCode, char>()
         {
-            { KeyCode.Plus, '=' }, { KeyCode.Comma, ',' }, { KeyCode.Minus, '-' },
-            { KeyCode.Period, '.' }, { KeyCode.ForwardSlash, '/' }, { KeyCode.Tilde, '`' },
-            { KeyCode.BackSlash, '\\' }, { KeyCode.LeftBracket, '[' }, { KeyCode.RightBracket, ']' },
-            { KeyCode.Quote, '\'' }, { KeyCode.Semicolon, ';' }, { KeyCode.NumpadPlus, '+' }, { KeyCode.NumpadDecimal, '.' },
-            { KeyCode.NumpadDivide, '/' }, { KeyCode.NumpadMultiply, '*' }, { KeyCode.NumpadMinus, '-' },
+            { KeyCode.Equal, '=' }, { KeyCode.Comma, ',' }, { KeyCode.Minus, '-' }, { KeyCode.Period, '.' }, { KeyCode.Slash, '/' },
+            { KeyCode.Backslash, '\\' }, { KeyCode.LeftBracket, '[' }, { KeyCode.RightBracket, ']' },
+            { KeyCode.Apostrophe, '\'' }, { KeyCode.Semicolon, ';' }, { KeyCode.KeyPadAdd, '+' }, { KeyCode.KeyPadDecimal, '.' },
+            { KeyCode.KeyPadDivide, '/' }, { KeyCode.KeyPadMultiply, '*' }, { KeyCode.KeyPadSubtract, '-' },
         };
 
         /// <summary>
@@ -88,14 +85,13 @@ namespace Raptor.Input
         /// </summary>
         private static readonly Dictionary<KeyCode, char> WithShiftSymbolCharacters = new Dictionary<KeyCode, char>()
         {
-            { KeyCode.Plus, '+' }, { KeyCode.Comma, '<' }, { KeyCode.Minus, '_' },
-            { KeyCode.Period, '>' }, { KeyCode.ForwardSlash, '?' }, { KeyCode.Tilde, '~' },
-            { KeyCode.BackSlash, '|' }, { KeyCode.LeftBracket, '{' }, { KeyCode.RightBracket, '}' },
-            { KeyCode.Quote, '\'' }, { KeyCode.Semicolon, ':' }, { KeyCode.Number1, '!' },
-            { KeyCode.Number2, '@' }, { KeyCode.Number3, '#' }, { KeyCode.Number4, '$' }, { KeyCode.Number5, '%' },
-            { KeyCode.Number6, '^' }, { KeyCode.Number7, '&' }, { KeyCode.Number8, '*' }, { KeyCode.Number9, '(' },
-            { KeyCode.Number0, ')' }, { KeyCode.NumpadDivide, '/' }, { KeyCode.NumpadMultiply, '*' }, { KeyCode.NumpadMinus, '-' },
-            { KeyCode.NumpadPlus, '+' }, { KeyCode.NumpadDecimal, '.' },
+            { KeyCode.Equal, '+' }, { KeyCode.Comma, '<' }, { KeyCode.Minus, '_' }, { KeyCode.Period, '>' }, { KeyCode.Slash, '?' },
+            { KeyCode.Backslash, '|' }, { KeyCode.LeftBracket, '{' }, { KeyCode.RightBracket, '}' },
+            { KeyCode.Apostrophe, '\'' }, { KeyCode.Semicolon, ':' }, { KeyCode.D1, '!' },
+            { KeyCode.D2, '@' }, { KeyCode.D3, '#' }, { KeyCode.D4, '$' }, { KeyCode.D5, '%' },
+            { KeyCode.D6, '^' }, { KeyCode.D7, '&' }, { KeyCode.D8, '*' }, { KeyCode.D9, '(' },
+            { KeyCode.D0, ')' }, { KeyCode.KeyPadDivide, '/' }, { KeyCode.KeyPadMultiply, '*' }, { KeyCode.KeyPadSubtract, '-' },
+            { KeyCode.KeyPadAdd, '+' }, { KeyCode.KeyPadDecimal, '.' },
         };
 
         private Dictionary<KeyCode, bool> keyStates;
@@ -111,7 +107,7 @@ namespace Raptor.Input
         public bool CapsLockOn => IsKeyDown(KeyCode.CapsLock);
 
         //// <summary>
-        //// Gets or sets a value indicating whether gets a value indicating if the numlock key is on.
+        //// Gets or sets a value indicating whether gets a value indicating if the num lock key is on.
         //// </summary>
         public bool NumLockOn => IsKeyDown(KeyCode.NumLock);
         */
