@@ -83,10 +83,8 @@ namespace Raptor
             });
             SuppressDisposableTransientWarning<IGPUBuffer>();
 
-            IoCContainer.Register<IShaderProgram>(() =>
-            {
-                return new ShaderProgram(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IEmbeddedResourceLoaderService>());
-            });
+            IoCContainer.Register<IShaderProgram, ShaderProgram>();
+
             SuppressDisposableTransientWarning<IShaderProgram>();
 
             IoCContainer.Register<ISpriteBatch>(() =>

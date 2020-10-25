@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Raptor</RootNamespace>
@@ -10,7 +10,7 @@
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Raptor</Product>
-    <Description>2D game development framework that provides 2D rendering, keyboard and mouse input and sound</Description>
+    <Description>2D game development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
     <Copyright>Copyright ©2020 Kinson Digital</Copyright>
     <PackageTags>raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>
@@ -62,10 +62,12 @@
   
   <!--TODO: Need to find a way to have different nuget packages for other operating systems such as linux and MacOS-->
 
-  <!--ADD VELCRO PHYSICS LIBRARY TO NUGET PACKAGE-->
-  <Target Name="Add-Velcro-Physics-Lib" AfterTargets="Build">
+  <!--ADD LIBRARIES TO NUGET PACKAGE-->
+  <Target Name="Add-Libs-To-Nuget-Package" AfterTargets="Build">
     <ItemGroup>
-      <Content Include="$(ProjectDir)Libs\VelcroPhysics.dll" Pack="true" PackagePath="\lib\$(TargetFramework)" />
+      <Content Include="$(ProjectDir)Libs\win-x86\openal32.dll" Pack="true" PackagePath="\runtimes\win-x86\native" />
+      <Content Include="$(ProjectDir)Libs\win-x64\openal32.dll" Pack="true" PackagePath="\runtimes\win-x64\native" />
+      <Content Include="$(ProjectDir)Libs\VelcroPhysics.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
     </ItemGroup>
   </Target>
 
