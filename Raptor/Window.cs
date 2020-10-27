@@ -7,6 +7,7 @@ namespace Raptor
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Numerics;
     using Raptor.Content;
 
     /// <summary>
@@ -47,6 +48,15 @@ namespace Raptor
         {
             get => this.window.Title;
             set => this.window.Title = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the position of the window.
+        /// </summary>
+        public Vector2 Position
+        {
+            get => this.window.Position;
+            set => this.window.Position = value;
         }
 
         /// <summary>

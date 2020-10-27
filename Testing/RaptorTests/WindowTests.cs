@@ -5,6 +5,7 @@
 namespace RaptorTests
 {
     using System;
+    using System.Numerics;
     using Moq;
     using Raptor;
     using Raptor.Content;
@@ -12,11 +13,17 @@ namespace RaptorTests
     using RaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="Window"/> class.
+    /// </summary>
     public class WindowTests
     {
         private readonly Mock<IWindow> mockWindow;
         private readonly Mock<IContentLoader> mockContentLoader;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowTests"/> class.
+        /// </summary>
         public WindowTests()
         {
             this.mockWindow = new Mock<IWindow>();
@@ -30,10 +37,9 @@ namespace RaptorTests
             // Arrange
             this.mockWindow.SetupProperty(p => p.Title);
 
-            var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object)
-            {
-                Title = "test-title",
-            };
+            var window = CreateWindow();
+
+            window.Title = "test-title";
 
             // Act
             var actual = window.Title;
@@ -43,15 +49,29 @@ namespace RaptorTests
         }
 
         [Fact]
+        public void Position_WhenSettingValue_ReturnsCorrectValue()
+        {
+            // Arrange
+            this.mockWindow.SetupProperty(p => p.Position);
+            var expected = new Vector2(11, 22);
+            var window = CreateWindow();
+
+            // Act
+            window.Position = new Vector2(11, 22);
+            var actual = window.Position;
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void Width_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
             this.mockWindow.SetupProperty(p => p.Width);
 
-            var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object)
-            {
-                Width = 1234,
-            };
+            var window = CreateWindow();
+            window.Width = 1234;
 
             // Act
             var actual = window.Width;
@@ -66,10 +86,8 @@ namespace RaptorTests
             // Arrange
             this.mockWindow.SetupProperty(p => p.Height);
 
-            var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object)
-            {
-                Height = 1234,
-            };
+            var window = CreateWindow();
+            window.Height = 1234;
 
             // Act
             var actual = window.Height;
@@ -84,10 +102,8 @@ namespace RaptorTests
             // Arrange
             this.mockWindow.SetupProperty(p => p.UpdateFreq);
 
-            var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object)
-            {
-                UpdateFrequency = 1234,
-            };
+            var window = CreateWindow();
+            window.UpdateFrequency = 1234;
 
             // Act
             var actual = window.UpdateFrequency;
@@ -104,9 +120,7 @@ namespace RaptorTests
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 var window = new WindowFake(null, this.mockContentLoader.Object);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "Window must not be null. (Parameter 'window')");
         }
 
@@ -116,9 +130,7 @@ namespace RaptorTests
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 var window = new WindowFake(this.mockWindow.Object, null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "Content loader must not be null. (Parameter 'contentLoader')");
         }
 
@@ -128,9 +140,7 @@ namespace RaptorTests
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 var window = new WindowFake(window: null, contentLoader: null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "Window must not be null. (Parameter 'window')");
         }
 
@@ -138,7 +148,7 @@ namespace RaptorTests
         public void Ctor_WhenInvokedWithWindowAndContentLoader_SetsWindowAndContentLoader()
         {
             // Act
-            var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object);
+            var window = CreateWindow();
 
             // Assert
             Assert.Equal(this.mockContentLoader.Object, window.ContentLoader);
@@ -148,7 +158,7 @@ namespace RaptorTests
         public void Show_WhenInvoked_ShowsWindow()
         {
             // Arrange
-            var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object);
+            var window = CreateWindow();
 
             // Act
             window.Show();
@@ -161,7 +171,7 @@ namespace RaptorTests
         public void Dispose_WhenInvoked_DisposesOfMangedResources()
         {
             // Arrange
-            var window = new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object);
+            var window = CreateWindow();
 
             // Act
             window.Dispose();
@@ -171,5 +181,12 @@ namespace RaptorTests
             this.mockWindow.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
+
+        /// <summary>
+        /// Creates an instance of <see cref="WindowFake"/> for the purpose
+        /// of testing the abstract <see cref="Window"/> class.
+        /// </summary>
+        /// <returns>The instance used for testing.</returns>
+        private WindowFake CreateWindow() => new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object);
     }
 }

@@ -15,6 +15,7 @@ namespace Raptor.OpenGL
     using Raptor.Input;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using RaptorMouseButton = Raptor.Input.MouseButton;
+    using SysVector2 = System.Numerics.Vector2;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -85,6 +86,13 @@ namespace Raptor.OpenGL
         {
             get => this.gameWindow.Title;
             set => this.gameWindow.Title = value;
+        }
+
+        /// <inheritdoc/>
+        public SysVector2 Position
+        {
+            get => new SysVector2(this.gameWindow.Location.X, this.gameWindow.Location.Y);
+            set => this.gameWindow.Location = new Vector2i((int)value.X, (int)value.Y);
         }
 
         /// <inheritdoc/>

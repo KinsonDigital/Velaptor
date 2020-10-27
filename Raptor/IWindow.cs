@@ -5,6 +5,7 @@
 namespace Raptor
 {
     using System;
+    using System.Numerics;
 
     /// <summary>
     /// Provides the core of a game which facilitates how the engine starts, stops,
@@ -16,6 +17,11 @@ namespace Raptor
         /// Gets or sets the title of the window.
         /// </summary>
         string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the position of the window.
+        /// </summary>
+        Vector2 Position { get; set; }
 
         /// <summary>
         /// Gets or sets the width of the game window.
