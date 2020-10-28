@@ -97,7 +97,7 @@ namespace Raptor
         }
 
         /// <summary>
-        /// Gets or sets the state of the window.
+        /// Gets or sets the state of the <see cref="Window"/>.
         /// </summary>
         public StateOfWindow WindowState
         {
