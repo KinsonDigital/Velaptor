@@ -14,7 +14,9 @@ namespace Raptor.OpenGL
     using OpenTK.Windowing.Desktop;
     using Raptor.Input;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
+    using GLWindowState = OpenTK.Windowing.Common.WindowState;
     using RaptorMouseButton = Raptor.Input.MouseButton;
+    using SysVector2 = System.Numerics.Vector2;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -88,6 +90,13 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
+        public SysVector2 Position
+        {
+            get => new SysVector2(this.gameWindow.Location.X, this.gameWindow.Location.Y);
+            set => this.gameWindow.Location = new Vector2i((int)value.X, (int)value.Y);
+        }
+
+        /// <inheritdoc/>
         public int Width
         {
             get => this.gameWindow.Size.X;
@@ -102,6 +111,23 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
+        public bool MouseCursorVisible
+        {
+            get => this.gameWindow.CursorVisible;
+            set => this.gameWindow.CursorVisible = value;
+        }
+
+        /// <inheritdoc/>3
+        public StateOfWindow WindowState
+        {
+            get => (StateOfWindow)this.gameWindow.WindowState;
+            set => this.gameWindow.WindowState = (GLWindowState)value;
+        }
+
+        /// <inheritdoc/>
+        public Action? Init { get; set; }
+
+        /// <inheritdoc/>
         public Action<FrameTime>? Update { get; set; }
 
         /// <inheritdoc/>
@@ -111,7 +137,31 @@ namespace Raptor.OpenGL
         public Action? WinResize { get; set; }
 
         /// <inheritdoc/>
-        public Action? Init { get; set; }
+        public BorderType TypeOfBorder
+        {
+            get => this.gameWindow.WindowBorder switch
+            {
+                WindowBorder.Resizable => BorderType.Resizable,
+                WindowBorder.Fixed => BorderType.Fixed,
+                WindowBorder.Hidden => BorderType.Hidden,
+                _ => throw new Exception($"The '{nameof(WindowBorder)}' is invalid."),
+            };
+            set
+            {
+                switch (value)
+                {
+                    case BorderType.Resizable:
+                        this.gameWindow.WindowBorder = WindowBorder.Resizable;
+                        break;
+                    case BorderType.Fixed:
+                        this.gameWindow.WindowBorder = WindowBorder.Fixed;
+                        break;
+                    case BorderType.Hidden:
+                        this.gameWindow.WindowBorder = WindowBorder.Hidden;
+                        break;
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public int UpdateFreq

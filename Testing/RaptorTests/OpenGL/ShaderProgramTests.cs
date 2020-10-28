@@ -5,8 +5,6 @@
 namespace RaptorTests.OpenGL
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO.Abstractions;
     using Moq;
     using OpenTK.Graphics.OpenGL4;
     using Raptor.OpenGL;

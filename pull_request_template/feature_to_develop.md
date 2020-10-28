@@ -6,8 +6,8 @@ This <span style="color:whitesmoke;font-weight:bold">PR</span> <span style="colo
 <span style="color:gold;font-weight:bold">NOTE:</span> Text in <span style="color:darkorange;font-weight:bold">orange</span> is to be replaced with dynamic content
 
 1. [ ] Set the <span style="color:whitesmoke;font-weight:bold">PR</span> Title Using Following Syntax:
-   * <span style="color:gold;font-weight:bold">Syntax:</span> [card-type] #[card-id] - [description]
-    * <span style="color:gold;font-weight:bold">Title Example:</span> Enabler  1234 - Add feature 
+   * <span style="color:gold;font-weight:bold">Syntax:</span> [card-type] [card-id] - [description]
+    * <span style="color:gold;font-weight:bold">Title Example:</span> Enabler 1234 - Add feature 
 2. [ ] Verify that the entire solution <span style="color:whitesmoke;font-weight:bold">builds</span> locally using <span style="color:mediumpurple;font-weight:bold;font-weight:bold">Visual Studio</span>
 3. [ ] Verify that all <span style="color:whitesmoke;font-weight:bold">unit tests</span> pass locally using <span style="color:mediumpurple;font-weight:bold;font-weight:bold">Visual Studio</span>
 4. [ ] Check the code to make sure that it follows the coding standards

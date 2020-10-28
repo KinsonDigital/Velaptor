@@ -1,10 +1,31 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.13.0</span>
+
+### **New** 🎉
+
+1. Added the ability to change the position of the window programmatically
+2. Added the ability to enable and disable the maximize button and the resizing of the window border
+   * Both the maximize button and the disabling the resizing of the window border are both set using the `WindowBorder.Fixed` border state value
+3. Added the ability to set the mouse cursor to be shown or hidden when hovering over the window
+4. Added the ability to set the state of the window
+   * Available states:
+     1. Minimized
+     2. Normal
+     3. Maximized
+     4. Full Screen
+
+### **Other** 👏
+
+1. Simple cleanup and refactoring
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.12.0</span>
 
 ### **Changes** ✨
 
-1. Changed the nuget package setup to properly include native **OpenAL** runtime libraries.
+1. Changed the nuget package setup to properly include native **OpenAL** runtime libraries
 2. Library/Nuget Package Updates:
    * Updated **OpenTK** from **v4.0.0-pre9.1** to **v4.0.6**
    * Updated **SimpleInjector** from **v5.0.3** to **v5.0.4**
@@ -13,7 +34,7 @@
 
 ### **Breaking Changes** 💣
 
-1. Refactored **KeyCode** enumeration to match closer to **OpenTK** version.
+1. Refactored **KeyCode** enumeration to match closer to **OpenTK** version
 
 ### **Other** 👏
 
@@ -93,7 +114,7 @@
 
 ### **Other** 👏
 
-1. Updated **FxCopAnalyzers** library from version **v2.9.8** to **v3.0.0**.
+1. Updated **FxCopAnalyzers** library from version **v2.9.8** to **v3.0.0**
 
 ---
 
@@ -101,7 +122,7 @@
 
 
 ### **Breaking Changes** 💣
-1. Changed the visible scope of all **SDL** implementation classes from **public** to **internal**.
+1. Changed the visible scope of all **SDL** implementation classes from **public** to **internal**
 
 ### **Changes** ✨
 1. Updated **SDLCore** nuget package library from **v0.1.0** to **v0.1.1**
