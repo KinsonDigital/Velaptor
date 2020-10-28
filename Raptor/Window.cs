@@ -97,6 +97,15 @@ namespace Raptor
         }
 
         /// <summary>
+        /// Gets or sets the state of the window.
+        /// </summary>
+        public StateOfWindow WindowState
+        {
+            get => this.window.WindowState;
+            set => this.window.WindowState = value;
+        }
+
+        /// <summary>
         /// Gets or sets the type of border that the <see cref="Window"/> will have.
         /// </summary>
         public BorderType TypeOfBorder

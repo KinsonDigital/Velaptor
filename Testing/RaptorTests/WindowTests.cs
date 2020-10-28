@@ -127,6 +127,22 @@ namespace RaptorTests
             // Assert
             Assert.Equal(1234, actual);
         }
+
+        [Fact]
+        public void WindowState_WhenSettingValue_ReturnsCorrectValue()
+        {
+            // Arrange
+            this.mockWindow.SetupProperty(p => p.WindowState);
+            var window = CreateWindow();
+
+            // Act
+            window.WindowState = StateOfWindow.FullScreen;
+            var actual = window.WindowState;
+
+            // Assert
+            this.mockWindow.VerifySet(p => p.WindowState = StateOfWindow.FullScreen, Times.Once());
+            Assert.Equal(StateOfWindow.FullScreen, actual);
+        }
         #endregion
 
         #region Method tests

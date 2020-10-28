@@ -43,4 +43,31 @@ namespace Raptor
         /// </summary>
         Hidden = 2,
     }
+
+    /// <summary>
+    /// The different states that a <see cref="Window"/> can be in.
+    /// </summary>
+    public enum StateOfWindow
+    {
+        /// <summary>
+        /// The window is in the normal state.
+        /// </summary>
+        Normal = 0,
+
+        /// <summary>
+        /// The window is minimized to the taskbar.
+        /// </summary>
+        /// <remarks>This is also known as .iconified'.</remarks>
+        Minimized = 1,
+
+        /// <summary>
+        /// TRhe window covers the whole working area, which includes the desktop but not the taskbar and/or panels.
+        /// </summary>
+        Maximized = 2,
+
+        /// <summary>
+        /// The window covers the whole screen, including all taskbars and/or panels.
+        /// </summary>
+        FullScreen = 3,
+    }
 }

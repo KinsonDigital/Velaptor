@@ -16,6 +16,7 @@ namespace Raptor.OpenGL
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using RaptorMouseButton = Raptor.Input.MouseButton;
     using SysVector2 = System.Numerics.Vector2;
+    using GLWindowState = OpenTK.Windowing.Common.WindowState;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -114,6 +115,16 @@ namespace Raptor.OpenGL
         {
             get => this.gameWindow.CursorVisible;
             set => this.gameWindow.CursorVisible = value;
+        }
+
+        /// <inheritdoc/>3
+        public StateOfWindow WindowState
+        {
+            get => (StateOfWindow)this.gameWindow.WindowState;
+            set
+            {
+                this.gameWindow.WindowState = (GLWindowState)value;
+            }
         }
 
         /// <inheritdoc/>

@@ -39,6 +39,11 @@ namespace Raptor
         bool MouseCursorVisible { get; set; }
 
         /// <summary>
+        /// Gets or sets the state of the window.
+        /// </summary>
+        StateOfWindow WindowState { get; set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize the window.
         /// </summary>
         Action? Init { get; set; }
