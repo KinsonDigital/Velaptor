@@ -7,6 +7,7 @@ namespace Raptor
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Numerics;
     using Raptor.Content;
 
     /// <summary>
@@ -50,6 +51,15 @@ namespace Raptor
         }
 
         /// <summary>
+        /// Gets or sets the position of the window.
+        /// </summary>
+        public Vector2 Position
+        {
+            get => this.window.Position;
+            set => this.window.Position = value;
+        }
+
+        /// <summary>
         /// Gets or sets the width of the window.
         /// </summary>
         public int Width
@@ -75,6 +85,33 @@ namespace Raptor
         {
             get => this.window.UpdateFreq;
             set => this.window.UpdateFreq = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the mouse cursor is visible.
+        /// </summary>
+        public bool MouseCursorVisible
+        {
+            get => this.window.MouseCursorVisible;
+            set => this.window.MouseCursorVisible = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the state of the <see cref="Window"/>.
+        /// </summary>
+        public StateOfWindow WindowState
+        {
+            get => this.window.WindowState;
+            set => this.window.WindowState = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the type of border that the <see cref="Window"/> will have.
+        /// </summary>
+        public BorderType TypeOfBorder
+        {
+            get => this.window.TypeOfBorder;
+            set => this.window.TypeOfBorder = value;
         }
 
         /// <summary>

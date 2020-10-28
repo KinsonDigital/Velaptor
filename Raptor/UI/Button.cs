@@ -5,7 +5,6 @@
 namespace Raptor.UI
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
     using Raptor.Content;

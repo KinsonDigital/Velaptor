@@ -5,6 +5,7 @@
 namespace Raptor
 {
     using System;
+    using System.Numerics;
 
     /// <summary>
     /// Provides the core of a game which facilitates how the engine starts, stops,
@@ -18,6 +19,11 @@ namespace Raptor
         string Title { get; set; }
 
         /// <summary>
+        /// Gets or sets the position of the window.
+        /// </summary>
+        Vector2 Position { get; set; }
+
+        /// <summary>
         /// Gets or sets the width of the game window.
         /// </summary>
         int Width { get; set; }
@@ -26,6 +32,16 @@ namespace Raptor
         /// Gets or sets the height of the game window.
         /// </summary>
         int Height { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the mouse cursor is visible.
+        /// </summary>
+        bool MouseCursorVisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the state of the window.
+        /// </summary>
+        StateOfWindow WindowState { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize the window.
@@ -46,6 +62,11 @@ namespace Raptor
         /// Gets or sets the <see cref="Action"/> delegate that is invoked every time the window is resized.
         /// </summary>
         Action? WinResize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of border that the <see cref="IWindow"/> will have.
+        /// </summary>
+        BorderType TypeOfBorder { get; set; }
 
         /// <summary>
         /// Gets or sets the value of how often the <see cref="Update"/>
