@@ -110,6 +110,9 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
+        public Action? Init { get; set; }
+
+        /// <inheritdoc/>
         public Action<FrameTime>? Update { get; set; }
 
         /// <inheritdoc/>
@@ -119,7 +122,38 @@ namespace Raptor.OpenGL
         public Action? WinResize { get; set; }
 
         /// <inheritdoc/>
-        public Action? Init { get; set; }
+        public BorderType TypeOfBorder
+        {
+            get
+            {
+                switch (this.gameWindow.WindowBorder)
+                {
+                    case WindowBorder.Resizable:
+                        return BorderType.Resizable;
+                    case WindowBorder.Fixed:
+                        return BorderType.Fixed;
+                    case WindowBorder.Hidden:
+                        return BorderType.Hidden;
+                }
+
+                throw new Exception($"The '{nameof(WindowBorder)}' is invalid.");
+            }
+            set
+            {
+                switch (value)
+                {
+                    case BorderType.Resizable:
+                        this.gameWindow.WindowBorder = WindowBorder.Resizable;
+                        break;
+                    case BorderType.Fixed:
+                        this.gameWindow.WindowBorder = WindowBorder.Fixed;
+                        break;
+                    case BorderType.Hidden:
+                        this.gameWindow.WindowBorder = WindowBorder.Hidden;
+                        break;
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public int UpdateFreq

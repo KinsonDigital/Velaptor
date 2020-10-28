@@ -54,6 +54,11 @@ namespace Raptor
         Action? WinResize { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of border that the <see cref="IWindow"/> will have.
+        /// </summary>
+        BorderType TypeOfBorder { get; set; }
+
+        /// <summary>
         /// Gets or sets the value of how often the <see cref="Update"/>
         /// and <see cref="Draw"/> actions are invoked in the value of hertz.
         /// </summary>

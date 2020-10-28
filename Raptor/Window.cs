@@ -88,6 +88,15 @@ namespace Raptor
         }
 
         /// <summary>
+        /// Gets or sets the type of border that the <see cref="Window"/> will have.
+        /// </summary>
+        public BorderType TypeOfBorder
+        {
+            get => this.window.TypeOfBorder;
+            set => this.window.TypeOfBorder = value;
+        }
+
+        /// <summary>
         /// Gets the content loader for loading content.
         /// </summary>
         public IContentLoader? ContentLoader { get; private set; }
