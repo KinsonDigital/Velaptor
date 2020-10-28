@@ -14,9 +14,9 @@ namespace Raptor.OpenGL
     using OpenTK.Windowing.Desktop;
     using Raptor.Input;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
+    using GLWindowState = OpenTK.Windowing.Common.WindowState;
     using RaptorMouseButton = Raptor.Input.MouseButton;
     using SysVector2 = System.Numerics.Vector2;
-    using GLWindowState = OpenTK.Windowing.Common.WindowState;
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -121,10 +121,7 @@ namespace Raptor.OpenGL
         public StateOfWindow WindowState
         {
             get => (StateOfWindow)this.gameWindow.WindowState;
-            set
-            {
-                this.gameWindow.WindowState = (GLWindowState)value;
-            }
+            set => this.gameWindow.WindowState = (GLWindowState)value;
         }
 
         /// <inheritdoc/>
@@ -142,20 +139,13 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public BorderType TypeOfBorder
         {
-            get
+            get => this.gameWindow.WindowBorder switch
             {
-                switch (this.gameWindow.WindowBorder)
-                {
-                    case WindowBorder.Resizable:
-                        return BorderType.Resizable;
-                    case WindowBorder.Fixed:
-                        return BorderType.Fixed;
-                    case WindowBorder.Hidden:
-                        return BorderType.Hidden;
-                }
-
-                throw new Exception($"The '{nameof(WindowBorder)}' is invalid.");
-            }
+                WindowBorder.Resizable => BorderType.Resizable,
+                WindowBorder.Fixed => BorderType.Fixed,
+                WindowBorder.Hidden => BorderType.Hidden,
+                _ => throw new Exception($"The '{nameof(WindowBorder)}' is invalid."),
+            };
             set
             {
                 switch (value)

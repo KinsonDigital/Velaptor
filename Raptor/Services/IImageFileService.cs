@@ -1,4 +1,4 @@
-﻿// <copyright file="IImageFile.cs" company="KinsonDigital">
+﻿// <copyright file="IImageFileService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
