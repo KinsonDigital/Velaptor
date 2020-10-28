@@ -34,6 +34,11 @@ namespace Raptor
         int Height { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the mouse cursor is visible.
+        /// </summary>
+        bool MouseCursorVisible { get; set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize the window.
         /// </summary>
         Action? Init { get; set; }

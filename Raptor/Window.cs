@@ -88,6 +88,15 @@ namespace Raptor
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the mouse cursor is visible.
+        /// </summary>
+        public bool MouseCursorVisible
+        {
+            get => this.window.MouseCursorVisible;
+            set => this.window.MouseCursorVisible = value;
+        }
+
+        /// <summary>
         /// Gets or sets the type of border that the <see cref="Window"/> will have.
         /// </summary>
         public BorderType TypeOfBorder

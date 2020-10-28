@@ -110,6 +110,13 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
+        public bool MouseCursorVisible
+        {
+            get => this.gameWindow.CursorVisible;
+            set => this.gameWindow.CursorVisible = value;
+        }
+
+        /// <inheritdoc/>
         public Action? Init { get; set; }
 
         /// <inheritdoc/>

@@ -1,4 +1,4 @@
-﻿// <copyright file="WindowTests.cs" company="KinsonDigital">
+// <copyright file="WindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -94,6 +94,22 @@ namespace RaptorTests
 
             // Assert
             Assert.Equal(1234, actual);
+        }
+
+        [Fact]
+        public void MouseCursorVisible_WhenSettingValue_ReturnsCorrectValue()
+        {
+            // Arrange
+            this.mockWindow.SetupProperty(p => p.MouseCursorVisible);
+            var window = CreateWindow();
+
+            // Act
+            window.MouseCursorVisible = true;
+            var actual = window.MouseCursorVisible;
+
+            // Assert
+            this.mockWindow.VerifySet(p => p.MouseCursorVisible = true, Times.Once());
+            Assert.True(actual);
         }
 
         [Fact]
