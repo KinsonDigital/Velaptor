@@ -1,4 +1,4 @@
-// <copyright file="WindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="WindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -36,15 +36,14 @@ namespace RaptorTests
         {
             // Arrange
             this.mockWindow.SetupProperty(p => p.Title);
-
             var window = CreateWindow();
 
-            window.Title = "test-title";
-
             // Act
+            window.Title = "test-title";
             var actual = window.Title;
 
             // Assert
+            this.mockWindow.VerifySet(p => p.Title = "test-title", Times.Once());
             Assert.Equal("test-title", actual);
         }
 
@@ -53,7 +52,6 @@ namespace RaptorTests
         {
             // Arrange
             this.mockWindow.SetupProperty(p => p.Position);
-            var expected = new Vector2(11, 22);
             var window = CreateWindow();
 
             // Act
@@ -61,7 +59,8 @@ namespace RaptorTests
             var actual = window.Position;
 
             // Assert
-            Assert.Equal(expected, actual);
+            this.mockWindow.VerifySet(p => p.Position = new Vector2(11, 22), Times.Once());
+            Assert.Equal(new Vector2(11, 22), actual);
         }
 
         [Fact]
@@ -69,14 +68,14 @@ namespace RaptorTests
         {
             // Arrange
             this.mockWindow.SetupProperty(p => p.Width);
-
             var window = CreateWindow();
-            window.Width = 1234;
 
             // Act
+            window.Width = 1234;
             var actual = window.Width;
 
             // Assert
+            this.mockWindow.VerifySet(p => p.Width = 1234, Times.Once());
             Assert.Equal(1234, actual);
         }
 
@@ -93,6 +92,7 @@ namespace RaptorTests
             var actual = window.Height;
 
             // Assert
+            this.mockWindow.VerifySet(p => p.Height = 1234, Times.Once());
             Assert.Equal(1234, actual);
         }
 
@@ -117,14 +117,14 @@ namespace RaptorTests
         {
             // Arrange
             this.mockWindow.SetupProperty(p => p.UpdateFreq);
-
             var window = CreateWindow();
-            window.UpdateFrequency = 1234;
 
             // Act
+            window.UpdateFrequency = 1234;
             var actual = window.UpdateFrequency;
 
             // Assert
+            this.mockWindow.VerifySet(p => p.UpdateFreq = 1234, Times.Once());
             Assert.Equal(1234, actual);
         }
 
