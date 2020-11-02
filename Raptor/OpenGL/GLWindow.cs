@@ -24,7 +24,7 @@ namespace Raptor.OpenGL
     [ExcludeFromCodeCoverage]
     internal sealed class GLWindow : IWindow
     {
-        private readonly InternalGLWindow gameWindow;
+        private readonly InternalGLWindow appWindow;
         private readonly DebugProc debugProc;
         private readonly IGLInvoker gl;
         private bool isShuttingDown;
@@ -44,7 +44,7 @@ namespace Raptor.OpenGL
                 Size = new Vector2i(width, height),
             };
 
-            this.gameWindow = new InternalGLWindow(gameWinSettings, nativeWinSettings);
+            this.appWindow = new InternalGLWindow(gameWinSettings, nativeWinSettings);
 
             /*NOTE:
              * The IoC container get instance must be called after the
@@ -53,17 +53,17 @@ namespace Raptor.OpenGL
              */
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
 
-            this.gameWindow.Load += GameWindow_Load;
-            this.gameWindow.UpdateFrame += GameWindow_UpdateFrame;
-            this.gameWindow.RenderFrame += GameWindow_RenderFrame;
-            this.gameWindow.Resize += GameWindow_Resize;
-            this.gameWindow.Unload += GameWindow_Unload;
-            this.gameWindow.KeyDown += GameWindow_KeyDown;
-            this.gameWindow.KeyUp += GameWindow_KeyUp;
-            this.gameWindow.MouseDown += GameWindow_MouseDown;
-            this.gameWindow.MouseUp += GameWindow_MouseUp;
-            this.gameWindow.MouseMove += GameWindow_MouseMove;
-            this.gameWindow.UpdateFrequency = 60;
+            this.appWindow.Load += GameWindow_Load;
+            this.appWindow.UpdateFrame += GameWindow_UpdateFrame;
+            this.appWindow.RenderFrame += GameWindow_RenderFrame;
+            this.appWindow.Resize += GameWindow_Resize;
+            this.appWindow.Unload += GameWindow_Unload;
+            this.appWindow.KeyDown += GameWindow_KeyDown;
+            this.appWindow.KeyUp += GameWindow_KeyUp;
+            this.appWindow.MouseDown += GameWindow_MouseDown;
+            this.appWindow.MouseUp += GameWindow_MouseUp;
+            this.appWindow.MouseMove += GameWindow_MouseMove;
+            this.appWindow.UpdateFrequency = 60;
 
             this.debugProc = DebugCallback;
 
@@ -85,43 +85,43 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public string Title
         {
-            get => this.gameWindow.Title;
-            set => this.gameWindow.Title = value;
+            get => this.appWindow.Title;
+            set => this.appWindow.Title = value;
         }
 
         /// <inheritdoc/>
         public SysVector2 Position
         {
-            get => new SysVector2(this.gameWindow.Location.X, this.gameWindow.Location.Y);
-            set => this.gameWindow.Location = new Vector2i((int)value.X, (int)value.Y);
+            get => new SysVector2(this.appWindow.Location.X, this.appWindow.Location.Y);
+            set => this.appWindow.Location = new Vector2i((int)value.X, (int)value.Y);
         }
 
         /// <inheritdoc/>
         public int Width
         {
-            get => this.gameWindow.Size.X;
-            set => this.gameWindow.Size = new Vector2i(value, this.gameWindow.Size.Y);
+            get => this.appWindow.Size.X;
+            set => this.appWindow.Size = new Vector2i(value, this.appWindow.Size.Y);
         }
 
         /// <inheritdoc/>
         public int Height
         {
-            get => this.gameWindow.Size.Y;
-            set => this.gameWindow.Size = new Vector2i(this.gameWindow.Size.X, value);
+            get => this.appWindow.Size.Y;
+            set => this.appWindow.Size = new Vector2i(this.appWindow.Size.X, value);
         }
 
         /// <inheritdoc/>
         public bool MouseCursorVisible
         {
-            get => this.gameWindow.CursorVisible;
-            set => this.gameWindow.CursorVisible = value;
+            get => this.appWindow.CursorVisible;
+            set => this.appWindow.CursorVisible = value;
         }
 
         /// <inheritdoc/>3
         public StateOfWindow WindowState
         {
-            get => (StateOfWindow)this.gameWindow.WindowState;
-            set => this.gameWindow.WindowState = (GLWindowState)value;
+            get => (StateOfWindow)this.appWindow.WindowState;
+            set => this.appWindow.WindowState = (GLWindowState)value;
         }
 
         /// <inheritdoc/>
@@ -139,7 +139,7 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public BorderType TypeOfBorder
         {
-            get => this.gameWindow.WindowBorder switch
+            get => this.appWindow.WindowBorder switch
             {
                 WindowBorder.Resizable => BorderType.Resizable,
                 WindowBorder.Fixed => BorderType.Fixed,
@@ -151,13 +151,13 @@ namespace Raptor.OpenGL
                 switch (value)
                 {
                     case BorderType.Resizable:
-                        this.gameWindow.WindowBorder = WindowBorder.Resizable;
+                        this.appWindow.WindowBorder = WindowBorder.Resizable;
                         break;
                     case BorderType.Fixed:
-                        this.gameWindow.WindowBorder = WindowBorder.Fixed;
+                        this.appWindow.WindowBorder = WindowBorder.Fixed;
                         break;
                     case BorderType.Hidden:
-                        this.gameWindow.WindowBorder = WindowBorder.Hidden;
+                        this.appWindow.WindowBorder = WindowBorder.Hidden;
                         break;
                 }
             }
@@ -168,23 +168,23 @@ namespace Raptor.OpenGL
         {
             get
             {
-                if (this.gameWindow.UpdateFrequency != this.gameWindow.RenderFrequency)
+                if (this.appWindow.UpdateFrequency != this.appWindow.RenderFrequency)
                     throw new Exception($"The update and render frequencies must match for this '{nameof(GLWindow)}' implementation.");
 
-                return (int)this.gameWindow.UpdateFrequency;
+                return (int)this.appWindow.UpdateFrequency;
             }
             set
             {
-                this.gameWindow.UpdateFrequency = value;
-                this.gameWindow.RenderFrequency = value;
+                this.appWindow.UpdateFrequency = value;
+                this.appWindow.RenderFrequency = value;
             }
         }
 
         /// <inheritdoc/>
-        public void Show() => this.gameWindow.Run();
+        public void Show() => this.appWindow.Run();
 
         /// <inheritdoc/>
-        public void Close() => this.gameWindow.Close();
+        public void Close() => this.appWindow.Close();
 
         /// <inheritdoc/>
         public void Dispose()
@@ -292,12 +292,12 @@ namespace Raptor.OpenGL
 
             if (disposing)
             {
-                this.gameWindow.Load -= GameWindow_Load;
-                this.gameWindow.UpdateFrame -= GameWindow_UpdateFrame;
-                this.gameWindow.RenderFrame -= GameWindow_RenderFrame;
-                this.gameWindow.Resize -= GameWindow_Resize;
-                this.gameWindow.Unload -= GameWindow_Unload;
-                this.gameWindow.Dispose();
+                this.appWindow.Load -= GameWindow_Load;
+                this.appWindow.UpdateFrame -= GameWindow_UpdateFrame;
+                this.appWindow.RenderFrame -= GameWindow_RenderFrame;
+                this.appWindow.Resize -= GameWindow_Resize;
+                this.appWindow.Unload -= GameWindow_Unload;
+                this.appWindow.Dispose();
             }
 
             this.isDiposed = true;
@@ -341,7 +341,7 @@ namespace Raptor.OpenGL
 
             Draw?.Invoke(frameTime);
 
-            this.gameWindow.SwapBuffers();
+            this.appWindow.SwapBuffers();
         }
 
         /// <summary>
