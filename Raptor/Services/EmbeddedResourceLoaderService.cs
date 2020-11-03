@@ -14,7 +14,7 @@ namespace Raptor.Services
     /// Loads embedded text file resources.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class EmbeddedResourceLoaderService : IEmbeddedResourceLoaderService
+    internal class EmbeddedResourceLoaderService : IEmbeddedResourceLoaderService
     {
         /// <inheritdoc/>
         public string LoadResource(string name)

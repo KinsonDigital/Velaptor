@@ -48,18 +48,21 @@ namespace Raptor
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.File);
             IoCContainer.Register(() => FileSystem.Directory);
-            IoCContainer.Register<IImageFileService, ImageFileService>();
-            IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>();
             IoCContainer.Register<ILoader<ITexture>, TextureLoader>();
             IoCContainer.Register<ILoader<ISound>, SoundLoader>();
-            IoCContainer.Register<IALInvoker, ALInvoker>();
+            IoCContainer.Register<IALInvoker, ALInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IImageFileService, ImageFileService>();
+            IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>();
+            IoCContainer.Register<ISystemMonitorService, SystemMonitorService>();
+            IoCContainer.Register<GLFWMonitors>();
 
             // Register the proper data stream to be the implementation if the consumer is a certain decoder
             IoCContainer.RegisterConditional<IAudioDataStream<float>, OggAudioDataStream>(context =>
             {
                 return !context.HasConsumer || context.Consumer.ImplementationType == typeof(OggSoundDecoder);
             });
-            SuppressDisposableTransientWarning<IAudioDataStream<float>>();
+            SuppressDisposableTransientWarning<IAudioDataStream<float>>(); // TODO: Look into removing the warning suppressions
 
             IoCContainer.RegisterConditional<IAudioDataStream<byte>, Mp3AudioDataStream>(context =>
             {

@@ -7,7 +7,7 @@ namespace Raptor.Services
     /// <summary>
     /// Loads embedded text file resources.
     /// </summary>
-    public interface IEmbeddedResourceLoaderService
+    internal interface IEmbeddedResourceLoaderService
     {
         /// <summary>
         /// Load a text resources that matches the given <paramref name="name"/>.
