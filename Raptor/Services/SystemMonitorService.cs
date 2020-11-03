@@ -24,5 +24,8 @@ namespace Raptor.Services
 
         /// <inheritdoc/>
         public ReadOnlyCollection<SystemMonitor> Monitors => new ReadOnlyCollection<SystemMonitor>(this.monitors.SystemMonitors);
+
+        /// <inheritdoc/>
+        public void Refresh() => this.monitors.Refresh();
     }
 }

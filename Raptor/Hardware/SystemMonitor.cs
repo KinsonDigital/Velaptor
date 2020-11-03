@@ -29,17 +29,17 @@ namespace Raptor.Hardware
         public int Height { get; set; }
 
         /// <summary>
-        /// Gets or sets the big depth of the red color channel in the current video mode.
+        /// Gets or sets the bit depth of the red color channel in the current video mode.
         /// </summary>
         public int RedBitDepth { get; set; }
 
         /// <summary>
-        /// Gets or sets the big depth of the green color channel in the current video mode.
+        /// Gets or sets the bit depth of the green color channel in the current video mode.
         /// </summary>
         public int GreenBitDepth { get; set; }
 
         /// <summary>
-        /// Gets or sets the big depth of the blue color channel in the current video mode.
+        /// Gets or sets the bit depth of the blue color channel in the current video mode.
         /// </summary>
         public int BlueBitDepth { get; set; }
 
@@ -49,12 +49,12 @@ namespace Raptor.Hardware
         public int RefreshRate { get; set; }
 
         /// <summary>
-        /// Gets or sets the scale of the monitor in the horizontal axis.
+        /// Gets or sets the scale of the monitor on the horizontal axis.
         /// </summary>
         public float HorizontalScale { get; set; }
 
         /// <summary>
-        /// Gets or sets the scale of the monitor in the vertical axis.
+        /// Gets or sets the scale of the monitor on the vertical axis.
         /// </summary>
         public float VerticalScale { get; set; }
 

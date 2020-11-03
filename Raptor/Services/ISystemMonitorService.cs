@@ -16,5 +16,10 @@ namespace Raptor.Services
         /// Gets a list of the monitors in the system.
         /// </summary>
         ReadOnlyCollection<SystemMonitor> Monitors { get; }
+
+        /// <summary>
+        /// Refreshes the monitor information.
+        /// </summary>
+        void Refresh();
     }
 }
