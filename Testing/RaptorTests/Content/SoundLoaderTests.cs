@@ -75,7 +75,7 @@ namespace RaptorTests.Content
             var actual = loader.Load("sound.ogg");
 
             // Assert
-            Assert.Equal("sound", actual.ContentName);
+            Assert.Equal("sound", actual.Name);
         }
         #endregion
 

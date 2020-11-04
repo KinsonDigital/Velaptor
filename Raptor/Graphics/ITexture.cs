@@ -18,11 +18,6 @@ namespace Raptor.Graphics
         uint ID { get; }
 
         /// <summary>
-        /// Gets the name of the texture.
-        /// </summary>
-        string Name { get; }
-
-        /// <summary>
         /// Gets the width of the texture.
         /// </summary>
         int Width { get; }

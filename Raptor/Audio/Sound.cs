@@ -94,7 +94,7 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
-        public string ContentName => Path.GetFileNameWithoutExtension(this.name);
+        public string Name => Path.GetFileNameWithoutExtension(this.name);
 
         /// <inheritdoc/>
         public float Volume

@@ -13,11 +13,6 @@ namespace Raptor.Audio
     public interface ISound : IContent, IDisposable
     {
         /// <summary>
-        /// Gets the name of the sound.
-        /// </summary>
-        string ContentName { get; }
-
-        /// <summary>
         /// Gets or sets the volume of the sound.
         /// </summary>
         /// <remarks>

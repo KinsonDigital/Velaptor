@@ -182,7 +182,7 @@ namespace RaptorTests.Audio
             this.sound = new Sound(this.soundContentName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object, this.mockContentSrc.Object);
 
             // Assert
-            Assert.Equal("sound", this.sound.ContentName);
+            Assert.Equal("sound", this.sound.Name);
         }
 
         [Fact]

@@ -1,4 +1,4 @@
-﻿// <copyright file="IAtlasRegionRectangle .cs" company="KinsonDigital">
+﻿// <copyright file="IAtlasRegionRectangle.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,11 +9,6 @@ namespace Raptor.Content
     /// </summary>
     public interface IAtlasRegionRectangle : IContent
     {
-        /// <summary>
-        /// Gets or sets the name of the atlas rectangle region.
-        /// </summary>
-        string Name { get; set; }
-
         /// <summary>
         /// Gets or sets the width of the rectangular region.
         /// </summary>
