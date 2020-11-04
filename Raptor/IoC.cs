@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable SA1116 // Split parameters should start on line after declaration
 namespace Raptor
 {
     using System;
@@ -60,20 +61,15 @@ namespace Raptor
             IoCContainer.RegisterConditional<IAudioDataStream<float>, OggAudioDataStream>(context =>
             {
                 return !context.HasConsumer || context.Consumer.ImplementationType == typeof(OggSoundDecoder);
-            });
-            SuppressDisposableTransientWarning<IAudioDataStream<float>>(); // TODO: Look into removing the warning suppressions
+            }, true);
 
             IoCContainer.RegisterConditional<IAudioDataStream<byte>, Mp3AudioDataStream>(context =>
             {
                 return !context.HasConsumer || context.Consumer.ImplementationType == typeof(MP3SoundDecoder);
-            });
-            SuppressDisposableTransientWarning<IAudioDataStream<byte>>();
+            }, true);
 
-            IoCContainer.Register<ISoundDecoder<float>, OggSoundDecoder>();
-            SuppressDisposableTransientWarning<ISoundDecoder<float>>();
-
-            IoCContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>();
-            SuppressDisposableTransientWarning<ISoundDecoder<byte>>();
+            IoCContainer.Register<ISoundDecoder<float>, OggSoundDecoder>(true);
+            IoCContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>(true);
 
             IoCContainer.Register<ILoader<ITexture>>(() =>
             {
@@ -83,7 +79,6 @@ namespace Raptor
                     new GraphicsContentSource(IoCContainer.GetInstance<IDirectory>()));
             });
 
-            // TODO: If using Container works, convert all of the IoCContainer references to Container
             IoCContainer.Register<IContentLoader>(() =>
             {
                 return new ContentLoader(Container.GetInstance<ILoader<ITexture>>(), Container.GetInstance<ILoader<ISound>>());
@@ -107,37 +102,16 @@ namespace Raptor
             IoCContainer.Register<IGPUBuffer>(() =>
             {
                 return new GPUBuffer<VertexData>(IoCContainer.GetInstance<IGLInvoker>());
-            });
-            SuppressDisposableTransientWarning<IGPUBuffer>();
+            }, true);
 
-            IoCContainer.Register<IShaderProgram, ShaderProgram>();
-
-            SuppressDisposableTransientWarning<IShaderProgram>();
+            IoCContainer.Register<IShaderProgram, ShaderProgram>(true);
 
             IoCContainer.Register<ISpriteBatch>(() =>
             {
                 return new SpriteBatch(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IShaderProgram>(), IoCContainer.GetInstance<IGPUBuffer>());
-            });
-            SuppressDisposableTransientWarning<ISpriteBatch>();
+            }, true);
 
             isInitialized = true;
-        }
-
-        /// <summary>
-        /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
-        /// inherit from <see cref="IDisposable"/>.
-        /// </summary>
-        /// <typeparam name="T">The type to suppress against.</typeparam>
-        private static void SuppressDisposableTransientWarning<T>()
-        {
-            /*NOTE:
-             * The suppression of the SimpleInjector warning of DiagnosticType.DisposableTransientComponent is for
-             * classes that are disposable.  This tells simple injector that the disposing of the object will be
-             * handled manually by the application/library instead of by simple injector.
-             */
-
-            var spriteBatchRegistration = IoCContainer.GetRegistration(typeof(T))?.Registration;
-            spriteBatchRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
         }
     }
 }
