@@ -11,7 +11,7 @@ namespace Raptor.OpenGL
     /// Represents GPU vertex buffer memory.
     /// </summary>
     /// <typeparam name="T">The type of data to send to the GPU.</typeparam>
-    public interface IGPUBuffer : IDisposable
+    internal interface IGPUBuffer : IDisposable
     {
         /// <summary>
         /// Gets or sets the number of quads that the buffer will deal with.

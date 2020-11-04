@@ -11,7 +11,7 @@ namespace Raptor.OpenGL
     /// <summary>
     /// Invokes GLFW calls.
     /// </summary>
-    public interface IGLFWInvoker
+    internal interface IGLFWInvoker
     {
         /// <summary>
         /// <para>

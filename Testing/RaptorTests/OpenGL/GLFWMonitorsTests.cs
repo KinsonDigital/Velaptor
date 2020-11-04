@@ -55,17 +55,16 @@ namespace RaptorTests.OpenGL
                 RefreshRate = 66,
             };
 
-            fixed (VideoMode* handle = &this.videoModeA)
+            fixed (VideoMode* handleA = &this.videoModeA)
             {
-                this.videoModeHandleA = handle;
+                this.videoModeHandleA = handleA;
             }
 
-            fixed (VideoMode* handle = &this.videoModeB)
+            fixed (VideoMode* handleB = &this.videoModeB)
             {
-                this.videoModeHandleB = handle;
+                this.videoModeHandleB = handleB;
             }
 
-            // TODO: Possibly remove and is not needed
             this.monitorA = default;
             this.monitorB = default;
 
