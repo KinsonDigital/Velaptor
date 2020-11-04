@@ -2,7 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 namespace RaptorTests.Graphics
 {
     using System;

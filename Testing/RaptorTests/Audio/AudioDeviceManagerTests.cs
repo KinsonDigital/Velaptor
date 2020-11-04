@@ -49,9 +49,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 this.manager = AudioDeviceManager.GetInstance(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "Parameter must not be null. (Parameter 'alInvoker')");
         }
 
@@ -331,7 +329,7 @@ namespace RaptorTests.Audio
                 });
 
             var mockContentSrc = new Mock<IContentSource>();
-            mockContentSrc.Setup(m => m.GetContentPath(ContentType.Sounds, It.IsAny<string>())).Returns(fileName);
+            mockContentSrc.Setup(m => m.GetContentPath(It.IsAny<string>())).Returns(fileName);
 
             this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
             this.manager.InitDevice();

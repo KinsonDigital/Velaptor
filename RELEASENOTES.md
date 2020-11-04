@@ -1,5 +1,29 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.15.0</span>
+
+### **Breaking Changes** 💣
+
+1. Improved how content is used and managed
+   * Removed `Window` class constructor dependency of the type `IContentLoader`
+   * Created a `ILoader<T>` for **Raptor** content types below
+     1. Graphics
+     2. Sound
+     3. Atlas Data
+   * Created new `IContent` type.  Every content type created must inherit from this interface to be able to be loaded and managed as **content**.  The list below are the current types that have been changed to use the new `IContent` type
+     1. `ITexture`
+     2. `ISound`
+     3. `IAtlasRegionRectangle`
+
+### **New** 🎉
+
+1. Created new `IPlatform` type with associated implementation type `Platform` to detect which platform the code is running on
+   * Implemented use of `IPlatform` type into the 
+2. Added new exception type `UnknownContentException`
+   * This exception is thrown when dealing with unsupported content
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.14.0</span>
 
 ### **New** 🎉

@@ -32,11 +32,11 @@ namespace Raptor.Content
         [ExcludeFromCodeCoverage]
         public SoundLoader(IContentSource contentSource, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
         {
-            this.alInvoker = new ALInvoker();
-            this.audioManager = AudioDeviceManager.GetInstance(this.alInvoker);
             this.contentSource = contentSource;
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
+            this.alInvoker = new ALInvoker();
+            this.audioManager = AudioDeviceManager.GetInstance(this.alInvoker);
         }
 
         /// <summary>

@@ -11,8 +11,16 @@ namespace Raptor.Hardware
     /// <summary>
     /// Holds information about a single monitor in the system.
     /// </summary>
-    public struct SystemMonitor : System.IEquatable<SystemMonitor>
+    public class SystemMonitor : IEquatable<SystemMonitor>
     {
+        private readonly IPlatform platform;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
+        /// </summary>
+        /// <param name="platform">The current platform.</param>
+        public SystemMonitor(IPlatform platform) => this.platform = platform;
+
         /// <summary>
         /// Gets or sets a value indicating whether the monitor is the main monitor in the system.
         /// </summary>
@@ -74,7 +82,7 @@ namespace Raptor.Hardware
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>True if both operands are equal.</returns>
-        public static bool operator ==(SystemMonitor left, SystemMonitor right) => left.Equals(right);
+        public static bool operator ==(SystemMonitor left, SystemMonitor right) => !(left is null) && left.Equals(right);
 
         /// <summary>
         /// Returns a value indicating if the left operand is not equal to the right operand.
@@ -85,16 +93,23 @@ namespace Raptor.Hardware
         public static bool operator !=(SystemMonitor left, SystemMonitor right) => !(left == right);
 
         /// <inheritdoc/>
-        public bool Equals(SystemMonitor other)
-            => IsMain == other.IsMain &&
-            RedBitDepth == other.RedBitDepth &&
-            GreenBitDepth == other.GreenBitDepth &&
-            BlueBitDepth == other.BlueBitDepth &&
-            Width == other.Width &&
-            Height == other.Height &&
-            RefreshRate == other.RefreshRate &&
-            HorizontalScale == other.HorizontalScale &&
-            VerticalScale == other.VerticalScale;
+        public bool Equals(SystemMonitor? other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            return IsMain == other.IsMain &&
+                RedBitDepth == other.RedBitDepth &&
+                GreenBitDepth == other.GreenBitDepth &&
+                BlueBitDepth == other.BlueBitDepth &&
+                Width == other.Width &&
+                Height == other.Height &&
+                RefreshRate == other.RefreshRate &&
+                HorizontalScale == other.HorizontalScale &&
+                VerticalScale == other.VerticalScale;
+        }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)
@@ -116,6 +131,6 @@ namespace Raptor.Hardware
         /// </summary>
         /// <returns>The current platform's DPI setting.</returns>
         [ExcludeFromCodeCoverage]
-        private static float GetPlatformDefaultDpi() => RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? 72f : 96f;
+        private float GetPlatformDefaultDpi() => this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f;
     }
 }

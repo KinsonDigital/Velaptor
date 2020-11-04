@@ -5,7 +5,6 @@
 namespace Raptor.Content
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.IO.Abstractions;
     using Raptor.Graphics;
     using Raptor.OpenGL;
     using Raptor.Services;
@@ -23,12 +22,13 @@ namespace Raptor.Content
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
         /// <param name="imageFileService">Loads an image file.</param>
+        /// <param name="contentSource">Provides access to the content source.</param>
         [ExcludeFromCodeCoverage]
-        public TextureLoader(IImageFileService imageFileService)
+        public TextureLoader(IImageFileService imageFileService, IContentSource contentSource)
         {
             this.gl = new GLInvoker();
             this.imageFileService = imageFileService;
-            this.contentSource = new ContentSource(IoC.Container.GetInstance<IDirectory>());
+            this.contentSource = contentSource;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Raptor.Content
         /// <inheritdoc/>
         public ITexture Load(string name)
         {
-            var filePath = this.contentSource.GetContentPath(ContentType.Graphics, name);
+            var filePath = this.contentSource.GetContentPath(name);
             var (pixels, width, height) = this.imageFileService.Load(filePath);
 
             return new Texture(this.gl, name, pixels, width, height);

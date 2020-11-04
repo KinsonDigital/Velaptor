@@ -36,7 +36,7 @@ namespace RaptorTests.Content
             this.mockAudioManager = new Mock<IAudioDeviceManager>();
 
             this.mockContentSource = new Mock<IContentSource>();
-            this.mockContentSource.Setup(m => m.GetContentPath(ContentType.Sounds, "sound.ogg")).Returns(@"C:\temp\Content\Sounds\sound.ogg");
+            this.mockContentSource.Setup(m => m.GetContentPath("sound.ogg")).Returns(@"C:\temp\Content\Sounds\sound.ogg");
 
             this.mockOggDecoder = new Mock<ISoundDecoder<float>>();
             this.mockOggDecoder.Setup(m => m.LoadData(@"C:\temp\Content\Sounds\sound.ogg"))
@@ -75,7 +75,7 @@ namespace RaptorTests.Content
             var actual = loader.Load("sound.ogg");
 
             // Assert
-            Assert.Equal("sound", actual.ContentName);
+            Assert.Equal("sound", actual.Name);
         }
         #endregion
 

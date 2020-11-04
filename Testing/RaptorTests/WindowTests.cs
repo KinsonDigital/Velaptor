@@ -152,38 +152,18 @@ namespace RaptorTests
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var window = new WindowFake(null, this.mockContentLoader.Object);
+                var window = new WindowFake(null);
             }, "Window must not be null. (Parameter 'window')");
         }
 
         [Fact]
-        public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullLoader_ThrowsException()
-        {
-            // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var window = new WindowFake(this.mockWindow.Object, null);
-            }, "Content loader must not be null. (Parameter 'contentLoader')");
-        }
-
-        [Fact]
-        public void Ctor_WhenUsingOverloadWithLoaderAndWidthAndHeightWithNullLoader_ThrowsException()
-        {
-            // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var window = new WindowFake(window: null, contentLoader: null);
-            }, "Window must not be null. (Parameter 'window')");
-        }
-
-        [Fact]
-        public void Ctor_WhenInvokedWithWindowAndContentLoader_SetsWindowAndContentLoader()
+        public void Ctor_WhenInvoked_ByDefaultContentLoaderIsNull()
         {
             // Act
             var window = CreateWindow();
 
             // Assert
-            Assert.Equal(this.mockContentLoader.Object, window.ContentLoader);
+            Assert.Null(window.ContentLoader);
         }
 
         [Fact]
@@ -219,6 +199,6 @@ namespace RaptorTests
         /// of testing the abstract <see cref="Window"/> class.
         /// </summary>
         /// <returns>The instance used for testing.</returns>
-        private WindowFake CreateWindow() => new WindowFake(this.mockWindow.Object, this.mockContentLoader.Object);
+        private WindowFake CreateWindow() => new WindowFake(this.mockWindow.Object);
     }
 }

@@ -2,12 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests
+namespace RaptorTests.Content
 {
     using Moq;
-    using Raptor;
+    using Raptor.Content;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="AtlasRegionRectangle"/> class.
+    /// </summary>
     public class AtlasRegionRectangleTests
     {
         #region Constructor Tests
@@ -59,64 +62,6 @@ namespace RaptorTests
 
             // Assert
             Assert.Equal(1234, rect.Height);
-        }
-        #endregion
-
-        #region Method tests
-        [Fact]
-        public void EqualsOperator_WhenInvoked_ReturnTrue()
-        {
-            // Arrange
-            var rectA = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
-            var rectB = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
-
-            // Act
-            var actual = rectA == rectB;
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void NotEqualsOperator_WhenInvoked_ReturnTrue()
-        {
-            // Arrange
-            var rectA = new AtlasRegionRectangle("rect-A", 11, 22, 33, 44);
-            var rectB = new AtlasRegionRectangle("rect-B", 55, 66, 77, 88);
-
-            // Act
-            var actual = rectA != rectB;
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void Equals_WhenParamObjectIsDifferentType_ReturnFalse()
-        {
-            // Arrange
-            var rectA = new AtlasRegionRectangle("rect-A", 11, 22, 33, 44);
-            var differentObject = new object();
-
-            // Act
-            var actual = rectA.Equals(differentObject);
-
-            // Assert
-            Assert.False(actual);
-        }
-
-        [Fact]
-        public void Equals_WhenParamObjectSameType_ReturnFalse()
-        {
-            // Arrange
-            var rectA = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
-            object rectB = new AtlasRegionRectangle("rect", 11, 22, 33, 44);
-
-            // Act
-            var actual = rectA.Equals(rectB);
-
-            // Assert
-            Assert.True(actual);
         }
         #endregion
     }

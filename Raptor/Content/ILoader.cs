@@ -11,10 +11,10 @@ namespace Raptor.Content
     public interface ILoader<T>
     {
         /// <summary>
-        /// Loads data at the given <paramref name="filePath"/>.
+        /// Loads data at the given <paramref name="contentNameOrPath"/>.
         /// </summary>
-        /// <param name="filePath">The path to the file with the data to load.</param>
+        /// <param name="contentNameOrPath">The name or path to the content of the data to load.</param>
         /// <returns>The data loaded from disk.</returns>
-        T Load(string filePath);
+        T Load(string contentNameOrPath);
     }
 }

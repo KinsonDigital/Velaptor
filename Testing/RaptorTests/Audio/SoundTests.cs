@@ -66,7 +66,7 @@ namespace RaptorTests.Audio
             this.mockMp3Decoder = new Mock<ISoundDecoder<byte>>();
 
             this.mockContentSrc = new Mock<IContentSource>();
-            this.mockContentSrc.Setup(m => m.GetContentPath(ContentType.Sounds, "sound"))
+            this.mockContentSrc.Setup(m => m.GetContentPath("sound"))
                 .Returns(@"C:\temp\Content\Graphics\sound.ogg");
         }
 
@@ -78,7 +78,7 @@ namespace RaptorTests.Audio
             this.sound = new Sound(this.soundContentName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object, this.mockContentSrc.Object);
 
             // Assert
-            this.mockContentSrc.Verify(m => m.GetContentPath(ContentType.Sounds, this.soundContentName), Times.Once());
+            this.mockContentSrc.Verify(m => m.GetContentPath(this.soundContentName), Times.Once());
         }
 
         [Theory]
@@ -138,7 +138,7 @@ namespace RaptorTests.Audio
         public void Ctor_WhenUsingMp3Sound_UploadsBufferData()
         {
             // Act
-            this.mockContentSrc.Setup(m => m.GetContentPath(ContentType.Sounds, "sound"))
+            this.mockContentSrc.Setup(m => m.GetContentPath("sound"))
                 .Returns(@"C:\temp\Content\Graphics\sound.mp3");
             this.mockMp3Decoder.Setup(m => m.LoadData(this.mp3ContentFilePath))
                 .Returns(() =>
@@ -163,7 +163,7 @@ namespace RaptorTests.Audio
         public void Ctor_WhenUsingUnsupportedFileType_ThrowsException()
         {
             // Arrange
-            this.mockContentSrc.Setup(m => m.GetContentPath(ContentType.Sounds, "sound"))
+            this.mockContentSrc.Setup(m => m.GetContentPath("sound"))
                 .Returns(@"C:\temp\Content\Graphics\sound.wav");
 
             // Act & Assert
@@ -182,7 +182,7 @@ namespace RaptorTests.Audio
             this.sound = new Sound(this.soundContentName, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object, this.mockContentSrc.Object);
 
             // Assert
-            Assert.Equal("sound", this.sound.ContentName);
+            Assert.Equal("sound", this.sound.Name);
         }
 
         [Fact]
@@ -567,6 +567,7 @@ namespace RaptorTests.Audio
         }
         #endregion
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             this.sound?.Dispose();
