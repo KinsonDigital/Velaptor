@@ -5,7 +5,6 @@
 namespace RaptorTests.Fakes
 {
     using Raptor;
-    using Raptor.Content;
 
     /// <summary>
     /// Used for the purpose of testing the abstract <see cref="Window"/> class.
@@ -18,8 +17,8 @@ namespace RaptorTests.Fakes
         /// <param name="window">Window implementation.</param>
         /// <param name="contentLoader">Content loader implementation.</param>
         /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
-        public WindowFake(IWindow window, IContentLoader contentLoader)
-            : base(window, contentLoader)
+        public WindowFake(IWindow window)
+            : base(window)
         {
         }
     }

@@ -22,14 +22,10 @@ namespace Raptor
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="window">The window implementation that contains the window functionality.</param>
-        /// <param name="contentLoader">Loads content.</param>
-        public Window(IWindow window, IContentLoader? contentLoader)
+        public Window(IWindow window)
         {
             if (window is null)
                 throw new ArgumentNullException(nameof(window), "Window must not be null.");
-
-            if (contentLoader is null)
-                throw new ArgumentNullException(nameof(contentLoader), "Content loader must not be null.");
 
             this.window = window;
             this.window.Init = OnLoad;
@@ -37,8 +33,6 @@ namespace Raptor
             this.window.Draw = OnDraw;
             this.window.WinResize = OnResize;
             this.window.UpdateFreq = 60;
-
-            ContentLoader = contentLoader;
         }
 
         /// <summary>
@@ -117,7 +111,7 @@ namespace Raptor
         /// <summary>
         /// Gets the content loader for loading content.
         /// </summary>
-        public IContentLoader? ContentLoader { get; private set; }
+        public IContentLoader? ContentLoader { get; protected set; }
 
         /// <summary>
         /// Shows the window.

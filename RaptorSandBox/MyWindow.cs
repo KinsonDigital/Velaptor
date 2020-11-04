@@ -25,7 +25,12 @@ namespace RaptorSandBox
         private float timeElapsed;
         private int linkTexturePosX;
 
-        public MyWindow(IWindow window, IContentLoader? contentLoader) : base(window, contentLoader) => this.linkTexturePosX = 400;
+        public MyWindow(IWindow window)
+            : base(window)
+        {
+            ContentLoader = ContentLoaderFactory.CreateContentLoader();
+            this.linkTexturePosX = 400;
+        }
 
         public override void OnLoad()
         {
@@ -34,13 +39,13 @@ namespace RaptorSandBox
 
             this.spriteBatch = SpriteBatchFactory.CreateSpriteBatch(Width, Height);
 
-            this.dungeonTexture = ContentLoader.LoadTexture("dungeon.png");
-            this.linkTexture = ContentLoader.LoadTexture("Link.png");
+            this.dungeonTexture = ContentLoader.Load<ITexture>("dungeon.png");
+            this.linkTexture = ContentLoader.Load<ITexture>("Link.png");
             //this.zapSound = ContentLoader.LoadSound("zap.ogg");
             //this.deadShipsMusic = ContentLoader.LoadSound("deadships.ogg");
             //this.deadShipsMusic.SetTimePosition(60);
 
-            this.quietPlaceMusic = ContentLoader.LoadSound("deadships.ogg");
+            this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
             this.quietPlaceMusic.PlaySound();
 

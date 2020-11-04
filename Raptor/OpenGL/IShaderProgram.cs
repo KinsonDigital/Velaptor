@@ -9,7 +9,7 @@ namespace Raptor.OpenGL
     /// <summary>
     /// A shader program consisting of a vertex and fragment shader.
     /// </summary>
-    public interface IShaderProgram : IDisposable
+    internal interface IShaderProgram : IDisposable
     {
         /// <summary>
         /// Gets the shader program ID on the GPU.

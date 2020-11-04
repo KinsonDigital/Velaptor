@@ -16,14 +16,12 @@ namespace Raptor.Content
     /// <summary>
     /// Manages the content source.
     /// </summary>
-    public class ContentSource : IContentSource
+    public abstract class ContentSource : IContentSource
     {
         private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
         private readonly IDirectory directory;
         private string contentRootDirectory = @$"{BaseDir}Content\";
-        private string graphicsDirName = "Graphics";
-        private string soundsDirName = "Sounds";
-        private string atlasDirName = "AtlasData";
+        private string contentDirName = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentSource"/> class.
@@ -40,108 +38,51 @@ namespace Raptor.Content
                 value = string.IsNullOrEmpty(value) ? BaseDir : value;
 
                 // If the value ends with a backslash, leave as is, else add one
-                value = value.EndsWith('\\') ? value : $@"{value}\";
+                value = value.EndsWith(Path.DirectorySeparatorChar) ? value : $@"{value}\";
 
                 this.contentRootDirectory = $@"{value}Content\";
             }
         }
 
         /// <inheritdoc/>
-        public string GraphicsDirectoryName
+        public string ContentDirectoryName
         {
-            get => this.graphicsDirName;
+            get => this.contentDirName;
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    throw new Exception($"The '{nameof(GraphicsDirectoryName)}' must not be null or empty.");
+                {
+                    throw new Exception($"The '{nameof(ContentDirectoryName)}' must not be null or empty.");
+                }
 
-                // NOTE: No localization required
-#pragma warning disable CA1307 // Specify StringComparison
-                value = value.Replace("\\", string.Empty);
-#pragma warning restore CA1307 // Specify StringComparison
-
-                this.graphicsDirName = value;
+                this.contentDirName = value.GetLastDirName();
             }
         }
 
         /// <inheritdoc/>
-        public string SoundsDirectoryName
-        {
-            get => this.soundsDirName;
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    throw new Exception($"The '{nameof(SoundsDirectoryName)}' must not be null or empty.");
-
-                // NOTE: No localization required
-#pragma warning disable CA1307 // Specify StringComparison
-                value = value.Replace("\\", string.Empty);
-#pragma warning restore CA1307 // Specify StringComparison
-
-                this.soundsDirName = value;
-            }
-        }
-
-        /// <inheritdoc/>
-        public string AtlasDirectoryName
-        {
-            get => this.atlasDirName;
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    throw new Exception($"The '{nameof(AtlasDirectoryName)}' must not be null or empty.");
-
-                // NOTE: No localization required
-#pragma warning disable CA1307 // Specify StringComparison
-                value = value.Replace("\\", string.Empty);
-#pragma warning restore CA1307 // Specify StringComparison
-
-                this.atlasDirName = value;
-            }
-        }
-
-        /// <inheritdoc/>
-        public string GetGraphicsPath() => $@"{this.contentRootDirectory}{this.graphicsDirName}\";
-
-        /// <inheritdoc/>
-        public string GetSoundsPath() => $@"{this.contentRootDirectory}{this.soundsDirName}\";
-
-        /// <inheritdoc/>
-        public string GetAtlasPath() => $@"{this.contentRootDirectory}{this.atlasDirName}\";
-
-        /// <inheritdoc/>
-        public string GetContentPath(ContentType contentType, string name)
+        public string GetContentPath(string name)
         {
             if (string.IsNullOrEmpty(name))
                 throw new StringNullOrEmptyException();
 
             // If the name ends with a '\', throw and exception
-            if (name.EndsWith('\\'))
+            if (name.EndsWith(Path.DirectorySeparatorChar))
                 throw new ArgumentException($"The '{name}' cannot end with folder.  It must end with a file name with or without the extension.");
 
             // If the name has an extension, remove it
             if (Path.HasExtension(name))
             {
                 // NOTE: No localization required
-#pragma warning disable CA1307 // Specify StringComparison
-                name = $@"{Path.GetDirectoryName(name)}\{Path.GetFileNameWithoutExtension(name)}".Replace(@"\", string.Empty);
-#pragma warning restore CA1307 // Specify StringComparison
+                name = $@"{Path.GetDirectoryName(name)}\{Path.GetFileNameWithoutExtension(name)}".Replace(@"\", string.Empty, StringComparison.OrdinalIgnoreCase);
             }
 
             var filePath = string.Empty;
 
-            switch (contentType)
-            {
-                case ContentType.Graphics:
-                    filePath = $@"{GetGraphicsPath()}{name}";
-                    break;
-                case ContentType.Sounds:
-                    filePath = $@"{GetSoundsPath()}{name}";
-                    break;
-                case ContentType.Atlas:
-                    filePath = $@"{GetAtlasPath()}{name}";
-                    break;
-            }
+            this.contentRootDirectory = this.contentRootDirectory.EndsWith(Path.DirectorySeparatorChar)
+                ? this.contentRootDirectory.TrimEnd(Path.DirectorySeparatorChar)
+                : this.contentRootDirectory;
+
+            filePath = $@"{this.contentRootDirectory}\{this.contentDirName}\{name}";
 
             var directory = Path.GetDirectoryName(filePath);
             var fileNameNoExt = Path.GetFileNameWithoutExtension(filePath).ToUpperInvariant();

@@ -5,17 +5,13 @@
 namespace Raptor.Audio
 {
     using System;
+    using Raptor.Content;
 
     /// <summary>
     /// A single sound that can be played, paused etc.
     /// </summary>
-    public interface ISound : IDisposable
+    public interface ISound : IContent, IDisposable
     {
-        /// <summary>
-        /// Gets the name of the sound.
-        /// </summary>
-        string ContentName { get; }
-
         /// <summary>
         /// Gets or sets the volume of the sound.
         /// </summary>

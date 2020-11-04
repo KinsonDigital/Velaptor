@@ -17,6 +17,7 @@ namespace RaptorTests.Content
     public class AtlasDataLoaderTests
     {
         private readonly Mock<IFile> mockTextFile;
+        private readonly Mock<IContentSource> mockContentSource;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasDataLoaderTests"/> class.
@@ -24,6 +25,7 @@ namespace RaptorTests.Content
         public AtlasDataLoaderTests()
         {
             this.mockTextFile = new Mock<IFile>();
+            this.mockContentSource = new Mock<IContentSource>();
 
             var textFileData = new Rectangle[]
             {
@@ -42,7 +44,7 @@ namespace RaptorTests.Content
         public void Load_WhenInvoked_LoadsTextureAtlasData()
         {
             // Arrange
-            var loader = new AtlasDataLoader<Rectangle>(this.mockTextFile.Object);
+            var loader = new AtlasDataLoader<Rectangle>(this.mockContentSource.Object, this.mockTextFile.Object);
             var expected = new Rectangle[]
             {
                 new Rectangle(11, 22, 33, 44),

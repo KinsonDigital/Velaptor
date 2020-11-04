@@ -21,9 +21,7 @@ namespace RaptorTests.OpenGL
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 VertexDataAnalyzer.GetTotalBytesForStruct(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "The argument must not be null (Parameter 'type')");
         }
 

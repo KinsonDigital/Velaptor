@@ -94,7 +94,7 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
-        public string ContentName => Path.GetFileNameWithoutExtension(this.name);
+        public string Name => Path.GetFileNameWithoutExtension(this.name);
 
         /// <inheritdoc/>
         public float Volume
@@ -286,7 +286,7 @@ namespace Raptor.Audio
 
             (this.srcId, this.bufferId) = this.audioManager.InitSound();
 
-            var fileName = this.contentSource.GetContentPath(ContentType.Sounds, this.name);
+            var fileName = this.contentSource.GetContentPath(this.name);
 
             var extension = Path.GetExtension(fileName);
 
@@ -356,7 +356,7 @@ namespace Raptor.Audio
             // Bind the buffer to the source
             this.alInvoker.Source(this.srcId, ALSourcei.Buffer, this.bufferId);
 
-            // TODO: Call audiomanager update sound source
+            // TODO: Call audio manager update sound source
         }
 
         /// <summary>

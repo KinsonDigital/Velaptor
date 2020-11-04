@@ -150,6 +150,39 @@ namespace RaptorTests
             // Assert
             Assert.Equal(50_000, actual);
         }
+
+        [Theory]
+        [InlineData("", false)]
+        [InlineData(@"C:\", true)]
+        [InlineData(@"C:", false)]
+        [InlineData(@"C\", false)]
+        [InlineData(@"C:\test-file.txt", true)]
+        public void IsDirectoryRootDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
+        {
+            // Act
+            var actual = value.IsDirectoryRootDrive();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("", "")]
+        [InlineData(null, "")]
+        [InlineData("test-dir", "test-dir")]
+        [InlineData(@"C:\", @"C:\")]
+        [InlineData(@"C:\temp", @"temp")]
+        [InlineData(@"C:\temp\", @"temp")]
+        [InlineData(@"C:\test-file.txt", @"C:\")]
+        [InlineData(@"C:\temp\test-file.txt", @"temp")]
+        public void GetLastDirName_WhenInvoked_ReturnsCorrectValue(string value, string expected)
+        {
+            // Act
+            var actual = value.GetLastDirName();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
         #endregion
     }
 }
