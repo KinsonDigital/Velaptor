@@ -45,6 +45,7 @@ namespace Raptor
         /// </summary>
         private static void SetupContainer()
         {
+            IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.File);
             IoCContainer.Register(() => FileSystem.Directory);

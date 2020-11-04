@@ -18,15 +18,18 @@ namespace Raptor.OpenGL
     {
         private static bool glfwInitialzed;
         private readonly IGLFWInvoker glfwInvoker;
+        private readonly IPlatform platform;
         private readonly List<SystemMonitor> monitors = new List<SystemMonitor>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitors"/> class.
         /// </summary>
         /// <param name="glfwInvoker">Used to make calls to GLFW.</param>
-        public unsafe GLFWMonitors(IGLFWInvoker glfwInvoker)
+        /// <param name="platform">The current platform.</param>
+        public unsafe GLFWMonitors(IGLFWInvoker glfwInvoker, IPlatform platform)
         {
             this.glfwInvoker = glfwInvoker;
+            this.platform = platform;
 
             if (!glfwInitialzed)
             {
@@ -62,7 +65,7 @@ namespace Raptor.OpenGL
             {
                 var monitorVideoMode = (VideoMode*)this.glfwInvoker.GetVideoMode(monitorHandle);
 
-                var newMonitor = new SystemMonitor
+                var newMonitor = new SystemMonitor(this.platform)
                 {
                     IsMain = this.monitors == null || this.monitors.Count <= 0,
                     RedBitDepth = monitorVideoMode->RedBits,

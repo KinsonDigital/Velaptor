@@ -6,8 +6,10 @@ namespace RaptorTests.OpenGL
 {
     using System;
     using System.Numerics;
+    using System.Runtime.InteropServices;
     using Moq;
     using OpenTK.Windowing.GraphicsLibraryFramework;
+    using Raptor;
     using Raptor.Hardware;
     using Raptor.OpenGL;
     using Xunit;
@@ -23,12 +25,16 @@ namespace RaptorTests.OpenGL
         private readonly IntPtr monitorHandleA;
         private readonly Monitor monitorB;
         private readonly IntPtr monitorHandleB;
+        private readonly Mock<IPlatform> mockPlatform;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitorsTests"/> class.
         /// </summary>
         public unsafe GLFWMonitorsTests()
         {
+            this.mockPlatform = new Mock<IPlatform>();
+            this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
+
             this.videoModeA = new VideoMode()
             {
                 Width = 1,
@@ -94,7 +100,7 @@ namespace RaptorTests.OpenGL
         public void Ctor_WhenInvoked_InitializesGLFW()
         {
             // Act
-            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object);
+            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
 
             // Assert
             this.mockGLFWInvoker.Verify(m => m.Init(), Times.Once());
@@ -104,7 +110,7 @@ namespace RaptorTests.OpenGL
         public void Ctor_WhenInvoked_SetsMonitorCallback()
         {
             // Act
-            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object);
+            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
 
             // Assert
             this.mockGLFWInvoker.Verify(m => m.SetMonitorCallback(It.IsAny<GLFWCallbacks.MonitorCallback>()), Times.Once());
@@ -114,7 +120,7 @@ namespace RaptorTests.OpenGL
         public void Ctor_WhenInvoked_SystemMonitorsRefreshed()
         {
             // Arrange
-            var expectedMonitorA = new SystemMonitor()
+            var expectedMonitorA = new SystemMonitor(this.mockPlatform.Object)
             {
                 IsMain = true,
                 Width = 1,
@@ -127,7 +133,7 @@ namespace RaptorTests.OpenGL
                 VerticalScale = 8,
             };
 
-            var expectedMonitorB = new SystemMonitor()
+            var expectedMonitorB = new SystemMonitor(this.mockPlatform.Object)
             {
                 IsMain = false,
                 Width = 11,
@@ -141,7 +147,7 @@ namespace RaptorTests.OpenGL
             };
 
             // Act
-            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object);
+            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
             var actual = monitors.SystemMonitors;
 
             // Assert

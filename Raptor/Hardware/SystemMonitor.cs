@@ -1,4 +1,4 @@
-﻿// <copyright file="SystemMonitor.cs" company="KinsonDigital">
+// <copyright file="SystemMonitor.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,8 +11,16 @@ namespace Raptor.Hardware
     /// <summary>
     /// Holds information about a single monitor in the system.
     /// </summary>
-    public struct SystemMonitor : System.IEquatable<SystemMonitor>
+    public class SystemMonitor : IEquatable<SystemMonitor>
     {
+        private readonly IPlatform platform;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
+        /// </summary>
+        /// <param name="platform">The current platform.</param>
+        public SystemMonitor(IPlatform platform) => this.platform = platform;
+
         /// <summary>
         /// Gets or sets a value indicating whether the monitor is the main monitor in the system.
         /// </summary>
@@ -116,6 +124,6 @@ namespace Raptor.Hardware
         /// </summary>
         /// <returns>The current platform's DPI setting.</returns>
         [ExcludeFromCodeCoverage]
-        private static float GetPlatformDefaultDpi() => RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? 72f : 96f;
+        private float GetPlatformDefaultDpi() => this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f;
     }
 }
