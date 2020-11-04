@@ -280,7 +280,7 @@ namespace RaptorTests.Hardware
         /// Gets horizontal DPI data for testing.
         /// </summary>
         /// <returns>The horizontal DPI data and expected results.</returns>
-        private static IEnumerable<object[]> GetHorizontalDPIData()
+        public static IEnumerable<object[]> GetHorizontalDPIData()
         {
             yield return new object[] { OSPlatform.Windows, 672 };
             yield return new object[] { OSPlatform.Linux, 672 };
@@ -292,7 +292,7 @@ namespace RaptorTests.Hardware
         /// Gets vertical DPI data for testing.
         /// </summary>
         /// <returns>The vertical DPI data and expected results.</returns>
-        private static IEnumerable<object[]> GetVerticalDPIData()
+        public static IEnumerable<object[]> GetVerticalDPIData()
         {
             yield return new object[] { OSPlatform.Windows, 768 };
             yield return new object[] { OSPlatform.Linux, 768 };
