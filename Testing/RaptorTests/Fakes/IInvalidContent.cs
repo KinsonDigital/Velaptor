@@ -7,7 +7,7 @@ namespace RaptorTests.Fakes
     using Raptor.Content;
 
     /// <summary>
-    /// Used to represent invalid content for test the <see cref="ContentLoader"/> class.
+    /// Used to represent invalid content for testing the <see cref="ContentLoader"/> class.
     /// </summary>
     public interface IInvalidContent : IContent
     {
