@@ -46,17 +46,49 @@ namespace Raptor
         /// </summary>
         private static void SetupContainer()
         {
+            SetupOpenTK();
+
+            SetupServices();
+
+            SetupContent();
+
+            isInitialized = true;
+        }
+
+        /// <summary>
+        /// Setup container registration related to OpenTK.
+        /// </summary>
+        private static void SetupOpenTK()
+        {
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.File);
             IoCContainer.Register(() => FileSystem.Directory);
             IoCContainer.Register<IALInvoker, ALInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IImageFileService, ImageFileService>();
-            IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>();
-            IoCContainer.Register<ISystemMonitorService, SystemMonitorService>();
+
             IoCContainer.Register<GLFWMonitors>();
 
+            IoCContainer.Register<IGPUBuffer>(() =>
+            {
+                return new GPUBuffer<VertexData>(IoCContainer.GetInstance<IGLInvoker>());
+            }, true);
+
+            IoCContainer.Register<IShaderProgram, ShaderProgram>(true);
+
+            IoCContainer.Register<ISpriteBatch>(() =>
+            {
+                return new SpriteBatch(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IShaderProgram>(), IoCContainer.GetInstance<IGPUBuffer>());
+            }, true);
+
+            SetupAudio();
+        }
+
+        /// <summary>
+        /// Setup container registration related to audio.
+        /// </summary>
+        private static void SetupAudio()
+        {
             // Register the proper data stream to be the implementation if the consumer is a certain decoder
             IoCContainer.RegisterConditional<IAudioDataStream<float>, OggAudioDataStream>(context =>
             {
@@ -70,7 +102,23 @@ namespace Raptor
 
             IoCContainer.Register<ISoundDecoder<float>, OggSoundDecoder>(true);
             IoCContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>(true);
+        }
 
+        /// <summary>
+        /// Setup container registration related to services.
+        /// </summary>
+        private static void SetupServices()
+        {
+            IoCContainer.Register<IImageFileService, ImageFileService>();
+            IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>();
+            IoCContainer.Register<ISystemMonitorService, SystemMonitorService>();
+        }
+
+        /// <summary>
+        /// Setup container registration related to content.
+        /// </summary>
+        private static void SetupContent()
+        {
             IoCContainer.Register<ILoader<ITexture>>(() =>
             {
                 return new TextureLoader(
@@ -98,20 +146,6 @@ namespace Raptor
             {
                 return new AtlasDataLoader<AtlasRegionRectangle>(new AtlasContentSource(IoCContainer.GetInstance<IDirectory>()), IoCContainer.GetInstance<IFile>());
             });
-
-            IoCContainer.Register<IGPUBuffer>(() =>
-            {
-                return new GPUBuffer<VertexData>(IoCContainer.GetInstance<IGLInvoker>());
-            }, true);
-
-            IoCContainer.Register<IShaderProgram, ShaderProgram>(true);
-
-            IoCContainer.Register<ISpriteBatch>(() =>
-            {
-                return new SpriteBatch(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IShaderProgram>(), IoCContainer.GetInstance<IGPUBuffer>());
-            }, true);
-
-            isInitialized = true;
         }
     }
 }
