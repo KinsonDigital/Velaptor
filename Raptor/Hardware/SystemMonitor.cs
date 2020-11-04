@@ -1,4 +1,4 @@
-// <copyright file="SystemMonitor.cs" company="KinsonDigital">
+﻿// <copyright file="SystemMonitor.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -82,7 +82,7 @@ namespace Raptor.Hardware
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>True if both operands are equal.</returns>
-        public static bool operator ==(SystemMonitor left, SystemMonitor right) => left.Equals(right);
+        public static bool operator ==(SystemMonitor left, SystemMonitor right) => !(left is null) && left.Equals(right);
 
         /// <summary>
         /// Returns a value indicating if the left operand is not equal to the right operand.
@@ -93,16 +93,23 @@ namespace Raptor.Hardware
         public static bool operator !=(SystemMonitor left, SystemMonitor right) => !(left == right);
 
         /// <inheritdoc/>
-        public bool Equals(SystemMonitor other)
-            => IsMain == other.IsMain &&
-            RedBitDepth == other.RedBitDepth &&
-            GreenBitDepth == other.GreenBitDepth &&
-            BlueBitDepth == other.BlueBitDepth &&
-            Width == other.Width &&
-            Height == other.Height &&
-            RefreshRate == other.RefreshRate &&
-            HorizontalScale == other.HorizontalScale &&
-            VerticalScale == other.VerticalScale;
+        public bool Equals(SystemMonitor? other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            return IsMain == other.IsMain &&
+                RedBitDepth == other.RedBitDepth &&
+                GreenBitDepth == other.GreenBitDepth &&
+                BlueBitDepth == other.BlueBitDepth &&
+                Width == other.Width &&
+                Height == other.Height &&
+                RefreshRate == other.RefreshRate &&
+                HorizontalScale == other.HorizontalScale &&
+                VerticalScale == other.VerticalScale;
+        }
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)
