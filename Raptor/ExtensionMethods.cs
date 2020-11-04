@@ -6,6 +6,8 @@ namespace Raptor
 {
     using System;
     using System.Drawing;
+    using System.IO;
+    using System.Linq;
     using OpenTK.Mathematics;
 
     /// <summary>
@@ -20,28 +22,28 @@ namespace Raptor
         /// </summary>
         /// <param name="radians">The value to convert.</param>
         /// <returns>The radians converted into degrees.</returns>
-        public static float ToDegrees(this float radians) => radians * 180.0f / PI;
+        internal static float ToDegrees(this float radians) => radians * 180.0f / PI;
 
         /// <summary>
         /// Converts the given <paramref name="degrees"/> value into radians.
         /// </summary>
         /// <param name="degrees">The value to convert.</param>
         /// <returns>The degrees converted into radians.</returns>
-        public static float ToRadians(this float degrees) => degrees * PI / 180f;
+        internal static float ToRadians(this float degrees) => degrees * PI / 180f;
 
         /// <summary>
         /// Sets the value to positive if its negative.
         /// </summary>
         /// <param name="value">The value to force.</param>
         /// <returns>The value as a positive number.</returns>
-        public static float ForcePositive(this float value) => value < 0 ? value * -1 : value;
+        internal static float ForcePositive(this float value) => value < 0 ? value * -1 : value;
 
         /// <summary>
         /// Sets the value to negative if its positive.
         /// </summary>
         /// <param name="value">The value to force.</param>
         /// <returns>The value as a negative number.</returns>
-        public static float ForceNegative(this float value) => value > 0 ? value * -1 : value;
+        internal static float ForceNegative(this float value) => value > 0 ? value * -1 : value;
 
         /// <summary>
         /// Rotates the <paramref name="vector"/> around the <paramref name="origin"/> at the given <paramref name="angle"/>.
@@ -51,7 +53,7 @@ namespace Raptor
         /// <param name="angle">The angle in degrees to rotate <paramref name="vector"/>.  Value must be positive.</param>
         /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/>.</param>
         /// <returns>The <paramref name="vector"/> rotated around the <paramref name="origin"/>.</returns>
-        public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
+        internal static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
         {
             var angleRadians = clockWise ? angle.ToRadians() : angle.ToRadians() * -1;
 
@@ -82,14 +84,14 @@ namespace Raptor
         ///     Z = blue.
         ///     W = alpha.
         /// </returns>
-        public static Vector4 ToVector4(this Color clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
+        internal static Vector4 ToVector4(this Color clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
         /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A color represented by a 4 component vector.</returns>
-        public static Vector4 ToGLColor(this Color value)
+        internal static Vector4 ToGLColor(this Color value)
         {
             var vec4 = value.ToVector4();
             return vec4.MapValues(0, 255, 0, 1);
@@ -104,7 +106,7 @@ namespace Raptor
         /// <param name="toStart">The to starting range value.</param>
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        public static float MapValue(this int value, float fromStart, float fromStop, float toStart, float toStop)
+        internal static float MapValue(this int value, float fromStart, float fromStop, float toStart, float toStop)
             => MapValue((float)value, fromStart, fromStop, toStart, toStop);
 
         /// <summary>
@@ -116,7 +118,7 @@ namespace Raptor
         /// <param name="toStart">The to starting range value.</param>
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        public static float MapValue(this float value, float fromStart, float fromStop, float toStart, float toStop)
+        internal static float MapValue(this float value, float fromStart, float fromStop, float toStart, float toStop)
             => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
 
         /// <summary>
@@ -128,7 +130,7 @@ namespace Raptor
         /// <param name="toStart">The to starting range value.</param>
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        public static byte MapValue(this byte value, byte fromStart, byte fromStop, byte toStart, byte toStop)
+        internal static byte MapValue(this byte value, byte fromStart, byte fromStop, byte toStart, byte toStop)
             => (byte)(toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart))));
 
         /// <summary>
@@ -140,7 +142,7 @@ namespace Raptor
         /// <param name="toStart">The to starting range value.</param>
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A 4 component vector with each value mapped from one range to another.</returns>
-        public static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
+        internal static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
             => new Vector4
             {
                 X = value.X.MapValue(fromStart, fromStop, toStart, toStop),
