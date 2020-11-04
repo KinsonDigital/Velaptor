@@ -331,7 +331,7 @@ namespace RaptorTests.Audio
                 });
 
             var mockContentSrc = new Mock<IContentSource>();
-            mockContentSrc.Setup(m => m.GetContentPath(ContentType.Sounds, It.IsAny<string>())).Returns(fileName);
+            mockContentSrc.Setup(m => m.GetContentPath(It.IsAny<string>())).Returns(fileName);
 
             this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
             this.manager.InitDevice();

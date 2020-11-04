@@ -1,4 +1,4 @@
-﻿// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
+// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -148,5 +148,88 @@ namespace Raptor
                 Z = value.Z.MapValue(fromStart, fromStop, toStart, toStop),
                 W = value.W.MapValue(fromStart, fromStop, toStart, toStop),
             };
+
+        /// <summary>
+        /// Returns a value indicating whether the given file or directory path
+        /// only contains a root drive path with no directories.
+        /// </summary>
+        /// <param name="fileOrDirPath">The path to check.</param>
+        /// <returns>True if there are no directories and is just a root drive.</returns>
+        internal static bool IsDirectoryRootDrive(this string fileOrDirPath)
+        {
+            if (string.IsNullOrEmpty(fileOrDirPath))
+            {
+                return false;
+            }
+
+            var onlyDirPath = Path.HasExtension(fileOrDirPath)
+                ? Path.GetDirectoryName(fileOrDirPath)
+                : fileOrDirPath;
+
+            if (onlyDirPath.Count(c => c == ':') == 1 && onlyDirPath.Count(c => c == '\\') == 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the last directory name in the given directory or file path.
+        /// </summary>
+        /// <param name="fileOrDirPath">The path to check.</param>
+        /// <returns>The last directory name.</returns>
+        /// <remarks>
+        /// <para>
+        ///     If the <paramref name="fileOrDirPath"/> is a file path, then the file name
+        ///     will be stripped and the last directory will be returned.
+        /// </para>
+        /// <para>
+        ///     Example: The path 'C:\temp\dirA\myfile.txtl' will return 'dirA'.
+        /// </para>
+        /// <para>
+        ///     If the <paramref name="fileOrDirPath"/> is a directory path, then the
+        ///     last directory will be returned.
+        /// </para>
+        /// <para>
+        ///     Example: The path 'C:\temp\dirA\dirB' will return the result 'dirB'.
+        /// </para>
+        /// </remarks>
+        internal static string GetLastDirName(this string fileOrDirPath)
+        {
+            if (string.IsNullOrEmpty(fileOrDirPath))
+            {
+                return string.Empty;
+            }
+
+            var containsDirSeparators = fileOrDirPath.Contains(Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+
+            if (containsDirSeparators)
+            {
+                var onlyDirPath = Path.HasExtension(fileOrDirPath)
+                    ? Path.GetDirectoryName(fileOrDirPath)
+                    : fileOrDirPath;
+
+                // If the directory path is just a root drive path
+                if (!string.IsNullOrEmpty(onlyDirPath) && onlyDirPath.IsDirectoryRootDrive())
+                {
+                    var sections = onlyDirPath.Split(':', StringSplitOptions.RemoveEmptyEntries);
+
+                    return sections[^1] == Path.DirectorySeparatorChar.ToString()
+                        ? onlyDirPath
+                        : sections[^1].TrimStart(Path.DirectorySeparatorChar);
+                }
+
+                var dirNames = string.IsNullOrEmpty(onlyDirPath)
+                    ? Array.Empty<string>()
+                    : onlyDirPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+
+                return dirNames.Length <= 0 ? string.Empty : dirNames[^1];
+            }
+            else
+            {
+                return fileOrDirPath;
+            }
+        }
     }
 }

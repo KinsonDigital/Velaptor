@@ -1,4 +1,4 @@
-﻿// <copyright file="IoC.cs" company="KinsonDigital">
+// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -48,8 +48,6 @@ namespace Raptor
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.File);
             IoCContainer.Register(() => FileSystem.Directory);
-            IoCContainer.Register<ILoader<ITexture>, TextureLoader>();
-            IoCContainer.Register<ILoader<ISound>, SoundLoader>();
             IoCContainer.Register<IALInvoker, ALInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IImageFileService, ImageFileService>();
@@ -76,9 +74,29 @@ namespace Raptor
             IoCContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>();
             SuppressDisposableTransientWarning<ISoundDecoder<byte>>();
 
-            IoCContainer.Register<IContentSource, ContentSource>();
-            IoCContainer.Register<IContentLoader, ContentLoader>();
-            IoCContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
+            IoCContainer.Register<ILoader<ITexture>>(() =>
+            {
+                return new TextureLoader(
+                    IoCContainer.GetInstance<IGLInvoker>(),
+                    IoCContainer.GetInstance<IImageFileService>(),
+                    new GraphicsContentSource(IoCContainer.GetInstance<IDirectory>()));
+            });
+
+            IoCContainer.Register<ILoader<ISound>>(() =>
+            {
+                return new SoundLoader(
+                    IoCContainer.GetInstance<IALInvoker>(),
+                    AudioDeviceManager.GetInstance(Container.GetInstance<IALInvoker>()),
+                    new SoundContentSource(IoCContainer.GetInstance<IDirectory>()),
+                    IoCContainer.GetInstance<ISoundDecoder<float>>(),
+                    IoCContainer.GetInstance<ISoundDecoder<byte>>());
+            });
+
+            // TODO: If using Container works, convert all of the IoCContainer references to Container
+            IoCContainer.Register<IContentLoader>(() =>
+            {
+                return new ContentLoader(Container.GetInstance<ILoader<ITexture>>(), Container.GetInstance<ILoader<ISound>>());
+            });
 
             IoCContainer.Register<IGPUBuffer>(() =>
             {
