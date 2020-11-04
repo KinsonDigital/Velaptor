@@ -49,9 +49,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 this.manager = AudioDeviceManager.GetInstance(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }, "Parameter must not be null. (Parameter 'alInvoker')");
         }
 

@@ -5,7 +5,7 @@
 namespace Raptor.Content
 {
     /// <summary>
-    /// Represents a rectangular region in a a texture atlas.
+    /// Represents a rectangular region in a texture atlas.
     /// </summary>
     public interface IAtlasRegionRectangle : IContent
     {

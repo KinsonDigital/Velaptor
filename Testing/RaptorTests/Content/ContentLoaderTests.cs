@@ -7,7 +7,10 @@ namespace RaptorTests.Content
     using Moq;
     using Raptor.Audio;
     using Raptor.Content;
+    using Raptor.Exceptions;
     using Raptor.Graphics;
+    using RaptorTests.Fakes;
+    using RaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -29,15 +32,42 @@ namespace RaptorTests.Content
 
         #region Method Tests
         [Fact]
-        public void LoadTexture_WhenInvoked_LoadsTexture()
+        public void Load_WhenInvoked_LoadsTexture()
         {
-            // Act
+            // Arrange
             var loader = CreateContentLoader();
 
+            // Act
             loader.Load<ITexture>("test-texture");
 
             // Assert
             this.mockTextureLoader.Verify(m => m.Load("test-texture"), Times.Once());
+        }
+
+        [Fact]
+        public void Load_WhenInvoked_LoadsSound()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+
+            // Act
+            loader.Load<ISound>("test-sound");
+
+            // Assert
+            this.mockSoundLoader.Verify(m => m.Load("test-sound"), Times.Once());
+        }
+
+        [Fact]
+        public void Load_WhenLoadingUnknownContent_ThrowsException()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<UnknownContentException>(() =>
+            {
+                loader.Load<IInvalidContent>("test-texture");
+            }, "Content of type 'RaptorTests.Fakes.IInvalidContent' invalid.  Content types must inherit from interface 'IContent'.");
         }
         #endregion
 

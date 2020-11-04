@@ -14,6 +14,9 @@ namespace RaptorTests.OpenGL
     using Raptor.OpenGL;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="GLFWMonitors"/> class.
+    /// </summary>
     public unsafe class GLFWMonitorsTests
     {
         private readonly Mock<IGLFWInvoker> mockGLFWInvoker;

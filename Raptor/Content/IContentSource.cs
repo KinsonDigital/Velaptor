@@ -34,8 +34,8 @@ namespace Raptor.Content
         /// </summary>
         /// <param name="name">The name of the content item.</param>
         /// <returns>
-        ///     This is the <see cref="ContentRootDirectory"/> and
-        ///     <see cref="ContentDirectoryName"/> combined.
+        ///     The <see cref="ContentRootDirectory"/>, <see cref="ContentDirectoryName"/>
+        ///     and content item name combined.
         /// </returns>
         string GetContentPath(string name);
     }

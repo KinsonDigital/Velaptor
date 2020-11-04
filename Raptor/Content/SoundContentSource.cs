@@ -7,7 +7,7 @@ namespace Raptor.Content
     using System.IO.Abstractions;
 
     /// <summary>
-    /// Manages content source for sound content.
+    /// Manages a sound content source.
     /// </summary>
     public class SoundContentSource : ContentSource
     {

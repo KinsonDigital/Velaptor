@@ -5,7 +5,6 @@
 #pragma warning disable SA1116 // Split parameters should start on line after declaration
 namespace Raptor
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Raptor.Audio;
@@ -15,7 +14,6 @@ namespace Raptor
     using Raptor.OpenGL;
     using Raptor.Services;
     using SimpleInjector;
-    using SimpleInjector.Diagnostics;
 
     /// <summary>
     /// Provides dependency injection for the application.

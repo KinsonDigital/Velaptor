@@ -10,7 +10,7 @@ namespace Raptor.Content
     public interface IContent
     {
         /// <summary>
-        /// Gets the name of the texture.
+        /// Gets the name of the content.
         /// </summary>
         string Name { get; }
     }

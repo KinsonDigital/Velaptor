@@ -3,7 +3,6 @@
 // </copyright>
 
 #pragma warning disable IDE0017 // Simplify object initialization
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 namespace RaptorTests.Content
 {
     using System;

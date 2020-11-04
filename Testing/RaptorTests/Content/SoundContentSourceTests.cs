@@ -9,6 +9,9 @@ namespace RaptorTests.Content
     using Raptor.Content;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="SoundContentSource"/> class.
+    /// </summary>
     public class SoundContentSourceTests
     {
         #region Constructor Tests

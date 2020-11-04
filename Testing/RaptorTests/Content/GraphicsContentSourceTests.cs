@@ -9,6 +9,9 @@ namespace RaptorTests.Content
     using Raptor.Content;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="GraphicsContentSource"/> class.
+    /// </summary>
     public class GraphicsContentSourceTests
     {
         #region Constructor Tests

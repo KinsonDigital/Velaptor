@@ -567,6 +567,7 @@ namespace RaptorTests.Audio
         }
         #endregion
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             this.sound?.Dispose();

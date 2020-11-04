@@ -5,7 +5,7 @@
 namespace Raptor.Content
 {
     /// <summary>
-    /// Represents a loader that can load content for rendering or sound.
+    /// Loads various kinds of content.
     /// </summary>
     public interface IContentLoader
     {

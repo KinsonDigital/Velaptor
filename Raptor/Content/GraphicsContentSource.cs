@@ -7,7 +7,7 @@ namespace Raptor.Content
     using System.IO.Abstractions;
 
     /// <summary>
-    /// Manages content source for graphical content.
+    /// Manages a graphical content source.
     /// </summary>
     public class GraphicsContentSource : ContentSource
     {

@@ -6,8 +6,8 @@
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 namespace Raptor.Content
 {
-    using System;
     using Raptor.Audio;
+    using Raptor.Exceptions;
     using Raptor.Graphics;
 
     /// <summary>
@@ -21,12 +21,9 @@ namespace Raptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoader"/> class.
         /// </summary>
-        /// <param name="contentSource">Manages the source of where content is located.</param>
         /// <param name="textureLoader">The loader used to load textures.</param>
         /// <param name="soundLoader">Loads sounds.</param>
-        public ContentLoader(
-            ILoader<ITexture> textureLoader,
-            ILoader<ISound> soundLoader)
+        public ContentLoader(ILoader<ITexture> textureLoader, ILoader<ISound> soundLoader)
         {
             this.textureLoader = textureLoader;
             this.soundLoader = soundLoader;
@@ -46,8 +43,7 @@ namespace Raptor.Content
                 return (T)this.soundLoader.Load(name);
             }
 
-            // TODO: Create custom unknown content exception
-            throw new Exception($"Content of type '{typeof(T)}' invalid.  Must inherit from type '{nameof(IContent)}'");
+            throw new UnknownContentException($"Content of type '{typeof(T)}' invalid.  Content types must inherit from interface '{nameof(IContent)}'.");
         }
     }
 }

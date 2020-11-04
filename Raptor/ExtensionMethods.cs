@@ -18,21 +18,19 @@ namespace Raptor
     /// </summary>
     internal static class ExtensionMethods
     {
-        private const float PI = 3.1415926535897931f;
-
         /// <summary>
         /// Converts the given <paramref name="radians"/> value into degrees.
         /// </summary>
         /// <param name="radians">The value to convert.</param>
         /// <returns>The radians converted into degrees.</returns>
-        internal static float ToDegrees(this float radians) => radians * 180.0f / PI;
+        internal static float ToDegrees(this float radians) => radians * 180.0f / (float)Math.PI;
 
         /// <summary>
         /// Converts the given <paramref name="degrees"/> value into radians.
         /// </summary>
         /// <param name="degrees">The value to convert.</param>
         /// <returns>The degrees converted into radians.</returns>
-        internal static float ToRadians(this float degrees) => degrees * PI / 180f;
+        internal static float ToRadians(this float degrees) => degrees * (float)Math.PI / 180f;
 
         /// <summary>
         /// Sets the value to positive if its negative.
@@ -190,7 +188,7 @@ namespace Raptor
         ///     will be stripped and the last directory will be returned.
         /// </para>
         /// <para>
-        ///     Example: The path 'C:\temp\dirA\myfile.txtl' will return 'dirA'.
+        ///     Example: The path 'C:\temp\dirA\myfile.txt' will return 'dirA'.
         /// </para>
         /// <para>
         ///     If the <paramref name="fileOrDirPath"/> is a directory path, then the
