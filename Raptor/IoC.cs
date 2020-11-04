@@ -1,4 +1,4 @@
-// <copyright file="IoC.cs" company="KinsonDigital">
+﻿// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -82,6 +82,12 @@ namespace Raptor
                     new GraphicsContentSource(IoCContainer.GetInstance<IDirectory>()));
             });
 
+            // TODO: If using Container works, convert all of the IoCContainer references to Container
+            IoCContainer.Register<IContentLoader>(() =>
+            {
+                return new ContentLoader(Container.GetInstance<ILoader<ITexture>>(), Container.GetInstance<ILoader<ISound>>());
+            });
+
             IoCContainer.Register<ILoader<ISound>>(() =>
             {
                 return new SoundLoader(
@@ -92,10 +98,9 @@ namespace Raptor
                     IoCContainer.GetInstance<ISoundDecoder<byte>>());
             });
 
-            // TODO: If using Container works, convert all of the IoCContainer references to Container
-            IoCContainer.Register<IContentLoader>(() =>
+            IoCContainer.Register<ILoader<AtlasRegionRectangle[]>>(() =>
             {
-                return new ContentLoader(Container.GetInstance<ILoader<ITexture>>(), Container.GetInstance<ILoader<ISound>>());
+                return new AtlasDataLoader<AtlasRegionRectangle>(new AtlasContentSource(IoCContainer.GetInstance<IDirectory>()), IoCContainer.GetInstance<IFile>());
             });
 
             IoCContainer.Register<IGPUBuffer>(() =>
