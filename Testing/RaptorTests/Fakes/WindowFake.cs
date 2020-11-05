@@ -5,6 +5,7 @@
 namespace RaptorTests.Fakes
 {
     using Raptor;
+    using Raptor.Desktop;
 
     /// <summary>
     /// Used for the purpose of testing the abstract <see cref="Window"/> class.

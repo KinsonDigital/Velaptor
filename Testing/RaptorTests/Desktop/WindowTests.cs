@@ -1,14 +1,15 @@
-// <copyright file="WindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="WindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests
+namespace RaptorTests.Desktop
 {
     using System;
     using System.Numerics;
     using Moq;
     using Raptor;
     using Raptor.Content;
+    using Raptor.Desktop;
     using RaptorTests.Fakes;
     using RaptorTests.Helpers;
     using Xunit;
@@ -18,8 +19,10 @@ namespace RaptorTests
     /// </summary>
     public class WindowTests
     {
+        //TODO: Convert all propers that use pure interface invokes to use MOQ verifies
+
         private readonly Mock<IWindow> mockWindow;
-        private readonly Mock<IContentLoader> mockContentLoader;
+        private readonly Mock<IContentLoader> mockContentLoader; //TODO: Cleanup
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowTests"/> class.

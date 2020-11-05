@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor
+namespace Raptor.Desktop
 {
     using System;
     using System.Numerics;
@@ -53,7 +53,7 @@ namespace Raptor
         ///     and set this property to true.  That would be a waste of resources.
         /// </para>
         /// </remarks>
-        bool AutoClearBuffers { get; set; }
+        bool AutoClearBuffer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the mouse cursor is visible.

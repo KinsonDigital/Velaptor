@@ -12,6 +12,7 @@ namespace Raptor.OpenGL
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
+    using Raptor.Desktop;
     using Raptor.Input;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using GLWindowState = OpenTK.Windowing.Common.WindowState;
@@ -111,7 +112,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public bool AutoClearBuffers { get; set; } = true;
+        public bool AutoClearBuffer { get; set; } = true;
 
         /// <inheritdoc/>
         public bool MouseCursorVisible
@@ -342,7 +343,7 @@ namespace Raptor.OpenGL
                 ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(deltaTime.Time * 1000.0)),
             };
 
-            if (AutoClearBuffers)
+            if (AutoClearBuffer)
             {
                 this.gl.Clear(ClearBufferMask.ColorBufferBit);
             }

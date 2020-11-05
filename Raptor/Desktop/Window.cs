@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
-namespace Raptor
+namespace Raptor.Desktop
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -100,10 +100,10 @@ namespace Raptor
         ///     and set this property to true.  That would be a waste of resources.
         /// </para>
         /// </remarks>
-        public bool AutoClearBuffers
+        public bool AutoClearBuffer
         {
-            get => this.window.AutoClearBuffers;
-            set => this.window.AutoClearBuffers = value;
+            get => this.window.AutoClearBuffer;
+            set => this.window.AutoClearBuffer = value;
         }
 
         /// <summary>

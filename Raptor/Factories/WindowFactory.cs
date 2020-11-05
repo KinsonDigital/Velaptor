@@ -1,10 +1,11 @@
-﻿// <copyright file="WindowFactory.cs" company="KinsonDigital">
+// <copyright file="WindowFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Raptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
+    using Raptor.Desktop;
     using Raptor.OpenGL;
 
     /// <summary>
