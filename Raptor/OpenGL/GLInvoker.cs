@@ -20,6 +20,9 @@ namespace Raptor.OpenGL
         public void BlendFunc(BlendingFactor sfactor, BlendingFactor dfactor) => GL.BlendFunc(sfactor, dfactor);
 
         /// <inheritdoc/>
+        public void Clear(ClearBufferMask mask) => GL.Clear(mask);
+
+        /// <inheritdoc/>
         public void ClearColor(float red, float green, float blue, float alpha) => GL.ClearColor(red, green, blue, alpha);
 
         /// <inheritdoc/>

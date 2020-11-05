@@ -76,6 +76,9 @@ namespace Raptor.Graphics
         public void BeginBatch() => this.hasBegun = true;
 
         /// <inheritdoc/>
+        public void Clear() => this.gl.Clear(ClearBufferMask.ColorBufferBit);
+
+        /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 
         /// <inheritdoc/>

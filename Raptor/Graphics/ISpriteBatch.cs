@@ -34,6 +34,16 @@ namespace Raptor.Graphics
         void BeginBatch();
 
         /// <summary>
+        /// Clears the buffers.
+        /// </summary>
+        /// <remarks>
+        ///     It is best to clear the buffer before rendering all of the textures.
+        ///     This is to make sure smearing does not occur during texture
+        ///     movement or animation.
+        /// </remarks>
+        void Clear();
+
+        /// <summary>
         /// Ends the sprite batch process.  Calling this will render any textures
         /// still in the batch.
         /// </summary>

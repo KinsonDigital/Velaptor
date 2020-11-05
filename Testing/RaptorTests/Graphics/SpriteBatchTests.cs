@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
+// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -134,6 +134,19 @@ namespace RaptorTests.Graphics
         #endregion
 
         #region Method Tests
+        [Fact]
+        public void Clear_WhenInvoked_ClearsBuffer()
+        {
+            // Arrange
+            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            // Act
+            batch.Clear();
+
+            // Assert
+            this.mockGL.Verify(m => m.Clear(ClearBufferMask.ColorBufferBit), Times.Once());
+        }
+
         [Fact]
         public void Render_WhenUsingOverloadWithFourParamsAndWithoutCallingBeginFirst_ThrowsException()
         {

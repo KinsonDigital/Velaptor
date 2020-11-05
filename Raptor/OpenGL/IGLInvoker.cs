@@ -36,6 +36,15 @@ namespace Raptor.OpenGL
         void BlendFunc(BlendingFactor sfactor, BlendingFactor dfactor);
 
         /// <summary>
+        /// Clear buffers to preset values.
+        /// </summary>
+        /// <param name="mask">
+        ///     Bitwise OR of masks that indicate the buffers to be cleared. The three masks
+        ///     are ColorBufferBit, DepthBufferBit, and StencilBufferBit.
+        /// </param>
+        void Clear(ClearBufferMask mask);
+
+        /// <summary>
         /// [requires: v1.0] Specify clear values for the color buffers.
         /// </summary>
         /// <param name="red">Specify the red value used when the color buffers are cleared. The initial values are all 0.</param>
