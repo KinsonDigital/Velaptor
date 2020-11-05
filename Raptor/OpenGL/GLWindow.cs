@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -168,7 +168,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public int UpdateFreq
+        public int UpdateFrequency
         {
             get
             {

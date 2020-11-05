@@ -1,4 +1,4 @@
-// <copyright file="Window.cs" company="KinsonDigital">
+﻿// <copyright file="Window.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -32,7 +32,7 @@ namespace Raptor.Desktop
             this.window.Update = OnUpdate;
             this.window.Draw = OnDraw;
             this.window.WinResize = OnResize;
-            this.window.UpdateFreq = 60;
+            this.window.UpdateFrequency = 60;
         }
 
         /// <inheritdoc/>
@@ -66,8 +66,8 @@ namespace Raptor.Desktop
         /// <inheritdoc/>
         public int UpdateFrequency
         {
-            get => this.window.UpdateFreq;
-            set => this.window.UpdateFreq = value;
+            get => this.window.UpdateFrequency;
+            set => this.window.UpdateFrequency = value;
         }
 
         /// <inheritdoc/>

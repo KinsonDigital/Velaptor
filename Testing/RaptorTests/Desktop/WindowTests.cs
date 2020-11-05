@@ -134,7 +134,7 @@ namespace RaptorTests.Desktop
         public void UpdateFrequency_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            this.mockWindow.SetupProperty(p => p.UpdateFreq);
+            this.mockWindow.SetupProperty(p => p.UpdateFrequency);
             var window = CreateWindow();
 
             // Act
@@ -142,7 +142,7 @@ namespace RaptorTests.Desktop
             var actual = window.UpdateFrequency;
 
             // Assert
-            this.mockWindow.VerifySet(p => p.UpdateFreq = 1234, Times.Once());
+            this.mockWindow.VerifySet(p => p.UpdateFrequency = 1234, Times.Once());
             Assert.Equal(1234, actual);
         }
 
