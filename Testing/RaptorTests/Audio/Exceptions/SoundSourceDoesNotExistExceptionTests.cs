@@ -8,6 +8,9 @@ namespace RaptorTests.Audio.Exceptions
     using Raptor.Audio.Exceptions;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="SoundSourceDoesNotExistException"/> class.
+    /// </summary>
     public class SoundSourceDoesNotExistExceptionTests
     {
         #region Constructor Tests

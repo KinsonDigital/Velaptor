@@ -11,7 +11,7 @@ namespace RaptorTests.Graphics
     using Xunit;
 
     /// <summary>
-    /// Unit tests to test the <see cref="Text"/> class.
+    /// Tests the <see cref="Text"/> class.
     /// </summary>
     public class RenderTextTests
     {
@@ -22,12 +22,12 @@ namespace RaptorTests.Graphics
             // Arrange
             var mockInternalText = new Mock<IText>();
             mockInternalText.SetupProperty(m => m.Color, Color.FromArgb(0, 0, 0, 0));
-            var gameText = new RenderText();
+            var renderText = new RenderText();
             var expected = Color.FromArgb(44, 11, 22, 33);
 
             // Act
-            gameText.Color = Color.FromArgb(44, 11, 22, 33);
-            var actual = gameText.Color;
+            renderText.Color = Color.FromArgb(44, 11, 22, 33);
+            var actual = renderText.Color;
 
             // Assert
             Assert.Equal(expected, actual);

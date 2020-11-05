@@ -29,17 +29,22 @@ namespace RaptorTests.Helpers
             Assert.Equal(expectedMessage, Assert.Throws<T>(testCode).Message);
         }
 
-        public static void DoesNotThrow<T>(Action action)
+        /// <summary>
+        /// Asserts that the given test code does not throw the exception of type <typeparamref name="T"/> is not thrown.
+        /// </summary>
+        /// <typeparam name="T">The type of exception to check for.</typeparam>
+        /// <param name="testCode">The test code that should not throw the exception.</param>
+        public static void DoesNotThrow<T>(Action testCode)
             where T : Exception
         {
-            if (action is null)
+            if (testCode is null)
             {
-                throw new ArgumentNullException(nameof(action), "The parameter must not be null");
+                throw new ArgumentNullException(nameof(testCode), "The parameter must not be null");
             }
 
             try
             {
-                action();
+                testCode();
             }
             catch (T)
             {
@@ -47,16 +52,20 @@ namespace RaptorTests.Helpers
             }
         }
 
-        public static void DoesNotThrowNullReference(Action action)
+        /// <summary>
+        /// Asserts that the given <paramref name="testCode"/> does not throw a null reference exception.
+        /// </summary>
+        /// <param name="testCode">The test that should not throw an exception.</param>
+        public static void DoesNotThrowNullReference(Action testCode)
         {
-            if (action is null)
+            if (testCode is null)
             {
-                throw new ArgumentNullException(nameof(action), "The parameter must not be null");
+                throw new ArgumentNullException(nameof(testCode), "The parameter must not be null");
             }
 
             try
             {
-                action();
+                testCode();
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
@@ -70,22 +79,6 @@ namespace RaptorTests.Helpers
                 {
                     Assert.True(true);
                 }
-            }
-        }
-
-        public static void IsNullOrZeroField(object fieldContainer, string name)
-        {
-            try
-            {
-                var result = fieldContainer.IsNullOrZeroField(name);
-
-                Assert.True(true);
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                Assert.True(false, ex.Message);
             }
         }
 

@@ -109,7 +109,7 @@ namespace Raptor.UI
         /// <summary>
         /// Loads the content for the <see cref="Button"/>.
         /// </summary>
-        /// <param name="contentLoader">The loader used to laod the content.</param>
+        /// <param name="contentLoader">The loader used to load the content.</param>
         public void LoadContent(ContentLoader contentLoader)
         {
         }
@@ -117,7 +117,7 @@ namespace Raptor.UI
         /// <summary>
         /// Updates the <see cref="Button"/>.
         /// </summary>
-        /// <param name="engineTime">The game engine time.</param>
+        /// <param name="engineTime">The update iteration time.</param>
         public void Update(FrameTime engineTime)
         {
             ProcessMouse();

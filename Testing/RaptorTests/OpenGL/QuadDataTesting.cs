@@ -8,6 +8,9 @@ namespace RaptorTests.OpenGL
     using Raptor.OpenGL;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="QuadData"/> struct.
+    /// </summary>
     public class QuadDataTesting
     {
         #region Overloaded Operator Tests

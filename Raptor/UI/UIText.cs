@@ -196,7 +196,7 @@ namespace Raptor.UI
         /// <summary>
         /// Updates the text item. This helps keep the update frequency up to date.
         /// </summary>
-        /// <param name="frameTime">The game time of the last frame.</param>
+        /// <param name="frameTime">The update iteration time of the last frame.</param>
         public void Update(FrameTime frameTime)
         {
             this.elapsedTime += frameTime.ElapsedTime.Milliseconds;

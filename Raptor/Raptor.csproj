@@ -10,7 +10,7 @@
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Raptor</Product>
-    <Description>2D game development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
+    <Description>2D game or application development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
     <Copyright>Copyright ©2020 Kinson Digital</Copyright>
     <PackageTags>raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>

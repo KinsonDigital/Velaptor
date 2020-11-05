@@ -28,6 +28,9 @@ namespace RaptorTests.Audio
         private readonly int bufferId = 9876;
         private IAudioDeviceManager? manager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AudioDeviceManagerTests"/> class.
+        /// </summary>
         public AudioDeviceManagerTests()
         {
             this.device = new ALDevice(new IntPtr(1234));

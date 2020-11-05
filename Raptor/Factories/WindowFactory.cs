@@ -1,4 +1,4 @@
-// <copyright file="WindowFactory.cs" company="KinsonDigital">
+﻿// <copyright file="WindowFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace Raptor.Factories
     public static class WindowFactory
     {
         /// <summary>
-        /// Creats a single instance of a raptor window implementation.
+        /// Creates a single instance of a raptor window implementation.
         /// </summary>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>

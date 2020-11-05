@@ -7,7 +7,7 @@ namespace Raptor.Graphics
     using System.Drawing;
 
     /// <summary>
-    /// Provides game text that can be rendered to a graphics surface.
+    /// Provides text that can be rendered to a graphics surface.
     /// </summary>
     public class RenderText
     {
@@ -54,7 +54,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// Concatenates a <see cref="RenderText"/> object and a string.
         /// </summary>
-        /// <param name="textA">The game text object to combine.</param>
+        /// <param name="textA">The text object to combine.</param>
         /// <param name="textB">The string to combine.</param>
         /// <returns>Result of both text values concatenated.</returns>
         public static string operator +(RenderText textA, string textB)
@@ -71,7 +71,7 @@ namespace Raptor.Graphics
         /// Concatenates a string and a <see cref="RenderText"/> object.
         /// </summary>
         /// <param name="textA">The string to combine.</param>
-        /// <param name="textB">The game text object to combine.</param>
+        /// <param name="textB">The text object to combine.</param>
         /// <returns>Result of both text values concatenated.</returns>
         public static string operator +(string textA, RenderText textB)
         {
@@ -94,7 +94,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// Concatenates a <see cref="RenderText"/> object and a string.
         /// </summary>
-        /// <param name="textA">The game text object to combine.</param>
+        /// <param name="textA">The text object to combine.</param>
         /// <param name="textB">The string to combine.</param>
         /// <returns>Result of both text values concatenated.</returns>
         public static string Add(RenderText textA, string textB) => textA + textB;
@@ -103,7 +103,7 @@ namespace Raptor.Graphics
         /// Concatenates a string and a <see cref="RenderText"/> object.
         /// </summary>
         /// <param name="textA">The string to combine.</param>
-        /// <param name="textB">The game text object to combine.</param>
+        /// <param name="textB">The text object to combine.</param>
         /// <returns>Result of both text values concatenated.</returns>
         public static string Add(string textA, RenderText textB) => textA + textB;
     }

@@ -1,4 +1,4 @@
-// <copyright file="Enums.cs" company="KinsonDigital">
+﻿// <copyright file="Enums.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -50,7 +50,7 @@ namespace Raptor
         Maximized = 2,
 
         /// <summary>
-        /// The window covers the whole screen, including all taskbars and/or panels.
+        /// The window covers the whole screen, including all task bars and/or panels.
         /// </summary>
         FullScreen = 3,
     }

@@ -1,4 +1,4 @@
-// <copyright file="GLWindow.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -49,7 +49,7 @@ namespace Raptor.OpenGL
 
             /*NOTE:
              * The IoC container get instance must be called after the
-             * game window has been called.  This is because an OpenGL context
+             * window has been called.  This is because an OpenGL context
              * must be created first before any GL calls can be made.
              */
             this.gl = IoC.Container.GetInstance<IGLInvoker>();

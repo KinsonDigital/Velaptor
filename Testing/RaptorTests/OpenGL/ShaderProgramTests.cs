@@ -27,6 +27,9 @@ namespace RaptorTests.OpenGL
         private readonly uint fragShaderID = 5678;
         private readonly uint shaderProgramID = 1928;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
+        /// </summary>
         public ShaderProgramTests()
         {
             this.mockLoader = new Mock<IEmbeddedResourceLoaderService>();
