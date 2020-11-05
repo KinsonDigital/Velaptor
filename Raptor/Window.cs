@@ -82,6 +82,31 @@ namespace Raptor
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the buffers should]
+        /// be automatically cleared before rendering any textures.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        ///     If this is set to true, this means you do not have to
+        ///     use or invoke the <see cref="ISpriteBatch.Clear"/>() method.
+        /// </para>
+        /// <para>
+        ///     Set to the value of false if you want more control over when
+        ///     the back buffers will be cleared.
+        /// </para>
+        /// <para>
+        ///     WARNING!! - To prevent performance issues, do not have the clear
+        ///     the buffers with the <see cref="ISpriteBatch.Clear"/>() method
+        ///     and set this property to true.  That would be a waste of resources.
+        /// </para>
+        /// </remarks>
+        public bool AutoClearBuffers
+        {
+            get => this.window.AutoClearBuffers;
+            set => this.window.AutoClearBuffers = value;
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the mouse cursor is visible.
         /// </summary>
         public bool MouseCursorVisible

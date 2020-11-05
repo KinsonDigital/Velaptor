@@ -1,4 +1,4 @@
-﻿// <copyright file="WindowTests.cs" company="KinsonDigital">
+// <copyright file="WindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -94,6 +94,21 @@ namespace RaptorTests
             // Assert
             this.mockWindow.VerifySet(p => p.Height = 1234, Times.Once());
             Assert.Equal(1234, actual);
+        }
+
+        [Fact]
+        public void AutoClearBuffer_WhenSettingValue_ReturnsCorrectValue()
+        {
+            // Arrange
+            var window = CreateWindow();
+
+            // Act
+            window.AutoClearBuffer = true;
+            var actual = window.AutoClearBuffer;
+
+            // Assert
+            this.mockWindow.VerifySet(p => p.AutoClearBuffer = true, Times.Once());
+            this.mockWindow.VerifyGet(p => p.AutoClearBuffer, Times.Once());
         }
 
         [Fact]

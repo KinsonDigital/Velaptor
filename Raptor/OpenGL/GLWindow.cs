@@ -111,6 +111,9 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
+        public bool AutoClearBuffers { get; set; } = true;
+
+        /// <inheritdoc/>
         public bool MouseCursorVisible
         {
             get => this.appWindow.CursorVisible;
@@ -338,6 +341,11 @@ namespace Raptor.OpenGL
             {
                 ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(deltaTime.Time * 1000.0)),
             };
+
+            if (AutoClearBuffers)
+            {
+                this.gl.Clear(ClearBufferMask.ColorBufferBit);
+            }
 
             Draw?.Invoke(frameTime);
 
