@@ -1,4 +1,4 @@
-﻿// <copyright file="Window.cs" company="KinsonDigital">
+// <copyright file="Window.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ namespace Raptor.Desktop
     /// <summary>
     /// A system window that graphics can be rendered to.
     /// </summary>
-    public abstract class Window : IDisposable
+    public abstract class Window : IWindowProps, IDisposable
     {
         private readonly IWindow window;
         private bool isDisposed;
@@ -35,98 +35,63 @@ namespace Raptor.Desktop
             this.window.UpdateFreq = 60;
         }
 
-        /// <summary>
-        /// Gets or sets the title of the window.
-        /// </summary>
+        /// <inheritdoc/>
         public string Title
         {
             get => this.window.Title;
             set => this.window.Title = value;
         }
 
-        /// <summary>
-        /// Gets or sets the position of the window.
-        /// </summary>
+        /// <inheritdoc/>
         public Vector2 Position
         {
             get => this.window.Position;
             set => this.window.Position = value;
         }
 
-        /// <summary>
-        /// Gets or sets the width of the window.
-        /// </summary>
+        /// <inheritdoc/>
         public int Width
         {
             get => this.window.Width;
             set => this.window.Width = value;
         }
 
-        /// <summary>
-        /// Gets or sets the height of the window.
-        /// </summary>
+        /// <inheritdoc/>
         public int Height
         {
             get => this.window.Height;
             set => this.window.Height = value;
         }
 
-        /// <summary>
-        /// Gets or sets the frequency of how often the window updates and draws
-        /// in hertz.
-        /// </summary>
+        /// <inheritdoc/>
         public int UpdateFrequency
         {
             get => this.window.UpdateFreq;
             set => this.window.UpdateFreq = value;
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the buffers should]
-        /// be automatically cleared before rendering any textures.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        ///     If this is set to true, this means you do not have to
-        ///     use or invoke the <see cref="ISpriteBatch.Clear"/>() method.
-        /// </para>
-        /// <para>
-        ///     Set to the value of false if you want more control over when
-        ///     the back buffers will be cleared.
-        /// </para>
-        /// <para>
-        ///     WARNING!! - To prevent performance issues, do not have the clear
-        ///     the buffers with the <see cref="ISpriteBatch.Clear"/>() method
-        ///     and set this property to true.  That would be a waste of resources.
-        /// </para>
-        /// </remarks>
+        /// <inheritdoc/>
         public bool AutoClearBuffer
         {
             get => this.window.AutoClearBuffer;
             set => this.window.AutoClearBuffer = value;
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the mouse cursor is visible.
-        /// </summary>
+        /// <inheritdoc/>
         public bool MouseCursorVisible
         {
             get => this.window.MouseCursorVisible;
             set => this.window.MouseCursorVisible = value;
         }
 
-        /// <summary>
-        /// Gets or sets the state of the <see cref="Window"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public StateOfWindow WindowState
         {
             get => this.window.WindowState;
             set => this.window.WindowState = value;
         }
 
-        /// <summary>
-        /// Gets or sets the type of border that the <see cref="Window"/> will have.
-        /// </summary>
+        /// <inheritdoc/>
         public BorderType TypeOfBorder
         {
             get => this.window.TypeOfBorder;
