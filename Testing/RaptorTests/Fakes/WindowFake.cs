@@ -4,7 +4,6 @@
 
 namespace RaptorTests.Fakes
 {
-    using Raptor;
     using Raptor.Desktop;
 
     /// <summary>
