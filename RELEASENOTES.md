@@ -1,5 +1,31 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.16.0</span>
+
+### **New** 🎉
+
+1. Added the ability for the abstract `Window` class to allow for automatic buffer clearing
+   * Setting the `AutoClearBuffer` property to true will automatically clear the buffer before rendering
+   * If the `AutoClearBuffer` property is set to false, the buffer has to be cleared manually.  This can be done by using the `SpriteBatch.Clear()` method
+
+### **Breaking Changes** 💣
+
+1. Moved the following types to to a new namespace with the name `Raptor.Desktop`
+   * `IWindow`
+   * `Window`
+2. Added 2 more new interfaces related to window properties for window state and actions
+   * Added new interfaces called `IWindowProps` and `IWindowActions`
+   * These interfaces were added to the `Raptor.Desktop` namespace
+3. Changed the name of the `Window.UpdateFreq` property to `Window.UpdateFrequency`
+
+### **Bug Fixes** 🐞
+
+1. Fixed a bug where the buffer was not being cleared before textures were being rendered
+   * This was causing textures to be smeared on the render target during texture movement or animation
+2. Fixed a bug where textures being rendered would be stretched horizontally and vertically when resizing the window
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.15.0</span>
 
 ### **Breaking Changes** 💣
