@@ -44,6 +44,32 @@ namespace Raptor.OpenGL
         public void GetProgram(uint program, GetProgramParameterName pname, out int programParams) => GL.GetProgram(program, pname, out programParams);
 
         /// <inheritdoc/>
+        public void GetInteger(GetPName pname, int[] data) => GL.GetInteger(GetPName.Viewport, data);
+
+        /// <inheritdoc/>
+        public Vector2 GetViewPortSize()
+        {
+            var data = new int[4];
+
+            GetInteger(GetPName.Viewport, data);
+
+            return new Vector2(data[2], data[3]);
+        }
+
+        /// <inheritdoc/>
+        public Vector2 GetViewPortPosition()
+        {
+            var data = new int[4];
+
+            GetInteger(GetPName.Viewport, data);
+
+            return new Vector2(data[0], data[1]);
+        }
+
+        /// <inheritdoc/>
+        public void Viewport(int x, int y, int width, int height) => GL.Viewport(x, y, width, height);
+
+        /// <inheritdoc/>
         public bool LinkProgramSuccess(uint program)
         {
             GetProgram(program, GetProgramParameterName.LinkStatus, out var statusCode);

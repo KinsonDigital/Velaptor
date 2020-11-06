@@ -99,7 +99,7 @@ namespace Raptor.Desktop
         }
 
         /// <summary>
-        /// Gets the content loader for loading content.
+        /// Gets or sets the content loader for loading content.
         /// </summary>
         public IContentLoader? ContentLoader { get; protected set; }
 

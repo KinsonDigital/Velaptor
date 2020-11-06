@@ -8,7 +8,6 @@ namespace RaptorTests.Desktop
     using System.Numerics;
     using Moq;
     using Raptor;
-    using Raptor.Content;
     using Raptor.Desktop;
     using RaptorTests.Fakes;
     using RaptorTests.Helpers;
