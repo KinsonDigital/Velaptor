@@ -19,19 +19,13 @@ namespace RaptorTests.Desktop
     /// </summary>
     public class WindowTests
     {
-        //TODO: Convert all propers that use pure interface invokes to use MOQ verifies
-
+        // TODO: Convert all propers that use pure interface invokes to use MOQ verifies
         private readonly Mock<IWindow> mockWindow;
-        private readonly Mock<IContentLoader> mockContentLoader; //TODO: Cleanup
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowTests"/> class.
         /// </summary>
-        public WindowTests()
-        {
-            this.mockWindow = new Mock<IWindow>();
-            this.mockContentLoader = new Mock<IContentLoader>();
-        }
+        public WindowTests() => this.mockWindow = new Mock<IWindow>();
 
         #region Prop Tests
         [Fact]

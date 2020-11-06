@@ -23,15 +23,15 @@ namespace RaptorTests.OpenGL
     public unsafe class GLFWMonitorsTests : IDisposable
     {
         private readonly Mock<IGLFWInvoker> mockGLFWInvoker;
-        private VideoMode videoModeA;
-        private VideoMode* videoModeHandleA;
-        private VideoMode videoModeB;
-        private VideoMode* videoModeHandleB;
-        private Monitor monitorA;
-        private IntPtr monitorHandleA;
-        private Monitor monitorB;
-        private IntPtr monitorHandleB;
         private readonly Mock<IPlatform> mockPlatform;
+        private readonly VideoMode* videoModeHandleA;
+        private readonly VideoMode* videoModeHandleB;
+        private readonly Monitor monitorA;
+        private readonly Monitor monitorB;
+        private VideoMode videoModeA;
+        private VideoMode videoModeB;
+        private IntPtr monitorHandleA;
+        private IntPtr monitorHandleB;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitorsTests"/> class.
