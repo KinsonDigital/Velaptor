@@ -5,7 +5,6 @@
 namespace RaptorTests.OpenGL
 {
     using System;
-    using System.Collections.Generic;
     using System.Numerics;
     using System.Runtime.InteropServices;
     using Moq;
@@ -18,18 +17,16 @@ namespace RaptorTests.OpenGL
     /// <summary>
     /// Tests the <see cref="GLFWMonitors"/> class.
     /// </summary>
-    public unsafe class GLFWMonitorsTests : IDisposable
+    public unsafe class GLFWMonitorsTests
     {
         private readonly Mock<IGLFWInvoker> mockGLFWInvoker;
         private readonly Mock<IPlatform> mockPlatform;
-        private readonly VideoMode* videoModeHandleA;
-        private readonly VideoMode* videoModeHandleB;
         private readonly Monitor monitorA;
         private readonly Monitor monitorB;
+        private readonly IntPtr monitorHandleA;
+        private readonly IntPtr monitorHandleB;
         private VideoMode videoModeA;
         private VideoMode videoModeB;
-        private IntPtr monitorHandleA;
-        private IntPtr monitorHandleB;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitorsTests"/> class.
@@ -59,16 +56,6 @@ namespace RaptorTests.OpenGL
                 RefreshRate = 66,
             };
 
-            fixed (VideoMode* pVideoModeA = &this.videoModeA)
-            {
-                this.videoModeHandleA = pVideoModeA;
-            }
-
-            fixed (VideoMode* pVideoModeB = &this.videoModeB)
-            {
-                this.videoModeHandleB = pVideoModeB;
-            }
-
             this.monitorA = default;
             this.monitorB = default;
 
@@ -88,29 +75,14 @@ namespace RaptorTests.OpenGL
                 return new[] { this.monitorHandleA, this.monitorHandleB };
             });
 
-            this.mockGLFWInvoker.Setup(m => m.GetVideoMode(this.monitorHandleA)).Returns((IntPtr)this.videoModeHandleA);
-            this.mockGLFWInvoker.Setup(m => m.GetVideoMode(this.monitorHandleB)).Returns((IntPtr)this.videoModeHandleB);
+            this.mockGLFWInvoker.Setup(m => m.GetVideoMode(this.monitorHandleA)).Returns(this.videoModeA);
+            this.mockGLFWInvoker.Setup(m => m.GetVideoMode(this.monitorHandleB)).Returns(this.videoModeB);
 
             this.mockGLFWInvoker.Setup(m => m.GetMonitorContentScale(this.monitorHandleA))
                 .Returns(new Vector2(7, 8));
 
             this.mockGLFWInvoker.Setup(m => m.GetMonitorContentScale(this.monitorHandleB))
                 .Returns(new Vector2(77, 88));
-
-            var pointers = new List<IntPtr>()
-            {
-                this.monitorHandleA,
-                this.monitorHandleB,
-                (IntPtr)this.videoModeHandleA,
-                (IntPtr)this.videoModeHandleB,
-            };
-
-            GC.KeepAlive(this.monitorA);
-            GC.KeepAlive(this.monitorB);
-            GC.KeepAlive(this.videoModeA);
-            GC.KeepAlive(this.videoModeB);
-            GC.KeepAlive(this.monitorHandleA);
-            GC.KeepAlive(this.monitorHandleB);
         }
 
         #region Constructor Tests
@@ -171,14 +143,6 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.Equal(expectedMonitorA, actual[0]);
             Assert.Equal(expectedMonitorB, actual[1]);
-        }
-
-        public void Dispose()
-        {
-            this.monitorHandleA = IntPtr.Zero;
-            this.monitorHandleB = IntPtr.Zero;
-
-            GC.Collect();
         }
         #endregion
     }

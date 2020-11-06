@@ -1,5 +1,13 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.16.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
+
+### **Bug Fix** 🐞
+
+1. Fixed an issue with failing unit tests related to unsafe pointer setup with the unit tests and implementation details related to **GLFW**
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.16.0</span>
 
 ### **New** 🎉

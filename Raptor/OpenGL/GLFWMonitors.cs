@@ -63,18 +63,17 @@ namespace Raptor.OpenGL
 
             foreach (var monitorHandle in monitorHandles)
             {
-                var monitorVideoMode = (VideoMode*)this.glfwInvoker.GetVideoMode(monitorHandle);
+                var monitorVideoMode = this.glfwInvoker.GetVideoMode(monitorHandle);
 
                 var newMonitor = new SystemMonitor(this.platform)
                 {
                     IsMain = this.monitors == null || this.monitors.Count <= 0,
-                    RedBitDepth = monitorVideoMode->RedBits,
-                    BlueBitDepth = monitorVideoMode->BlueBits,
-                    GreenBitDepth = monitorVideoMode->GreenBits,
-                    RefreshRate = monitorVideoMode->RefreshRate,
-
-                    Height = monitorVideoMode->Height,
-                    Width = monitorVideoMode->Width,
+                    RedBitDepth = monitorVideoMode.RedBits,
+                    BlueBitDepth = monitorVideoMode.BlueBits,
+                    GreenBitDepth = monitorVideoMode.GreenBits,
+                    Height = monitorVideoMode.Height,
+                    Width = monitorVideoMode.Width,
+                    RefreshRate = monitorVideoMode.RefreshRate,
                 };
 
                 var monitorScale = GetMonitorScale(monitorHandle);
