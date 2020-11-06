@@ -67,13 +67,38 @@ namespace Raptor.Graphics
         }
 
         /// <inheritdoc/>
-        public int RenderSurfaceWidth { get; set; } = 800;
+        public int RenderSurfaceWidth
+        {
+            get => (int)this.gl.GetViewPortSize().X;
+            set
+            {
+                var data = new int[4];
+
+                this.gl.GetInteger(GetPName.Viewport, data);
+
+                this.gl.Viewport(data[0], data[1], value, data[3]);
+            }
+        }
 
         /// <inheritdoc/>
-        public int RenderSurfaceHeight { get; set; } = 600;
+        public int RenderSurfaceHeight
+        {
+            get => (int)this.gl.GetViewPortSize().Y;
+            set
+            {
+                var data = new int[4];
+
+                this.gl.GetInteger(GetPName.Viewport, data);
+
+                this.gl.Viewport(data[0], data[1], data[2], value);
+            }
+        }
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
+
+        /// <inheritdoc/>
+        public void Clear() => this.gl.Clear(ClearBufferMask.ColorBufferBit);
 
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
@@ -282,14 +307,16 @@ namespace Raptor.Graphics
         /// <param name="angle">The angle of the texture.</param>
         private Matrix4 BuildTransformationMatrix(float x, float y, int width, int height, float size, float angle)
         {
-            var scaleX = (float)width / RenderSurfaceWidth;
-            var scaleY = (float)height / RenderSurfaceHeight;
+            var viewPortSize = this.gl.GetViewPortSize();
+
+            var scaleX = (float)width / viewPortSize.X;
+            var scaleY = (float)height / viewPortSize.Y;
 
             scaleX *= size;
             scaleY *= size;
 
-            var ndcX = x.MapValue(0f, RenderSurfaceWidth, -1f, 1f);
-            var ndcY = y.MapValue(0f, RenderSurfaceHeight, 1f, -1f);
+            var ndcX = x.MapValue(0f, viewPortSize.X, -1f, 1f);
+            var ndcY = y.MapValue(0f, viewPortSize.Y, 1f, -1f);
 
             // NOTE: (+ degrees) rotates CCW and (- degrees) rotates CW
             var angleRadians = MathHelper.DegreesToRadians(angle);

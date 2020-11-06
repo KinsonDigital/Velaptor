@@ -18,6 +18,9 @@ namespace RaptorTests.Input
      * tests will check for changes when upgrading to verify that no changes were made.
      */
 
+    /// <summary>
+    /// Tests the <see cref="KeyCode"/> <see cref="Keys"/> enum to make sure nothing has changed.
+    /// </summary>
     public class KeyCodeEnumTests
     {
         private readonly Dictionary<string, int> raptorEnumNamesAndValues = new Dictionary<string, int>();

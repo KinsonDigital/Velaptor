@@ -8,7 +8,7 @@ namespace Raptor
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
-    /// Holds timing information for a game loop.
+    /// Holds timing information for a loop iteration.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public struct FrameTime : IEquatable<FrameTime>

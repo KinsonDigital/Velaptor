@@ -12,6 +12,7 @@ namespace Raptor.OpenGL
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
+    using Raptor.Desktop;
     using Raptor.Input;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using GLWindowState = OpenTK.Windowing.Common.WindowState;
@@ -48,7 +49,7 @@ namespace Raptor.OpenGL
 
             /*NOTE:
              * The IoC container get instance must be called after the
-             * game window has been called.  This is because an OpenGL context
+             * window has been called.  This is because an OpenGL context
              * must be created first before any GL calls can be made.
              */
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
@@ -111,6 +112,9 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
+        public bool AutoClearBuffer { get; set; } = true;
+
+        /// <inheritdoc/>
         public bool MouseCursorVisible
         {
             get => this.appWindow.CursorVisible;
@@ -164,7 +168,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public int UpdateFreq
+        public int UpdateFrequency
         {
             get
             {
@@ -339,6 +343,11 @@ namespace Raptor.OpenGL
                 ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(deltaTime.Time * 1000.0)),
             };
 
+            if (AutoClearBuffer)
+            {
+                this.gl.Clear(ClearBufferMask.ColorBufferBit);
+            }
+
             Draw?.Invoke(frameTime);
 
             this.appWindow.SwapBuffers();
@@ -350,7 +359,8 @@ namespace Raptor.OpenGL
         /// <param name="currentSize">Resize event args.</param>
         private void GameWindow_Resize(ResizeEventArgs currentSize)
         {
-            GL.Viewport(0, 0, currentSize.Width, currentSize.Height);
+            // Update the view port so it is the same size as the window
+            this.gl.Viewport(0, 0, currentSize.Width, currentSize.Height);
             WinResize?.Invoke();
         }
 

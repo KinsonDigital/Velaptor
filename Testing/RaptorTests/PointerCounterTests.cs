@@ -9,7 +9,7 @@ namespace RaptorTests
     using Xunit;
 
     /// <summary>
-    /// Unit tests to test the <see cref="PointerContainer"/> class.
+    /// Tests the <see cref="PointerContainer"/> class.
     /// </summary>
     public class PointerCounterTests
     {

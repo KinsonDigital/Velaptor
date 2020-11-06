@@ -20,11 +20,13 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets or sets the render surface width.
         /// </summary>
+        /// <remarks>This is the width of the viewport.</remarks>
         int RenderSurfaceWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the render surface height.
         /// </summary>
+        /// <remarks>This is the height of the viewport.</remarks>
         int RenderSurfaceHeight { get; set; }
 
         /// <summary>
@@ -32,6 +34,16 @@ namespace Raptor.Graphics
         /// the <see cref="Render()"/> methods.
         /// </summary>
         void BeginBatch();
+
+        /// <summary>
+        /// Clears the buffers.
+        /// </summary>
+        /// <remarks>
+        ///     It is best to clear the buffer before rendering all of the textures.
+        ///     This is to make sure smearing does not occur during texture
+        ///     movement or animation.
+        /// </remarks>
+        void Clear();
 
         /// <summary>
         /// Ends the sprite batch process.  Calling this will render any textures

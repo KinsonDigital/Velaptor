@@ -99,7 +99,7 @@ namespace Raptor.UI
         /// <summary>
         /// Updates the text box.
         /// </summary>
-        /// <param name="engineTime">The game engine time.</param>
+        /// <param name="engineTime">The update iteration time.</param>
         public void Update(FrameTime engineTime)
         {
             UpdateSideLocations();

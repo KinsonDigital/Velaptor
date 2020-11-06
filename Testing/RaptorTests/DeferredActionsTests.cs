@@ -9,7 +9,7 @@ namespace RaptorTests
     using Xunit;
 
     /// <summary>
-    /// Unit tests to test the <see cref="DeferredActionsCollection"/> class.
+    /// Tests the <see cref="DeferredActionsCollection"/> class.
     /// </summary>
     public class DeferredActionsTests
     {

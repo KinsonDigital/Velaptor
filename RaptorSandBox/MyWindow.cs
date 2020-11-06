@@ -1,6 +1,7 @@
 ﻿using Raptor;
 using Raptor.Audio;
 using Raptor.Content;
+using Raptor.Desktop;
 using Raptor.Factories;
 using Raptor.Graphics;
 using Raptor.Input;
@@ -52,7 +53,6 @@ namespace RaptorSandBox
             base.OnLoad();
         }
 
-
         public override void OnUpdate(FrameTime frameTime)
         {
             this.currentKeyboardState = Keyboard.GetState();
@@ -90,7 +90,6 @@ namespace RaptorSandBox
 
             base.OnUpdate(frameTime);
         }
-
 
         public override void OnDraw(FrameTime frameTime)
         {

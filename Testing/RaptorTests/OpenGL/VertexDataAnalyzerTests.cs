@@ -12,6 +12,9 @@ namespace RaptorTests.OpenGL
     using RaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="VertexDataAnalyzer"/> class.
+    /// </summary>
     public class VertexDataAnalyzerTests
     {
         #region Method tests

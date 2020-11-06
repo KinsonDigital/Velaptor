@@ -36,6 +36,15 @@ namespace Raptor.OpenGL
         void BlendFunc(BlendingFactor sfactor, BlendingFactor dfactor);
 
         /// <summary>
+        /// Clear buffers to preset values.
+        /// </summary>
+        /// <param name="mask">
+        ///     Bitwise OR of masks that indicate the buffers to be cleared. The three masks
+        ///     are ColorBufferBit, DepthBufferBit, and StencilBufferBit.
+        /// </param>
+        void Clear(ClearBufferMask mask);
+
+        /// <summary>
         /// [requires: v1.0] Specify clear values for the color buffers.
         /// </summary>
         /// <param name="red">Specify the red value used when the color buffers are cleared. The initial values are all 0.</param>
@@ -112,6 +121,54 @@ namespace Raptor.OpenGL
         /// </param>
         /// <param name="programParams">[length: COMPSIZE(pname)] Returns the requested object parameter.</param>
         void GetProgram(uint program, GetProgramParameterName pname, out int programParams);
+
+        /// <summary>
+        /// Returns parameter values of type integer.
+        /// </summary>
+        /// <param name="pname">
+        ///     Specifies the parameter value to be returned for non-indexed versions of glGet.
+        ///     The symbolic constants in the list below are accepted.
+        /// </param>
+        /// <param name="data">Returns the values of the specified parameter.</param>
+        /// <remarks>
+        ///     Refer to http://docs.gl/gl4/glGet for more information.
+        /// </remarks>
+        void GetInteger(GetPName pname, int[]data);
+
+        /// <summary>
+        /// Gets the size of the viewport.
+        /// </summary>
+        /// <returns>The size of the viewport.</returns>
+        /// <remarks>
+        /// <para>
+        ///     The X component of the vector is the width.
+        /// </para>
+        /// <para>
+        ///     The Y component of the vector is the height.
+        /// </para>
+        /// </remarks>
+        Vector2 GetViewPortSize();
+
+        /// <summary>
+        /// Gets the position of the viewport.
+        /// </summary>
+        /// <returns>The position of the viewport.</returns>
+        Vector2 GetViewPortPosition();
+
+        /// <summary>
+        /// Set the viewport.
+        /// </summary>
+        /// <param name="x">Specify the X coordinate of the lower left corner of the viewport rectangle, in pixels. The initial value is (0,0).</param>
+        /// <param name="y">Specify the Y coordinate of the lower left corner of the viewport rectangle, in pixels. The initial value is (0,0).</param>
+        /// <param name="width">
+        ///     Specify the width of the viewport. When a GL context is first attached to a window,
+        ///     width are set to the width dimension of that window.
+        /// </param>
+        /// <param name="height">
+        ///     Specify the width of the viewport.When a GL context is first attached to a window,
+        ///     width are set to the width dimension of that window.
+        /// </param>
+        void Viewport(int x, int y, int width, int height);
 
         /// <summary>
         /// Returns a value indicating if the program linking process was successful.

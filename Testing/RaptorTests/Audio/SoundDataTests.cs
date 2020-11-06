@@ -14,6 +14,7 @@ namespace RaptorTests.Audio
     /// </summary>
     public class SoundDataTests
     {
+        #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvoked_SetsPropertiesToCorrectValues()
         {
@@ -32,7 +33,9 @@ namespace RaptorTests.Audio
             Assert.Equal(AudioFormat.Stereo16, data.Format);
             Assert.Equal(123, data.TotalSeconds);
         }
+        #endregion
 
+        #region Method Tests
         [Fact]
         public void Equals_WhenInvokingOverloadedEqualsOperator_ReturnsCorrectResult()
         {
@@ -178,5 +181,6 @@ namespace RaptorTests.Audio
             // Assert
             Assert.Equal(expected, actual);
         }
+        #endregion
     }
 }

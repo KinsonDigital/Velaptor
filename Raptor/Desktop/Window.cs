@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma warning disable CA1303 // Do not pass literals as localized parameters
-namespace Raptor
+namespace Raptor.Desktop
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -13,7 +13,7 @@ namespace Raptor
     /// <summary>
     /// A system window that graphics can be rendered to.
     /// </summary>
-    public abstract class Window : IDisposable
+    public abstract class Window : IWindowProps, IDisposable
     {
         private readonly IWindow window;
         private bool isDisposed;
@@ -32,76 +32,66 @@ namespace Raptor
             this.window.Update = OnUpdate;
             this.window.Draw = OnDraw;
             this.window.WinResize = OnResize;
-            this.window.UpdateFreq = 60;
+            this.window.UpdateFrequency = 60;
         }
 
-        /// <summary>
-        /// Gets or sets the title of the window.
-        /// </summary>
+        /// <inheritdoc/>
         public string Title
         {
             get => this.window.Title;
             set => this.window.Title = value;
         }
 
-        /// <summary>
-        /// Gets or sets the position of the window.
-        /// </summary>
+        /// <inheritdoc/>
         public Vector2 Position
         {
             get => this.window.Position;
             set => this.window.Position = value;
         }
 
-        /// <summary>
-        /// Gets or sets the width of the window.
-        /// </summary>
+        /// <inheritdoc/>
         public int Width
         {
             get => this.window.Width;
             set => this.window.Width = value;
         }
 
-        /// <summary>
-        /// Gets or sets the height of the window.
-        /// </summary>
+        /// <inheritdoc/>
         public int Height
         {
             get => this.window.Height;
             set => this.window.Height = value;
         }
 
-        /// <summary>
-        /// Gets or sets the frequency of how often the window updates and draws
-        /// in hertz.
-        /// </summary>
+        /// <inheritdoc/>
         public int UpdateFrequency
         {
-            get => this.window.UpdateFreq;
-            set => this.window.UpdateFreq = value;
+            get => this.window.UpdateFrequency;
+            set => this.window.UpdateFrequency = value;
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the mouse cursor is visible.
-        /// </summary>
+        /// <inheritdoc/>
+        public bool AutoClearBuffer
+        {
+            get => this.window.AutoClearBuffer;
+            set => this.window.AutoClearBuffer = value;
+        }
+
+        /// <inheritdoc/>
         public bool MouseCursorVisible
         {
             get => this.window.MouseCursorVisible;
             set => this.window.MouseCursorVisible = value;
         }
 
-        /// <summary>
-        /// Gets or sets the state of the <see cref="Window"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public StateOfWindow WindowState
         {
             get => this.window.WindowState;
             set => this.window.WindowState = value;
         }
 
-        /// <summary>
-        /// Gets or sets the type of border that the <see cref="Window"/> will have.
-        /// </summary>
+        /// <inheritdoc/>
         public BorderType TypeOfBorder
         {
             get => this.window.TypeOfBorder;
@@ -109,7 +99,7 @@ namespace Raptor
         }
 
         /// <summary>
-        /// Gets the content loader for loading content.
+        /// Gets or sets the content loader for loading content.
         /// </summary>
         public IContentLoader? ContentLoader { get; protected set; }
 
