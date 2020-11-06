@@ -32,65 +32,60 @@ namespace RaptorTests.Desktop
         public void Title_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            this.mockWindow.SetupProperty(p => p.Title);
             var window = CreateWindow();
 
             // Act
             window.Title = "test-title";
-            var actual = window.Title;
+            _ = window.Title;
 
             // Assert
             this.mockWindow.VerifySet(p => p.Title = "test-title", Times.Once());
-            Assert.Equal("test-title", actual);
+            this.mockWindow.VerifyGet(p => p.Title, Times.Once());
         }
 
         [Fact]
         public void Position_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            this.mockWindow.SetupProperty(p => p.Position);
             var window = CreateWindow();
 
             // Act
             window.Position = new Vector2(11, 22);
-            var actual = window.Position;
+            _ = window.Position;
 
             // Assert
             this.mockWindow.VerifySet(p => p.Position = new Vector2(11, 22), Times.Once());
-            Assert.Equal(new Vector2(11, 22), actual);
+            this.mockWindow.VerifyGet(p => p.Position, Times.Once());
         }
 
         [Fact]
         public void Width_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            this.mockWindow.SetupProperty(p => p.Width);
             var window = CreateWindow();
 
             // Act
             window.Width = 1234;
-            var actual = window.Width;
+            _ = window.Width;
 
             // Assert
             this.mockWindow.VerifySet(p => p.Width = 1234, Times.Once());
-            Assert.Equal(1234, actual);
+            this.mockWindow.VerifyGet(p => p.Width, Times.Once());
         }
 
         [Fact]
         public void Height_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            this.mockWindow.SetupProperty(p => p.Height);
-
             var window = CreateWindow();
             window.Height = 1234;
 
             // Act
-            var actual = window.Height;
+            _ = window.Height;
 
             // Assert
             this.mockWindow.VerifySet(p => p.Height = 1234, Times.Once());
-            Assert.Equal(1234, actual);
+            this.mockWindow.VerifyGet(p => p.Height, Times.Once());
         }
 
         [Fact]
@@ -101,7 +96,7 @@ namespace RaptorTests.Desktop
 
             // Act
             window.AutoClearBuffer = true;
-            var actual = window.AutoClearBuffer;
+            _ = window.AutoClearBuffer;
 
             // Assert
             this.mockWindow.VerifySet(p => p.AutoClearBuffer = true, Times.Once());
@@ -112,48 +107,45 @@ namespace RaptorTests.Desktop
         public void MouseCursorVisible_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            this.mockWindow.SetupProperty(p => p.MouseCursorVisible);
             var window = CreateWindow();
 
             // Act
             window.MouseCursorVisible = true;
-            var actual = window.MouseCursorVisible;
+            _ = window.MouseCursorVisible;
 
             // Assert
             this.mockWindow.VerifySet(p => p.MouseCursorVisible = true, Times.Once());
-            Assert.True(actual);
+            this.mockWindow.VerifyGet(p => p.MouseCursorVisible, Times.Once());
         }
 
         [Fact]
         public void UpdateFrequency_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            this.mockWindow.SetupProperty(p => p.UpdateFrequency);
             var window = CreateWindow();
 
             // Act
             window.UpdateFrequency = 1234;
-            var actual = window.UpdateFrequency;
+            _ = window.UpdateFrequency;
 
             // Assert
             this.mockWindow.VerifySet(p => p.UpdateFrequency = 1234, Times.Once());
-            Assert.Equal(1234, actual);
+            this.mockWindow.VerifyGet(p => p.UpdateFrequency, Times.Once());
         }
 
         [Fact]
         public void WindowState_WhenSettingValue_ReturnsCorrectValue()
         {
             // Arrange
-            this.mockWindow.SetupProperty(p => p.WindowState);
             var window = CreateWindow();
 
             // Act
             window.WindowState = StateOfWindow.FullScreen;
-            var actual = window.WindowState;
+            _ = window.WindowState;
 
             // Assert
             this.mockWindow.VerifySet(p => p.WindowState = StateOfWindow.FullScreen, Times.Once());
-            Assert.Equal(StateOfWindow.FullScreen, actual);
+            this.mockWindow.VerifyGet(p => p.WindowState, Times.Once());
         }
         #endregion
 
