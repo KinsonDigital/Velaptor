@@ -148,7 +148,7 @@ namespace Raptor.OpenGL
         /// </para>
         /// </remarks>
         /// <seealso cref="GetVideoModes"/>
-        unsafe IntPtr GetVideoMode(IntPtr monitor);
+        unsafe VideoMode GetVideoMode(IntPtr monitor);
 
         /// <summary>
         /// <para>

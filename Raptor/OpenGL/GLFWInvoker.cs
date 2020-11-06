@@ -26,16 +26,16 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public unsafe IntPtr[] GetMonitors()
         {
-            var monitors = GLFW.GetMonitors();
+            var pointers = new List<IntPtr>();
 
-            var result = new List<IntPtr>();
+            var rawPointers = GLFW.GetMonitors();
 
-            foreach (var monitor in monitors)
+            foreach (var rawPointer in rawPointers)
             {
-                result.Add((IntPtr)monitor);
+                pointers.Add((IntPtr)rawPointer);
             }
 
-            return result.ToArray();
+            return pointers.ToArray();
         }
 
         /// <inheritdoc/>
@@ -47,7 +47,20 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public unsafe IntPtr GetVideoMode(IntPtr monitor) => (IntPtr)GLFW.GetVideoMode((Monitor*)monitor);
+        public unsafe VideoMode GetVideoMode(IntPtr monitor)
+        {
+            var pVideoMode = GLFW.GetVideoMode((Monitor*)monitor);
+
+            return new VideoMode()
+            {
+                RedBits = pVideoMode->RedBits,
+                GreenBits = pVideoMode->RedBits,
+                BlueBits = pVideoMode->RedBits,
+                Width = pVideoMode->Width,
+                Height = pVideoMode->Height,
+                RefreshRate = pVideoMode->RefreshRate,
+            };
+        }
 
         /// <inheritdoc/>
         public IntPtr SetMonitorCallback(GLFWCallbacks.MonitorCallback callback) => GLFW.SetMonitorCallback(callback);
