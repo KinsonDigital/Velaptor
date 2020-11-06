@@ -29,6 +29,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "PullRequestTemplates", "{ED067A9D-E4B5-45CB-9200-0DC485256007}"
 	ProjectSection(SolutionItems) = preProject
 		pull_request_template\feature_to_develop.md = pull_request_template\feature_to_develop.md
+		pull_request_template\hotfix_to_develop.md = pull_request_template\hotfix_to_develop.md
+		pull_request_template\hotfix_to_master.md = pull_request_template\hotfix_to_master.md
 		pull_request_template\release_to_develop.md = pull_request_template\release_to_develop.md
 		pull_request_template\release_to_master.md = pull_request_template\release_to_master.md
 	EndProjectSection
