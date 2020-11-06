@@ -359,8 +359,6 @@ namespace Raptor.OpenGL
         /// <param name="currentSize">Resize event args.</param>
         private void GameWindow_Resize(ResizeEventArgs currentSize)
         {
-            // TODO: Need to add this GL call to the gl invoker and then update this
-
             // Update the view port so it is the same size as the window
             this.gl.Viewport(0, 0, currentSize.Width, currentSize.Height);
             WinResize?.Invoke();

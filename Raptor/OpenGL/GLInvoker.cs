@@ -44,10 +44,7 @@ namespace Raptor.OpenGL
         public void GetProgram(uint program, GetProgramParameterName pname, out int programParams) => GL.GetProgram(program, pname, out programParams);
 
         /// <inheritdoc/>
-        public void GetInteger(GetPName pname, int[] data)
-        {
-            GL.GetInteger(GetPName.Viewport, data);
-        }
+        public void GetInteger(GetPName pname, int[] data) => GL.GetInteger(GetPName.Viewport, data);
 
         /// <inheritdoc/>
         public Vector2 GetViewPortSize()
@@ -55,7 +52,6 @@ namespace Raptor.OpenGL
             var data = new int[4];
 
             GetInteger(GetPName.Viewport, data);
-            //GL.GetInteger(GetPName.Viewport, data);
 
             return new Vector2(data[2], data[3]);
         }

@@ -20,13 +20,13 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets or sets the render surface width.
         /// </summary>
-        /// <remarks>This is the width of the view port</remarks>
+        /// <remarks>This is the width of the viewport.</remarks>
         int RenderSurfaceWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the render surface height.
         /// </summary>
-        /// <remarks>This is the height of the view port</remarks>
+        /// <remarks>This is the height of the viewport.</remarks>
         int RenderSurfaceHeight { get; set; }
 
         /// <summary>

@@ -123,7 +123,7 @@ namespace Raptor.OpenGL
         void GetProgram(uint program, GetProgramParameterName pname, out int programParams);
 
         /// <summary>
-        /// Returns parameter name values of the type integer.
+        /// Returns parameter values of type integer.
         /// </summary>
         /// <param name="pname">
         ///     Specifies the parameter value to be returned for non-indexed versions of glGet.
