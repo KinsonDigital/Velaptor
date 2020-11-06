@@ -11,6 +11,9 @@ namespace RaptorTests.Audio
     using RaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="OggSoundDecoder"/> class.
+    /// </summary>
     public class OggSoundDecoderTests
     {
         private readonly Mock<IAudioDataStream<float>> mockDataStream;

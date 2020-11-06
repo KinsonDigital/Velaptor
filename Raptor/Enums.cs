@@ -5,22 +5,6 @@
 namespace Raptor
 {
     /// <summary>
-    /// Represents different ways that a scene should run.
-    /// </summary>
-    public enum RunMode
-    {
-        /// <summary>
-        /// This makes an scene run continuously.  Used for standard game running through frames.
-        /// </summary>
-        Continuous = 1,
-
-        /// <summary>
-        /// This gives fine control to run the game a set amount of frames at a time.
-        /// </summary>
-        FrameStack = 2,
-    }
-
-    /// <summary>
     /// The different kinds of borders that a <see cref="IWindow"/> can have.
     /// </summary>
     public enum BorderType
@@ -66,7 +50,7 @@ namespace Raptor
         Maximized = 2,
 
         /// <summary>
-        /// The window covers the whole screen, including all taskbars and/or panels.
+        /// The window covers the whole screen, including all task bars and/or panels.
         /// </summary>
         FullScreen = 3,
     }

@@ -8,6 +8,9 @@ namespace RaptorTests.OpenGL
     using Raptor.OpenGL;
     using Xunit;
 
+    /// <summary>
+    /// Test the <see cref="SpriteBatchItem"/> struct.
+    /// </summary>
     public class SpriteBatchItemTests
     {
         #region Prop Tests

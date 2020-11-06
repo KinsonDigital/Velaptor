@@ -8,6 +8,9 @@ namespace RaptorTests.Exceptions
     using Raptor.Exceptions;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="StringNullOrEmptyException"/> class.
+    /// </summary>
     public class StringNullOrEmptyExceptionTests
     {
         #region Constructor Tests

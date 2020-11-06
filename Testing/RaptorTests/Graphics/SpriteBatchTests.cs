@@ -15,6 +15,9 @@ namespace RaptorTests.Graphics
     using RaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="SpriteBatch"/> class.
+    /// </summary>
     public class SpriteBatchTests
     {
         private readonly Mock<ITexture> mockTextureOne;
@@ -24,6 +27,9 @@ namespace RaptorTests.Graphics
         private readonly Mock<IGPUBuffer> mockBuffer;
         private readonly Mock<IFile> mockFile;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpriteBatchTests"/> class.
+        /// </summary>
         public SpriteBatchTests()
         {
             this.mockTextureOne = new Mock<ITexture>();
@@ -134,6 +140,19 @@ namespace RaptorTests.Graphics
         #endregion
 
         #region Method Tests
+        [Fact]
+        public void Clear_WhenInvoked_ClearsBuffer()
+        {
+            // Arrange
+            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            // Act
+            batch.Clear();
+
+            // Assert
+            this.mockGL.Verify(m => m.Clear(ClearBufferMask.ColorBufferBit), Times.Once());
+        }
+
         [Fact]
         public void Render_WhenUsingOverloadWithFourParamsAndWithoutCallingBeginFirst_ThrowsException()
         {
@@ -388,6 +407,11 @@ namespace RaptorTests.Graphics
                 $"Expected total draw calls of {totalDrawCalls} not reached.");
         }
 
+        /// <summary>
+        /// Asserts that the OpenGL.<see cref="UniformMatrix4(uint, bool, ref Matrix4)"/>
+        /// method is invoked the given amount of times.
+        /// </summary>
+        /// <param name="times">The amount of times that it is invoked.</param>
         private void AssertTransformUpdate(uint times)
         {
             // Verify with any transform
@@ -396,6 +420,12 @@ namespace RaptorTests.Graphics
                 "Transformation matrix not updated on GPU");
         }
 
+        /// <summary>
+        /// Asserts that the OpenGL.<see cref="UniformMatrix4(uint, bool, ref Matrix4)"/>
+        /// method is invoked the given amount of times.
+        /// </summary>
+        /// <param name="times">The amount of times that it is invoked.</param>
+        /// <param name="transform">The transform to be used in each invoke.</param>
         private void AssertTransformUpdate(uint times, Matrix4 transform)
         {
             // Verify with given transform

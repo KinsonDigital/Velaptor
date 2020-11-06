@@ -12,7 +12,7 @@ namespace Raptor
         /// <summary>
         /// Updates the object.
         /// </summary>
-        /// <param name="engineTime">The game engine time.</param>
+        /// <param name="engineTime">The update iteration time.</param>
         void Update(FrameTime engineTime);
     }
 }

@@ -10,7 +10,7 @@ namespace RaptorTests.Input
     // TODO: Remove this class/file
 
     /// <summary>
-    /// Unit tests to test the <see cref="KeyEventArgs"/> class.
+    /// Tests the <see cref="KeyEventArgs"/> class.
     /// </summary>
     public class KeyEventArgsTests
     {

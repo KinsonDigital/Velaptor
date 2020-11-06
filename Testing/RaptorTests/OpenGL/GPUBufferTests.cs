@@ -24,6 +24,9 @@ namespace RaptorTests.OpenGL
         private bool vertexBufferCreated;
         private bool indexBufferCreated;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GPUBufferTests"/> class.
+        /// </summary>
         public GPUBufferTests()
         {
             this.mockGL = new Mock<IGLInvoker>();

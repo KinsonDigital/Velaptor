@@ -1,6 +1,6 @@
 # <span style='font-weight: bold; color: gold'>Raptor</span>
 
-This 2D game development framework for developing 2D games and miscellaneous applications that comes as a library/nuget package.
+This 2D game and application development framework for developing 2D games and miscellaneous applications that comes as a library/nuget package.
 
 
 ## <span style='font-weight: bold; color: mediumseagreen'>Getting Started</span>

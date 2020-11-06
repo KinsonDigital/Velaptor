@@ -8,6 +8,9 @@ namespace RaptorTests.Audio.Exceptions
     using Raptor.Audio.Exceptions;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="SettingContextCurrentException"/> class.
+    /// </summary>
     public class SettingContextCurrentExceptionTests
     {
         #region Constructor Tests

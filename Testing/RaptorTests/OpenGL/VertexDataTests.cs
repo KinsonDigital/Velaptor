@@ -8,6 +8,9 @@ namespace RaptorTests.OpenGL
     using Raptor.OpenGL;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="VertexData"/> struct.
+    /// </summary>
     public class VertexDataTests
     {
         #region Overloaded Operator Tests
