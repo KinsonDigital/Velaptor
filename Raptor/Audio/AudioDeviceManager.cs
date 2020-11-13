@@ -1,4 +1,4 @@
-﻿// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
+// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -71,7 +71,7 @@ namespace Raptor.Audio
         public void InitDevice(string? name = null)
         {
             var nameResult = name != null ? $"{DeviceNamePrefix}{name}" : name;
-            bool? setCurrentResult = null;
+            var setCurrentResult = false;
 
             if (!(alInvoker is null))
             {
@@ -87,7 +87,7 @@ namespace Raptor.Audio
                 setCurrentResult = alInvoker.MakeContextCurrent(context);
             }
 
-            if (setCurrentResult == null || !(bool)setCurrentResult)
+            if (!setCurrentResult)
                 throw new SettingContextCurrentException();
         }
 
@@ -248,12 +248,9 @@ namespace Raptor.Audio
             // Guarantee that the cache is clear
             ContinuePlaybackCache.Clear();
 
-            if (alInvoker is null)
-                return;
-
             foreach (var soundSrcKVP in SoundSources)
             {
-                var sourceState = alInvoker.GetSourceState(soundSrcKVP.Value.SourceId);
+                var sourceState = alInvoker?.GetSourceState(soundSrcKVP.Value.SourceId);
 
                 if (sourceState != ALSourceState.Playing && sourceState != ALSourceState.Paused)
                     continue;

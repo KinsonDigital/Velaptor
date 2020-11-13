@@ -1,4 +1,4 @@
-﻿// <copyright file="Sound.cs" company="KinsonDigital">
+// <copyright file="Sound.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -249,12 +249,9 @@ namespace Raptor.Audio
 
                 UnloadSoundData();
 
-                if (!(this.alInvoker.ErrorCallback is null) && !(this.alInvoker.ErrorCallback is null))
-                {
 #pragma warning disable CS8601 // Possible null reference assignment.
-                    this.alInvoker.ErrorCallback -= ErrorCallback;
+                this.alInvoker.ErrorCallback -= ErrorCallback;
 #pragma warning restore CS8601 // Possible null reference assignment.
-                }
             }
 
             this.isDisposed = true;

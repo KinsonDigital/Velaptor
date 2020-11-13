@@ -197,7 +197,7 @@ namespace Raptor.OpenGL
 
             foreach (var line in sourceCodeLines)
             {
-                var processedLine = ProcessLine(line is null ? string.Empty : line);
+                var processedLine = ProcessLine(line);
 
                 result.AppendLine(processedLine);
             }
