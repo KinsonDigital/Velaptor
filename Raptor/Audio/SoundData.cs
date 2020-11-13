@@ -81,7 +81,9 @@ namespace Raptor.Audio
         public override bool Equals(object? obj)
         {
             if (!(obj is SoundData<T> data))
+            {
                 return false;
+            }
 
             return Equals(data);
         }

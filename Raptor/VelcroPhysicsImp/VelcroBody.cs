@@ -36,13 +36,19 @@ namespace Raptor.VelcroPhysicsImp
         public VelcroBody(float[] xVertices, float[] yVertices, float xPosition, float yPosition, float angle, float density = 1, float friction = 0.2f, float restitution = 0, bool isStatic = false)
         {
             if (xVertices is null)
+            {
                 throw new ArgumentNullException(nameof(xVertices), "The X vertices's must not be null.");
+            }
 
             if (yVertices is null)
+            {
                 throw new ArgumentNullException(nameof(yVertices), "The Y vertices's must not be null.");
+            }
 
             if (xVertices.Length != yVertices.Length)
+            {
                 throw new ArgumentOutOfRangeException($"The parameters {nameof(xVertices)} and {nameof(yVertices)} must have the same number of elements.");
+            }
 
             this.tempSettings.SetXVertices(xVertices);
             this.tempSettings.SetYVertices(yVertices);
@@ -123,7 +129,9 @@ namespace Raptor.VelcroPhysicsImp
             set
             {
                 if (PolygonBody == null)
+                {
                     throw new Exception("Body must be added to a world first");
+                }
 
                 PolygonBody.Position = new Vector2(value.ToPhysicsUnit(), PolygonBody.Position.Y);
             }
@@ -138,7 +146,9 @@ namespace Raptor.VelcroPhysicsImp
             set
             {
                 if (PolygonBody == null)
+                {
                     throw new Exception("Body must be added to a world first");
+                }
 
                 PolygonBody.Position = new Vector2(PolygonBody.Position.X, value.ToPhysicsUnit());
             }
@@ -193,7 +203,9 @@ namespace Raptor.VelcroPhysicsImp
             set
             {
                 if (PolygonBody is null)
+                {
                     return;
+                }
 
                 PolygonBody.Friction = value;
             }
@@ -233,7 +245,9 @@ namespace Raptor.VelcroPhysicsImp
             set
             {
                 if (PolygonBody is null)
+                {
                     return;
+                }
 
                 PolygonBody.LinearVelocity = new Vector2(value.ToPhysicsUnit(), PolygonBody.LinearVelocity.Y);
             }
@@ -248,7 +262,9 @@ namespace Raptor.VelcroPhysicsImp
             set
             {
                 if (PolygonBody is null)
+                {
                     return;
+                }
 
                 PolygonBody.LinearVelocity = new Vector2(PolygonBody.LinearVelocity.X, value.ToPhysicsUnit());
             }
@@ -286,7 +302,9 @@ namespace Raptor.VelcroPhysicsImp
             set
             {
                 if (PolygonBody is null)
+                {
                     return;
+                }
 
                 PolygonBody.AngularVelocity = value.ToPhysicsUnit();
             }
@@ -334,7 +352,9 @@ namespace Raptor.VelcroPhysicsImp
         public void ApplyLinearImpulse(float x, float y)
         {
             if (PolygonBody is null)
+            {
                 return;
+            }
 
             PolygonBody.ApplyLinearImpulse(new Vector2(x.ToPhysicsUnit(), y.ToPhysicsUnit()));
         }
@@ -347,7 +367,9 @@ namespace Raptor.VelcroPhysicsImp
         public void ApplyAngularImpulse(float value)
         {
             if (PolygonBody is null)
+            {
                 return;
+            }
 
             PolygonBody.ApplyAngularImpulse(value.ToPhysicsUnit());
         }
@@ -362,7 +384,9 @@ namespace Raptor.VelcroPhysicsImp
         public void ApplyForce(float forceX, float forceY, float worldLocationX, float worldLocationY)
         {
             if (PolygonBody is null)
+            {
                 return;
+            }
 
             PolygonBody.ApplyForce(new Vector2(forceX.ToPhysicsUnit(), forceY.ToPhysicsUnit()), new Vector2(worldLocationX.ToPhysicsUnit(), worldLocationY.ToPhysicsUnit()));
         }

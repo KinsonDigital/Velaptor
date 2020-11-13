@@ -77,7 +77,9 @@ namespace Raptor.Content
             var extension = Path.GetExtension(name);
 
             if (!new[] { ".ogg", ".mp3" }.Contains(extension))
+            {
                 throw new UnsupportedSoundTypeException($"The extension '{extension}' is not supported.  Supported audio files are '.ogg' and '.mp3'.");
+            }
 
             return new Sound(
                 name,

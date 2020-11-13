@@ -32,10 +32,14 @@ namespace Raptor.Audio
         public SoundData<byte> LoadData(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
+            {
                 throw new ArgumentException("The param must not be null or empty.", nameof(fileName));
+            }
 
             if (Path.GetExtension(fileName) != ".mp3")
+            {
                 throw new ArgumentException("The file name must have an mp3 file extension.", nameof(fileName));
+            }
 
             SoundData<byte> result = default;
 

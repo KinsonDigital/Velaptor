@@ -43,10 +43,14 @@ namespace Raptor.Graphics
             var textBResult = string.Empty;
 
             if (!(textA is null))
+            {
                 textAResult = textA.Text;
+            }
 
             if (!(textB is null))
+            {
                 textBResult = textB.Text;
+            }
 
             return textAResult + textBResult;
         }
@@ -62,7 +66,9 @@ namespace Raptor.Graphics
             var textAResult = string.Empty;
 
             if (!(textA is null))
+            {
                 textAResult = textA.Text;
+            }
 
             return textAResult + textB;
         }
@@ -78,7 +84,9 @@ namespace Raptor.Graphics
             var textBResult = string.Empty;
 
             if (!(textB is null))
+            {
                 textBResult = textB.Text;
+            }
 
             return textA + textBResult;
         }

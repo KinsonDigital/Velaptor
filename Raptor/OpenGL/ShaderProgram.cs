@@ -61,7 +61,9 @@ namespace Raptor.OpenGL
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)
+            {
                 return;
+            }
 
             // Delete unmanaged resources
             this.gl.DeleteProgram(ProgramId);

@@ -364,7 +364,9 @@ namespace Raptor.OpenGL
         private void Dispose(bool disposing)
         {
             if (!this.isDiposed)
+            {
                 return;
+            }
 
             if (disposing)
             {
@@ -394,7 +396,9 @@ namespace Raptor.OpenGL
         private void GameWindow_UpdateFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)
+            {
                 return;
+            }
 
             var frameTime = new FrameTime()
             {
@@ -411,7 +415,9 @@ namespace Raptor.OpenGL
         private void GameWindow_RenderFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)
+            {
                 return;
+            }
 
             var frameTime = new FrameTime()
             {

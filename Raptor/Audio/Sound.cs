@@ -102,7 +102,9 @@ namespace Raptor.Audio
             get
             {
                 if (this.isDisposed)
+                {
                     throw new Exception(IsDisposedExceptionMessage);
+                }
 
                 // Get the current volume between 0.0 and 1.0
                 var volume = this.alInvoker.GetSource(this.srcId, ALSourcef.Gain);
@@ -113,7 +115,9 @@ namespace Raptor.Audio
             set
             {
                 if (this.isDisposed)
+                {
                     throw new Exception(IsDisposedExceptionMessage);
+                }
 
                 // Make sure that the incoming value stays between 0 and 100
                 value = value > 100f ? 100f : value;
@@ -136,7 +140,9 @@ namespace Raptor.Audio
             get
             {
                 if (this.isDisposed)
+                {
                     throw new Exception(IsDisposedExceptionMessage);
+                }
 
                 return this.alInvoker.GetSource(this.srcId, ALSourcef.SecOffset);
             }
@@ -162,14 +168,18 @@ namespace Raptor.Audio
             get
             {
                 if (this.isDisposed)
+                {
                     throw new Exception(IsDisposedExceptionMessage);
+                }
 
                 return this.alInvoker.GetSource(this.srcId, ALSourceb.Looping);
             }
             set
             {
                 if (this.isDisposed)
+                {
                     throw new Exception(IsDisposedExceptionMessage);
+                }
 
                 this.alInvoker.Source(this.srcId, ALSourceb.Looping, value);
             }
@@ -179,7 +189,9 @@ namespace Raptor.Audio
         public void PlaySound()
         {
             if (this.isDisposed)
+            {
                 throw new Exception(IsDisposedExceptionMessage);
+            }
 
             this.alInvoker.SourcePlay(this.srcId);
         }
@@ -188,7 +200,9 @@ namespace Raptor.Audio
         public void PauseSound()
         {
             if (this.isDisposed)
+            {
                 throw new Exception(IsDisposedExceptionMessage);
+            }
 
             this.alInvoker.SourcePause(this.srcId);
         }
@@ -197,7 +211,9 @@ namespace Raptor.Audio
         public void StopSound()
         {
             if (this.isDisposed)
+            {
                 throw new Exception(IsDisposedExceptionMessage);
+            }
 
             this.alInvoker.SourceStop(this.srcId);
         }
@@ -206,7 +222,9 @@ namespace Raptor.Audio
         public void Reset()
         {
             if (this.isDisposed)
+            {
                 throw new Exception(IsDisposedExceptionMessage);
+            }
 
             this.alInvoker.SourceRewind(this.srcId);
         }
@@ -215,7 +233,9 @@ namespace Raptor.Audio
         public void SetTimePosition(float seconds)
         {
             if (this.isDisposed)
+            {
                 throw new Exception(IsDisposedExceptionMessage);
+            }
 
             // Prevent negative numbers
             seconds = seconds < 0f ? 0.0f : seconds;
@@ -279,7 +299,9 @@ namespace Raptor.Audio
         private void Init()
         {
             if (!this.audioManager.IsInitialized)
+            {
                 this.audioManager.InitDevice();
+            }
 
             (this.srcId, this.bufferId) = this.audioManager.InitSound();
 
@@ -362,15 +384,21 @@ namespace Raptor.Audio
         private void UnloadSoundData()
         {
             if (this.isDisposed)
+            {
                 return;
+            }
 
             if (this.srcId <= 0)
+            {
                 return;
+            }
 
             this.alInvoker.DeleteSource(this.srcId);
 
             if (this.bufferId != 0)
+            {
                 this.alInvoker.DeleteBuffer(this.bufferId);
+            }
         }
 
         /// <summary>

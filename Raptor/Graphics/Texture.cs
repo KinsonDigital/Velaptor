@@ -76,7 +76,9 @@ namespace Raptor.Graphics
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)
+            {
                 return;
+            }
 
             this.gl.DeleteTexture(ID);
 

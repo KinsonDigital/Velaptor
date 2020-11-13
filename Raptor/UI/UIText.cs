@@ -61,7 +61,9 @@ namespace Raptor.UI
             set
             {
                 if (value is null)
+                {
                     throw new Exception($"The property '{nameof(LabelText)}' value must not be set to null.");
+                }
 
                 value.Text += ": ";
                 this.labelText = value;

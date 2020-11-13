@@ -1,4 +1,4 @@
-﻿// <copyright file="Window.cs" company="KinsonDigital">
+// <copyright file="Window.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -25,7 +25,9 @@ namespace Raptor.Desktop
         public Window(IWindow window)
         {
             if (window is null)
+            {
                 throw new ArgumentNullException(nameof(window), "Window must not be null.");
+            }
 
             this.window = window;
             this.window.Init = OnLoad;
@@ -163,7 +165,9 @@ namespace Raptor.Desktop
             if (!this.isDisposed)
             {
                 if (disposing)
+                {
                     this.window.Dispose();
+                }
 
                 this.isDisposed = true;
             }

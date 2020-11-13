@@ -115,7 +115,9 @@ namespace Raptor.Hardware
         public override bool Equals(object? obj)
         {
             if (!(obj is SystemMonitor monitor))
+            {
                 return false;
+            }
 
             return Equals(monitor);
         }

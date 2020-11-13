@@ -1,4 +1,4 @@
-﻿// <copyright file="TextBox.cs" company="KinsonDigital">
+// <copyright file="TextBox.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -84,7 +84,9 @@ namespace Raptor.UI
         public void LoadContent(ContentLoader contentLoader)
         {
             if (contentLoader is null)
+            {
                 throw new ArgumentNullException(nameof(contentLoader), "The content loader must not be null.");
+            }
 
                 // TODO: Currently for every single instance of this class TextBox, there will be 2 RenderText objects created.
                 // One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
@@ -299,7 +301,9 @@ namespace Raptor.UI
         private void RemoveCharacterUsingBackspace()
         {
             if (this.visibleText is null)
+            {
                 return;
+            }
 
             Text = Text.Remove(Text.IndexOf(this.visibleText.Text, StringComparison.Ordinal) + this.characterPosition - 1, 1);
         }
@@ -311,7 +315,9 @@ namespace Raptor.UI
         private int CalcCursorXPos()
         {
             if (this.textRuler is null)
+            {
                 return 0;
+            }
 
             this.textRuler.Text = string.Empty;
 
@@ -334,7 +340,9 @@ namespace Raptor.UI
         private string ClipText(string text)
         {
             if (this.textRuler is null)
+            {
                 return string.Empty;
+            }
 
             this.textRuler.Text = string.Empty;
 

@@ -303,7 +303,7 @@ namespace RaptorTests.Audio
             // Arrange
             var fileName = @"C:\temp\Content\Sounds\sound.ogg";
             this.mockALInvoker.Setup(m => m.GetString(this.device, AlcGetStringList.AllDevicesSpecifier))
-                .Returns(new[] { "device-1"});
+                .Returns(new[] { "device-1" });
             this.mockALInvoker.Setup(m => m.GetSourceState(this.srcId))
                 .Returns(ALSourceState.Playing);
             this.mockALInvoker.Setup(m => m.GetSource(this.srcId, ALGetSourcei.SampleOffset))

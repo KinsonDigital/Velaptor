@@ -49,7 +49,9 @@ namespace Raptor.UI
             get
             {
                 if (MouseOverTexture == null || MouseNotOverTexture == null)
+                {
                     return 0;
+                }
 
                 return MouseOverTexture.Width > MouseNotOverTexture.Width ?
                     MouseOverTexture.Width :
@@ -65,7 +67,9 @@ namespace Raptor.UI
             get
             {
                 if (MouseOverTexture == null || MouseNotOverTexture == null)
+                {
                     return 0;
+                }
 
                 return MouseOverTexture.Height > MouseNotOverTexture.Height ?
                     MouseOverTexture.Height :
