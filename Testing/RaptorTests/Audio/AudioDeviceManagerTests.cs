@@ -287,6 +287,65 @@ namespace RaptorTests.Audio
             }, "Device Name: test-device-1\nThe audio device does not exist.");
         }
 
+        [Fact]
+        public void ChangeDevice_WhenCurrentTimePositionIsGreaterThenMaxTime_ChangesDevices()
+        {
+            /*NOTE:
+             * To calculate the time position in seconds, take the sampleOffset and divide it by sample rate.
+             * Example: 220,500 sample offset / 44100 sample rate = 5 seconds
+             *          220,500 / 44100 = 5.0
+             * When changing a device, the state and time position should be invoked once
+             * for each sound source that exists.
+             * sampleOffset is the amount of samples positionally the sound is currently at.
+             * 44100 is the standard samples/Hz for 1 second worth of sound.
+             * To get 10 seconds of sound, you would need 220,500 samples.
+             */
+            // Arrange
+            var fileName = @"C:\temp\Content\Sounds\sound.ogg";
+            this.mockALInvoker.Setup(m => m.GetString(this.device, AlcGetStringList.AllDevicesSpecifier))
+                .Returns(new[] { "device-1" });
+            this.mockALInvoker.Setup(m => m.GetSourceState(this.srcId))
+                .Returns(ALSourceState.Playing);
+            this.mockALInvoker.Setup(m => m.GetSource(this.srcId, ALGetSourcei.SampleOffset))
+                .Returns(500_000); // End result will be calculated to the time position that the sound is currently at
+
+            var mockOggDecoder = new Mock<ISoundDecoder<float>>();
+            mockOggDecoder.Setup(m => m.LoadData(It.IsAny<string>()))
+                .Returns(() =>
+                {
+                    var oggData = new SoundData<float>
+                    {
+                        BufferData = new ReadOnlyCollection<float>(new[] { 1f }),
+                        Format = AudioFormat.Stereo16,
+                        Channels = 2,
+                        SampleRate = 44100,
+                        TotalSeconds = 1,
+                    };
+
+                    return oggData;
+                });
+
+            var mockContentSrc = new Mock<IContentSource>();
+            mockContentSrc.Setup(m => m.GetContentPath(It.IsAny<string>())).Returns(fileName);
+
+            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+
+            var sound = new Sound(
+                It.IsAny<string>(),
+                this.mockALInvoker.Object,
+                this.manager,
+                mockOggDecoder.Object,
+                new Mock<ISoundDecoder<byte>>().Object,
+                mockContentSrc.Object);
+
+            // Act
+            this.manager.ChangeDevice("device-1");
+
+            // Assert
+            this.mockALInvoker.Verify(m => m.GetSourceState(this.srcId), Times.Once());
+            this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourcef.SecOffset), Times.Once());
+        }
+
         [Theory]
         [InlineData(ALSourceState.Stopped, 1, 0, 0)]
         [InlineData(ALSourceState.Playing, 1, 1, 220_500)] // 5 seconds of sound at a sample rate of 44100

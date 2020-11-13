@@ -2,7 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.Desktop
 {
     using System;
@@ -25,13 +24,18 @@ namespace Raptor.Desktop
         public Window(IWindow window)
         {
             if (window is null)
+            {
                 throw new ArgumentNullException(nameof(window), "Window must not be null.");
+            }
 
             this.window = window;
             this.window.Init = OnLoad;
             this.window.Update = OnUpdate;
             this.window.Draw = OnDraw;
             this.window.WinResize = OnResize;
+
+            // Set the update frequency to default value of 60
+            // just in case the IWindow implementation is not
             this.window.UpdateFrequency = 60;
         }
 
@@ -98,10 +102,12 @@ namespace Raptor.Desktop
             set => this.window.TypeOfBorder = value;
         }
 
-        /// <summary>
-        /// Gets or sets the content loader for loading content.
-        /// </summary>
-        public IContentLoader? ContentLoader { get; protected set; }
+        /// <inheritdoc/>
+        public IContentLoader? ContentLoader
+        {
+            get => this.window.ContentLoader;
+            set => this.window.ContentLoader = value;
+        }
 
         /// <summary>
         /// Shows the window.
@@ -162,7 +168,9 @@ namespace Raptor.Desktop
             if (!this.isDisposed)
             {
                 if (disposing)
+                {
                     this.window.Dispose();
+                }
 
                 this.isDisposed = true;
             }

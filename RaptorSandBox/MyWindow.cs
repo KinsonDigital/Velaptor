@@ -1,4 +1,4 @@
-﻿using Raptor;
+using Raptor;
 using Raptor.Audio;
 using Raptor.Content;
 using Raptor.Desktop;
@@ -6,7 +6,6 @@ using Raptor.Factories;
 using Raptor.Graphics;
 using Raptor.Input;
 using System;
-using System.Linq;
 
 namespace RaptorSandBox
 {
@@ -29,7 +28,6 @@ namespace RaptorSandBox
         public MyWindow(IWindow window)
             : base(window)
         {
-            ContentLoader = ContentLoaderFactory.CreateContentLoader();
             this.linkTexturePosX = 400;
         }
 
@@ -48,7 +46,6 @@ namespace RaptorSandBox
 
             this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
-            this.quietPlaceMusic.PlaySound();
 
             base.OnLoad();
         }
@@ -65,8 +62,9 @@ namespace RaptorSandBox
 
             if (this.currentKeyboardState.IsKeyUp(KeyCode.Space) && this.previousKeyboardState.IsKeyDown(KeyCode.Space))
             {
-                var headPhones = AudioDevice.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
-                AudioDevice.ChangeDevice(headPhones);
+                this.WindowState = StateOfWindow.Minimized;
+                //var headPhones = AudioDevice.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
+                //AudioDevice.ChangeDevice(headPhones);
             }
 
             if (this.currentKeyboardState.IsKeyUp(KeyCode.P) && this.previousKeyboardState.IsKeyDown(KeyCode.P))

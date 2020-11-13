@@ -34,10 +34,14 @@ namespace Raptor.Audio
             set
             {
                 if (string.IsNullOrEmpty(value))
+                {
                     throw new StringNullOrEmptyException();
+                }
 
                 if (!File.Exists(value))
+                {
                     throw new FileNotFoundException($"The file '{value}' was not found or does not exist.");
+                }
 
                 if (this.mp3Reader is null)
                 {
@@ -65,7 +69,9 @@ namespace Raptor.Audio
             get
             {
                 if (string.IsNullOrEmpty(this.fileName) || this.mp3Reader is null)
+                {
                     return default;
+                }
 
                 return this.mp3Reader.Format == SoundFormat.Pcm16BitMono
                     ? AudioFormat.Mono16
@@ -80,7 +86,9 @@ namespace Raptor.Audio
         public int ReadSamples(byte[] buffer, int offset, int count)
         {
             if (string.IsNullOrEmpty(Filename))
+            {
                 throw new StringNullOrEmptyException();
+            }
 
             return this.mp3Reader?.Read(buffer, offset, count) ?? 0;
         }
@@ -102,7 +110,9 @@ namespace Raptor.Audio
             if (!this.isDisposed)
             {
                 if (disposing)
+                {
                     this.mp3Reader?.Dispose();
+                }
 
                 this.isDisposed = true;
             }

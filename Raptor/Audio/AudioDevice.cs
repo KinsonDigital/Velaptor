@@ -34,7 +34,9 @@ namespace Raptor.Audio
         public static void ChangeDevice(string name)
         {
             if (!DeviceManager.IsInitialized)
+            {
                 DeviceManager.InitDevice();
+            }
 
             DeviceManager.ChangeDevice(name);
         }

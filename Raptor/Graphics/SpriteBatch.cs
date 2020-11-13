@@ -41,13 +41,19 @@ namespace Raptor.Graphics
         public SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
         {
             if (gl is null)
+            {
                 throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
+            }
 
             if (shader is null)
+            {
                 throw new ArgumentNullException(nameof(shader), $"The '{nameof(IShaderProgram)}' must not be null.");
+            }
 
             if (gpuBuffer is null)
+            {
                 throw new ArgumentNullException(nameof(gpuBuffer), $"The '{nameof(IGPUBuffer)}' must not be null.");
+            }
 
             this.gl = gl;
             this.shader = shader;
@@ -107,10 +113,14 @@ namespace Raptor.Graphics
         public void Render(ITexture texture, int x, int y, Color tintColor)
         {
             if (!this.hasBegun)
+            {
                 throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
+            }
 
             if (texture is null)
+            {
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
+            }
 
             var srcRect = new Rectangle()
             {
@@ -129,10 +139,14 @@ namespace Raptor.Graphics
         public void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor)
         {
             if (!this.hasBegun)
+            {
                 throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
+            }
 
             if (texture is null)
+            {
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
+            }
 
             this.currentTextureID = texture.ID;
 
@@ -166,7 +180,9 @@ namespace Raptor.Graphics
         public void EndBatch()
         {
             if (this.batchItems.All(i => i.Value.IsEmpty))
+            {
                 return;
+            }
 
             RenderBatch();
 
@@ -190,7 +206,9 @@ namespace Raptor.Graphics
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)
+            {
                 return;
+            }
 
             if (disposing)
             {
@@ -235,7 +253,9 @@ namespace Raptor.Graphics
             for (uint i = 0; i < this.batchItems.Values.Count; i++)
             {
                 if (this.batchItems[i].IsEmpty)
+                {
                     continue;
+                }
 
                 if (!textureIsBound)
                 {
@@ -263,7 +283,9 @@ namespace Raptor.Graphics
             // Only render the amount of elements for the amount of batch items to render.
             // 6 = the number of vertices/quad and each batch is a quad. batchAmontToRender is the total quads to render
             if (batchAmountToRender > 0)
+            {
                 this.gl.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            }
 
             // Empty the batch items
             for (uint i = 0; i < this.batchItems.Count; i++)

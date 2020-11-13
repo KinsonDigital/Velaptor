@@ -189,7 +189,9 @@ namespace Raptor.Input
             foreach (var key in this.keyStates)
             {
                 if (key.Value)
+                {
                     downKeys.Add(key.Key);
+                }
             }
 
             return downKeys.ToArray();
@@ -220,7 +222,9 @@ namespace Raptor.Input
             foreach (var key in this.keyStates)
             {
                 if (key.Value)
+                {
                     downKeys.Add(key.Key);
+                }
             }
 
             return keys.Any(k => downKeys.Contains(k));
@@ -263,7 +267,9 @@ namespace Raptor.Input
             foreach (var key in StandardNumberKeys)
             {
                 if (IsKeyDown(key))
+                {
                     return true;
+                }
             }
 
             return false;
@@ -280,7 +286,9 @@ namespace Raptor.Input
             foreach (var key in NumpadNumberKeys)
             {
                 if (IsKeyDown(key))
+                {
                     return true;
+                }
             }
 
             return false;
@@ -311,14 +319,20 @@ namespace Raptor.Input
             {
                 // NOTE!!  THIS MIGHT NOT WORK.  THE ToUpperInvariant() THAT IS
                 if (LetterKeys.Contains(key))
+                {
                     return key == KeyCode.Space ? ' ' : key.ToString().ToUpperInvariant()[0];
+                }
 
                 // When the shift key is down, the standard number keys and symbol keys return symbols.
                 if (StandardNumberKeys.Contains(key))
+                {
                     return WithShiftSymbolCharacters[key];
+                }
 
                 if (SymbolKeys.Contains(key))
+                {
                     return WithShiftSymbolCharacters[key];
+                }
             }
             else
             {
@@ -330,11 +344,15 @@ namespace Raptor.Input
                 }
 
                 if (SymbolKeys.Contains(key))
+                {
                     return NoShiftSymbolCharacters[key];
+                }
 
                 // When the shift is is up, the standard number keys return numbers.
                 if (StandardNumberKeys.Contains(key))
+                {
                     return NoShiftStandardNumberCharacters[key];
+                }
             }
 
             return (char)0;
@@ -348,7 +366,9 @@ namespace Raptor.Input
         public override bool Equals(object? obj)
         {
             if (!(obj is KeyboardState state))
+            {
                 return false;
+            }
 
             return Equals(state);
         }
@@ -381,7 +401,9 @@ namespace Raptor.Input
         private void InitKeys()
         {
             if (!(this.keyStates is null) && this.keyStates.Count > 0)
+            {
                 return;
+            }
 
             this.keyStates = new Dictionary<KeyCode, bool>();
 

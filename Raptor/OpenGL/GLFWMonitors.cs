@@ -67,7 +67,7 @@ namespace Raptor.OpenGL
 
                 var newMonitor = new SystemMonitor(this.platform)
                 {
-                    IsMain = this.monitors == null || this.monitors.Count <= 0,
+                    IsMain = this.monitors.Count <= 0,
                     RedBitDepth = monitorVideoMode.RedBits,
                     BlueBitDepth = monitorVideoMode.BlueBits,
                     GreenBitDepth = monitorVideoMode.GreenBits,

@@ -108,6 +108,8 @@ csharp_prefer_simple_default_expression = true:warning
 csharp_style_pattern_local_over_anonymous_function = true:warning
 csharp_style_inlined_variable_declaration = true:warning
 
+# IDE0057: Use range operator
+csharp_style_prefer_range_operator = true:warning
 
 ###############################
 # C# Formatting Rules         #
@@ -140,7 +142,6 @@ csharp_space_between_method_call_name_and_opening_parenthesis = false
 csharp_space_between_method_call_empty_parameter_list_parentheses = false
 
 # Wrapping preferences
-csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
 
 
@@ -154,7 +155,7 @@ dotnet_diagnostic.IDE0052.severity = warning
 csharp_style_unused_value_assignment_preference = discard_variable:warning
 
 # SA1503: Braces should not be omitted
-dotnet_diagnostic.SA1503.severity = none
+dotnet_diagnostic.SA1503.severity = warning
 
 # SA1101: Prefix local calls with this
 dotnet_diagnostic.SA1101.severity = none
@@ -170,6 +171,3 @@ dotnet_diagnostic.SA1011.severity = none
 
 # SA0001: XML comment analysis is disabled due to project configuration
 dotnet_diagnostic.SA0001.severity = none
-
-# IDE0057: Use range operator
-csharp_style_prefer_range_operator = true:warning

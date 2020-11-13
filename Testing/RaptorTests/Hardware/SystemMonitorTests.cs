@@ -298,6 +298,32 @@ namespace RaptorTests.Hardware
             // Assert
             Assert.True(actual);
         }
+
+        [Fact]
+        public void EqualsOverloadedOperator_WithLeftOperandAsNullAndRightOperandNotNull_ReturnsTrue()
+        {
+            // Arrange
+            SystemMonitor? monitorA = null;
+
+            var monitorB = new SystemMonitor(new Mock<IPlatform>().Object)
+            {
+                IsMain = false,
+                RedBitDepth = 11,
+                GreenBitDepth = 22,
+                BlueBitDepth = 33,
+                Width = 44,
+                Height = 55,
+                RefreshRate = 66,
+                HorizontalScale = 77,
+                VerticalScale = 88,
+            };
+
+            // Act
+            var actual = monitorA != monitorB;
+
+            // Assert
+            Assert.True(actual);
+        }
         #endregion
     }
 }
