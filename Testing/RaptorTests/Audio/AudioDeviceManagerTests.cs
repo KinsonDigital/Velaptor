@@ -288,7 +288,7 @@ namespace RaptorTests.Audio
         }
 
         [Fact]
-        public void ChangeDevice_WithNullALInvoker_MakesProperALCallsForCachingSources()
+        public void ChangeDevice_WhenCurrentTimePositionIsGreaterThenMaxTime_ChangesDevices()
         {
             /*NOTE:
              * To calculate the time position in seconds, take the sampleOffset and divide it by sample rate.

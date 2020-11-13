@@ -33,6 +33,10 @@ namespace Raptor.Desktop
             this.window.Update = OnUpdate;
             this.window.Draw = OnDraw;
             this.window.WinResize = OnResize;
+
+            // Set the update frequency to default value of 60
+            // just in case the IWindow implementation is not
+            this.window.UpdateFrequency = 60;
         }
 
         /// <inheritdoc/>

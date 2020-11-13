@@ -27,12 +27,9 @@ namespace Raptor.OpenAL
             var contextResult = ALC.CreateContext(device, attributes);
             var error = ALC.GetError(device);
 
-            var errorString = Enum.GetName(typeof(AlcError), error);
+            var errorMessage = Enum.GetName(typeof(AlcError), error);
 
-            if (error != AlcError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != AlcError.NoError, errorMessage);
 
             return contextResult;
         }
@@ -43,12 +40,9 @@ namespace Raptor.OpenAL
             var deviceResult = ALC.OpenDevice(deviceName);
             var error = ALC.GetError(deviceResult);
 
-            var errorString = Enum.GetName(typeof(AlcError), error);
+            var errorMessage = Enum.GetName(typeof(AlcError), error);
 
-            if (error != AlcError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != AlcError.NoError, errorMessage);
 
             return deviceResult;
         }
@@ -65,7 +59,7 @@ namespace Raptor.OpenAL
 
                 if (!result)
                 {
-                    ErrorCallback?.Invoke("Issue destroying context.");
+                    InvokeErrorIfTrue(true, "Issue destroying the context.");
                 }
             }
             else
@@ -75,19 +69,16 @@ namespace Raptor.OpenAL
                 var device = GetContextsDevice(context);
 
                 var error = ALC.GetError(device);
-                if (error != AlcError.NoError)
-                {
-                    var errorString = Enum.GetName(typeof(AlcError), error);
 
-                    ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
+                if (result)
+                {
+                    var errorMessage = Enum.GetName(typeof(AlcError), error);
+                    InvokeErrorIfTrue(error != AlcError.NoError, errorMessage);
                 }
                 else
                 {
-                    // Throw error if the context could not be made current
-                    if (!result)
-                    {
-                        ErrorCallback?.Invoke($"Context with handle '{context.Handle}' could not be made current.");
-                    }
+                    // Throw an error that the context could not be made current
+                    InvokeErrorIfTrue(true, $"Context with handle '{context.Handle}' could not be made current.");
                 }
             }
 
@@ -101,12 +92,9 @@ namespace Raptor.OpenAL
 
             var error = GetError();
 
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
 
             return result;
         }
@@ -117,12 +105,9 @@ namespace Raptor.OpenAL
             var result = AL.GenSource();
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
 
             return result;
         }
@@ -136,12 +121,9 @@ namespace Raptor.OpenAL
             AL.GetSource(sid, param, out var result);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
 
             return result;
         }
@@ -152,12 +134,9 @@ namespace Raptor.OpenAL
             AL.GetSource(sid, param, out var result);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
 
             return result;
         }
@@ -168,12 +147,9 @@ namespace Raptor.OpenAL
             AL.GetSource(sid, param, out var value);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
 
             return value;
         }
@@ -192,12 +168,9 @@ namespace Raptor.OpenAL
             var deviceResult = ALC.GetContextsDevice(context);
 
             var error = ALC.GetError(deviceResult);
-            var errorString = Enum.GetName(typeof(AlcError), error);
+            var errorMessage = Enum.GetName(typeof(AlcError), error);
 
-            if (error != AlcError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != AlcError.NoError, errorMessage);
 
             return deviceResult;
         }
@@ -208,12 +181,9 @@ namespace Raptor.OpenAL
             var result = ALC.GetString(device, param);
             var error = ALC.GetError(device);
 
-            var errorString = Enum.GetName(typeof(AlcError), error);
+            var errorMessage = Enum.GetName(typeof(AlcError), error);
 
-            if (error != AlcError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != AlcError.NoError, errorMessage);
 
             return result;
         }
@@ -223,12 +193,9 @@ namespace Raptor.OpenAL
         {
             var result = ALC.GetString(param);
             var error = ALC.GetError(device);
-            var errorString = Enum.GetName(typeof(AlcError), error);
+            var errorMessage = Enum.GetName(typeof(AlcError), error);
 
-            if (error != AlcError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != AlcError.NoError, errorMessage);
 
             return result;
         }
@@ -240,12 +207,9 @@ namespace Raptor.OpenAL
             AL.BufferData(bid, format, buffer, freq);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -254,12 +218,9 @@ namespace Raptor.OpenAL
             AL.BindBufferToSource(source, buffer);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -268,12 +229,9 @@ namespace Raptor.OpenAL
             AL.Source(sid, param, value);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -282,12 +240,9 @@ namespace Raptor.OpenAL
             AL.Source(sid, param, value);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -296,12 +251,9 @@ namespace Raptor.OpenAL
             AL.Source(sid, param, value);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -310,12 +262,9 @@ namespace Raptor.OpenAL
             AL.SourcePlay(sid);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -324,12 +273,9 @@ namespace Raptor.OpenAL
             AL.SourcePause(sid);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -338,12 +284,9 @@ namespace Raptor.OpenAL
             AL.SourceStop(sid);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -352,12 +295,9 @@ namespace Raptor.OpenAL
             AL.SourceRewind(sid);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -365,12 +305,9 @@ namespace Raptor.OpenAL
         {
             var closeResult = ALC.CloseDevice(device);
             var error = ALC.GetError(device);
-            var errorString = Enum.GetName(typeof(AlcError), error);
+            var errorMessage = Enum.GetName(typeof(AlcError), error);
 
-            if (error != AlcError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != AlcError.NoError, errorMessage);
 
             return closeResult;
         }
@@ -381,11 +318,9 @@ namespace Raptor.OpenAL
             AL.DeleteBuffer(buffer);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            var errorMessage = Enum.GetName(typeof(ALError), error);
+
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -394,12 +329,9 @@ namespace Raptor.OpenAL
             AL.DeleteSource(source);
 
             var error = GetError();
-            var errorString = Enum.GetName(typeof(ALError), error);
+            var errorMessage = Enum.GetName(typeof(ALError), error);
 
-            if (error != ALError.NoError)
-            {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
-            }
+            InvokeErrorIfTrue(error != ALError.NoError, errorMessage);
         }
 
         /// <inheritdoc/>
@@ -409,11 +341,21 @@ namespace Raptor.OpenAL
 
             ALC.DestroyContext(context);
             var error = ALC.GetError(device);
-            var errorString = Enum.GetName(typeof(AlcError), error);
+            var errorMessage = Enum.GetName(typeof(AlcError), error);
 
-            if (error != AlcError.NoError)
+            InvokeErrorIfTrue(error != AlcError.NoError, errorMessage);
+        }
+
+        /// <summary>
+        /// Invokes the error callback if the <paramref name="shouldInvoke"/> is true.
+        /// </summary>
+        /// <param name="shouldInvoke">If true, invokes the error callback.</param>
+        /// <param name="errorMessage">The error message.</param>
+        private void InvokeErrorIfTrue(bool shouldInvoke, string? errorMessage)
+        {
+            if (shouldInvoke)
             {
-                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorString) ? "OpenAL" : errorString);
+                ErrorCallback?.Invoke(string.IsNullOrEmpty(errorMessage) ? "OpenAL" : errorMessage);
             }
         }
     }
