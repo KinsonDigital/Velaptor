@@ -1,8 +1,7 @@
-// <copyright file="GLWindow.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.OpenGL
 {
     using System;
