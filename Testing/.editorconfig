@@ -39,7 +39,7 @@ dotnet_diagnostic.SA1124.severity = none
 dotnet_diagnostic.CA2000.severity = none
 
 # IDE0017: Simplify object initialization
-dotnet_style_object_initializer = true:none
+dotnet_style_object_initializer = false:none
 
 # CA1063: Implement IDisposable Correctly
 dotnet_diagnostic.CA1063.severity = none
@@ -67,3 +67,6 @@ dotnet_diagnostic.SA1005.severity = none
 
 # CS8625: Cannot convert null literal to non-nullable reference type.
 dotnet_diagnostic.CS8625.severity = none
+
+# CS8604: Possible null reference argument.
+dotnet_diagnostic.CS8604.severity = none

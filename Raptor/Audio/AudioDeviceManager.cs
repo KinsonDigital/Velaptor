@@ -295,7 +295,7 @@ namespace Raptor.Audio
         private static void SetTimePosition(int srcId, float seconds, float totalSeconds)
         {
             // Prevent negative number
-            seconds = seconds < 0f ? 0.0f : seconds;
+            seconds = Math.Abs(seconds);
 
             seconds = seconds > totalSeconds ? totalSeconds : seconds;
 
