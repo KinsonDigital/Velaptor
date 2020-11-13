@@ -25,7 +25,9 @@ namespace Raptor.Input
         public static KeyboardState GetState()
         {
             if (KeyStates.Count <= 0)
+            {
                 SetupKeyStates();
+            }
 
             var keyboardState = default(KeyboardState);
 

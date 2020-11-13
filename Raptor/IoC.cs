@@ -33,7 +33,9 @@ namespace Raptor
             get
             {
                 if (!isInitialized)
+                {
                     SetupContainer();
+                }
 
                 return IoCContainer;
             }

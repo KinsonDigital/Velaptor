@@ -31,7 +31,9 @@ namespace Raptor
         public override bool Equals(object? obj)
         {
             if (obj == null || !(obj is FrameTime frameTime))
+            {
                 return false;
+            }
 
             return Equals(frameTime);
         }

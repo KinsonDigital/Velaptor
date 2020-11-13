@@ -73,7 +73,9 @@ namespace Raptor.OpenGL
         public static uint GetTotalBytesForStruct(Type type)
         {
             if (type is null)
+            {
                 throw new ArgumentNullException(nameof(type), "The argument must not be null");
+            }
 
             var fields = type.GetFields();
 
@@ -84,7 +86,9 @@ namespace Raptor.OpenGL
                 var otherAttrs = field.GetCustomAttribute<FieldDataAttribute>();
 
                 if (!(otherAttrs is null))
+                {
                     result += otherAttrs.TotalBytes;
+                }
             }
 
             return result;
@@ -99,7 +103,9 @@ namespace Raptor.OpenGL
         public static uint GetPrimitiveByteSize(Type type)
         {
             if (!type.IsPrimitive)
+            {
                 throw new ArgumentException($"The param '{nameof(type)}' must be a primitive type.");
+            }
 
             return PrimitiveTypeSizes[type];
         }

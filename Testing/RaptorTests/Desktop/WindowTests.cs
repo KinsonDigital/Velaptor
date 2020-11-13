@@ -8,6 +8,7 @@ namespace RaptorTests.Desktop
     using System.Numerics;
     using Moq;
     using Raptor;
+    using Raptor.Content;
     using Raptor.Desktop;
     using RaptorTests.Fakes;
     using RaptorTests.Helpers;
@@ -145,6 +146,37 @@ namespace RaptorTests.Desktop
             // Assert
             this.mockWindow.VerifySet(p => p.WindowState = StateOfWindow.FullScreen, Times.Once());
             this.mockWindow.VerifyGet(p => p.WindowState, Times.Once());
+        }
+
+        [Fact]
+        public void TypeOfBorder_WhenSettingValue_ReturnsCorrectValue()
+        {
+            // Arrange
+            var window = CreateWindow();
+
+            // Act
+            window.TypeOfBorder = BorderType.Resizable;
+            _ = window.TypeOfBorder;
+
+            // Assert
+            this.mockWindow.VerifySet(p => p.TypeOfBorder = BorderType.Resizable, Times.Once());
+            this.mockWindow.VerifyGet(p => p.TypeOfBorder, Times.Once());
+        }
+
+        [Fact]
+        public void ContentLoader_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var mockContentLoader = new Mock<IContentLoader>();
+            var window = CreateWindow();
+
+            // Act
+            window.ContentLoader = mockContentLoader.Object;
+            _ = window.ContentLoader;
+
+            // Assert
+            this.mockWindow.VerifySet(p => p.ContentLoader = mockContentLoader.Object, Times.Once());
+            this.mockWindow.VerifyGet(p => p.ContentLoader, Times.Once());
         }
         #endregion
 

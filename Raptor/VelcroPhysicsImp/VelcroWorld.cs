@@ -52,7 +52,9 @@ namespace Raptor.VelcroPhysicsImp
         public void Update(float dt)
         {
             if (!(PhysicsWorld is null))
+            {
                 PhysicsWorld.Step(dt);
+            }
         }
 
         /// <summary>

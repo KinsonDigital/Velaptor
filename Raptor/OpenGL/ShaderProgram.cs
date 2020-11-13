@@ -61,7 +61,9 @@ namespace Raptor.OpenGL
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)
+            {
                 return;
+            }
 
             // Delete unmanaged resources
             this.gl.DeleteProgram(ProgramId);
@@ -197,7 +199,7 @@ namespace Raptor.OpenGL
 
             foreach (var line in sourceCodeLines)
             {
-                var processedLine = ProcessLine(line is null ? string.Empty : line);
+                var processedLine = ProcessLine(line);
 
                 result.AppendLine(processedLine);
             }

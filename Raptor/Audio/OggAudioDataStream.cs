@@ -33,10 +33,14 @@ namespace Raptor.Audio
             set
             {
                 if (string.IsNullOrEmpty(value))
+                {
                     throw new StringNullOrEmptyException();
+                }
 
                 if (!File.Exists(value))
+                {
                     throw new FileNotFoundException($"The file '{value}' was not found or does not exist", value);
+                }
 
                 if (this.vorbisReader is null)
                 {
@@ -64,7 +68,9 @@ namespace Raptor.Audio
             get
             {
                 if (string.IsNullOrEmpty(this.fileName) || this.vorbisReader is null)
+                {
                     return default;
+                }
 
                 return Channels == 1 ? AudioFormat.Mono32Float : AudioFormat.StereoFloat32;
             }
@@ -77,7 +83,9 @@ namespace Raptor.Audio
         public int ReadSamples(float[] buffer, int offset, int count)
         {
             if (string.IsNullOrEmpty(Filename))
+            {
                 throw new StringNullOrEmptyException();
+            }
 
             return this.vorbisReader?.ReadSamples(buffer, offset, count) ?? 0;
         }
@@ -99,7 +107,9 @@ namespace Raptor.Audio
             if (!this.isDisposed)
             {
                 if (disposing)
+                {
                     this.vorbisReader?.Dispose();
+                }
 
                 this.isDisposed = true;
             }

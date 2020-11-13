@@ -63,11 +63,15 @@ namespace Raptor.Content
         public string GetContentPath(string name)
         {
             if (string.IsNullOrEmpty(name))
+            {
                 throw new StringNullOrEmptyException();
+            }
 
             // If the name ends with a '\', throw and exception
             if (name.EndsWith(Path.DirectorySeparatorChar))
+            {
                 throw new ArgumentException($"The '{name}' cannot end with folder.  It must end with a file name with or without the extension.");
+            }
 
             // If the name has an extension, remove it
             if (Path.HasExtension(name))
@@ -92,7 +96,9 @@ namespace Raptor.Content
                 .Where(f => Path.GetFileNameWithoutExtension(f).ToUpperInvariant() == fileNameNoExt).ToArray();
 
             if (files.Length <= 0)
+            {
                 throw new Exception($"The content item '{Path.GetFileNameWithoutExtension(filePath)}' does not exist.");
+            }
 
             if (files.Length > 1)
             {

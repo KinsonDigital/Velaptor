@@ -205,34 +205,28 @@ namespace Raptor
                 return string.Empty;
             }
 
-            var containsDirSeparators = fileOrDirPath.Contains(Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+            var onlyDirPath = Path.HasExtension(fileOrDirPath)
+                ? Path.GetDirectoryName(fileOrDirPath)
+                : fileOrDirPath;
 
-            if (containsDirSeparators)
+            if (string.IsNullOrEmpty(onlyDirPath))
             {
-                var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                    ? Path.GetDirectoryName(fileOrDirPath)
-                    : fileOrDirPath;
-
-                // If the directory path is just a root drive path
-                if (!string.IsNullOrEmpty(onlyDirPath) && onlyDirPath.IsDirectoryRootDrive())
-                {
-                    var sections = onlyDirPath.Split(':', StringSplitOptions.RemoveEmptyEntries);
-
-                    return sections[^1] == Path.DirectorySeparatorChar.ToString()
-                        ? onlyDirPath
-                        : sections[^1].TrimStart(Path.DirectorySeparatorChar);
-                }
-
-                var dirNames = string.IsNullOrEmpty(onlyDirPath)
-                    ? Array.Empty<string>()
-                    : onlyDirPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-
-                return dirNames.Length <= 0 ? string.Empty : dirNames[^1];
+                return string.Empty;
             }
-            else
+
+            // If the directory path is just a root drive path
+            if (onlyDirPath.IsDirectoryRootDrive())
             {
-                return fileOrDirPath;
+                var sections = onlyDirPath.Split(':', StringSplitOptions.RemoveEmptyEntries);
+
+                return sections[^1] == Path.DirectorySeparatorChar.ToString()
+                    ? onlyDirPath
+                    : sections[^1].TrimStart(Path.DirectorySeparatorChar);
             }
+
+            var dirNames = onlyDirPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+
+            return dirNames[^1];
         }
 
         /// <summary>

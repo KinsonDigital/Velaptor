@@ -32,10 +32,14 @@ namespace Raptor.Audio
         public SoundData<float> LoadData(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
+            {
                 throw new ArgumentException("The param must not be null or empty.", nameof(fileName));
+            }
 
             if (Path.GetExtension(fileName) != ".ogg")
+            {
                 throw new ArgumentException("The file name must have an ogg file extension.", nameof(fileName));
+            }
 
             var result = default(SoundData<float>);
 
@@ -87,7 +91,9 @@ namespace Raptor.Audio
             if (!this.isDisposed)
             {
                 if (disposing)
+                {
                     this.audioDataStream.Dispose();
+                }
 
                 this.isDisposed = true;
             }

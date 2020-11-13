@@ -5,6 +5,7 @@
 namespace Raptor.Desktop
 {
     using System.Numerics;
+    using Raptor.Content;
 
     /// <summary>
     /// Provides properties to hold the state of a window.
@@ -72,5 +73,10 @@ namespace Raptor.Desktop
         /// Gets or sets the type of border that the <see cref="IWindow"/> will have.
         /// </summary>
         BorderType TypeOfBorder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content loader for loading content.
+        /// </summary>
+        IContentLoader? ContentLoader { get; set; }
     }
 }

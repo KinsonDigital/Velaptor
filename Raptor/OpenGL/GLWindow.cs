@@ -2,17 +2,20 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
 namespace Raptor.OpenGL
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Runtime.InteropServices;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
+    using Raptor.Content;
     using Raptor.Desktop;
+    using Raptor.Factories;
     using Raptor.Input;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using GLWindowState = OpenTK.Windowing.Common.WindowState;
@@ -25,9 +28,19 @@ namespace Raptor.OpenGL
     [ExcludeFromCodeCoverage]
     internal sealed class GLWindow : IWindow
     {
-        private readonly InternalGLWindow appWindow;
-        private readonly DebugProc debugProc;
-        private readonly IGLInvoker gl;
+        private readonly Dictionary<string, CachedValue<string>> cachedStringProps = new Dictionary<string, CachedValue<string>>();
+        private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
+        private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new Dictionary<string, CachedValue<bool>>();
+        private readonly int cachedWindowWidth;
+        private readonly int cachedWindowHeight;
+        private GameWindowSettings? gameWinSettings;
+        private NativeWindowSettings? nativeWinSettings;
+        private CachedValue<StateOfWindow>? cachedWindowState;
+        private CachedValue<BorderType>? cachedTypeOfBorder;
+        private CachedValue<SysVector2>? cachedPosition;
+        private InternalGLWindow? appWindow;
+        private DebugProc? debugProc;
+        private IGLInvoker? gl;
         private bool isShuttingDown;
         private bool isDiposed;
 
@@ -39,13 +52,146 @@ namespace Raptor.OpenGL
         /// <param name="height">The height of the window.</param>
         public GLWindow(int width, int height)
         {
-            var gameWinSettings = new GameWindowSettings();
-            var nativeWinSettings = new NativeWindowSettings()
+            this.cachedWindowWidth = width;
+            this.cachedWindowHeight = height;
+            SetupPropertyCaches();
+        }
+
+        /// <inheritdoc/>
+        public string Title
+        {
+            get => this.cachedStringProps[nameof(Title)].GetValue();
+            set => this.cachedStringProps[nameof(Title)].SetValue(value);
+        }
+
+        /// <inheritdoc/>
+        public SysVector2 Position
+        {
+            get
             {
-                Size = new Vector2i(width, height),
+                if (this.cachedPosition is null)
+                {
+                    throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
+                }
+
+                return this.cachedPosition.GetValue();
+            }
+            set
+            {
+                if (this.cachedPosition is null)
+                {
+                    throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
+                }
+
+                this.cachedPosition.SetValue(value);
+            }
+        }
+
+        /// <inheritdoc/>
+        public int Width
+        {
+            get => this.cachedIntProps[nameof(Width)].GetValue();
+            set => this.cachedIntProps[nameof(Width)].SetValue(value);
+        }
+
+        /// <inheritdoc/>
+        public int Height
+        {
+            get => this.cachedIntProps[nameof(Height)].GetValue();
+            set => this.cachedIntProps[nameof(Height)].SetValue(value);
+        }
+
+        /// <inheritdoc/>
+        public bool AutoClearBuffer { get; set; } = true;
+
+        /// <inheritdoc/>
+        public bool MouseCursorVisible
+        {
+            get => this.cachedBoolProps[nameof(MouseCursorVisible)].GetValue();
+            set => this.cachedBoolProps[nameof(MouseCursorVisible)].SetValue(value);
+        }
+
+        /// <inheritdoc/>3
+        public StateOfWindow WindowState
+        {
+            get
+            {
+                if (this.cachedWindowState is null)
+                {
+                    throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
+                }
+
+                return this.cachedWindowState.GetValue();
+            }
+            set
+            {
+                if (this.cachedWindowState is null)
+                {
+                    throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
+                }
+
+                this.cachedWindowState.SetValue(value);
+            }
+        }
+
+        /// <inheritdoc/>
+        public Action? Init { get; set; }
+
+        /// <inheritdoc/>
+        public Action<FrameTime>? Update { get; set; }
+
+        /// <inheritdoc/>
+        public Action<FrameTime>? Draw { get; set; }
+
+        /// <inheritdoc/>
+        public Action? WinResize { get; set; }
+
+        /// <inheritdoc/>
+        public BorderType TypeOfBorder
+        {
+            get
+            {
+                if (this.cachedTypeOfBorder is null)
+                {
+                    throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
+                }
+
+                return this.cachedTypeOfBorder.GetValue();
+            }
+            set
+            {
+                if (this.cachedTypeOfBorder is null)
+                {
+                    throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
+                }
+
+                this.cachedTypeOfBorder.SetValue(value);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IContentLoader? ContentLoader { get; set; }
+
+        /// <inheritdoc/>
+        public int UpdateFrequency
+        {
+            get => this.cachedIntProps[nameof(UpdateFrequency)].GetValue();
+            set => this.cachedIntProps[nameof(UpdateFrequency)].SetValue(value);
+        }
+
+        /// <inheritdoc/>
+        public void Show()
+        {
+            this.gameWinSettings = new GameWindowSettings();
+            this.nativeWinSettings = new NativeWindowSettings()
+            {
+                Size = new Vector2i(this.cachedWindowWidth, this.cachedWindowHeight),
+                StartVisible = false,
             };
 
-            this.appWindow = new InternalGLWindow(gameWinSettings, nativeWinSettings);
+            this.appWindow = new InternalGLWindow(this.gameWinSettings, this.nativeWinSettings);
+
+            TurnOffCaching();
 
             /*NOTE:
              * The IoC container get instance must be called after the
@@ -64,7 +210,6 @@ namespace Raptor.OpenGL
             this.appWindow.MouseDown += GameWindow_MouseDown;
             this.appWindow.MouseUp += GameWindow_MouseUp;
             this.appWindow.MouseMove += GameWindow_MouseMove;
-            this.appWindow.UpdateFrequency = 60;
 
             this.debugProc = DebugCallback;
 
@@ -80,115 +225,21 @@ namespace Raptor.OpenGL
             this.gl.Enable(EnableCap.DebugOutputSynchronous);
             this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
 
-            Title = "Raptor Application";
+            ContentLoader = ContentLoaderFactory.CreateContentLoader();
+
+            this.appWindow.Run();
         }
 
         /// <inheritdoc/>
-        public string Title
+        public void Close()
         {
-            get => this.appWindow.Title;
-            set => this.appWindow.Title = value;
-        }
-
-        /// <inheritdoc/>
-        public SysVector2 Position
-        {
-            get => new SysVector2(this.appWindow.Location.X, this.appWindow.Location.Y);
-            set => this.appWindow.Location = new Vector2i((int)value.X, (int)value.Y);
-        }
-
-        /// <inheritdoc/>
-        public int Width
-        {
-            get => this.appWindow.Size.X;
-            set => this.appWindow.Size = new Vector2i(value, this.appWindow.Size.Y);
-        }
-
-        /// <inheritdoc/>
-        public int Height
-        {
-            get => this.appWindow.Size.Y;
-            set => this.appWindow.Size = new Vector2i(this.appWindow.Size.X, value);
-        }
-
-        /// <inheritdoc/>
-        public bool AutoClearBuffer { get; set; } = true;
-
-        /// <inheritdoc/>
-        public bool MouseCursorVisible
-        {
-            get => this.appWindow.CursorVisible;
-            set => this.appWindow.CursorVisible = value;
-        }
-
-        /// <inheritdoc/>3
-        public StateOfWindow WindowState
-        {
-            get => (StateOfWindow)this.appWindow.WindowState;
-            set => this.appWindow.WindowState = (GLWindowState)value;
-        }
-
-        /// <inheritdoc/>
-        public Action? Init { get; set; }
-
-        /// <inheritdoc/>
-        public Action<FrameTime>? Update { get; set; }
-
-        /// <inheritdoc/>
-        public Action<FrameTime>? Draw { get; set; }
-
-        /// <inheritdoc/>
-        public Action? WinResize { get; set; }
-
-        /// <inheritdoc/>
-        public BorderType TypeOfBorder
-        {
-            get => this.appWindow.WindowBorder switch
+            if (this.appWindow is null)
             {
-                WindowBorder.Resizable => BorderType.Resizable,
-                WindowBorder.Fixed => BorderType.Fixed,
-                WindowBorder.Hidden => BorderType.Hidden,
-                _ => throw new Exception($"The '{nameof(WindowBorder)}' is invalid."),
-            };
-            set
-            {
-                switch (value)
-                {
-                    case BorderType.Resizable:
-                        this.appWindow.WindowBorder = WindowBorder.Resizable;
-                        break;
-                    case BorderType.Fixed:
-                        this.appWindow.WindowBorder = WindowBorder.Fixed;
-                        break;
-                    case BorderType.Hidden:
-                        this.appWindow.WindowBorder = WindowBorder.Hidden;
-                        break;
-                }
+                throw new Exception($"There was an issue trying to close the '{nameof(IWindow)}'.");
             }
+
+            this.appWindow.Close();
         }
-
-        /// <inheritdoc/>
-        public int UpdateFrequency
-        {
-            get
-            {
-                if (this.appWindow.UpdateFrequency != this.appWindow.RenderFrequency)
-                    throw new Exception($"The update and render frequencies must match for this '{nameof(GLWindow)}' implementation.");
-
-                return (int)this.appWindow.UpdateFrequency;
-            }
-            set
-            {
-                this.appWindow.UpdateFrequency = value;
-                this.appWindow.RenderFrequency = value;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void Show() => this.appWindow.Run();
-
-        /// <inheritdoc/>
-        public void Close() => this.appWindow.Close();
 
         /// <inheritdoc/>
         public void Dispose()
@@ -286,22 +337,47 @@ namespace Raptor.OpenGL
         private void GameWindow_MouseMove(MouseMoveEventArgs e) => Mouse.SetPosition((int)e.X, (int)e.Y);
 
         /// <summary>
+        /// Turns off all of the caching for any props that are having their values cached.
+        /// </summary>
+        private void TurnOffCaching()
+        {
+            this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+            if (!(this.cachedWindowState is null))
+            {
+                this.cachedWindowState.IsCaching = false;
+            }
+
+            if (!(this.cachedTypeOfBorder is null))
+            {
+                this.cachedTypeOfBorder.IsCaching = false;
+            }
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <param name="disposing">True to release managed resources.</param>
         private void Dispose(bool disposing)
         {
             if (!this.isDiposed)
+            {
                 return;
+            }
 
             if (disposing)
             {
-                this.appWindow.Load -= GameWindow_Load;
-                this.appWindow.UpdateFrame -= GameWindow_UpdateFrame;
-                this.appWindow.RenderFrame -= GameWindow_RenderFrame;
-                this.appWindow.Resize -= GameWindow_Resize;
-                this.appWindow.Unload -= GameWindow_Unload;
-                this.appWindow.Dispose();
+                if (!(this.appWindow is null))
+                {
+                    this.appWindow.Load -= GameWindow_Load;
+                    this.appWindow.UpdateFrame -= GameWindow_UpdateFrame;
+                    this.appWindow.RenderFrame -= GameWindow_RenderFrame;
+                    this.appWindow.Resize -= GameWindow_Resize;
+                    this.appWindow.Unload -= GameWindow_Unload;
+                    this.appWindow.Dispose();
+                }
             }
 
             this.isDiposed = true;
@@ -319,7 +395,9 @@ namespace Raptor.OpenGL
         private void GameWindow_UpdateFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)
+            {
                 return;
+            }
 
             var frameTime = new FrameTime()
             {
@@ -336,7 +414,9 @@ namespace Raptor.OpenGL
         private void GameWindow_RenderFrame(FrameEventArgs deltaTime)
         {
             if (this.isShuttingDown)
+            {
                 return;
+            }
 
             var frameTime = new FrameTime()
             {
@@ -345,10 +425,20 @@ namespace Raptor.OpenGL
 
             if (AutoClearBuffer)
             {
+                if (this.gl is null)
+                {
+                    throw new Exception($"There was an issue rendering the '{nameof(IWindow)}'.");
+                }
+
                 this.gl.Clear(ClearBufferMask.ColorBufferBit);
             }
 
             Draw?.Invoke(frameTime);
+
+            if (this.appWindow is null)
+            {
+                throw new Exception($"There was an issue rendering the '{nameof(IWindow)}'.");
+            }
 
             this.appWindow.SwapBuffers();
         }
@@ -359,6 +449,11 @@ namespace Raptor.OpenGL
         /// <param name="currentSize">Resize event args.</param>
         private void GameWindow_Resize(ResizeEventArgs currentSize)
         {
+            if (this.gl is null)
+            {
+                throw new Exception($"There was an issue resizing the '{nameof(IWindow)}'.");
+            }
+
             // Update the view port so it is the same size as the window
             this.gl.Viewport(0, 0, currentSize.Width, currentSize.Height);
             WinResize?.Invoke();
@@ -369,6 +464,200 @@ namespace Raptor.OpenGL
         /// </summary>
         private void GameWindow_Unload() => this.isShuttingDown = true;
 
+        /// <summary>
+        /// Setup all of the caching for the properties that need caching.
+        /// </summary>
+        private void SetupPropertyCaches()
+        {
+            this.cachedStringProps.Add(
+                nameof(Title), // key
+                new CachedValue<string>( // value
+                    defaultValue: "Raptor Application",
+                    getterWhenNotCaching: () =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Title)}' property value.");
+                        }
+
+                        return this.appWindow.Title;
+                    },
+                    setterWhenNotCaching: (value) =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Title)}' property value.");
+                        }
+
+                        this.appWindow.Title = value;
+                    }));
+
+            this.cachedPosition = new CachedValue<SysVector2>(
+                defaultValue: SysVector2.Zero,
+                getterWhenNotCaching: () =>
+                {
+                    if (this.appWindow is null)
+                    {
+                        throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
+                    }
+
+                    return new SysVector2(this.appWindow.Location.X, this.appWindow.Location.Y);
+                },
+                setterWhenNotCaching: (value) =>
+                {
+                    if (this.appWindow is null)
+                    {
+                        throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
+                    }
+
+                    this.appWindow.Location = new Vector2i((int)value.X, (int)value.Y);
+                });
+
+            this.cachedIntProps.Add(
+                nameof(UpdateFrequency), // key
+                new CachedValue<int>( // value
+                    defaultValue: 60,
+                    getterWhenNotCaching: () =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(UpdateFrequency)}' property value.");
+                        }
+
+                        return (int)this.appWindow.UpdateFrequency;
+                    },
+                    setterWhenNotCaching: (value) =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(UpdateFrequency)}' property value.");
+                        }
+
+                        this.appWindow.UpdateFrequency = value;
+                    }));
+
+            this.cachedIntProps.Add(
+                nameof(Width), // key
+                new CachedValue<int>( // value
+                    defaultValue: this.cachedWindowWidth,
+                    getterWhenNotCaching: () =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Width)}' property value.");
+                        }
+
+                        return this.appWindow.Size.X;
+                    },
+                    setterWhenNotCaching: (value) =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Width)}' property value.");
+                        }
+
+                        this.appWindow.Size = new Vector2i(value, this.appWindow.Size.Y);
+                    }));
+
+            this.cachedIntProps.Add(
+                nameof(Height), // key
+                new CachedValue<int>( // value
+                    defaultValue: this.cachedWindowHeight,
+                    getterWhenNotCaching: () =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Height)}' property value.");
+                        }
+
+                        return this.appWindow.Size.Y;
+                    },
+                    setterWhenNotCaching: (value) =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Height)}' property value.");
+                        }
+
+                        this.appWindow.Size = new Vector2i(this.appWindow.Size.X, value);
+                    }));
+
+            this.cachedBoolProps.Add(
+                nameof(MouseCursorVisible), // key
+                new CachedValue<bool>( // value
+                    defaultValue: true,
+                    getterWhenNotCaching: () =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(MouseCursorVisible)}' property value.");
+                        }
+
+                        return this.appWindow.CursorVisible;
+                    },
+                    setterWhenNotCaching: (value) =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(MouseCursorVisible)}' property value.");
+                        }
+
+                        this.appWindow.CursorVisible = value;
+                    }));
+
+            this.cachedWindowState = new CachedValue<StateOfWindow>(
+                defaultValue: StateOfWindow.Normal,
+                getterWhenNotCaching: () =>
+                {
+                    if (this.appWindow is null)
+                    {
+                        throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
+                    }
+
+                    return (StateOfWindow)this.appWindow.WindowState;
+                },
+                setterWhenNotCaching: (value) =>
+                {
+                    if (this.appWindow is null)
+                    {
+                        throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
+                    }
+
+                    this.appWindow.WindowState = (GLWindowState)value;
+                });
+
+            this.cachedTypeOfBorder = new CachedValue<BorderType>(
+                defaultValue: BorderType.Resizable,
+                getterWhenNotCaching: () =>
+                {
+                    if (this.appWindow is null)
+                    {
+                        throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
+                    }
+
+                    return (BorderType)this.appWindow.WindowBorder;
+                },
+                setterWhenNotCaching: (value) =>
+                {
+                    if (this.appWindow is null)
+                    {
+                        throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
+                    }
+
+                    this.appWindow.WindowBorder = (WindowBorder)value;
+                });
+        }
+
+        /// <summary>
+        /// Invoked when an OpenGL error occurs.
+        /// </summary>
+        /// <param name="src">The source of the debug message.</param>
+        /// <param name="type">The type of debug message.</param>
+        /// <param name="id">The id of the debug message.</param>
+        /// <param name="severity">The severity of debug message.</param>
+        /// <param name="length">The length of this debug message.</param>
+        /// <param name="message">A pointer to a null-terminated ASCII C string, representing the content of this debug message.</param>
+        /// <param name="userParam">A pointer to a user-specified parameter.</param>
         private void DebugCallback(DebugSource src, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
         {
             var errorMessage = Marshal.PtrToStringAnsi(message);

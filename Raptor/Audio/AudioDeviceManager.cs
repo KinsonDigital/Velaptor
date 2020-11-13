@@ -53,7 +53,9 @@ namespace Raptor.Audio
             get
             {
                 if (!IsInitialized)
+                {
                     throw new AudioDeviceManagerNotInitializedException(IsDisposedExceptionMessage);
+                }
 
                 var result = Array.Empty<string>();
 
@@ -71,31 +73,41 @@ namespace Raptor.Audio
         public void InitDevice(string? name = null)
         {
             var nameResult = name != null ? $"{DeviceNamePrefix}{name}" : name;
-            bool? setCurrentResult = null;
+            var setCurrentResult = false;
 
             if (!(alInvoker is null))
             {
                 if (device.Handle == IntPtr.Zero)
+                {
                     device = alInvoker.OpenDevice(nameResult);
+                }
 
                 if (attributes is null)
+                {
                     attributes = new ALContextAttributes();
+                }
 
                 if (context.Handle == IntPtr.Zero)
+                {
                     context = alInvoker.CreateContext(device, attributes);
+                }
 
                 setCurrentResult = alInvoker.MakeContextCurrent(context);
             }
 
-            if (setCurrentResult == null || !(bool)setCurrentResult)
+            if (!setCurrentResult)
+            {
                 throw new SettingContextCurrentException();
+            }
         }
 
         /// <inheritdoc/>
         public (int srcId, int bufferId) InitSound()
         {
             if (!IsInitialized)
+            {
                 throw new AudioDeviceManagerNotInitializedException(IsDisposedExceptionMessage);
+            }
 
             SoundSource soundSrc;
             soundSrc.SampleRate = 0;
@@ -119,10 +131,14 @@ namespace Raptor.Audio
         public void ChangeDevice(string name)
         {
             if (!IsInitialized)
+            {
                 throw new AudioDeviceManagerNotInitializedException(IsDisposedExceptionMessage);
+            }
 
             if (!DeviceNames.Contains(name))
+            {
                 throw new AudioDeviceDoesNotExistException("The audio device does not exist.", name);
+            }
 
             var availableDevices = DeviceNames;
 
@@ -157,10 +173,14 @@ namespace Raptor.Audio
         public void UpdateSoundSource(SoundSource soundSrc)
         {
             if (!IsInitialized)
+            {
                 throw new AudioDeviceManagerNotInitializedException(IsDisposedExceptionMessage);
+            }
 
             if (!SoundSources.Keys.Contains(soundSrc.SourceId))
+            {
                 throw new SoundSourceDoesNotExistException($"The sound source with the source id '{soundSrc.SourceId}' does not exist.");
+            }
 
             SoundSources[soundSrc.SourceId] = soundSrc;
         }
@@ -189,10 +209,14 @@ namespace Raptor.Audio
         internal static AudioDeviceManager GetInstance(IALInvoker alInvoker)
         {
             if (alInvoker is null)
+            {
                 throw new ArgumentNullException(nameof(alInvoker), "Parameter must not be null.");
+            }
 
             if (instance.IsInitialized)
+            {
                 return instance;
+            }
 
             if (AudioDeviceManager.alInvoker is null)
             {
@@ -225,7 +249,9 @@ namespace Raptor.Audio
             if (device != ALDevice.Null)
             {
                 if (!(alInvoker is null))
+                {
                     alInvoker.CloseDevice(device);
+                }
             }
 
             device = ALDevice.Null;
@@ -248,15 +274,15 @@ namespace Raptor.Audio
             // Guarantee that the cache is clear
             ContinuePlaybackCache.Clear();
 
-            if (alInvoker is null)
-                return;
-
             foreach (var soundSrcKVP in SoundSources)
             {
-                var sourceState = alInvoker.GetSourceState(soundSrcKVP.Value.SourceId);
+                var sourceState = alInvoker?.GetSourceState(soundSrcKVP.Value.SourceId);
 
                 if (sourceState != ALSourceState.Playing && sourceState != ALSourceState.Paused)
+                {
                     continue;
+                }
+
                 SoundState soundState;
                 soundState.SourceId = soundSrcKVP.Value.SourceId;
                 soundState.PlaybackState = default;
@@ -295,10 +321,14 @@ namespace Raptor.Audio
         /// <param name="srcId">The OpenAL source id.</param>
         /// <param name="seconds">The position in seconds.</param>
         /// <param name="totalSeconds">The total seconds of the sound.</param>
+        /// <remarks>
+        ///     If the <paramref name="seconds"/> value is negative,
+        ///     it will be treated as positive.
+        /// </remarks>
         private static void SetTimePosition(int srcId, float seconds, float totalSeconds)
         {
             // Prevent negative number
-            seconds = seconds < 0f ? 0.0f : seconds;
+            seconds = Math.Abs(seconds);
 
             seconds = seconds > totalSeconds ? totalSeconds : seconds;
 

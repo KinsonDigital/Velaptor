@@ -167,8 +167,9 @@ namespace RaptorTests
         }
 
         [Theory]
-        [InlineData("", "")]
         [InlineData(null, "")]
+        [InlineData("", "")]
+        [InlineData(".txt", "")]
         [InlineData("test-dir", "test-dir")]
         [InlineData(@"C:\", @"C:\")]
         [InlineData(@"C:\temp", @"temp")]
