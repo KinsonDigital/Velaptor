@@ -32,7 +32,6 @@ namespace Raptor.Desktop
             this.window.Update = OnUpdate;
             this.window.Draw = OnDraw;
             this.window.WinResize = OnResize;
-            this.window.UpdateFrequency = 60;
         }
 
         /// <inheritdoc/>
@@ -98,10 +97,12 @@ namespace Raptor.Desktop
             set => this.window.TypeOfBorder = value;
         }
 
-        /// <summary>
-        /// Gets or sets the content loader for loading content.
-        /// </summary>
-        public IContentLoader? ContentLoader { get; protected set; }
+        /// <inheritdoc/>
+        public IContentLoader? ContentLoader
+        {
+            get => this.window.ContentLoader;
+            set => this.window.ContentLoader = value;
+        }
 
         /// <summary>
         /// Shows the window.

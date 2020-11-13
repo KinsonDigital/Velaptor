@@ -58,7 +58,7 @@ namespace Raptor.VelcroPhysicsImp
         /// <summary>
         /// Gets the list of <see cref="DeferredActionsCollection"/> that will execute after the body has been added to a <see cref="World"/>.
         /// </summary>
-        public DeferredActionsCollection AfterAddedToWorldActions { get; } = new DeferredActionsCollection();
+        //public DeferredActionsCollection AfterAddedToWorldActions { get; } = new DeferredActionsCollection();
 
         /// <summary>
         /// Gets the X vertices's of the body's shape.
@@ -154,11 +154,11 @@ namespace Raptor.VelcroPhysicsImp
             {
                 if (PolygonBody == null)
                 {
-                    AfterAddedToWorldActions.Add(() =>
-                    {
-                        if (!(PolygonBody is null))
-                            PolygonBody.Rotation = value.ToRadians();
-                    });
+                    //AfterAddedToWorldActions.Add(() =>
+                    //{
+                    //    if (!(PolygonBody is null))
+                    //        PolygonBody.Rotation = value.ToRadians();
+                    //});
                 }
                 else
                 {
@@ -209,11 +209,11 @@ namespace Raptor.VelcroPhysicsImp
             {
                 if (PolygonBody == null)
                 {
-                    AfterAddedToWorldActions.Add(() =>
-                    {
-                        if (!(PolygonBody is null))
-                            PolygonBody.Restitution = value;
-                    });
+                    //AfterAddedToWorldActions.Add(() =>
+                    //{
+                    //    if (!(PolygonBody is null))
+                    //        PolygonBody.Restitution = value;
+                    //});
                 }
                 else
                 {
@@ -264,11 +264,11 @@ namespace Raptor.VelcroPhysicsImp
             {
                 if (PolygonBody == null)
                 {
-                    AfterAddedToWorldActions.Add(() =>
-                    {
-                        if (!(PolygonBody is null))
-                            PolygonBody.LinearDamping = value.ToPhysicsUnit();
-                    });
+                    //AfterAddedToWorldActions.Add(() =>
+                    //{
+                    //    if (!(PolygonBody is null))
+                    //        PolygonBody.LinearDamping = value.ToPhysicsUnit();
+                    //});
                 }
                 else
                 {
@@ -302,11 +302,11 @@ namespace Raptor.VelcroPhysicsImp
             {
                 if (PolygonBody == null)
                 {
-                    AfterAddedToWorldActions.Add(() =>
-                    {
-                        if (!(PolygonBody is null))
-                            PolygonBody.AngularDamping = value.ToPhysicsUnit();
-                    });
+                    //AfterAddedToWorldActions.Add(() =>
+                    //{
+                    //    if (!(PolygonBody is null))
+                    //        PolygonBody.AngularDamping = value.ToPhysicsUnit();
+                    //});
                 }
                 else
                 {

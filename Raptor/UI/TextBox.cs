@@ -20,7 +20,6 @@ namespace Raptor.UI
         private const int RIGHTMARGIN = 5;
         private readonly RenderText? textRuler; // Used for measuring text with and height
         private readonly RenderText? visibleText;
-        private readonly DeferredActionsCollection deferredActions = new DeferredActionsCollection();
         private int visibleTextCharPosition;
         private int charPosDelta;
         private int characterPosition;
@@ -93,7 +92,7 @@ namespace Raptor.UI
                 // not best for performance as well as taking extra memory.
                 // _visibleText = contentLoader.LoadText(FontName);
                 // _textRuler = contentLoader.LoadText(FontName);
-            this.deferredActions.ExecuteAll();
+            //this.deferredActions.ExecuteAll();
         }
 
         /// <summary>
