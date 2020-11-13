@@ -1,5 +1,15 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.17.0</span>
+
+### **Improvements** 🌟
+
+1. Improved how the `Window` class shows the window
+   * Previously, the window was displayed on window creation before the `Show()` method was invoked.  Now the window will only be displayed when invoking the `Show()` method.  This gives more control over how the window is displayed during window creation and also enables better management of when a window is shown on another thread other than the **main thread**.
+   * NOTE: Simply invoking the `Show()` method on a worker thread will run the window on that thread.
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.16.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
 
 ### **Bug Fix** 🐞
