@@ -88,12 +88,12 @@ namespace Raptor.UI
                 throw new ArgumentNullException(nameof(contentLoader), "The content loader must not be null.");
             }
 
-                // TODO: Currently for every single instance of this class TextBox, there will be 2 RenderText objects created.
-                // One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
-                // This is not ideal.  Try to figure out a way to measure text without the use of another RenderText object.  This is
-                // not best for performance as well as taking extra memory.
-                // _visibleText = contentLoader.LoadText(FontName);
-                // _textRuler = contentLoader.LoadText(FontName);
+            // TODO: Currently for every single instance of this class TextBox, there will be 2 RenderText objects created.
+            // One of them is for the TextBox itself and the other is for the purpose of measuring the text inside of the box.
+            // This is not ideal.  Try to figure out a way to measure text without the use of another RenderText object.  This is
+            // not best for performance as well as taking extra memory.
+            // _visibleText = contentLoader.LoadText(FontName);
+            // _textRuler = contentLoader.LoadText(FontName);
             //this.deferredActions.ExecuteAll();
         }
 

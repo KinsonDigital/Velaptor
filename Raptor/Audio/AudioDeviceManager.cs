@@ -1,4 +1,4 @@
-// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
+﻿// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -321,6 +321,10 @@ namespace Raptor.Audio
         /// <param name="srcId">The OpenAL source id.</param>
         /// <param name="seconds">The position in seconds.</param>
         /// <param name="totalSeconds">The total seconds of the sound.</param>
+        /// <remarks>
+        ///     If the <paramref name="seconds"/> value is negative,
+        ///     it will be treated as positive.
+        /// </remarks>
         private static void SetTimePosition(int srcId, float seconds, float totalSeconds)
         {
             // Prevent negative number
