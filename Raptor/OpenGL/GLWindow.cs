@@ -191,7 +191,7 @@ namespace Raptor.OpenGL
 
             this.appWindow = new InternalGLWindow(this.gameWinSettings, this.nativeWinSettings);
 
-            TurnOffCaching();
+            TurnOffPropertyCaching();
 
             /*NOTE:
              * The IoC container get instance must be called after the
@@ -226,6 +226,10 @@ namespace Raptor.OpenGL
             this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
 
             ContentLoader = ContentLoaderFactory.CreateContentLoader();
+
+            // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
+            // that means OpenGL has been initialized by OpenTK itself.
+            IGLInvoker.SetOpenGLAsInitialized();
 
             this.appWindow.Run();
         }
@@ -339,7 +343,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Turns off all of the caching for any props that are having their values cached.
         /// </summary>
-        private void TurnOffCaching()
+        private void TurnOffPropertyCaching()
         {
             this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
             this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
