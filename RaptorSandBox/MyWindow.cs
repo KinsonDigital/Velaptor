@@ -1,4 +1,4 @@
-using Raptor;
+﻿using Raptor;
 using Raptor.Audio;
 using Raptor.Content;
 using Raptor.Desktop;
@@ -13,6 +13,7 @@ namespace RaptorSandBox
     {
         private ITexture? linkTexture;
         private ITexture? dungeonTexture;
+        private ITexture? otherTexture;
         private readonly AtlasRegionRectangle[] atlasData;
         private ISpriteBatch? spriteBatch;
         private KeyboardState currentKeyboardState;
@@ -24,6 +25,7 @@ namespace RaptorSandBox
         private ISound? quietPlaceMusic;
         private float timeElapsed;
         private int linkTexturePosX;
+        private bool isDisposed;
 
         public MyWindow(IWindow window)
             : base(window)
@@ -62,9 +64,10 @@ namespace RaptorSandBox
 
             if (this.currentKeyboardState.IsKeyUp(KeyCode.Space) && this.previousKeyboardState.IsKeyDown(KeyCode.Space))
             {
-                this.WindowState = StateOfWindow.Minimized;
+                //this.WindowState = StateOfWindow.Minimized;
                 //var headPhones = AudioDevice.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
                 //AudioDevice.ChangeDevice(headPhones);
+                this.otherTexture = ContentLoader.Load<ITexture>("link.png");
             }
 
             if (this.currentKeyboardState.IsKeyUp(KeyCode.P) && this.previousKeyboardState.IsKeyDown(KeyCode.P))
@@ -101,12 +104,34 @@ namespace RaptorSandBox
             this.spriteBatch?.Render(this.dungeonTexture, 0, 0);
             this.spriteBatch?.Render(this.linkTexture, this.linkTexturePosX, 400);
 
+            if (this.otherTexture != null)
+            {
+                this.spriteBatch?.Render(this.otherTexture, 500, 100);
+            }
+
             this.spriteBatch?.EndBatch();
 
             base.OnDraw(frameTime);
         }
 
-
         public override void OnResize() => base.OnResize();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!this.isDisposed)
+            {
+                if (disposing)
+                {
+                    this.linkTexture?.Dispose();
+                    this.dungeonTexture?.Dispose();
+                    this.spriteBatch?.Dispose();
+                    this.quietPlaceMusic?.Dispose();
+                }
+
+                this.isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }
