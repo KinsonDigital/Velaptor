@@ -77,66 +77,6 @@ namespace RaptorTests.Graphics
                 var buffer = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, null);
             }, $"The '{nameof(IGPUBuffer)}' must not be null. (Parameter 'gpuBuffer')");
         }
-
-        [Fact]
-        public void Ctor_WhenInvoked_SetsUpShaderProgram()
-        {
-            // Act
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
-
-            // Assert
-            this.mockShader.Verify(m => m.UseProgram(), Times.Once());
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoked_EnablesBlending()
-        {
-            // Act
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
-
-            // Assert
-            this.mockGL.Verify(m => m.Enable(EnableCap.Blend), Times.Once());
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoked_SetsUpBlending()
-        {
-            // Act
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
-
-            // Assert
-            this.mockGL.Verify(m => m.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha), Times.Once());
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoked_SetsUpClearColor()
-        {
-            // Act
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
-
-            // Assert
-            this.mockGL.Verify(m => m.ClearColor(0.2f, 0.3f, 0.3f, 1.0f), Times.Once());
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoked_SetsTextureUnitToSlot0()
-        {
-            // Act
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
-
-            // Assert
-            this.mockGL.Verify(m => m.ActiveTexture(TextureUnit.Texture0), Times.Once());
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoked_GetTransformLocation()
-        {
-            // Act
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
-
-            // Assert
-            this.mockGL.Verify(m => m.GetUniformLocation(It.IsAny<uint>(), "uTransform"), Times.Once());
-        }
         #endregion
 
         #region Prop Tests
@@ -196,6 +136,84 @@ namespace RaptorTests.Graphics
         #endregion
 
         #region Method Tests
+        [Fact]
+        public void Init_WhenInvoked_SetsUpShaderProgram()
+        {
+            // Arrange
+            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            // Act
+            batch.Init();
+
+            // Assert
+            this.mockShader.Verify(m => m.UseProgram(), Times.Once());
+        }
+
+        [Fact]
+        public void Init_WhenInvoked_EnablesBlending()
+        {
+            // Arrange
+            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            // Act
+            batch.Init();
+
+            // Assert
+            this.mockGL.Verify(m => m.Enable(EnableCap.Blend), Times.Once());
+        }
+
+        [Fact]
+        public void Init_WhenInvoked_SetsUpBlending()
+        {
+            // Arrange
+            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            // Act
+            batch.Init();
+
+            // Assert
+            this.mockGL.Verify(m => m.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha), Times.Once());
+        }
+
+        [Fact]
+        public void Init_WhenInvoked_SetsUpClearColor()
+        {
+            // Arrange
+            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            // Act
+            batch.Init();
+
+            // Assert
+            this.mockGL.Verify(m => m.ClearColor(0.2f, 0.3f, 0.3f, 1.0f), Times.Once());
+        }
+
+        [Fact]
+        public void Init_WhenInvoked_SetsTextureUnitToSlot0()
+        {
+            // Arrange
+            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            // Act
+            batch.Init();
+
+            // Assert
+            this.mockGL.Verify(m => m.ActiveTexture(TextureUnit.Texture0), Times.Once());
+        }
+
+        [Fact]
+        public void Init_WhenInvoked_GetTransformLocation()
+        {
+            // Arrange
+            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            // Act
+            batch.Init();
+
+            // Assert
+            this.mockGL.Verify(m => m.GetUniformLocation(It.IsAny<uint>(), "uTransform"), Times.Once());
+        }
+
         [Fact]
         public void Clear_WhenInvoked_ClearsBuffer()
         {

@@ -58,7 +58,8 @@ namespace Raptor.Graphics
             this.gl = gl;
             this.shader = shader;
             this.gpuBuffer = gpuBuffer;
-            Init();
+
+            IGLInvoker.OpenGLInitialized += Gl_OpenGLInitialized;
         }
 
         /// <inheritdoc/>
@@ -98,6 +99,30 @@ namespace Raptor.Graphics
 
                 this.gl.Viewport(data[0], data[1], data[2], value);
             }
+        }
+
+        /// <inheritdoc/>
+        public void Init()
+        {
+            this.shader.Init();
+            this.gpuBuffer.Init();
+
+            this.batchItems.Clear();
+
+            for (uint i = 0; i < BatchSize; i++)
+            {
+                this.batchItems.Add(i, SpriteBatchItem.Empty);
+            }
+
+            this.gl.Enable(EnableCap.Blend);
+            this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            this.gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f); // TODO: Allow changing of this
+
+            this.gl.ActiveTexture(TextureUnit.Texture0);
+
+            this.shader.UseProgram();
+
+            this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
         }
 
         /// <inheritdoc/>
@@ -212,6 +237,7 @@ namespace Raptor.Graphics
 
             if (disposing)
             {
+                IGLInvoker.OpenGLInitialized -= Gl_OpenGLInitialized;
                 this.batchItems.Clear();
                 this.shader.Dispose();
                 this.gpuBuffer.Dispose();
@@ -221,26 +247,9 @@ namespace Raptor.Graphics
         }
 
         /// <summary>
-        /// Initializes the sprite batch.
+        /// Invoked when OpenGL has been initialized.
         /// </summary>
-        private void Init()
-        {
-            this.batchItems.Clear();
-            for (uint i = 0; i < BatchSize; i++)
-            {
-                this.batchItems.Add(i, SpriteBatchItem.Empty);
-            }
-
-            this.gl.Enable(EnableCap.Blend);
-            this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            this.gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f); // TODO: Allow changing of this
-
-            this.gl.ActiveTexture(TextureUnit.Texture0);
-
-            this.shader.UseProgram();
-
-            this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
-        }
+        private void Gl_OpenGLInitialized(object? sender, EventArgs e) => Init();
 
         /// <summary>
         /// Renders the current batch of textures.

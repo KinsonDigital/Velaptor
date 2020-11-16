@@ -32,6 +32,11 @@ namespace Raptor.OpenGL
         uint BatchSize { get; set; }
 
         /// <summary>
+        /// Initializes the shader program.
+        /// </summary>
+        void Init();
+
+        /// <summary>
         /// Sets the active shader program to use on the GPU.
         /// </summary>
         void UseProgram();

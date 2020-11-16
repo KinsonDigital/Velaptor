@@ -19,6 +19,11 @@ namespace Raptor.OpenGL
         uint TotalQuads { get; set; }
 
         /// <summary>
+        /// Initializes the GPU buffer.
+        /// </summary>
+        void Init();
+
+        /// <summary>
         /// Updates the given quad using the given information for a particular quad item in the GPU.
         /// </summary>
         /// <param name="quadID">The ID of the quad to update.</param>

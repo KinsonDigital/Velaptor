@@ -270,9 +270,9 @@ namespace Raptor.Audio
                 UnloadSoundData();
 
                 this.alInvoker.ErrorCallback -= ErrorCallback;
-            }
 
-            this.isDisposed = true;
+                this.isDisposed = true;
+            }
         }
 
         /// <summary>

@@ -1,5 +1,21 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.18.0</span>
+
+### **New** 🎉
+
+1. Added a new method to the `Window` class named `ShowAsync()` to add the ability to run a **Raptor Window** on another thread.
+   * Currently `Show()` blocks the thread that it was invoked on due to the `Show()` method not returning until the window has been closed.  This is not ideal due to how long the window needs to live.  Using `ShowAsync()` will allow the use of the window while still allowing execution after the invocation of the method.
+     * Use Case: Running a **Raptor Window** from a GUI application.
+   * Any implementation of the `Window` class will get this functionality
+
+### **Bug Fixes** 🐞
+
+1. Fixed an issue with the abstract `Window` class not being disposed of properly when closing the window
+2. Fixed an issue with the `Sound` class not being disposed of properly when calling dispose explicitly or implicitly
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.17.0</span>
 
 ### **Improvements** 🌟

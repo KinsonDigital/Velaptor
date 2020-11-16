@@ -19,8 +19,6 @@ namespace RaptorTests.OpenGL
     {
         private readonly Mock<IEmbeddedResourceLoaderService> mockLoader;
         private readonly Mock<IGLInvoker> mockGL;
-
-        // TODO: This might have to be used somewhere else to make it work
         private readonly string vertextShaderFileName = $@"shader.vert";
         private readonly string fragShaderFileName = $@"shader.frag";
         private readonly uint vertextShaderID = 1234;
@@ -60,28 +58,30 @@ namespace RaptorTests.OpenGL
             this.mockGL.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
         }
 
-        #region Constructor Tests
+        #region Method Tests
         [Fact]
-        public void Ctor_WhenInvoked_LoadsShaderSourceCode()
+        public void Init_WhenInvoked_LoadsShaderSourceCode()
         {
             // Arrange
             this.mockLoader.Setup(m => m.LoadResource(It.IsAny<string>())).Returns("line-1");
+            var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
 
             // Act
-            var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+            program.Init();
 
             // Assert
             this.mockLoader.Verify(m => m.LoadResource(It.IsAny<string>()), Times.Exactly(2));
         }
 
         [Fact]
-        public void Ctor_WhenInvoked_SuccessfullyCreatesVertexShader()
+        public void Init_WhenInvoked_SuccessfullyCreatesVertexShader()
         {
             // Arrange
             var expected = "layout(location = 3) in float aTransformIndex;\r\n\r\nuniform mat4 uTransform[10];//MODIFIED_DURING_COMPILE_TIME\r\n";
+            var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
 
             // Act
-            var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+            program.Init();
 
             // Assert
             this.mockGL.Verify(m => m.CreateShader(ShaderType.VertexShader), Times.Once());
@@ -90,13 +90,14 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public void Ctor_WhenInvoked_SuccessfullyCreatesFragmentShader()
+        public void Init_WhenInvoked_SuccessfullyCreatesFragmentShader()
         {
             // Arrange
             var expected = "in vec2 v_TexCoord;\r\n\r\nin vec4 v_TintClr;\r\n";
+            var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
 
             // Act
-            var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+            program.Init();
 
             // Assert
             this.mockGL.Verify(m => m.CreateShader(ShaderType.FragmentShader), Times.Once());
@@ -105,10 +106,13 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public void Ctor_WhenInvoked_SuccessfullyCreatesProgram()
+        public void Init_WhenInvoked_SuccessfullyCreatesProgram()
         {
-            // Act
+            // Arrange
             var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+
+            // Act
+            program.Init();
 
             // Assert
             this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
@@ -118,10 +122,13 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public void Ctor_WhenInvoked_DestroysVertexAndFragmentShader()
+        public void Init_WhenInvoked_DestroysVertexAndFragmentShader()
         {
-            // Act
+            // Arrange
             var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+
+            // Act
+            program.Init();
 
             // Assert
             this.mockGL.Verify(m => m.DetachShader(this.shaderProgramID, this.vertextShaderID), Times.Once());
@@ -131,44 +138,45 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public void Ctor_WithShaderCompileIssue_ThrowsException()
+        public void Init_WithShaderCompileIssue_ThrowsException()
         {
             // Arrange
             var statusCode = 0;
             this.mockGL.Setup(m => m.GetShader(this.vertextShaderID, ShaderParameter.CompileStatus, out statusCode));
             this.mockGL.Setup(m => m.GetShaderInfoLog(this.vertextShaderID)).Returns("Vertex Shader Compile Error");
             this.mockGL.Setup(m => m.ShaderCompileSuccess(this.vertextShaderID)).Returns(false);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+                program.Init();
             }, $"Error occurred while compiling shader with ID '{this.vertextShaderID}'\nVertex Shader Compile Error");
         }
 
         [Fact]
-        public void Ctor_WithProgramLinkingIssue_ThrowsException()
+        public void Init_WithProgramLinkingIssue_ThrowsException()
         {
             // Arrange
             var statusCode = 0;
             this.mockGL.Setup(m => m.GetProgram(this.shaderProgramID, GetProgramParameterName.LinkStatus, out statusCode));
             this.mockGL.Setup(m => m.GetProgramInfoLog(this.shaderProgramID)).Returns("Program Linking Error");
             this.mockGL.Setup(m => m.LinkProgramSuccess(this.shaderProgramID)).Returns(false);
+            var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
             {
-                var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+                program.Init();
             }, $"Error occurred while linking program with ID '{this.shaderProgramID}'\nProgram Linking Error");
         }
-        #endregion
 
-        #region Method Tests
         [Fact]
         public void UseProgram_WhenInvoked_SetsProgramForUse()
         {
             // Arrange
             var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+            program.Init();
 
             // Act
             program.UseProgram();
@@ -182,6 +190,7 @@ namespace RaptorTests.OpenGL
         {
             // Arrange
             var program = new ShaderProgram(this.mockGL.Object, this.mockLoader.Object);
+            program.Init();
 
             // Act
             program.Dispose();
