@@ -46,7 +46,7 @@ namespace Raptor
         /// </summary>
         private static void SetupContainer()
         {
-            SetupOpenTK();
+            SetupOpenGL();
 
             SetupServices();
 
@@ -58,28 +58,22 @@ namespace Raptor
         /// <summary>
         /// Setup container registration related to OpenTK.
         /// </summary>
-        private static void SetupOpenTK()
+        private static void SetupOpenGL()
         {
-            IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
-            IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.File);
             IoCContainer.Register(() => FileSystem.Directory);
+            IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
+            IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IALInvoker, ALInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
 
             IoCContainer.Register<GLFWMonitors>();
 
-            IoCContainer.Register<IGPUBuffer>(() =>
-            {
-                return new GPUBuffer<VertexData>(IoCContainer.GetInstance<IGLInvoker>());
-            }, true);
+            IoCContainer.Register<IGPUBuffer, GPUBuffer<VertexData>>(Lifestyle.Singleton); // Suppressed Disposal
 
-            IoCContainer.Register<IShaderProgram, ShaderProgram>(true);
+            IoCContainer.Register<IShaderProgram, ShaderProgram>(Lifestyle.Singleton); // Suppressed Disposal
 
-            IoCContainer.Register<ISpriteBatch>(() =>
-            {
-                return new SpriteBatch(IoCContainer.GetInstance<IGLInvoker>(), IoCContainer.GetInstance<IShaderProgram>(), IoCContainer.GetInstance<IGPUBuffer>());
-            }, true);
+            IoCContainer.Register<ISpriteBatch, SpriteBatch>(Lifestyle.Singleton); // Suppressed Disposal
 
             SetupAudio();
         }
@@ -110,7 +104,7 @@ namespace Raptor
         private static void SetupServices()
         {
             IoCContainer.Register<IImageFileService, ImageFileService>();
-            IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>();
+            IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>();
         }
 
@@ -119,33 +113,28 @@ namespace Raptor
         /// </summary>
         private static void SetupContent()
         {
-            IoCContainer.Register<ILoader<ITexture>>(() =>
+            IoCContainer.RegisterConditional<IContentSource, GraphicsContentSource>(context =>
             {
-                return new TextureLoader(
-                    IoCContainer.GetInstance<IGLInvoker>(),
-                    IoCContainer.GetInstance<IImageFileService>(),
-                    new GraphicsContentSource(IoCContainer.GetInstance<IDirectory>()));
+                return context.Consumer.ImplementationType == typeof(TextureLoader);
             });
 
-            IoCContainer.Register<IContentLoader>(() =>
+            IoCContainer.RegisterConditional<IContentSource, SoundContentSource>(context =>
             {
-                return new ContentLoader(Container.GetInstance<ILoader<ITexture>>(), Container.GetInstance<ILoader<ISound>>());
+                return context.Consumer.ImplementationType == typeof(SoundLoader);
             });
 
-            IoCContainer.Register<ILoader<ISound>>(() =>
+            IoCContainer.RegisterConditional<IContentSource, AtlasContentSource>(context =>
             {
-                return new SoundLoader(
-                    IoCContainer.GetInstance<IALInvoker>(),
-                    AudioDeviceManager.GetInstance(Container.GetInstance<IALInvoker>()),
-                    new SoundContentSource(IoCContainer.GetInstance<IDirectory>()),
-                    IoCContainer.GetInstance<ISoundDecoder<float>>(),
-                    IoCContainer.GetInstance<ISoundDecoder<byte>>());
+                return context.Consumer.ImplementationType == typeof(AtlasDataLoader<AtlasRegionRectangle>);
             });
 
-            IoCContainer.Register<ILoader<AtlasRegionRectangle[]>>(() =>
-            {
-                return new AtlasDataLoader<AtlasRegionRectangle>(new AtlasContentSource(IoCContainer.GetInstance<IDirectory>()), IoCContainer.GetInstance<IFile>());
-            });
+            IoCContainer.Register<ILoader<ITexture>, TextureLoader>();
+
+            IoCContainer.Register<IContentLoader, ContentLoader>();
+
+            IoCContainer.Register<ILoader<ISound>, SoundLoader>();
+
+            IoCContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
         }
     }
 }
