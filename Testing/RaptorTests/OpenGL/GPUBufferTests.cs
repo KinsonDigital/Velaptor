@@ -49,81 +49,6 @@ namespace RaptorTests.OpenGL
             this.mockGL.Setup(m => m.GenVertexArray()).Returns(this.vertexArrayID);
         }
 
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WhenInvoked_CreatesVertexBuffer()
-        {
-            // Arrange
-            var totalQuadBytes = 320u; // 160 bytes per quad * 2 quads = 320 bytes
-
-            // Act
-            var buffer = new GPUBuffer<VertexData>(this.mockGL.Object)
-            {
-                TotalQuads = 2,
-            };
-
-            // Assert
-            // These are all invoked once per quad.  The number of invokes is 4 because
-            // the internal Init() method that invokes these is called once in the constructor
-            // as well as when the setter of the TotalQuads property is invoked.
-            this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce());
-
-            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ArrayBuffer, this.vertexBufferID), Times.AtLeast(2));
-            this.mockGL.Verify(m => m.BufferData(BufferTarget.ArrayBuffer, totalQuadBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw), Times.AtLeastOnce());
-            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ArrayBuffer, 0), Times.AtLeast(2));
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoked_CreatesIndexBuffer()
-        {
-            // Act
-            var buffer = new GPUBuffer<VertexData>(this.mockGL.Object);
-
-            // Assert
-            // First invoke is done creating the Vertex Buffer, the second is the index buffer
-            this.mockGL.Verify(m => m.GenBuffer(), Times.Exactly(2));
-            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ElementArrayBuffer, this.indexBufferID), Times.Exactly(2));
-            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ElementArrayBuffer, 0), Times.Exactly(1));
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoking_SetsUpAttributes()
-        {
-            // Arrange
-            var invokeCount = typeof(VertexData).GetFields().Length;
-            var actualIndices = new List<uint>();
-            var actualSizes = new List<uint>();
-            var actualOffsets = new List<uint>();
-
-            // Collect the various parameter values for assert comparisons later
-            this.mockGL.Setup(m => m.VertexAttribPointer(It.IsAny<uint>(), It.IsAny<uint>(), VertexAttribPointerType.Float, false, It.IsAny<uint>(), It.IsAny<uint>()))
-                .Callback<uint, uint, VertexAttribPointerType, bool, uint, uint>((index, size, type, normalized, stride, offset) =>
-                {
-                    actualIndices.Add(index);
-                    actualSizes.Add(size);
-                    actualOffsets.Add(offset);
-                });
-
-            // Act
-            var buffer = new GPUBuffer<VertexData>(this.mockGL.Object);
-
-            // Assert
-            this.mockGL.Verify(m => m.EnableVertexArrayAttrib(this.vertexArrayID, It.IsAny<uint>()), Times.Exactly(invokeCount));
-            this.mockGL.Verify(m => m.VertexAttribPointer(
-                It.IsAny<uint>(),
-                It.IsAny<uint>(),
-                VertexAttribPointerType.Float,
-                false,
-                40,
-                It.IsAny<uint>()),
-            Times.Exactly(invokeCount));
-
-            Assert.Equal(new uint[] { 0, 1, 2, 3 }, actualIndices.ToArray());
-            Assert.Equal(new uint[] { 3, 2, 4, 1 }, actualSizes.ToArray());
-            Assert.Equal(new uint[] { 0, 12, 20, 36 }, actualOffsets.ToArray());
-        }
-        #endregion
-
         #region Props Tests
         [Fact]
         public void TotalQuads_WhenSettingValue_ReturnsCorrectValue()
@@ -141,7 +66,85 @@ namespace RaptorTests.OpenGL
         }
         #endregion
 
-        #region Method Tets
+        #region Method Tests
+        [Fact]
+        public void Init_WhenInvoked_CreatesIndexBuffer()
+        {
+            // Arrange
+            var buffer = new GPUBuffer<VertexData>(this.mockGL.Object);
+
+            // Act
+            buffer.Init();
+
+            // Assert
+            // First invoke is done creating the Vertex Buffer, the second is the index buffer
+            this.mockGL.Verify(m => m.GenBuffer(), Times.Exactly(2));
+            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ElementArrayBuffer, this.indexBufferID), Times.Exactly(2));
+            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ElementArrayBuffer, 0), Times.Exactly(1));
+        }
+
+        [Fact]
+        public void Init_WhenInvoked_CreatesVertexBuffer()
+        {
+            // Arrange
+            var totalQuadBytes = 320u; // 160 bytes per quad * 2 quads = 320 bytes
+
+            var buffer = new GPUBuffer<VertexData>(this.mockGL.Object)
+            {
+                TotalQuads = 2,
+            };
+
+            // Act
+            buffer.Init();
+
+            // Assert
+            // These are all invoked once per quad
+            this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce());
+
+            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ArrayBuffer, this.vertexBufferID), Times.AtLeast(2));
+            this.mockGL.Verify(m => m.BufferData(BufferTarget.ArrayBuffer, totalQuadBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw), Times.AtLeastOnce());
+            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ArrayBuffer, 0), Times.AtLeast(2));
+        }
+
+        [Fact]
+        public void Init_WhenInvoking_SetsUpAttributes()
+        {
+            // Arrange
+            var invokeCount = typeof(VertexData).GetFields().Length;
+            var actualIndices = new List<uint>();
+            var actualSizes = new List<uint>();
+            var actualOffsets = new List<uint>();
+
+            // Collect the various parameter values for assert comparisons later
+            this.mockGL.Setup(m => m.VertexAttribPointer(It.IsAny<uint>(), It.IsAny<uint>(), VertexAttribPointerType.Float, false, It.IsAny<uint>(), It.IsAny<uint>()))
+                .Callback<uint, uint, VertexAttribPointerType, bool, uint, uint>((index, size, type, normalized, stride, offset) =>
+                {
+                    actualIndices.Add(index);
+                    actualSizes.Add(size);
+                    actualOffsets.Add(offset);
+                });
+
+            var buffer = new GPUBuffer<VertexData>(this.mockGL.Object);
+
+            // Act
+            buffer.Init();
+
+            // Assert
+            this.mockGL.Verify(m => m.EnableVertexArrayAttrib(this.vertexArrayID, It.IsAny<uint>()), Times.Exactly(invokeCount));
+            this.mockGL.Verify(m => m.VertexAttribPointer(
+                It.IsAny<uint>(),
+                It.IsAny<uint>(),
+                VertexAttribPointerType.Float,
+                false,
+                40,
+                It.IsAny<uint>()),
+            Times.Exactly(invokeCount));
+
+            Assert.Equal(new uint[] { 0, 1, 2, 3 }, actualIndices.ToArray());
+            Assert.Equal(new uint[] { 3, 2, 4, 1 }, actualSizes.ToArray());
+            Assert.Equal(new uint[] { 0, 12, 20, 36 }, actualOffsets.ToArray());
+        }
+
         [Fact]
         public void UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer()
         {
@@ -161,6 +164,7 @@ namespace RaptorTests.OpenGL
         {
             // Arrange
             var buffer = new GPUBuffer<VertexData>(this.mockGL.Object);
+            buffer.Init();
 
             // Act
             buffer.Dispose();
