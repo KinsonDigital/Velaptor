@@ -368,23 +368,21 @@ namespace Raptor.OpenGL
         {
             if (!this.isDiposed)
             {
-                return;
-            }
-
-            if (disposing)
-            {
-                if (!(this.appWindow is null))
+                if (disposing)
                 {
-                    this.appWindow.Load -= GameWindow_Load;
-                    this.appWindow.UpdateFrame -= GameWindow_UpdateFrame;
-                    this.appWindow.RenderFrame -= GameWindow_RenderFrame;
-                    this.appWindow.Resize -= GameWindow_Resize;
-                    this.appWindow.Unload -= GameWindow_Unload;
-                    this.appWindow.Dispose();
+                    if (!(this.appWindow is null))
+                    {
+                        this.appWindow.Load -= GameWindow_Load;
+                        this.appWindow.UpdateFrame -= GameWindow_UpdateFrame;
+                        this.appWindow.RenderFrame -= GameWindow_RenderFrame;
+                        this.appWindow.Resize -= GameWindow_Resize;
+                        this.appWindow.Unload -= GameWindow_Unload;
+                        this.appWindow.Dispose();
+                    }
                 }
-            }
 
-            this.isDiposed = true;
+                this.isDiposed = true;
+            }
         }
 
         /// <summary>
