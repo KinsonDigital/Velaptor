@@ -30,6 +30,11 @@ namespace Raptor.Graphics
         int RenderSurfaceHeight { get; set; }
 
         /// <summary>
+        /// Initializes the sprite batch.
+        /// </summary>
+        void Init();
+
+        /// <summary>
         /// Starts the batch rendering process.  Must be called before calling
         /// the <see cref="Render()"/> methods.
         /// </summary>
