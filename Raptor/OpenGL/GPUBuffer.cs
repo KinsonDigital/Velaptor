@@ -26,15 +26,10 @@ namespace Raptor.OpenGL
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBuffer{T}"/> class.
-        /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="totalQuads">The total number or quads to render per batch.</param>
-        public GPUBuffer(IGLInvoker gl)
-        {
-            this.gl = gl;
-            Init();
-        }
+        public GPUBuffer(IGLInvoker gl) => this.gl = gl;
 
         /// <inheritdoc/>
         public uint TotalQuads
@@ -45,6 +40,22 @@ namespace Raptor.OpenGL
                 this.totalQuads = value;
                 Init();
             }
+        }
+
+        /// <inheritdoc/>
+        public void Init()
+        {
+            CreateVertexBuffer();
+            CreateIndexBuffer();
+
+            this.vertexArrayID = this.gl.GenVertexArray();
+
+            // Bind the buffers to setup the attrib pointers
+            BindVertexArray();
+            BindVertexBuffer();
+            BindIndexBuffer();
+
+            SetupAttribPointers(this.vertexArrayID);
         }
 
         /// <inheritdoc/>
@@ -157,25 +168,6 @@ namespace Raptor.OpenGL
             quad.Vertex4.TextureCoord = bottomLeftCoord;
 
             return quad;
-        }
-
-        /// <summary>
-        /// Initializes the <see cref="GPUBuffer{T}"/>.
-        /// </summary>
-        /// <param name="totalQuads">The total number or quads to render per batch.</param>
-        private void Init()
-        {
-            CreateVertexBuffer();
-            CreateIndexBuffer();
-
-            this.vertexArrayID = this.gl.GenVertexArray();
-
-            // Bind the buffers to setup the attrib pointers
-            BindVertexArray();
-            BindVertexBuffer();
-            BindIndexBuffer();
-
-            SetupAttribPointers(this.vertexArrayID);
         }
 
         /// <summary>
