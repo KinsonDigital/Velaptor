@@ -11,7 +11,7 @@
 
 ### **Bug Fixes** 🐞
 
-1. Fixed an issue with the `Window` abstract class not being disposed of properly when closing a window
+1. Fixed an issue with the abstract `Window` class not being disposed of properly when closing the window
 2. Fixed an issue with the `Sound` class not being disposed of properly when calling dispose explicitly or implicitly
 
 ---
