@@ -18,7 +18,6 @@ namespace Raptor.OpenGL
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
-        /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="resourceLoaderService">Loads embedded resources.</param>
@@ -29,7 +28,6 @@ namespace Raptor.OpenGL
         {
             this.gl = gl;
             this.resourceLoaderService = resourceLoaderService;
-            Init();
         }
 
         /// <inheritdoc/>
@@ -43,6 +41,26 @@ namespace Raptor.OpenGL
 
         /// <inheritdoc/>
         public uint BatchSize { get; set; } = 10;
+
+        /// <inheritdoc/>
+        public void Init()
+        {
+            var shaderSource = LoadShaderSourceCode("shader.vert");
+            VertexShaderId = CreateShader(ShaderType.VertexShader, shaderSource);
+
+            // We do the same for the fragment shader
+            shaderSource = LoadShaderSourceCode("shader.frag");
+            FragmentShaderId = CreateShader(ShaderType.FragmentShader, shaderSource);
+
+            // Merge both shaders into a shader program, which can then be used by Openthis.gl.
+            ProgramId = CreateShaderProgram(VertexShaderId, FragmentShaderId);
+
+            // When the shader program is linked, it no longer needs the individual shaders attacked to it.
+            // The compiled code is copied into the shader program.
+            // Detach and then delete them.
+            DestroyShader(ProgramId, VertexShaderId);
+            DestroyShader(ProgramId, FragmentShaderId);
+        }
 
         /// <inheritdoc/>
         public void UseProgram() => this.gl.UseProgram(ProgramId);
@@ -69,31 +87,6 @@ namespace Raptor.OpenGL
             this.gl.DeleteProgram(ProgramId);
 
             this.isDisposed = true;
-        }
-
-        /// <summary>
-        /// Initializes the shader program.
-        /// </summary>
-        /// <param name="batchSize">The batch size that the shader will support.</param>
-        /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
-        /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        private void Init()
-        {
-            var shaderSource = LoadShaderSourceCode("shader.vert");
-            VertexShaderId = CreateShader(ShaderType.VertexShader, shaderSource);
-
-            // We do the same for the fragment shader
-            shaderSource = LoadShaderSourceCode("shader.frag");
-            FragmentShaderId = CreateShader(ShaderType.FragmentShader, shaderSource);
-
-            // Merge both shaders into a shader program, which can then be used by Openthis.gl.
-            ProgramId = CreateShaderProgram(VertexShaderId, FragmentShaderId);
-
-            // When the shader program is linked, it no longer needs the individual shaders attacked to it.
-            // The compiled code is copied into the shader program.
-            // Detach and then delete them.
-            DestroyShader(ProgramId, VertexShaderId);
-            DestroyShader(ProgramId, FragmentShaderId);
         }
 
         /// <summary>
