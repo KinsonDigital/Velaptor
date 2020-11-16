@@ -14,6 +14,32 @@ namespace Raptor.OpenGL
     internal interface IGLInvoker
     {
         /// <summary>
+        /// Value indicating if OpenGL has been initialized.
+        /// </summary>
+        private static bool isOpenGLInitialized;
+
+        /// <summary>
+        /// Invoked when OpenGL has been initialized.
+        /// </summary>
+        public static event EventHandler<EventArgs>? OpenGLInitialized;
+
+        /// <summary>
+        /// Sets OpenGL as initialized.
+        /// </summary>
+        public static void SetOpenGLAsInitialized()
+        {
+            isOpenGLInitialized = true;
+
+            OpenGLInitialized?.Invoke(null, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Returns a value indicating if OpenGL is initialized and ready for use.
+        /// </summary>
+        /// <returns>True if OpenGL is initialized.</returns>
+        public static bool IsOpenGLInitialized() => isOpenGLInitialized;
+
+        /// <summary>
         /// [requires: v1.0] Enable or disable server-side GL capabilities.
         /// </summary>
         /// <param name="cap">Specifies a symbolic constant indicating a GL capability.</param>
