@@ -16,10 +16,8 @@ namespace Raptor.Desktop
     /// </summary>
     public abstract class Window : IWindowProps, IDisposable
     {
-        private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
         private readonly IWindow window;
         private bool isDisposed;
-        private Task? showTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
@@ -121,28 +119,9 @@ namespace Raptor.Desktop
         /// <summary>
         /// Shows the window asynchronously.
         /// </summary>
-        /// <param name="dispose">The code to be disposed once the window has been shut down.</param>
+        /// <param name="dispose">The action to use to dispose of resources once the window has been shut down.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        public async Task ShowAsync(Action dispose)
-        {
-            this.showTask = new Task(
-                () =>
-            {
-                this.window.Show();
-            }, this.tokenSrc.Token);
-
-            this.showTask.Start();
-
-            await this.showTask.ConfigureAwait(true);
-            await this.showTask.ContinueWith(
-                (t) =>
-            {
-                dispose();
-            },
-                this.tokenSrc.Token,
-                TaskContinuationOptions.ExecuteSynchronously, // Execute the continuation on the same thread as the show task
-                TaskScheduler.Default).ConfigureAwait(true);
-        }
+        public async Task ShowAsync(Action dispose) => await this.window.ShowAsync(dispose).ConfigureAwait(true);
 
         /// <summary>
         /// Invoked when the window is loaded.
@@ -200,7 +179,6 @@ namespace Raptor.Desktop
                 if (disposing)
                 {
                     this.window.Dispose();
-                    this.tokenSrc.Dispose();
                 }
 
                 this.isDisposed = true;
