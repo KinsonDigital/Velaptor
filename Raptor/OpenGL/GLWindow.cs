@@ -56,8 +56,8 @@ namespace Raptor.OpenGL
         /// <param name="height">The height of the window.</param>
         public GLWindow(int width, int height)
         {
-            this.cachedWindowWidth = width;
-            this.cachedWindowHeight = height;
+            this.cachedWindowWidth = width <= 0 ? 1 : width;
+            this.cachedWindowHeight = height <= 0 ? 1 : height;
             SetupPropertyCaches();
             IGLInvoker.OpenGLInitialized += IGLInvoker_OpenGLInitialized;
         }
