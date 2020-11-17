@@ -6,6 +6,7 @@ namespace Raptor.Hardware
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Numerics;
     using System.Runtime.InteropServices;
 
     /// <summary>
@@ -65,6 +66,11 @@ namespace Raptor.Hardware
         /// Gets or sets the scale of the monitor on the vertical axis.
         /// </summary>
         public float VerticalScale { get; set; }
+
+        /// <summary>
+        /// Gets the center location of the monitor.
+        /// </summary>
+        public Vector2 Center => new Vector2(Width / 2f, Height / 2f);
 
         /// <summary>
         /// Gets the approximate dpi of the monitor on the horizontal axis.

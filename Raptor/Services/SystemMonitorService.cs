@@ -4,8 +4,10 @@
 
 namespace Raptor.Services
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using Raptor.Hardware;
     using Raptor.OpenGL;
 
@@ -15,7 +17,7 @@ namespace Raptor.Services
     [ExcludeFromCodeCoverage]
     public class SystemMonitorService : ISystemMonitorService
     {
-        private readonly GLFWMonitors monitors;
+        private readonly GLFWMonitors? monitors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SystemMonitorService"/> class.
@@ -23,9 +25,34 @@ namespace Raptor.Services
         public SystemMonitorService() => this.monitors = IoC.Container.GetInstance<GLFWMonitors>();
 
         /// <inheritdoc/>
-        public ReadOnlyCollection<SystemMonitor> Monitors => new ReadOnlyCollection<SystemMonitor>(this.monitors.SystemMonitors);
+        public ReadOnlyCollection<SystemMonitor> Monitors
+        {
+            get
+            {
+                if (this.monitors is null)
+                {
+                    return new ReadOnlyCollection<SystemMonitor>(Array.Empty<SystemMonitor>());
+                }
+
+                return new ReadOnlyCollection<SystemMonitor>(this.monitors.SystemMonitors);
+            }
+        }
 
         /// <inheritdoc/>
-        public void Refresh() => this.monitors.Refresh();
+        public SystemMonitor? MainMonitor
+        {
+            get
+            {
+                if (this.monitors is null)
+                {
+                    return null;
+                }
+
+                return this.monitors.SystemMonitors.Where(m => m.IsMain).FirstOrDefault();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Refresh() => this.monitors?.Refresh();
     }
 }
