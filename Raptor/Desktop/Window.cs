@@ -119,7 +119,7 @@ namespace Raptor.Desktop
         /// <summary>
         /// Shows the window asynchronously.
         /// </summary>
-        /// <param name="dispose">The code to be disposed once the window has been shut down.</param>
+        /// <param name="dispose">The action to use to dispose of resources once the window has been shut down.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         public async Task ShowAsync(Action dispose) => await this.window.ShowAsync(dispose).ConfigureAwait(true);
 
