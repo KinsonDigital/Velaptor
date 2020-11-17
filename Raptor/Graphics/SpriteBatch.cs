@@ -258,11 +258,9 @@ namespace Raptor.Graphics
                     getterWhenNotCaching: () => (int)this.gl.GetViewPortSize().X,
                     setterWhenNotCaching: (value) =>
                     {
-                        var data = new int[4];
+                        var viewPortSize = this.gl.GetViewPortSize();
 
-                        this.gl.GetInteger(GetPName.Viewport, data);
-
-                        this.gl.Viewport(data[0], data[1], value, data[3]);
+                        this.gl.SetViewPortSize(new Vector2(value, viewPortSize.Y));
                     }));
 
             this.cachedIntProps.Add(
@@ -272,11 +270,9 @@ namespace Raptor.Graphics
                     getterWhenNotCaching: () => (int)this.gl.GetViewPortSize().Y,
                     setterWhenNotCaching: (value) =>
                     {
-                        var data = new int[4];
+                        var viewPortSize = this.gl.GetViewPortSize();
 
-                        this.gl.GetInteger(GetPName.Viewport, data);
-
-                        this.gl.Viewport(data[0], data[1], data[2], value);
+                        this.gl.SetViewPortSize(new Vector2(viewPortSize.X, value));
                     }));
         }
 
