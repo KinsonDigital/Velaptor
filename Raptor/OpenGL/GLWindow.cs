@@ -55,6 +55,7 @@ namespace Raptor.OpenGL
             this.cachedWindowWidth = width;
             this.cachedWindowHeight = height;
             SetupPropertyCaches();
+            IGLInvoker.OpenGLInitialized += IGLInvoker_OpenGLInitialized;
         }
 
         /// <inheritdoc/>
@@ -191,8 +192,6 @@ namespace Raptor.OpenGL
 
             this.appWindow = new InternalGLWindow(this.gameWinSettings, this.nativeWinSettings);
 
-            TurnOffPropertyCaching();
-
             /*NOTE:
              * The IoC container get instance must be called after the
              * window has been called.  This is because an OpenGL context
@@ -293,6 +292,26 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
+        /// Occurs when OpenGL has been initialized.
+        /// </summary>
+        private void IGLInvoker_OpenGLInitialized(object? sender, EventArgs e)
+        {
+            this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+            if (!(this.cachedWindowState is null))
+            {
+                this.cachedWindowState.IsCaching = false;
+            }
+
+            if (!(this.cachedTypeOfBorder is null))
+            {
+                this.cachedTypeOfBorder.IsCaching = false;
+            }
+        }
+
+        /// <summary>
         /// Occurs when a keyboard key is pressed into the down position.
         /// </summary>
         /// <param name="e">The keyboard info of the event.</param>
@@ -341,26 +360,6 @@ namespace Raptor.OpenGL
         private void GameWindow_MouseMove(MouseMoveEventArgs e) => Mouse.SetPosition((int)e.X, (int)e.Y);
 
         /// <summary>
-        /// Turns off all of the caching for any props that are having their values cached.
-        /// </summary>
-        private void TurnOffPropertyCaching()
-        {
-            this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-
-            if (!(this.cachedWindowState is null))
-            {
-                this.cachedWindowState.IsCaching = false;
-            }
-
-            if (!(this.cachedTypeOfBorder is null))
-            {
-                this.cachedTypeOfBorder.IsCaching = false;
-            }
-        }
-
-        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <param name="disposing">True to release managed resources.</param>
@@ -372,6 +371,10 @@ namespace Raptor.OpenGL
                 {
                     if (!(this.appWindow is null))
                     {
+                        this.cachedStringProps.Clear();
+                        this.cachedIntProps.Clear();
+                        this.cachedBoolProps.Clear();
+                        IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
                         this.appWindow.Load -= GameWindow_Load;
                         this.appWindow.UpdateFrame -= GameWindow_UpdateFrame;
                         this.appWindow.RenderFrame -= GameWindow_RenderFrame;

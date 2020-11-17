@@ -57,6 +57,16 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
+        public void SetViewPortSize(Vector2 vector)
+        {
+            var data = new int[4];
+
+            GetInteger(GetPName.Viewport, data);
+
+            Viewport(data[0], data[1], (int)vector.X, (int)vector.Y);
+        }
+
+        /// <inheritdoc/>
         public Vector2 GetViewPortPosition()
         {
             var data = new int[4];
