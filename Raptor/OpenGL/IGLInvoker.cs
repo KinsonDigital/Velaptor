@@ -176,6 +176,20 @@ namespace Raptor.OpenGL
         Vector2 GetViewPortSize();
 
         /// <summary>
+        /// Sets the size of the view port.
+        /// </summary>
+        /// <param name="vector">The vector representing the width and height of the viewport.</param>
+        /// <remarks>
+        /// <para>
+        ///     The X component is the width of the viewport.
+        /// </para>
+        /// <para>
+        ///     The Y component is the height of the viewport.
+        /// </para>
+        /// </remarks>
+        void SetViewPortSize(Vector2 vector);
+
+        /// <summary>
         /// Gets the position of the viewport.
         /// </summary>
         /// <returns>The position of the viewport.</returns>

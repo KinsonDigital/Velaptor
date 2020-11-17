@@ -18,6 +18,7 @@ namespace Raptor.Graphics
     internal class SpriteBatch : ISpriteBatch
     {
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
+        private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
         private readonly IGLInvoker gl;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
@@ -59,6 +60,8 @@ namespace Raptor.Graphics
             this.shader = shader;
             this.gpuBuffer = gpuBuffer;
 
+            SetupPropertyCaches();
+
             IGLInvoker.OpenGLInitialized += Gl_OpenGLInitialized;
         }
 
@@ -76,29 +79,15 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public int RenderSurfaceWidth
         {
-            get => (int)this.gl.GetViewPortSize().X;
-            set
-            {
-                var data = new int[4];
-
-                this.gl.GetInteger(GetPName.Viewport, data);
-
-                this.gl.Viewport(data[0], data[1], value, data[3]);
-            }
+            get => this.cachedIntProps[nameof(RenderSurfaceWidth)].GetValue();
+            set => this.cachedIntProps[nameof(RenderSurfaceWidth)].SetValue(value);
         }
 
         /// <inheritdoc/>
         public int RenderSurfaceHeight
         {
-            get => (int)this.gl.GetViewPortSize().Y;
-            set
-            {
-                var data = new int[4];
-
-                this.gl.GetInteger(GetPName.Viewport, data);
-
-                this.gl.Viewport(data[0], data[1], data[2], value);
-            }
+            get => this.cachedIntProps[nameof(RenderSurfaceHeight)].GetValue();
+            set => this.cachedIntProps[nameof(RenderSurfaceHeight)].SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -238,9 +227,10 @@ namespace Raptor.Graphics
             if (disposing)
             {
                 IGLInvoker.OpenGLInitialized -= Gl_OpenGLInitialized;
-                this.batchItems.Clear();
                 this.shader.Dispose();
                 this.gpuBuffer.Dispose();
+                this.batchItems.Clear();
+                this.cachedIntProps.Clear();
             }
 
             this.isDisposed = true;
@@ -249,7 +239,42 @@ namespace Raptor.Graphics
         /// <summary>
         /// Invoked when OpenGL has been initialized.
         /// </summary>
-        private void Gl_OpenGLInitialized(object? sender, EventArgs e) => Init();
+        private void Gl_OpenGLInitialized(object? sender, EventArgs e)
+        {
+            this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+            Init();
+        }
+
+        /// <summary>
+        /// Setup all of the caching for the properties that need caching.
+        /// </summary>
+        private void SetupPropertyCaches()
+        {
+            this.cachedIntProps.Add(
+                nameof(RenderSurfaceWidth),
+                new CachedValue<int>(
+                    defaultValue: 0,
+                    getterWhenNotCaching: () => (int)this.gl.GetViewPortSize().X,
+                    setterWhenNotCaching: (value) =>
+                    {
+                        var viewPortSize = this.gl.GetViewPortSize();
+
+                        this.gl.SetViewPortSize(new Vector2(value, viewPortSize.Y));
+                    }));
+
+            this.cachedIntProps.Add(
+                nameof(RenderSurfaceHeight),
+                new CachedValue<int>(
+                    defaultValue: 0,
+                    getterWhenNotCaching: () => (int)this.gl.GetViewPortSize().Y,
+                    setterWhenNotCaching: (value) =>
+                    {
+                        var viewPortSize = this.gl.GetViewPortSize();
+
+                        this.gl.SetViewPortSize(new Vector2(viewPortSize.X, value));
+                    }));
+        }
 
         /// <summary>
         /// Renders the current batch of textures.

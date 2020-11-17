@@ -81,57 +81,41 @@ namespace RaptorTests.Graphics
 
         #region Prop Tests
         [Fact]
-        public unsafe void Width_WhenSettingValue_ReturnsCorrectResult()
+        public unsafe void Width_WhenSettingValueWithOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGL.Setup(m => m.GetInteger(GetPName.Viewport, It.IsAny<int[]>()))
-                .Callback<GetPName, int[]>((pname, data) =>
-                {
-                    fixed (int* pData = &data[0])
-                    {
-                        pData[0] = 11;
-                        pData[1] = 22;
-                        pData[2] = 33;
-                        pData[3] = 44;
-                    }
-                });
+            this.mockGL.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 22));
+
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            IGLInvoker.SetOpenGLAsInitialized();
 
             // Act
             batch.RenderSurfaceWidth = 100;
             _ = batch.RenderSurfaceWidth;
 
             // Assert
-            this.mockGL.Verify(m => m.GetViewPortSize(), Times.Once());
-            this.mockGL.Verify(m => m.GetInteger(GetPName.Viewport, It.IsAny<int[]>()), Times.Once());
-            this.mockGL.Verify(m => m.Viewport(11, 22, 100, 44), Times.Once());
+            this.mockGL.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGL.Verify(m => m.SetViewPortSize(new Vector2(100, 22)), Times.Once());
         }
 
         [Fact]
         public unsafe void Height_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGL.Setup(m => m.GetInteger(GetPName.Viewport, It.IsAny<int[]>()))
-                .Callback<GetPName, int[]>((pname, data) =>
-                {
-                    fixed (int* pData = &data[0])
-                    {
-                        pData[0] = 11;
-                        pData[1] = 22;
-                        pData[2] = 33;
-                        pData[3] = 44;
-                    }
-                });
+            this.mockGL.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 22));
+
             var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+
+            IGLInvoker.SetOpenGLAsInitialized();
 
             // Act
             batch.RenderSurfaceHeight = 100;
             _ = batch.RenderSurfaceHeight;
 
             // Assert
-            this.mockGL.Verify(m => m.GetViewPortSize(), Times.Once());
-            this.mockGL.Verify(m => m.GetInteger(GetPName.Viewport, It.IsAny<int[]>()), Times.Once());
-            this.mockGL.Verify(m => m.Viewport(11, 22, 33, 100), Times.Once());
+            this.mockGL.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGL.Verify(m => m.SetViewPortSize(new Vector2(11, 100)), Times.Once());
         }
         #endregion
 
