@@ -1,5 +1,24 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.19.0</span>
+
+### **Bug Fixes** 🐞
+
+1. Fixed an issue with an **OpenGL** bindings exception being thrown when using the `SpriteBatchFactory.CreateSpriteBatch()` method
+   * This was due to something that was missed when implementing the change in release **v0.18.0**
+
+### **Nuget/Library Updates** 📦
+
+1. Update nuget package **OpenTK** from **v4.0.6** to **v4.2.0**
+2. Update nuget package **Microsoft.CodeAnalysis.FxCopAnalyzers** from **v3.3.0** to **v3.3.1**
+3. Update nuget package **SixLabors.ImageSharp** from **v1.1.1** to **v1.0.2**
+4. Update nuget package **System.IO.Abstractions** from **v12.2.7** to **v12.2.24**
+5. Update nuget package **Simplelnjector** from **v5.0.4** to **v5.1.0**
+6. Update nuget package **Moq** from **v4.14.7** to **v4.15.1**
+7. Update nuget package **Microsoft.NET.Test.Sdk** from **v16.7.1** to **v16.8.0**
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.18.0</span>
 
 ### **New** 🎉
@@ -28,7 +47,7 @@
 
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.16.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
 
-### **Bug Fix** 🐞
+### **Bug Fixes** 🐞
 
 1. Fixed an issue with failing unit tests related to unsafe pointer setup with the unit tests and implementation details related to **GLFW**
 
@@ -123,11 +142,13 @@
 ### **Changes** ✨
 
 1. Changed the nuget package setup to properly include native **OpenAL** runtime libraries
-2. Library/Nuget Package Updates:
-   * Updated **OpenTK** from **v4.0.0-pre9.1** to **v4.0.6**
-   * Updated **SimpleInjector** from **v5.0.3** to **v5.0.4**
-   * Updated **Microsoft.NET.Test.Sdk** from **v16.7.0** to **v16.7.1**
-   * Updated **Moq** from **v4.14.5** to **v4.14.7**
+
+### **Nuget/Library Updates** 📦
+
+1. Updated **OpenTK** from **v4.0.0-pre9.1** to **v4.0.6**
+2. Updated **SimpleInjector** from **v5.0.3** to **v5.0.4**
+3. Updated **Microsoft.NET.Test.Sdk** from **v16.7.0** to **v16.7.1**
+4. Updated **Moq** from **v4.14.5** to **v4.14.7**
 
 ### **Breaking Changes** 💣
 
@@ -150,7 +171,10 @@
 
 1. Added rules to **editorconfig** files in solution to improve coding standards
 2. Adjusted **editorconfig** solution setup
-3. Updated **KinsonDigital.FileIO** nuget package from **v1.6.1** to **1.7.0**
+
+### **Nuget/Library Updates** 📦
+
+1. Updated **KinsonDigital.FileIO** nuget package from **v1.6.1** to **1.7.0**
 
 ---
 
@@ -183,21 +207,22 @@
 
 ### **Changes** ✨
 
-1. Updated nuget packages below:
-   1. Unit Test Project:
-		* coverlet.msbuild - v2.6.3 to v2.9.0
-		* Microsoft.NET.Test.Sdk - v16.2.0 to v16.6.1
-		* Moq - v4.12.0	to v4.14.5
-		* xunit.runner.visualstudio - v2.4.1 to v2.4.2
-	2. Raptor Project:
-        * SimpleInjector - v5.0.1 to v5.0.2
-
-2. Removed old **SDL** related code from library/project/solution
-3. Refactored code to prevent **OpenGL** related code from being exposed to the public API of the Raptor library
-4. Refactored code to use unsigned integers instead of signed integers where it makes sense
+1. Removed old **SDL** related code from library/project/solution
+2. Refactored code to prevent **OpenGL** related code from being exposed to the public API of the Raptor library
+3. Refactored code to use unsigned integers instead of signed integers where it makes sense
    * Example: You cannot have a texture with a negative width.  This has been converted to an unsigned integer
-5. Created unit tests where applicable
-6. Implemented various analyzers for the purpose of better code.  This resulted in large amounts of refactoring of the code base to satisfy the analyzers
+4. Created unit tests where applicable
+5.  Implemented various analyzers for the purpose of better code.  This resulted in large amounts of refactoring of the code base to satisfy the analyzers
+
+### **Nuget/Library Updates** 📦
+
+1. Updated nuget package **coverlet.msbuild** from **v2.6.3** to **v2.9.0**
+2. Updated nuget package **Microsoft.NET.Test.Sdk** from **v16.2.0** to **v16.6.1**
+3. Updated nuget package **Moq** from **v4.12.0** to **v4.14.5**
+4. Updated nuget package **xunit.runner.visualstudio** from **v2.4.1** to **v2.4.2**
+5. Updated nuget package **SimpleInjector** from **v5.0.1** to **v5.0.2**
+
+---
 
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.8.0</span>
 
@@ -217,14 +242,16 @@
 
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.7.0</span>
 
-
 ### **Breaking Changes** 💣
+
 1. Changed the visible scope of all **SDL** implementation classes from **public** to **internal**
 
-### **Changes** ✨
-1. Updated **SDLCore** nuget package library from **v0.1.0** to **v0.1.1**
+### **Nuget/Library Updates** 📦
+
+1. Updated nuget package **SDLCore** from **v0.1.0** to **v0.1.1**
 
 ### **Other** 👏
+
 1. Changed how **SDL** files are dealt with in the build and nuget packaging process
    * Removes dependency on the native **SDL** libraries in **Raptor** code base and relies on **SDLCore** nuget package native **SDL** libraries
 2. Cleaned up **ExtensionMethodTests** file
@@ -237,12 +264,17 @@
 
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.6.0</span>
 
-### **Changes** ✨
+### **Nuget/Library Updates** 📦
+
 1. Updated **SDLCore** nuget package from **v0.0.1** to **v0.1.0**
+
+### **Changes** ✨
+
 2. Refactored code according to **Microsofts** FxCop analyzers as well as setting code base to use nullable references
    * This greatly improves the code base to account for null reference exceptions as well as following better coding standards
 
 ### **Other** 👏
+
 1. Changed name of **Raptor.Tests** unit testing project to **RaptorTests**
 2. Added **runsettings** file to help facilitate better code coverage during development and during **CI/CD** operations
 
