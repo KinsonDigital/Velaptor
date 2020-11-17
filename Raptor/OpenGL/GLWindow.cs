@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -287,6 +287,11 @@ namespace Raptor.OpenGL
             this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
             this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
             this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+            if (!(this.cachedPosition is null))
+            {
+                this.cachedPosition.IsCaching = false;
+            }
 
             if (!(this.cachedWindowState is null))
             {
