@@ -1,5 +1,24 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.19.0</span>
+
+### **Bug Fixes** 🐞
+
+1. Fixed an issue with an **OpenGL** bindings exception being thrown when using the `SpriteBatchFactory.CreateSpriteBatch()` method
+   * This was due to something that was missed when implementing the change in release **v0.18.0**
+
+### **Nuget/Library Updates** 📦
+
+1. Update nuget package OpenTK from v4.0.6 to v4.2.0
+2. Update nuget package Microsoft.CodeAnalysis.FxCopAnalyzers from v3.3.0 to v3.3.1
+3. Update nuget package SixLabors.ImageSharp from v1.1.1 to v1.0.2
+4. Update nuget package System.lO.Abstractions v12.2.7 to v12.2.24
+5. Update nuget package Simplelnjector v5.0.4 to v5.1.0
+6. Update nuget package Moq from V4.14.7 to v4.15.1
+7. Update nuget package Microsoft.NET.Test.Sdk from version v16.7.1 to v16.8.0
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.18.0</span>
 
 ### **New** 🎉
@@ -28,7 +47,7 @@
 
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.16.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
 
-### **Bug Fix** 🐞
+### **Bug Fixes** 🐞
 
 1. Fixed an issue with failing unit tests related to unsafe pointer setup with the unit tests and implementation details related to **GLFW**
 
