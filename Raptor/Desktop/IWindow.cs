@@ -5,6 +5,7 @@
 namespace Raptor.Desktop
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides the core of an application window which facilitates how the
@@ -17,6 +18,13 @@ namespace Raptor.Desktop
         /// Shows the window.
         /// </summary>
         void Show();
+
+        /// <summary>
+        /// Shows the window asynchronously.
+        /// </summary>
+        /// <param name="dispose">The action to use to dispose of resources once the window has been shut down.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task ShowAsync(Action dispose);
 
         /// <summary>
         /// Closes the window.

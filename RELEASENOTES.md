@@ -1,5 +1,15 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.20.0</span>
+
+### **New** 🎉
+
+1. Added a method named `ShowAsync()` to the `IWindow` interface and all associated `IWindow` implementations
+   * This is to provide the ability for consumers of the library/framework to create `IWindow` implementations, that can show the window asynchronously instead of on the applications main thread.
+   * Example: Showing a **Raptor** window inside of a GUI application like **WPF** or **WinForms**, and not block the UI thread
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.19.0</span>
 
 ### **Bug Fixes** 🐞

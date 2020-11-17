@@ -9,6 +9,8 @@ namespace Raptor.OpenGL
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Threading;
+    using System.Threading.Tasks;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
@@ -31,6 +33,7 @@ namespace Raptor.OpenGL
         private readonly Dictionary<string, CachedValue<string>> cachedStringProps = new Dictionary<string, CachedValue<string>>();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
         private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new Dictionary<string, CachedValue<bool>>();
+        private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
         private readonly int cachedWindowWidth;
         private readonly int cachedWindowHeight;
         private GameWindowSettings? gameWinSettings;
@@ -43,6 +46,7 @@ namespace Raptor.OpenGL
         private IGLInvoker? gl;
         private bool isShuttingDown;
         private bool isDiposed;
+        private Task? showTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
@@ -183,54 +187,38 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public void Show()
         {
-            this.gameWinSettings = new GameWindowSettings();
-            this.nativeWinSettings = new NativeWindowSettings()
+            // If the window is showing asynchronously, exit
+            if (this.showTask is null)
             {
-                Size = new Vector2i(this.cachedWindowWidth, this.cachedWindowHeight),
-                StartVisible = false,
-            };
+                return;
+            }
 
-            this.appWindow = new InternalGLWindow(this.gameWinSettings, this.nativeWinSettings);
+            SetupWindow();
 
-            /*NOTE:
-             * The IoC container get instance must be called after the
-             * window has been called.  This is because an OpenGL context
-             * must be created first before any GL calls can be made.
-             */
-            this.gl = IoC.Container.GetInstance<IGLInvoker>();
+            this.appWindow?.Run();
+        }
 
-            this.appWindow.Load += GameWindow_Load;
-            this.appWindow.UpdateFrame += GameWindow_UpdateFrame;
-            this.appWindow.RenderFrame += GameWindow_RenderFrame;
-            this.appWindow.Resize += GameWindow_Resize;
-            this.appWindow.Unload += GameWindow_Unload;
-            this.appWindow.KeyDown += GameWindow_KeyDown;
-            this.appWindow.KeyUp += GameWindow_KeyUp;
-            this.appWindow.MouseDown += GameWindow_MouseDown;
-            this.appWindow.MouseUp += GameWindow_MouseUp;
-            this.appWindow.MouseMove += GameWindow_MouseMove;
+        /// <inheritdoc/>
+        public async Task ShowAsync(Action dispose)
+        {
+            this.showTask = new Task(
+                () =>
+                {
+                    SetupWindow();
+                    this.appWindow?.Run();
+                }, this.tokenSrc.Token);
 
-            this.debugProc = DebugCallback;
+            this.showTask.Start();
 
-            /*NOTE:
-             * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
-             * The garbage collector performs a collect on the delegate passed into GL.DebugMesageCallback()
-             * without the native system knowing about it which causes this exception. The GC.KeepAlive()
-             * method tells the garbage collector to not collect the delegate to prevent this from happening.
-             */
-            GC.KeepAlive(this.debugProc);
-
-            this.gl.Enable(EnableCap.DebugOutput);
-            this.gl.Enable(EnableCap.DebugOutputSynchronous);
-            this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
-
-            ContentLoader = ContentLoaderFactory.CreateContentLoader();
-
-            // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
-            // that means OpenGL has been initialized by OpenTK itself.
-            IGLInvoker.SetOpenGLAsInitialized();
-
-            this.appWindow.Run();
+            await this.showTask.ConfigureAwait(true);
+            await this.showTask.ContinueWith(
+                (t) =>
+                {
+                    dispose();
+                },
+                this.tokenSrc.Token,
+                TaskContinuationOptions.ExecuteSynchronously, // Execute the continuation on the same thread as the show task
+                TaskScheduler.Default).ConfigureAwait(true);
         }
 
         /// <inheritdoc/>
@@ -360,6 +348,59 @@ namespace Raptor.OpenGL
         private void GameWindow_MouseMove(MouseMoveEventArgs e) => Mouse.SetPosition((int)e.X, (int)e.Y);
 
         /// <summary>
+        /// Sets up the OpenGL window.
+        /// </summary>
+        private void SetupWindow()
+        {
+            this.gameWinSettings = new GameWindowSettings();
+            this.nativeWinSettings = new NativeWindowSettings()
+            {
+                Size = new Vector2i(this.cachedWindowWidth, this.cachedWindowHeight),
+                StartVisible = false,
+            };
+
+            this.appWindow = new InternalGLWindow(this.gameWinSettings, this.nativeWinSettings);
+
+            /*NOTE:
+             * The IoC container get instance must be called after the
+             * window has been called.  This is because an OpenGL context
+             * must be created first before any GL calls can be made.
+             */
+            this.gl = IoC.Container.GetInstance<IGLInvoker>();
+
+            this.appWindow.Load += GameWindow_Load;
+            this.appWindow.UpdateFrame += GameWindow_UpdateFrame;
+            this.appWindow.RenderFrame += GameWindow_RenderFrame;
+            this.appWindow.Resize += GameWindow_Resize;
+            this.appWindow.Unload += GameWindow_Unload;
+            this.appWindow.KeyDown += GameWindow_KeyDown;
+            this.appWindow.KeyUp += GameWindow_KeyUp;
+            this.appWindow.MouseDown += GameWindow_MouseDown;
+            this.appWindow.MouseUp += GameWindow_MouseUp;
+            this.appWindow.MouseMove += GameWindow_MouseMove;
+
+            this.debugProc = DebugCallback;
+
+            /*NOTE:
+             * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
+             * The garbage collector performs a collect on the delegate passed into GL.DebugMesageCallback()
+             * without the native system knowing about it which causes this exception. The GC.KeepAlive()
+             * method tells the garbage collector to not collect the delegate to prevent this from happening.
+             */
+            GC.KeepAlive(this.debugProc);
+
+            this.gl.Enable(EnableCap.DebugOutput);
+            this.gl.Enable(EnableCap.DebugOutputSynchronous);
+            this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
+
+            ContentLoader = ContentLoaderFactory.CreateContentLoader();
+
+            // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
+            // that means OpenGL has been initialized by OpenTK itself.
+            IGLInvoker.SetOpenGLAsInitialized();
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <param name="disposing">True to release managed resources.</param>
@@ -371,6 +412,8 @@ namespace Raptor.OpenGL
                 {
                     if (!(this.appWindow is null))
                     {
+                        this.tokenSrc.Dispose();
+                        this.showTask?.Dispose();
                         this.cachedStringProps.Clear();
                         this.cachedIntProps.Clear();
                         this.cachedBoolProps.Clear();
