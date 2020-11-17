@@ -240,6 +240,46 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
+        /// Maps the given OpenGL mouse button to a <see cref="Raptor.Input.MouseButton"/>.
+        /// </summary>
+        /// <param name="from">The OpenGL mouse button to map.</param>
+        /// <returns>The mouse button.</returns>
+        private static RaptorMouseButton MapMouseButton(GLMouseButton from)
+        {
+            switch (from)
+            {
+                case GLMouseButton.Button1: // Same as LeftButton
+                    return RaptorMouseButton.LeftButton;
+                case GLMouseButton.Button2: // Same as RightButton
+                    return RaptorMouseButton.RightButton;
+                case GLMouseButton.Button3: // Same as MiddleButton
+                    return RaptorMouseButton.MiddleButton;
+                case GLMouseButton.Last:
+                    return RaptorMouseButton.None;
+            }
+
+            // By default, Button 1, 2 and 3 are fired for left, middle and right
+            // This is here just in case the OpenTK implementation changes.
+            switch (from)
+            {
+                case GLMouseButton.Left: // Same as Button1
+                    return RaptorMouseButton.LeftButton;
+                case GLMouseButton.Middle: // Same as Button3
+                    return RaptorMouseButton.MiddleButton;
+                case GLMouseButton.Right: // Same as Button2
+                    return RaptorMouseButton.RightButton;
+                case GLMouseButton.Button4:
+                case GLMouseButton.Button5:
+                case GLMouseButton.Button6:
+                case GLMouseButton.Button7:
+                case GLMouseButton.Button8:
+                    return RaptorMouseButton.None;
+            }
+
+            return RaptorMouseButton.None;
+        }
+
+        /// <summary>
         /// Occurs when OpenGL has been initialized.
         /// </summary>
         private void IGLInvoker_OpenGLInitialized(object? sender, EventArgs e)
@@ -358,46 +398,6 @@ namespace Raptor.OpenGL
             // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
             // that means OpenGL has been initialized by OpenTK itself.
             IGLInvoker.SetOpenGLAsInitialized();
-        }
-
-        /// <summary>
-        /// Maps the given OpenGL mouse button to a <see cref="Raptor.Input.MouseButton"/>.
-        /// </summary>
-        /// <param name="from">The OpenGL mouse button to map.</param>
-        /// <returns>The mouse button.</returns>
-        private static RaptorMouseButton MapMouseButton(GLMouseButton from)
-        {
-            switch (from)
-            {
-                case GLMouseButton.Button1: // Same as LeftButton
-                    return RaptorMouseButton.LeftButton;
-                case GLMouseButton.Button2: // Same as RightButton
-                    return RaptorMouseButton.RightButton;
-                case GLMouseButton.Button3: // Same as MiddleButton
-                    return RaptorMouseButton.MiddleButton;
-                case GLMouseButton.Last:
-                    return RaptorMouseButton.None;
-            }
-
-            // By default, Button 1, 2 and 3 are fired for left, middle and right
-            // This is here just in case the OpenTK implementation changes.
-            switch (from)
-            {
-                case GLMouseButton.Left: // Same as Button1
-                    return RaptorMouseButton.LeftButton;
-                case GLMouseButton.Middle: // Same as Button3
-                    return RaptorMouseButton.MiddleButton;
-                case GLMouseButton.Right: // Same as Button2
-                    return RaptorMouseButton.RightButton;
-                case GLMouseButton.Button4:
-                case GLMouseButton.Button5:
-                case GLMouseButton.Button6:
-                case GLMouseButton.Button7:
-                case GLMouseButton.Button8:
-                    return RaptorMouseButton.None;
-            }
-
-            return RaptorMouseButton.None;
         }
 
         /// <summary>

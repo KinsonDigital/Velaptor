@@ -16,10 +16,8 @@ namespace Raptor.Desktop
     /// </summary>
     public abstract class Window : IWindowProps, IDisposable
     {
-        private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
         private readonly IWindow window;
         private bool isDisposed;
-        private Task? showTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
@@ -181,7 +179,6 @@ namespace Raptor.Desktop
                 if (disposing)
                 {
                     this.window.Dispose();
-                    this.tokenSrc.Dispose();
                 }
 
                 this.isDisposed = true;
