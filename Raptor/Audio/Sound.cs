@@ -2,7 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
 #pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
 namespace Raptor.Audio
 {

@@ -1,11 +1,24 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.20.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
+
+### **New** 🎉
+
+1. Changed the window to be displayed in the center of the screen horizontally and vertically by default
+
+### **Bug Fixes** 🐞
+
+1. Fixed an issue with the window position not working when using the `Window.Position` property
+2. Fixed an issue with **GLFW** exceptions being thrown when using a width or height value of **'0'** when using the `CreateWindow()` method in the `WindowFactory` class
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.20.0</span>
 
 ### **New** 🎉
 
 1. Added a method named `ShowAsync()` to the `IWindow` interface and all associated `IWindow` implementations
-   * This is to provide the ability for consumers of the library/framework to create `IWindow` implementations, that can show the window asynchronously instead of on the applications main thread.
+   * This is to provide the ability for consumers of the library/framework to create `IWindow` implementations, that can show the window asynchronously instead of on the applications main thread
    * Example: Showing a **Raptor** window inside of a GUI application like **WPF** or **WinForms**, and not block the UI thread
 
 ---
@@ -33,9 +46,9 @@
 
 ### **New** 🎉
 
-1. Added a new method to the `Window` class named `ShowAsync()` to add the ability to run a **Raptor Window** on another thread.
-   * Currently `Show()` blocks the thread that it was invoked on due to the `Show()` method not returning until the window has been closed.  This is not ideal due to how long the window needs to live.  Using `ShowAsync()` will allow the use of the window while still allowing execution after the invocation of the method.
-     * Use Case: Running a **Raptor Window** from a GUI application.
+1. Added a new method to the `Window` class named `ShowAsync()` to add the ability to run a **Raptor Window** on another thread
+   * Currently `Show()` blocks the thread that it was invoked on due to the `Show()` method not returning until the window has been closed  This is not ideal due to how long the window needs to live.  Using `ShowAsync()` will allow the use of the window while still allowing execution after the invocation of the method
+     * Use Case: Running a **Raptor Window** from a GUI application
    * Any implementation of the `Window` class will get this functionality
 
 ### **Bug Fixes** 🐞
@@ -50,8 +63,8 @@
 ### **Improvements** 🌟
 
 1. Improved how the `Window` class shows the window
-   * Previously, the window was displayed on window creation before the `Show()` method was invoked.  Now the window will only be displayed when invoking the `Show()` method.  This gives more control over how the window is displayed during window creation and also enables better management of when a window is shown on another thread other than the **main thread**.
-   * NOTE: Simply invoking the `Show()` method on a worker thread will run the window on that thread.
+   * Previously, the window was displayed on window creation before the `Show()` method was invoked.  Now the window will only be displayed when invoking the `Show()` method.  This gives more control over how the window is displayed during window creation and also enables better management of when a window is shown on another thread other than the **main thread**
+   * NOTE: Simply invoking the `Show()` method on a worker thread will run the window on that thread
 
 ---
 
@@ -117,7 +130,7 @@
 
 ### **New** 🎉
 
-1. Added the ability to retrieve information about monitors that might be hooked up to the system.
+1. Added the ability to retrieve information about monitors that might be hooked up to the system
    * This includes width, height, DPI, scaling and bit depth
 
 ### **Other** 👏
