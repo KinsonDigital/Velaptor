@@ -7,6 +7,7 @@ namespace Raptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Desktop;
     using Raptor.OpenGL;
+    using Raptor.Services;
 
     /// <summary>
     /// Creates an instance of a raptor window.
@@ -20,6 +21,7 @@ namespace Raptor.Factories
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <returns>A raptor framework window implementation.</returns>
-        public static IWindow CreateWindow(int width, int height) => new GLWindow(width, height);
+        public static IWindow CreateWindow(int width, int height)
+            => new GLWindow(width, height, IoC.Container.GetInstance<ISystemMonitorService>());
     }
 }

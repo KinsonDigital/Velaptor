@@ -113,19 +113,20 @@ namespace RaptorTests.Content
         }
 
         [Theory]
-        [InlineData("content-item.png", @"C:\temp\Content\test-dir\content-item.png")]
-        [InlineData("content-item.ogg", @"C:\temp\Content\test-dir\content-item.ogg")]
-        [InlineData("content-item.json", @"C:\temp\Content\test-dir\content-item.json")]
-        public void GetContentPath_WhenInvokedWithFileExtension_ReturnsCorrectResult(string contentName, string expected)
+        [InlineData("content-item.png", @"C:\temp\", @"C:\temp\Content\test-dir\content-item.png")]
+        [InlineData("content-item.ogg", @"C:\temp\", @"C:\temp\Content\test-dir\content-item.ogg")]
+        [InlineData("content-item.json", @"C:\temp\", @"C:\temp\Content\test-dir\content-item.json")]
+        [InlineData("content-item.png", @"C:\", @"C:\Content\test-dir\content-item.json")]
+        public void GetContentPath_WhenInvokedWithFileExtension_ReturnsCorrectResult(string contentName, string rootDir, string expected)
         {
             // Arrange
             var contentSubFolder = string.Empty;
 
-            this.mockDirectory.Setup(m => m.GetFiles(@$"C:\temp\Content\test-dir"))
+            this.mockDirectory.Setup(m => m.GetFiles(Path.GetDirectoryName(expected)))
                 .Returns(new[] { expected });
 
             var loader = CreateContentSource();
-            loader.ContentRootDirectory = @"C:\temp\";
+            loader.ContentRootDirectory = rootDir;
 
             // Act
             var actual = loader.GetContentPath(contentName);
@@ -136,6 +137,23 @@ namespace RaptorTests.Content
 
         [Fact]
         public void GetContentPath_WhenContentItemDoesNotExist_ThrowsException()
+        {
+            // Arrange
+            this.mockDirectory.Setup(m => m.GetFiles(It.IsAny<string>()))
+                .Returns(new[] { "invalid-item.ogg" });
+
+            var source = CreateContentSource();
+            source.ContentRootDirectory = @"C:\temp\";
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            {
+                source.GetContentPath("content-item");
+            }, "The content item 'content-item' does not exist.");
+        }
+
+        [Fact]
+        public void GetContentPath_WhenContentItemHasTooManyMatches_ThrowsException()
         {
             // Arrange
             this.mockDirectory.Setup(m => m.GetFiles(It.IsAny<string>()))

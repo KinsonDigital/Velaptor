@@ -19,6 +19,7 @@ namespace Raptor.OpenGL
     using Raptor.Desktop;
     using Raptor.Factories;
     using Raptor.Input;
+    using Raptor.Services;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using GLWindowState = OpenTK.Windowing.Common.WindowState;
     using RaptorMouseButton = Raptor.Input.MouseButton;
@@ -36,6 +37,7 @@ namespace Raptor.OpenGL
         private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
         private readonly int cachedWindowWidth;
         private readonly int cachedWindowHeight;
+        private readonly ISystemMonitorService systemMonitorService;
         private GameWindowSettings? gameWinSettings;
         private NativeWindowSettings? nativeWinSettings;
         private CachedValue<StateOfWindow>? cachedWindowState;
@@ -54,11 +56,14 @@ namespace Raptor.OpenGL
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
-        public GLWindow(int width, int height)
+        public GLWindow(int width, int height, ISystemMonitorService systemMonitorService)
         {
-            this.cachedWindowWidth = width;
-            this.cachedWindowHeight = height;
+            this.cachedWindowWidth = width <= 0 ? 1 : width;
+            this.cachedWindowHeight = height <= 0 ? 1 : height;
+            this.systemMonitorService = systemMonitorService;
+
             SetupPropertyCaches();
+
             IGLInvoker.OpenGLInitialized += IGLInvoker_OpenGLInitialized;
         }
 
@@ -287,6 +292,11 @@ namespace Raptor.OpenGL
             this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
             this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
             this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+            if (!(this.cachedPosition is null))
+            {
+                this.cachedPosition.IsCaching = false;
+            }
 
             if (!(this.cachedWindowState is null))
             {
@@ -540,8 +550,28 @@ namespace Raptor.OpenGL
                         this.appWindow.Title = value;
                     }));
 
+            SysVector2 defaultPosition = SysVector2.Zero;
+
+            var mainMonitor = this.systemMonitorService.MainMonitor;
+
+            var platform = new Platform();
+
+            float ToMonitorScale(float value)
+            {
+                return value * (mainMonitor is null ? 0 : mainMonitor.HorizontalDPI) /
+                    (platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
+            }
+
+            var halfWidth = ToMonitorScale(this.cachedWindowWidth / 2f);
+            var halfHeight = ToMonitorScale(this.cachedWindowHeight / 2f);
+
+            if (!(mainMonitor is null))
+            {
+                defaultPosition = new SysVector2(mainMonitor.Center.X - halfHeight, mainMonitor.Center.Y - halfHeight);
+            }
+
             this.cachedPosition = new CachedValue<SysVector2>(
-                defaultValue: SysVector2.Zero,
+                defaultValue: defaultPosition,
                 getterWhenNotCaching: () =>
                 {
                     if (this.appWindow is null)
