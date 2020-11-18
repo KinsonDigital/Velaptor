@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
 namespace Raptor.Content
 {
     using Raptor.Audio;
