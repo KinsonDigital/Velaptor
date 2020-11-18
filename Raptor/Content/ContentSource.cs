@@ -1,4 +1,4 @@
-﻿// <copyright file="ContentSource.cs" company="KinsonDigital">
+// <copyright file="ContentSource.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,9 +18,9 @@ namespace Raptor.Content
     /// </summary>
     public abstract class ContentSource : IContentSource
     {
-        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
         private readonly IDirectory directory;
-        private string contentRootDirectory = @$"{BaseDir}Content\";
+        private string contentRootDirectory = @$"{BaseDir}Content{Path.DirectorySeparatorChar}";
         private string contentDirName = string.Empty;
 
         /// <summary>
@@ -38,9 +38,9 @@ namespace Raptor.Content
                 value = string.IsNullOrEmpty(value) ? BaseDir : value;
 
                 // If the value ends with a backslash, leave as is, else add one
-                value = value.EndsWith(Path.DirectorySeparatorChar) ? value : $@"{value}\";
+                value = value.EndsWith(Path.DirectorySeparatorChar) ? value : $@"{value}{Path.DirectorySeparatorChar}";
 
-                this.contentRootDirectory = $@"{value}Content\";
+                this.contentRootDirectory = $@"{value}Content{Path.DirectorySeparatorChar}";
             }
         }
 
@@ -76,8 +76,8 @@ namespace Raptor.Content
             // If the name has an extension, remove it
             if (Path.HasExtension(name))
             {
-                // NOTE: No localization required
-                name = $@"{Path.GetDirectoryName(name)}\{Path.GetFileNameWithoutExtension(name)}".Replace(@"\", string.Empty, StringComparison.OrdinalIgnoreCase);
+                name = $@"{Path.GetDirectoryName(name)}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(name)}"
+                    .Replace($"{Path.DirectorySeparatorChar}", string.Empty, StringComparison.OrdinalIgnoreCase);
             }
 
             var filePath = string.Empty;
@@ -86,7 +86,7 @@ namespace Raptor.Content
                 ? this.contentRootDirectory.TrimEnd(Path.DirectorySeparatorChar)
                 : this.contentRootDirectory;
 
-            filePath = $@"{this.contentRootDirectory}\{this.contentDirName}\{name}";
+            filePath = $@"{this.contentRootDirectory}{Path.DirectorySeparatorChar}{this.contentDirName}{Path.DirectorySeparatorChar}{name}";
 
             var directory = Path.GetDirectoryName(filePath);
             var fileNameNoExt = Path.GetFileNameWithoutExtension(filePath).ToUpperInvariant();

@@ -5,6 +5,7 @@
 namespace RaptorTests.Hardware
 {
     using System.Collections.Generic;
+    using System.Numerics;
     using System.Runtime.InteropServices;
     using Moq;
     using Raptor;
@@ -95,6 +96,23 @@ namespace RaptorTests.Hardware
 
             // Assert
             Assert.Equal(expectedDPI, actual);
+        }
+
+        [Fact]
+        public void Center_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var monitor = new SystemMonitor(new Mock<IPlatform>().Object)
+            {
+                Width = 100,
+                Height = 200,
+            };
+
+            // Act
+            var actual = monitor.Center;
+
+            // Assert
+            Assert.Equal(new Vector2(50, 100), actual);
         }
         #endregion
 
