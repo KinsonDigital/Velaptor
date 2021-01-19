@@ -23,6 +23,7 @@ namespace RaptorSandBox
         private ISound? zapSound;
         private ISound? deadShipsMusic;
         private ISound? quietPlaceMusic;
+        private IKeyboard keyboard;
         private float timeElapsed;
         private int linkTexturePosX;
         private bool isDisposed;
@@ -31,6 +32,7 @@ namespace RaptorSandBox
             : base(window)
         {
             this.linkTexturePosX = 400;
+            this.keyboard = new Keyboard();
         }
 
         public override void OnLoad()
@@ -54,7 +56,7 @@ namespace RaptorSandBox
 
         public override void OnUpdate(FrameTime frameTime)
         {
-            this.currentKeyboardState = Keyboard.GetState();
+            this.currentKeyboardState = this.keyboard.GetState();
             this.currentMouseState = Mouse.GetMouseState();
 
             if (this.currentKeyboardState.IsKeyDown(KeyCode.Right))

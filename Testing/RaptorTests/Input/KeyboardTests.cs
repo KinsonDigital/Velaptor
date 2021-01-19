@@ -18,20 +18,22 @@ namespace RaptorTests.Input
         public void GetState_WhenInvokedWithNoKeyStates_SetsUpKeyStates()
         {
             // Act
-            Keyboard.GetState();
+            var keyboard = new Keyboard();
+            keyboard.GetState();
 
             // Assert
-            Assert.Equal(119, Keyboard.KeyStates.Count);
+            Assert.Equal(119, IKeyboard.KeyStates.Count);
         }
 
         [Fact]
         public void GetState_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
+            var keyboard = new Keyboard();
             Keyboard.SetKeyState(KeyCode.T, true);
 
             // Act
-            var actual = Keyboard.GetState();
+            var actual = keyboard.GetState();
 
             // Assert
             AssertHelpers.AllItemsAre(actual.GetKeyStates(), state =>
@@ -51,8 +53,9 @@ namespace RaptorTests.Input
         public void SetKeyState_WhenInvoked_SetsProperKey()
         {
             // Act
+            var keyboard = new Keyboard();
             Keyboard.SetKeyState(KeyCode.F, true);
-            var actual = Keyboard.GetState();
+            var actual = keyboard.GetState();
 
             // Assert
             AssertHelpers.AllItemsAre(actual.GetKeyStates(), state =>
