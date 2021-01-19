@@ -24,6 +24,7 @@ namespace RaptorSandBox
         private ISound? deadShipsMusic;
         private ISound? quietPlaceMusic;
         private IKeyboard keyboard;
+        private readonly Mouse mouse;
         private float timeElapsed;
         private int linkTexturePosX;
         private bool isDisposed;
@@ -33,6 +34,7 @@ namespace RaptorSandBox
         {
             this.linkTexturePosX = 400;
             this.keyboard = new Keyboard();
+            this.mouse = new Mouse();
         }
 
         public override void OnLoad()
@@ -57,7 +59,7 @@ namespace RaptorSandBox
         public override void OnUpdate(FrameTime frameTime)
         {
             this.currentKeyboardState = this.keyboard.GetState();
-            this.currentMouseState = Mouse.GetMouseState();
+            this.currentMouseState = this.mouse.GetMouseState();
 
             if (this.currentKeyboardState.IsKeyDown(KeyCode.Right))
             {
@@ -72,9 +74,14 @@ namespace RaptorSandBox
                 this.otherTexture = ContentLoader.Load<ITexture>("link.png");
             }
 
-            if (this.currentKeyboardState.IsKeyUp(KeyCode.P) && this.previousKeyboardState.IsKeyDown(KeyCode.P))
+            if (this.currentMouseState.IsLeftButtonUp() && this.previousMouseState.IsLeftButtonDown())
             {
                 this.quietPlaceMusic.PlaySound();
+            }
+
+            if (this.currentMouseState.IsRightButtonUp() && this.previousMouseState.IsRightButtonDown())
+            {
+                this.quietPlaceMusic.PauseSound();
             }
 
             if (this.timeElapsed < 1000)

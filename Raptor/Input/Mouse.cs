@@ -4,23 +4,17 @@
 
 namespace Raptor.Input
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Provides functionality for the mouse.
     /// </summary>
-    public static class Mouse
+    public class Mouse : IMouse
     {
-        private static readonly Dictionary<MouseButton, bool> ButtonStates = new Dictionary<MouseButton, bool>();
         private static int xPos;
         private static int yPos;
         private static int scrollWheelValue;
 
-        /// <summary>
-        /// Gets the current state of the mouse.
-        /// </summary>
-        /// <returns>The current state.</returns>
-        public static MouseState GetMouseState()
+        /// <inheritdoc/>
+        public MouseState GetMouseState()
         {
             var result = default(MouseState);
 
@@ -28,7 +22,7 @@ namespace Raptor.Input
             result.SetScrollWheelValue(scrollWheelValue);
 
             // Set all of the states for the buttons
-            foreach (var state in ButtonStates)
+            foreach (var state in IMouse.ButtonStates)
             {
                 result.SetButtonState(state.Key, state.Value);
             }
@@ -58,6 +52,6 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
         /// <param name="state">The state to set the button to.</param>
-        internal static void SetButtonState(MouseButton mouseButton, bool state) => ButtonStates[mouseButton] = state;
+        internal static void SetButtonState(MouseButton mouseButton, bool state) => IMouse.ButtonStates[mouseButton] = state;
     }
 }
