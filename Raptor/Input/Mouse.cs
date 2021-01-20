@@ -48,7 +48,7 @@ namespace Raptor.Input
         internal static void SetScrollWheelValue(int value) => scrollWheelValue = value;
 
         /// <summary>
-        /// Sets the state to the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
+        /// Sets the state of the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
         /// <param name="state">The state to set the button to.</param>
