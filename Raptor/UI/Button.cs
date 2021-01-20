@@ -114,7 +114,7 @@ namespace Raptor.UI
         /// Loads the content for the <see cref="Button"/>.
         /// </summary>
         /// <param name="contentLoader">The loader used to load the content.</param>
-        public void LoadContent(ContentLoader contentLoader)
+        public void LoadContent(IContentLoader contentLoader)
         {
         }
 
