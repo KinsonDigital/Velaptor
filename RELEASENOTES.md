@@ -1,5 +1,23 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.21.0</span>
+
+### **Breaking Changes** 💣
+
+1. Changed `Keyboard` class from static to non static
+   * Implemented new `IKeyboard` interface that the `Keyboard` class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container.
+2. Changed `Mouse` class from static to non static
+   * Implemented new `IMouse` interface that the `Mouse` class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container.
+3. Changed the `contentLoader` parameter type from a concrete `ContentLoader` type, to the `IContentLoader` interface type for the `LoadContent()` method in the `IContentLoadable` interface
+   * This is to follow along with the design of making things flexible and testable and aligns with the rest of the library
+
+### **Build/Release Pipelines** 🔁
+
+1. Updated the YAML file for the build pipeline to use the new `Build-Release-Servers` agent pool
+2. Added an additional task to the build, test, and publish artifact YAML template files to install `dotnet core 3.x sdk`
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.20.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
 
 ### **New** 🎉
