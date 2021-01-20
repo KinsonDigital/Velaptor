@@ -4,6 +4,7 @@ trigger:
     - develop # Development Environment
     - master # Production Environment
 
+
 variables:
 - name: solution
   value: '**/*.sln'
