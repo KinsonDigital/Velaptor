@@ -16,6 +16,13 @@ steps:
     vstsFeed: ${{parameters.vstsFeed}}
 
 
+- task: UseDotNet@2 #🟣
+  displayName: 'Install Dotnet Core SDK 3.x'
+  inputs:
+    packageType: 'sdk'
+    version: '3.x'
+
+
 - task: CmdLine@2 #🟣
   displayName: 'Create ${{parameters.projectName}} Nuget Package Artifact'
   inputs:
