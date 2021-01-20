@@ -24,7 +24,7 @@ variables:
 - name: kinsonDigitalNugetFeed
   value: '1020f331-f22a-4330-a69a-78abfe6f6372/4c644bf2-f1e8-4f28-a3df-3bc9d3283df9'    
 - name: pool
-  value: 'KinsonServer'
+  value: 'Build-Release-Servers'
 
 
 

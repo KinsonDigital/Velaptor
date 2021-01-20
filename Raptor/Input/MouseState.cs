@@ -146,13 +146,13 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="x">The X position of the mouse.</param>
         /// <param name="y">The Y position of the mouse.</param>
-        internal void SetPosition(int x, int y) => this.position = new Vector2(x, y);
+        public void SetPosition(int x, int y) => this.position = new Vector2(x, y);
 
         /// <summary>
         /// Sets the value of the scroll wheel.
         /// </summary>
         /// <param name="value">The value to set the scroll to.</param>
-        internal void SetScrollWheelValue(int value) => this.scrollWheelValue = value;
+        public void SetScrollWheelValue(int value) => this.scrollWheelValue = value;
 
         /// <summary>
         /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
@@ -160,7 +160,7 @@ namespace Raptor.Input
         /// <param name="mouseButton">The button to set.</param>
         /// <param name="state">The state to set the button to.</param>
         /// <remarks>If the button is set to <see cref="MouseButton.None"/>, all buttons will be set to false/up.</remarks>
-        internal void SetButtonState(MouseButton mouseButton, bool state)
+        public void SetButtonState(MouseButton mouseButton, bool state)
         {
             switch (mouseButton)
             {

@@ -15,6 +15,6 @@ namespace Raptor
         /// Load the content using the given <paramref name="contentLoader"/>.
         /// </summary>
         /// <param name="contentLoader">Used to load content.</param>
-        void LoadContent(ContentLoader contentLoader);
+        void LoadContent(IContentLoader contentLoader);
     }
 }

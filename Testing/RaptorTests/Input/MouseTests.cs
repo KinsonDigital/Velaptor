@@ -31,12 +31,13 @@ namespace RaptorTests.Input
         public void SetPosition_WhenInvoked_SetsPosition()
         {
             // Arrange
+            var mouse = new Mouse();
             var expected = default(MouseState);
             expected.SetPosition(11, 22);
 
             // Act
             Mouse.SetPosition(11, 22);
-            var actual = Mouse.GetMouseState();
+            var actual = mouse.GetMouseState();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -46,12 +47,13 @@ namespace RaptorTests.Input
         public void SetScrollWheelValue_WhenInvoked_SetsWheelValue()
         {
             // Arrange
+            var mouse = new Mouse();
             var expected = default(MouseState);
             expected.SetScrollWheelValue(123);
 
             // Act
             Mouse.SetScrollWheelValue(123);
-            var actual = Mouse.GetMouseState();
+            var actual = mouse.GetMouseState();
 
             // Assert
             Assert.Equal(expected, actual);

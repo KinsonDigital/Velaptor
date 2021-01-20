@@ -30,7 +30,6 @@ namespace RaptorTests.Input
             }
         }
 
-#pragma warning disable SA1005 // Single line comments should begin with single space
         public static IEnumerable<object[]> StandardNumberKeyCodeData =>
             new List<object[]>
             {
@@ -116,7 +115,6 @@ namespace RaptorTests.Input
                 new object[] { KeyCode.KeyPad8,     true },
                 new object[] { KeyCode.KeyPad9,     true },
             };
-#pragma warning restore SA1005 // Single line comments should begin with single space
 
         public static IEnumerable<object[]> LetterKeyUpperCaseCharacterData =>
             new List<object[]>
@@ -393,9 +391,10 @@ namespace RaptorTests.Input
         public void AnyKeysDown_WhenCheckingCertainKeysAndAtLeastOneOfThemIsDown_ReturnsTrue()
         {
             // Arrange
+            var keyboard = new Keyboard();
             var downKeys = new[] { KeyCode.H, KeyCode.I };
 
-            var state = Keyboard.GetState();
+            var state = keyboard.GetState();
             state.SetKeyState(KeyCode.H, true);
 
             // Act

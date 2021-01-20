@@ -388,7 +388,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="key">The key to set the state to.</param>
         /// <param name="state">The state of the key.</param>
-        internal void SetKeyState(KeyCode key, bool state)
+        public void SetKeyState(KeyCode key, bool state)
         {
             InitKeys();
 
