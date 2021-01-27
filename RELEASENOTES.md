@@ -1,5 +1,66 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.22.0</span>
+
+### **Breaking Changes** 💣
+
+1. Changed the `Sound` class to take in a full file path to the sound content instead of just a sound name
+   * Before this used a content source to resolve where the sound content was located
+   * The new `SoundLoader` is now responsible for resolving the path to the sound content before loading the sound
+2. The following types have changed their names
+   * `AtlasDataLoader` class name has been changed to `AtlasLoader`
+   * `IContentSource` class name has been changed to `IPathResolver`
+   * `ContentSource` class name has been changed to `ContentPathResolver`
+   * `AtlasContentSource` class has been changed to `AtlasJSONDataPathResolver`
+   * `SoundContentSource` class has been changed to `SoundPathResolver`
+
+### **New** 🎉
+
+1. Added the following methods to the `ContentLoaderFactory` class to create different kinds of content loaders
+   * `CreateTextureLoader()`
+   * `CreateTextureAtlasLoader()`
+   * `CreateSoundLoader()`
+2. `ContentSource` types are now called `Resolvers` and have been improved.  The following resolvers have been created to help resolve paths to various pieces of content
+   * `AtlasJSONDataPathResolver`
+   * `AtlasTexturePathResolver`
+   * `SoundPathResolver`
+   * `TexturePathResolver`
+5. Created a `PathResolverFactory` class to create instances of the different resolvers
+6. Created new types for loading texture atlas data such as texture atlas images and atlas sub texture data
+   * Created the following types to be used for loading of texture atlas's
+      * `IAtlasData`
+      * `AtlasData`
+      * `AtlasRepository`
+      * `AtlasSubTextureData`
+9. Made `MapValue()` overloads public to the library API for library users to use
+   * These extension methods can be used map a value from one range to another
+
+### **Tech Debt/Cleanup** 🧹
+
+1. Removed `VelcroPhysics.dll` library
+2. Removed the following classes/types
+   1. `PhysicsBody`
+   2. `PhysicsWorld`
+   3. `PhysicsBodySettings`
+   4. `VelcroBody`
+   5. `VelcroWorld`
+
+### **Improvements** 🌟
+
+1. Increase of code coverage with unit tests
+
+### **Nuget/Library Updates** 📦
+
+1. The following packages were updated for the unit testing project
+   * Removed nuget package **Microsoft.CodeAnalysis.FxCopAnalyers** *`v3.3.1`*
+   * Added **Microsoft.CodeAnalysis.NetAnalyers** from *`v5.0.3`*
+   * Updated nuget package **coverlet.msbuild** from *`v2.9.0`* to *`v3.0.2`*
+   * Updated nuget package **Microsoft.NET.Test.Sdk** from *`v16.8.0`* to *`v16.8.3`*
+   * Updated nuget package **Moq** from *`v4.15.1`* to *`v4.16.0`*
+   * Updated nuget package **System.IO.Abstractions** from *`v12.2.24`* to *`v13.2.9`*
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.21.0</span>
 
 ### **Breaking Changes** 💣
@@ -50,13 +111,13 @@
 
 ### **Nuget/Library Updates** 📦
 
-1. Update nuget package **OpenTK** from **v4.0.6** to **v4.2.0**
-2. Update nuget package **Microsoft.CodeAnalysis.FxCopAnalyzers** from **v3.3.0** to **v3.3.1**
-3. Update nuget package **SixLabors.ImageSharp** from **v1.1.1** to **v1.0.2**
-4. Update nuget package **System.IO.Abstractions** from **v12.2.7** to **v12.2.24**
-5. Update nuget package **Simplelnjector** from **v5.0.4** to **v5.1.0**
-6. Update nuget package **Moq** from **v4.14.7** to **v4.15.1**
-7. Update nuget package **Microsoft.NET.Test.Sdk** from **v16.7.1** to **v16.8.0**
+1. Updated nuget package **OpenTK** from **v4.0.6** to **v4.2.0**
+2. Updated nuget package **Microsoft.CodeAnalysis.FxCopAnalyzers** from **v3.3.0** to **v3.3.1**
+3. Updated nuget package **SixLabors.ImageSharp** from **v1.1.1** to **v1.0.2**
+4. Updated nuget package **System.IO.Abstractions** from **v12.2.7** to **v12.2.24**
+5. Updated nuget package **Simplelnjector** from **v5.0.4** to **v5.1.0**
+6. Updated nuget package **Moq** from **v4.14.7** to **v4.15.1**
+7. Updated nuget package **Microsoft.NET.Test.Sdk** from **v16.7.1** to **v16.8.0**
 
 ---
 

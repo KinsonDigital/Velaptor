@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1062 // Validate arguments of public methods
-
 namespace RaptorTests.Input
 {
     using System.Numerics;

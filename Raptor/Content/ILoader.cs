@@ -9,6 +9,7 @@ namespace Raptor.Content
     /// </summary>
     /// <typeparam name="T">The type of data to load.</typeparam>
     public interface ILoader<T>
+        where T : IContent
     {
         /// <summary>
         /// Loads data at the given <paramref name="contentNameOrPath"/>.

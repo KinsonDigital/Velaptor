@@ -12,7 +12,7 @@ namespace RaptorTests
     {
         #region Prop Tests
         [Fact]
-        public void IsCaching_WhenSettingToTrue_ReturnsCorrectValue()
+        public void IsCaching_WhenSettingToTrue_ReturnsCorrectResult()
         {
             // Arrange
             var cachedValue = new CachedValue<int>(

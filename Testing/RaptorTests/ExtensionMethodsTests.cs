@@ -16,35 +16,35 @@ namespace RaptorTests
     {
         #region Method Tests
         [Fact]
-        public void ForcePositive_WhenUsingNegativeValue_ReturnsPositiveValue()
+        public void ForcePositive_WhenUsingNegativeValue_ReturnsPositiveResult()
         {
             // Act & Assert
             Assert.Equal(123f, (-123f).ForcePositive());
         }
 
         [Fact]
-        public void ForcePositive_WhenUsingPositiveValue_ReturnsPositiveValue()
+        public void ForcePositive_WhenUsingPositiveValue_ReturnsPositiveResult()
         {
             // Act & Assert
             Assert.Equal(123f, 123f.ForcePositive());
         }
 
         [Fact]
-        public void ForceNegative_WhenUsingPositiveValue_ReturnsNegativeValue()
+        public void ForceNegative_WhenUsingPositiveValue_ReturnsNegativeResult()
         {
             // Act & Assert
             Assert.Equal(-123f, 123f.ForceNegative());
         }
 
         [Fact]
-        public void ForceNegative_WhenUsingNegativeValue_ReturnsNegativeValue()
+        public void ForceNegative_WhenUsingNegativeValue_ReturnsNegativeResult()
         {
             // Act & Assert
             Assert.Equal(-123f, (-123f).ForceNegative());
         }
 
         [Fact]
-        public void ToRadians_WhenInvoking_ReturnsCorrectValue()
+        public void ToRadians_WhenInvoking_ReturnsCorrectResult()
         {
             // Act & Assert
             Assert.Equal(70710.06f, 1234.1234f.ToDegrees());

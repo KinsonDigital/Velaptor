@@ -13,7 +13,6 @@ namespace Raptor.Audio
     using System.IO;
     using System.Linq;
     using OpenTK.Audio.OpenAL;
-    using Raptor.Content;
     using Raptor.Factories;
     using Raptor.OpenAL;
 
@@ -34,8 +33,7 @@ namespace Raptor.Audio
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
         private readonly IALInvoker alInvoker;
-        private readonly IContentSource contentSource;
-        private readonly string name;
+        private readonly string filePath;
         private int srcId;
         private int bufferId;
         private bool isDisposed;
@@ -44,11 +42,11 @@ namespace Raptor.Audio
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
         /// </summary>
-        /// <param name="name">The name of the content item to load.</param>
+        /// <param name="filePath">The path to the sound file..</param>
         [ExcludeFromCodeCoverage]
-        public Sound(string name)
+        public Sound(string filePath)
         {
-            this.name = name;
+            this.filePath = filePath;
 
             this.alInvoker = new ALInvoker
             {
@@ -60,23 +58,21 @@ namespace Raptor.Audio
 
             this.audioManager = AudioDeviceManagerFactory.CreateDeviceManager();
             this.audioManager.DeviceChanged += AudioManager_DeviceChanged;
-
-            this.contentSource = IoC.Container.GetInstance<IContentSource>();
             Init();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
         /// </summary>
-        /// <param name="name">The name of the content to load.</param>
+        /// <param name="filePath">The path to the sound file.</param>
         /// <param name="alInvoker">Provides access to OpenAL.</param>
         /// <param name="audioManager">Manages audio related operations.</param>
         /// <param name="oggDecoder">Decodes OGG audio files.</param>
         /// <param name="mp3Decoder">Decodes MP3 audio files.</param>
-        /// <param name="contentSource">Provides access to the source of content.</param>
-        internal Sound(string name, IALInvoker alInvoker, IAudioDeviceManager audioManager, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder, IContentSource contentSource)
+        /// <param name="soundPathResolver">Resolves paths to sound content.</param>
+        internal Sound(string filePath, IALInvoker alInvoker, IAudioDeviceManager audioManager, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
         {
-            this.name = name;
+            this.filePath = filePath;
 
             this.alInvoker = alInvoker;
             this.alInvoker.ErrorCallback = ErrorCallback;
@@ -87,13 +83,11 @@ namespace Raptor.Audio
             this.audioManager = audioManager;
             this.audioManager.DeviceChanged += AudioManager_DeviceChanged;
 
-            this.contentSource = contentSource;
-
             Init();
         }
 
         /// <inheritdoc/>
-        public string Name => Path.GetFileNameWithoutExtension(this.name);
+        public string Name => Path.GetFileNameWithoutExtension(this.filePath);
 
         /// <inheritdoc/>
         public float Volume
@@ -302,21 +296,19 @@ namespace Raptor.Audio
 
             (this.srcId, this.bufferId) = this.audioManager.InitSound();
 
-            var fileName = this.contentSource.GetContentPath(this.name);
-
-            var extension = Path.GetExtension(fileName);
+            var extension = Path.GetExtension(this.filePath);
 
             switch (extension)
             {
                 case ".ogg":
-                    var oggData = this.oggDecoder.LoadData(fileName);
+                    var oggData = this.oggDecoder.LoadData(this.filePath);
 
                     this.totalSeconds = oggData.TotalSeconds;
 
                     UploadOggData(oggData);
                     break;
                 case ".mp3":
-                    var mp3Data = this.mp3Decoder.LoadData(fileName);
+                    var mp3Data = this.mp3Decoder.LoadData(this.filePath);
 
                     this.totalSeconds = mp3Data.TotalSeconds;
 

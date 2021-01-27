@@ -159,7 +159,7 @@ namespace Raptor.OpenGL
         /// <remarks>
         ///     Refer to http://docs.gl/gl4/glGet for more information.
         /// </remarks>
-        void GetInteger(GetPName pname, int[]data);
+        void GetInteger(GetPName pname, int[] data);
 
         /// <summary>
         /// Gets the size of the viewport.

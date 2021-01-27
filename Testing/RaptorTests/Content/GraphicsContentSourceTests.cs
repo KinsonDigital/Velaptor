@@ -10,7 +10,7 @@ namespace RaptorTests.Content
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="GraphicsContentSource"/> class.
+    /// Tests the <see cref="TexturePathResolver"/> class.
     /// </summary>
     public class GraphicsContentSourceTests
     {
@@ -22,8 +22,8 @@ namespace RaptorTests.Content
             var mockDirectory = new Mock<IDirectory>();
 
             // Act
-            var source = new GraphicsContentSource(mockDirectory.Object);
-            var actual = source.ContentDirectoryName;
+            var source = new TexturePathResolver(mockDirectory.Object);
+            var actual = source.FileDirectoryName;
 
             // Assert
             Assert.Equal("Graphics", actual);

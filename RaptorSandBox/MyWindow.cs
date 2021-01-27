@@ -1,4 +1,5 @@
-﻿using Raptor;
+﻿using Newtonsoft.Json;
+using Raptor;
 using Raptor.Audio;
 using Raptor.Content;
 using Raptor.Desktop;
@@ -6,14 +7,13 @@ using Raptor.Factories;
 using Raptor.Graphics;
 using Raptor.Input;
 using System;
+using System.Drawing;
 
 namespace RaptorSandBox
 {
     public class MyWindow : Window
     {
-        private ITexture? linkTexture;
-        private ITexture? dungeonTexture;
-        private ITexture? otherTexture;
+        private IAtlasData? subTextureAtlas;
         private readonly AtlasRegionRectangle[] atlasData;
         private ISpriteBatch? spriteBatch;
         private KeyboardState currentKeyboardState;
@@ -28,6 +28,8 @@ namespace RaptorSandBox
         private float timeElapsed;
         private int linkTexturePosX;
         private bool isDisposed;
+        private int currentFrameIndex;
+        private Rectangle currentFrame;
 
         public MyWindow(IWindow window)
             : base(window)
@@ -40,38 +42,32 @@ namespace RaptorSandBox
         public override void OnLoad()
         {
             if (ContentLoader is null)
+            {
                 throw new NullReferenceException($"The ContentLoader must not be null.");
+            }
 
             this.spriteBatch = SpriteBatchFactory.CreateSpriteBatch(Width, Height);
 
-            this.dungeonTexture = ContentLoader.Load<ITexture>("dungeon.png");
-            this.linkTexture = ContentLoader.Load<ITexture>("Link.png");
-            //this.zapSound = ContentLoader.LoadSound("zap.ogg");
-            //this.deadShipsMusic = ContentLoader.LoadSound("deadships.ogg");
-            //this.deadShipsMusic.SetTimePosition(60);
+            this.subTextureAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
 
             this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
 
+
             base.OnLoad();
         }
 
+        private int elapsedFrameTime = 0;
+
         public override void OnUpdate(FrameTime frameTime)
         {
+            ProcessAnimation(frameTime);
             this.currentKeyboardState = this.keyboard.GetState();
             this.currentMouseState = this.mouse.GetMouseState();
 
             if (this.currentKeyboardState.IsKeyDown(KeyCode.Right))
             {
                 this.linkTexturePosX += 1;
-            }
-
-            if (this.currentKeyboardState.IsKeyUp(KeyCode.Space) && this.previousKeyboardState.IsKeyDown(KeyCode.Space))
-            {
-                //this.WindowState = StateOfWindow.Minimized;
-                //var headPhones = AudioDevice.DeviceNames.Where(n => n.Contains("WH-1000XM3 Hands-Free AG Audio")).ToArray().FirstOrDefault();
-                //AudioDevice.ChangeDevice(headPhones);
-                this.otherTexture = ContentLoader.Load<ITexture>("link.png");
             }
 
             if (this.currentMouseState.IsLeftButtonUp() && this.previousMouseState.IsLeftButtonDown())
@@ -95,28 +91,34 @@ namespace RaptorSandBox
             }
 
 
-            this.previousKeyboardState =  this.currentKeyboardState;
+            this.previousKeyboardState = this.currentKeyboardState;
             this.previousMouseState = this.currentMouseState;
 
             base.OnUpdate(frameTime);
         }
 
+        private void ProcessAnimation(FrameTime frameTime)
+        {
+            if (this.elapsedFrameTime >= 62)
+            {
+                this.elapsedFrameTime = 0;
+
+                this.currentFrameIndex += 1;
+                this.currentFrameIndex = this.currentFrameIndex > 5 ? 0 : this.currentFrameIndex;
+            }
+            else
+            {
+                this.elapsedFrameTime += frameTime.ElapsedTime.Milliseconds;
+            }
+        }
+
         public override void OnDraw(FrameTime frameTime)
         {
-            if (this.dungeonTexture is null || this.linkTexture is null)
-            {
-                return;
-            }
-
             this.spriteBatch?.BeginBatch();
 
-            this.spriteBatch?.Render(this.dungeonTexture, 0, 0);
-            this.spriteBatch?.Render(this.linkTexture, this.linkTexturePosX, 400);
+            var subTexture = this.subTextureAtlas[this.currentFrameIndex];
 
-            if (this.otherTexture != null)
-            {
-                this.spriteBatch?.Render(this.otherTexture, 500, 100);
-            }
+            this.spriteBatch?.Render(this.subTextureAtlas.Texture, subTexture.Bounds, new Rectangle(100, 100, 500, 100), 1, 0, Color.White);
 
             this.spriteBatch?.EndBatch();
 
@@ -131,8 +133,7 @@ namespace RaptorSandBox
             {
                 if (disposing)
                 {
-                    this.linkTexture?.Dispose();
-                    this.dungeonTexture?.Dispose();
+                    this.subTextureAtlas?.Dispose();
                     this.spriteBatch?.Dispose();
                     this.quietPlaceMusic?.Dispose();
                 }
