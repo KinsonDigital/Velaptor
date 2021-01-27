@@ -16,38 +16,40 @@ namespace Raptor.Content
     {
         private readonly IGLInvoker gl;
         private readonly IImageFileService imageFileService;
-        private readonly IContentSource contentSource;
+        private readonly IPathResolver pathResolver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
         /// <param name="imageFileService">Loads an image file.</param>
-        /// <param name="contentSource">Provides access to the content source.</param>
+        /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         [ExcludeFromCodeCoverage]
-        public TextureLoader(IImageFileService imageFileService, IContentSource contentSource)
+        public TextureLoader(IImageFileService imageFileService, IPathResolver texturePathResolver)
         {
             this.gl = new GLInvoker();
             this.imageFileService = imageFileService;
-            this.contentSource = contentSource;
+            this.pathResolver = texturePathResolver;
         }
 
+        // TODO: Check if this is needed or being used, and if not, remove it
+        // The IoC container might use it
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="imageFileService">Loads an image file.</param>
-        /// <param name="contentSource">Provides access to the content source.</param>
-        internal TextureLoader(IGLInvoker gl, IImageFileService imageFileService, IContentSource contentSource)
+        /// <param name="texturePathResolver">Resolves paths to texture content.</param>
+        internal TextureLoader(IGLInvoker gl, IImageFileService imageFileService, IPathResolver texturePathResolver)
         {
             this.gl = gl;
             this.imageFileService = imageFileService;
-            this.contentSource = contentSource;
+            this.pathResolver = texturePathResolver;
         }
 
         /// <inheritdoc/>
         public ITexture Load(string name)
         {
-            var filePath = this.contentSource.GetContentPath(name);
+            var filePath = this.pathResolver.ResolveFilePath(name);
             var (pixels, width, height) = this.imageFileService.Load(filePath);
 
             return new Texture(this.gl, name, pixels, width, height);

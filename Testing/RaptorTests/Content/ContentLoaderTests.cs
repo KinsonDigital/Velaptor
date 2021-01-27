@@ -20,6 +20,7 @@ namespace RaptorTests.Content
     {
         private readonly Mock<ILoader<ITexture>> mockTextureLoader;
         private readonly Mock<ILoader<ISound>> mockSoundLoader;
+        private readonly Mock<ILoader<IAtlasData>> mockAtlasLoader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoaderTests"/> class.
@@ -28,6 +29,7 @@ namespace RaptorTests.Content
         {
             this.mockTextureLoader = new Mock<ILoader<ITexture>>();
             this.mockSoundLoader = new Mock<ILoader<ISound>>();
+            this.mockAtlasLoader = new Mock<ILoader<IAtlasData>>();
         }
 
         #region Method Tests
@@ -77,6 +79,7 @@ namespace RaptorTests.Content
         /// <returns>A content loader instance to use for testing.</returns>
         private ContentLoader CreateContentLoader()
             => new ContentLoader(this.mockTextureLoader.Object,
-                                 this.mockSoundLoader.Object);
+                                 this.mockSoundLoader.Object,
+                                 this.mockAtlasLoader.Object);
     }
 }

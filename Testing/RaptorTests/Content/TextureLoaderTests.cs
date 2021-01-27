@@ -18,7 +18,7 @@ namespace RaptorTests.Content
     {
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IImageFileService> mockImageFileService;
-        private readonly Mock<IContentSource> mockContentSource;
+        private readonly Mock<IPathResolver> mockTexturePathResolver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
@@ -27,7 +27,7 @@ namespace RaptorTests.Content
         {
             this.mockGL = new Mock<IGLInvoker>();
             this.mockImageFileService = new Mock<IImageFileService>();
-            this.mockContentSource = new Mock<IContentSource>();
+            this.mockTexturePathResolver = new Mock<IPathResolver>();
         }
 
         #region Method Tests
@@ -35,7 +35,7 @@ namespace RaptorTests.Content
         public void Load_WhenInvoked_LoadsTexture()
         {
             // Arrange
-            var loader = new TextureLoader(this.mockGL.Object, this.mockImageFileService.Object, this.mockContentSource.Object);
+            var loader = new TextureLoader(this.mockGL.Object, this.mockImageFileService.Object, this.mockTexturePathResolver.Object);
 
             // Act
             var actual = loader.Load("test-file");

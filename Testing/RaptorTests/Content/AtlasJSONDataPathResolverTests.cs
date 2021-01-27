@@ -1,4 +1,4 @@
-﻿// <copyright file="AtlasContentSourceTests.cs" company="KinsonDigital">
+﻿// <copyright file="AtlasJSONDataPathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,23 +10,23 @@ namespace RaptorTests.Content
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="AtlasContentSource"/> class.
+    /// Tests the <see cref="AtlasJSONDataPathResolver"/> class.
     /// </summary>
-    public class AtlasContentSourceTests
+    public class AtlasJSONDataPathResolverTests
     {
         #region Constructor Tests
         [Fact]
-        public void Ctor_WhenInvoked_SetsContentDirectoryNameToCorrectValue()
+        public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
         {
             // Arrange
             var mockDirectory = new Mock<IDirectory>();
 
             // Act
-            var source = new AtlasContentSource(mockDirectory.Object);
-            var actual = source.ContentDirectoryName;
+            var source = new AtlasJSONDataPathResolver(mockDirectory.Object);
+            var actual = source.FileDirectoryName;
 
             // Assert
-            Assert.Equal("Atlases", actual);
+            Assert.Equal("Atlas", actual);
         }
         #endregion
     }

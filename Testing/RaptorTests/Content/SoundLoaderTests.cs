@@ -8,10 +8,8 @@ namespace RaptorTests.Content
     using Moq;
     using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
-    using Raptor.Audio.Exceptions;
     using Raptor.Content;
     using Raptor.OpenAL;
-    using RaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -19,9 +17,11 @@ namespace RaptorTests.Content
     /// </summary>
     public class SoundLoaderTests
     {
+        private const string OggSoundDirPath = @"C:\temp\Content\Sounds\";
+        private readonly string oggSoundFilepath;
         private readonly Mock<IALInvoker> mockAlInvoker;
         private readonly Mock<IAudioDeviceManager> mockAudioManager;
-        private readonly Mock<IContentSource> mockContentSource;
+        private readonly Mock<IPathResolver> mockSoundPathResolver;
         private readonly Mock<ISoundDecoder<float>> mockOggDecoder;
         private readonly Mock<ISoundDecoder<byte>> mockMp3Decoder;
 
@@ -30,16 +30,17 @@ namespace RaptorTests.Content
         /// </summary>
         public SoundLoaderTests()
         {
+            this.oggSoundFilepath = $"{OggSoundDirPath}sound.ogg";
             this.mockAlInvoker = new Mock<IALInvoker>();
             this.mockAlInvoker.Setup(m => m.MakeContextCurrent(It.IsAny<ALContext>())).Returns(true);
 
             this.mockAudioManager = new Mock<IAudioDeviceManager>();
 
-            this.mockContentSource = new Mock<IContentSource>();
-            this.mockContentSource.Setup(m => m.GetContentPath("sound.ogg")).Returns(@"C:\temp\Content\Sounds\sound.ogg");
+            this.mockSoundPathResolver = new Mock<IPathResolver>();
+            this.mockSoundPathResolver.Setup(m => m.ResolveFilePath("sound")).Returns(this.oggSoundFilepath);
 
             this.mockOggDecoder = new Mock<ISoundDecoder<float>>();
-            this.mockOggDecoder.Setup(m => m.LoadData(@"C:\temp\Content\Sounds\sound.ogg"))
+            this.mockOggDecoder.Setup(m => m.LoadData(this.oggSoundFilepath))
                 .Returns(() =>
                 {
                     var result = default(SoundData<float>);
@@ -53,29 +54,16 @@ namespace RaptorTests.Content
 
         #region Method Tests
         [Fact]
-        public void Load_WhenUsingUnsupportedExtension_ThrowsException()
-        {
-            // Arrange
-            var loader = CreateSoundLoader();
-
-            // Act & Assert
-            AssertHelpers.ThrowsWithMessage<UnsupportedSoundTypeException>(() =>
-            {
-                loader.Load("sound.wav");
-            }, "The extension '.wav' is not supported.  Supported audio files are '.ogg' and '.mp3'.");
-        }
-
-        [Fact]
-        public void Load_WhenInvoked_ReturnsCorrectResult()
+        public void Load_WhenInvoked_SoundNotNull()
         {
             // Arrange
             var loader = CreateSoundLoader();
 
             // Act
-            var actual = loader.Load("sound.ogg");
+            var actual = loader.Load("sound");
 
             // Assert
-            Assert.Equal("sound", actual.Name);
+            Assert.NotNull(actual);
         }
         #endregion
 
@@ -86,7 +74,7 @@ namespace RaptorTests.Content
         private SoundLoader CreateSoundLoader() => new SoundLoader(
             this.mockAlInvoker.Object,
             this.mockAudioManager.Object,
-            this.mockContentSource.Object,
+            this.mockSoundPathResolver.Object,
             this.mockOggDecoder.Object,
             this.mockMp3Decoder.Object);
     }

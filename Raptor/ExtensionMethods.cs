@@ -5,6 +5,8 @@
 namespace Raptor
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.IO;
@@ -23,28 +25,64 @@ namespace Raptor
         /// </summary>
         /// <param name="radians">The value to convert.</param>
         /// <returns>The radians converted into degrees.</returns>
-        internal static float ToDegrees(this float radians) => radians * 180.0f / (float)Math.PI;
+        public static float ToDegrees(this float radians) => radians * 180.0f / (float)Math.PI;
 
         /// <summary>
         /// Converts the given <paramref name="degrees"/> value into radians.
         /// </summary>
         /// <param name="degrees">The value to convert.</param>
         /// <returns>The degrees converted into radians.</returns>
-        internal static float ToRadians(this float degrees) => degrees * (float)Math.PI / 180f;
+        public static float ToRadians(this float degrees) => degrees * (float)Math.PI / 180f;
 
         /// <summary>
         /// Sets the value to positive if its negative.
         /// </summary>
         /// <param name="value">The value to force.</param>
         /// <returns>The value as a positive number.</returns>
-        internal static float ForcePositive(this float value) => value < 0 ? value * -1 : value;
+        public static float ForcePositive(this float value) => value < 0 ? value * -1 : value;
 
         /// <summary>
         /// Sets the value to negative if its positive.
         /// </summary>
         /// <param name="value">The value to force.</param>
         /// <returns>The value as a negative number.</returns>
-        internal static float ForceNegative(this float value) => value > 0 ? value * -1 : value;
+        public static float ForceNegative(this float value) => value > 0 ? value * -1 : value;
+
+        /// <summary>
+        /// Maps the given <paramref name="value"/> from one range to another.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="fromStart">The from starting range value.</param>
+        /// <param name="fromStop">The from ending range value.</param>
+        /// <param name="toStart">The to starting range value.</param>
+        /// <param name="toStop">The to ending range value.</param>
+        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
+        public static float MapValue(this int value, float fromStart, float fromStop, float toStart, float toStop)
+            => MapValue((float)value, fromStart, fromStop, toStart, toStop);
+
+        /// <summary>
+        /// Maps the given <paramref name="value"/> from one range to another.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="fromStart">The from starting range value.</param>
+        /// <param name="fromStop">The from ending range value.</param>
+        /// <param name="toStart">The to starting range value.</param>
+        /// <param name="toStop">The to ending range value.</param>
+        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
+        public static float MapValue(this float value, float fromStart, float fromStop, float toStart, float toStop)
+            => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
+
+        /// <summary>
+        /// Maps the given <paramref name="value"/> from one range to another.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="fromStart">The from starting range value.</param>
+        /// <param name="fromStop">The from ending range value.</param>
+        /// <param name="toStart">The to starting range value.</param>
+        /// <param name="toStop">The to ending range value.</param>
+        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
+        public static byte MapValue(this byte value, byte fromStart, byte fromStop, byte toStart, byte toStop)
+            => (byte)(toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart))));
 
         /// <summary>
         /// Rotates the <paramref name="vector"/> around the <paramref name="origin"/> at the given <paramref name="angle"/>.
@@ -97,42 +135,6 @@ namespace Raptor
             var vec4 = value.ToVector4();
             return vec4.MapValues(0, 255, 0, 1);
         }
-
-        /// <summary>
-        /// Maps the given <paramref name="value"/> from one range to another.
-        /// </summary>
-        /// <param name="value">The value to map.</param>
-        /// <param name="fromStart">The from starting range value.</param>
-        /// <param name="fromStop">The from ending range value.</param>
-        /// <param name="toStart">The to starting range value.</param>
-        /// <param name="toStop">The to ending range value.</param>
-        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        internal static float MapValue(this int value, float fromStart, float fromStop, float toStart, float toStop)
-            => MapValue((float)value, fromStart, fromStop, toStart, toStop);
-
-        /// <summary>
-        /// Maps the given <paramref name="value"/> from one range to another.
-        /// </summary>
-        /// <param name="value">The value to map.</param>
-        /// <param name="fromStart">The from starting range value.</param>
-        /// <param name="fromStop">The from ending range value.</param>
-        /// <param name="toStart">The to starting range value.</param>
-        /// <param name="toStop">The to ending range value.</param>
-        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        internal static float MapValue(this float value, float fromStart, float fromStop, float toStart, float toStop)
-            => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
-
-        /// <summary>
-        /// Maps the given <paramref name="value"/> from one range to another.
-        /// </summary>
-        /// <param name="value">The value to map.</param>
-        /// <param name="fromStart">The from starting range value.</param>
-        /// <param name="fromStop">The from ending range value.</param>
-        /// <param name="toStart">The to starting range value.</param>
-        /// <param name="toStop">The to ending range value.</param>
-        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        internal static byte MapValue(this byte value, byte fromStart, byte fromStop, byte toStart, byte toStop)
-            => (byte)(toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart))));
 
         /// <summary>
         /// Maps each component of the vector to from one range to another.
@@ -228,6 +230,15 @@ namespace Raptor
 
             return dirNames[^1];
         }
+
+        /// <summary>
+        /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
+        /// <param name="items">The items to convert.</param>
+        /// <returns>The items as a read only collection.</returns>
+        internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
+            => new ReadOnlyCollection<T>(items.ToList());
 
         /// <summary>
         /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they

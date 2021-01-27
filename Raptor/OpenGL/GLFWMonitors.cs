@@ -81,11 +81,6 @@ namespace Raptor.OpenGL
                 newMonitor.HorizontalScale = monitorScale.X;
                 newMonitor.VerticalScale = monitorScale.Y;
 
-                if (this.monitors == null)
-                {
-                    break;
-                }
-
                 this.monitors.Add(newMonitor);
             }
         }

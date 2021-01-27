@@ -2,6 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("RaptorTests", AllInternalsVisible = true)]
+
 #pragma warning disable SA1116 // Split parameters should start on line after declaration
 namespace Raptor
 {
@@ -111,30 +115,6 @@ namespace Raptor
         /// <summary>
         /// Setup container registration related to content.
         /// </summary>
-        private static void SetupContent()
-        {
-            IoCContainer.RegisterConditional<IContentSource, GraphicsContentSource>(context =>
-            {
-                return context.Consumer.ImplementationType == typeof(TextureLoader);
-            });
-
-            IoCContainer.RegisterConditional<IContentSource, SoundContentSource>(context =>
-            {
-                return context.Consumer.ImplementationType == typeof(SoundLoader);
-            });
-
-            IoCContainer.RegisterConditional<IContentSource, AtlasContentSource>(context =>
-            {
-                return context.Consumer.ImplementationType == typeof(AtlasDataLoader<AtlasRegionRectangle>);
-            });
-
-            IoCContainer.Register<ILoader<ITexture>, TextureLoader>();
-
-            IoCContainer.Register<IContentLoader, ContentLoader>();
-
-            IoCContainer.Register<ILoader<ISound>, SoundLoader>();
-
-            IoCContainer.Register<ILoader<AtlasRegionRectangle[]>, AtlasDataLoader<AtlasRegionRectangle>>();
-        }
+        private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>();
     }
 }

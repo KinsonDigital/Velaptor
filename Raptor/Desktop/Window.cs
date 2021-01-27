@@ -7,7 +7,6 @@ namespace Raptor.Desktop
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
-    using System.Threading;
     using System.Threading.Tasks;
     using Raptor.Content;
 

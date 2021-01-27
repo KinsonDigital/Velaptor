@@ -1,0 +1,38 @@
+[
+  {
+    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "Bounds": "0, 0, 75, 50",
+    "FrameIndex": 0,
+    "Name": "sub"
+  },
+  {
+    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "Bounds": "76, 0, 75, 50",
+    "FrameIndex": 1,
+    "Name": "sub"
+  },
+  {
+    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "Bounds": "152, 0, 75, 50",
+    "FrameIndex": 2,
+    "Name": "sub"
+  },
+  {
+    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "Bounds": "228, 0, 75, 50",
+    "FrameIndex": 3,
+    "Name": "sub"
+  },
+  {
+    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "Bounds": "304, 0, 75, 50",
+    "FrameIndex": 4,
+    "Name": "sub"
+  },
+  {
+    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "Bounds": "380, 0, 75, 50",
+    "FrameIndex": 5,
+    "Name": "sub"
+  }
+]
