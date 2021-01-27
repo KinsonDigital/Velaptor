@@ -18,7 +18,7 @@ namespace Raptor.Factories
         private static IPathResolver? atlasJSONDataPathResolver;
         private static IPathResolver? soundPathResolver;
 
-        /// <summary> 
+        /// <summary>
         /// Creates a path resolver that resolves paths to texture content.
         /// </summary>
         /// <returns>The resolver to texture content.</returns>

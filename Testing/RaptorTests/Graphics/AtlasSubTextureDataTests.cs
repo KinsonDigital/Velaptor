@@ -8,6 +8,9 @@ namespace RaptorTests.Graphics
     using Raptor.Graphics;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="AtlasSubTextureData"/> class.
+    /// </summary>
     public class AtlasSubTextureDataTests
     {
         #region Prop Tests

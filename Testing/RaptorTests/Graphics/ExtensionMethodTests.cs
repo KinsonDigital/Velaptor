@@ -7,6 +7,9 @@ namespace RaptorTests.Graphics
     using Raptor.Graphics;
     using Xunit;
 
+    /// <summary>
+    /// Tests the various helper extension methods.
+    /// </summary>
     public class ExtensionMethodTests
     {
         #region Method Tests

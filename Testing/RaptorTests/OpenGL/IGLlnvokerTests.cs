@@ -7,6 +7,9 @@ namespace RaptorTests.OpenGL
     using Raptor.OpenGL;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="IGLInvoker"/> interface.
+    /// </summary>
     public class IGLlnvokerTests
     {
         [Fact]
