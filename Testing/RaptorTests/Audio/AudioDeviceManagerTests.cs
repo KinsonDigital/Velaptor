@@ -10,7 +10,6 @@ namespace RaptorTests.Audio
     using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
     using Raptor.Audio.Exceptions;
-    using Raptor.Content;
     using Raptor.OpenAL;
     using RaptorTests.Helpers;
     using Xunit;
@@ -21,6 +20,7 @@ namespace RaptorTests.Audio
     public class AudioDeviceManagerTests : IDisposable
     {
         private static readonly string IsDisposedExceptionMessage = $"The '{nameof(AudioDeviceManager)}' has not been initialized.\nInvoked the '{nameof(AudioDeviceManager.InitDevice)}()' to initialize the device manager.";
+        private readonly string oggFilePath;
         private readonly Mock<IALInvoker> mockALInvoker;
         private readonly ALDevice device;
         private readonly ALContext context;
@@ -33,6 +33,7 @@ namespace RaptorTests.Audio
         /// </summary>
         public AudioDeviceManagerTests()
         {
+            this.oggFilePath = @"C:\temp\Content\Sounds\sound.ogg";
             this.device = new ALDevice(new IntPtr(1234));
             this.context = new ALContext(new IntPtr(5678));
 
@@ -301,7 +302,6 @@ namespace RaptorTests.Audio
              * To get 10 seconds of sound, you would need 220,500 samples.
              */
             // Arrange
-            var fileName = @"C:\temp\Content\Sounds\sound.ogg";
             this.mockALInvoker.Setup(m => m.GetString(this.device, AlcGetStringList.AllDevicesSpecifier))
                 .Returns(new[] { "device-1" });
             this.mockALInvoker.Setup(m => m.GetSourceState(this.srcId))
@@ -325,18 +325,14 @@ namespace RaptorTests.Audio
                     return oggData;
                 });
 
-            var mockContentSrc = new Mock<IContentSource>();
-            mockContentSrc.Setup(m => m.GetContentPath(It.IsAny<string>())).Returns(fileName);
-
             this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
 
             var sound = new Sound(
-                It.IsAny<string>(),
+                this.oggFilePath,
                 this.mockALInvoker.Object,
                 this.manager,
                 mockOggDecoder.Object,
-                new Mock<ISoundDecoder<byte>>().Object,
-                mockContentSrc.Object);
+                new Mock<ISoundDecoder<byte>>().Object);
 
             // Act
             this.manager.ChangeDevice("device-1");
@@ -366,7 +362,6 @@ namespace RaptorTests.Audio
              * To get 10 seconds of sound, you would need 220,500 samples.
              */
             // Arrange
-            var fileName = @"C:\temp\Content\Sounds\sound.ogg";
             this.mockALInvoker.Setup(m => m.GetString(this.device, AlcGetStringList.AllDevicesSpecifier))
                 .Returns(new[] { "device-1", "device-2" });
             this.mockALInvoker.Setup(m => m.GetSourceState(this.srcId))
@@ -390,19 +385,15 @@ namespace RaptorTests.Audio
                     return oggData;
                 });
 
-            var mockContentSrc = new Mock<IContentSource>();
-            mockContentSrc.Setup(m => m.GetContentPath(It.IsAny<string>())).Returns(fileName);
-
             this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
             this.manager.InitDevice();
 
             var sound = new Sound(
-                "sound",
+                this.oggFilePath,
                 this.mockALInvoker.Object,
                 this.manager,
                 mockOggDecoder.Object,
-                new Mock<ISoundDecoder<byte>>().Object,
-                mockContentSrc.Object);
+                new Mock<ISoundDecoder<byte>>().Object);
 
             // Act
             this.manager.ChangeDevice("device-1");

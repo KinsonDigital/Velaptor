@@ -4,10 +4,7 @@
 
 namespace Raptor.Content
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Linq;
     using Raptor.Audio;
     using Raptor.Audio.Exceptions;
     using Raptor.OpenAL;
@@ -19,20 +16,20 @@ namespace Raptor.Content
     {
         private readonly IALInvoker alInvoker;
         private readonly IAudioDeviceManager audioManager;
-        private readonly IContentSource contentSource;
+        private readonly IPathResolver soundPathResolver;
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
-        /// <param name="contentSource">Manages the source of the content.</param>
+        /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="oggDecoder">Decodes ogg sound files.</param>
         /// <param name="mp3Decoder">Decodes mp3 sound files.</param>
         [ExcludeFromCodeCoverage]
-        public SoundLoader(IContentSource contentSource, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
+        public SoundLoader(IPathResolver soundPathResolver, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
         {
-            this.contentSource = contentSource;
+            this.soundPathResolver = soundPathResolver;
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
             this.alInvoker = new ALInvoker();
@@ -44,14 +41,14 @@ namespace Raptor.Content
         /// </summary>
         /// <param name="alInvoker">Make calls to OpenAL.</param>
         /// <param name="audioManager">Manages the audio devices.</param>
-        /// <param name="contentSource">Manages the source of the content.</param>
+        /// <param name="soundPathResolver">Resolves paths to sound content.</param>
         /// <param name="oggDecoder">Decodes ogg sound files.</param>
         /// <param name="mp3Decoder">Decodes mp3 sound files.</param>
-        internal SoundLoader(IALInvoker alInvoker, IAudioDeviceManager audioManager, IContentSource contentSource, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
+        internal SoundLoader(IALInvoker alInvoker, IAudioDeviceManager audioManager, IPathResolver soundPathResolver, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
         {
             this.alInvoker = alInvoker;
             this.audioManager = audioManager;
-            this.contentSource = contentSource;
+            this.soundPathResolver = soundPathResolver;
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
         }
@@ -74,20 +71,14 @@ namespace Raptor.Content
         /// </exception>
         public ISound Load(string name)
         {
-            var extension = Path.GetExtension(name);
-
-            if (!new[] { ".ogg", ".mp3" }.Contains(extension))
-            {
-                throw new UnsupportedSoundTypeException($"The extension '{extension}' is not supported.  Supported audio files are '.ogg' and '.mp3'.");
-            }
+            var filePath = this.soundPathResolver.ResolveFilePath(name);
 
             return new Sound(
-                name,
+                filePath,
                 this.alInvoker,
                 this.audioManager,
                 this.oggDecoder,
-                this.mp3Decoder,
-                this.contentSource);
+                this.mp3Decoder);
         }
     }
 }

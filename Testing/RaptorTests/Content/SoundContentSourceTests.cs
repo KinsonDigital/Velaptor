@@ -10,7 +10,7 @@ namespace RaptorTests.Content
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="SoundContentSource"/> class.
+    /// Tests the <see cref="SoundPathResolver"/> class.
     /// </summary>
     public class SoundContentSourceTests
     {
@@ -22,8 +22,8 @@ namespace RaptorTests.Content
             var mockDirectory = new Mock<IDirectory>();
 
             // Act
-            var source = new SoundContentSource(mockDirectory.Object);
-            var actual = source.ContentDirectoryName;
+            var source = new SoundPathResolver(mockDirectory.Object);
+            var actual = source.FileDirectoryName;
 
             // Assert
             Assert.Equal("Sounds", actual);

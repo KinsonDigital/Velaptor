@@ -26,19 +26,16 @@
 
 
   <ItemGroup>
-    <None Update="Content\Graphics\main-atlas.json">
+    <None Update="Content\Atlas\Main-Atlas.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Atlas\Main-Atlas.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Content\Graphics\Dungeon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Content\Graphics\Link.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\main-atlas.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\main-atlas.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Content\Sounds\dance.mp3">
@@ -53,6 +50,11 @@
     <None Update="Content\Sounds\zap.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Content\Atlas\" />
   </ItemGroup>
   
   

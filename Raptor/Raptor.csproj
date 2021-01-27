@@ -48,6 +48,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MP3Sharp" Version="1.0.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
     <PackageReference Include="OpenTK" Version="4.2.0" />
     <PackageReference Include="SimpleInjector" Version="5.1.0" />
@@ -67,18 +68,10 @@
     <ItemGroup>
       <Content Include="$(ProjectDir)Libs\win-x86\openal32.dll" Pack="true" PackagePath="\runtimes\win-x86\native" />
       <Content Include="$(ProjectDir)Libs\win-x64\openal32.dll" Pack="true" PackagePath="\runtimes\win-x64\native" />
-      <Content Include="$(ProjectDir)Libs\VelcroPhysics.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
     </ItemGroup>
   </Target>
 
-
-  <ItemGroup>
-    <Reference Include="VelcroPhysics">
-      <HintPath>Libs\VelcroPhysics.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-
+  
   <ItemGroup>
     <None Update="Libs\openal32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
