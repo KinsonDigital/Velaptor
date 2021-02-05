@@ -37,12 +37,16 @@ namespace Raptor.Content
             // Check if there are any files that match the name
             var files = this.directory.GetFiles(contentDirPath);
 
-            if (files.Length <= 0 || files.Any(f => f == $"{contentDirPath}{name}.png") is false)
+            var foundTexture = (from f in files
+                                where f == $"{contentDirPath}{name}.png"
+                                select f).FirstOrDefault();
+
+            if (files.Length <= 0 || foundTexture is null || foundTexture.Length <= 0)
             {
                 throw new FileNotFoundException($"The texture image file '{contentDirPath}{name}' does not exist.");
             }
 
-            return files[0];
+            return foundTexture;
         }
     }
 }

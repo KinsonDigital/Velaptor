@@ -13,5 +13,10 @@ namespace Raptor.Content
         /// Gets the name of the content.
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Gets the path to the content.
+        /// </summary>
+        string Path { get; }
     }
 }

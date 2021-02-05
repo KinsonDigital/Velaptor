@@ -48,7 +48,7 @@ namespace Raptor.Content
 
             var atlasTexture = this.textureLoader.Load(name);
 
-            var atlasData = new AtlasData(atlasSpriteData, atlasTexture, name);
+            var atlasData = new AtlasData(atlasSpriteData, atlasTexture, name, atlasDataFilePath);
 
             this.atlasRepo.AddAtlasData(name, atlasData);
 

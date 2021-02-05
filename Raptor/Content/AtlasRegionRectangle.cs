@@ -29,6 +29,8 @@ namespace Raptor.Content
         /// <inheritdoc/>
         public string Name { get; set; }
 
+        public string Path { get; set; }
+
         /// <inheritdoc/>
         public int X { get; set; }
 

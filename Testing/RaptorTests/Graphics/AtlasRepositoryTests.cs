@@ -43,7 +43,7 @@ namespace RaptorTests.Graphics
                 },
             };
 
-            this.atlasData = new AtlasData(spriteData, this.mockTexture.Object, "test-atlas");
+            this.atlasData = new AtlasData(spriteData, this.mockTexture.Object, "test-atlas", $@"C:\temp\test-atlas.png");
             AtlasRepository.Instance.EmptyRepository();
         }
 

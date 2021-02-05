@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Graphics;
     using Raptor.OpenGL;
@@ -17,6 +18,7 @@ namespace Raptor.Content
         private readonly IGLInvoker gl;
         private readonly IImageFileService imageFileService;
         private readonly IPathResolver pathResolver;
+        private readonly ConcurrentDictionary<string, ITexture> textures = new ConcurrentDictionary<string, ITexture>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
@@ -50,9 +52,13 @@ namespace Raptor.Content
         public ITexture Load(string name)
         {
             var filePath = this.pathResolver.ResolveFilePath(name);
-            var (pixels, width, height) = this.imageFileService.Load(filePath);
 
-            return new Texture(this.gl, name, pixels, width, height);
+            return this.textures.GetOrAdd(filePath, (key) =>
+            {
+                var (pixels, width, height) = this.imageFileService.Load(key);
+
+                return new Texture(this.gl, name, filePath, pixels, width, height);
+            });
         }
     }
 }

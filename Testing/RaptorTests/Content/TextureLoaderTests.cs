@@ -19,6 +19,7 @@ namespace RaptorTests.Content
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IImageFileService> mockImageFileService;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
+        private const string TextureFileName = "test-texture.png";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
@@ -28,6 +29,7 @@ namespace RaptorTests.Content
             this.mockGL = new Mock<IGLInvoker>();
             this.mockImageFileService = new Mock<IImageFileService>();
             this.mockTexturePathResolver = new Mock<IPathResolver>();
+            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName)).Returns($@"C:\temp\{TextureFileName}");
         }
 
         #region Method Tests
@@ -35,16 +37,38 @@ namespace RaptorTests.Content
         public void Load_WhenInvoked_LoadsTexture()
         {
             // Arrange
-            var loader = new TextureLoader(this.mockGL.Object, this.mockImageFileService.Object, this.mockTexturePathResolver.Object);
+            var loader = CreateLoader();
 
             // Act
-            var actual = loader.Load("test-file");
+            var actual = loader.Load(TextureFileName);
 
             // Assert
             Assert.NotNull(actual);
             this.mockGL.Verify(m => m.GenTexture(), Times.Once());
             this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
         }
+
+        [Fact]
+        public void Load_WhenTextureIsAlreadyLoaded_ReturnsAlreadyLoadedTexture()
+        {
+            // Arrange
+            var loader = CreateLoader();
+
+            // Act
+            var textureA = loader.Load(TextureFileName);
+            var textureB = loader.Load(TextureFileName);
+
+            // Assert
+            Assert.Equal(textureA.Name, textureB.Name);
+            Assert.Equal(textureA.Path, textureB.Path);
+            this.mockGL.Verify(m => m.ObjectLabel(ObjectLabelIdentifier.Texture, It.IsAny<uint>(), -1, TextureFileName), Times.Once());
+        }
         #endregion
+
+        /// <summary>
+        /// Creates a new instance of <see cref="TextureLoader"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test.</returns>
+        private TextureLoader CreateLoader() => new TextureLoader(this.mockGL.Object, this.mockImageFileService.Object, this.mockTexturePathResolver.Object);
     }
 }
