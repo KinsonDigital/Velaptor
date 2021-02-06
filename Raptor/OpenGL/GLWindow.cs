@@ -184,7 +184,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public IContentLoader? ContentLoader { get; set; }
+        public IContentLoader ContentLoader { get; set; }
 
         /// <inheritdoc/>
         public int UpdateFrequency

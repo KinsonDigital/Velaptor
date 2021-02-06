@@ -19,13 +19,19 @@ namespace RaptorTests.Desktop
     /// </summary>
     public class WindowTests
     {
-        // TODO: Convert all propers that use pure interface invokes to use MOQ verifies
         private readonly Mock<IWindow> mockWindow;
+        private readonly Mock<IContentLoader> mockContentLoader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowTests"/> class.
         /// </summary>
-        public WindowTests() => this.mockWindow = new Mock<IWindow>();
+        public WindowTests()
+        {
+            this.mockContentLoader = new Mock<IContentLoader>();
+
+            this.mockWindow = new Mock<IWindow>();
+            this.mockWindow.SetupGet(m => m.ContentLoader).Returns(this.mockContentLoader.Object);
+        }
 
         #region Prop Tests
         [Fact]
@@ -205,16 +211,6 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void Ctor_WhenInvoked_ByDefaultContentLoaderIsNull()
-        {
-            // Act
-            var window = CreateWindow();
-
-            // Assert
-            Assert.Null(window.ContentLoader);
-        }
-
-        [Fact]
         public void Show_WhenInvoked_ShowsWindow()
         {
             // Arrange
@@ -239,6 +235,7 @@ namespace RaptorTests.Desktop
 
             // Assert
             this.mockWindow.Verify(m => m.Dispose(), Times.Once());
+            this.mockContentLoader.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 

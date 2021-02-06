@@ -105,7 +105,7 @@ namespace Raptor.Desktop
         }
 
         /// <inheritdoc/>
-        public IContentLoader? ContentLoader
+        public IContentLoader ContentLoader
         {
             get => this.window.ContentLoader;
             set => this.window.ContentLoader = value;
@@ -183,6 +183,7 @@ namespace Raptor.Desktop
             {
                 if (disposing)
                 {
+                    ContentLoader.Dispose();
                     this.window.Dispose();
                 }
 
