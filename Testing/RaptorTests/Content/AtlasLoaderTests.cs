@@ -16,7 +16,7 @@ namespace RaptorTests.Content
     /// <summary>
     /// Tests the <see cref="AtlasDataLoader{T}"/> class.
     /// </summary>
-    public class AtlasLoaderTests : IDisposable
+    public class AtlasLoaderTests
     {
         private const string AtlasFileNameWithoutExtension = "test-atlas";
         private readonly string atlasDirPath;
@@ -103,8 +103,5 @@ namespace RaptorTests.Content
             Assert.Same(this.mockTexture.Object, actual.Texture);
         }
         #endregion
-
-        /// <inheritdoc/>
-        public void Dispose() => AtlasRepository.Instance.EmptyRepository();
     }
 }
