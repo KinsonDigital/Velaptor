@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Audio;
     using Raptor.Audio.Exceptions;
@@ -19,6 +20,7 @@ namespace Raptor.Content
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
+        private readonly ConcurrentDictionary<string, ISound> sounds = new ConcurrentDictionary<string, ISound>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
@@ -73,12 +75,15 @@ namespace Raptor.Content
         {
             var filePath = this.soundPathResolver.ResolveFilePath(name);
 
-            return new Sound(
-                filePath,
-                this.alInvoker,
-                this.audioManager,
-                this.oggDecoder,
-                this.mp3Decoder);
+            return this.sounds.GetOrAdd(filePath, (key) =>
+            {
+                return new Sound(
+                    filePath,
+                    this.alInvoker,
+                    this.audioManager,
+                    this.oggDecoder,
+                    this.mp3Decoder);
+            });
         }
     }
 }
