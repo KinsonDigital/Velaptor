@@ -56,6 +56,7 @@ namespace Raptor.OpenGL
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
+        /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
         public GLWindow(int width, int height, ISystemMonitorService systemMonitorService)
         {
             this.cachedWindowWidth = width <= 0 ? 1 : width;
@@ -145,13 +146,16 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public Action? Init { get; set; }
+        public Action? Initialize { get; set; }
 
         /// <inheritdoc/>
         public Action<FrameTime>? Update { get; set; }
 
         /// <inheritdoc/>
         public Action<FrameTime>? Draw { get; set; }
+
+        /// <inheritdoc/>
+        public Action? Uninitialize { get; set; }
 
         /// <inheritdoc/>
         public Action? WinResize { get; set; }
@@ -379,15 +383,16 @@ namespace Raptor.OpenGL
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
 
             this.appWindow.Load += GameWindow_Load;
+            this.appWindow.Unload += GameWindow_Unload;
             this.appWindow.UpdateFrame += GameWindow_UpdateFrame;
             this.appWindow.RenderFrame += GameWindow_RenderFrame;
             this.appWindow.Resize += GameWindow_Resize;
-            this.appWindow.Unload += GameWindow_Unload;
             this.appWindow.KeyDown += GameWindow_KeyDown;
             this.appWindow.KeyUp += GameWindow_KeyUp;
             this.appWindow.MouseDown += GameWindow_MouseDown;
             this.appWindow.MouseUp += GameWindow_MouseUp;
             this.appWindow.MouseMove += GameWindow_MouseMove;
+            this.appWindow.Closed += GameWindow_Closed;
 
             this.debugProc = DebugCallback;
 
@@ -429,10 +434,12 @@ namespace Raptor.OpenGL
                         this.cachedBoolProps.Clear();
                         IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
                         this.appWindow.Load -= GameWindow_Load;
+                        this.appWindow.Unload -= GameWindow_Unload;
                         this.appWindow.UpdateFrame -= GameWindow_UpdateFrame;
                         this.appWindow.RenderFrame -= GameWindow_RenderFrame;
                         this.appWindow.Resize -= GameWindow_Resize;
                         this.appWindow.Unload -= GameWindow_Unload;
+                        this.appWindow.Closed -= GameWindow_Closed;
                         this.appWindow.Dispose();
                     }
                 }
@@ -442,9 +449,14 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Invokes the <see cref="Init"/> action property.
+        /// Invokes the <see cref="Initialize"/> action property.
         /// </summary>
-        private void GameWindow_Load() => Init?.Invoke();
+        private void GameWindow_Load() => Initialize?.Invoke();
+
+        /// <summary>
+        /// Starts the unload process.
+        /// </summary>
+        private void GameWindow_Closed() => GameWindow_Unload();
 
         /// <summary>
         /// Invokes the <see cref="Update"/> action property.
@@ -518,9 +530,13 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Sets the state of the window as shutting down.
+        /// Sets the state of the window as shutting down and starts the uninitialize process.
         /// </summary>
-        private void GameWindow_Unload() => this.isShuttingDown = true;
+        private void GameWindow_Unload()
+        {
+            this.isShuttingDown = true;
+            Uninitialize?.Invoke();
+        }
 
         /// <summary>
         /// Setup all of the caching for the properties that need caching.

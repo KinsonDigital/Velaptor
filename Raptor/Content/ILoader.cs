@@ -12,10 +12,16 @@ namespace Raptor.Content
         where T : IContent
     {
         /// <summary>
-        /// Loads data at the given <paramref name="contentNameOrPath"/>.
+        /// Loads data with the given <paramref name="name"/>.
         /// </summary>
-        /// <param name="contentNameOrPath">The name or path to the content of the data to load.</param>
+        /// <param name="name">The name of the content of the data to load.</param>
         /// <returns>The data loaded from disk.</returns>
-        T Load(string contentNameOrPath);
+        T Load(string name);
+
+        /// <summary>
+        /// Unloads the data at the given <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of the content item to unload.</param>
+        void Unload(string name);
     }
 }

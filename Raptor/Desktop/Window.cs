@@ -30,7 +30,8 @@ namespace Raptor.Desktop
             }
 
             this.window = window;
-            this.window.Init = OnLoad;
+            this.window.Initialize = OnLoad;
+            this.window.Uninitialize = OnUnload;
             this.window.Update = OnUpdate;
             this.window.Draw = OnDraw;
             this.window.WinResize = OnResize;
@@ -145,6 +146,13 @@ namespace Raptor.Desktop
         /// <param name="frameTime">The amount of time since the last frame.</param>
         [ExcludeFromCodeCoverage]
         public virtual void OnDraw(FrameTime frameTime)
+        {
+        }
+
+        /// <summary>
+        /// Invoked when the window is unloaded.
+        /// </summary>
+        public virtual void OnUnload()
         {
         }
 
