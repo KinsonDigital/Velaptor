@@ -4,11 +4,13 @@
 
 namespace Raptor.Content
 {
+    using System;
+
     /// <summary>
     /// Loads data of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The type of data to load.</typeparam>
-    public interface ILoader<T>
+    public interface ILoader<T> : IDisposable
         where T : IContent
     {
         /// <summary>

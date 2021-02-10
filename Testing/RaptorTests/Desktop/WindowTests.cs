@@ -178,6 +178,19 @@ namespace RaptorTests.Desktop
             this.mockWindow.VerifySet(p => p.ContentLoader = mockContentLoader.Object, Times.Once());
             this.mockWindow.VerifyGet(p => p.ContentLoader, Times.Once());
         }
+
+        [Fact]
+        public void OnUnload_WhenInvoked_DisposesOfContentLoader()
+        {
+            // Arrange
+            var window = CreateWindow();
+
+            // Act
+            window.OnUnload();
+
+            // Assert
+            this.mockContentLoader.Verify(m => m.Dispose(), Times.Once());
+        }
         #endregion
 
         #region Method tests

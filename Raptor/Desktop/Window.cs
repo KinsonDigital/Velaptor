@@ -152,9 +152,7 @@ namespace Raptor.Desktop
         /// <summary>
         /// Invoked when the window is unloaded.
         /// </summary>
-        public virtual void OnUnload()
-        {
-        }
+        public virtual void OnUnload() => ContentLoader.Dispose();
 
         /// <summary>
         /// Invoked when the window size changes.

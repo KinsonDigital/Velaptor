@@ -1,9 +1,10 @@
-﻿// <copyright file="ContentLoader.cs" company="KinsonDigital">
+// <copyright file="ContentLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Raptor.Content
 {
+    using System;
     using System.IO;
     using Raptor.Audio;
     using Raptor.Exceptions;
@@ -17,6 +18,7 @@ namespace Raptor.Content
         private readonly ILoader<ITexture> textureLoader;
         private readonly ILoader<ISound> soundLoader;
         private readonly ILoader<IAtlasData> atlasLoader;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoader"/> class.
@@ -53,6 +55,49 @@ namespace Raptor.Content
             }
 
             throw new UnknownContentException($"Content of type '{typeof(T)}' invalid.  Content types must inherit from interface '{nameof(IContent)}'.");
+        }
+
+        /// <inheritdoc/>
+        public void Unload<T>(string name)
+            where T : class, IContent
+        {
+            name = Path.GetFileNameWithoutExtension(name);
+
+            if (typeof(T) == typeof(ITexture))
+            {
+                this.textureLoader.Unload(name);
+                return;
+            }
+
+            throw new UnknownContentException($"The content of type '{typeof(T)}' is unknown.");
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                this.textureLoader.Dispose();
+                this.soundLoader.Dispose();
+                this.atlasLoader.Dispose();
+            }
+
+            this.isDisposed = true;
         }
     }
 }
