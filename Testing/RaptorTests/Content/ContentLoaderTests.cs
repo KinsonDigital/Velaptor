@@ -1,4 +1,4 @@
-// <copyright file="ContentLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="ContentLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -105,6 +105,20 @@ namespace RaptorTests.Content
 
             // Assert
             this.mockAtlasLoader.Verify(m => m.Unload(AtlasName), Times.Once());
+        }
+
+        [Fact]
+        public void Unload_WhenUnloadingSound_UnloadsSound()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+            loader.Load<ISound>(SoundName);
+
+            // Act
+            loader.Unload<ISound>(SoundName);
+
+            // Assert
+            this.mockSoundLoader.Verify(m => m.Unload(SoundName), Times.Once());
         }
 
         [Fact]

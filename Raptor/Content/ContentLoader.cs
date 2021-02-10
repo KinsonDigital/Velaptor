@@ -1,4 +1,4 @@
-// <copyright file="ContentLoader.cs" company="KinsonDigital">
+﻿// <copyright file="ContentLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -72,6 +72,12 @@ namespace Raptor.Content
             if (typeof(T) == typeof(IAtlasData))
             {
                 this.atlasLoader.Unload(name);
+                return;
+            }
+
+            if (typeof(T) == typeof(ISound))
+            {
+                this.soundLoader.Unload(name);
                 return;
             }
 
