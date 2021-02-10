@@ -30,6 +30,10 @@ namespace RaptorSandBox
         private bool isDisposed;
         private int currentFrameIndex;
         private Rectangle currentFrame;
+        private AtlasSubTextureData[] subFrames;
+        private AtlasSubTextureData bubbleFrame;
+        private ITexture linkTexture;
+        private ITexture dungeonTexture;
 
         public MyWindow(IWindow window)
             : base(window)
@@ -49,6 +53,9 @@ namespace RaptorSandBox
             this.spriteBatch = SpriteBatchFactory.CreateSpriteBatch(Width, Height);
 
             this.subTextureAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
+
+            this.linkTexture = ContentLoader.Load<ITexture>("Link");
+            this.dungeonTexture = ContentLoader.Load<ITexture>("Dungeon");
 
             this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
@@ -127,21 +134,9 @@ namespace RaptorSandBox
 
         public override void OnResize() => base.OnResize();
 
-        protected override void Dispose(bool disposing)
-        {
-            if (!this.isDisposed)
-            {
-                if (disposing)
-                {
-                    this.subTextureAtlas?.Dispose();
-                    this.spriteBatch?.Dispose();
-                    this.quietPlaceMusic?.Dispose();
-                }
-
-                this.isDisposed = true;
-            }
-
-            base.Dispose(disposing);
-        }
+        //public override void OnUnload()
+        //{
+        //    base.OnUnload();
+        //}
     }
 }
