@@ -69,6 +69,12 @@ namespace Raptor.Content
                 return;
             }
 
+            if (typeof(T) == typeof(IAtlasData))
+            {
+                this.atlasLoader.Unload(name);
+                return;
+            }
+
             throw new UnknownContentException($"The content of type '{typeof(T)}' is unknown.");
         }
 

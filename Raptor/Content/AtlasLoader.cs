@@ -4,6 +4,8 @@
 
 namespace Raptor.Content
 {
+    using System;
+    using System.Collections.Concurrent;
     using System.IO.Abstractions;
     using Newtonsoft.Json;
     using Raptor.Graphics;
@@ -14,10 +16,11 @@ namespace Raptor.Content
     /// <typeparam name="T">The type of data to load.</typeparam>
     public class AtlasLoader : ILoader<IAtlasData>
     {
-        private readonly AtlasRepository atlasRepo;
+        private readonly ConcurrentDictionary<string, IAtlasData> atlases = new ConcurrentDictionary<string, IAtlasData>();
         private readonly IPathResolver atlasDataPathResolver;
         private readonly ILoader<ITexture> textureLoader;
         private readonly IFile file;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
@@ -27,7 +30,6 @@ namespace Raptor.Content
         /// <param name="file">Used to load the texture atlas.</param>
         public AtlasLoader(ILoader<ITexture> textureLoader, IPathResolver atlasDataPathResolver, IFile file)
         {
-            this.atlasRepo = AtlasRepository.Instance;
             this.atlasDataPathResolver = atlasDataPathResolver;
             this.textureLoader = textureLoader;
             this.file = file;
@@ -36,23 +38,59 @@ namespace Raptor.Content
         /// <inheritdoc/>
         public IAtlasData Load(string name)
         {
-            if (this.atlasRepo.IsAtlasLoaded(name))
-            {
-                return this.atlasRepo.GetAtlasData(name);
-            }
-
             var atlasDataFilePath = this.atlasDataPathResolver.ResolveFilePath(name);
 
-            var rawData = this.file.ReadAllText($"{atlasDataFilePath}");
-            var atlasSpriteData = JsonConvert.DeserializeObject<AtlasSubTextureData[]>(rawData);
+            return this.atlases.GetOrAdd(atlasDataFilePath, (key) =>
+            {
+                var rawData = this.file.ReadAllText($"{key}");
+                var atlasSpriteData = JsonConvert.DeserializeObject<AtlasSubTextureData[]>(rawData);
 
-            var atlasTexture = this.textureLoader.Load(name);
+                var atlasTexture = this.textureLoader.Load(name);
 
-            var atlasData = new AtlasData(atlasSpriteData, atlasTexture, name);
+                return new AtlasData(atlasSpriteData, atlasTexture, name);
+            });
+        }
 
-            this.atlasRepo.AddAtlasData(name, atlasData);
+        /// <inheritdoc/>
+        public void Unload(string name)
+        {
+            var atlasDataFilePath = this.atlasDataPathResolver.ResolveFilePath(name);
 
-            return atlasData;
+            if (this.atlases.TryRemove(atlasDataFilePath, out var atlas))
+            {
+                atlas.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                foreach (var atlas in this.atlases.Values)
+                {
+                    atlas.Dispose();
+                }
+
+                this.atlases.Clear();
+            }
+
+            this.isDisposed = true;
         }
     }
 }

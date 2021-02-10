@@ -92,6 +92,21 @@ namespace RaptorTests.Content
             // Assert
             this.mockTextureLoader.Verify(m => m.Unload(TextureName), Times.Once());
         }
+
+        [Fact]
+        public void Unload_WhenUnloadingAtlasData_UnloadsAtlasData()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+            loader.Load<IAtlasData>(AtlasName);
+
+            // Act
+            loader.Unload<IAtlasData>(AtlasName);
+
+            // Assert
+            this.mockAtlasLoader.Verify(m => m.Unload(AtlasName), Times.Once());
+        }
+
         [Fact]
         public void Unload_IfUnloadingUnknownContentType_ThrowException()
         {

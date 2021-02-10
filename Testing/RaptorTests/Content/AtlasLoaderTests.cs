@@ -16,9 +16,9 @@ namespace RaptorTests.Content
     /// <summary>
     /// Tests the <see cref="AtlasDataLoader{T}"/> class.
     /// </summary>
-    public class AtlasLoaderTests : IDisposable
+    public class AtlasLoaderTests
     {
-        private const string AtlasFileNameWithoutExtension = "test-atlas";
+        private const string AtlasContentName = "test-atlas";
         private readonly string atlasDirPath;
         private readonly string atlasFilePath;
         private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
@@ -38,15 +38,15 @@ namespace RaptorTests.Content
         public AtlasLoaderTests()
         {
             this.atlasDirPath = @"C:\temp\Content\Atlas\";
-            this.atlasFilePath = $@"{this.atlasDirPath}{AtlasFileNameWithoutExtension}.png";
+            this.atlasFilePath = $@"{this.atlasDirPath}{AtlasContentName}.png";
 
             this.mockAtlasPathResolver = new Mock<IPathResolver>();
-            this.mockAtlasPathResolver.Setup(m => m.ResolveFilePath(AtlasFileNameWithoutExtension)).Returns(this.atlasFilePath);
+            this.mockAtlasPathResolver.Setup(m => m.ResolveFilePath(AtlasContentName)).Returns(this.atlasFilePath);
 
             this.mockTexture = new Mock<ITexture>();
 
             this.mockTextureLoader = new Mock<ILoader<ITexture>>();
-            this.mockTextureLoader.Setup(m => m.Load(AtlasFileNameWithoutExtension))
+            this.mockTextureLoader.Setup(m => m.Load(AtlasContentName))
                 .Returns(this.mockTexture.Object);
 
             this.atlasSpriteData = new AtlasSubTextureData[]
@@ -75,10 +75,10 @@ namespace RaptorTests.Content
         public void Load_WhenInvoked_LoadsTextureAtlasData()
         {
             // Arrange
-            var loader = new AtlasLoader(this.mockTextureLoader.Object, this.mockAtlasPathResolver.Object, this.mockFile.Object);
+            var loader = CreateLoader();
 
             // Act
-            var actual = loader.Load(AtlasFileNameWithoutExtension);
+            var actual = loader.Load(AtlasContentName);
 
             // Assert
             this.mockFile.Verify(m => m.ReadAllText(this.atlasFilePath), Times.Once());
@@ -91,20 +91,52 @@ namespace RaptorTests.Content
         public void Load_WithAlreadyLoadedAtlasData_ReturnsAlreadyLoadedAtlasData()
         {
             // Arrange
-            var loader = new AtlasLoader(this.mockTextureLoader.Object, this.mockAtlasPathResolver.Object, this.mockFile.Object);
-            loader.Load(AtlasFileNameWithoutExtension);
+            var loader = CreateLoader();
+            loader.Load(AtlasContentName);
 
             // Act
-            var actual = loader.Load(AtlasFileNameWithoutExtension);
+            var actual = loader.Load(AtlasContentName);
 
             // Assert
             Assert.Equal(this.atlasSpriteData[0], actual[0]);
             Assert.Equal(this.atlasSpriteData[1], actual[1]);
             Assert.Same(this.mockTexture.Object, actual.Texture);
         }
+
+        [Fact]
+        public void Unload_WhenInvoked_UnloadsAtlas()
+        {
+            // Arrange
+            var loader = CreateLoader();
+            loader.Load(AtlasContentName);
+
+            // Act
+            loader.Unload(AtlasContentName);
+
+            // Assert
+            this.mockTexture.Verify(m => m.Dispose(), Times.Once());
+        }
+
+        [Fact]
+        public void Dispose_WhenInvoked_DisposesOfTextures()
+        {
+            // Arrange
+            var loader = CreateLoader();
+            loader.Load(AtlasContentName);
+
+            // Act
+            loader.Dispose();
+            loader.Dispose();
+
+            // Assert
+            this.mockTexture.Verify(m => m.Dispose(), Times.Once());
+        }
         #endregion
 
-        /// <inheritdoc/>
-        public void Dispose() => AtlasRepository.Instance.EmptyRepository();
+        /// <summary>
+        /// Creates an instance of <see cref="AtlasLoader"/> for the purpoase of testing.
+        /// </summary>
+        /// <returns>The instnace to test.</returns>
+        private AtlasLoader CreateLoader() => new AtlasLoader(this.mockTextureLoader.Object, this.mockAtlasPathResolver.Object, this.mockFile.Object);
     }
 }
