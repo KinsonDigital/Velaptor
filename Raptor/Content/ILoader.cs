@@ -21,7 +21,7 @@ namespace Raptor.Content
         T Load(string name);
 
         /// <summary>
-        /// Unloads the data at the given <paramref name="name"/>.
+        /// Unloads the data with the given <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The name of the content item to unload.</param>
         void Unload(string name);

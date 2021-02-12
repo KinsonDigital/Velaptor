@@ -106,7 +106,7 @@ namespace RaptorTests.Content
         }
 
         [Fact]
-        public void Dispose_WhenSourceIDIsNotGreaterThenZero_DoesNotDeleteSource()
+        public void Dispose_WhenSourceIDIsNotGreaterThanZero_DoesNotDeleteSource()
         {
             // Arrange
             this.mockAudioManager.Setup(m => m.InitSound()).Returns((srcId: 0, bufferId: OpenALBufferID));
