@@ -70,7 +70,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets the texture of the atlas.
         /// </summary>
-        public ITexture Texture { get; }
+        public ITexture Texture { get; set; }
 
         /// <summary>
         /// Gets the width of the atlas.
