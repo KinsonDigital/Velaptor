@@ -16,6 +16,11 @@
     <RootNamespace>RaptorTests</RootNamespace>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="TestResults\**" />
+    <EmbeddedResource Remove="TestResults\**" />
+    <None Remove="TestResults\**" />
+  </ItemGroup>
   
   <ItemGroup>
     <Compile Remove="Fakes\AudioManagerFake.cs" />
