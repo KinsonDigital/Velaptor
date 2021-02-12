@@ -42,6 +42,13 @@ namespace Raptor.Graphics
         AtlasSubTextureData this[int index] { get; }
 
         /// <summary>
+        /// Gets the single frame in the atlas data that matches the given <paramref name="subTextureID"/>.
+        /// </summary>
+        /// <param name="subTextureID">The name of the sub texture frame.</param>
+        /// <returns>The sub texture data of the frame.</returns>
+        AtlasSubTextureData GetFrame(string subTextureID);
+
+        /// <summary>
         /// Gets the all of the frames that have the given sub texture id.
         /// </summary>
         /// <param name="subTextureID">The sub texture ID of the frames to return.</param>

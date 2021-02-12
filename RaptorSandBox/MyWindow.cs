@@ -7,13 +7,14 @@ using Raptor.Factories;
 using Raptor.Graphics;
 using Raptor.Input;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace RaptorSandBox
 {
     public class MyWindow : Window
     {
-        private IAtlasData? subTextureAtlas;
+        private IAtlasData? mainAtlas;
         private readonly AtlasRegionRectangle[] atlasData;
         private ISpriteBatch? spriteBatch;
         private KeyboardState currentKeyboardState;
@@ -30,6 +31,9 @@ namespace RaptorSandBox
         private bool isDisposed;
         private int currentFrameIndex;
         private Rectangle currentFrame;
+        private AtlasSubTextureData[] subFrames;
+        private AtlasSubTextureData bubbleFrame;
+        private ITexture linkTexture;
 
         public MyWindow(IWindow window)
             : base(window)
@@ -48,7 +52,14 @@ namespace RaptorSandBox
 
             this.spriteBatch = SpriteBatchFactory.CreateSpriteBatch(Width, Height);
 
-            this.subTextureAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
+            this.mainAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
+
+            this.subFrames = this.mainAtlas.GetFrames("sub");
+
+            this.bubbleFrame = this.mainAtlas.GetFrame("bubble");
+
+            this.linkTexture = ContentLoader.Load<ITexture>("Link");
+            var otherTexture = ContentLoader.Load<ITexture>("Link");
 
             this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
@@ -102,9 +113,7 @@ namespace RaptorSandBox
             if (this.elapsedFrameTime >= 62)
             {
                 this.elapsedFrameTime = 0;
-
-                this.currentFrameIndex += 1;
-                this.currentFrameIndex = this.currentFrameIndex > 5 ? 0 : this.currentFrameIndex;
+                this.currentFrameIndex = this.currentFrameIndex >= this.subFrames.Length - 1 ? 0 : this.currentFrameIndex + 1;
             }
             else
             {
@@ -116,9 +125,11 @@ namespace RaptorSandBox
         {
             this.spriteBatch?.BeginBatch();
 
-            var subTexture = this.subTextureAtlas[this.currentFrameIndex];
+            var subTexture = this.subFrames[this.currentFrameIndex];
 
-            this.spriteBatch?.Render(this.subTextureAtlas.Texture, subTexture.Bounds, new Rectangle(100, 100, 500, 100), 1, 0, Color.White);
+            this.spriteBatch?.Render(this.mainAtlas.Texture, subTexture.Bounds, new Rectangle(100, 100, 500, 100), 1, 0, Color.White);
+            this.spriteBatch?.Render(this.mainAtlas.Texture, this.bubbleFrame.Bounds, new Rectangle(200, 400, 500, 100), 1, 0, Color.White);
+            this.spriteBatch?.Render(this.linkTexture, 400, 500);
 
             this.spriteBatch?.EndBatch();
 
@@ -133,7 +144,7 @@ namespace RaptorSandBox
             {
                 if (disposing)
                 {
-                    this.subTextureAtlas?.Dispose();
+                    this.mainAtlas?.Dispose();
                     this.spriteBatch?.Dispose();
                     this.quietPlaceMusic?.Dispose();
                 }

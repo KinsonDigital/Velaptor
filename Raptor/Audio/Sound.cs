@@ -10,11 +10,11 @@ namespace Raptor.Audio
     using System.Diagnostics;
 #endif
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
     using System.Linq;
     using OpenTK.Audio.OpenAL;
     using Raptor.Factories;
     using Raptor.OpenAL;
+    using IOPath = System.IO.Path;
 
     /// <summary>
     /// A single sound that can be played, paused etc.
@@ -26,14 +26,10 @@ namespace Raptor.Audio
         // NOTE: This warning is ignored due to the implementation of the IAudioManager being a singleton.
         // Disposing of the audio manager when any sound is disposed would cause issues with how the
         // audio manager implementation is suppose to behave.
-#pragma warning disable CA2213 // Disposable fields should be disposed
         private readonly IAudioDeviceManager audioManager;
-#pragma warning restore CA2213 // Disposable fields should be disposed
-
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
         private readonly IALInvoker alInvoker;
-        private readonly string filePath;
         private int srcId;
         private int bufferId;
         private bool isDisposed;
@@ -46,7 +42,7 @@ namespace Raptor.Audio
         [ExcludeFromCodeCoverage]
         public Sound(string filePath)
         {
-            this.filePath = filePath;
+            Path = filePath;
 
             this.alInvoker = new ALInvoker
             {
@@ -72,7 +68,7 @@ namespace Raptor.Audio
         /// <param name="soundPathResolver">Resolves paths to sound content.</param>
         internal Sound(string filePath, IALInvoker alInvoker, IAudioDeviceManager audioManager, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
         {
-            this.filePath = filePath;
+            Path = filePath;
 
             this.alInvoker = alInvoker;
             this.alInvoker.ErrorCallback = ErrorCallback;
@@ -87,7 +83,10 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
-        public string Name => Path.GetFileNameWithoutExtension(this.filePath);
+        public string Name => IOPath.GetFileNameWithoutExtension(Path);
+
+        /// <inheritdoc/>
+        public string Path { get; private set; }
 
         /// <inheritdoc/>
         public float Volume
@@ -296,19 +295,19 @@ namespace Raptor.Audio
 
             (this.srcId, this.bufferId) = this.audioManager.InitSound();
 
-            var extension = Path.GetExtension(this.filePath);
+            var extension = IOPath.GetExtension(Path);
 
             switch (extension)
             {
                 case ".ogg":
-                    var oggData = this.oggDecoder.LoadData(this.filePath);
+                    var oggData = this.oggDecoder.LoadData(Path);
 
                     this.totalSeconds = oggData.TotalSeconds;
 
                     UploadOggData(oggData);
                     break;
                 case ".mp3":
-                    var mp3Data = this.mp3Decoder.LoadData(this.filePath);
+                    var mp3Data = this.mp3Decoder.LoadData(Path);
 
                     this.totalSeconds = mp3Data.TotalSeconds;
 

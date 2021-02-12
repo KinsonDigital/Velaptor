@@ -199,6 +199,6 @@ namespace RaptorTests.Graphics
         /// Creates a new instance of <see cref="AtlasData"/> for testing purposes.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private AtlasData CreateAtlasData() => new AtlasData(this.spriteData, this.mockTexture.Object, "test-atlas");
+        private AtlasData CreateAtlasData() => new AtlasData(this.spriteData, this.mockTexture.Object, "test-atlas", $@"C:\temp\test-atlas.png");
     }
 }
