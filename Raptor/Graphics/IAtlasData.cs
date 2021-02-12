@@ -22,7 +22,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets the texture.
         /// </summary>
-        ITexture Texture { get; }
+        ITexture Texture { get; set; }
 
         /// <summary>
         /// Gets the width of the entire texture atlas texture.

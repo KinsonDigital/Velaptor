@@ -87,16 +87,18 @@ namespace RaptorTests.Graphics
         }
 
         [Fact]
-        public void Texture_WhenGettingValue_ReturnsCorrectResult()
+        public void Texture_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
+            var otherTexture = new Mock<ITexture>();
             var data = CreateAtlasData();
 
             // Act
+            data.Texture = otherTexture.Object;
             var actual = data.Texture;
 
             // Assert
-            Assert.Same(this.mockTexture.Object, actual);
+            Assert.Same(otherTexture.Object, actual);
         }
 
         [Fact]
