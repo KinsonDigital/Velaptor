@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Audio;
@@ -15,12 +16,13 @@ namespace Raptor.Content
     /// </summary>
     public class SoundLoader : ILoader<ISound>
     {
+        private readonly ConcurrentDictionary<string, ISound> sounds = new ConcurrentDictionary<string, ISound>();
         private readonly IALInvoker alInvoker;
         private readonly IAudioDeviceManager audioManager;
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
-        private readonly ConcurrentDictionary<string, ISound> sounds = new ConcurrentDictionary<string, ISound>();
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
@@ -84,6 +86,48 @@ namespace Raptor.Content
                     this.oggDecoder,
                     this.mp3Decoder);
             });
+        }
+
+        /// <inheritdoc/>
+        public void Unload(string name)
+        {
+            var filePath = this.soundPathResolver.ResolveFilePath(name);
+
+            if (this.sounds.TryRemove(filePath, out var sound))
+            {
+                sound.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                foreach (var sound in this.sounds.Values)
+                {
+                    sound.Dispose();
+                }
+
+                this.audioManager.Dispose();
+            }
+
+            this.isDisposed = true;
         }
     }
 }

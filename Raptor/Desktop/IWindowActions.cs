@@ -14,7 +14,7 @@ namespace Raptor.Desktop
         /// <summary>
         /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to initialize the window.
         /// </summary>
-        Action? Init { get; set; }
+        Action? Initialize { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Action"/> delegate that is invoked per frame for updating.
@@ -25,6 +25,11 @@ namespace Raptor.Desktop
         /// Gets or sets the <see cref="Action"/> delegate that is invoked per frame for rendering.
         /// </summary>
         Action<FrameTime>? Draw { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Action"/> delegate to be invoked one time to uninitialize the window.
+        /// </summary>
+        Action? Uninitialize { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Action"/> delegate that is invoked every time the window is resized.

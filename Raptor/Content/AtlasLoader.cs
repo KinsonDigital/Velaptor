@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System;
     using System.Collections.Concurrent;
     using System.IO.Abstractions;
     using Newtonsoft.Json;
@@ -19,6 +20,7 @@ namespace Raptor.Content
         private readonly IPathResolver atlasDataPathResolver;
         private readonly ILoader<ITexture> textureLoader;
         private readonly IFile file;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
@@ -47,6 +49,48 @@ namespace Raptor.Content
 
                 return new AtlasData(atlasSpriteData, atlasTexture, name, key);
             });
+        }
+
+        /// <inheritdoc/>
+        public void Unload(string name)
+        {
+            var atlasDataFilePath = this.atlasDataPathResolver.ResolveFilePath(name);
+
+            if (this.atlases.TryRemove(atlasDataFilePath, out var atlas))
+            {
+                atlas.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                foreach (var atlas in this.atlases.Values)
+                {
+                    atlas.Dispose();
+                }
+
+                this.atlases.Clear();
+            }
+
+            this.isDisposed = true;
         }
     }
 }

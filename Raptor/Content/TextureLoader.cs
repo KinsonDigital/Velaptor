@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Graphics;
@@ -15,10 +16,11 @@ namespace Raptor.Content
     /// </summary>
     public class TextureLoader : ILoader<ITexture>
     {
+        private readonly ConcurrentDictionary<string, ITexture> textures = new ConcurrentDictionary<string, ITexture>();
         private readonly IGLInvoker gl;
         private readonly IImageFileService imageFileService;
         private readonly IPathResolver pathResolver;
-        private readonly ConcurrentDictionary<string, ITexture> textures = new ConcurrentDictionary<string, ITexture>();
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
@@ -33,8 +35,6 @@ namespace Raptor.Content
             this.pathResolver = texturePathResolver;
         }
 
-        // TODO: Check if this is needed or being used, and if not, remove it
-        // The IoC container might use it
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
@@ -63,6 +63,48 @@ namespace Raptor.Content
 
                 return new Texture(this.gl, name, key, pixels, width, height);
             });
+        }
+
+        /// <inheritdoc/>
+        public void Unload(string name)
+        {
+            var filePath = this.pathResolver.ResolveFilePath(name);
+
+            if (this.textures.TryRemove(filePath, out var texture))
+            {
+                texture.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="disposing">True to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                foreach (var texture in this.textures.Values)
+                {
+                    texture.Dispose();
+                }
+
+                this.textures.Clear();
+            }
+
+            this.isDisposed = true;
         }
     }
 }

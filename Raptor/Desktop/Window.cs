@@ -30,7 +30,8 @@ namespace Raptor.Desktop
             }
 
             this.window = window;
-            this.window.Init = OnLoad;
+            this.window.Initialize = OnLoad;
+            this.window.Uninitialize = OnUnload;
             this.window.Update = OnUpdate;
             this.window.Draw = OnDraw;
             this.window.WinResize = OnResize;
@@ -104,7 +105,7 @@ namespace Raptor.Desktop
         }
 
         /// <inheritdoc/>
-        public IContentLoader? ContentLoader
+        public IContentLoader ContentLoader
         {
             get => this.window.ContentLoader;
             set => this.window.ContentLoader = value;
@@ -149,6 +150,11 @@ namespace Raptor.Desktop
         }
 
         /// <summary>
+        /// Invoked when the window is unloaded.
+        /// </summary>
+        public virtual void OnUnload() => ContentLoader.Dispose();
+
+        /// <summary>
         /// Invoked when the window size changes.
         /// </summary>
         [ExcludeFromCodeCoverage]
@@ -177,6 +183,7 @@ namespace Raptor.Desktop
             {
                 if (disposing)
                 {
+                    ContentLoader.Dispose();
                     this.window.Dispose();
                 }
 

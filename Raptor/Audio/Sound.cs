@@ -371,11 +371,6 @@ namespace Raptor.Audio
         /// </summary>
         private void UnloadSoundData()
         {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
             if (this.srcId <= 0)
             {
                 return;

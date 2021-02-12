@@ -18,6 +18,7 @@ namespace RaptorTests.Content
     {
         private const string TextureFileName = "test-texture.png";
         private readonly string textureFilePath;
+        private const uint OpenGLTextureID = 1234;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IImageFileService> mockImageFileService;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
@@ -29,6 +30,8 @@ namespace RaptorTests.Content
         {
             this.textureFilePath = $@"C:\temp\{TextureFileName}";
             this.mockGL = new Mock<IGLInvoker>();
+            this.mockGL.Setup(m => m.GenTexture()).Returns(OpenGLTextureID); // Mock out the OpenGL texture ID
+
             this.mockImageFileService = new Mock<IImageFileService>();
             this.mockTexturePathResolver = new Mock<IPathResolver>();
             this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName)).Returns(this.textureFilePath);
@@ -65,6 +68,35 @@ namespace RaptorTests.Content
             Assert.Equal(textureA.Name, textureB.Name);
             Assert.Equal(textureA.Path, textureB.Path);
             this.mockGL.Verify(m => m.ObjectLabel(ObjectLabelIdentifier.Texture, It.IsAny<uint>(), -1, TextureFileName), Times.Once());
+        }
+
+        [Fact]
+        public void Unload_WhenInvoked_UnloadsTexture()
+        {
+            // Arrange
+            var loader = CreateLoader();
+            loader.Load(TextureFileName);
+
+            // Act
+            loader.Unload(TextureFileName);
+
+            // Assert
+            this.mockGL.Verify(m => m.DeleteTexture(OpenGLTextureID), Times.Once());
+        }
+
+        [Fact]
+        public void Dispose_WhenInvoked_ProperlyDisposesOfTextures()
+        {
+            // Arrange
+            var loader = CreateLoader();
+            loader.Load(TextureFileName);
+
+            // Act
+            loader.Dispose();
+            loader.Dispose();
+
+            // Assert
+            this.mockGL.Verify(m => m.DeleteTexture(OpenGLTextureID), Times.Once());
         }
         #endregion
 
