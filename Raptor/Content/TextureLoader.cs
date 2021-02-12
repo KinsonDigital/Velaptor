@@ -49,7 +49,7 @@ namespace Raptor.Content
         }
 
         /// <summary>
-        /// Loads a texture with the given name.
+        /// Loads a texture with the given <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The name of the texture to load.</param>
         /// <returns>The loaded texture.</returns>
