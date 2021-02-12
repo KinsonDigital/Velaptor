@@ -33,8 +33,13 @@ namespace RaptorTests.Graphics
         public SpriteBatchTests()
         {
             this.mockTextureOne = new Mock<ITexture>();
+            this.mockTextureOne.SetupGet(p => p.Width).Returns(10);
+            this.mockTextureOne.SetupGet(p => p.Height).Returns(20);
+
             this.mockTextureTwo = new Mock<ITexture>();
             this.mockTextureTwo.SetupGet(p => p.ID).Returns(1);
+            this.mockTextureTwo.SetupGet(p => p.Width).Returns(10);
+            this.mockTextureTwo.SetupGet(p => p.Height).Returns(20);
 
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGL.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
@@ -86,7 +91,7 @@ namespace RaptorTests.Graphics
             // Arrange
             this.mockGL.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 22));
 
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             IGLInvoker.SetOpenGLAsInitialized();
 
@@ -105,7 +110,7 @@ namespace RaptorTests.Graphics
             // Arrange
             this.mockGL.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 22));
 
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             IGLInvoker.SetOpenGLAsInitialized();
 
@@ -124,7 +129,7 @@ namespace RaptorTests.Graphics
         public void Init_WhenInvoked_SetsUpShaderProgram()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act
             batch.Init();
@@ -137,7 +142,7 @@ namespace RaptorTests.Graphics
         public void Init_WhenInvoked_EnablesBlending()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act
             batch.Init();
@@ -150,7 +155,7 @@ namespace RaptorTests.Graphics
         public void Init_WhenInvoked_SetsUpBlending()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act
             batch.Init();
@@ -163,7 +168,7 @@ namespace RaptorTests.Graphics
         public void Init_WhenInvoked_SetsUpClearColor()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act
             batch.Init();
@@ -176,7 +181,7 @@ namespace RaptorTests.Graphics
         public void Init_WhenInvoked_SetsTextureUnitToSlot0()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act
             batch.Init();
@@ -189,7 +194,7 @@ namespace RaptorTests.Graphics
         public void Init_WhenInvoked_GetTransformLocation()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act
             batch.Init();
@@ -202,7 +207,7 @@ namespace RaptorTests.Graphics
         public void Clear_WhenInvoked_ClearsBuffer()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act
             batch.Clear();
@@ -215,7 +220,7 @@ namespace RaptorTests.Graphics
         public void Render_WhenUsingOverloadWithFourParamsAndWithoutCallingBeginFirst_ThrowsException()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
@@ -228,7 +233,7 @@ namespace RaptorTests.Graphics
         public void Render_WhenUsingOverloadWithFourParamsAndNullTexture_ThrowsException()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -294,7 +299,7 @@ namespace RaptorTests.Graphics
         public void Render_WhenUsingOverloadWithSixParamsAndWithoutCallingBeginFirst_ThrowsException()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<Exception>(() =>
@@ -311,14 +316,49 @@ namespace RaptorTests.Graphics
         public void Render_WhenUsingOverloadWithSixParamsAndWithNullTexture_ThrowsException()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
+                var srcRect = new Rectangle(0, 0, 10, 20);
                 batch.BeginBatch();
-                batch.Render(null, It.IsAny<Rectangle>(), It.IsAny<Rectangle>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<Color>());
+                batch.Render(null, srcRect, It.IsAny<Rectangle>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<Color>());
             }, "The texture must not be null. (Parameter 'texture')");
+        }
+
+        [Fact]
+        public void Render_WithNoSourceRectWidth_ThrowsExceptoin()
+        {
+            // Arrange
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            {
+                var srcRect = new Rectangle(0, 0, 0, 20);
+                var destRect = new Rectangle(10, 20, 100, 200);
+
+                batch.Render(this.mockTextureOne.Object, srcRect, destRect, 1, 1, Color.White);
+            }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
+        }
+
+        [Fact]
+        public void Render_WithNoSourceRectHeight_ThrowsExceptoin()
+        {
+            // Arrange
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            {
+                var srcRect = new Rectangle(0, 0, 10, 0);
+                var destRect = new Rectangle(10, 20, 100, 200);
+
+                batch.Render(this.mockTextureOne.Object, srcRect, destRect, 1, 1, Color.White);
+            }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
         }
 
         [Fact]
@@ -406,7 +446,7 @@ namespace RaptorTests.Graphics
         public void Dispose_WhenInvoked_DisposesOfMangedResources()
         {
             // Arrange
-            var batch = new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
+            var batch = CreateSpriteBatch();
 
             // Act
             batch.Dispose();
@@ -417,6 +457,12 @@ namespace RaptorTests.Graphics
             this.mockBuffer.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
+
+        /// <summary>
+        /// Creates a new instance of <see cref="SpriteBatch"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test with.</returns>
+        private SpriteBatch CreateSpriteBatch() => new SpriteBatch(this.mockGL.Object, this.mockShader.Object, this.mockBuffer.Object);
 
         /// <summary>
         /// Assert that a single batch was rendered the given amount of <paramref name="totalBatchUpdates"/>.
