@@ -34,5 +34,11 @@
     "Bounds": "380, 0, 75, 50",
     "FrameIndex": 5,
     "Name": "sub"
+  },
+  {
+    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "Bounds": "0, 51, 27, 27",
+    "FrameIndex": -1,
+    "Name": "bubble"
   }
 ]

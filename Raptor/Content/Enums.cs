@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    // TODO: This is not being used.  Remove this.
     /// <summary>
     /// The type of content that can be loaded.
     /// </summary>

@@ -24,11 +24,13 @@ namespace Raptor.Graphics
         /// <param name="atlasSubTexutureData">The sub texture data of all of the sub textures in the atlas.</param>
         /// <param name="texture">The texture data of the atlas.</param>
         /// <param name="atlasName">The name of the atlas.</param>
-        public AtlasData(AtlasSubTextureData[] atlasSubTexutureData, ITexture texture, string atlasName)
+        /// <param name="path">The path to the content.</param>
+        public AtlasData(AtlasSubTextureData[] atlasSubTexutureData, ITexture texture, string atlasName, string path)
         {
             this.atlasSprites = atlasSubTexutureData.OrderBy(data => data.FrameIndex).ToArray();
             Texture = texture;
             Name = atlasName;
+            Path = path;
         }
 
         /// <summary>
@@ -62,6 +64,9 @@ namespace Raptor.Graphics
         /// </summary>
         public string Name { get; }
 
+        /// <inheritdoc/>
+        public string Path { get; }
+
         /// <summary>
         /// Gets the texture of the atlas.
         /// </summary>
@@ -83,6 +88,21 @@ namespace Raptor.Graphics
         /// <param name="index">The index of the item to get.</param>
         /// <returns>The atlas sprite data.</returns>
         public AtlasSubTextureData this[int index] => this.atlasSprites[index];
+
+        /// <inheritdoc/>
+        public AtlasSubTextureData GetFrame(string subTextureID)
+        {
+            var foundFrmae = (from s in this.atlasSprites
+                              where s.Name == subTextureID
+                              select s).FirstOrDefault();
+
+            if (foundFrmae is null)
+            {
+                throw new Exception($"The frame '{subTextureID}' was not found in the atlas '${Name}'.");
+            }
+
+            return foundFrmae;
+        }
 
         /// <inheritdoc/>
         public AtlasSubTextureData[] GetFrames(string subTextureID)

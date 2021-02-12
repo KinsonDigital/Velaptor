@@ -47,7 +47,7 @@ namespace Raptor.Content
 
                 var atlasTexture = this.textureLoader.Load(name);
 
-                return new AtlasData(atlasSpriteData, atlasTexture, name);
+                return new AtlasData(atlasSpriteData, atlasTexture, name, key);
             });
         }
 

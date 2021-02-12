@@ -48,7 +48,11 @@ namespace Raptor.Content
             this.pathResolver = texturePathResolver;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Loads a texture with the given <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of the texture to load.</param>
+        /// <returns>The loaded texture.</returns>
         public ITexture Load(string name)
         {
             var filePath = this.pathResolver.ResolveFilePath(name);
@@ -57,7 +61,7 @@ namespace Raptor.Content
             {
                 var (pixels, width, height) = this.imageFileService.Load(key);
 
-                return new Texture(this.gl, name, pixels, width, height);
+                return new Texture(this.gl, name, key, pixels, width, height);
             });
         }
 

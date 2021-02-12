@@ -67,6 +67,7 @@ namespace RaptorTests.Content
 
             // Assert
             Assert.NotNull(actual);
+            Assert.Equal(actual.Path, this.oggSoundFilepath);
         }
 
         [Fact]

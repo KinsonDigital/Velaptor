@@ -101,6 +101,7 @@ namespace RaptorTests.Content
             Assert.Equal(this.atlasSpriteData[0], actual[0]);
             Assert.Equal(this.atlasSpriteData[1], actual[1]);
             Assert.Same(this.mockTexture.Object, actual.Texture);
+            Assert.Equal(AtlasContentName, actual.Name);
         }
 
         [Fact]
