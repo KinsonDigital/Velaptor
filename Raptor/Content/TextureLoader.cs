@@ -61,7 +61,7 @@ namespace Raptor.Content
             {
                 var (pixels, width, height) = this.imageFileService.Load(key);
 
-                return new Texture(this.gl, name, filePath, pixels, width, height);
+                return new Texture(this.gl, name, key, pixels, width, height);
             });
         }
     }

@@ -40,12 +40,12 @@ namespace Raptor.Content
 
             return this.atlases.GetOrAdd(atlasDataFilePath, (key) =>
             {
-                var rawData = this.file.ReadAllText($"{atlasDataFilePath}");
+                var rawData = this.file.ReadAllText($"{key}");
                 var atlasSpriteData = JsonConvert.DeserializeObject<AtlasSubTextureData[]>(rawData);
 
                 var atlasTexture = this.textureLoader.Load(name);
 
-                return new AtlasData(atlasSpriteData, atlasTexture, name, atlasDataFilePath);
+                return new AtlasData(atlasSpriteData, atlasTexture, name, key);
             });
         }
     }

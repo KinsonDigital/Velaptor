@@ -78,7 +78,7 @@ namespace Raptor.Content
             return this.sounds.GetOrAdd(filePath, (key) =>
             {
                 return new Sound(
-                    filePath,
+                    key,
                     this.alInvoker,
                     this.audioManager,
                     this.oggDecoder,

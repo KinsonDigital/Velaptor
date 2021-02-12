@@ -16,20 +16,22 @@ namespace RaptorTests.Content
     /// </summary>
     public class TextureLoaderTests
     {
+        private const string TextureFileName = "test-texture.png";
+        private readonly string textureFilePath;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IImageFileService> mockImageFileService;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
-        private const string TextureFileName = "test-texture.png";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
         /// </summary>
         public TextureLoaderTests()
         {
+            this.textureFilePath = $@"C:\temp\{TextureFileName}";
             this.mockGL = new Mock<IGLInvoker>();
             this.mockImageFileService = new Mock<IImageFileService>();
             this.mockTexturePathResolver = new Mock<IPathResolver>();
-            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName)).Returns($@"C:\temp\{TextureFileName}");
+            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName)).Returns(this.textureFilePath);
         }
 
         #region Method Tests
@@ -44,6 +46,7 @@ namespace RaptorTests.Content
 
             // Assert
             Assert.NotNull(actual);
+            Assert.Equal(actual.Path, this.textureFilePath);
             this.mockGL.Verify(m => m.GenTexture(), Times.Once());
             this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
         }
