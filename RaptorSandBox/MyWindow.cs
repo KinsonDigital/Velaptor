@@ -15,7 +15,6 @@ namespace RaptorSandBox
     public class MyWindow : Window
     {
         private IAtlasData? mainAtlas;
-        private readonly AtlasRegionRectangle[] atlasData;
         private ISpriteBatch? spriteBatch;
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
