@@ -15,7 +15,7 @@ namespace Raptor.Graphics
     /// </summary>
     public class AtlasData : IAtlasData
     {
-        private readonly AtlasSubTextureData[] atlasSprites;
+        private readonly AtlasSubTextureData[] subTextures;
         private bool isDisposed;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Raptor.Graphics
         /// <param name="path">The path to the content.</param>
         public AtlasData(AtlasSubTextureData[] atlasSubTexutureData, ITexture texture, string atlasName, string path)
         {
-            this.atlasSprites = atlasSubTexutureData.OrderBy(data => data.FrameIndex).ToArray();
+            this.subTextures = atlasSubTexutureData.OrderBy(data => data.FrameIndex).ToArray();
             Texture = texture;
             Name = atlasName;
             Path = path;
@@ -45,7 +45,7 @@ namespace Raptor.Graphics
             get
             {
                 var result = new List<string>();
-                var allNames = this.atlasSprites.Select(item => item.Name).ToArray();
+                var allNames = this.subTextures.Select(item => item.Name).ToArray();
 
                 foreach (var name in allNames)
                 {
@@ -87,12 +87,12 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="index">The index of the item to get.</param>
         /// <returns>The atlas sprite data.</returns>
-        public AtlasSubTextureData this[int index] => this.atlasSprites[index];
+        public AtlasSubTextureData this[int index] => this.subTextures[index];
 
         /// <inheritdoc/>
         public AtlasSubTextureData GetFrame(string subTextureID)
         {
-            var foundFrmae = (from s in this.atlasSprites
+            var foundFrmae = (from s in this.subTextures
                               where s.Name == subTextureID
                               select s).FirstOrDefault();
 
@@ -106,7 +106,7 @@ namespace Raptor.Graphics
 
         /// <inheritdoc/>
         public AtlasSubTextureData[] GetFrames(string subTextureID)
-            => (from s in this.atlasSprites
+            => (from s in this.subTextures
                 where s.Name == subTextureID
                 select s).ToArray();
 
