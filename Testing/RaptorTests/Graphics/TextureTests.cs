@@ -61,7 +61,7 @@ namespace RaptorTests.Graphics
         public void Ctor_WhenInvoked_UploadsTextureDataToGPU()
         {
             // Act
-            var texture = new Texture(this.mockGL.Object, "test-texture.png", this.pixelData, 2, 3);
+            var texture = new Texture(this.mockGL.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.pixelData, 2, 3);
 
             // Assert
             this.mockGL.Verify(m => m.ObjectLabel(ObjectLabelIdentifier.Texture, this.textureID, -1, "test-texture.png"), Times.Once());
@@ -103,7 +103,7 @@ namespace RaptorTests.Graphics
         public void Dispose_WhenUnmanagedResourcesIsNotDisposed_DisposesOfUnmanagedResources()
         {
             // Arrange
-            var texture = new Texture(this.mockGL.Object, "test-texture", this.pixelData, 2, 3);
+            var texture = new Texture(this.mockGL.Object, "test-texture", $@"C:\temp\test-texture.png", this.pixelData, 2, 3);
 
             // Act
             texture.Dispose();

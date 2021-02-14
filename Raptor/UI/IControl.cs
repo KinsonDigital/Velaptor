@@ -5,6 +5,7 @@
 namespace Raptor.UI
 {
     using System.Numerics;
+    using Raptor.Content;
 
     /// <summary>
     /// A user interface object that can be updated and rendered to the screen.

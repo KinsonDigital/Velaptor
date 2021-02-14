@@ -22,7 +22,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets the texture.
         /// </summary>
-        ITexture Texture { get; }
+        ITexture Texture { get; set; }
 
         /// <summary>
         /// Gets the width of the entire texture atlas texture.
@@ -40,6 +40,13 @@ namespace Raptor.Graphics
         /// <param name="index">The index of the item to retrieve.</param>
         /// <returns>The sub texture data.</returns>
         AtlasSubTextureData this[int index] { get; }
+
+        /// <summary>
+        /// Gets the single frame in the atlas data that matches the given <paramref name="subTextureID"/>.
+        /// </summary>
+        /// <param name="subTextureID">The name of the sub texture frame.</param>
+        /// <returns>The sub texture data of the frame.</returns>
+        AtlasSubTextureData GetFrame(string subTextureID);
 
         /// <summary>
         /// Gets the all of the frames that have the given sub texture id.

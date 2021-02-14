@@ -156,6 +156,11 @@ namespace Raptor.Graphics
                 throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
             }
 
+            if (srcRect.Width <= 0 || srcRect.Height <= 0)
+            {
+                throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
+            }
+
             if (texture is null)
             {
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");

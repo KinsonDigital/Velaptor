@@ -19,13 +19,19 @@ namespace RaptorTests.Desktop
     /// </summary>
     public class WindowTests
     {
-        // TODO: Convert all propers that use pure interface invokes to use MOQ verifies
         private readonly Mock<IWindow> mockWindow;
+        private readonly Mock<IContentLoader> mockContentLoader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowTests"/> class.
         /// </summary>
-        public WindowTests() => this.mockWindow = new Mock<IWindow>();
+        public WindowTests()
+        {
+            this.mockContentLoader = new Mock<IContentLoader>();
+
+            this.mockWindow = new Mock<IWindow>();
+            this.mockWindow.SetupGet(m => m.ContentLoader).Returns(this.mockContentLoader.Object);
+        }
 
         #region Prop Tests
         [Fact]
@@ -178,6 +184,19 @@ namespace RaptorTests.Desktop
             this.mockWindow.VerifySet(p => p.ContentLoader = mockContentLoader.Object, Times.Once());
             this.mockWindow.VerifyGet(p => p.ContentLoader, Times.Once());
         }
+
+        [Fact]
+        public void OnUnload_WhenInvoked_DisposesOfContentLoader()
+        {
+            // Arrange
+            var window = CreateWindow();
+
+            // Act
+            window.OnUnload();
+
+            // Assert
+            this.mockContentLoader.Verify(m => m.Dispose(), Times.Once());
+        }
         #endregion
 
         #region Method tests
@@ -189,16 +208,6 @@ namespace RaptorTests.Desktop
             {
                 var window = new WindowFake(null);
             }, "Window must not be null. (Parameter 'window')");
-        }
-
-        [Fact]
-        public void Ctor_WhenInvoked_ByDefaultContentLoaderIsNull()
-        {
-            // Act
-            var window = CreateWindow();
-
-            // Assert
-            Assert.Null(window.ContentLoader);
         }
 
         [Fact]
@@ -226,6 +235,7 @@ namespace RaptorTests.Desktop
 
             // Assert
             this.mockWindow.Verify(m => m.Dispose(), Times.Once());
+            this.mockContentLoader.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 

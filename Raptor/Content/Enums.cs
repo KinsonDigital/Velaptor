@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    // TODO: This is not being used.  Remove this.
     /// <summary>
     /// The type of content that can be loaded.
     /// </summary>
@@ -23,5 +24,21 @@ namespace Raptor.Content
         /// Texture atlas content.
         /// </summary>
         Atlas,
+    }
+
+    /// <summary>
+    /// Describes the type of texture.
+    /// </summary>
+    public enum TextureType
+    {
+        /// <summary>
+        /// The entire texture.
+        /// </summary>
+        WholeTexture,
+
+        /// <summary>
+        /// A small area of the entire texture.
+        /// </summary>
+        SubTexture,
     }
 }

@@ -87,16 +87,18 @@ namespace RaptorTests.Graphics
         }
 
         [Fact]
-        public void Texture_WhenGettingValue_ReturnsCorrectResult()
+        public void Texture_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
+            var otherTexture = new Mock<ITexture>();
             var data = CreateAtlasData();
 
             // Act
+            data.Texture = otherTexture.Object;
             var actual = data.Texture;
 
             // Assert
-            Assert.Same(this.mockTexture.Object, actual);
+            Assert.Same(otherTexture.Object, actual);
         }
 
         [Fact]
@@ -199,6 +201,6 @@ namespace RaptorTests.Graphics
         /// Creates a new instance of <see cref="AtlasData"/> for testing purposes.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private AtlasData CreateAtlasData() => new AtlasData(this.spriteData, this.mockTexture.Object, "test-atlas");
+        private AtlasData CreateAtlasData() => new AtlasData(this.spriteData, this.mockTexture.Object, "test-atlas", $@"C:\temp\test-atlas.png");
     }
 }

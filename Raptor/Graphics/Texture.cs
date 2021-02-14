@@ -22,13 +22,14 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="pixelData">The pixel data of the texture.</param>
         /// <param name="name">The name of the texture.</param>
+        /// <param name="path">The path to the image file.</param>
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
         [ExcludeFromCodeCoverage]
-        public Texture(string name, byte[] pixelData, int width, int height)
+        public Texture(string name, string path, byte[] pixelData, int width, int height)
         {
             this.gl = new GLInvoker();
-            Init(name, pixelData, width, height);
+            Init(name, path, pixelData, width, height);
         }
 
         /// <summary>
@@ -37,13 +38,14 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="name">The name of the texture.</param>
+        /// <param name="path">The path to the image file.</param>
         /// <param name="pixelData">The pixel data of the texture.</param>
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
-        internal Texture(IGLInvoker gl, string name, byte[] pixelData, int width, int height)
+        internal Texture(IGLInvoker gl, string name, string path, byte[] pixelData, int width, int height)
         {
             this.gl = gl;
-            Init(name, pixelData, width, height);
+            Init(name, path, pixelData, width, height);
         }
 
         /// <inheritdoc/>
@@ -51,6 +53,9 @@ namespace Raptor.Graphics
 
         /// <inheritdoc/>
         public string Name { get; private set; } = string.Empty;
+
+        /// <inheritdoc/>
+        public string Path { get; set; }
 
         /// <inheritdoc/>
         public int Width { get; protected set; }
@@ -89,10 +94,11 @@ namespace Raptor.Graphics
         /// Initializes the <see cref="Texture"/>.
         /// </summary>
         /// <param name="name">The name of the texture.</param>
+        /// <param name="path">The path to the image file.</param>
         /// <param name="pixelData">The pixel data of the texture.</param>
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
-        private void Init(string name, byte[] pixelData, int width, int height)
+        private void Init(string name, string path, byte[] pixelData, int width, int height)
         {
             ID = this.gl.GenTexture();
 
@@ -102,6 +108,7 @@ namespace Raptor.Graphics
             Height = height;
 
             Name = name;
+            Path = path;
 
             UploadDataToGPU(name, pixelData, width, height);
 
