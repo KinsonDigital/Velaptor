@@ -2,10 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor
+namespace Raptor.Content
 {
-    using Raptor.Content;
-
     /// <summary>
     /// Provides the ability to load content.
     /// </summary>
