@@ -48,6 +48,7 @@ namespace Raptor.OpenGL
         private IGLInvoker? gl;
         private bool isShuttingDown;
         private bool isDiposed;
+        private bool firstRenderInvoked;
         private Task? showTask;
 
         /// <summary>
@@ -483,6 +484,12 @@ namespace Raptor.OpenGL
         /// <param name="deltaTime">The frame event args.</param>
         private void GameWindow_RenderFrame(FrameEventArgs deltaTime)
         {
+            if (this.firstRenderInvoked is false)
+            {
+                GameWindow_UpdateFrame(deltaTime);
+                this.firstRenderInvoked = true;
+            }
+
             if (this.isShuttingDown)
             {
                 return;
