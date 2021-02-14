@@ -25,4 +25,20 @@ namespace Raptor.Content
         /// </summary>
         Atlas,
     }
+
+    /// <summary>
+    /// Describes the type of texture.
+    /// </summary>
+    public enum TextureType
+    {
+        /// <summary>
+        /// The entire texture.
+        /// </summary>
+        WholeTexture,
+
+        /// <summary>
+        /// A small area of the entire texture.
+        /// </summary>
+        SubTexture,
+    }
 }
