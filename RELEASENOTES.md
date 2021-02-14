@@ -1,5 +1,42 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.23.0</span>
+
+### **Breaking Changes** 💣
+
+1. Removed `InvalidReason` enum from library
+2. Removed `AtlasRegionRectangle` from library
+3. Removed `IAtlasRegionRectangle` from library
+
+### **Changes** ✨
+
+1. Changed `AtlasData.Texture` property to no longer be readonly
+2. Added caching ability to the `TextureLoader` class to internally cache textures to improve performance
+   * Loading of a texture that has already been loaded will return the exact same texture
+3. Added caching ability to the `AtlasLoader` class to internally cache atlas data to improve performance
+   * Loading of a texture atlas and atlas data that has already been loaded will return the exact same data
+4. Added caching ability to the `SoundLoader` class to internally cache sounds to improve performance
+   * Loading of a sound that has already been loaded will return the exact same sound
+
+
+### **New** 🎉
+
+1. Added new enumeration type named `TextureType` to represent the kind of texture
+   * This can be represent the rendering of a whole texture or sub-texture
+2. Added a new interface type named `IContentUnloadable`
+   * This can be used to unload content
+3. Added ability to throw a descriptive exception when attempting to render a texture with a width or height that is less than or equal to zero
+4. Add feature to be able to unload texture, texture atlas, and sound data
+   * This has been implemented into the `TextureLoader`, `AtlasLoader`, and `SoundLoader`
+
+
+
+### **Tech Debt/Cleanup** 🧹
+
+1. Refactor class field for `AtlasData` class
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.22.0</span>
 
 ### **Breaking Changes** 💣
