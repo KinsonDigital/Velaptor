@@ -1,5 +1,14 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.23.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
+
+### **Bug Fixes** 🐞
+
+1. Fixed a bug where the max of 2 textures that could be rendered in a batch on the same texture
+   * The max quad buffer data amount (batch size) of 2 was all that was getting alloted on the GPU.  This was throwing an exception when attempting to render more than 2 quads worth of buffer data
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.23.0</span>
 
 ### **Breaking Changes** 💣
