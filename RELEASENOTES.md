@@ -1,5 +1,19 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.23.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
+
+### **Bug Fixes** 🐞
+
+1. Fixed a bug where only the max of 2 textures could be rendered in a batch on the same texture
+   * The max quad buffer data amount (batch size) of 2 was all that was getting alloted on the GPU.  This was throwing an exception when attempting to render more than 2 quads worth of buffer data
+
+### **New** 🎉
+
+1. Added the ability to the `SpriteBatch` class to be able to set a custom batch size amount
+   * Doing this will dispose of the GPU buffers and shader programs and re-create them
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.23.0</span>
 
 ### **Breaking Changes** 💣
@@ -18,7 +32,6 @@
 4. Added caching ability to the `SoundLoader` class to internally cache sounds to improve performance
    * Loading of a sound that has already been loaded will return the exact same sound
 
-
 ### **New** 🎉
 
 1. Added new enumeration type named `TextureType` to represent the kind of texture
@@ -28,8 +41,6 @@
 3. Added ability to throw a descriptive exception when attempting to render a texture with a width or height that is less than or equal to zero
 4. Add feature to be able to unload texture, texture atlas, and sound data
    * This has been implemented into the `TextureLoader`, `AtlasLoader`, and `SoundLoader`
-
-
 
 ### **Tech Debt/Cleanup** 🧹
 

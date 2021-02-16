@@ -21,10 +21,10 @@ namespace Raptor.Graphics
         private readonly IGLInvoker gl;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
+        private uint batchSize = 10;
         private uint transDataLocation;
         private bool isDisposed;
         private bool hasBegun;
-        private uint batchSize = 10;
         private uint currentBatchItem;
         private uint currentTextureID;
         private uint previousTextureID;
@@ -70,6 +70,7 @@ namespace Raptor.Graphics
             get => this.batchSize;
             set
             {
+                Dispose(true);
                 this.batchSize = value;
                 Init();
             }
@@ -87,30 +88,6 @@ namespace Raptor.Graphics
         {
             get => this.cachedIntProps[nameof(RenderSurfaceHeight)].GetValue();
             set => this.cachedIntProps[nameof(RenderSurfaceHeight)].SetValue(value);
-        }
-
-        /// <inheritdoc/>
-        public void Init()
-        {
-            this.shader.Init();
-            this.gpuBuffer.Init();
-
-            this.batchItems.Clear();
-
-            for (uint i = 0; i < BatchSize; i++)
-            {
-                this.batchItems.Add(i, SpriteBatchItem.Empty);
-            }
-
-            this.gl.Enable(EnableCap.Blend);
-            this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            this.gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f); // TODO: Allow changing of this
-
-            this.gl.ActiveTexture(TextureUnit.Texture0);
-
-            this.shader.UseProgram();
-
-            this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
         }
 
         /// <inheritdoc/>
@@ -238,6 +215,34 @@ namespace Raptor.Graphics
             }
 
             this.isDisposed = true;
+        }
+
+        /// <summary>
+        /// Initializes the sprite batch.
+        /// </summary>
+        private void Init()
+        {
+            this.shader.Init();
+            this.gpuBuffer.TotalQuads = this.batchSize;
+            this.gpuBuffer.Init();
+
+            this.batchItems.Clear();
+
+            for (uint i = 0; i < this.batchSize; i++)
+            {
+                this.batchItems.Add(i, SpriteBatchItem.Empty);
+            }
+
+            this.gl.Enable(EnableCap.Blend);
+            this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            this.gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f); // TODO: Allow changing of this
+
+            this.gl.ActiveTexture(TextureUnit.Texture0);
+
+            this.shader.UseProgram();
+
+            this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
+            this.isDisposed = false;
         }
 
         /// <summary>
