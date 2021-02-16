@@ -19,10 +19,11 @@ namespace Raptor.OpenGL
         private uint vertexArrayID;
         private uint vertexBufferID;
         private uint indexBufferID;
-        private uint totalQuads = 2;
+        private uint totalQuads = 10;
         private uint totalVertexBytes;
         private uint totalQuadSizeInBytes;
         private bool isDisposed;
+        private bool isInitialized;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBuffer{T}"/> class.
@@ -37,6 +38,7 @@ namespace Raptor.OpenGL
             get => this.totalQuads;
             set
             {
+                Dispose(true);
                 this.totalQuads = value;
                 Init();
             }
@@ -45,6 +47,11 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public void Init()
         {
+            if (this.isInitialized)
+            {
+                return;
+            }
+
             CreateVertexBuffer();
             CreateIndexBuffer();
 
@@ -56,6 +63,8 @@ namespace Raptor.OpenGL
             BindIndexBuffer();
 
             SetupAttribPointers(this.vertexArrayID);
+            this.isDisposed = false;
+            this.isInitialized = true;
         }
 
         /// <inheritdoc/>
@@ -100,6 +109,7 @@ namespace Raptor.OpenGL
                 this.gl.DeleteBuffer(this.indexBufferID);
 
                 this.isDisposed = true;
+                this.isInitialized = false;
             }
         }
 

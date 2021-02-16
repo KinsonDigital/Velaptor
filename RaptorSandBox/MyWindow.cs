@@ -7,6 +7,7 @@ using Raptor.Factories;
 using Raptor.Graphics;
 using Raptor.Input;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 
@@ -32,6 +33,7 @@ namespace RaptorSandBox
         private Rectangle currentFrame;
         private AtlasSubTextureData[] subFrames;
         private AtlasSubTextureData bubbleFrame;
+        private List<Rectangle> bubbles = new List<Rectangle>();
         private ITexture linkTexture;
 
         public MyWindow(IWindow window)
@@ -57,12 +59,23 @@ namespace RaptorSandBox
 
             this.bubbleFrame = this.mainAtlas.GetFrame("bubble");
 
+            var random = new Random();
+
+            for (var i = 0; i < 2; i++)
+            {
+                this.bubbles.Add(new Rectangle()
+                {
+                    X = random.Next(0, Width - this.bubbleFrame.Bounds.Width),
+                    Y = Height,
+                    Width = 500,
+                    Height = 100
+                });
+            }
+
             this.linkTexture = ContentLoader.Load<ITexture>("Link");
-            var otherTexture = ContentLoader.Load<ITexture>("Link");
 
             this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
-
 
             base.OnLoad();
         }
@@ -88,6 +101,15 @@ namespace RaptorSandBox
             if (this.currentMouseState.IsRightButtonUp() && this.previousMouseState.IsRightButtonDown())
             {
                 this.quietPlaceMusic.PauseSound();
+            }
+
+            for (var i = 0; i < this.bubbles.Count; i++)
+            {
+                var bubble = this.bubbles[i];
+
+                bubble.Y -= 1;
+
+                this.bubbles[i] = bubble;
             }
 
             if (this.timeElapsed < 1000)
@@ -127,8 +149,13 @@ namespace RaptorSandBox
             var subTexture = this.subFrames[this.currentFrameIndex];
 
             this.spriteBatch?.Render(this.mainAtlas.Texture, subTexture.Bounds, new Rectangle(100, 100, 500, 100), 1, 0, Color.White);
-            this.spriteBatch?.Render(this.mainAtlas.Texture, this.bubbleFrame.Bounds, new Rectangle(200, 400, 500, 100), 1, 0, Color.White);
-            this.spriteBatch?.Render(this.linkTexture, 400, 500);
+
+            foreach (var bubble in this.bubbles)
+            {
+                this.spriteBatch?.Render(this.mainAtlas.Texture, this.bubbleFrame.Bounds, bubble, 1, 0, Color.White);
+            }
+
+            //this.spriteBatch?.Render(this.linkTexture, 400, 500);
 
             this.spriteBatch?.EndBatch();
 
