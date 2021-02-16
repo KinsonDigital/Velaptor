@@ -4,7 +4,7 @@
 
 ### **Bug Fixes** 🐞
 
-1. Fixed a bug where the max of 2 textures that could be rendered in a batch on the same texture
+1. Fixed a bug where only the max of 2 textures could be rendered in a batch on the same texture
    * The max quad buffer data amount (batch size) of 2 was all that was getting alloted on the GPU.  This was throwing an exception when attempting to render more than 2 quads worth of buffer data
 
 ### **New** 🎉
