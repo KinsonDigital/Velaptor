@@ -101,7 +101,7 @@ namespace RaptorTests.OpenGL
 
             this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ArrayBuffer, this.vertexBufferID), Times.AtLeast(2));
             this.mockGL.Verify(m => m.BufferData(BufferTarget.ArrayBuffer, totalQuadBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw), Times.AtLeastOnce());
-            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ArrayBuffer, 0), Times.AtLeast(2));
+            this.mockGL.Verify(m => m.BindBuffer(BufferTarget.ArrayBuffer, 0), Times.AtLeast(1));
         }
 
         [Fact]

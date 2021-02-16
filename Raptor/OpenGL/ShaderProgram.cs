@@ -15,6 +15,7 @@ namespace Raptor.OpenGL
         private readonly IGLInvoker gl;
         private readonly IEmbeddedResourceLoaderService resourceLoaderService;
         private bool isDisposed;
+        private bool isInitialized;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
@@ -45,6 +46,11 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public void Init()
         {
+            if (this.isInitialized)
+            {
+                return;
+            }
+
             var shaderSource = LoadShaderSourceCode("shader.vert");
             VertexShaderId = CreateShader(ShaderType.VertexShader, shaderSource);
 
@@ -60,6 +66,7 @@ namespace Raptor.OpenGL
             // Detach and then delete them.
             DestroyShader(ProgramId, VertexShaderId);
             DestroyShader(ProgramId, FragmentShaderId);
+            this.isInitialized = true;
         }
 
         /// <inheritdoc/>
@@ -87,6 +94,7 @@ namespace Raptor.OpenGL
             this.gl.DeleteProgram(ProgramId);
 
             this.isDisposed = true;
+            this.isInitialized = false;
         }
 
         /// <summary>
