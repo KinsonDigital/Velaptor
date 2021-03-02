@@ -24,10 +24,10 @@ namespace RaptorSandBox
         private ISound? zapSound;
         private ISound? deadShipsMusic;
         private ISound? quietPlaceMusic;
-        private IKeyboard keyboard;
-        private readonly Mouse mouse;
+        private IGameInput<KeyCode, KeyboardState> keyboard;
+        private readonly IGameInput<MouseButton, MouseState> mouse;
         private float timeElapsed;
-        private int linkTexturePosX;
+        private int subPositionX;
         private bool isDisposed;
         private int currentFrameIndex;
         private Rectangle currentFrame;
@@ -39,7 +39,7 @@ namespace RaptorSandBox
         public MyWindow(IWindow window)
             : base(window)
         {
-            this.linkTexturePosX = 400;
+            this.subPositionX = 400;
             this.keyboard = new Keyboard();
             this.mouse = new Mouse();
         }
@@ -86,11 +86,11 @@ namespace RaptorSandBox
         {
             ProcessAnimation(frameTime);
             this.currentKeyboardState = this.keyboard.GetState();
-            this.currentMouseState = this.mouse.GetMouseState();
+            this.currentMouseState = this.mouse.GetState();
 
             if (this.currentKeyboardState.IsKeyDown(KeyCode.Right))
             {
-                this.linkTexturePosX += 1;
+                this.subPositionX += 1;
             }
 
             if (this.currentMouseState.IsLeftButtonUp() && this.previousMouseState.IsLeftButtonDown())
@@ -148,7 +148,7 @@ namespace RaptorSandBox
 
             var subTexture = this.subFrames[this.currentFrameIndex];
 
-            this.spriteBatch?.Render(this.mainAtlas.Texture, subTexture.Bounds, new Rectangle(100, 100, 500, 100), 1, 0, Color.White);
+            this.spriteBatch?.Render(this.mainAtlas.Texture, subTexture.Bounds, new Rectangle(subPositionX, 100, 500, 100), 1, 0, Color.White);
 
             foreach (var bubble in this.bubbles)
             {

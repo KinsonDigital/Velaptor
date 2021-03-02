@@ -7,14 +7,14 @@ namespace Raptor.Input
     /// <summary>
     /// Provides functionality for the mouse.
     /// </summary>
-    public class Mouse : IMouse
+    public class Mouse : IGameInput<MouseButton, MouseState>
     {
         private static int xPos;
         private static int yPos;
         private static int scrollWheelValue;
 
         /// <inheritdoc/>
-        public MouseState GetMouseState()
+        public MouseState GetState()
         {
             var result = default(MouseState);
 
@@ -22,7 +22,7 @@ namespace Raptor.Input
             result.SetScrollWheelValue(scrollWheelValue);
 
             // Set all of the states for the buttons
-            foreach (var state in IMouse.ButtonStates)
+            foreach (var state in IGameInput<MouseButton, MouseState>.InputStates)
             {
                 result.SetButtonState(state.Key, state.Value);
             }
@@ -44,7 +44,7 @@ namespace Raptor.Input
         /// <summary>
         /// Sets the value of the mouse scroll wheel.
         /// </summary>
-        /// <param name="value">The value to set the scroll to.</param>
+        /// <param name="value">The value of the scroll.</param>
         internal static void SetScrollWheelValue(int value) => scrollWheelValue = value;
 
         /// <summary>
@@ -52,6 +52,6 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
         /// <param name="state">The state to set the button to.</param>
-        internal static void SetButtonState(MouseButton mouseButton, bool state) => IMouse.ButtonStates[mouseButton] = state;
+        internal static void SetButtonState(MouseButton mouseButton, bool state) => IGameInput<MouseButton, MouseState>.InputStates[mouseButton] = state;
     }
 }

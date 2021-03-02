@@ -22,7 +22,7 @@ namespace RaptorTests.Input
             keyboard.GetState();
 
             // Assert
-            Assert.Equal(119, IKeyboard.KeyStates.Count);
+            Assert.Equal(119, IGameInput<KeyCode, KeyboardState>.InputStates.Count);
         }
 
         [Fact]
