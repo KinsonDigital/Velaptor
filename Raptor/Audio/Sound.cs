@@ -1,4 +1,4 @@
-﻿// <copyright file="Sound.cs" company="KinsonDigital">
+// <copyright file="Sound.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -26,7 +26,9 @@ namespace Raptor.Audio
         // NOTE: This warning is ignored due to the implementation of the IAudioManager being a singleton.
         // Disposing of the audio manager when any sound is disposed would cause issues with how the
         // audio manager implementation is suppose to behave.
+#pragma warning disable CA2213 // Disposable fields should be disposed
         private readonly IAudioDeviceManager audioManager;
+#pragma warning restore CA2213 // Disposable fields should be disposed
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
         private readonly IALInvoker alInvoker;
