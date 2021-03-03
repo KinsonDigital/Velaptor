@@ -1,5 +1,6 @@
 ﻿using Raptor;
 using Raptor.Audio;
+using Raptor.Content;
 using Raptor.Factories;
 using Raptor.Graphics;
 using Raptor.Input;
