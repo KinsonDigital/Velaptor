@@ -16,20 +16,20 @@ steps:
     vstsFeed: ${{parameters.vstsFeed}}
 
 
-- task: UseDotNet@2 #🟣
+- task: UseDotNet@2
   displayName: 'Install Dotnet Core SDK 3.x'
   inputs:
     packageType: 'sdk'
     version: '3.x'
 
 
-- task: CmdLine@2 #🟣
+- task: CmdLine@2
   displayName: 'Create ${{parameters.projectName}} Nuget Package Artifact'
   inputs:
     script: "dotnet pack \"$(System.DefaultWorkingDirectory)\\${{parameters.projectName}}\\${{parameters.projectName}}.csproj\" -c ${{parameters.buildConfiguration}} /p:Platform=${{parameters.buildPlatform}} -o $(Build.ArtifactStagingDirectory)"
 
 
-- task: PublishBuildArtifacts@1 #🟣
+- task: PublishBuildArtifacts@1
   displayName: 'Publish ${{parameters.projectName}} Build Artifacts'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
