@@ -37,7 +37,7 @@ namespace Raptor.Content
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
             this.alInvoker = new ALInvoker();
-            this.audioManager = AudioDeviceManager.GetInstance(this.alInvoker);
+            this.audioManager = IoC.Container.GetInstance<IAudioDeviceManager>();
         }
 
         /// <summary>
