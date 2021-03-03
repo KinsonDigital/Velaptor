@@ -13,6 +13,7 @@ namespace Raptor.Content
     /// </summary>
     public class SoundPathResolver : ContentPathResolver
     {
+        private readonly string[] AllowedExtensions = new[] { ".ogg", ".mp3" };
         private readonly IDirectory directory;
 
         /// <summary>
@@ -28,11 +29,12 @@ namespace Raptor.Content
         /// <summary>
         /// Returns the path to the sound content.
         /// </summary>
-        /// <param name="name">The name of the content.</param>
+        /// <param name="contentName">The name of the content.</param>
         /// <returns>The path to the content.</returns>
-        public override string ResolveFilePath(string name)
+        public override string ResolveFilePath(string contentName)
         {
-            name = Path.GetFileNameWithoutExtension(name);
+            // Performs other checks on the content name
+            contentName = base.ResolveFilePath(contentName);
 
             var contentDirPath = GetContentDirPath();
 
@@ -44,15 +46,26 @@ namespace Raptor.Content
                             var allowedExtensions = new[] { ".ogg", ".mp3" };
                             var currentExtension = Path.GetExtension(f);
 
-                            return fileNameNoExt == name && allowedExtensions.Contains(currentExtension);
+                            return fileNameNoExt == contentName && allowedExtensions.Contains(currentExtension);
                         }).ToArray();
 
-            if (files.Length <= 0 || files.Any(f => f == $"{contentDirPath}{name}.ogg" || f == $"{contentDirPath}{name}.mp3") is false)
+            var oggFiles = files.Where(f => Path.GetExtension(f) == ".ogg").ToArray();
+
+            // If therre are any ogg files, choose this first
+            if (oggFiles.Length > 0)
             {
-                throw new FileNotFoundException($"The sound file '{contentDirPath}{name}' does not exist.");
+                return oggFiles[0];
             }
 
-            return files[0];
+            var mp3Files = files.Where(f => Path.GetExtension(f) == ".mp3").ToArray();
+
+            // If therre are any ogg files, choose this first
+            if (mp3Files.Length > 0)
+            {
+                return mp3Files[0];
+            }
+
+            throw new FileNotFoundException($"The sound file '{contentDirPath}{contentName}' does not exist.");
         }
     }
 }
