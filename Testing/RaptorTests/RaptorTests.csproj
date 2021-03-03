@@ -60,11 +60,6 @@
 
 
   <ItemGroup>
-    <Folder Include="UI\" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Raptor\Raptor.csproj" />
   </ItemGroup>
 </Project>

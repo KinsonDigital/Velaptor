@@ -6,7 +6,6 @@ namespace Raptor.Graphics
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Drawing;
     using Raptor.Content;
 
     /// <summary>
