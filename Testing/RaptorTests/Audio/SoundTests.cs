@@ -153,7 +153,7 @@ namespace RaptorTests.Audio
 
         #region Prop Tests
         [Fact]
-        public void ContentName_WhenGettingValue_ReturnsCorrectValue()
+        public void ContentName_WhenGettingValue_ReturnsCorrectResult()
         {
             // Act
             this.sound = CreateSound(this.oggContentFilePath);

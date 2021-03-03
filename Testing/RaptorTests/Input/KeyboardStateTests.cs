@@ -249,7 +249,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void NumLockOn_WhenGettingValue_ReturnsCorrectValue()
+        public void NumLockOn_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             SetKeyState(KeyCode.NumLock, true);
@@ -264,7 +264,7 @@ namespace RaptorTests.Input
         */
 
         [Fact]
-        public void IsLeftShiftDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsLeftShiftDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -278,7 +278,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsRightShiftDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsRightShiftDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -292,7 +292,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsLeftControlDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsLeftControlDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -306,7 +306,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsRightControlDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsRightControlDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -320,7 +320,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsLeftAltDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsLeftAltDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -334,7 +334,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsRightAltDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsRightAltDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -350,7 +350,7 @@ namespace RaptorTests.Input
 
         #region Method Tests
         [Fact]
-        public void GetDownKeys_WhenInvoked_ReturnsCorrectValue()
+        public void GetDownKeys_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
             var expected = new[]

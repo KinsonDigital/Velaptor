@@ -51,7 +51,7 @@ namespace RaptorTests.OpenGL
 
         #region Props Tests
         [Fact]
-        public void TotalQuads_WhenSettingValue_ReturnsCorrectValue()
+        public void TotalQuads_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var buffer = new GPUBuffer<VertexData>(this.mockGL.Object);
