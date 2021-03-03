@@ -13,6 +13,7 @@ namespace Raptor.Content
     /// </summary>
     public class TexturePathResolver : ContentPathResolver
     {
+        private const string FileExtension = ".png";
         private readonly IDirectory directory;
 
         /// <summary>
@@ -28,25 +29,26 @@ namespace Raptor.Content
         /// <summary>
         /// Returns the path to the texture image content.
         /// </summary>
-        /// <param name="name">The name of the content.</param>
+        /// <param name="contentName">The name of the content.</param>
         /// <returns>The path to the content.</returns>
-        public override string ResolveFilePath(string name)
+        public override string ResolveFilePath(string contentName)
         {
+            // Performs other checks on the content name
+            contentName = base.ResolveFilePath(contentName);
+
             var contentDirPath = GetContentDirPath();
 
             // Check if there are any files that match the name
-            var files = this.directory.GetFiles(contentDirPath);
+            var files = (from f in this.directory.GetFiles(contentDirPath, FileExtension)
+                         where f == $"{contentDirPath}{contentName}{FileExtension}"
+                         select f).ToArray();
 
-            var foundTexture = (from f in files
-                                where f == $"{contentDirPath}{name}.png"
-                                select f).FirstOrDefault();
-
-            if (files.Length <= 0 || foundTexture is null || foundTexture.Length <= 0)
+            if (files.Length <= 0)
             {
-                throw new FileNotFoundException($"The texture image file '{contentDirPath}{name}' does not exist.");
+                throw new FileNotFoundException($"The texture image file '{contentDirPath}{contentName}{FileExtension}' does not exist.");
             }
 
-            return foundTexture;
+            return files[0];
         }
     }
 }
