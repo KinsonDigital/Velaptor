@@ -18,6 +18,7 @@ namespace RaptorTests.Content
     /// </summary>
     public class ContentPathResolverTests
     {
+        private const string ContentName = "test-content";
         private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
 
         /// <summary>
@@ -74,17 +75,19 @@ namespace RaptorTests.Content
             }, "The 'FileDirectoryName' must not be null or empty.");
         }
 
-        [Fact]
-        public void ResolveFilePath_WhenInvoked_ReturnsName()
+        [Theory]
+        [InlineData("test-content")]
+        [InlineData("test-content.json")]
+        public void ResolveFilePath_WhenInvoked_ResolvesContentFilePath(string contentName)
         {
             // Arrange
             var resolver = new ContentPathResolverFake();
 
             // Act
-            var actual = resolver.ResolveFilePath("content-item");
+            var actual = resolver.ResolveFilePath(contentName);
 
             // Assert
-            Assert.Equal("content-item", actual);
+            Assert.Equal(ContentName, actual);
         }
 
         [Fact]
@@ -97,7 +100,7 @@ namespace RaptorTests.Content
             AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 resolver.ResolveFilePath(null);
-            }, "The parameter must not be null or empty. (Parameter 'name')");
+            }, "The parameter must not be null or empty. (Parameter 'contentName')");
         }
 
         [Fact]
@@ -109,8 +112,8 @@ namespace RaptorTests.Content
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
             {
-                resolver.ResolveFilePath(@"content-item\");
-            }, @"The 'content-item\' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'name')");
+                resolver.ResolveFilePath($@"{ContentName}\");
+            }, $@"The '{ContentName}\' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
         }
         #endregion
     }
