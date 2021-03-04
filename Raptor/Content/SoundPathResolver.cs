@@ -13,7 +13,6 @@ namespace Raptor.Content
     /// </summary>
     public class SoundPathResolver : ContentPathResolver
     {
-        private readonly string[] AllowedExtensions = new[] { ".ogg", ".mp3" };
         private readonly IDirectory directory;
 
         /// <summary>
@@ -31,6 +30,18 @@ namespace Raptor.Content
         /// </summary>
         /// <param name="contentName">The name of the content.</param>
         /// <returns>The path to the content item.</returns>
+        /// <remarks>
+        ///     The 2 types of sound formats supported are '.ogg' and '.mp3'.
+        /// <para>
+        ///     Precedence is taken with '.ogg' fles over '.mp3'.  What this means is that if
+        ///     there are 2 files <br/> with the same name but with different extensions in the
+        ///     same <see cref="ContentPathResolver.FileDirectoryName"/>, <br/> the '.ogg'
+        ///     file will be loaded, not the '.mp3' file.
+        /// </para>
+        /// <para>
+        ///     If no '.ogg' file exsits but a '.mp3' file does, then the '.mp3' file will be loaded.
+        /// </para>
+        /// </remarks>
         public override string ResolveFilePath(string contentName)
         {
             // Performs other checks on the content name
