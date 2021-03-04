@@ -17,7 +17,7 @@ This <span style="color:whitesmoke;font-weight:bold">PR</span> merges everything
 5. [ ] Verify that all <span style="color:whitesmoke;font-weight:bold">unit tests</span> pass locally using <span style="color:mediumpurple;font-weight:bold;font-weight:bold">Visual Studio</span>
 6. [ ] Check the code to make sure that it follows coding standards
    * If any coding standard violations exist, create cards in **Azure DevOps** to fix these issues.
-7. [ ] Update the version number on the release branch
-8. [ ] Update the release notes on the release branch
+7. [ ] Update the version number on the hotfix branch
+8. [ ] Update the release notes on the hotfix branch
 	* <span style="color:whitesmoke;font-weight:bold">NOTE:</span> Make sure to browse through the card info and GIT commits to collect information for the release notes
 9. [ ] Verify that the code changes have been reviewed and checked off for the PR
