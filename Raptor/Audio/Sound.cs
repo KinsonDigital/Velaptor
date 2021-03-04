@@ -24,6 +24,7 @@ namespace Raptor.Audio
         private const string IsDisposedExceptionMessage = "The sound is disposed.  You must create another sound instance.";
 
         // NOTE: This warning is ignored due to the implementation of the IAudioManager being a singleton.
+        // This AudioManager implementation as a singleton is being managed by the IoC container class.
         // Disposing of the audio manager when any sound is disposed would cause issues with how the
         // audio manager implementation is suppose to behave.
         private readonly IAudioDeviceManager audioManager;

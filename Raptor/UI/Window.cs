@@ -152,7 +152,10 @@ namespace Raptor.UI
         /// <summary>
         /// Invoked when the window is unloaded.
         /// </summary>
-        public virtual void OnUnload() => ContentLoader.Dispose();
+        [ExcludeFromCodeCoverage]
+        public virtual void OnUnload()
+        {
+        }
 
         /// <summary>
         /// Invoked when the window size changes.

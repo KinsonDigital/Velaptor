@@ -17,7 +17,7 @@ namespace RaptorTests.Audio
     /// <summary>
     /// Tests the <see cref="AudioDeviceManager"/> class.
     /// </summary>
-    public class AudioDeviceManagerTests : IDisposable
+    public class AudioDeviceManagerTests
     {
         private static readonly string IsDisposedExceptionMessage = $"The '{nameof(AudioDeviceManager)}' has not been initialized.\nInvoked the '{nameof(AudioDeviceManager.InitDevice)}()' to initialize the device manager.";
         private readonly string oggFilePath;
@@ -46,59 +46,12 @@ namespace RaptorTests.Audio
             this.mockALInvoker.Setup(m => m.MakeContextCurrent(this.context)).Returns(true);
         }
 
-        #region Method Tests
-        [Fact]
-        public void GetInstance_WithNullInvoker_ThrowsException()
-        {
-            // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                this.manager = AudioDeviceManager.GetInstance(null);
-            }, "Parameter must not be null. (Parameter 'alInvoker')");
-        }
-
-        [Fact]
-        public void GetInstance_WhenInvoked_InitializesAudioDevice()
-        {
-            // Act
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
-            this.manager.InitDevice();
-
-            // Assert
-            this.mockALInvoker.Verify(m => m.OpenDevice(It.IsAny<string>()), Times.Once());
-            this.mockALInvoker.Verify(m => m.CreateContext(this.device, It.IsAny<ALContextAttributes>()), Times.Once());
-        }
-
-        [Fact]
-        public void GetInstance_WhenInvokedReInitialization_ReturnsReferenceToSameInstance()
-        {
-            // Act
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
-            this.manager.InitDevice();
-            object managerB = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
-
-            // Assert
-            Assert.Same(this.manager, managerB);
-        }
-
-        [Fact]
-        public void GetInstance_WhenInvokedAfterFirstInvoke_ReturnsReferenceToSameInstance()
-        {
-            // Act
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
-            object managerB = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
-
-            // Assert
-            Assert.Same(this.manager, managerB);
-        }
-        #endregion
-
         #region Prop Tests
         [Fact]
         public void IsInitialized_WhenGettingValueAfterInitialization_ReturnsTrue()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice();
 
             // Act
@@ -112,7 +65,7 @@ namespace RaptorTests.Audio
         public void DeviceNames_WhenGettingValueAfterBeingDisposed_ThrowsException()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.Dispose();
 
             // Act & Assert
@@ -127,7 +80,7 @@ namespace RaptorTests.Audio
         {
             // Arrange
             var expected = new[] { "Device-1", "Device-2" };
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice();
             this.mockALInvoker.Setup(m => m.GetString(this.device, AlcGetStringList.AllDevicesSpecifier))
                 .Returns(() => new[] { "Device-1", "Device-2" });
@@ -145,11 +98,11 @@ namespace RaptorTests.Audio
         public void InitDevice_WhenInvoked_InitializesDevice()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.Dispose();
 
             // Act
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice("test-device");
 
             // Assert
@@ -165,10 +118,8 @@ namespace RaptorTests.Audio
             // The MakeContextCurrent call does not take nullable bool.  This fixes that issue
             var contextResult = !(makeContextCurrentResult is null) && (bool)makeContextCurrentResult;
 
-            this.mockALInvoker.Setup(m => m.MakeContextCurrent(this.context)).Returns(contextResult);
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
-            this.manager.Dispose();
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.mockALInvoker.Setup(m => m.MakeContextCurrent(this.context)).Returns(false);
+            this.manager = CreateManager();
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<SettingContextCurrentException>(() =>
@@ -181,7 +132,7 @@ namespace RaptorTests.Audio
         public void InitSound_WithSingleParamAndWhileDisposed_ThrowsException()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.Dispose();
 
             // Act & Assert
@@ -195,7 +146,7 @@ namespace RaptorTests.Audio
         public void InitSound_WhenInvoked_SetsUpSoundAndReturnsCorrectResult()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice();
 
             // Act
@@ -212,7 +163,7 @@ namespace RaptorTests.Audio
         public void UpdateSoundSource_WhenNotInitialized_ThrowsException()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
@@ -225,7 +176,7 @@ namespace RaptorTests.Audio
         public void UpdateSoundSource_WhenSoundSourceDoesNotExist_ThrowsException()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice();
 
             // Act & Assert
@@ -243,7 +194,7 @@ namespace RaptorTests.Audio
         public void UpdateSoundSource_WhenInvoked_UpdatesSoundSource()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice();
             this.manager.InitSound();
 
@@ -262,7 +213,7 @@ namespace RaptorTests.Audio
         public void ChangeDevice_WhenNotInitialized_ThrowsException()
         {
             // Arrange
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
@@ -278,7 +229,7 @@ namespace RaptorTests.Audio
             this.mockALInvoker.Setup(m => m.GetString(this.device, AlcGetStringList.AllDevicesSpecifier))
                 .Returns(new[] { "device-1", "device-2" });
 
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice();
 
             // Act & Assert
@@ -325,7 +276,7 @@ namespace RaptorTests.Audio
                     return oggData;
                 });
 
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
 
             var sound = new Sound(
                 this.oggFilePath,
@@ -385,7 +336,7 @@ namespace RaptorTests.Audio
                     return oggData;
                 });
 
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice();
 
             var sound = new Sound(
@@ -409,7 +360,7 @@ namespace RaptorTests.Audio
             // Arrange
             this.mockALInvoker.Setup(m => m.GetString(this.device, AlcGetStringList.AllDevicesSpecifier))
                 .Returns(new[] { "device-1", "device-2" });
-            this.manager = AudioDeviceManager.GetInstance(this.mockALInvoker.Object);
+            this.manager = CreateManager();
             this.manager.InitDevice();
 
             // Act & Assert
@@ -424,14 +375,27 @@ namespace RaptorTests.Audio
                 this.manager.ChangeDevice("device-1");
             });
         }
+
+        [Fact]
+        public void Dispose_WhenInvoked_DisposesOfManager()
+        {
+            // Arrange
+            var manager = CreateManager();
+            manager.InitDevice();
+
+            // Act
+            manager.Dispose();
+            manager.Dispose();
+
+            // Assert
+            this.mockALInvoker.Verify(m => m.MakeContextCurrent(ALContext.Null), Times.Once());
+        }
         #endregion
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            this.manager?.Dispose();
-            this.manager = null;
-            GC.SuppressFinalize(this);
-        }
+        /// <summary>
+        /// Creates a new instance of <see cref="AudioDeviceManager"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test.</returns>
+        private AudioDeviceManager CreateManager() => new AudioDeviceManager(this.mockALInvoker.Object);
     }
 }
