@@ -230,39 +230,6 @@ namespace RaptorTests.Input
             };
 
         #region Prop Tests
-        /*TODO:
-            These tests are for testing caps and num lock.  Currently OpenTK 4.0
-            needs some implementation of the proper overload and enums to be able to do this.
-            Refer to https://github.com/opentk/opentk/issues/1089 for more info
-        [Fact]
-        public void CapsLockOn_WhenGettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            SetKeyState(KeyCode.CapsLock, true);
-            var state = new KeyboardState();
-
-            // Act
-            var actual = state.CapsLockOn;
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void NumLockOn_WhenGettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            SetKeyState(KeyCode.NumLock, true);
-            var state = new KeyboardState();
-
-            // Act
-            var actual = state.NumLockOn;
-
-            // Assert
-            Assert.True(actual);
-        }
-        */
-
         [Fact]
         public void IsLeftShiftDown_WhenGettingValue_ReturnsCorrectResult()
         {
