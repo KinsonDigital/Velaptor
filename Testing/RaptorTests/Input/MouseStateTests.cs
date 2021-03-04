@@ -30,7 +30,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void GetX_WhenInvoked_ReturnsCorrectValue()
+        public void GetX_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(MouseState);
@@ -44,7 +44,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void GetY_WhenInvoked_ReturnsCorrectValue()
+        public void GetY_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(MouseState);

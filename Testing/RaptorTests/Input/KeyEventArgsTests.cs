@@ -36,7 +36,7 @@ namespace RaptorTests.Input
 
         #region Prop Tests
         [Fact]
-        public void Keys_WhenGettingValue_ReturnsCorrectValue()
+        public void Keys_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var expected = new KeyCode[]

@@ -35,7 +35,7 @@ namespace RaptorTests.Desktop
 
         #region Prop Tests
         [Fact]
-        public void Title_WhenSettingValue_ReturnsCorrectValue()
+        public void Title_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();
@@ -50,7 +50,7 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void Position_WhenSettingValue_ReturnsCorrectValue()
+        public void Position_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();
@@ -65,7 +65,7 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void Width_WhenSettingValue_ReturnsCorrectValue()
+        public void Width_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();
@@ -80,7 +80,7 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void Height_WhenSettingValue_ReturnsCorrectValue()
+        public void Height_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();
@@ -95,7 +95,7 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void AutoClearBuffer_WhenSettingValue_ReturnsCorrectValue()
+        public void AutoClearBuffer_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();
@@ -110,7 +110,7 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void MouseCursorVisible_WhenSettingValue_ReturnsCorrectValue()
+        public void MouseCursorVisible_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();
@@ -125,7 +125,7 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void UpdateFrequency_WhenSettingValue_ReturnsCorrectValue()
+        public void UpdateFrequency_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();
@@ -140,7 +140,7 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void WindowState_WhenSettingValue_ReturnsCorrectValue()
+        public void WindowState_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();
@@ -155,7 +155,7 @@ namespace RaptorTests.Desktop
         }
 
         [Fact]
-        public void TypeOfBorder_WhenSettingValue_ReturnsCorrectValue()
+        public void TypeOfBorder_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var window = CreateWindow();

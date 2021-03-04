@@ -230,41 +230,8 @@ namespace RaptorTests.Input
             };
 
         #region Prop Tests
-        /*TODO:
-            These tests are for testing caps and num lock.  Currently OpenTK 4.0
-            needs some implementation of the proper overload and enums to be able to do this.
-            Refer to https://github.com/opentk/opentk/issues/1089 for more info
         [Fact]
-        public void CapsLockOn_WhenGettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            SetKeyState(KeyCode.CapsLock, true);
-            var state = new KeyboardState();
-
-            // Act
-            var actual = state.CapsLockOn;
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void NumLockOn_WhenGettingValue_ReturnsCorrectValue()
-        {
-            // Arrange
-            SetKeyState(KeyCode.NumLock, true);
-            var state = new KeyboardState();
-
-            // Act
-            var actual = state.NumLockOn;
-
-            // Assert
-            Assert.True(actual);
-        }
-        */
-
-        [Fact]
-        public void IsLeftShiftDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsLeftShiftDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -278,7 +245,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsRightShiftDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsRightShiftDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -292,7 +259,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsLeftControlDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsLeftControlDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -306,7 +273,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsRightControlDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsRightControlDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -320,7 +287,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsLeftAltDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsLeftAltDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -334,7 +301,7 @@ namespace RaptorTests.Input
         }
 
         [Fact]
-        public void IsRightAltDown_WhenGettingValue_ReturnsCorrectValue()
+        public void IsRightAltDown_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var state = default(KeyboardState);
@@ -350,7 +317,7 @@ namespace RaptorTests.Input
 
         #region Method Tests
         [Fact]
-        public void GetDownKeys_WhenInvoked_ReturnsCorrectValue()
+        public void GetDownKeys_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
             var expected = new[]
