@@ -66,6 +66,8 @@ namespace Raptor.OpenGL
 
             SetupPropertyCaches();
 
+            ContentLoader = ContentLoaderFactory.CreateContentLoader();
+
             IGLInvoker.OpenGLInitialized += IGLInvoker_OpenGLInitialized;
         }
 
@@ -408,8 +410,6 @@ namespace Raptor.OpenGL
             this.gl.Enable(EnableCap.DebugOutput);
             this.gl.Enable(EnableCap.DebugOutputSynchronous);
             this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
-
-            ContentLoader = ContentLoaderFactory.CreateContentLoader();
 
             // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
             // that means OpenGL has been initialized by OpenTK itself.
