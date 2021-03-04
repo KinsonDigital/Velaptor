@@ -19,7 +19,7 @@ namespace Raptor.Graphics
         ReadOnlyCollection<string> SubTextureNames { get; }
 
         /// <summary>
-        /// Gets the texture.
+        /// Gets or sets the the texture of the atlas.
         /// </summary>
         ITexture Texture { get; set; }
 

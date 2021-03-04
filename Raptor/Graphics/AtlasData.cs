@@ -66,26 +66,16 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public string Path { get; }
 
-        /// <summary>
-        /// Gets the texture of the atlas.
-        /// </summary>
+        /// <inheritdoc/>
         public ITexture Texture { get; set; }
 
-        /// <summary>
-        /// Gets the width of the atlas.
-        /// </summary>
+        /// <inheritdoc/>
         public int Width => Texture.Width;
 
-        /// <summary>
-        /// Gets the height of the atlas.
-        /// </summary>
+        /// <inheritdoc/>
         public int Height => Texture.Height;
 
-        /// <summary>
-        /// Returns the value at the specified key.
-        /// </summary>
-        /// <param name="index">The index of the item to get.</param>
-        /// <returns>The atlas sprite data.</returns>
+        /// <inheritdoc/>
         public AtlasSubTextureData this[int index] => this.subTextures[index];
 
         /// <inheritdoc/>
