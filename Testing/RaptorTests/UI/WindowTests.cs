@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Desktop
+namespace RaptorTests.UI
 {
     using System;
     using System.Numerics;
     using Moq;
     using Raptor;
     using Raptor.Content;
-    using Raptor.Desktop;
+    using Raptor.UI;
     using RaptorTests.Fakes;
     using RaptorTests.Helpers;
     using Xunit;

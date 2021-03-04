@@ -16,10 +16,10 @@ namespace Raptor.OpenGL
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
     using Raptor.Content;
-    using Raptor.Desktop;
     using Raptor.Factories;
     using Raptor.Input;
     using Raptor.Services;
+    using Raptor.UI;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using GLWindowState = OpenTK.Windowing.Common.WindowState;
     using RaptorMouseButton = Raptor.Input.MouseButton;
