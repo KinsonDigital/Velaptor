@@ -10,19 +10,22 @@ namespace Raptor.Input
     /// <summary>
     /// Provides functionality for the keyboard.
     /// </summary>
-    public class Keyboard : IKeyboard
+    public class Keyboard : IGameInput<KeyCode, KeyboardState>
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the current state of the keyboard.
+        /// </summary>
+        /// <returns>The state of the keyboard.</returns>
         public KeyboardState GetState()
         {
-            if (IKeyboard.KeyStates.Count <= 0)
+            if (IGameInput<KeyCode, KeyboardState>.InputStates.Count <= 0)
             {
                 InitializepKeyStates();
             }
 
             var keyboardState = default(KeyboardState);
 
-            foreach (var state in IKeyboard.KeyStates)
+            foreach (var state in IGameInput<KeyCode, KeyboardState>.InputStates)
             {
                 keyboardState.SetKeyState(state.Key, state.Value);
             }
@@ -34,9 +37,11 @@ namespace Raptor.Input
         /// Sets the state of the given <paramref name="key"/> to the given <paramref name="state"/>.
         /// </summary>
         /// <param name="key">The key to set.</param>
-        /// <param name="state">The state to set the key to.</param>
-        /// <remarks>Using the value of true for the <paramref name="state"/> param means the key is in the down position.</remarks>
-        internal static void SetKeyState(KeyCode key, bool state) => IKeyboard.KeyStates[key] = state;
+        /// <param name="state">The state of the given key.</param>
+        /// <remarks>
+        ///     If the <paramref name="state"/> paramemter is true, means the key is in the down position.
+        /// </remarks>
+        internal static void SetKeyState(KeyCode key, bool state) => IGameInput<KeyCode, KeyboardState>.InputStates[key] = state;
 
         /// <summary>
         /// Initializes all of the available keys and default states.
@@ -47,7 +52,7 @@ namespace Raptor.Input
 
             for (var i = 0; i < keyCodes.Length; i++)
             {
-                IKeyboard.KeyStates.Add(keyCodes[i], false);
+                IGameInput<KeyCode, KeyboardState>.InputStates.Add(keyCodes[i], false);
             }
         }
     }

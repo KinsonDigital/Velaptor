@@ -37,7 +37,7 @@ namespace RaptorTests.Input
 
             // Act
             Mouse.SetPosition(11, 22);
-            var actual = mouse.GetMouseState();
+            var actual = mouse.GetState();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -53,7 +53,7 @@ namespace RaptorTests.Input
 
             // Act
             Mouse.SetScrollWheelValue(123);
-            var actual = mouse.GetMouseState();
+            var actual = mouse.GetState();
 
             // Assert
             Assert.Equal(expected, actual);
