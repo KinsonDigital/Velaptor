@@ -32,7 +32,7 @@ namespace Raptor.Content
         /// <summary>
         /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
         /// </summary>
-        /// <param name="contentName">The name of the file with or without the extension.</param>
+        /// <param name="contentName">The name of the file with or without the file extension.</param>
         /// <returns>
         ///     The <see cref="RootDirectory"/>, <see cref="FileDirectoryName"/> and file directory name combined.
         /// </returns>

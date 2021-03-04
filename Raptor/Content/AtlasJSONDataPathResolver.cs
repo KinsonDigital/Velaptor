@@ -29,7 +29,7 @@ namespace Raptor.Content
         /// <summary>
         /// Returns the path to the texture atlas data content.
         /// </summary>
-        /// <param name="contentName">The name of the content.</param>
+        /// <param name="contentName">The name of the content item with or without the file extension.</param>
         /// <returns>The path to the content.</returns>
         public override string ResolveFilePath(string contentName)
         {

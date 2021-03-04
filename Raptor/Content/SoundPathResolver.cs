@@ -30,7 +30,7 @@ namespace Raptor.Content
         /// Returns the path to the sound content.
         /// </summary>
         /// <param name="contentName">The name of the content.</param>
-        /// <returns>The path to the content.</returns>
+        /// <returns>The path to the content item.</returns>
         public override string ResolveFilePath(string contentName)
         {
             // Performs other checks on the content name

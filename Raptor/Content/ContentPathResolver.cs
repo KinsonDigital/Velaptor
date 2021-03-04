@@ -50,7 +50,7 @@ namespace Raptor.Content
         /// <summary>
         /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
         /// </summary>
-        /// <param name="contentName">The name of the content item.</param>
+        /// <param name="contentName">The name of the content item with or without the file extension.</param>
         /// <returns>The resolved file path to the content item.</returns>
         /// <remarks>
         ///     If the <paramref name="contentName"/> contains a file extension, it will be ignored
