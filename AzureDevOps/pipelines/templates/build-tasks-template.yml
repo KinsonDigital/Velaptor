@@ -16,14 +16,14 @@ steps:
     vstsFeed: ${{parameters.vstsFeed}}
 
 
-- task: UseDotNet@2 #🟣
+- task: UseDotNet@2
   displayName: 'Install Dotnet Core SDK 3.x'
   inputs:
     packageType: 'sdk'
     version: '3.x'
 
 
-- task: DotNetCoreCLI@2 #🟣
+- task: DotNetCoreCLI@2
   displayName: 'Build ${{parameters.projectName}}'
   inputs:
     command: 'build'

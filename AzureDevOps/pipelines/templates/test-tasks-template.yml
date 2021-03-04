@@ -16,14 +16,14 @@ steps:
     vstsFeed: ${{parameters.vstsFeed}}
 
 
-- task: UseDotNet@2 #🟣
+- task: UseDotNet@2
   displayName: 'Install Dotnet Core SDK 3.x'
   inputs:
     packageType: 'sdk'
     version: '3.x'
 
 
-- task: DotNetCoreCLI@2 #🟣
+- task: DotNetCoreCLI@2
   displayName: 'Run ${{parameters.projectName}} Tests & Collect Code Coverage'
   inputs:
     command: 'test'
@@ -33,7 +33,7 @@ steps:
     testRunTitle: 'Unit Test Results'
 
 
-- task: reportgenerator@4 #🟣
+- task: reportgenerator@4
   displayName: 'Generate Code Coverage Reports'
   inputs:
     reports: '**/*.cobertura.xml'
@@ -41,7 +41,7 @@ steps:
     sourcedirs: '$(System.DefaultWorkingDirectory)'
 
 
-- task: PublishCodeCoverageResults@1 #🟣
+- task: PublishCodeCoverageResults@1
   displayName: 'Publish All Code Coverage Results'
   inputs:
     codeCoverageTool: 'Cobertura'
