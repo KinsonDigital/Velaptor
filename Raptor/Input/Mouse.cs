@@ -13,7 +13,9 @@ namespace Raptor.Input
         private static int yPos;
         private static int scrollWheelValue;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the current state of the mouse.
+        /// </summary>
         public MouseState GetState()
         {
             var result = default(MouseState);
@@ -44,7 +46,7 @@ namespace Raptor.Input
         /// <summary>
         /// Sets the value of the mouse scroll wheel.
         /// </summary>
-        /// <param name="value">The value of the scroll.</param>
+        /// <param name="value">The value of the scroll wheel.</param>
         internal static void SetScrollWheelValue(int value) => scrollWheelValue = value;
 
         /// <summary>

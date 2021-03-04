@@ -13,7 +13,7 @@ namespace Raptor.Input
     public class Keyboard : IGameInput<KeyCode, KeyboardState>
     {
         /// <summary>
-        /// Gets the current state of the input.
+        /// Gets the current state of the keyboard.
         /// </summary>
         /// <returns>The state of the keyboard.</returns>
         public KeyboardState GetState()
@@ -37,9 +37,9 @@ namespace Raptor.Input
         /// Sets the state of the given <paramref name="key"/> to the given <paramref name="state"/>.
         /// </summary>
         /// <param name="key">The key to set.</param>
-        /// <param name="state">The state of the key.</param>
+        /// <param name="state">The state of the given key.</param>
         /// <remarks>
-        ///     True for the <paramref name="state"/> paramemter means the key is in the down position.
+        ///     If the <paramref name="state"/> paramemter is true, means the key is in the down position.
         /// </remarks>
         internal static void SetKeyState(KeyCode key, bool state) => IGameInput<KeyCode, KeyboardState>.InputStates[key] = state;
 

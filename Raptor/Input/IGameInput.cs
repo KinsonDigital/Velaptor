@@ -8,7 +8,7 @@ namespace Raptor.Input
     using System.Collections.Generic;
 
     /// <summary>
-    /// Gets the state of a game specific input such as a mouse or keyboard.
+    /// Gets the state of game-specific input such as a mouse or keyboard.
     /// </summary>
     /// <typeparam name="TInputs">The inputs available.</typeparam>
     /// <typeparam name="TInputState">The state of the input.</typeparam>
@@ -21,7 +21,7 @@ namespace Raptor.Input
         /// <remarks>
         ///     True means that the input is being used.
         /// <para>
-        ///     Example: True could mean that a keyboard key is being held down.
+        ///     Example: A mouse button or keyboard key is being pressed down.
         /// </para>
         /// </remarks>
         internal static readonly Dictionary<TInputs, bool> InputStates = new Dictionary<TInputs, bool>();
