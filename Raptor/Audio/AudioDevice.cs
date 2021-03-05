@@ -14,7 +14,7 @@ namespace Raptor.Audio
     [ExcludeFromCodeCoverage]
     public static class AudioDevice
     {
-        private static readonly IAudioDeviceManager DeviceManager = AudioDeviceManager.GetInstance(new ALInvoker());
+        private static readonly IAudioDeviceManager DeviceManager = IoC.Container.GetInstance<IAudioDeviceManager>();
 
         /// <summary>
         /// Gets a list of devices in the system.

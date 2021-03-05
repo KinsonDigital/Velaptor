@@ -19,14 +19,14 @@ namespace Raptor.UI
         private const int RIGHTMARGIN = 5;
         private readonly RenderText? textRuler; // Used for measuring text with and height
         private readonly RenderText? visibleText;
-        private int visibleTextCharPosition;
-        private int charPosDelta;
-        private int characterPosition;
+        private readonly int visibleTextCharPosition;
+        private readonly int charPosDelta;
+        private readonly int characterPosition;
+        private readonly int lastDirectionOfTravel;
         private int cursorElapsedMilliseconds;
         private bool cursorVisible;
         private int rightSide;
         private int leftSide;
-        private int lastDirectionOfTravel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextBox"/> class.

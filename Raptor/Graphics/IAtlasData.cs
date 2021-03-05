@@ -6,7 +6,6 @@ namespace Raptor.Graphics
 {
     using System;
     using System.Collections.ObjectModel;
-    using System.Drawing;
     using Raptor.Content;
 
     /// <summary>
@@ -20,7 +19,7 @@ namespace Raptor.Graphics
         ReadOnlyCollection<string> SubTextureNames { get; }
 
         /// <summary>
-        /// Gets the texture.
+        /// Gets or sets the the texture of the atlas.
         /// </summary>
         ITexture Texture { get; set; }
 

@@ -87,6 +87,8 @@ namespace Raptor
         /// </summary>
         private static void SetupAudio()
         {
+            IoCContainer.Register<IAudioDeviceManager, AudioDeviceManager>(Lifestyle.Singleton);
+
             // Register the proper data stream to be the implementation if the consumer is a certain decoder
             IoCContainer.RegisterConditional<IAudioDataStream<float>, OggAudioDataStream>(context =>
             {

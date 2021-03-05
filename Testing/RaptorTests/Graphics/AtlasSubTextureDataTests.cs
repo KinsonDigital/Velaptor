@@ -15,7 +15,7 @@ namespace RaptorTests.Graphics
     {
         #region Prop Tests
         [Fact]
-        public void Bounds_WhenSettingValue_ReturnsCorrectValue()
+        public void Bounds_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var expected = new Rectangle(11, 22, 33, 44);
@@ -30,7 +30,7 @@ namespace RaptorTests.Graphics
         }
 
         [Fact]
-        public void Name_WhenSettingValue_ReturnsCorrectValue()
+        public void Name_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var data = new AtlasSubTextureData();

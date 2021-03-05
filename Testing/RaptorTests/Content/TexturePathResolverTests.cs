@@ -1,4 +1,4 @@
-﻿// <copyright file="AtlasJSONDataPathResolverTests.cs" company="KinsonDigital">
+﻿// <copyright file="TexturePathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,9 +13,9 @@ namespace RaptorTests.Content
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="AtlasJSONDataPathResolver"/> class.
+    /// Tests the <see cref="TexturePathResolver"/> class.
     /// </summary>
-    public class AtlasJSONDataPathResolverTests
+    public class TexturePathResolverTests
     {
         private const string ContentName = "test-content";
         private readonly string contentFilePath;
@@ -24,14 +24,14 @@ namespace RaptorTests.Content
         private readonly string atlasContentDir;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AtlasJSONDataPathResolverTests"/> class.
+        /// Initializes a new instance of the <see cref="TexturePathResolverTests"/> class.
         /// </summary>
-        public AtlasJSONDataPathResolverTests()
+        public TexturePathResolverTests()
         {
             this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
             this.baseContentDir = $@"{this.baseDir}Content\";
-            this.atlasContentDir = $@"{this.baseContentDir}Atlas\";
-            this.contentFilePath = $"{this.atlasContentDir}{ContentName}.json";
+            this.atlasContentDir = $@"{this.baseContentDir}Graphics\";
+            this.contentFilePath = $"{this.atlasContentDir}{ContentName}.png";
         }
 
         #region Constructor Tests
@@ -42,11 +42,11 @@ namespace RaptorTests.Content
             var mockDirectory = new Mock<IDirectory>();
 
             // Act
-            var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
+            var resolver = new TexturePathResolver(mockDirectory.Object);
             var actual = resolver.FileDirectoryName;
 
             // Assert
-            Assert.Equal("Atlas", actual);
+            Assert.Equal("Graphics", actual);
         }
         #endregion
 
@@ -56,43 +56,43 @@ namespace RaptorTests.Content
         {
             // Arrange
             var mockDirectory = new Mock<IDirectory>();
-            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, ".json"))
+            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, ".png"))
                 .Returns(() =>
                 {
                     return new[]
                     {
-                        $"{this.baseDir}other-file-A.json",
+                        $"{this.baseDir}other-file-A.png",
                         $"{this.baseDir}other-file-B.txt",
                     };
                 });
 
-            var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
+            var resolver = new TexturePathResolver(mockDirectory.Object);
 
             // Act & Assert
             AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
-            }, $"The texture atlas data file '{this.contentFilePath}' does not exist.");
+            }, $"The texture image file '{this.contentFilePath}' does not exist.");
         }
 
         [Theory]
         [InlineData("test-content")]
-        [InlineData("test-content.json")]
+        [InlineData("test-content.png")]
         public void ResolveFilePath_WhenInvoked_ResolvesFilepath(string contentName)
         {
             // Arrange
             var mockDirectory = new Mock<IDirectory>();
-            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, ".json"))
+            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, ".png"))
                 .Returns(() =>
                 {
                     return new[]
                     {
-                        $"{this.atlasContentDir}other-file.json",
+                        $"{this.atlasContentDir}other-file.png",
                         this.contentFilePath,
                     };
                 });
 
-            var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
+            var resolver = new TexturePathResolver(mockDirectory.Object);
 
             // Act
             var actual = resolver.ResolveFilePath(contentName);

@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundLoader.cs" company="KinsonDigital">
+// <copyright file="SoundLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -37,13 +37,13 @@ namespace Raptor.Content
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
             this.alInvoker = new ALInvoker();
-            this.audioManager = AudioDeviceManager.GetInstance(this.alInvoker);
+            this.audioManager = IoC.Container.GetInstance<IAudioDeviceManager>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
-        /// <param name="alInvoker">Make calls to OpenAL.</param>
+        /// <param name="alInvoker">Makes calls to OpenAL.</param>
         /// <param name="audioManager">Manages the audio devices.</param>
         /// <param name="soundPathResolver">Resolves paths to sound content.</param>
         /// <param name="oggDecoder">Decodes ogg sound files.</param>

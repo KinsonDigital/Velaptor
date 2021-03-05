@@ -17,8 +17,6 @@ variables:
     value: 'Debug'
   ${{ if eq(variables['Build.SourceBranchName'], 'master')}}:
     value: 'Release'
-- name: coverageReportDirName
-  value: 'CoverageReport'
 - name: projectName
   value: 'Raptor'
 - name: kinsonDigitalNugetFeed
@@ -30,11 +28,29 @@ variables:
 
 
 stages:
-- stage: 'Main_Stage' #🟢
+- stage: 'Main_Stage'
   displayName: 'Main Stage'
   pool: '$(pool)'
   jobs:
-  - job: 'Build_Raptor_Job' #🟠
+  - job: 'Print_Variables_Job' #🟠
+    displayName: Print Variables
+    steps:
+    - task: PowerShell@2
+      displayName: Print Variables
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "##[group]Pipeline Variables"
+          Write-Host "##[command]solution: $(solution)"
+          Write-Host "##[command]buildPlatform: $(buildPlatform)"
+          Write-Host "##[command]buildConfiguration: $(buildConfiguration)"
+          Write-Host "##[command]projectName: $(projectName)"
+          Write-Host "##[command]kinsonDigitalNugetFeed: $(kinsonDigitalNugetFeed)"
+          Write-Host "##[command]pool: $(pool)"
+          Write-Host "##[endgroup]"
+
+
+  - job: 'Build_Raptor_Job'
     displayName: 'Build Raptor'
     steps:
     - template: templates/build-tasks-template.yml
@@ -45,7 +61,7 @@ stages:
         vstsFeed: '$(kinsonDigitalNugetFeed)'
 
 
-  - job: 'Run_Raptor_Tests_Job' #🟠
+  - job: 'Run_Raptor_Tests_Job'
     displayName: 'Run Raptor Tests'
     steps:
     - template: templates/test-tasks-template.yml
@@ -56,7 +72,7 @@ stages:
         vstsFeed: '$(kinsonDigitalNugetFeed)'
 
 
-  - job: 'Publish_Raptor_Artifacts_Job' #🟠
+  - job: 'Publish_Raptor_Artifacts_Job' 
     displayName: 'Publish Raptor Artifacts'
     steps:
     - template: templates/publish-tasks-template.yml

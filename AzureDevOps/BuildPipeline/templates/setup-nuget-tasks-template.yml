@@ -6,11 +6,11 @@ parameters:
 
 
 steps:
-  - task: NuGetToolInstaller@1 #🟣
+  - task: NuGetToolInstaller@1
     displayName: 'Set Up Nuget Installer Tool'  
 
 
-  - task: NuGetCommand@2 #🟣
+  - task: NuGetCommand@2
     displayName: 'Restore ${{parameters.projectName}} Nuget Packages'
     inputs:
       command: 'restore'

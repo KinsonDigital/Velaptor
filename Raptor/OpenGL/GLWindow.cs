@@ -16,10 +16,10 @@ namespace Raptor.OpenGL
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
     using Raptor.Content;
-    using Raptor.Desktop;
     using Raptor.Factories;
     using Raptor.Input;
     using Raptor.Services;
+    using Raptor.UI;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using GLWindowState = OpenTK.Windowing.Common.WindowState;
     using RaptorMouseButton = Raptor.Input.MouseButton;
@@ -65,6 +65,8 @@ namespace Raptor.OpenGL
             this.systemMonitorService = systemMonitorService;
 
             SetupPropertyCaches();
+
+            ContentLoader = ContentLoaderFactory.CreateContentLoader();
 
             IGLInvoker.OpenGLInitialized += IGLInvoker_OpenGLInitialized;
         }
@@ -408,8 +410,6 @@ namespace Raptor.OpenGL
             this.gl.Enable(EnableCap.DebugOutput);
             this.gl.Enable(EnableCap.DebugOutputSynchronous);
             this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
-
-            ContentLoader = ContentLoaderFactory.CreateContentLoader();
 
             // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
             // that means OpenGL has been initialized by OpenTK itself.

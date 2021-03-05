@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Desktop
+namespace Raptor.UI
 {
     using System;
     using System.Threading.Tasks;

@@ -1,5 +1,34 @@
 # **Raptor Release Notes**
 
+## <span style="color:mediumseagreen;font-weight:bold">Version 0.24.0</span>
+
+### **Breaking Changes** 💣
+
+1. Moved the following types from the <span style='font-weight: bold; color: khaki'>Raptor.Desktop</span> namespace to the <span style='font-weight: bold; color: khaki'>Raptor.UI</span> namespace.
+   * NOTE: The types below were all of the types in the <span style='font-weight: bold; color: khaki'>Raptor.Desktop</span> namespace.  The namespace has been removed entirely
+   * <span style='font-weight: bold; color: khaki'>IWindow</span>
+   * <span style='font-weight: bold; color: khaki'>IWindowAction</span>
+   * <span style='font-weight: bold; color: khaki'>IWindowProps</span>
+   * <span style='font-weight: bold; color: khaki'>Window</span>
+2. Replaced the <span style='font-weight: bold; color: khaki'>IKeyboard</span> and <span style='font-weight: bold; color: khaki'>IMouse</span> types with a new type named <span style='font-weight: bold; color: khaki'>IGameInput<TInputs, TInputState></span>
+   * The types <span style='font-weight: bold; color: khaki'>IKeyboard</span> and <span style='font-weight: bold; color: khaki'>IMouse</span> have been removed.
+3. Removed the <span style='font-weight: bold; color: khaki'>PointerContainer</span> class from the library
+
+### **Improvements** 🌟
+
+1. Improved audio device management and how audio is played
+
+### **Tech Debt/Cleanup** 🧹
+
+1. Refactored code to meet coding standards
+2. Cleaned up <span style='font-weight: bold; color: dodgerblue'>YAML</span> files for build pipeline
+   * No functional changes were done.  Just cleanup
+3. Refactored unit test method names for consistency and clarity
+4. Increased code coverage of various areas of the code base
+5. Made correct to PR templates used when merging hot fix branches to develop branches
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.23.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
 
 ### **Bug Fixes** 🐞
@@ -9,7 +38,7 @@
 
 ### **New** 🎉
 
-1. Added the ability to the `SpriteBatch` class to be able to set a custom batch size amount
+1. Added the ability to the <span style='font-weight: bold; color: khaki'>SpriteBatch </span> class to be able to set a custom batch size amount
    * Doing this will dispose of the GPU buffers and shader programs and re-create them
 
 ---
@@ -18,33 +47,33 @@
 
 ### **Breaking Changes** 💣
 
-1. Removed `InvalidReason` enum from library
-2. Removed `AtlasRegionRectangle` from library
-3. Removed `IAtlasRegionRectangle` from library
+1. Removed <span style='font-weight: bold; color: khaki'>InvalidReason </span> enum from library
+2. Removed <span style='font-weight: bold; color: khaki'>AtlasRegionRectangle </span> from library
+3. Removed <span style='font-weight: bold; color: khaki'>IAtlasRegionRectangle </span> from library
 
 ### **Changes** ✨
 
-1. Changed `AtlasData.Texture` property to no longer be readonly
-2. Added caching ability to the `TextureLoader` class to internally cache textures to improve performance
+1. Changed <span style='font-weight: bold; color: khaki'>AtlasData.Texture </span> property to no longer be readonly
+2. Added caching ability to the <span style='font-weight: bold; color: khaki'>TextureLoader </span> class to internally cache textures to improve performance
    * Loading of a texture that has already been loaded will return the exact same texture
-3. Added caching ability to the `AtlasLoader` class to internally cache atlas data to improve performance
+3. Added caching ability to the <span style='font-weight: bold; color: khaki'>AtlasLoader </span> class to internally cache atlas data to improve performance
    * Loading of a texture atlas and atlas data that has already been loaded will return the exact same data
-4. Added caching ability to the `SoundLoader` class to internally cache sounds to improve performance
+4. Added caching ability to the <span style='font-weight: bold; color: khaki'>SoundLoader </span> class to internally cache sounds to improve performance
    * Loading of a sound that has already been loaded will return the exact same sound
 
 ### **New** 🎉
 
-1. Added new enumeration type named `TextureType` to represent the kind of texture
+1. Added new enumeration type named <span style='font-weight: bold; color: khaki'>TextureType </span> to represent the kind of texture
    * This can be represent the rendering of a whole texture or sub-texture
-2. Added a new interface type named `IContentUnloadable`
+2. Added a new interface type named <span style='font-weight: bold; color: khaki'>IContentUnloadable</span>
    * This can be used to unload content
 3. Added ability to throw a descriptive exception when attempting to render a texture with a width or height that is less than or equal to zero
 4. Add feature to be able to unload texture, texture atlas, and sound data
-   * This has been implemented into the `TextureLoader`, `AtlasLoader`, and `SoundLoader`
+   * This has been implemented into the <span style='font-weight: bold; color: khaki'>TextureLoader</span>, <span style='font-weight: bold; color: khaki'>AtlasLoader</span>, and <span style='font-weight: bold; color: khaki'>SoundLoader</span>
 
 ### **Tech Debt/Cleanup** 🧹
 
-1. Refactor class field for `AtlasData` class
+1. Refactor class field for <span style='font-weight: bold; color: khaki'>AtlasData </span> class
 
 ---
 
@@ -52,46 +81,46 @@
 
 ### **Breaking Changes** 💣
 
-1. Changed the `Sound` class to take in a full file path to the sound content instead of just a sound name
+1. Changed the <span style='font-weight: bold; color: khaki'>Sound </span> class to take in a full file path to the sound content instead of just a sound name
    * Before this used a content source to resolve where the sound content was located
-   * The new `SoundLoader` is now responsible for resolving the path to the sound content before loading the sound
+   * The new <span style='font-weight: bold; color: khaki'>SoundLoader </span> is now responsible for resolving the path to the sound content before loading the sound
 2. The following types have changed their names
-   * `AtlasDataLoader` class name has been changed to `AtlasLoader`
-   * `IContentSource` class name has been changed to `IPathResolver`
-   * `ContentSource` class name has been changed to `ContentPathResolver`
-   * `AtlasContentSource` class has been changed to `AtlasJSONDataPathResolver`
-   * `SoundContentSource` class has been changed to `SoundPathResolver`
+   * <span style='font-weight: bold; color: khaki'>AtlasDataLoader </span> class name has been changed to <span style='font-weight: bold; color: khaki'>AtlasLoader</span>
+   * <span style='font-weight: bold; color: khaki'>IContentSource </span> class name has been changed to <span style='font-weight: bold; color: khaki'>IPathResolver</span>
+   * <span style='font-weight: bold; color: khaki'>ContentSource </span> class name has been changed to <span style='font-weight: bold; color: khaki'>ContentPathResolver</span>
+   * <span style='font-weight: bold; color: khaki'>AtlasContentSource </span> class has been changed to <span style='font-weight: bold; color: khaki'>AtlasJSONDataPathResolver</span>
+   * <span style='font-weight: bold; color: khaki'>SoundContentSource </span> class has been changed to <span style='font-weight: bold; color: khaki'>SoundPathResolver</span>
 
 ### **New** 🎉
 
-1. Added the following methods to the `ContentLoaderFactory` class to create different kinds of content loaders
-   * `CreateTextureLoader()`
-   * `CreateTextureAtlasLoader()`
-   * `CreateSoundLoader()`
-2. `ContentSource` types are now called `Resolvers` and have been improved.  The following resolvers have been created to help resolve paths to various pieces of content
-   * `AtlasJSONDataPathResolver`
-   * `AtlasTexturePathResolver`
-   * `SoundPathResolver`
-   * `TexturePathResolver`
-5. Created a `PathResolverFactory` class to create instances of the different resolvers
+1. Added the following methods to the <span style='font-weight: bold; color: khaki'>ContentLoaderFactory </span> class to create different kinds of content loaders
+   * <span style='font-weight: bold; color: khaki'>CreateTextureLoader()</span>
+   * <span style='font-weight: bold; color: khaki'>CreateTextureAtlasLoader()</span>
+   * <span style='font-weight: bold; color: khaki'>CreateSoundLoader()</span>
+2. <span style='font-weight: bold; color: khaki'>ContentSource </span> types are now called <span style='font-weight: bold; color: khaki'>Resolvers </span> and have been improved.  The following resolvers have been created to help resolve paths to various pieces of content
+   * <span style='font-weight: bold; color: khaki'>AtlasJSONDataPathResolver</span>
+   * <span style='font-weight: bold; color: khaki'>AtlasTexturePathResolver</span>
+   * <span style='font-weight: bold; color: khaki'>SoundPathResolver</span>
+   * <span style='font-weight: bold; color: khaki'>TexturePathResolver</span>
+5. Created a <span style='font-weight: bold; color: khaki'>PathResolverFactory </span> class to create instances of the different resolvers
 6. Created new types for loading texture atlas data such as texture atlas images and atlas sub texture data
    * Created the following types to be used for loading of texture atlas's
-      * `IAtlasData`
-      * `AtlasData`
-      * `AtlasRepository`
-      * `AtlasSubTextureData`
-9. Made `MapValue()` overloads public to the library API for library users to use
+      * <span style='font-weight: bold; color: khaki'>IAtlasData</span>
+      * <span style='font-weight: bold; color: khaki'>AtlasData</span>
+      * <span style='font-weight: bold; color: khaki'>AtlasRepository</span>
+      * <span style='font-weight: bold; color: khaki'>AtlasSubTextureData</span>
+9. Made <span style='font-weight: bold; color: khaki'>MapValue() </span> overloads public to the library API for library users to use
    * These extension methods can be used map a value from one range to another
 
 ### **Tech Debt/Cleanup** 🧹
 
-1. Removed `VelcroPhysics.dll` library
+1. Removed **VelcroPhysics.dll** library
 2. Removed the following classes/types
-   1. `PhysicsBody`
-   2. `PhysicsWorld`
-   3. `PhysicsBodySettings`
-   4. `VelcroBody`
-   5. `VelcroWorld`
+   1. <span style='font-weight: bold; color: khaki'>PhysicsBody</span>
+   2. <span style='font-weight: bold; color: khaki'>PhysicsWorld</span>
+   3. <span style='font-weight: bold; color: khaki'>PhysicsBodySettings</span>
+   4. <span style='font-weight: bold; color: khaki'>VelcroBody</span>
+   5. <span style='font-weight: bold; color: khaki'>VelcroWorld</span>
 
 ### **Improvements** 🌟
 
@@ -113,17 +142,17 @@
 
 ### **Breaking Changes** 💣
 
-1. Changed `Keyboard` class from static to non static
-   * Implemented new `IKeyboard` interface that the `Keyboard` class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container.
-2. Changed `Mouse` class from static to non static
-   * Implemented new `IMouse` interface that the `Mouse` class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container.
-3. Changed the `contentLoader` parameter type from a concrete `ContentLoader` type, to the `IContentLoader` interface type for the `LoadContent()` method in the `IContentLoadable` interface
+1. Changed <span style='font-weight: bold; color: khaki'>Keyboard </span> class from static to non static
+   * Implemented new <span style='font-weight: bold; color: khaki'>IKeyboard </span> interface that the <span style='font-weight: bold; color: khaki'>Keyboard </span> class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container.
+2. Changed <span style='font-weight: bold; color: khaki'>Mouse </span> class from static to non static
+   * Implemented new <span style='font-weight: bold; color: khaki'>IMouse </span> interface that the <span style='font-weight: bold; color: khaki'>Mouse </span> class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container.
+3. Changed the <span style='font-weight: bold; color: khaki'>contentLoader </span> parameter type from a concrete <span style='font-weight: bold; color: khaki'>ContentLoader </span> type, to the <span style='font-weight: bold; color: khaki'>IContentLoader </span> interface type for the <span style='font-weight: bold; color: khaki'>LoadContent() </span> method in the <span style='font-weight: bold; color: khaki'>IContentLoadable </span> interface
    * This is to follow along with the design of making things flexible and testable and aligns with the rest of the library
 
 ### **Build/Release Pipelines** 🔁
 
-1. Updated the YAML file for the build pipeline to use the new `Build-Release-Servers` agent pool
-2. Added an additional task to the build, test, and publish artifact YAML template files to install `dotnet core 3.x sdk`
+1. Updated the YAML file for the build pipeline to use the new **Build-Release-Servers** agent pool
+2. Added an additional task to the build, test, and publish artifact YAML template files to install **dotnet core 3.x sdk**
 
 ---
 
@@ -135,8 +164,8 @@
 
 ### **Bug Fixes** 🐞
 
-1. Fixed an issue with the window position not working when using the `Window.Position` property
-2. Fixed an issue with **GLFW** exceptions being thrown when using a width or height value of **'0'** when using the `CreateWindow()` method in the `WindowFactory` class
+1. Fixed an issue with the window position not working when using the <span style='font-weight: bold; color: khaki'>Window.Position </span> property
+2. Fixed an issue with **GLFW** exceptions being thrown when using a width or height value of **'0'** when using the <span style='font-weight: bold; color: khaki'>CreateWindow() </span> method in the <span style='font-weight: bold; color: khaki'>WindowFactory </span> class
 
 ---
 
@@ -144,8 +173,8 @@
 
 ### **New** 🎉
 
-1. Added a method named `ShowAsync()` to the `IWindow` interface and all associated `IWindow` implementations
-   * This is to provide the ability for consumers of the library/framework to create `IWindow` implementations, that can show the window asynchronously instead of on the applications main thread
+1. Added a method named <span style='font-weight: bold; color: khaki'>ShowAsync() </span> to the <span style='font-weight: bold; color: khaki'>IWindow </span> interface and all associated <span style='font-weight: bold; color: khaki'>IWindow </span> implementations
+   * This is to provide the ability for consumers of the library/framework to create <span style='font-weight: bold; color: khaki'>IWindow </span> implementations, that can show the window asynchronously instead of on the applications main thread
    * Example: Showing a **Raptor** window inside of a GUI application like **WPF** or **WinForms**, and not block the UI thread
 
 ---
@@ -154,7 +183,7 @@
 
 ### **Bug Fixes** 🐞
 
-1. Fixed an issue with an **OpenGL** bindings exception being thrown when using the `SpriteBatchFactory.CreateSpriteBatch()` method
+1. Fixed an issue with an **OpenGL** bindings exception being thrown when using the <span style='font-weight: bold; color: khaki'>SpriteBatchFactory.CreateSpriteBatch() </span> method
    * This was due to something that was missed when implementing the change in release **v0.18.0**
 
 ### **Nuget/Library Updates** 📦
@@ -173,25 +202,25 @@
 
 ### **New** 🎉
 
-1. Added a new method to the `Window` class named `ShowAsync()` to add the ability to run a **Raptor Window** on another thread
-   * Currently `Show()` blocks the thread that it was invoked on due to the `Show()` method not returning until the window has been closed  This is not ideal due to how long the window needs to live.  Using `ShowAsync()` will allow the use of the window while still allowing execution after the invocation of the method
+1. Added a new method to the <span style='font-weight: bold; color: khaki'>Window </span> class named <span style='font-weight: bold; color: khaki'>ShowAsync() </span> to add the ability to run a **Raptor Window** on another thread
+   * Currently <span style='font-weight: bold; color: khaki'>Show() </span> blocks the thread that it was invoked on due to the <span style='font-weight: bold; color: khaki'>Show() </span> method not returning until the window has been closed  This is not ideal due to how long the window needs to live.  Using <span style='font-weight: bold; color: khaki'>ShowAsync() </span> will allow the use of the window while still allowing execution after the invocation of the method
      * Use Case: Running a **Raptor Window** from a GUI application
-   * Any implementation of the `Window` class will get this functionality
+   * Any implementation of the <span style='font-weight: bold; color: khaki'>Window </span> class will get this functionality
 
 ### **Bug Fixes** 🐞
 
-1. Fixed an issue with the abstract `Window` class not being disposed of properly when closing the window
-2. Fixed an issue with the `Sound` class not being disposed of properly when calling dispose explicitly or implicitly
+1. Fixed an issue with the abstract <span style='font-weight: bold; color: khaki'>Window </span> class not being disposed of properly when closing the window
+2. Fixed an issue with the <span style='font-weight: bold; color: khaki'>Sound </span> class not being disposed of properly when calling dispose explicitly or implicitly
 
 ---
 
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.17.0</span>
 
-### **Improvements** 🌟
+### **Changes** ✨
 
-1. Improved how the `Window` class shows the window
-   * Previously, the window was displayed on window creation before the `Show()` method was invoked.  Now the window will only be displayed when invoking the `Show()` method.  This gives more control over how the window is displayed during window creation and also enables better management of when a window is shown on another thread other than the **main thread**
-   * NOTE: Simply invoking the `Show()` method on a worker thread will run the window on that thread
+1. Improved how the <span style='font-weight: bold; color: khaki'>Window </span> class shows the window
+   * Previously, the window was displayed on window creation before the <span style='font-weight: bold; color: khaki'>Show() </span> method was invoked.  Now the window will only be displayed when invoking the <span style='font-weight: bold; color: khaki'>Show() </span> method.  This gives more control over how the window is displayed during window creation and also enables better management of when a window is shown on another thread other than the **main thread**
+   * NOTE: Simply invoking the <span style='font-weight: bold; color: khaki'>Show() </span> method on a worker thread will run the window on that thread
 
 ---
 
@@ -207,19 +236,19 @@
 
 ### **New** 🎉
 
-1. Added the ability for the abstract `Window` class to allow for automatic buffer clearing
-   * Setting the `AutoClearBuffer` property to true will automatically clear the buffer before rendering
-   * If the `AutoClearBuffer` property is set to false, the buffer has to be cleared manually.  This can be done by using the `SpriteBatch.Clear()` method
+1. Added the ability for the abstract <span style='font-weight: bold; color: khaki'>Window </span> class to allow for automatic buffer clearing
+   * Setting the <span style='font-weight: bold; color: khaki'>AutoClearBuffer </span> property to true will automatically clear the buffer before rendering
+   * If the <span style='font-weight: bold; color: khaki'>AutoClearBuffer </span> property is set to false, the buffer has to be cleared manually.  This can be done by using the <span style='font-weight: bold; color: khaki'>SpriteBatch.Clear() </span> method
 
 ### **Breaking Changes** 💣
 
-1. Moved the following types to to a new namespace with the name `Raptor.Desktop`
-   * `IWindow`
-   * `Window`
+1. Moved the following types to to a new namespace with the name <span style='font-weight: bold; color: khaki'>Raptor.Desktop`
+   * <span style='font-weight: bold; color: khaki'>IWindow</span>
+   * <span style='font-weight: bold; color: khaki'>Window</span>
 2. Added 2 more new interfaces related to window properties for window state and actions
-   * Added new interfaces called `IWindowProps` and `IWindowActions`
-   * These interfaces were added to the `Raptor.Desktop` namespace
-3. Changed the name of the `Window.UpdateFreq` property to `Window.UpdateFrequency`
+   * Added new interfaces called <span style='font-weight: bold; color: khaki'>IWindowProps </span> and <span style='font-weight: bold; color: khaki'>IWindowActions</span>
+   * These interfaces were added to the <span style='font-weight: bold; color: khaki'>Raptor.Desktop </span> namespace
+3. Changed the name of the <span style='font-weight: bold; color: khaki'>Window.UpdateFreq </span> property to <span style='font-weight: bold; color: khaki'>Window.UpdateFrequency</span>
 
 ### **Bug Fixes** 🐞
 
@@ -234,21 +263,21 @@
 ### **Breaking Changes** 💣
 
 1. Improved how content is used and managed
-   * Removed `Window` class constructor dependency of the type `IContentLoader`
-   * Created a `ILoader<T>` for **Raptor** content types below
+   * Removed <span style='font-weight: bold; color: khaki'>Window </span> class constructor dependency of the type <span style='font-weight: bold; color: khaki'>IContentLoader</span>
+   * Created a <span style='font-weight: bold; color: khaki'>ILoader<T> </span> for **Raptor** content types below
      1. Graphics
      2. Sound
      3. Atlas Data
-   * Created new `IContent` type.  Every content type created must inherit from this interface to be able to be loaded and managed as **content**.  The list below are the current types that have been changed to use the new `IContent` type
-     1. `ITexture`
-     2. `ISound`
-     3. `IAtlasRegionRectangle`
+   * Created new <span style='font-weight: bold; color: khaki'>IContent </span> type.  Every content type created must inherit from this interface to be able to be loaded and managed as **content**.  The list below are the current types that have been changed to use the new <span style='font-weight: bold; color: khaki'>IContent </span> type
+     1. <span style='font-weight: bold; color: khaki'>ITexture</span>
+     2. <span style='font-weight: bold; color: khaki'>ISound</span>
+     3. <span style='font-weight: bold; color: khaki'>IAtlasRegionRectangle</span>
 
 ### **New** 🎉
 
-1. Created new `IPlatform` type with associated implementation type `Platform` to detect which platform the code is running on
-   * Implemented use of `IPlatform` type into the 
-2. Added new exception type `UnknownContentException`
+1. Created new <span style='font-weight: bold; color: khaki'>IPlatform </span> type with associated implementation type <span style='font-weight: bold; color: khaki'>Platform </span> to detect which platform the code is running on
+   * Implemented use of <span style='font-weight: bold; color: khaki'>IPlatform </span> type into the 
+2. Added new exception type <span style='font-weight: bold; color: khaki'>UnknownContentException</span>
    * This exception is thrown when dealing with unsupported content
 
 ---
@@ -272,7 +301,7 @@
 
 1. Added the ability to change the position of the window programmatically
 2. Added the ability to enable and disable the maximize button and the resizing of the window border
-   * Both the maximize button and the disabling the resizing of the window border are both set using the `WindowBorder.Fixed` border state value
+   * Both the maximize button and the disabling the resizing of the window border are both set using the <span style='font-weight: bold; color: khaki'>WindowBorder.Fixed </span> border state value
 3. Added the ability to set the mouse cursor to be shown or hidden when hovering over the window
 4. Added the ability to set the state of the window
    * Available states:

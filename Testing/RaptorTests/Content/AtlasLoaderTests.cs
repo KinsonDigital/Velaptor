@@ -4,7 +4,6 @@
 
 namespace RaptorTests.Content
 {
-    using System;
     using System.Drawing;
     using System.IO.Abstractions;
     using Moq;

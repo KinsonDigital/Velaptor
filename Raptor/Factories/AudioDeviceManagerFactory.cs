@@ -6,7 +6,6 @@ namespace Raptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Audio;
-    using Raptor.OpenAL;
 
     /// <summary>
     /// Creates a singleton instance of <see cref="AudioDeviceManager"/>.
@@ -19,10 +18,6 @@ namespace Raptor.Factories
         /// </summary>
         /// <returns>The device manager instance.</returns>
         public static IAudioDeviceManager CreateDeviceManager()
-        {
-            var alInvoker = IoC.Container.GetInstance<IALInvoker>();
-
-            return AudioDeviceManager.GetInstance(alInvoker);
-        }
+            => IoC.Container.GetInstance<IAudioDeviceManager>();
     }
 }

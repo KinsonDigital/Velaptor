@@ -121,7 +121,7 @@ namespace RaptorTests.Graphics
         }
 
         [Fact]
-        public void BatchSize_WhenSettingValue_ReturnsCorrectValue()
+        public void BatchSize_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             this.batch.BatchSize = 3;

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Desktop
+namespace Raptor.UI
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -152,7 +152,10 @@ namespace Raptor.Desktop
         /// <summary>
         /// Invoked when the window is unloaded.
         /// </summary>
-        public virtual void OnUnload() => ContentLoader.Dispose();
+        [ExcludeFromCodeCoverage]
+        public virtual void OnUnload()
+        {
+        }
 
         /// <summary>
         /// Invoked when the window size changes.

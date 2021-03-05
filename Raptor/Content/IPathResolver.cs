@@ -4,8 +4,6 @@
 
 namespace Raptor.Content
 {
-    using System;
-
     /// <summary>
     /// Resolves file paths.
     /// </summary>
@@ -32,18 +30,12 @@ namespace Raptor.Content
         string FileDirectoryName { get; set; }
 
         /// <summary>
-        /// Resolves the full file path.
+        /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
         /// </summary>
-        /// <param name="name">The name of the file with or without the extension.</param>
+        /// <param name="contentName">The name of the file with or without the file extension.</param>
         /// <returns>
         ///     The <see cref="RootDirectory"/>, <see cref="FileDirectoryName"/> and file directory name combined.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///     Occurs when the given <paramref name="name"/> is null or emtpy.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     Occurs when the given <paramref name="name"/> ends with a directory separator.
-        /// </exception>"
-        string ResolveFilePath(string name);
+        string ResolveFilePath(string contentName);
     }
 }

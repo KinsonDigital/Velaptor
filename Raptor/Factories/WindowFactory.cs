@@ -5,9 +5,9 @@
 namespace Raptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
-    using Raptor.Desktop;
     using Raptor.OpenGL;
     using Raptor.Services;
+    using Raptor.UI;
 
     /// <summary>
     /// Creates an instance of a raptor window.
