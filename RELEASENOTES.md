@@ -1,5 +1,18 @@
 # **Raptor Release Notes**
 
+## <span style='color:mediumseagreen;font-weight:bold'>Version 0.24.1</span> - <span style='color:indianred;font-weight:bold'>(Hot Fix)</span>
+
+### **Bug Fixes** 🐞
+
+1. Fixed an issue where loading content would throw an exception that the content did not exist even though it did exist.
+   * This was occurring for <span style='font-weight: bold; color: dodgerblue'>texture atlas</span> JSON and <span style='font-weight: bold; color: dodgerblue'>texture</span> types of content 
+
+### **Improvements** 🌟
+
+1. Made simple adjustments to hot PR templates
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.24.0</span>
 
 ### **Breaking Changes** 💣
@@ -449,7 +462,7 @@
 
 ### **Changes** ✨
 
-2. Refactored code according to **Microsofts** FxCop analyzers as well as setting code base to use nullable references
+2. Refactored code according to **Microsoft's** FxCop analyzers as well as setting code base to use nullable references
    * This greatly improves the code base to account for null reference exceptions as well as following better coding standards
 
 ### **Other** 👏
