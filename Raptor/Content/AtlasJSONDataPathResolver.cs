@@ -39,7 +39,7 @@ namespace Raptor.Content
             var contentDirPath = GetContentDirPath();
 
             // Check if there are any files that match the name
-            var files = (from f in this.directory.GetFiles(contentDirPath, FileExtension)
+            var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
                          where f == $"{contentDirPath}{contentName}{FileExtension}"
                          select f).ToArray();
 
