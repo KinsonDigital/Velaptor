@@ -57,6 +57,14 @@
 		],
 		"description": "Breaking Changes"
 	},
+    "Improvements": {
+		"scope": "",
+		"prefix": "improve",
+		"body": [
+			"### **Improvements** 🌟\n\n1. "
+		],
+		"description": "Improvements"
+	},
     "Bug Fixes": {
 		"scope": "",
 		"prefix": "bug-fixes",
