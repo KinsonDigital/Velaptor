@@ -35,12 +35,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "Pul
 		pull_request_template\release_to_master.md = pull_request_template\release_to_master.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{2A451920-2E14-4F6F-A5EA-8982DDAB8118}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPipeline", "BuildPipeline", "{2A451920-2E14-4F6F-A5EA-8982DDAB8118}"
 	ProjectSection(SolutionItems) = preProject
 		AzureDevOps\pipelines\raptor-pipeline.yml = AzureDevOps\pipelines\raptor-pipeline.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{D88293BA-31D7-46E3-A6FC-B8AEDDEF145D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{D88293BA-31D7-46E3-A6FC-B8AEDDEF145D}"
 	ProjectSection(SolutionItems) = preProject
 		AzureDevOps\pipelines\templates\build-tasks-template.yml = AzureDevOps\pipelines\templates\build-tasks-template.yml
 		AzureDevOps\pipelines\templates\publish-tasks-template.yml = AzureDevOps\pipelines\templates\publish-tasks-template.yml

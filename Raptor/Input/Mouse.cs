@@ -16,6 +16,7 @@ namespace Raptor.Input
         /// <summary>
         /// Gets the current state of the mouse.
         /// </summary>
+        /// <returns>The state of the mouse.</returns>
         public MouseState GetState()
         {
             var result = default(MouseState);
