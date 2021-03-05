@@ -5,7 +5,7 @@
 ### **Bug Fixes** 🐞
 
 1. Fixed an issue where loading content would throw an exception that the content did not exist even though it did exist.
-   * This was occurring for <span style='font-weight: bold; color: dodgerblue'>texture atlas</span> JSON and <span style='font-weight: bold; color: dodgerblue'>texture</span> types of content 
+   * This was occurring for <span style='font-weight: bold; color: dodgerblue'>texture</span> and <span style='font-weight: bold; color: dodgerblue'>texture atlas</span> JSON types of content 
 
 ### **Improvements** 🌟
 
