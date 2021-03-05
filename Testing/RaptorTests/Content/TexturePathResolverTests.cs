@@ -56,7 +56,7 @@ namespace RaptorTests.Content
         {
             // Arrange
             var mockDirectory = new Mock<IDirectory>();
-            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, ".png"))
+            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.png"))
                 .Returns(() =>
                 {
                     return new[]
@@ -82,7 +82,7 @@ namespace RaptorTests.Content
         {
             // Arrange
             var mockDirectory = new Mock<IDirectory>();
-            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, ".png"))
+            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.png"))
                 .Returns(() =>
                 {
                     return new[]

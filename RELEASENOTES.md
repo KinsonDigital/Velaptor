@@ -1,17 +1,30 @@
 # **Raptor Release Notes**
 
+## <span style='color:mediumseagreen;font-weight:bold'>Version 0.24.1</span> - <span style='color:indianred;font-weight:bold'>(Hot Fix)</span>
+
+### **Bug Fixes** 🐞
+
+1. Fixed an issue where loading content would throw an exception that the content did not exist even though it did exist
+   * This was occurring for <span style='font-weight: bold; color: dodgerblue'>texture</span> and <span style='font-weight: bold; color: dodgerblue'>texture atlas</span> JSON types of content 
+
+### **Improvements** 🌟
+
+1. Made simple adjustments to hot PR templates
+
+---
+
 ## <span style="color:mediumseagreen;font-weight:bold">Version 0.24.0</span>
 
 ### **Breaking Changes** 💣
 
-1. Moved the following types from the <span style='font-weight: bold; color: khaki'>Raptor.Desktop</span> namespace to the <span style='font-weight: bold; color: khaki'>Raptor.UI</span> namespace.
+1. Moved the following types from the <span style='font-weight: bold; color: khaki'>Raptor.Desktop</span> namespace to the <span style='font-weight: bold; color: khaki'>Raptor.UI</span> namespace
    * NOTE: The types below were all of the types in the <span style='font-weight: bold; color: khaki'>Raptor.Desktop</span> namespace.  The namespace has been removed entirely
    * <span style='font-weight: bold; color: khaki'>IWindow</span>
    * <span style='font-weight: bold; color: khaki'>IWindowAction</span>
    * <span style='font-weight: bold; color: khaki'>IWindowProps</span>
    * <span style='font-weight: bold; color: khaki'>Window</span>
 2. Replaced the <span style='font-weight: bold; color: khaki'>IKeyboard</span> and <span style='font-weight: bold; color: khaki'>IMouse</span> types with a new type named <span style='font-weight: bold; color: khaki'>IGameInput<TInputs, TInputState></span>
-   * The types <span style='font-weight: bold; color: khaki'>IKeyboard</span> and <span style='font-weight: bold; color: khaki'>IMouse</span> have been removed.
+   * The types <span style='font-weight: bold; color: khaki'>IKeyboard</span> and <span style='font-weight: bold; color: khaki'>IMouse</span> have been removed
 3. Removed the <span style='font-weight: bold; color: khaki'>PointerContainer</span> class from the library
 
 ### **Improvements** 🌟
@@ -143,9 +156,9 @@
 ### **Breaking Changes** 💣
 
 1. Changed <span style='font-weight: bold; color: khaki'>Keyboard </span> class from static to non static
-   * Implemented new <span style='font-weight: bold; color: khaki'>IKeyboard </span> interface that the <span style='font-weight: bold; color: khaki'>Keyboard </span> class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container.
+   * Implemented new <span style='font-weight: bold; color: khaki'>IKeyboard </span> interface that the <span style='font-weight: bold; color: khaki'>Keyboard </span> class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container
 2. Changed <span style='font-weight: bold; color: khaki'>Mouse </span> class from static to non static
-   * Implemented new <span style='font-weight: bold; color: khaki'>IMouse </span> interface that the <span style='font-weight: bold; color: khaki'>Mouse </span> class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container.
+   * Implemented new <span style='font-weight: bold; color: khaki'>IMouse </span> interface that the <span style='font-weight: bold; color: khaki'>Mouse </span> class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container
 3. Changed the <span style='font-weight: bold; color: khaki'>contentLoader </span> parameter type from a concrete <span style='font-weight: bold; color: khaki'>ContentLoader </span> type, to the <span style='font-weight: bold; color: khaki'>IContentLoader </span> interface type for the <span style='font-weight: bold; color: khaki'>LoadContent() </span> method in the <span style='font-weight: bold; color: khaki'>IContentLoadable </span> interface
    * This is to follow along with the design of making things flexible and testable and aligns with the rest of the library
 
@@ -340,7 +353,7 @@
 2. Refactored code to meet coding standards
 3. Added ability to move the texture in the **Sandbox** project to test out keyboard input
 4. Replaced the **KinsonDigital.FileIO** with **System.IO.Abstractions**
-   * This was done to not have to maintain the **KinsonDigital.FileIO** library anymore and to use the better **System.IO.Abstractions** library.
+   * This was done to not have to maintain the **KinsonDigital.FileIO** library anymore and to use the better **System.IO.Abstractions** library
 
 ---
 
@@ -449,7 +462,7 @@
 
 ### **Changes** ✨
 
-2. Refactored code according to **Microsofts** FxCop analyzers as well as setting code base to use nullable references
+2. Refactored code according to **Microsoft's** FxCop analyzers as well as setting code base to use nullable references
    * This greatly improves the code base to account for null reference exceptions as well as following better coding standards
 
 ### **Other** 👏

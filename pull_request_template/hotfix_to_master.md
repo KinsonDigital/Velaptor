@@ -8,7 +8,7 @@ This <span style="color:whitesmoke;font-weight:bold">PR</span> merges everything
 
 ## <span style="color:mediumseagreen;font-weight:bold">PR To Do</span>
 
-1. [ ] Verify that the name of the current release branch is correct
+1. [ ] Verify that the name of the current hotfix branch is correct
     * <span style="color:whitesmoke;font-weight:bold">NOTE:</span> Use [<span style="color:dodgerblue;font-weight:bold">semantic versioning</span>](https://semver.org/)
 	* <span style="color:whitesmoke;font-weight:bold">Syntax:</span> hotfix/v[version]
 	* <span style="color:whitesmoke;font-weight:bold">Example:</span> hotfix/v1.2.3
