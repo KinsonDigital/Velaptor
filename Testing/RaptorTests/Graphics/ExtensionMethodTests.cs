@@ -83,29 +83,14 @@ namespace RaptorTests.Graphics
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void GetFirstOccurenceOfNumber_WhenInvokedWithNumberInString_ReturnsCorrectIndex()
+        [Theory]
+        [InlineData("1234", 1234)]
+        [InlineData("The number 5678", 5678)]
+        [InlineData("No number here", -1)]
+        public void GetFirstOccurenceOfNumber_WhenInvokedWithNumberInString_ReturnsCorrectIndex(string value, int expected)
         {
-            // Arrange
-            var data = "This number 1234 is my favorite number!";
-            var expected = 1234;
-
             // Act
-            var actual = data.GetFirstOccurenceOfNumber();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void GetFirstOccurenceOfNumber_WhenInvokedWithNoNumbersInString_ReturnsCorrectResult()
-        {
-            // Arrange
-            var data = "No number is my favorite number!";
-            var expected = -1;
-
-            // Act
-            var actual = data.GetFirstOccurenceOfNumber();
+            var actual = value.GetFirstOccurenceOfNumber();
 
             // Assert
             Assert.Equal(expected, actual);

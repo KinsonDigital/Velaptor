@@ -4,9 +4,7 @@
 
 namespace Raptor.Content
 {
-    using System.IO;
     using System.IO.Abstractions;
-    using System.Linq;
 
     /// <summary>
     /// Resolves paths to atlas texture content.

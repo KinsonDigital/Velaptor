@@ -46,14 +46,16 @@ namespace Raptor.Graphics
         {
             var number = new string(item.Where(IsNumber).ToArray());
 
-            if (string.IsNullOrEmpty(number))
+            var parseSuccess = int.TryParse(number, out var result);
+
+            if (parseSuccess)
+            {
+                return result;
+            }
+            else
             {
                 return -1;
             }
-
-            var parseSuccess = int.TryParse(number, out var result);
-
-            return parseSuccess ? result : -1;
         }
 
         /// <summary>

@@ -87,7 +87,8 @@ namespace Raptor.Graphics
 
             if (foundFrmae is null)
             {
-                throw new Exception($"The frame '{subTextureID}' was not found in the atlas '${Name}'.");
+                // TODO: Create a custom exception named TextureAtlasException and implement here
+                throw new Exception($"The frame '{subTextureID}' was not found in the atlas '{Name}'.");
             }
 
             return foundFrmae;

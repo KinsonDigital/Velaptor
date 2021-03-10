@@ -6,7 +6,6 @@ namespace Raptor.Audio
 {
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
-    using Raptor.OpenAL;
 
     /// <summary>
     /// Represents audio devices in the system.
