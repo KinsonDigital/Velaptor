@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
+// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,6 +10,7 @@ namespace RaptorTests.Graphics
     using Moq;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
+    using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.OpenGL;
     using RaptorTests.Helpers;
@@ -45,6 +46,7 @@ namespace RaptorTests.Graphics
             this.mockGLInvoker = new Mock<IGLInvoker>();
             this.mockGLInvoker.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
             this.mockGLInvoker.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLInvoker.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 22));
 
             this.mockShader = new Mock<IShaderProgram>();
 
@@ -92,7 +94,6 @@ namespace RaptorTests.Graphics
         public unsafe void Width_WhenSettingValueWithOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLInvoker.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 22));
             IGLInvoker.SetOpenGLAsInitialized();
 
             // Act
@@ -108,7 +109,6 @@ namespace RaptorTests.Graphics
         public unsafe void Height_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLInvoker.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 22));
             IGLInvoker.SetOpenGLAsInitialized();
 
             // Act
@@ -223,7 +223,7 @@ namespace RaptorTests.Graphics
                 var destRect = new Rectangle(5, 6, 7, 8);
                 var tintClr = Color.FromArgb(11, 22, 33, 44);
 
-                this.batch.Render(this.mockTextureOne.Object, srcRect, destRect, 0.5f, 90, tintClr);
+                this.batch.Render(this.mockTextureOne.Object, srcRect, destRect, 0.5f, 90, tintClr, RenderEffects.None);
             }, $"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
         }
 
@@ -237,7 +237,7 @@ namespace RaptorTests.Graphics
             {
                 var srcRect = new Rectangle(0, 0, 10, 20);
                 this.batch.BeginBatch();
-                this.batch.Render(null, srcRect, It.IsAny<Rectangle>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<Color>());
+                this.batch.Render(null, srcRect, It.IsAny<Rectangle>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<Color>(), RenderEffects.None);
             }, "The texture must not be null. (Parameter 'texture')");
         }
 
@@ -253,7 +253,7 @@ namespace RaptorTests.Graphics
                 var srcRect = new Rectangle(0, 0, 0, 20);
                 var destRect = new Rectangle(10, 20, 100, 200);
 
-                this.batch.Render(this.mockTextureOne.Object, srcRect, destRect, 1, 1, Color.White);
+                this.batch.Render(this.mockTextureOne.Object, srcRect, destRect, 1, 1, Color.White, RenderEffects.None);
             }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
         }
 
@@ -269,7 +269,7 @@ namespace RaptorTests.Graphics
                 var srcRect = new Rectangle(0, 0, 10, 0);
                 var destRect = new Rectangle(10, 20, 100, 200);
 
-                this.batch.Render(this.mockTextureOne.Object, srcRect, destRect, 1, 1, Color.White);
+                this.batch.Render(this.mockTextureOne.Object, srcRect, destRect, 1, 1, Color.White, RenderEffects.None);
             }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
         }
 
@@ -289,8 +289,8 @@ namespace RaptorTests.Graphics
             var tintClr = Color.FromArgb(11, 22, 33, 44);
 
             this.batch.BeginBatch();
-            this.batch.Render(this.mockTextureOne.Object, srcRect, destRect, 0.5f, 90, tintClr);
-            this.batch.Render(this.mockTextureTwo.Object, srcRect, destRect, 0.5f, 90, tintClr);
+            this.batch.Render(this.mockTextureOne.Object, srcRect, destRect, 0.5f, 90, tintClr, RenderEffects.None);
+            this.batch.Render(this.mockTextureTwo.Object, srcRect, destRect, 0.5f, 90, tintClr, RenderEffects.None);
             var transMatrix = new Matrix4()
             {
                 Column0 = new Vector4(-6.5567085E-09f, 0.15f, 0f, 0f),
@@ -326,22 +326,187 @@ namespace RaptorTests.Graphics
         {
             // Arrange
             this.batch.BatchSize = 2;
-
-            // Act
             this.batch.BeginBatch();
 
+            // Act
             this.batch.Render(
                 this.mockTextureOne.Object,
                 new Rectangle(1, 2, 3, 4),
                 new Rectangle(5, 6, 7, 8),
                 9f,
                 10f,
-                Color.FromArgb(11, 22, 33, 44));
+                Color.FromArgb(11, 22, 33, 44),
+                RenderEffects.None);
 
             this.batch.EndBatch();
 
             // Assert
             AssertBatchRendered(1, 1, 1, 1);
+        }
+
+        [Fact]
+        public void Render_WhenInvoking4ParamOverloadWithRenderEffect_RendersTexture()
+        {
+            // Arrange
+            this.batch.RenderSurfaceWidth = 10;
+            this.batch.RenderSurfaceHeight = 20;
+            this.batch.BatchSize = 1u;
+
+            var expectedMatrix = default(Matrix4);
+            expectedMatrix.Row0 = new Vector4(-0.90909094f, 0f, 0f, 0f);
+            expectedMatrix.Row1 = new Vector4(0f, 0.90909094f, 0f, 0f);
+            expectedMatrix.Row2 = new Vector4(0f, 0f, 1f, 0f);
+            expectedMatrix.Row3 = new Vector4(0.8181819f, -0.8181819f, 0f, 1f);
+
+            this.batch.BeginBatch();
+
+            // Act
+            this.batch.Render(this.mockTextureOne.Object, 10, 20, RenderEffects.FlipHorizontally);
+            this.batch.Render(this.mockTextureOne.Object, 30, 40, RenderEffects.FlipHorizontally);
+
+            // Assert
+            AssertBatchRendered(
+                totalItemsInBatch: 1,
+                totalBatchUpdates: 1u,
+                totalTextureBinds: 1,
+                totalDrawCalls: 1,
+                transform: expectedMatrix);
+        }
+
+        [Fact]
+        public void Render_WhenInvoking7ParamOverloading_RendersTextureFlippedHorizontally()
+        {
+            // Arrange
+            this.mockGLInvoker.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 22));
+            this.batch.BatchSize = 1;
+            this.batch.BeginBatch();
+
+            var expectedMatrix = default(Matrix4);
+            expectedMatrix.Row0 = new Vector4(-2.4172554f, -0.28415158f, 0f, 0f);
+            expectedMatrix.Row1 = new Vector4(-0.42622736f, 1.6115037f, 0f, 0f);
+            expectedMatrix.Row2 = new Vector4(0f, 0f, 1f, 0f);
+            expectedMatrix.Row3 = new Vector4(-0.090909064f, 0.45454544f, 0f, 1f);
+
+            // Act
+            this.batch.Render(
+                            this.mockTextureOne.Object,
+                            new Rectangle(1, 2, 3, 4),
+                            new Rectangle(5, 6, 7, 8),
+                            9f,
+                            10f,
+                            Color.FromArgb(11, 22, 33, 44),
+                            RenderEffects.FlipHorizontally);
+
+            this.batch.EndBatch();
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.UniformMatrix4(0, true, ref expectedMatrix), Times.Once());
+        }
+
+        [Fact]
+        public void Render_WhenInvoking7ParamOverload_RendersTextureFlippedVertically()
+        {
+            // Arrange
+            this.batch.BatchSize = 1;
+            this.batch.BeginBatch();
+
+            var expectedMatrix = default(Matrix4);
+            expectedMatrix.Row0 = new Vector4(2.4172554f, 0.28415158f, 0f, 0f);
+            expectedMatrix.Row1 = new Vector4(0.42622736f, -1.6115037f, 0f, 0f);
+            expectedMatrix.Row2 = new Vector4(0f, 0f, 1f, 0f);
+            expectedMatrix.Row3 = new Vector4(-0.090909064f, 0.45454544f, 0f, 1f);
+
+            // Act
+            this.batch.Render(
+                            this.mockTextureOne.Object,
+                            new Rectangle(1, 2, 3, 4),
+                            new Rectangle(5, 6, 7, 8),
+                            9f,
+                            10f,
+                            Color.FromArgb(11, 22, 33, 44),
+                            RenderEffects.FlipVertically);
+
+            this.batch.EndBatch();
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.UniformMatrix4(0, true, ref expectedMatrix), Times.Once());
+        }
+
+        [Fact]
+        public void Render_WhenInvoking7ParamOverload_RendersTextureFlippedBothDirections()
+        {
+            // Arrange
+            this.batch.BatchSize = 1;
+            this.batch.BeginBatch();
+
+            var expectedMatrix = default(Matrix4);
+            expectedMatrix.Row0 = new Vector4(-2.4172554f, 0.28415158f, 0f, 0f);
+            expectedMatrix.Row1 = new Vector4(-0.42622736f, -1.6115037f, 0f, 0f);
+            expectedMatrix.Row2 = new Vector4(0f, 0f, 1f, 0f);
+            expectedMatrix.Row3 = new Vector4(-0.090909064f, 0.45454544f, 0f, 1f);
+
+            // Act
+            this.batch.Render(
+                            this.mockTextureOne.Object,
+                            new Rectangle(1, 2, 3, 4),
+                            new Rectangle(5, 6, 7, 8),
+                            9f,
+                            10f,
+                            Color.FromArgb(11, 22, 33, 44),
+                            RenderEffects.FlipBothDirections);
+
+            this.batch.EndBatch();
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.UniformMatrix4(0, true, ref expectedMatrix), Times.Once());
+        }
+
+        [Fact]
+        public void Render_WithUnknownRenderEffect_ThrowsException()
+        {
+            // Arrange
+
+            this.batch.BatchSize = 1;
+            this.batch.BeginBatch();
+
+            var expectedMatrix = default(Matrix4);
+            expectedMatrix.Row0 = new Vector4(-2.4172554f, 0.28415158f, 0f, 0f);
+            expectedMatrix.Row1 = new Vector4(-0.42622736f, -1.6115037f, 0f, 0f);
+            expectedMatrix.Row2 = new Vector4(0f, 0f, 1f, 0f);
+            expectedMatrix.Row3 = new Vector4(-0.090909064f, 0.45454544f, 0f, 1f);
+
+            // Act & Assert
+            this.batch.Render(
+                            this.mockTextureOne.Object,
+                            new Rectangle(1, 2, 3, 4),
+                            new Rectangle(5, 6, 7, 8),
+                            9f,
+                            10f,
+                            Color.FromArgb(11, 22, 33, 44),
+                            ((RenderEffects)44));
+
+            AssertHelpers.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
+            {
+                this.batch.EndBatch();
+            }, $"The '{nameof(RenderEffects)}' value of '44' is not valid.");
+        }
+
+        [Theory]
+        [InlineData(0, 22, "The port size width cannot be a negative or zero value.")]
+        [InlineData(11, 0, "The port size height cannot be a negative or zero value.")]
+        public void Render_WhenPortSizeWithIsZero_ThrowsException(int width, int height, string expectedMessage)
+        {
+            // Arrange
+            this.mockGLInvoker.Setup(m => m.GetViewPortSize()).Returns(new Vector2(width, height));
+            this.batch.BatchSize = 1;
+            this.batch.BeginBatch();
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            {
+                this.batch.Render(this.mockTextureOne.Object, 10, 20);
+                this.batch.EndBatch();
+            }, expectedMessage);
         }
 
         [Fact]

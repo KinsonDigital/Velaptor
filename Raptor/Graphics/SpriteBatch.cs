@@ -11,6 +11,7 @@ namespace Raptor.Graphics
     using System.Linq;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
+    using Raptor.Exceptions;
     using Raptor.OpenGL;
 
     /// <inheritdoc/>
@@ -99,8 +100,14 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 
+        /// <inheritdoc/>///
+        public void Render(ITexture texture, int x, int y, RenderEffects effects) => Render(texture, x, y, Color.White, effects);
+
         /// <inheritdoc/>
-        public void Render(ITexture texture, int x, int y, Color tintColor)
+        public void Render(ITexture texture, int x, int y, Color tintColor) => Render(texture, x, y, tintColor, RenderEffects.None);
+
+        /// <inheritdoc/>///
+        public void Render(ITexture texture, int x, int y, Color tintColor, RenderEffects effects)
         {
             if (!this.hasBegun)
             {
@@ -122,11 +129,21 @@ namespace Raptor.Graphics
 
             var destRect = new Rectangle(x, y, texture.Width, texture.Height);
 
-            Render(texture, srcRect, destRect, 1, 0, tintColor);
+            Render(texture, srcRect, destRect, 1, 0, tintColor, effects);
         }
 
         /// <inheritdoc/>
-        public void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor)
+        /// <exception cref="InvalidRenderEffectsException">
+        ///     Thrown if the given <paramref name="effects"/> is invalid.
+        /// </exception>
+        public void Render(
+            ITexture texture,
+            Rectangle srcRect,
+            Rectangle destRect,
+            float size,
+            float angle,
+            Color tintColor,
+            RenderEffects effects)
         {
             if (!this.hasBegun)
             {
@@ -163,6 +180,7 @@ namespace Raptor.Graphics
             batchItem.Size = size;
             batchItem.Angle = angle;
             batchItem.TintColor = tintColor;
+            batchItem.Effects = effects;
 
             this.batchItems[this.currentBatchItem] = batchItem;
 
@@ -306,12 +324,38 @@ namespace Raptor.Graphics
                     textureIsBound = true;
                 }
 
+                var srcRectWidth = this.batchItems[i].SrcRect.Width;
+                var srcRectHeight = this.batchItems[i].SrcRect.Height;
+
+                // Set the source rectangle width and height based on the render effects
+                switch (this.batchItems[i].Effects)
+                {
+                    case RenderEffects.None:
+                        srcRectWidth = this.batchItems[i].SrcRect.Width;
+                        srcRectHeight = this.batchItems[i].SrcRect.Height;
+                        break;
+                    case RenderEffects.FlipHorizontally:
+                        srcRectWidth = this.batchItems[i].SrcRect.Width * -1;
+                        srcRectHeight = this.batchItems[i].SrcRect.Height;
+                        break;
+                    case RenderEffects.FlipVertically:
+                        srcRectWidth = this.batchItems[i].SrcRect.Width;
+                        srcRectHeight = this.batchItems[i].SrcRect.Height * -1;
+                        break;
+                    case RenderEffects.FlipBothDirections:
+                        srcRectWidth = this.batchItems[i].SrcRect.Width * -1;
+                        srcRectHeight = this.batchItems[i].SrcRect.Height * -1;
+                        break;
+                    default:
+                        throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)this.batchItems[i].Effects}' is not valid.");
+                }
+
                 UpdateGPUTransform(
                     i,
                     this.batchItems[i].DestRect.X,
                     this.batchItems[i].DestRect.Y,
-                    this.batchItems[i].SrcRect.Width,
-                    this.batchItems[i].SrcRect.Height,
+                    srcRectWidth,
+                    srcRectHeight,
                     this.batchItems[i].Size,
                     this.batchItems[i].Angle);
 
@@ -374,8 +418,18 @@ namespace Raptor.Graphics
         {
             var viewPortSize = this.gl.GetViewPortSize();
 
-            var scaleX = (float)width / viewPortSize.X;
-            var scaleY = (float)height / viewPortSize.Y;
+            if (viewPortSize.X <= 0)
+            {
+                throw new Exception("The port size width cannot be a negative or zero value.");
+            }
+
+            if (viewPortSize.Y <= 0)
+            {
+                throw new Exception("The port size height cannot be a negative or zero value.");
+            }
+
+            var scaleX = width / viewPortSize.X;
+            var scaleY = height / viewPortSize.Y;
 
             scaleX *= size;
             scaleY *= size;
