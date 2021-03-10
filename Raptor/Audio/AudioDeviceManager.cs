@@ -1,4 +1,4 @@
-﻿// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
+// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -203,8 +203,8 @@ namespace Raptor.Audio
 
             if (disposing)
             {
-                this.soundSources?.Clear();
-                this.continuePlaybackCache?.Clear();
+                this.soundSources.Clear();
+                this.continuePlaybackCache.Clear();
             }
 
             this.isDisposed = true;

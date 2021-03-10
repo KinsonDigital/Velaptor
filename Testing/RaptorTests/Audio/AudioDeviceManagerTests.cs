@@ -239,8 +239,12 @@ namespace RaptorTests.Audio
             }, "Device Name: test-device-1\nThe audio device does not exist.");
         }
 
-        [Fact]
-        public void ChangeDevice_WhenCurrentTimePositionIsGreaterThenMaxTime_ChangesDevices()
+        [Theory]
+        [InlineData(10, 5, 5)]
+        public void ChangeDevice_WhenCurrentTimePositionIsGreaterThenMaxTime_ChangesDevices(
+            float timePosition,
+            float totalSeconds,
+            float expected)
         {
             /*NOTE:
              * To calculate the time position in seconds, take the sampleOffset and divide it by sample rate.
@@ -259,6 +263,7 @@ namespace RaptorTests.Audio
                 .Returns(ALSourceState.Playing);
             this.mockALInvoker.Setup(m => m.GetSource(this.srcId, ALGetSourcei.SampleOffset))
                 .Returns(500_000); // End result will be calculated to the time position that the sound is currently at
+            this.mockALInvoker.Setup(m => m.GetSource(this.srcId, ALSourcef.SecOffset)).Returns(timePosition);
 
             var mockOggDecoder = new Mock<ISoundDecoder<float>>();
             mockOggDecoder.Setup(m => m.LoadData(It.IsAny<string>()))
@@ -270,7 +275,7 @@ namespace RaptorTests.Audio
                         Format = AudioFormat.Stereo16,
                         Channels = 2,
                         SampleRate = 44100,
-                        TotalSeconds = 1,
+                        TotalSeconds = totalSeconds,
                     };
 
                     return oggData;
@@ -291,6 +296,7 @@ namespace RaptorTests.Audio
             // Assert
             this.mockALInvoker.Verify(m => m.GetSourceState(this.srcId), Times.Once());
             this.mockALInvoker.Verify(m => m.GetSource(this.srcId, ALSourcef.SecOffset), Times.Once());
+            this.mockALInvoker.Verify(m => m.Source(this.srcId, ALSourcef.SecOffset, expected), Times.Once());
         }
 
         [Theory]

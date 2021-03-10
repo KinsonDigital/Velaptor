@@ -4,9 +4,11 @@
 
 namespace RaptorTests.Graphics
 {
+    using System;
     using System.Drawing;
     using Moq;
     using Raptor.Graphics;
+    using RaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -177,6 +179,49 @@ namespace RaptorTests.Graphics
 
             // Act
             var actual = data.GetFrames("sub-texture");
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetFrame_WhenSubTextureIDDoesNotExist_ThrowsException()
+        {
+            // Arrange
+            var expected = new AtlasSubTextureData[]
+            {
+                new AtlasSubTextureData() // First frame of Animating sub texture
+                {
+                    Name = "sub-texture",
+                    FrameIndex = 0,
+                    Bounds = new Rectangle(11, 22, 33, 44),
+                },
+            };
+
+            var data = CreateAtlasData();
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            {
+                data.GetFrame("missing-texture");
+            }, "The frame 'missing-texture' was not found in the atlas 'test-atlas'.");
+        }
+
+        [Fact]
+        public void GetFrame_WithExistingSubTexture_ReturnsSubTextureData()
+        {
+            // Arrange
+            var expected = new AtlasSubTextureData()
+            {
+                Name = "sub-texture",
+                FrameIndex = 0,
+                Bounds = new Rectangle(11, 22, 33, 44),
+            };
+
+            var data = CreateAtlasData();
+
+            // Act
+            var actual = data.GetFrame("sub-texture");
 
             // Assert
             Assert.Equal(expected, actual);
