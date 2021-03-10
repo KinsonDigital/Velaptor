@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RaptorTests.Exceptions
+﻿namespace RaptorTests.Exceptions
 {
     using System;
     using Raptor.Exceptions;

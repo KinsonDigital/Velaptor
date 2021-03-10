@@ -1,4 +1,4 @@
-// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
+﻿// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -318,8 +318,6 @@ namespace Raptor.Audio
 
             seconds = seconds > totalSeconds ? totalSeconds : seconds;
 
-            // Warning Ignore Reason: Previous execution in this call stack
-            // this OpenAL call takes care of the null reference of alInvoker.
             this.alInvoker.Source(srcId, ALSourcef.SecOffset, seconds);
         }
     }
