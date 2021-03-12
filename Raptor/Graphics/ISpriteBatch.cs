@@ -30,6 +30,11 @@ namespace Raptor.Graphics
         int RenderSurfaceHeight { get; set; }
 
         /// <summary>
+        /// Gets or sets the color that the back buffer will cleared to.
+        /// </summary>
+        Color ClearColor { get; set; }
+
+        /// <summary>
         /// Starts the batch rendering process.  Must be called before calling
         /// the <see cref="Render()"/> methods.
         /// </summary>

@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,6 +19,7 @@ namespace Raptor.Graphics
     {
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
+        private CachedValue<Color> cachedClearColor;
         private readonly IGLInvoker gl;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
@@ -89,6 +90,13 @@ namespace Raptor.Graphics
         {
             get => this.cachedIntProps[nameof(RenderSurfaceHeight)].GetValue();
             set => this.cachedIntProps[nameof(RenderSurfaceHeight)].SetValue(value);
+        }
+
+        /// <inheritdoc/>
+        public Color ClearColor
+        {
+            get => this.cachedClearColor.GetValue();
+            set => this.cachedClearColor.SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -253,7 +261,6 @@ namespace Raptor.Graphics
 
             this.gl.Enable(EnableCap.Blend);
             this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            this.gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f); // TODO: Allow changing of this
 
             this.gl.ActiveTexture(TextureUnit.Texture0);
 
@@ -269,6 +276,7 @@ namespace Raptor.Graphics
         private void Gl_OpenGLInitialized(object? sender, EventArgs e)
         {
             this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            this.cachedClearColor.IsCaching = false;
 
             Init();
         }
@@ -301,6 +309,30 @@ namespace Raptor.Graphics
 
                         this.gl.SetViewPortSize(new Vector2(viewPortSize.X, value));
                     }));
+
+            this.cachedClearColor = new CachedValue<Color>(
+                defaultValue: Color.CornflowerBlue,
+                getterWhenNotCaching: () =>
+                {
+                    var colorValues = new float[4];
+                    this.gl.GetFloat(GetPName.ColorClearValue, colorValues);
+
+                    var red = colorValues[0].MapValue(0, 1, 0, 255);
+                    var green = colorValues[1].MapValue(0, 1, 0, 255);
+                    var blue = colorValues[2].MapValue(0, 1, 0, 255);
+                    var alpha = colorValues[3].MapValue(0, 1, 0, 255);
+
+                    return Color.FromArgb((byte)alpha, (byte)red, (byte)green, (byte)blue);
+                },
+                setterWhenNotCaching: (value) =>
+                {
+                    var red = value.R.MapValue(0, 255, 0, 1);
+                    var green = value.G.MapValue(0, 255, 0, 1);
+                    var blue = value.B.MapValue(0, 255, 0, 1);
+                    var alpha = value.A.MapValue(0, 255, 0, 1);
+
+                    this.gl.ClearColor(red, green, blue, alpha);
+                });
         }
 
         /// <summary>
