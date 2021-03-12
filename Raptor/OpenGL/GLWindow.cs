@@ -35,8 +35,6 @@ namespace Raptor.OpenGL
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
         private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new Dictionary<string, CachedValue<bool>>();
         private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
-        private readonly int cachedWindowWidth;
-        private readonly int cachedWindowHeight;
         private readonly ISystemMonitorService systemMonitorService;
         private GameWindowSettings? gameWinSettings;
         private NativeWindowSettings? nativeWinSettings;
@@ -638,8 +636,8 @@ namespace Raptor.OpenGL
                     (platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
             }
 
-            var halfWidth = ToMonitorScale(this.cachedWindowWidth / 2f);
-            var halfHeight = ToMonitorScale(this.cachedWindowHeight / 2f);
+            var halfWidth = ToMonitorScale(Width / 2f);
+            var halfHeight = ToMonitorScale(Height / 2f);
 
             if (!(mainMonitor is null))
             {

@@ -485,7 +485,6 @@ namespace RaptorTests.Graphics
         public void Render_WithUnknownRenderEffect_ThrowsException()
         {
             // Arrange
-
             this.batch.BatchSize = 1;
             this.batch.BeginBatch();
 
@@ -503,7 +502,7 @@ namespace RaptorTests.Graphics
                             9f,
                             10f,
                             Color.FromArgb(11, 22, 33, 44),
-                            ((RenderEffects)44));
+                            (RenderEffects)44);
 
             AssertHelpers.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
             {
