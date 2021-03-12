@@ -60,11 +60,10 @@ namespace Raptor.OpenGL
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
         public GLWindow(int width, int height, ISystemMonitorService systemMonitorService)
         {
-            this.cachedWindowWidth = width <= 0 ? 1 : width;
-            this.cachedWindowHeight = height <= 0 ? 1 : height;
             this.systemMonitorService = systemMonitorService;
 
-            SetupPropertyCaches();
+            SetupWidthHeightPropCaches(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
+            SetupOtherPropCaches();
 
             ContentLoader = ContentLoaderFactory.CreateContentLoader();
 
@@ -372,7 +371,7 @@ namespace Raptor.OpenGL
             this.gameWinSettings = new GameWindowSettings();
             this.nativeWinSettings = new NativeWindowSettings()
             {
-                Size = new Vector2i(this.cachedWindowWidth, this.cachedWindowHeight),
+                Size = new Vector2i(Width, Height),
                 StartVisible = false,
             };
 
@@ -546,9 +545,63 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
+        /// Sets up caching for the <see cref="Width"/> and <see cref="Height"/> properties.
+        /// </summary>
+        /// <param name="width">The window width.</param>
+        /// <param name="height">The window height.</param>
+        private void SetupWidthHeightPropCaches(int width, int height)
+        {
+            this.cachedIntProps.Add(
+                nameof(Width), // key
+                new CachedValue<int>( // value
+                    defaultValue: width,
+                    getterWhenNotCaching: () =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Width)}' property value.");
+                        }
+
+                        return this.appWindow.Size.X;
+                    },
+                    setterWhenNotCaching: (value) =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Width)}' property value.");
+                        }
+
+                        this.appWindow.Size = new Vector2i(value, this.appWindow.Size.Y);
+                    }));
+
+            this.cachedIntProps.Add(
+                nameof(Height), // key
+                new CachedValue<int>( // value
+                    defaultValue: height,
+                    getterWhenNotCaching: () =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Height)}' property value.");
+                        }
+
+                        return this.appWindow.Size.Y;
+                    },
+                    setterWhenNotCaching: (value) =>
+                    {
+                        if (this.appWindow is null)
+                        {
+                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Height)}' property value.");
+                        }
+
+                        this.appWindow.Size = new Vector2i(this.appWindow.Size.X, value);
+                    }));
+        }
+
+        /// <summary>
         /// Setup all of the caching for the properties that need caching.
         /// </summary>
-        private void SetupPropertyCaches()
+        private void SetupOtherPropCaches()
         {
             this.cachedStringProps.Add(
                 nameof(Title), // key
@@ -635,52 +688,6 @@ namespace Raptor.OpenGL
                         }
 
                         this.appWindow.UpdateFrequency = value;
-                    }));
-
-            this.cachedIntProps.Add(
-                nameof(Width), // key
-                new CachedValue<int>( // value
-                    defaultValue: this.cachedWindowWidth,
-                    getterWhenNotCaching: () =>
-                    {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Width)}' property value.");
-                        }
-
-                        return this.appWindow.Size.X;
-                    },
-                    setterWhenNotCaching: (value) =>
-                    {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Width)}' property value.");
-                        }
-
-                        this.appWindow.Size = new Vector2i(value, this.appWindow.Size.Y);
-                    }));
-
-            this.cachedIntProps.Add(
-                nameof(Height), // key
-                new CachedValue<int>( // value
-                    defaultValue: this.cachedWindowHeight,
-                    getterWhenNotCaching: () =>
-                    {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Height)}' property value.");
-                        }
-
-                        return this.appWindow.Size.Y;
-                    },
-                    setterWhenNotCaching: (value) =>
-                    {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Height)}' property value.");
-                        }
-
-                        this.appWindow.Size = new Vector2i(this.appWindow.Size.X, value);
                     }));
 
             this.cachedBoolProps.Add(
