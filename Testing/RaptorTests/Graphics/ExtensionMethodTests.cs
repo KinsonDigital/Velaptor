@@ -115,7 +115,7 @@ namespace RaptorTests.Graphics
         [InlineData("TheNumber445IsANumber", true)]
         [InlineData("", false)]
         [InlineData(null, false)]
-        public void IsAlphaNumeric_WhenInvoked_ReturnsCorrectValue(string data, bool expected)
+        public void IsAlphaNumeric_WhenInvoked_ReturnsCorrectResult(string data, bool expected)
         {
             // Act
             var actual = data.IsAlphaNumeric();

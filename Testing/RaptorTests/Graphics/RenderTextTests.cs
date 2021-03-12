@@ -51,7 +51,7 @@ namespace RaptorTests.Graphics
         [InlineData(null, "World", "World")]
         [InlineData("Hello ", null, "Hello ")]
         [InlineData(null, null, "")]
-        public void AddOperator_WhenAddingTwoRenderTexts_ReturnsCorrectValue(string stringA, string stringB, string expected)
+        public void AddOperator_WhenAddingTwoRenderTexts_ReturnsCorrectResult(string stringA, string stringB, string expected)
         {
             // Arrange
             var mockTextA = new Mock<IText>();
@@ -81,7 +81,7 @@ namespace RaptorTests.Graphics
         [InlineData(null, "World", "World")]
         [InlineData("Hello ", null, "Hello ")]
         [InlineData(null, null, "")]
-        public void AddOperator_WhenAddingRenderTextAndString_ReturnsCorrectValue(string stringA, string stringB, string expected)
+        public void AddOperator_WhenAddingRenderTextAndString_ReturnsCorrectResult(string stringA, string stringB, string expected)
         {
             // Arrange
             var mockText = new Mock<IText>();
@@ -104,7 +104,7 @@ namespace RaptorTests.Graphics
         [InlineData(null, "World", "World")]
         [InlineData("Hello ", null, "Hello ")]
         [InlineData(null, null, "")]
-        public void AddOperator_WhenAddingStringAndRenderText_ReturnsCorrectValue(string stringA, string stringB, string expected)
+        public void AddOperator_WhenAddingStringAndRenderText_ReturnsCorrectResult(string stringA, string stringB, string expected)
         {
             // Arrange
             var mockText = new Mock<IText>();

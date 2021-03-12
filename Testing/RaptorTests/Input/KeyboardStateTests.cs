@@ -419,7 +419,7 @@ namespace RaptorTests.Input
         [Theory]
         [InlineData(KeyCode.LeftShift, true)]
         [InlineData(KeyCode.RightShift, true)]
-        public void IsAnyShiftKeyDown_WhenInvoked_ReturnsCorrectValue(KeyCode key, bool expected)
+        public void IsAnyShiftKeyDown_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
         {
             // Arrange
             var state = default(KeyboardState);
@@ -435,7 +435,7 @@ namespace RaptorTests.Input
         [Theory]
         [InlineData(KeyCode.LeftControl, true)]
         [InlineData(KeyCode.RightControl, true)]
-        public void IsAnyCtrlKeyDown_WhenInvoked_ReturnsCorrectValue(KeyCode key, bool expected)
+        public void IsAnyCtrlKeyDown_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
         {
             // Arrange
             var state = default(KeyboardState);

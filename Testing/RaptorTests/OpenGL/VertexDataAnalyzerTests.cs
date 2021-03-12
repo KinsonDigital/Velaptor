@@ -59,7 +59,7 @@ namespace RaptorTests.OpenGL
         [InlineData(typeof(long), sizeof(long))]
         [InlineData(typeof(ulong), sizeof(ulong))]
         [InlineData(typeof(double), sizeof(double))]
-        public void GePrimitiveByteSize_WhenInvoked_ReturnsCorrectValue(Type type, uint expected)
+        public void GePrimitiveByteSize_WhenInvoked_ReturnsCorrectResult(Type type, uint expected)
         {
             // Act
             var actual = VertexDataAnalyzer.GetPrimitiveByteSize(type);

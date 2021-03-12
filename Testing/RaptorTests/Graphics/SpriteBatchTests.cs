@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -91,7 +91,7 @@ namespace RaptorTests.Graphics
 
         #region Prop Tests
         [Fact]
-        public unsafe void Width_WhenSettingValueWithOpenGLInitialized_ReturnsCorrectResult()
+        public unsafe void Width_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
             IGLInvoker.SetOpenGLAsInitialized();
@@ -106,7 +106,7 @@ namespace RaptorTests.Graphics
         }
 
         [Fact]
-        public unsafe void Height_WhenSettingValue_ReturnsCorrectResult()
+        public unsafe void Height_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
             IGLInvoker.SetOpenGLAsInitialized();
@@ -118,6 +118,26 @@ namespace RaptorTests.Graphics
             // Assert
             this.mockGLInvoker.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
             this.mockGLInvoker.Verify(m => m.SetViewPortSize(new Vector2(11, 100)), Times.Once());
+        }
+
+        [Fact]
+        public void ClearColor_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrerctResult()
+        {
+            // Arrange
+            IGLInvoker.SetOpenGLAsInitialized();
+
+            // Act
+            this.batch.ClearColor = Color.FromArgb(11, 22, 33, 44);
+            var actual = this.batch.ClearColor;
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.GetFloat(GetPName.ColorClearValue, It.IsAny<float[]>()), Times.Once());
+            this.mockGLInvoker.Verify(m => m.ClearColor(
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<float>()),
+            Times.Exactly(2));
         }
 
         [Fact]
