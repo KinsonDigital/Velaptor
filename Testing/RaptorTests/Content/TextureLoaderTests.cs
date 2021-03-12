@@ -17,8 +17,8 @@ namespace RaptorTests.Content
     public class TextureLoaderTests
     {
         private const string TextureFileName = "test-texture.png";
-        private readonly string textureFilePath;
         private const uint OpenGLTextureID = 1234;
+        private readonly string textureFilePath;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IImageFileService> mockImageFileService;
         private readonly Mock<IPathResolver> mockTexturePathResolver;

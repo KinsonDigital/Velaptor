@@ -1,4 +1,8 @@
-﻿namespace RaptorTests.Exceptions
+﻿// <copyright file="InvalidRenderEffectsExceptionTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace RaptorTests.Exceptions
 {
     using System;
     using Raptor.Exceptions;

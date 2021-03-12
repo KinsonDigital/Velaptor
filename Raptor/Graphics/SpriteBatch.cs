@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,10 +19,10 @@ namespace Raptor.Graphics
     {
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
-        private CachedValue<Color> cachedClearColor;
         private readonly IGLInvoker gl;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
+        private CachedValue<Color>? cachedClearColor;
         private uint batchSize = 10;
         private uint transDataLocation;
         private bool isDisposed;
@@ -95,8 +95,16 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public Color ClearColor
         {
-            get => this.cachedClearColor.GetValue();
-            set => this.cachedClearColor.SetValue(value);
+            get => this.cachedClearColor is null ? Color.Empty : this.cachedClearColor.GetValue();
+            set
+            {
+                if (this.cachedClearColor is null)
+                {
+                    throw new NullReferenceException($"The clear color caching mechanism in the class '{nameof(SpriteBatch)}' must not be null.");
+                }
+
+                this.cachedClearColor.SetValue(value);
+            }
         }
 
         /// <inheritdoc/>
@@ -275,6 +283,11 @@ namespace Raptor.Graphics
         /// </summary>
         private void Gl_OpenGLInitialized(object? sender, EventArgs e)
         {
+            if (this.cachedClearColor is null)
+            {
+                throw new NullReferenceException($"The clear color caching mechanism in the class '{nameof(SpriteBatch)}' must not be null.");
+            }
+
             this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
             this.cachedClearColor.IsCaching = false;
 
