@@ -162,6 +162,13 @@ namespace Raptor.OpenGL
         void GetInteger(GetPName pname, int[] data);
 
         /// <summary>
+        /// Returns the floating point values of the given parameter name.
+        /// </summary>
+        /// <param name="pname">The parameter name.</param>
+        /// <param name="data">The values to return.</param>
+        void GetFloat(GetPName pname, float[] data) => GL.GetFloat(pname, data);
+
+        /// <summary>
         /// Gets the size of the viewport.
         /// </summary>
         /// <returns>The size of the viewport.</returns>

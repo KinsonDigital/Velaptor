@@ -47,6 +47,9 @@ namespace Raptor.OpenGL
         public void GetInteger(GetPName pname, int[] data) => GL.GetInteger(GetPName.Viewport, data);
 
         /// <inheritdoc/>
+        public void GetFloat(GetPName pname, float[] data) => GL.GetFloat(pname, data);
+
+        /// <inheritdoc/>
         public Vector2 GetViewPortSize()
         {
             var data = new int[4];

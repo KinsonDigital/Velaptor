@@ -30,6 +30,11 @@ namespace Raptor.Graphics
         int RenderSurfaceHeight { get; set; }
 
         /// <summary>
+        /// Gets or sets the color that the back buffer will be cleared to.
+        /// </summary>
+        Color ClearColor { get; set; }
+
+        /// <summary>
         /// Starts the batch rendering process.  Must be called before calling
         /// the <see cref="Render()"/> methods.
         /// </summary>
@@ -66,9 +71,30 @@ namespace Raptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X location of the texture.</param>
         /// <param name="y">The y location of the texture.</param>
+        /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
+        /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
+        void Render(ITexture texture, int x, int y, RenderEffects effects);
+
+        /// <summary>
+        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> location.
+        /// </summary>
+        /// <param name="texture">The texture to render.</param>
+        /// <param name="x">The X location of the texture.</param>
+        /// <param name="y">The y location of the texture.</param>
         /// <param name="tintColor">The color to apply to the texture.</param>
         /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
         void Render(ITexture texture, int x, int y, Color tintColor);
+
+        /// <summary>
+        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> location.
+        /// </summary>
+        /// <param name="texture">The texture to render.</param>
+        /// <param name="x">The X location of the texture.</param>
+        /// <param name="y">The y location of the texture.</param>
+        /// <param name="tintColor">The color to apply to the texture.</param>
+        /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
+        /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
+        void Render(ITexture texture, int x, int y, Color tintColor, RenderEffects effects);
 
         /// <summary>
         /// Renders the given <see cref="Texture"/> using the given parametters.
@@ -79,7 +105,8 @@ namespace Raptor.Graphics
         /// <param name="size">The size to render the texture at. 1 is for 100%/normal size.</param>
         /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
         /// <param name="tintColor">The color to apply to the rendering.</param>
+        /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
         /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
-        void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor);
+        void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor, RenderEffects effects);
     }
 }

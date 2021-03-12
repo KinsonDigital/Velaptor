@@ -29,21 +29,30 @@ namespace Raptor
         ///     Executed to set the value of type <typeparamref name="T"/> when the <see cref="SetValue(T)"/>
         ///     is invoked while the caching is turned off.
         /// </param>
+        /// <param name="isCaching">True to turn on caching by default.</param>
         /// <remarks>
-        /// <para>
-        ///     If caching is turned on, then getting a value will return the cached value.  Otherwise it will return the value
-        ///     of <paramref name="getterWhenNotCaching"/> delegate.
-        /// </para>
-        /// <para>
-        ///     If caching is turned on, the value being will be cached.  Otherwise the
-        ///     <paramref name="getterWhenNotCaching"/> delegate will be used to set the value.
-        /// </para>
+        ///     <para>
+        ///         If caching is turned on, then getting a value will return the cached value.  Otherwise it will return the value
+        ///         of <paramref name="getterWhenNotCaching"/> delegate.
+        ///     </para>
+        ///     <para>
+        ///         If caching is turned on, the value being will be cached.  Otherwise the
+        ///         <paramref name="getterWhenNotCaching"/> delegate will be used to set the value.
+        ///     </para>
         /// </remarks>
-        public CachedValue(T defaultValue, Func<T> getterWhenNotCaching, Action<T> setterWhenNotCaching)
+        public CachedValue(T defaultValue, Func<T> getterWhenNotCaching, Action<T> setterWhenNotCaching, bool isCaching = true)
         {
+            this.isCaching = isCaching;
+
             this.getterWhenNotCaching = getterWhenNotCaching;
             this.setterWhenNotCaching = setterWhenNotCaching;
+
             this.cachedValue = defaultValue;
+
+            if (isCaching is false)
+            {
+                this.setterWhenNotCaching(defaultValue);
+            }
         }
 
         /// <summary>
@@ -54,12 +63,32 @@ namespace Raptor
             get => this.isCaching;
             set
             {
-                // If caching is being turned on
-                if (value)
+                /*DESCRIPTION:
+                 * When turning caching off:
+                 *      When caching is turned off, the user could have set the value at any time before turning
+                 *      caching off.  During this time, the value is being stored internally in the object.
+                 *
+                 *      If the user then turns caching off, the external system could be and most
+                 *      likely is not the same value as the last value that was set while caching was on.
+                 *
+                 *      Because of this, the external system when turning caching off needs to be updated
+                 *      to match the value of the internal system so they are in sync.
+                 *
+                 * When turning caching on:
+                 *      When caching is turned on, the user could have set the value at any time before turning
+                 *      caching on.  During this time, the value is being stored in the external system.
+                 *
+                 *      If the user then turns caching on, the internal object value could be and most
+                 *      likely is not the same value as the last value that was set while caching was off.
+                 *
+                 *      Because of this, the internal system when turning the caching on needs to be updated
+                 *      to match the value of the external system so they are in sync.
+                 */
+                if (this.isCaching is false && value is true)
                 {
                     this.cachedValue = this.getterWhenNotCaching();
                 }
-                else
+                else if (this.isCaching is true && value is false)
                 {
                     this.setterWhenNotCaching(this.cachedValue);
                 }

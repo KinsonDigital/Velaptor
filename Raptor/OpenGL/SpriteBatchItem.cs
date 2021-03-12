@@ -5,6 +5,7 @@
 namespace Raptor.OpenGL
 {
     using System.Drawing;
+    using Raptor.Graphics;
 
     /// <summary>
     /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.
@@ -44,6 +45,11 @@ namespace Raptor.OpenGL
         public Color TintColor;
 
         /// <summary>
+        /// The type of effects to apply to the texture when rendering.
+        /// </summary>
+        public RenderEffects Effects;
+
+        /// <summary>
         /// Gets an empty <see cref="SpriteBatchItem"/>.
         /// </summary>
         /// <returns>An empty sprite batch item.</returns>
@@ -58,6 +64,7 @@ namespace Raptor.OpenGL
                 result.SrcRect = Rectangle.Empty;
                 result.DestRect = Rectangle.Empty;
                 result.TintColor = Color.Empty;
+                result.Effects = RenderEffects.None;
 
                 return result;
             }
@@ -71,6 +78,7 @@ namespace Raptor.OpenGL
                     this.DestRect.IsEmpty &&
                     this.Size == 0f &&
                     this.Angle == 0f &&
-                    this.TintColor.IsEmpty;
+                    this.TintColor.IsEmpty &&
+                    (this.Effects == 0 || this.Effects == RenderEffects.None);
     }
 }

@@ -203,8 +203,8 @@ namespace Raptor.Audio
 
             if (disposing)
             {
-                this.soundSources?.Clear();
-                this.continuePlaybackCache?.Clear();
+                this.soundSources.Clear();
+                this.continuePlaybackCache.Clear();
             }
 
             this.isDisposed = true;
@@ -318,8 +318,6 @@ namespace Raptor.Audio
 
             seconds = seconds > totalSeconds ? totalSeconds : seconds;
 
-            // Warning Ignore Reason: Previous execution in this call stack
-            // this OpenAL call takes care of the null reference of alInvoker.
             this.alInvoker.Source(srcId, ALSourcef.SecOffset, seconds);
         }
     }

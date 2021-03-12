@@ -145,11 +145,25 @@ namespace RaptorSandBox
 
             var subTexture = this.subFrames[this.currentFrameIndex];
 
-            this.spriteBatch?.Render(this.mainAtlas.Texture, subTexture.Bounds, new Rectangle(subPositionX, 100, 500, 100), 1, 0, Color.White);
+            this.spriteBatch?.Render(
+                this.mainAtlas.Texture,
+                subTexture.Bounds,
+                new Rectangle(subPositionX, 100, 500, 100),
+                1,
+                0,
+                Color.White,
+                RenderEffects.FlipBothDirections);
 
             foreach (var bubble in this.bubbles)
             {
-                this.spriteBatch?.Render(this.mainAtlas.Texture, this.bubbleFrame.Bounds, bubble, 1, 0, Color.White);
+                this.spriteBatch?.Render(
+                    this.mainAtlas.Texture,
+                    this.bubbleFrame.Bounds,
+                    bubble,
+                    1,
+                    0,
+                    Color.White,
+                    RenderEffects.None);
             }
 
             //this.spriteBatch?.Render(this.linkTexture, 400, 500);
