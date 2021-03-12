@@ -30,7 +30,7 @@ namespace Raptor.Graphics
         int RenderSurfaceHeight { get; set; }
 
         /// <summary>
-        /// Gets or sets the color that the back buffer will cleared to.
+        /// Gets or sets the color that the back buffer will be cleared to.
         /// </summary>
         Color ClearColor { get; set; }
 
