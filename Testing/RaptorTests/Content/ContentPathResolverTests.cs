@@ -35,7 +35,7 @@ namespace RaptorTests.Content
         #region Prop Tests
         [Theory]
         [MemberData(nameof(ContentRootPaths))]
-        public void RootDirectory_WhenSettingValue_ReturnsCorrectValue(string rootDirectory, string expected)
+        public void RootDirectory_WhenSettingValue_ReturnsCorrectResult(string rootDirectory, string expected)
         {
             // Arrange
             var resolver = new ContentPathResolverFake();

@@ -176,7 +176,7 @@ namespace RaptorTests
         [InlineData(@"C:\temp\", @"temp")]
         [InlineData(@"C:\test-file.txt", @"C:\")]
         [InlineData(@"C:\temp\test-file.txt", @"temp")]
-        public void GetLastDirName_WhenInvoked_ReturnsCorrectValue(string value, string expected)
+        public void GetLastDirName_WhenInvoked_ReturnsCorrectResult(string value, string expected)
         {
             // Act
             var actual = value.GetLastDirName();
