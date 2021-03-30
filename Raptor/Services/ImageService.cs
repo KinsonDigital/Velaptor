@@ -2,63 +2,52 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional | Reason: The pixel array does not waist space
 namespace Raptor.Services
 {
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
+    using Raptor.Graphics;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
+    using NETColor = System.Drawing.Color;
 
     /// <summary>
     /// Saves, loads and manages image files.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class ImageService : IImageService
     {
         /// <inheritdoc/>
-        public (byte[] data, int width, int height) Load(string path)
+        public ImageData Load(string path)
         {
-            var image = (Image<Rgba32>)Image.Load(path);
+            ImageData imageData = default;
 
-            image.Mutate(x => x.Flip(FlipMode.Vertical));
+            var rgba32Image = Image.Load<Rgba32>(path);
+            rgba32Image.Mutate(context => context.Flip(FlipMode.Vertical));
 
-            var tempPixels = new List<Rgba32>();
+            imageData.Pixels = new NETColor[rgba32Image.Width, rgba32Image.Height];
+            imageData.Width = rgba32Image.Width;
+            imageData.Height = rgba32Image.Height;
 
-            for (var i = 0; i < image.Height; i++)
+            for (var y = 0; y < rgba32Image.Height; y++)
             {
-                tempPixels.AddRange(image.GetPixelRowSpan(i).ToArray());
+                var pixelRowSpan = rgba32Image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < rgba32Image.Width; x++)
+                {
+                    imageData.Pixels[x, y] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
+                }
             }
 
-            var pixels = new List<byte>();
-
-            foreach (var pixel in tempPixels)
-            {
-                pixels.Add(pixel.R);
-                pixels.Add(pixel.G);
-                pixels.Add(pixel.B);
-                pixels.Add(pixel.A);
-            }
-
-            var width = image.Width;
-            var height = image.Height;
-
-            image.Dispose();
-
-            return (pixels.ToArray(), width, height);
+            return imageData;
         }
 
         /// <inheritdoc/>
-        public void Save(string path, byte[] imageData, int width, int height)
+        public void Save(string path, ImageData imageData)
         {
-            var img = Image.LoadPixelData<Rgba32>(imageData, width, height);
+            var rgba32Image = imageData.ToSixLaborImage();
 
-            img.Mutate(x => x.Flip(FlipMode.Vertical));
-
-            using var fileStream = new FileStream(path, FileMode.Create);
-
-            img.SaveAsPng(fileStream);
+            rgba32Image.SaveAsPng(path);
+            rgba32Image.Dispose();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
+// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,12 +8,15 @@ namespace Raptor
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
     using System.IO;
     using System.Linq;
     using OpenTK.Mathematics;
+    using Raptor.Graphics;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
+    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.PixelFormats;
+    using NETColor = System.Drawing.Color;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.
@@ -123,14 +126,14 @@ namespace Raptor
         ///     Z = blue.
         ///     W = alpha.
         /// </returns>
-        internal static Vector4 ToVector4(this Color clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
+        internal static Vector4 ToVector4(this NETColor clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
         /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A color represented by a 4 component vector.</returns>
-        internal static Vector4 ToGLColor(this Color value)
+        internal static Vector4 ToGLColor(this NETColor value)
         {
             var vec4 = value.ToVector4();
             return vec4.MapValues(0, 255, 0, 1);
@@ -337,6 +340,33 @@ namespace Raptor
             {
                 SuppressDisposableTransientWarning<TService>(container);
             }
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="imageData"/> of type <see cref="ImageData"/>
+        /// to the type of <see cref="Image{Rgba32}"/>.
+        /// </summary>
+        /// <param name="imageData">The image data to convert.</param>
+        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
+        internal static Image<Rgba32> ToSixLaborImage(this ImageData imageData)
+        {
+            var result = new Image<Rgba32>(imageData.Width, imageData.Height);
+
+            for (var y = 0; y < result.Height; y++)
+            {
+                var pixelRowSpan = result.GetPixelRowSpan(y);
+
+                for (var x = 0; x < result.Width; x++)
+                {
+                    pixelRowSpan[x] = new Rgba32(
+                        imageData.Pixels[x, y].R,
+                        imageData.Pixels[x, y].G,
+                        imageData.Pixels[x, y].B,
+                        imageData.Pixels[x, y].A);
+                }
+            }
+
+            return result;
         }
     }
 }

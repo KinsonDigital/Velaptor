@@ -21,6 +21,9 @@ namespace Raptor.Graphics
         /// <remarks>
         ///     The first dimension is the X location of the pixel and the second
         ///     dimension is the Y location of the pixel.
+        /// <para>
+        ///     The 32-bit color component byte layout is ARGB.
+        /// </para>
         /// </remarks>
         public Color[,] Pixels { get; set; }
 

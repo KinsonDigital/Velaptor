@@ -1,4 +1,4 @@
-// <copyright file="TextureLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

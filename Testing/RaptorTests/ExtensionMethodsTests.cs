@@ -4,10 +4,13 @@
 
 namespace RaptorTests
 {
-    using System.Drawing;
     using OpenTK.Mathematics;
     using Raptor;
+    using Raptor.Graphics;
+    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.PixelFormats;
     using Xunit;
+    using NETColor = System.Drawing.Color;
 
     /// <summary>
     /// Tests the <see cref="ExtensionMethods"/> class.
@@ -88,7 +91,7 @@ namespace RaptorTests
         public void ToVector4_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            var color = Color.FromArgb(11, 22, 33, 44);
+            var color = NETColor.FromArgb(11, 22, 33, 44);
             var expected = new Vector4(22, 33, 44, 11);
 
             // Act
@@ -102,7 +105,7 @@ namespace RaptorTests
         public void ToGLColor_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            var color = Color.FromArgb(11, 22, 33, 44);
+            var color = NETColor.FromArgb(11, 22, 33, 44);
             var expected = new Vector4(0.08627451f, 0.12941177f, 0.17254902f, 0.043137256f);
 
             // Act
@@ -184,6 +187,47 @@ namespace RaptorTests
             // Assert
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void ToSixLaborImage_WhenInvoked_CorrectlyConvertsToSixLaborImage()
+        {
+            // Arrange
+            ImageData imageData = default;
+            imageData.Pixels = new NETColor[2, 3];
+            imageData.Width = 2;
+            imageData.Height = 3;
+
+            var expectedPixels = new Rgba32[2, 3];
+
+            // Act
+            var sixLaborsImage = imageData.ToSixLaborImage();
+            var actualPixels = GetSixLaborPixels(sixLaborsImage);
+
+            // Assert
+            Assert.Equal(expectedPixels, actualPixels);
+        }
         #endregion
+
+        /// <summary>
+        /// Gets the <see cref="Rgba32"/> pixels from the given <paramref name="sixLaborsImage"/>.
+        /// </summary>
+        /// <param name="sixLaborsImage">The six labors image.</param>
+        /// <returns>The 2 dimensional pixel colors of the image.</returns>
+        private Rgba32[,] GetSixLaborPixels(Image<Rgba32> sixLaborsImage)
+        {
+            var result = new Rgba32[sixLaborsImage.Width, sixLaborsImage.Height];
+
+            for (var y = 0; y < sixLaborsImage.Height; y++)
+            {
+                var pixelRow = sixLaborsImage.GetPixelRowSpan(y);
+
+                for (var x = 0; x < sixLaborsImage.Width; x++)
+                {
+                    result[x, y] = pixelRow[x];
+                }
+            }
+
+            return result;
+        }
     }
 }

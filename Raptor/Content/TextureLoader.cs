@@ -1,4 +1,4 @@
-// <copyright file="TextureLoader.cs" company="KinsonDigital">
+﻿// <copyright file="TextureLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -59,9 +59,9 @@ namespace Raptor.Content
 
             return this.textures.GetOrAdd(filePath, (key) =>
             {
-                var (pixels, width, height) = this.imageService.Load(key);
+                var imageData = this.imageService.Load(key);
 
-                return new Texture(this.gl, name, key, pixels, width, height);
+                return new Texture(this.gl, name, key, imageData);
             });
         }
 

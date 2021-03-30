@@ -62,4 +62,16 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Raptor\Raptor.csproj" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="TestAssets\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Update="TestAssets\TestCompareImage.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
