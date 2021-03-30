@@ -152,7 +152,7 @@ namespace RaptorSandBox
                 1,
                 0,
                 Color.White,
-                RenderEffects.FlipBothDirections);
+                RenderEffects.None);
 
             foreach (var bubble in this.bubbles)
             {

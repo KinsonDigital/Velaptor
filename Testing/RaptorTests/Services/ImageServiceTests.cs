@@ -1,18 +1,22 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Reflection;
-using Raptor.Graphics;
-using Raptor.Services;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using Xunit;
-using NETColor = System.Drawing.Color;
+﻿// <copyright file="ImageServiceTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 #pragma warning disable SA1202 // Elements should be ordered by access
 namespace RaptorTests.Services
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Reflection;
+    using Raptor.Graphics;
+    using Raptor.Services;
+    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.PixelFormats;
+    using SixLabors.ImageSharp.Processing;
+    using Xunit;
+    using NETColor = System.Drawing.Color;
+
     /// <summary>
     /// Tests the <see cref="ImageService"/>.
     /// </summary>
