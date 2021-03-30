@@ -1,4 +1,4 @@
-﻿// <copyright file="IImageFileService.cs" company="KinsonDigital">
+﻿// <copyright file="IImageService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace Raptor.Services
     /// <summary>
     /// Saves, loads and manages image files.
     /// </summary>
-    public interface IImageFileService
+    public interface IImageService
     {
         /// <summary>
         /// Loads a image file at the given <paramref name="path"/>.

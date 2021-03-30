@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureLoaderTests.cs" company="KinsonDigital">
+// <copyright file="TextureLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,7 +20,7 @@ namespace RaptorTests.Content
         private const uint OpenGLTextureID = 1234;
         private readonly string textureFilePath;
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IImageFileService> mockImageFileService;
+        private readonly Mock<IImageService> mockImageService;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace RaptorTests.Content
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGL.Setup(m => m.GenTexture()).Returns(OpenGLTextureID); // Mock out the OpenGL texture ID
 
-            this.mockImageFileService = new Mock<IImageFileService>();
+            this.mockImageService = new Mock<IImageService>();
             this.mockTexturePathResolver = new Mock<IPathResolver>();
             this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName)).Returns(this.textureFilePath);
         }
@@ -104,6 +104,6 @@ namespace RaptorTests.Content
         /// Creates a new instance of <see cref="TextureLoader"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private TextureLoader CreateLoader() => new TextureLoader(this.mockGL.Object, this.mockImageFileService.Object, this.mockTexturePathResolver.Object);
+        private TextureLoader CreateLoader() => new TextureLoader(this.mockGL.Object, this.mockImageService.Object, this.mockTexturePathResolver.Object);
     }
 }

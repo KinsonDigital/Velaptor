@@ -47,7 +47,7 @@ namespace Raptor.Factories
             if (textureLoader is null)
             {
                 var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-                var imageService = IoC.Container.GetInstance<IImageFileService>();
+                var imageService = IoC.Container.GetInstance<IImageService>();
                 IPathResolver texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
 
                 textureLoader = new TextureLoader(glInvoker, imageService, texturePathResolver);
@@ -64,7 +64,7 @@ namespace Raptor.Factories
         {
             if (atlasLoader is null)
             {
-                var textureLoader = new TextureLoader(IoC.Container.GetInstance<IImageFileService>(), IoC.Container.GetInstance<AtlasTexturePathResolver>());
+                var textureLoader = new TextureLoader(IoC.Container.GetInstance<IImageService>(), IoC.Container.GetInstance<AtlasTexturePathResolver>());
 
                 IPathResolver atlasDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
 

@@ -109,7 +109,7 @@ namespace Raptor
         /// </summary>
         private static void SetupServices()
         {
-            IoCContainer.Register<IImageFileService, ImageFileService>();
+            IoCContainer.Register<IImageService, ImageService>();
             IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>();
         }

@@ -1,4 +1,4 @@
-﻿// <copyright file="ImageFileService.cs" company="KinsonDigital">
+﻿// <copyright file="ImageService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace Raptor.Services
     /// Saves, loads and manages image files.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class ImageFileService : IImageFileService
+    public class ImageService : IImageService
     {
         /// <inheritdoc/>
         public (byte[] data, int width, int height) Load(string path)
