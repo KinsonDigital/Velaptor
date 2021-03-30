@@ -1,4 +1,4 @@
-// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -21,7 +21,7 @@ namespace Raptor
     /// <summary>
     /// Provides extensions to various things to help make better code.
     /// </summary>
-    internal static class ExtensionMethods
+    public static class ExtensionMethods
     {
         /// <summary>
         /// Converts the given <paramref name="radians"/> value into degrees.
@@ -95,7 +95,7 @@ namespace Raptor
         /// <param name="angle">The angle in degrees to rotate <paramref name="vector"/>.  Value must be positive.</param>
         /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/>.</param>
         /// <returns>The <paramref name="vector"/> rotated around the <paramref name="origin"/>.</returns>
-        internal static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
+        public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
         {
             var angleRadians = clockWise ? angle.ToRadians() : angle.ToRadians() * -1;
 
@@ -126,14 +126,14 @@ namespace Raptor
         ///     Z = blue.
         ///     W = alpha.
         /// </returns>
-        internal static Vector4 ToVector4(this NETColor clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
+        public static Vector4 ToVector4(this NETColor clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
         /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A color represented by a 4 component vector.</returns>
-        internal static Vector4 ToGLColor(this NETColor value)
+        public static Vector4 ToGLColor(this NETColor value)
         {
             var vec4 = value.ToVector4();
             return vec4.MapValues(0, 255, 0, 1);
@@ -148,7 +148,7 @@ namespace Raptor
         /// <param name="toStart">The to starting range value.</param>
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A 4 component vector with each value mapped from one range to another.</returns>
-        internal static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
+        public static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
             => new Vector4
             {
                 X = value.X.MapValue(fromStart, fromStop, toStart, toStop),
