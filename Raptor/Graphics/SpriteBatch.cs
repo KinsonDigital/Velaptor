@@ -22,7 +22,7 @@ namespace Raptor.Graphics
         private readonly IGLInvoker gl;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
-        private CachedValue<Color>? cachedClearColor;
+        private CachedValue<Color> cachedClearColor;
         private uint batchSize = 10;
         private uint transDataLocation;
         private bool isDisposed;
@@ -40,7 +40,13 @@ namespace Raptor.Graphics
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
         [ExcludeFromCodeCoverage]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+// Reason for ignoring this warning for cachedClearColor not being set in constructors while
+// it is set to not be null, is due to the face that we do not warnings we know for a fact
+// that it is not null.  The SetupPropertyCaches() method takes care of make sure it is not null.
         public SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             if (gl is null)
             {
@@ -96,15 +102,7 @@ namespace Raptor.Graphics
         public Color ClearColor
         {
             get => this.cachedClearColor is null ? Color.Empty : this.cachedClearColor.GetValue();
-            set
-            {
-                if (this.cachedClearColor is null)
-                {
-                    throw new NullReferenceException($"The clear color caching mechanism in the class '{nameof(SpriteBatch)}' must not be null.");
-                }
-
-                this.cachedClearColor.SetValue(value);
-            }
+            set => this.cachedClearColor.SetValue(value);
         }
 
         /// <inheritdoc/>

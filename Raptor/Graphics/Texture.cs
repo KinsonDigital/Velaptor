@@ -161,7 +161,7 @@ namespace Raptor.Graphics
                 param: (int)TextureWrapMode.ClampToEdge);
 
             this.gl.TexParameter(
-                target:TextureTarget.Texture2D,
+                target: TextureTarget.Texture2D,
                 pname: TextureParameterName.TextureWrapT,
                 param: (int)TextureWrapMode.ClampToEdge);
 

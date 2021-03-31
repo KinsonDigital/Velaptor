@@ -166,7 +166,7 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="pname">The parameter name.</param>
         /// <param name="data">The values to return.</param>
-        void GetFloat(GetPName pname, float[] data) => GL.GetFloat(pname, data);
+        void GetFloat(GetPName pname, float[] data);
 
         /// <summary>
         /// Gets the size of the viewport.
