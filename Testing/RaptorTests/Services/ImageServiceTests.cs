@@ -1,4 +1,4 @@
-﻿// <copyright file="ImageServiceTests.cs" company="KinsonDigital">
+// <copyright file="ImageServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -60,7 +60,7 @@ namespace RaptorTests.Services
         {
             // Arrange
             var service = new ImageService();
-            var expected = GetTestCompareImagePixels();
+            var expected = TestHelpers.ToPixelColors(this.testCompareImage);
 
             // Act
             var imageData = service.Load(this.testAssetFilePath);
@@ -134,13 +134,12 @@ namespace RaptorTests.Services
         {
             // Arrange
             var service = new ImageService();
-            var testCompareImage = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+            var testCompareImage = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
 
             // Act
             var flippedImage = service.FlipVertically(testCompareImage);
 
-            var flippedImageResultPath = $"{this.testResultDirPath}{nameof(FlipVertically_WhenInvoked_FlipsImageVertically)}.png";
-            ToSixLaborImage(flippedImage).SaveAsPng(flippedImageResultPath);
+            TestHelpers.SaveImageForTest(flippedImage);
 
             // Assert
             // Check that all pixels in the top left section are green
@@ -181,13 +180,12 @@ namespace RaptorTests.Services
         {
             // Arrange
             var service = new ImageService();
-            var testCompareImage = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+            var testCompareImage = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
 
             // Act
             var flippedImage = service.FlipHorizontally(testCompareImage);
 
-            var flippedImageResultPath = $"{this.testResultDirPath}{nameof(FlipHorizontally_WhenInvoked_FlipsImageVertically)}.png";
-            ToSixLaborImage(flippedImage).SaveAsPng(flippedImageResultPath);
+            TestHelpers.SaveImageForTest(flippedImage, nameof(FlipHorizontally_WhenInvoked_FlipsImageVertically));
 
             // Assert
             // Check that all pixels in the top left section are red
@@ -296,88 +294,6 @@ namespace RaptorTests.Services
                 for (var x = 0; x < image.Width; x++)
                 {
                     result[x, y] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Loads all of the pixel data into a 2 dimensional array of <see cref="NETColor"/>.
-        /// </summary>
-        /// <returns>The pixel data from the test comparison image.</returns>
-        [ExcludeFromCodeCoverage]
-        private NETColor[,] GetTestCompareImagePixels()
-        {
-            var result = new NETColor[this.testCompareImage.Width, this.testCompareImage.Height];
-
-            for (var y = 0; y < this.testCompareImage.Height; y++)
-            {
-                var pixelRowSpan = this.testCompareImage.GetPixelRowSpan(y);
-
-                for (var x = 0; x < this.testCompareImage.Width; x++)
-                {
-                    result[x, y] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Converts the given <paramref name="imageData"/> of type <see cref="ImageData"/>
-        /// to the type of <see cref="Image{Rgba32}"/>.
-        /// </summary>
-        /// <param name="imageData">The image data to convert.</param>
-        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        [ExcludeFromCodeCoverage]
-        public Image<Rgba32> ToSixLaborImage(ImageData imageData)
-        {
-            var result = new Image<Rgba32>(imageData.Width, imageData.Height);
-
-            for (var y = 0; y < result.Height; y++)
-            {
-                var pixelRowSpan = result.GetPixelRowSpan(y);
-
-                for (var x = 0; x < result.Width; x++)
-                {
-                    pixelRowSpan[x] = new Rgba32(
-                        imageData.Pixels[x, y].R,
-                        imageData.Pixels[x, y].G,
-                        imageData.Pixels[x, y].B,
-                        imageData.Pixels[x, y].A);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
-        /// to the type of <see cref="ImageData"/>.
-        /// </summary>
-        /// <param name="image">The image to convert.</param>
-        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-        [ExcludeFromCodeCoverage]
-        public ImageData ToImageData(Image<Rgba32> image)
-        {
-            ImageData result = default;
-
-            result.Pixels = new NETColor[image.Width, image.Height];
-            result.Width = image.Width;
-            result.Height = image.Height;
-
-            for (var y = 0; y < image.Height; y++)
-            {
-                var pixelRowSpan = image.GetPixelRowSpan(y);
-
-                for (var x = 0; x < image.Width; x++)
-                {
-                    result.Pixels[x, y] = NETColor.FromArgb(
-                        pixelRowSpan[x].A,
-                        pixelRowSpan[x].R,
-                        pixelRowSpan[x].G,
-                        pixelRowSpan[x].B);
                 }
             }
 
