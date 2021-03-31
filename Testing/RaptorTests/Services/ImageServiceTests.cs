@@ -1,4 +1,4 @@
-// <copyright file="ImageServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="ImageServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,6 +17,7 @@ namespace RaptorTests.Services
     using SixLabors.ImageSharp.Processing;
     using Xunit;
     using NETColor = System.Drawing.Color;
+    using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
 
     /// <summary>
@@ -220,24 +221,55 @@ namespace RaptorTests.Services
                 new NETRectangle(4, 4, 3, 3),
                 NETColor.FromArgb(255, 0, 255, 0));
         }
+
+        [Fact]
+        public void Draw_WhenInvoked_CorrectlyDrawsSrcImageOntoDestination()
+        {
+            /*NOTE:
+             * The location of '3,3' where the srcImage is drawn onto the destImage
+             * is purposly not centered on the destImage so that way any horizontal
+             * or vertically flipping of the drawn image can be detected.
+             */
+
+            // Arrange
+            var srcImage = TestHelpers.CreateImageData(NETColor.FromArgb(255, 0, 255, 0), 4, 4);
+            TestHelpers.SaveImageForTest(srcImage, $"{nameof(Draw_WhenInvoked_CorrectlyDrawsSrcImageOntoDestination)}-SrcImage");
+
+            var destImage = TestHelpers.CreateImageData(NETColor.FromArgb(255, 255, 255, 255), 8, 8);
+            TestHelpers.SaveImageForTest(destImage, $"{nameof(Draw_WhenInvoked_CorrectlyDrawsSrcImageOntoDestination)}-DestImage");
+
+            var service = new ImageService();
+
+            // Act
+            var actual = service.Draw(srcImage, destImage, new NETPoint(3, 3));
+            TestHelpers.SaveImageForTest(actual, $"{nameof(Draw_WhenInvoked_CorrectlyDrawsSrcImageOntoDestination)}-ResultImage");
+
+            // Assert
+            AssertThatPixelsMatch(
+                actual.Pixels,
+                actual.Width,
+                actual.Height,
+                new NETRectangle(3, 3, 4, 4),
+                NETColor.FromArgb(255, 0, 255, 0));
+        }
         #endregion
 
         /// <summary>
         /// Asserts that all of the given <paramref name="pixels"/> with the dimensions given by
-        /// <paramref name="width"/> and <paramref name="height"/> match the given <paramref name="clr"/>
+        /// <paramref name="width"/> and <paramref name="height"/> match the given <paramref name="expectedClr"/>
         /// inside of the given <paramref name="assertRect"/>.
         /// </summary>
         /// <param name="pixels">The pixels to possibly assert.</param>
         /// <param name="width">The width of the 1st array dimension.</param>
         /// <param name="height">The height of the 2nd array dimension.</param>
         /// <param name="assertRect">The rectangle that might contain any pixels to assert against.</param>
-        /// <param name="clr">The color that the pixels must be.</param>
+        /// <param name="expectedClr">The color that the pixels must be.</param>
         /// <remarks>
         ///     As long as the pixel is inside of the given <paramref name="assertRect"/>, the pixel
-        ///     color will be asserted againt the given <paramref name="clr"/>.
+        ///     color will be asserted againt the given <paramref name="expectedClr"/>.
         /// </remarks>
         [ExcludeFromCodeCoverage]
-        private void AssertThatPixelsMatch(NETColor[,] pixels, int width, int height, NETRectangle assertRect, NETColor clr)
+        private void AssertThatPixelsMatch(NETColor[,] pixels, int width, int height, NETRectangle assertRect, NETColor expectedClr)
         {
             AssertHelpers.All(pixels, width, height, (pixel, x, y) =>
             {
@@ -245,27 +277,27 @@ namespace RaptorTests.Services
                 {
                     var message = $"The pixel at location '{x},{y}' is incorrect with the ARGB value of '{pixel}'.";
                     AssertHelpers.True(
-                        condition: pixel.A == clr.A,
+                        condition: pixel.A == expectedClr.A,
                         message: message,
-                        expected: $"Alpha {clr.A}",
+                        expected: $"Alpha {expectedClr.A}",
                         actual: $"Alpha {pixel.A}");
 
                     AssertHelpers.True(
-                        condition: pixel.R == clr.R,
+                        condition: pixel.R == expectedClr.R,
                         message: message,
-                        expected: $"Red {clr.R}",
+                        expected: $"Red {expectedClr.R}",
                         actual: $"Red {pixel.R}");
 
                     AssertHelpers.True(
-                        condition: pixel.G == clr.G,
+                        condition: pixel.G == expectedClr.G,
                         message: message,
-                        expected: $"Green {clr.G}",
+                        expected: $"Green {expectedClr.G}",
                         actual: $"Green {pixel.G}");
 
                     AssertHelpers.True(
-                        condition: pixel.B == clr.B,
+                        condition: pixel.B == expectedClr.B,
                         message: message,
-                        expected: $"Blue {clr.B}",
+                        expected: $"Blue {expectedClr.B}",
                         actual: $"Red {pixel.B}");
                 }
             });

@@ -5,7 +5,6 @@
 namespace RaptorTests.Helpers
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
     using System.IO;
     using System.Reflection;
     using System.Runtime.CompilerServices;
@@ -128,6 +127,10 @@ namespace RaptorTests.Helpers
         /// <param name="unitTestName">The name of the unit test requesting the name.</param>
         public static void SaveImageForTest(ImageData image, [CallerMemberName]string unitTestName = "NOT-NAME-SET")
         {
+            unitTestName = Path.HasExtension(unitTestName)
+                ? unitTestName.Split('.')[0]
+                : unitTestName;
+
             var imageResultPath = $"{TestResultDirPath}{unitTestName}.png";
 
             ToSixLaborImage(image).SaveAsPng(imageResultPath);

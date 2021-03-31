@@ -4,6 +4,7 @@
 
 namespace Raptor.Services
 {
+    using System.Drawing;
     using Raptor.Graphics;
 
     /// <summary>
@@ -41,5 +42,15 @@ namespace Raptor.Services
         /// <param name="image">The image to flip.</param>
         /// <returns>The image flipped.</returns>
         ImageData FlipHorizontally(ImageData image);
+
+        /// <summary>
+        /// Draws the given <paramref name="src"/> image on top of the given
+        /// <paramref name="dest"/> image at the given <paramref name="location"/>.
+        /// </summary>
+        /// <param name="src">The source image to draw onto the destination.</param>
+        /// <param name="dest">The destination image/canvas to draw the source image on.</param>
+        /// <param name="location">The top left location of where to draw the <paramref name="src"/> image.</param>
+        /// <returns>The destination image with the soruce drawn onto its surface.</returns>
+        ImageData Draw(ImageData src, ImageData dest, Point location);
     }
 }

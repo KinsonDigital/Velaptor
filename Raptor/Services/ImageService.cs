@@ -10,6 +10,7 @@ namespace Raptor.Services
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
     using NETColor = System.Drawing.Color;
+    using NETPoint = System.Drawing.Point;
 
     /// <summary>
     /// Saves, loads and manages image files.
@@ -66,6 +67,19 @@ namespace Raptor.Services
             sixLaborImage.Mutate(context => context.Flip(FlipMode.Horizontal));
 
             return sixLaborImage.ToImageData();
+        }
+
+        /// <inheritdoc/>
+        public ImageData Draw(ImageData src, ImageData dest, NETPoint location)
+        {
+            var srcImage = src.ToSixLaborImage();
+            var destImage = dest.ToSixLaborImage();
+
+            destImage.Mutate(context => context.DrawImage(srcImage, new Point(location.X, location.Y), 1));
+
+            srcImage.Dispose();
+
+            return destImage.ToImageData();
         }
     }
 }
