@@ -175,6 +175,53 @@ namespace RaptorTests.Services
                 new NETRectangle(4, 4, 3, 3),
                 NETColor.FromArgb(255, 255, 0, 0));
         }
+
+        [Fact]
+        public void FlipHorizontally_WhenInvoked_FlipsImageVertically()
+        {
+            // Arrange
+            var service = new ImageService();
+            var testCompareImage = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+
+            // Act
+            var flippedImage = service.FlipHorizontally(testCompareImage);
+
+            var flippedImageResultPath = $"{this.testResultDirPath}{nameof(FlipHorizontally_WhenInvoked_FlipsImageVertically)}.png";
+            ToSixLaborImage(flippedImage).SaveAsPng(flippedImageResultPath);
+
+            // Assert
+            // Check that all pixels in the top left section are red
+            AssertThatPixelsMatch(
+                flippedImage.Pixels,
+                flippedImage.Width,
+                flippedImage.Height,
+                new NETRectangle(0, 0, 3, 3),
+                NETColor.FromArgb(255, 255, 0, 0));
+
+            // Check that all pixels in the top right section are gray
+            AssertThatPixelsMatch(
+                flippedImage.Pixels,
+                flippedImage.Width,
+                flippedImage.Height,
+                new NETRectangle(4, 0, 3, 3),
+                NETColor.FromArgb(255, 128, 128, 128));
+
+            // Check that all pixels in the bottom left section are blue
+            AssertThatPixelsMatch(
+                flippedImage.Pixels,
+                flippedImage.Width,
+                flippedImage.Height,
+                new NETRectangle(0, 4, 3, 3),
+                NETColor.FromArgb(255, 0, 0, 255));
+
+            // Check that all pixels in the bottom right section are green
+            AssertThatPixelsMatch(
+                flippedImage.Pixels,
+                flippedImage.Width,
+                flippedImage.Height,
+                new NETRectangle(4, 4, 3, 3),
+                NETColor.FromArgb(255, 0, 255, 0));
+        }
         #endregion
 
         /// <summary>

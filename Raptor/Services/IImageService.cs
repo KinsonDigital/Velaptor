@@ -34,5 +34,12 @@ namespace Raptor.Services
         /// <param name="image">The image to flip.</param>
         /// <returns>The image flipped.</returns>
         ImageData FlipVertically(ImageData image);
+
+        /// <summary>
+        /// Flips the given <paramref name="image"/> horizontally.
+        /// </summary>
+        /// <param name="image">The image to flip.</param>
+        /// <returns>The image flipped.</returns>
+        ImageData FlipHorizontally(ImageData image);
     }
 }

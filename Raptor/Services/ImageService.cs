@@ -51,12 +51,21 @@ namespace Raptor.Services
         }
 
         /// <inheritdoc/>
-        public ImageData FlipVertically(ImageData imageData)
+        public ImageData FlipVertically(ImageData image)
         {
-            var image = imageData.ToSixLaborImage();
-            image.Mutate(context => context.Flip(FlipMode.Vertical));
+            var sixLaborImage = image.ToSixLaborImage();
+            sixLaborImage.Mutate(context => context.Flip(FlipMode.Vertical));
 
-            return image.ToImageData();
+            return sixLaborImage.ToImageData();
+        }
+
+        /// <inheritdoc/>
+        public ImageData FlipHorizontally(ImageData image)
+        {
+            var sixLaborImage = image.ToSixLaborImage();
+            sixLaborImage.Mutate(context => context.Flip(FlipMode.Horizontal));
+
+            return sixLaborImage.ToImageData();
         }
     }
 }
