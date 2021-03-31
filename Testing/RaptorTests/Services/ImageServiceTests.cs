@@ -11,11 +11,13 @@ namespace RaptorTests.Services
     using System.Reflection;
     using Raptor.Graphics;
     using Raptor.Services;
+    using RaptorTests.Helpers;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
     using Xunit;
     using NETColor = System.Drawing.Color;
+    using NETRectangle = System.Drawing.Rectangle;
 
     /// <summary>
     /// Tests the <see cref="ImageService"/>.
@@ -27,8 +29,8 @@ namespace RaptorTests.Services
         private const string TestResultImageFileName = "SaveResultImage.png";
         private const string TestImageFileName = "TestCompareImage.png";
         private readonly string basePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-        private readonly string testAssetPath;
-        private readonly string testImagePath;
+        private readonly string testAssetDirPath;
+        private readonly string testAssetFilePath;
         private readonly string testResultDirPath;
         private Image<Rgba32> testCompareImage;
 
@@ -37,8 +39,8 @@ namespace RaptorTests.Services
         /// </summary>
         public ImageServiceTests()
         {
-            this.testAssetPath = $@"{this.basePath}{TestAssetDirName}\";
-            this.testImagePath = $"{this.testAssetPath}{TestImageFileName}";
+            this.testAssetDirPath = $@"{this.basePath}{TestAssetDirName}\";
+            this.testAssetFilePath = $"{this.testAssetDirPath}{TestImageFileName}";
             this.testResultDirPath = $@"{this.basePath}{TestResultDirName}\";
 
             if (Directory.Exists(this.testResultDirPath))
@@ -48,7 +50,7 @@ namespace RaptorTests.Services
 
             Directory.CreateDirectory(this.testResultDirPath);
 
-            this.testCompareImage = Image.Load<Rgba32>(this.testImagePath);
+            this.testCompareImage = Image.Load<Rgba32>(this.testAssetFilePath);
             this.testCompareImage.Mutate(context => context.Flip(FlipMode.Vertical));
         }
 
@@ -61,7 +63,7 @@ namespace RaptorTests.Services
             var expected = GetTestCompareImagePixels();
 
             // Act
-            var imageData = service.Load(this.testImagePath);
+            var imageData = service.Load(this.testAssetFilePath);
 
             // Assert
             Assert.Equal(expected, imageData.Pixels);
@@ -126,7 +128,103 @@ namespace RaptorTests.Services
             // Assert
             Assert.Equal(expectedPixelData, actualSavedPixelData);
         }
+
+        [Fact]
+        public void FlipVertically_WhenInvoked_FlipsImageVertically()
+        {
+            // Arrange
+            var service = new ImageService();
+            var testCompareImage = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+
+            // Act
+            var flippedImage = service.FlipVertically(testCompareImage);
+
+            var flippedImageResultPath = $"{this.testResultDirPath}{nameof(FlipVertically_WhenInvoked_FlipsImageVertically)}.png";
+            ToSixLaborImage(flippedImage).SaveAsPng(flippedImageResultPath);
+
+            // Assert
+            // Check that all pixels in the top left section are green
+            AssertThatPixelsMatch(
+                flippedImage.Pixels,
+                flippedImage.Width,
+                flippedImage.Height,
+                new NETRectangle(0, 0, 3, 3),
+                NETColor.FromArgb(255, 0, 255, 0));
+
+            // Check that all pixels in the top right section are blue
+            AssertThatPixelsMatch(
+                flippedImage.Pixels,
+                flippedImage.Width,
+                flippedImage.Height,
+                new NETRectangle(4, 0, 3, 3),
+                NETColor.FromArgb(255, 0, 0, 255));
+
+            // Check that all pixels in the bottom left section are gray
+            AssertThatPixelsMatch(
+                flippedImage.Pixels,
+                flippedImage.Width,
+                flippedImage.Height,
+                new NETRectangle(0, 4, 3, 3),
+                NETColor.FromArgb(255, 128, 128, 128));
+
+            // Check that all pixels in the bottom right section are red
+            AssertThatPixelsMatch(
+                flippedImage.Pixels,
+                flippedImage.Width,
+                flippedImage.Height,
+                new NETRectangle(4, 4, 3, 3),
+                NETColor.FromArgb(255, 255, 0, 0));
+        }
         #endregion
+
+        /// <summary>
+        /// Asserts that all of the given <paramref name="pixels"/> with the dimensions given by
+        /// <paramref name="width"/> and <paramref name="height"/> match the given <paramref name="clr"/>
+        /// inside of the given <paramref name="assertRect"/>.
+        /// </summary>
+        /// <param name="pixels">The pixels to possibly assert.</param>
+        /// <param name="width">The width of the 1st array dimension.</param>
+        /// <param name="height">The height of the 2nd array dimension.</param>
+        /// <param name="assertRect">The rectangle that might contain any pixels to assert against.</param>
+        /// <param name="clr">The color that the pixels must be.</param>
+        /// <remarks>
+        ///     As long as the pixel is inside of the given <paramref name="assertRect"/>, the pixel
+        ///     color will be asserted againt the given <paramref name="clr"/>.
+        /// </remarks>
+        [ExcludeFromCodeCoverage]
+        private void AssertThatPixelsMatch(NETColor[,] pixels, int width, int height, NETRectangle assertRect, NETColor clr)
+        {
+            AssertHelpers.All(pixels, width, height, (pixel, x, y) =>
+            {
+                if (assertRect.Contains(x, y))
+                {
+                    var message = $"The pixel at location '{x},{y}' is incorrect with the ARGB value of '{pixel}'.";
+                    AssertHelpers.True(
+                        condition: pixel.A == clr.A,
+                        message: message,
+                        expected: $"Alpha {clr.A}",
+                        actual: $"Alpha {pixel.A}");
+
+                    AssertHelpers.True(
+                        condition: pixel.R == clr.R,
+                        message: message,
+                        expected: $"Red {clr.R}",
+                        actual: $"Red {pixel.R}");
+
+                    AssertHelpers.True(
+                        condition: pixel.G == clr.G,
+                        message: message,
+                        expected: $"Green {clr.G}",
+                        actual: $"Green {pixel.G}");
+
+                    AssertHelpers.True(
+                        condition: pixel.B == clr.B,
+                        message: message,
+                        expected: $"Blue {clr.B}",
+                        actual: $"Red {pixel.B}");
+                }
+            });
+        }
 
         /// <summary>
         /// Loads all of the pixel data into a 2 dimensional array of <see cref="NETColor"/>.
@@ -180,19 +278,60 @@ namespace RaptorTests.Services
         }
 
         /// <summary>
-        /// Creates a single row of pixels.
+        /// Converts the given <paramref name="imageData"/> of type <see cref="ImageData"/>
+        /// to the type of <see cref="Image{Rgba32}"/>.
         /// </summary>
-        /// <param name="color">The color of all the pixels.</param>
-        /// <param name="rowWidth">The width of the rows.</param>
-        /// <returns>The 2 dimensional array of pixels to test.</returns>
+        /// <param name="imageData">The image data to convert.</param>
+        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
         [ExcludeFromCodeCoverage]
-        private NETColor[] CreatePixelRow(NETColor color, int rowWidth)
+        public Image<Rgba32> ToSixLaborImage(ImageData imageData)
         {
-            var result = new NETColor[rowWidth];
+            var result = new Image<Rgba32>(imageData.Width, imageData.Height);
 
-            for (var x = 0; x < rowWidth; x++)
+            for (var y = 0; y < result.Height; y++)
             {
-                result[x] = color;
+                var pixelRowSpan = result.GetPixelRowSpan(y);
+
+                for (var x = 0; x < result.Width; x++)
+                {
+                    pixelRowSpan[x] = new Rgba32(
+                        imageData.Pixels[x, y].R,
+                        imageData.Pixels[x, y].G,
+                        imageData.Pixels[x, y].B,
+                        imageData.Pixels[x, y].A);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        [ExcludeFromCodeCoverage]
+        public ImageData ToImageData(Image<Rgba32> image)
+        {
+            ImageData result = default;
+
+            result.Pixels = new NETColor[image.Width, image.Height];
+            result.Width = image.Width;
+            result.Height = image.Height;
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    result.Pixels[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
             }
 
             return result;

@@ -49,5 +49,14 @@ namespace Raptor.Services
             rgba32Image.SaveAsPng(path);
             rgba32Image.Dispose();
         }
+
+        /// <inheritdoc/>
+        public ImageData FlipVertically(ImageData imageData)
+        {
+            var image = imageData.ToSixLaborImage();
+            image.Mutate(context => context.Flip(FlipMode.Vertical));
+
+            return image.ToImageData();
+        }
     }
 }

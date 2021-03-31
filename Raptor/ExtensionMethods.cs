@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 namespace Raptor
 {
     using System;
@@ -363,6 +364,37 @@ namespace Raptor
                         imageData.Pixels[x, y].G,
                         imageData.Pixels[x, y].B,
                         imageData.Pixels[x, y].A);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        internal static ImageData ToImageData(this Image<Rgba32> image)
+        {
+            ImageData result = default;
+
+            result.Pixels = new NETColor[image.Width, image.Height];
+            result.Width = image.Width;
+            result.Height = image.Height;
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    result.Pixels[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
                 }
             }
 
