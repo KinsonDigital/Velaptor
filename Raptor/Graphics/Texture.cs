@@ -5,6 +5,7 @@
 namespace Raptor.Graphics
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using OpenTK.Graphics.OpenGL4;
     using Raptor.OpenGL;
@@ -20,17 +21,15 @@ namespace Raptor.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
         /// </summary>
-        /// <param name="pixelData">The pixel data of the texture.</param>
         /// <param name="name">The name of the texture.</param>
         /// <param name="path">The path to the image file.</param>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
+        /// <param name="imageData">The image data of the texture.</param>
         [ExcludeFromCodeCoverage]
-        public Texture(string name, string path, byte[] pixelData, int width, int height)
+        public Texture(string name, string path, ImageData imageData)
         {
             this.gl = new GLInvoker();
             Path = path;
-            Init(name, pixelData, width, height);
+            Init(name, imageData);
         }
 
         /// <summary>
@@ -40,14 +39,12 @@ namespace Raptor.Graphics
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="name">The name of the texture.</param>
         /// <param name="path">The path to the image file.</param>
-        /// <param name="pixelData">The pixel data of the texture.</param>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
-        internal Texture(IGLInvoker gl, string name, string path, byte[] pixelData, int width, int height)
+        /// <param name="imageData">The image data of the texture.</param>
+        internal Texture(IGLInvoker gl, string name, string path, ImageData imageData)
         {
             this.gl = gl;
             Path = path;
-            Init(name, pixelData, width, height);
+            Init(name, imageData);
         }
 
         /// <inheritdoc/>
@@ -96,21 +93,19 @@ namespace Raptor.Graphics
         /// Initializes the <see cref="Texture"/>.
         /// </summary>
         /// <param name="name">The name of the texture.</param>
-        /// <param name="pixelData">The pixel data of the texture.</param>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
-        private void Init(string name, byte[] pixelData, int width, int height)
+        /// <param name="imageData">The image data of the texture.</param>
+        private void Init(string name, ImageData imageData)
         {
             ID = this.gl.GenTexture();
 
             this.gl.BindTexture(TextureTarget.Texture2D, ID);
 
-            Width = width;
-            Height = height;
+            Width = imageData.Width;
+            Height = imageData.Height;
 
             Name = name;
 
-            UploadDataToGPU(name, pixelData, width, height);
+            UploadDataToGPU(name, imageData);
 
             // Unbind
             this.gl.BindTexture(TextureTarget.Texture2D, 0);
@@ -120,23 +115,66 @@ namespace Raptor.Graphics
         /// Uploads the given pixel data to the GPU.
         /// </summary>
         /// <param name="name">The name of the texture.</param>
-        /// <param name="pixelData">The pixel data of the texture.</param>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
-        private void UploadDataToGPU(string name, byte[] pixelData, int width, int height)
+        /// <param name="imageData">The image data of the texture.</param>
+        private void UploadDataToGPU(string name, ImageData imageData)
         {
+            /*NOTE:
+             * The incoming image data is in the ARGB byte layout.
+             * The data layout required by OpenGL is RGBA.
+             */
+            var pixelData = new List<byte>();
+
+            for (var y = 0; y < imageData.Height; y++)
+            {
+                var rowBytes = new List<byte>();
+
+                for (var x = 0; x < imageData.Width; x++)
+                {
+                    rowBytes.Add(imageData.Pixels[x, y].R);
+                    rowBytes.Add(imageData.Pixels[x, y].G);
+                    rowBytes.Add(imageData.Pixels[x, y].B);
+                    rowBytes.Add(imageData.Pixels[x, y].A);
+                }
+
+                pixelData.AddRange(rowBytes);
+                rowBytes.Clear();
+            }
+
             this.gl.ObjectLabel(ObjectLabelIdentifier.Texture, ID, -1, name);
 
             // Set the min and mag filters to linear
-            this.gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            this.gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            this.gl.TexParameter(
+                target: TextureTarget.Texture2D,
+                pname: TextureParameterName.TextureMinFilter,
+                param: (int)TextureMinFilter.Linear);
+
+            this.gl.TexParameter(
+                target: TextureTarget.Texture2D,
+                pname: TextureParameterName.TextureMagFilter,
+                param: (int)TextureMagFilter.Linear);
 
             // Sett the x(S) and y(T) axis wrap mode to repeat
-            this.gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            this.gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            this.gl.TexParameter(
+                target: TextureTarget.Texture2D,
+                pname: TextureParameterName.TextureWrapS,
+                param: (int)TextureWrapMode.ClampToEdge);
+
+            this.gl.TexParameter(
+                target: TextureTarget.Texture2D,
+                pname: TextureParameterName.TextureWrapT,
+                param: (int)TextureWrapMode.ClampToEdge);
 
             // Load the texture data to the GPU for the currently active texture slot
-            this.gl.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixelData);
+            this.gl.TexImage2D(
+                target: TextureTarget.Texture2D,
+                level: 0,
+                PixelInternalFormat.Rgba,
+                width: imageData.Width,
+                height: imageData.Height,
+                border: 0,
+                format: PixelFormat.Rgba,
+                type: PixelType.UnsignedByte,
+                pixels: pixelData.ToArray());
         }
     }
 }

@@ -18,20 +18,20 @@ namespace Raptor.Content
     {
         private readonly ConcurrentDictionary<string, ITexture> textures = new ConcurrentDictionary<string, ITexture>();
         private readonly IGLInvoker gl;
-        private readonly IImageFileService imageFileService;
+        private readonly IImageService imageService;
         private readonly IPathResolver pathResolver;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
-        /// <param name="imageFileService">Loads an image file.</param>
+        /// <param name="imageService">Loads an image file.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         [ExcludeFromCodeCoverage]
-        public TextureLoader(IImageFileService imageFileService, IPathResolver texturePathResolver)
+        public TextureLoader(IImageService imageService, IPathResolver texturePathResolver)
         {
             this.gl = new GLInvoker();
-            this.imageFileService = imageFileService;
+            this.imageService = imageService;
             this.pathResolver = texturePathResolver;
         }
 
@@ -39,12 +39,12 @@ namespace Raptor.Content
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="imageFileService">Loads an image file.</param>
+        /// <param name="imageService">Loads an image file.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
-        internal TextureLoader(IGLInvoker gl, IImageFileService imageFileService, IPathResolver texturePathResolver)
+        internal TextureLoader(IGLInvoker gl, IImageService imageService, IPathResolver texturePathResolver)
         {
             this.gl = gl;
-            this.imageFileService = imageFileService;
+            this.imageService = imageService;
             this.pathResolver = texturePathResolver;
         }
 
@@ -59,9 +59,9 @@ namespace Raptor.Content
 
             return this.textures.GetOrAdd(filePath, (key) =>
             {
-                var (pixels, width, height) = this.imageFileService.Load(key);
+                var imageData = this.imageService.Load(key);
 
-                return new Texture(this.gl, name, key, pixels, width, height);
+                return new Texture(this.gl, name, key, imageData);
             });
         }
 

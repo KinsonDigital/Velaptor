@@ -18,7 +18,7 @@ namespace RaptorTests.Graphics
     public class TextureTests
     {
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly byte[] pixelData;
+        private readonly ImageData imageData;
         private readonly uint textureID = 1234;
 
         /// <summary>
@@ -26,31 +26,36 @@ namespace RaptorTests.Graphics
         /// </summary>
         public TextureTests()
         {
-            var byteData = new List<byte>();
+            this.imageData = default;
+            this.imageData.Pixels = new Color[2, 3];
+            this.imageData.Width = 2;
+            this.imageData.Height = 3;
 
-            // Rows
-            for (var row = 0; row < 3; row++)
+            /*NOTE:
+             * Create the bytes in the ARGB byte layout.
+             * OpenGL expects the layout to be RGBA.  The texture class changes this
+             * this layout to meet OpenGL's requirements.
+             */
+
+            for (var y = 0; y < this.imageData.Height; y++)
             {
-                // Columns
-                for (var col = 0; col < 2; col++)
+                for (var x = 0; x < this.imageData.Width; x++)
                 {
                     // If the first row
-                    switch (row)
+                    switch (y)
                     {
                         case 0: // Row 1
-                            byteData.AddRange(ToByteArray(Color.Red));
+                            this.imageData.Pixels[x, y] = Color.FromArgb(255, 255, 0, 0);
                             break;
                         case 1: // Row 2
-                            byteData.AddRange(ToByteArray(Color.Green));
+                            this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 255, 0);
                             break;
                         case 2: // Row 3
-                            byteData.AddRange(ToByteArray(Color.Blue));
+                            this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 0, 255);
                             break;
                     }
                 }
             }
-
-            this.pixelData = byteData.ToArray();
 
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGL.Setup(m => m.GenTexture()).Returns(this.textureID);
@@ -60,8 +65,30 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Ctor_WhenInvoked_UploadsTextureDataToGPU()
         {
+            // Arrange
+            var expectedPixelData = new List<byte>();
+
+            // NOTE: Swap the from ARGB to RGBA byte layout because this is expected by OpenGL
+            for (var y = 0; y < this.imageData.Height; y++)
+            {
+                var rowBytes = new List<byte>();
+
+                for (var x = 0; x < this.imageData.Width; x++)
+                {
+                    rowBytes.Add(this.imageData.Pixels[x, y].R);
+                    rowBytes.Add(this.imageData.Pixels[x, y].G);
+                    rowBytes.Add(this.imageData.Pixels[x, y].B);
+                    rowBytes.Add(this.imageData.Pixels[x, y].A);
+                }
+
+                expectedPixelData.AddRange(rowBytes);
+                rowBytes.Clear();
+            }
+
+            var expectedPixelBytes = expectedPixelData.ToArray();
+
             // Act
-            var texture = new Texture(this.mockGL.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.pixelData, 2, 3);
+            var texture = new Texture(this.mockGL.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
 
             // Assert
             this.mockGL.Verify(m => m.ObjectLabel(ObjectLabelIdentifier.Texture, this.textureID, -1, "test-texture.png"), Times.Once());
@@ -94,7 +121,7 @@ namespace RaptorTests.Graphics
                 0,
                 PixelFormat.Rgba,
                 PixelType.UnsignedByte,
-                this.pixelData));
+                expectedPixelBytes), Times.Once());
         }
         #endregion
 
@@ -103,7 +130,7 @@ namespace RaptorTests.Graphics
         public void Dispose_WhenUnmanagedResourcesIsNotDisposed_DisposesOfUnmanagedResources()
         {
             // Arrange
-            var texture = new Texture(this.mockGL.Object, "test-texture", $@"C:\temp\test-texture.png", this.pixelData, 2, 3);
+            var texture = new Texture(this.mockGL.Object, "test-texture", $@"C:\temp\test-texture.png", this.imageData);
 
             // Act
             texture.Dispose();
@@ -113,7 +140,5 @@ namespace RaptorTests.Graphics
             this.mockGL.Verify(m => m.DeleteTexture(this.textureID), Times.Once());
         }
         #endregion
-
-        private static byte[] ToByteArray(Color clr) => new[] { clr.A, clr.R, clr.G, clr.B };
     }
 }

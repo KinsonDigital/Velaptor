@@ -2,23 +2,27 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 namespace Raptor
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
     using System.IO;
     using System.Linq;
     using OpenTK.Mathematics;
+    using Raptor.Graphics;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
+    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.PixelFormats;
+    using NETColor = System.Drawing.Color;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.
     /// </summary>
-    internal static class ExtensionMethods
+    public static class ExtensionMethods
     {
         /// <summary>
         /// Converts the given <paramref name="radians"/> value into degrees.
@@ -92,7 +96,7 @@ namespace Raptor
         /// <param name="angle">The angle in degrees to rotate <paramref name="vector"/>.  Value must be positive.</param>
         /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/>.</param>
         /// <returns>The <paramref name="vector"/> rotated around the <paramref name="origin"/>.</returns>
-        internal static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
+        public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
         {
             var angleRadians = clockWise ? angle.ToRadians() : angle.ToRadians() * -1;
 
@@ -123,14 +127,14 @@ namespace Raptor
         ///     Z = blue.
         ///     W = alpha.
         /// </returns>
-        internal static Vector4 ToVector4(this Color clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
+        public static Vector4 ToVector4(this NETColor clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
         /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A color represented by a 4 component vector.</returns>
-        internal static Vector4 ToGLColor(this Color value)
+        public static Vector4 ToGLColor(this NETColor value)
         {
             var vec4 = value.ToVector4();
             return vec4.MapValues(0, 255, 0, 1);
@@ -145,7 +149,7 @@ namespace Raptor
         /// <param name="toStart">The to starting range value.</param>
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A 4 component vector with each value mapped from one range to another.</returns>
-        internal static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
+        public static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
             => new Vector4
             {
                 X = value.X.MapValue(fromStart, fromStop, toStart, toStop),
@@ -337,6 +341,64 @@ namespace Raptor
             {
                 SuppressDisposableTransientWarning<TService>(container);
             }
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="ImageData"/>
+        /// to the type of <see cref="Image{Rgba32}"/>.
+        /// </summary>
+        /// <param name="image">The image data to convert.</param>
+        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
+        internal static Image<Rgba32> ToSixLaborImage(this ImageData image)
+        {
+            var result = new Image<Rgba32>(image.Width, image.Height);
+
+            for (var y = 0; y < result.Height; y++)
+            {
+                var pixelRowSpan = result.GetPixelRowSpan(y);
+
+                for (var x = 0; x < result.Width; x++)
+                {
+                    pixelRowSpan[x] = new Rgba32(
+                        image.Pixels[x, y].R,
+                        image.Pixels[x, y].G,
+                        image.Pixels[x, y].B,
+                        image.Pixels[x, y].A);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        internal static ImageData ToImageData(this Image<Rgba32> image)
+        {
+            ImageData result = default;
+
+            result.Pixels = new NETColor[image.Width, image.Height];
+            result.Width = image.Width;
+            result.Height = image.Height;
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    result.Pixels[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
+            }
+
+            return result;
         }
     }
 }
