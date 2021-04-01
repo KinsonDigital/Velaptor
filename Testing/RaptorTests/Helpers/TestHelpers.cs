@@ -97,20 +97,20 @@ namespace RaptorTests.Helpers
         }
 
         /// <summary>
-        /// Returns all of the pixels from the given <paramref name="testCompareImage"/>
+        /// Returns all of the pixels from the given <paramref name="image"/>
         /// and returns it as a 2-dimensional array of pixels represented by <see cref="NETColor"/>.
         /// </summary>
-        /// <param name="testCompareImage">The image to convert to pixels.</param>
+        /// <param name="image">The image to convert to pixels.</param>
         /// <returns>The pixel data from the test comparison image.</returns>
-        public static NETColor[,] ToPixelColors(Image<Rgba32> testCompareImage)
+        public static NETColor[,] ToPixelColors(Image<Rgba32> image)
         {
-            var result = new NETColor[testCompareImage.Width, testCompareImage.Height];
+            var result = new NETColor[image.Width, image.Height];
 
-            for (var y = 0; y < testCompareImage.Height; y++)
+            for (var y = 0; y < image.Height; y++)
             {
-                var pixelRowSpan = testCompareImage.GetPixelRowSpan(y);
+                var pixelRowSpan = image.GetPixelRowSpan(y);
 
-                for (var x = 0; x < testCompareImage.Width; x++)
+                for (var x = 0; x < image.Width; x++)
                 {
                     result[x, y] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
                 }
