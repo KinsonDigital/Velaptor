@@ -13,7 +13,7 @@ namespace Raptor.Services
     public interface IImageService
     {
         /// <summary>
-        /// Loads a image file at the given <paramref name="path"/>.
+        /// Loads an image file at the given <paramref name="path"/>.
         /// </summary>
         /// <param name="path">The directory path to the file.</param>
         /// <returns>The image data to return.</returns>
@@ -23,7 +23,7 @@ namespace Raptor.Services
         /// Saves the given <paramref name="image"/> to the given <paramref name="path"/>.
         /// </summary>
         /// <param name="path">The path of where to save the file.</param>
-        /// <param name="image">The image to save in the file.</param>
+        /// <param name="image">The image to save to a file.</param>
         /// <remarks>
         ///     Saves the image in the PNG file format.
         /// </remarks>
@@ -48,7 +48,7 @@ namespace Raptor.Services
         /// <paramref name="dest"/> image at the given <paramref name="location"/>.
         /// </summary>
         /// <param name="src">The source image to draw onto the destination.</param>
-        /// <param name="dest">The destination image/canvas to draw the source image on.</param>
+        /// <param name="dest">The destination image/canvas to draw the source image onto.</param>
         /// <param name="location">The top left location of where to draw the <paramref name="src"/> image.</param>
         /// <returns>The destination image with the soruce drawn onto its surface.</returns>
         ImageData Draw(ImageData src, ImageData dest, Point location);

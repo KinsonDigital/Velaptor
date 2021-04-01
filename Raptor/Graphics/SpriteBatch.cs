@@ -42,9 +42,9 @@ namespace Raptor.Graphics
         [ExcludeFromCodeCoverage]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-// Reason for ignoring this warning for cachedClearColor not being set in constructors while
-// it is set to not be null, is due to the face that we do not warnings we know for a fact
-// that it is not null.  The SetupPropertyCaches() method takes care of make sure it is not null.
+// The reason for ignoring this warning for the `cachedClearColor` not being set in constructor while
+// it is set to not be null is due to the fact that we do not want warnings expressing an issue that
+// does not exist.  The SetupPropertyCaches() method takes care of making sure it is not null.
         public SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {

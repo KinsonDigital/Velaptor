@@ -344,14 +344,14 @@ namespace Raptor
         }
 
         /// <summary>
-        /// Converts the given <paramref name="imageData"/> of type <see cref="ImageData"/>
+        /// Converts the given <paramref name="image"/> of type <see cref="ImageData"/>
         /// to the type of <see cref="Image{Rgba32}"/>.
         /// </summary>
-        /// <param name="imageData">The image data to convert.</param>
+        /// <param name="image">The image data to convert.</param>
         /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        internal static Image<Rgba32> ToSixLaborImage(this ImageData imageData)
+        internal static Image<Rgba32> ToSixLaborImage(this ImageData image)
         {
-            var result = new Image<Rgba32>(imageData.Width, imageData.Height);
+            var result = new Image<Rgba32>(image.Width, image.Height);
 
             for (var y = 0; y < result.Height; y++)
             {
@@ -360,10 +360,10 @@ namespace Raptor
                 for (var x = 0; x < result.Width; x++)
                 {
                     pixelRowSpan[x] = new Rgba32(
-                        imageData.Pixels[x, y].R,
-                        imageData.Pixels[x, y].G,
-                        imageData.Pixels[x, y].B,
-                        imageData.Pixels[x, y].A);
+                        image.Pixels[x, y].R,
+                        image.Pixels[x, y].G,
+                        image.Pixels[x, y].B,
+                        image.Pixels[x, y].A);
                 }
             }
 

@@ -138,7 +138,7 @@ namespace RaptorTests.Helpers
 
         /// <summary>
         /// Creates a new 2 dimensional array of pixel colors using the given <paramref name="color"/>
-        /// with enough pixels to fill and image that has the given <paramref name="width"/> and <paramref name="height"/>.
+        /// with enough pixels to fill an image that has the given <paramref name="width"/> and <paramref name="height"/>.
         /// </summary>
         /// <param name="color">The color of all the pixels.</param>
         /// <param name="width">The width of the image represented by the <see cref="ImageData.Pixels"/>.</param>

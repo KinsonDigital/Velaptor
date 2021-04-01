@@ -79,9 +79,6 @@ namespace RaptorTests.Services
             var expectedPixelData = new NETColor[width, height];
 
             // Fill the pixel data with 3 rows of pixels
-            // Row 0: RED
-            // Row 1: GREEN
-            // Row 2: BLUE
             for (var y = 0; y < height; y++)
             {
                 NETColor pixelClr = default;

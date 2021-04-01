@@ -120,7 +120,6 @@ namespace Raptor.Graphics
         {
             /*NOTE:
              * The incoming image data is in the ARGB byte layout.
-             *
              * The data layout required by OpenGL is RGBA.
              */
             var pixelData = new List<byte>();
