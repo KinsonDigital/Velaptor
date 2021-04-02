@@ -1,9 +1,10 @@
-// <copyright file="TestHelpers.cs" company="KinsonDigital">
+﻿// <copyright file="TestHelpers.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace RaptorTests.Helpers
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
@@ -11,10 +12,12 @@ namespace RaptorTests.Helpers
     using Raptor.Graphics;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
+    using SixLabors.ImageSharp.Processing;
     using NETColor = System.Drawing.Color;
+    using NETPoint = System.Drawing.Point;
 
     [ExcludeFromCodeCoverage]
-    public static class TestHelpers
+    public static unsafe class TestHelpers
     {
         private static readonly string BasePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
         private static readonly string TestResultDirName = "ImageTestResults";
@@ -56,64 +59,6 @@ namespace RaptorTests.Helpers
         }
 
         /// <summary>
-        /// Converts the given <paramref name="imageData"/> of type <see cref="ImageData"/>
-        /// to the type of <see cref="Image{Rgba32}"/>.
-        /// </summary>
-        /// <param name="imageData">The image data to convert.</param>
-        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        public static Image<Rgba32> ToSixLaborImage(ImageData imageData)
-        {
-            var result = new Image<Rgba32>(imageData.Width, imageData.Height);
-
-            for (var y = 0; y < result.Height; y++)
-            {
-                var pixelRowSpan = result.GetPixelRowSpan(y);
-
-                for (var x = 0; x < result.Width; x++)
-                {
-                    pixelRowSpan[x] = new Rgba32(
-                        imageData.Pixels[x, y].R,
-                        imageData.Pixels[x, y].G,
-                        imageData.Pixels[x, y].B,
-                        imageData.Pixels[x, y].A);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
-        /// to the type of <see cref="ImageData"/>.
-        /// </summary>
-        /// <param name="image">The image to convert.</param>
-        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-        public static ImageData ToImageData(Image<Rgba32> image)
-        {
-            ImageData result = default;
-
-            result.Pixels = new NETColor[image.Width, image.Height];
-            result.Width = image.Width;
-            result.Height = image.Height;
-
-            for (var y = 0; y < image.Height; y++)
-            {
-                var pixelRowSpan = image.GetPixelRowSpan(y);
-
-                for (var x = 0; x < image.Width; x++)
-                {
-                    result.Pixels[x, y] = NETColor.FromArgb(
-                        pixelRowSpan[x].A,
-                        pixelRowSpan[x].R,
-                        pixelRowSpan[x].G,
-                        pixelRowSpan[x].B);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Returns all of the pixels from the given <paramref name="image"/>
         /// and returns it as a 2-dimensional array of pixels represented by <see cref="NETColor"/>.
         /// </summary>
@@ -142,7 +87,7 @@ namespace RaptorTests.Helpers
         /// </summary>
         /// <param name="image">The image to save.</param>
         /// <param name="unitTestName">The name of the unit test requesting the name.</param>
-        public static void SaveImageForTest(ImageData image, [CallerMemberName]string unitTestName = "NOT-NAME-SET")
+        public static void SaveImageForTest(ImageData image, [CallerMemberName] string unitTestName = "NOT-NAME-SET")
         {
             unitTestName = Path.HasExtension(unitTestName)
                 ? unitTestName.Split('.')[0]
@@ -151,6 +96,106 @@ namespace RaptorTests.Helpers
             var imageResultPath = $"{TestResultDirPath}{unitTestName}.png";
 
             ToSixLaborImage(image).SaveAsPng(imageResultPath);
+        }
+
+        public static ImageData Draw(ImageData src, ImageData dest, NETPoint location)
+        {
+            var srcImage = src.ToSixLaborImage();
+            var destImage = dest.ToSixLaborImage();
+
+            destImage.Mutate(context => context.DrawImage(srcImage, new Point(location.X, location.Y), 1));
+
+            srcImage.Dispose();
+
+            return destImage.ToImageData();
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="ImageData"/>
+        /// to the type of <see cref="Image{Rgba32}"/>.
+        /// </summary>
+        /// <param name="image">The image data to convert.</param>
+        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
+        public static Image<Rgba32> ToSixLaborImage(this ImageData image)
+        {
+            var result = new Image<Rgba32>(image.Width, image.Height);
+
+            for (var y = 0; y < result.Height; y++)
+            {
+                var pixelRowSpan = result.GetPixelRowSpan(y);
+
+                for (var x = 0; x < result.Width; x++)
+                {
+                    pixelRowSpan[x] = new Rgba32(
+                        image.Pixels[x, y].R,
+                        image.Pixels[x, y].G,
+                        image.Pixels[x, y].B,
+                        image.Pixels[x, y].A);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        public static ImageData ToImageData(this Image<Rgba32> image)
+        {
+            ImageData result = default;
+
+            result.Pixels = new NETColor[image.Width, image.Height];
+            result.Width = image.Width;
+            result.Height = image.Height;
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    result.Pixels[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns an <see cref="IntPtr"/> to the given <paramref name="unmanagedData"/>.
+        /// </summary>
+        /// <typeparam name="T">The unmanaged type.</typeparam>
+        /// <param name="unmanagedData">The unmanaged data to return a pointer to.</param>
+        /// <returns>A pointer to the unmanaged data.</returns>
+        public static IntPtr ToIntPtr<T>(ref T unmanagedData)
+            where T : unmanaged
+        {
+            fixed (T* faceRecPtr = &unmanagedData)
+            {
+                return (IntPtr)faceRecPtr;
+            }
+        }
+
+        /// <summary>
+        /// Returns an unsafe pointer to the given <paramref name="unmanagedData"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of unmanaged data.</typeparam>
+        /// <param name="unmanagedData">The unmanaged data to conver.</param>
+        /// <returns>The unsafe pointer to the unmanaged data.</returns>
+        public static T* ToUnsafePointer<T>(ref T unmanagedData)
+            where T : unmanaged
+        {
+            fixed (T* slotRecPtr = &unmanagedData)
+            {
+                return slotRecPtr;
+            }
         }
 
         /// <summary>

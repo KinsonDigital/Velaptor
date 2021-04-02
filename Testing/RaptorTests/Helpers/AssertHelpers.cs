@@ -251,5 +251,25 @@ namespace RaptorTests.Helpers
 
             Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertHelpers)}.{nameof(All)}<T>.  Are there any items?");
         }
+
+        /// <summary>
+        /// Verifies that the two integers are equivalent.
+        /// </summary>
+        /// <param name="expected">The expected <see langword="int"/> value.</param>
+        /// <param name="actual">The actual <see langword="int"/> value.</param>
+        /// <param name="message">The message to be shown about the failed assertion.</param>
+        public static void Equals(int expected, int actual, string message)
+        {
+            var assertException = new AssertActualExpectedException(expected, actual, message);
+
+            try
+            {
+                Assert.Equal(expected, actual);
+            }
+            catch (Exception ex)
+            {
+                throw assertException;
+            }
+        }
     }
 }

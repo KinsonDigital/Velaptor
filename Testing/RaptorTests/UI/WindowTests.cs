@@ -30,7 +30,7 @@ namespace RaptorTests.UI
             this.mockContentLoader = new Mock<IContentLoader>();
 
             this.mockWindow = new Mock<IWindow>();
-            this.mockWindow.SetupGet(m => m.ContentLoader).Returns(this.mockContentLoader.Object);
+            this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
         }
 
         #region Prop Tests
