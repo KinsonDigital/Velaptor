@@ -1,4 +1,4 @@
-﻿// <copyright file="TestHelpers.cs" company="KinsonDigital">
+// <copyright file="TestHelpers.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,6 +19,23 @@ namespace RaptorTests.Helpers
         private static readonly string BasePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
         private static readonly string TestResultDirName = "ImageTestResults";
         private static readonly string TestResultDirPath = @$"{BasePath}{TestResultDirName}\";
+
+        /// <summary>
+        /// Returns the directory path to the test result directory.
+        /// </summary>
+        /// <returns>The directory path.</returns>
+        public static string GetTestResultDirPath() => TestResultDirPath;
+
+        /// <summary>
+        /// Sets up the directory of where to store image test results.
+        /// </summary>
+        public static void SetupTestResultDirPath()
+        {
+            if (Directory.Exists(TestResultDirPath) is false)
+            {
+                Directory.CreateDirectory(TestResultDirPath);
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="ImageData"/> struct for the purpose of testing.
