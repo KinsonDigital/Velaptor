@@ -9,7 +9,7 @@ namespace Raptor.Graphics
     /// <summary>
     /// Holds all of the various metrics of a glyph for rendering purposes.
     /// </summary>
-    internal struct GlyphMetrics
+    public struct GlyphMetrics
     {
         /// <summary>
         /// Gets or sets the glyph character.

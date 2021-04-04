@@ -261,12 +261,11 @@ namespace RaptorTests.Helpers
         public static void Equals(int expected, int actual, string message)
         {
             var assertException = new AssertActualExpectedException(expected, actual, message);
-
             try
             {
                 Assert.Equal(expected, actual);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw assertException;
             }
