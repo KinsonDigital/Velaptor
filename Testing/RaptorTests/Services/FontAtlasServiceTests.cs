@@ -155,7 +155,25 @@ namespace RaptorTests.Services
             this.mockFreeTypeInvoker.Verify(m => m.FT_New_Face(this.freeTypeLibPtr, fontFilePath, 0), Times.Once());
         }
 
-        [Fact]
+        [Theory]
+        [InlineData(new[] { '1', })]
+        [InlineData(new[] { '2', '3', })]
+        [InlineData(new[] { '4', '5', '6' })]
+        [InlineData(new[] { '7', '8', '9', '0' })]
+        public void CreateFontAtlas_WhenInvoked_CalculatesAtlasMetrics(char[] glyphChars)
+        {
+            // Arrange
+            var fontFilePath = $@"C:\temp\test-font.ttf";
+            var service = CreateService();
+            service.SetAvailableCharacters(glyphChars);
+
+            // Act
+            var (actualAtlasTexture, atlasData) = service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
+
+            // Assert
+            this.mockFreeTypeInvoker.Verify(m => m.FT_New_Face(this.freeTypeLibPtr, fontFilePath, 0), Times.Once());
+        }
+
         public void CreateFontAtlas_WhenInvoked_SetsCharacterSize()
         {
             // Arrange
