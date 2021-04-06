@@ -23,6 +23,7 @@ namespace Raptor.Factories
         private static ILoader<ITexture>? textureLoader;
         private static ILoader<IAtlasData>? atlasLoader;
         private static ILoader<ISound>? soundLoader;
+        private static ILoader<IFont>? fontLoader;
 
         /// <summary>
         /// Creates a single instance of a content loader.
@@ -32,7 +33,11 @@ namespace Raptor.Factories
         {
             if (contentLoader is null)
             {
-                contentLoader = new ContentLoader(CreateTextureLoader(), CreateSoundLoader(), CreateTextureAtlasLoader());
+                contentLoader = new ContentLoader(
+                    CreateTextureLoader(),
+                    CreateSoundLoader(),
+                    CreateTextureAtlasLoader(),
+                    CreateFontLoader());
             }
 
             return contentLoader;
@@ -48,9 +53,12 @@ namespace Raptor.Factories
             {
                 var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
                 var imageService = IoC.Container.GetInstance<IImageService>();
-                IPathResolver texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+                var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
 
-                textureLoader = new TextureLoader(glInvoker, imageService, texturePathResolver);
+                textureLoader = new TextureLoader(
+                    glInvoker,
+                    imageService,
+                    texturePathResolver);
             }
 
             return textureLoader;
@@ -64,11 +72,14 @@ namespace Raptor.Factories
         {
             if (atlasLoader is null)
             {
-                var textureLoader = new TextureLoader(IoC.Container.GetInstance<IImageService>(), IoC.Container.GetInstance<AtlasTexturePathResolver>());
+                var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+                var atlasDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
 
-                IPathResolver atlasDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
-
-                atlasLoader = new AtlasLoader(textureLoader, atlasDataPathResolver, IoC.Container.GetInstance<IFile>());
+                atlasLoader = new AtlasLoader(
+                    glInvoker,
+                    IoC.Container.GetInstance<IImageService>(),
+                    atlasDataPathResolver,
+                    IoC.Container.GetInstance<IFile>());
             }
 
             return atlasLoader;
@@ -84,14 +95,41 @@ namespace Raptor.Factories
             {
                 var alInvoker = IoC.Container.GetInstance<IALInvoker>();
                 var audioManager = AudioDeviceManagerFactory.CreateDeviceManager();
-                IPathResolver soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
+                var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
                 var oggDecoder = IoC.Container.GetInstance<ISoundDecoder<float>>();
                 var mp3Decoder = IoC.Container.GetInstance<ISoundDecoder<byte>>();
 
-                soundLoader = new SoundLoader(alInvoker, audioManager, soundPathResolver, oggDecoder, mp3Decoder);
+                soundLoader = new SoundLoader(
+                    alInvoker,
+                    audioManager,
+                    soundPathResolver,
+                    oggDecoder,
+                    mp3Decoder);
             }
 
             return soundLoader;
+        }
+
+        /// <summary>
+        /// Creates a loader that loads fonts from disk for rendering test.
+        /// </summary>
+        /// <returns>A loader for loading sound data.</returns>
+        public static ILoader<IFont> CreateFontLoader()
+        {
+            if (fontLoader is null)
+            {
+                var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+                var fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
+                var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
+
+                fontLoader = new FontLoader(
+                    glInvoker,
+                    fontAtlasService,
+                    fontPathResolver,
+                    IoC.Container.GetInstance<IFile>());
+            }
+
+            return fontLoader;
         }
     }
 }
