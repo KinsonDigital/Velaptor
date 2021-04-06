@@ -66,7 +66,7 @@ namespace Raptor.Graphics
         public string Path { get; }
 
         /// <inheritdoc/>
-        public ITexture Texture { get; set; }
+        public ITexture Texture { get; private set; }
 
         /// <inheritdoc/>
         public int Width => Texture.Width;
