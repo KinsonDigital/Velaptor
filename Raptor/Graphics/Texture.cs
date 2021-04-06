@@ -8,7 +8,7 @@ namespace Raptor.Graphics
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using OpenTK.Graphics.OpenGL4;
-    using Raptor.OpenGL;
+    using Raptor.NativeInterop;
 
     /// <summary>
     /// The texture to render to a screen.

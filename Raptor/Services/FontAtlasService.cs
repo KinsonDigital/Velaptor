@@ -6,7 +6,6 @@ namespace Raptor.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
@@ -14,6 +13,7 @@ namespace Raptor.Services
     using System.Runtime.InteropServices;
     using FreeTypeSharp.Native;
     using Raptor.Graphics;
+    using Raptor.NativeInterop;
 
     /* TODO List:
         ✔ 1. Check if the class consuming/injecting this service can be used by the library user.

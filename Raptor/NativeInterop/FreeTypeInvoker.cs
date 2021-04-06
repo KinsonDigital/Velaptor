@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Graphics
+namespace Raptor.NativeInterop
 {
     using System;
     using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace Raptor.Graphics
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
     /// </remarks>
     [ExcludeFromCodeCoverage]
-    public class FreeTypeInvoker : IFreeTypeInvoker
+    internal class FreeTypeInvoker : IFreeTypeInvoker
     {
         private readonly List<IntPtr> libraryPtrs = new List<IntPtr>();
         private bool isDisposed;

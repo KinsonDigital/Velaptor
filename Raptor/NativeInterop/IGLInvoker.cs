@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Raptor.NativeInterop
 {
     using System;
     using OpenTK.Graphics.OpenGL4;

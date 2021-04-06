@@ -11,7 +11,7 @@ namespace RaptorTests.Content
     using Raptor.Content;
     using Raptor.Exceptions;
     using Raptor.Graphics;
-    using Raptor.OpenGL;
+    using Raptor.NativeInterop;
     using Raptor.Services;
     using RaptorTests.Helpers;
     using Xunit;

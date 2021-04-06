@@ -12,6 +12,7 @@ namespace RaptorTests.Graphics
     using OpenTK.Mathematics;
     using Raptor.Exceptions;
     using Raptor.Graphics;
+    using Raptor.NativeInterop;
     using Raptor.OpenGL;
     using RaptorTests.Helpers;
     using Xunit;

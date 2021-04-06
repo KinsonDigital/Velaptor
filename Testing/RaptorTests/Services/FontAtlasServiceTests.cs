@@ -16,6 +16,7 @@ namespace RaptorTests.Services
     using Raptor;
     using Raptor.Graphics;
     using Raptor.Hardware;
+    using Raptor.NativeInterop;
     using Raptor.Services;
     using RaptorTests.Helpers;
     using Xunit;

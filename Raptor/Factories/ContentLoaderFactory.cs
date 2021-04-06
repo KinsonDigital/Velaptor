@@ -9,8 +9,8 @@ namespace Raptor.Factories
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
+    using Raptor.NativeInterop;
     using Raptor.OpenAL;
-    using Raptor.OpenGL;
     using Raptor.Services;
 
     /// <summary>

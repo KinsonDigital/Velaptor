@@ -11,7 +11,7 @@ namespace Raptor.Content
     using Newtonsoft.Json;
     using Raptor.Exceptions;
     using Raptor.Graphics;
-    using Raptor.OpenGL;
+    using Raptor.NativeInterop;
     using Raptor.Services;
 
     /// <summary>

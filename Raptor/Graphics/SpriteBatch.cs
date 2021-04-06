@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,6 +12,7 @@ namespace Raptor.Graphics
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using Raptor.Exceptions;
+    using Raptor.NativeInterop;
     using Raptor.OpenGL;
 
     /// <inheritdoc/>

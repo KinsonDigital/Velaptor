@@ -10,6 +10,7 @@ namespace Raptor.OpenGL
     using System.Linq;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
+    using Raptor.NativeInterop;
 
     /// <inheritdoc/>
     internal class GPUBuffer<T> : IGPUBuffer

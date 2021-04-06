@@ -1,4 +1,4 @@
-﻿// <copyright file="IoC.cs" company="KinsonDigital">
+// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,6 +14,7 @@ namespace Raptor
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
+    using Raptor.NativeInterop;
     using Raptor.OpenAL;
     using Raptor.OpenGL;
     using Raptor.Services;

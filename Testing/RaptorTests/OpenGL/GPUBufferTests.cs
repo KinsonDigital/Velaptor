@@ -9,6 +9,7 @@ namespace RaptorTests.OpenGL
     using System.Drawing;
     using Moq;
     using OpenTK.Graphics.OpenGL4;
+    using Raptor.NativeInterop;
     using Raptor.OpenGL;
     using Xunit;
 

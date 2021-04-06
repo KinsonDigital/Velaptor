@@ -8,7 +8,7 @@ namespace Raptor.Content
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Graphics;
-    using Raptor.OpenGL;
+    using Raptor.NativeInterop;
     using Raptor.Services;
 
     /// <summary>

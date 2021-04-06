@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.OpenGL
+namespace RaptorTests.NativeInterop
 {
-    using Raptor.OpenGL;
+    using Raptor.NativeInterop;
     using Xunit;
 
     /// <summary>

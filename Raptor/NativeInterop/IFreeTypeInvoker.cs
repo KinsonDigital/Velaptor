@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Graphics
+namespace Raptor.NativeInterop
 {
     using System;
     using FreeTypeSharp.Native;
