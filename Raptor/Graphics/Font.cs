@@ -9,6 +9,7 @@ namespace Raptor.Graphics
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Raptor.Content;
 
     /// <summary>
     /// Represents a font with a particular size that can be used
@@ -17,24 +18,24 @@ namespace Raptor.Graphics
     public class Font : IFont, IDisposable
     {
         private readonly GlyphMetrics[] fontAtlasData;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
         /// </summary>
-        /// <param name="fontTextureAtlas">The font atlas texture that contains all of the glyph bitmap data.</param>
+        /// <param name="texture">The font atlas texture that contains all of the glyph bitmap data.</param>
         /// <param name="fontAtlasData">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
         /// <param name="name">The name of the font content.</param>
-        /// <param name="size">The size of the font.</param>
         /// <param name="path">The path to the font content.</param>
-        public Font(ITexture fontTextureAtlas, GlyphMetrics[] fontAtlasData, string name, int size, string path)
+        /// <param name="fontSettings">The various font settings.</param>
+        public Font(ITexture texture, GlyphMetrics[] fontAtlasData, string name, string path, FontSettings fontSettings)
         {
-            FontTextureAtlas = fontTextureAtlas;
+            FontTextureAtlas = texture;
             this.fontAtlasData = fontAtlasData;
 
             Name = name;
-            Size = size;
             Path = path;
+            Size = fontSettings.Size;
+            Style = fontSettings.Style;
         }
 
         /// <inheritdoc/>
@@ -50,7 +51,13 @@ namespace Raptor.Graphics
         public int Size { get; private set; }
 
         /// <inheritdoc/>
+        public FontStyle Style { get; private set; }
+
+        /// <inheritdoc/>
         public int Length => this.fontAtlasData.Length;
+
+        /// <inheritdoc/>
+        public bool Unloaded { get; private set; }
 
         /// <inheritdoc/>
         public GlyphMetrics this[int index] => this.fontAtlasData[index];
@@ -76,7 +83,7 @@ namespace Raptor.Graphics
         /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 return;
             }
@@ -86,7 +93,7 @@ namespace Raptor.Graphics
                 FontTextureAtlas.Dispose();
             }
 
-            this.isDisposed = true;
+            Unloaded = true;
         }
     }
 }

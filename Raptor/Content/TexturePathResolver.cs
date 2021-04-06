@@ -1,4 +1,4 @@
-﻿// <copyright file="TexturePathResolver.cs" company="KinsonDigital">
+// <copyright file="TexturePathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -23,7 +23,7 @@ namespace Raptor.Content
         public TexturePathResolver(IDirectory directory)
         {
             this.directory = directory;
-            FileDirectoryName = "Graphics";
+            ContentDirectoryName = "Graphics";
         }
 
         /// <summary>

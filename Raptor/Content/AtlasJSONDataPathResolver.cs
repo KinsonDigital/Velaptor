@@ -1,4 +1,4 @@
-﻿// <copyright file="AtlasJSONDataPathResolver.cs" company="KinsonDigital">
+// <copyright file="AtlasJSONDataPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -23,7 +23,7 @@ namespace Raptor.Content
         public AtlasJSONDataPathResolver(IDirectory directory)
         {
             this.directory = directory;
-            FileDirectoryName = "Atlas";
+            ContentDirectoryName = "Atlas";
         }
 
         /// <summary>

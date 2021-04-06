@@ -1,4 +1,4 @@
-﻿// <copyright file="IFontAtlasService.cs" company="KinsonDigital">
+// <copyright file="IFontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,7 +10,7 @@ namespace Raptor.Services
     /// <summary>
     /// Creates font atlas textures for rendering text.
     /// </summary>
-    internal interface IFontAtlasService : IDisposable
+    public interface IFontAtlasService : IDisposable
     {
         /// <summary>
         /// Creates a font atlas texture and atlas data that can be used for rendering.

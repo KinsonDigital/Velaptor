@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundPathResolver.cs" company="KinsonDigital">
+// <copyright file="SoundPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -22,7 +22,7 @@ namespace Raptor.Content
         public SoundPathResolver(IDirectory directory)
         {
             this.directory = directory;
-            FileDirectoryName = "Sounds";
+            ContentDirectoryName = "Sounds";
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Raptor.Content
         /// <para>
         ///     Precedence is taken with '.ogg' fles over '.mp3'.  What this means is that if
         ///     there are 2 files <br/> with the same name but with different extensions in the
-        ///     same <see cref="ContentPathResolver.FileDirectoryName"/>, <br/> the '.ogg'
+        ///     same <see cref="ContentPathResolver.ContentDirectoryName"/>, <br/> the '.ogg'
         ///     file will be loaded, not the '.mp3' file.
         /// </para>
         /// <para>

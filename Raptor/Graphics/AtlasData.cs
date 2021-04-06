@@ -1,4 +1,4 @@
-﻿// <copyright file="AtlasData.cs" company="KinsonDigital">
+// <copyright file="AtlasData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,6 @@ namespace Raptor.Graphics
     public class AtlasData : IAtlasData
     {
         private readonly AtlasSubTextureData[] subTextures;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasData"/> class.
@@ -73,7 +72,7 @@ namespace Raptor.Graphics
         public int Width => Texture.Width;
 
         /// <inheritdoc/>
-        public int Height => Texture.Height;
+        public bool Unloaded { get; private set; }
 
         /// <inheritdoc/>
         public AtlasSubTextureData this[int index] => this.subTextures[index];
@@ -113,7 +112,7 @@ namespace Raptor.Graphics
         /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 return;
             }
@@ -123,7 +122,7 @@ namespace Raptor.Graphics
                 Texture.Dispose();
             }
 
-            this.isDisposed = true;
+            Unloaded = true;
         }
     }
 }

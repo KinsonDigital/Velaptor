@@ -4,8 +4,10 @@
 
 namespace RaptorTests.Content
 {
+    using System;
     using System.Drawing;
     using Moq;
+    using Raptor.Content;
     using Raptor.Graphics;
     using Xunit;
 
@@ -23,16 +25,22 @@ namespace RaptorTests.Content
         public void Ctor_WhenInvoked_SetsPropertyValues()
         {
             // Arrange
-            var glyphMetrics = new GlyphMetrics[0];
+            var glyphMetrics = Array.Empty<GlyphMetrics>();
+            var settings = new FontSettings()
+            {
+                Size = 14,
+                Style = FontStyle.Regular,
+            };
 
             // Act
-            var font = new Font(this.mockFontTexture.Object, glyphMetrics, "test-name", 14, "test-path");
+            var font = new Font(this.mockFontTexture.Object, glyphMetrics, "test-name", "test-path", settings);
 
             // Assert
             Assert.Same(font.FontTextureAtlas, this.mockFontTexture.Object);
             Assert.Equal(font.Length, glyphMetrics.Length);
             Assert.Equal("test-name", font.Name);
             Assert.Equal(14, font.Size);
+            Assert.Equal(FontStyle.Regular, font.Style);
             Assert.Equal("test-path", font.Path);
         }
         #endregion
@@ -61,8 +69,13 @@ namespace RaptorTests.Content
                     HorizontalAdvance = 333, AtlasBounds = new Rectangle(444, 555, 666, 777),
                 },
             };
+            var settings = new FontSettings()
+            {
+                Size = 14,
+                Style = FontStyle.Regular,
+            };
 
-            var font = new Font(this.mockFontTexture.Object, glyphMetrics, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>());
+            var font = new Font(this.mockFontTexture.Object, glyphMetrics, It.IsAny<string>(), It.IsAny<string>(), settings);
 
             // Act
             var actual = font[0];
@@ -75,7 +88,13 @@ namespace RaptorTests.Content
         public void Dispose_WhenInvoked_DisposesOfTextureAndFont()
         {
             // Arrange
-            var font = new Font(this.mockFontTexture.Object, new GlyphMetrics[0], It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>());
+            var settings = new FontSettings()
+            {
+                Size = 14,
+                Style = FontStyle.Regular,
+            };
+
+            var font = new Font(this.mockFontTexture.Object, Array.Empty<GlyphMetrics>(), It.IsAny<string>(), It.IsAny<string>(), settings);
 
             // Act
             font.Dispose();

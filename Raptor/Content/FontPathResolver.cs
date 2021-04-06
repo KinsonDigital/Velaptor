@@ -23,13 +23,17 @@ namespace Raptor.Content
         public FontPathResolver(IDirectory directory)
         {
             this.directory = directory;
-            FileDirectoryName = "Fonts";
+            ContentDirectoryName = "Fonts";
         }
 
         /// <inheritdoc/>
         public override string ResolveFilePath(string contentName)
         {
             contentName = base.ResolveFilePath(contentName);
+
+            contentName = Path.HasExtension(contentName)
+                ? Path.GetFileNameWithoutExtension(contentName)
+                : contentName;
 
             var contentDirPath = GetContentDirPath();
 

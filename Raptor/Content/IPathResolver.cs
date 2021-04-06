@@ -1,4 +1,4 @@
-﻿// <copyright file="IPathResolver.cs" company="KinsonDigital">
+// <copyright file="IPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -27,15 +27,21 @@ namespace Raptor.Content
         ///     deepest child directory name will be used.
         /// </para>
         /// </remarks>
-        string FileDirectoryName { get; set; }
+        string ContentDirectoryName { get; set; }
 
         /// <summary>
         /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
         /// </summary>
         /// <param name="contentName">The name of the file with or without the file extension.</param>
         /// <returns>
-        ///     The <see cref="RootDirectory"/>, <see cref="FileDirectoryName"/> and file directory name combined.
+        ///     The <see cref="RootDirectory"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
         /// </returns>
         string ResolveFilePath(string contentName);
+
+        /// <summary>
+        /// Resolves the full directory path to some content.
+        /// </summary>
+        /// <returns>The directory only path to some content.</returns>
+        string ResolveDirPath();
     }
 }

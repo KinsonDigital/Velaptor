@@ -35,7 +35,6 @@ namespace Raptor.Audio
         private readonly IALInvoker alInvoker;
         private int srcId;
         private int bufferId;
-        private bool isDisposed;
         private float totalSeconds;
 
         /// <summary>
@@ -96,7 +95,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -109,7 +108,7 @@ namespace Raptor.Audio
             }
             set
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -134,7 +133,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -162,7 +161,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -171,7 +170,7 @@ namespace Raptor.Audio
             }
             set
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -181,9 +180,12 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
+        public bool Unloaded { get; private set; }
+
+        /// <inheritdoc/>
         public void PlaySound()
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -194,7 +196,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void PauseSound()
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -205,7 +207,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void StopSound()
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -216,7 +218,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void Reset()
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -227,7 +229,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void SetTimePosition(float seconds)
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -253,7 +255,7 @@ namespace Raptor.Audio
         /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (!Unloaded)
             {
                 if (disposing)
                 {
@@ -266,7 +268,7 @@ namespace Raptor.Audio
 
                 this.alInvoker.ErrorCallback -= ErrorCallback;
 
-                this.isDisposed = true;
+                Unloaded = true;
             }
         }
 

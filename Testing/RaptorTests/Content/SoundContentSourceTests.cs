@@ -43,7 +43,7 @@ namespace RaptorTests.Content
 
             // Act
             var source = new SoundPathResolver(mockDirectory.Object);
-            var actual = source.FileDirectoryName;
+            var actual = source.ContentDirectoryName;
 
             // Assert
             Assert.Equal("Sounds", actual);

@@ -4,13 +4,14 @@
 
 namespace Raptor.Graphics
 {
+    using System;
     using System.Collections.Generic;
     using Raptor.Content;
 
     /// <summary>
     /// The font to use when rendering text to the screen.
     /// </summary>
-    public interface IFont : IContent, IEnumerable<GlyphMetrics>
+    public interface IFont : IContent, IDisposable, IEnumerable<GlyphMetrics>
     {
         /// <summary>
         /// Gets the font atlas texture that contains all of the glyphs for the font for rendering.
@@ -21,6 +22,11 @@ namespace Raptor.Graphics
         /// Gets the size of the font in points.
         /// </summary>
         int Size { get; }
+
+        /// <summary>
+        /// Gets the style of the font.
+        /// </summary>
+        FontStyle Style { get; }
 
         /// <summary>
         /// Gets the total number of glyph metrics in the font.

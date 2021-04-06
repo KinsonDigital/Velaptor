@@ -23,7 +23,7 @@ namespace RaptorTests.Content
 
             // Act
             var resolver = new AtlasTexturePathResolver(mockDirectory.Object);
-            var actual = resolver.FileDirectoryName;
+            var actual = resolver.ContentDirectoryName;
 
             // Assert
             Assert.Equal("Atlas", actual);
