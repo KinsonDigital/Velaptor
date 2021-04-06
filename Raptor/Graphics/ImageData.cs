@@ -1,9 +1,8 @@
-﻿// <copyright file="ImageData.cs" company="KinsonDigital">
+﻿
+// <copyright file="ImageData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional | Reason: The array does not waist space
-#pragma warning disable CA1819 // Properties should not return arrays | Reason: pixel data is immutable
 namespace Raptor.Graphics
 {
     using System;

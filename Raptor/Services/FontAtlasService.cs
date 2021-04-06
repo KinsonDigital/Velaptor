@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,6 +6,7 @@ namespace Raptor.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
@@ -59,7 +60,7 @@ namespace Raptor.Services
 
         // TODO: Need to add more characters to this to cover all the letters, numbers and symbols as well as uppercase letters
         private char[] glyphChars = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-        private bool disposedValue;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontAtlasService"/> class.
@@ -149,7 +150,7 @@ namespace Raptor.Services
         /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposedValue)
+            if (!this.isDisposed)
             {
                 if (disposing)
                 {
@@ -167,16 +168,38 @@ namespace Raptor.Services
                 this.freeTypeInvoker.FT_Done_Face(this.facePtr);
                 this.freeTypeInvoker.FT_Done_FreeType(this.freeTypeLibPtr);
 
-                this.disposedValue = true;
+                this.isDisposed = true;
             }
         }
 
         /// <summary>
-        /// Occurs when there is a free type associated error.
+        /// Calculates all of the font atlas metrics using the given <paramref name="glyphImages"/>.
         /// </summary>
-        private void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e)
+        /// <param name="glyphImages">The glyph images that will eventually be rendered onto the font texture atlas.</param>
+        /// <returns>The various metrics of the font atlas.</returns>
+        private static FontAtlasMetrics CalcAtlasMetrics(Dictionary<char, ImageData> glyphImages)
         {
-            // TODO: Throw custom free type exception here
+            FontAtlasMetrics result = default;
+
+            const int AntiEdgeCroppingMargin = 3;
+            var maxGlyphWidth = glyphImages.Max(g => g.Value.Width) + AntiEdgeCroppingMargin;
+            var maxGlyphHeight = glyphImages.Max(g => g.Value.Height) + AntiEdgeCroppingMargin;
+
+            var possibleRowAndColumnCount = Math.Sqrt(glyphImages.Count);
+
+            result.Rows = possibleRowAndColumnCount % 2 != 0
+                ? (int)Math.Round(possibleRowAndColumnCount + 1.0, MidpointRounding.ToZero)
+                : (int)possibleRowAndColumnCount;
+
+            // Add an extra row for certain situations where there are couple extra glyph chars
+            result.Rows++;
+
+            result.Columns = (int)possibleRowAndColumnCount;
+
+            result.Width = maxGlyphWidth * result.Columns;
+            result.Height = maxGlyphHeight * result.Rows;
+
+            return result;
         }
 
         /// <summary>
@@ -188,7 +211,7 @@ namespace Raptor.Services
         /// <returns>
         ///     The <paramref name="glyphMetrics"/> is the font atlas texture data that will eventually be returned.
         /// </returns>
-        private Dictionary<char, GlyphMetrics> SetGlyphMetricsAtlasBounds(Dictionary<char, ImageData> glyphImages, Dictionary<char, GlyphMetrics> glyphMetrics, int columnCount)
+        private static Dictionary<char, GlyphMetrics> SetGlyphMetricsAtlasBounds(Dictionary<char, ImageData> glyphImages, Dictionary<char, GlyphMetrics> glyphMetrics, int columnCount)
         {
             const int antiEdgeCroppingMargin = 3;
 
@@ -225,33 +248,43 @@ namespace Raptor.Services
         }
 
         /// <summary>
-        /// Calculates all of the font atlas metrics using the given <paramref name="glyphImages"/>.
+        /// Takes the given 8-bit grayscale glyph bitmap data in raw bytes with the glyph
+        /// bitmap <paramref name="width"/> and <paramref name="height"/> and returns it
+        /// as a white 32-bit RGBA image.
         /// </summary>
-        /// <param name="glyphImages">The glyph images that will eventually be rendered onto the font texture atlas.</param>
-        /// <returns>The various metrics of the font atlas.</returns>
-        private FontAtlasMetrics CalcAtlasMetrics(Dictionary<char, ImageData> glyphImages)
+        /// <param name="pixelData">The 8-bit grayscale glyph bitmap data.</param>
+        /// <param name="width">The width of the glyph bitmap.</param>
+        /// <param name="height">The height of the glyph bitmap.</param>
+        /// <returns>The 32-bit RGBA glyph image data.</returns>
+        private static ImageData ToImage(byte[] pixelData, int width, int height)
         {
-            FontAtlasMetrics result = default;
+            ImageData image = default;
+            image.Pixels = new Color[width, height];
+            image.Width = width;
+            image.Height = height;
 
-            const int AntiEdgeCroppingMargin = 3;
-            var maxGlyphWidth = glyphImages.Max(g => g.Value.Width) + AntiEdgeCroppingMargin;
-            var maxGlyphHeight = glyphImages.Max(g => g.Value.Height) + AntiEdgeCroppingMargin;
+            var iteration = 0;
 
-            var possibleRowAndColumnCount = Math.Sqrt(glyphImages.Count);
+            for (var y = 0; y < height; y++)
+            {
+                var pixelValue = pixelData[iteration];
 
-            result.Rows = possibleRowAndColumnCount % 2 != 0
-                ? (int)Math.Round(possibleRowAndColumnCount + 1.0, MidpointRounding.ToZero)
-                : (int)possibleRowAndColumnCount;
+                for (var x = 0; x < width; x++)
+                {
+                    image.Pixels[x, y] = Color.FromArgb(pixelValue, 255, 255, 255);
+                    iteration += 1;
+                }
+            }
 
-            // Add an extra row for certain situations where there are couple extra glyph chars
-            result.Rows++;
+            return image;
+        }
 
-            result.Columns = (int)possibleRowAndColumnCount;
-
-            result.Width = maxGlyphWidth * result.Columns;
-            result.Height = maxGlyphHeight * result.Rows;
-
-            return result;
+        /// <summary>
+        /// Occurs when there is a free type associated error.
+        /// </summary>
+        private void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e)
+        {
+            // TODO: Throw custom free type exception here
         }
 
         /// <summary>
@@ -360,7 +393,7 @@ namespace Raptor.Services
         {
             var sizeInPointsPtr = (IntPtr)(sizeInPoints << 6);
 
-            //TODO: Check if the main monitor is null and if so, throw exception
+            // TODO: Check if the main monitor is null and if so, throw exception
             this.freeTypeInvoker.FT_Set_Char_Size(
                 this.facePtr,
                 sizeInPointsPtr,
@@ -391,38 +424,6 @@ namespace Raptor.Services
             var glyphImage = ToImage(glyphBitmapData, width, height);
 
             return glyphImage;
-        }
-
-        /// <summary>
-        /// Takes the given 8-bit grayscale glyph bitmap data in raw bytes with the glyph
-        /// bitmap <paramref name="width"/> and <paramref name="height"/> and returns it
-        /// as a white 32-bit RGBA image.
-        /// </summary>
-        /// <param name="pixelData">The 8-bit grayscale glyph bitmap data.</param>
-        /// <param name="width">The width of the glyph bitmap.</param>
-        /// <param name="height">The height of the glyph bitmap.</param>
-        /// <returns>The 32-bit RGBA glyph image data.</returns>
-        private ImageData ToImage(byte[] pixelData, int width, int height)
-        {
-            ImageData image = default;
-            image.Pixels = new Color[width, height];
-            image.Width = width;
-            image.Height = height;
-
-            var iteration = 0;
-
-            for (var y = 0; y < height; y++)
-            {
-                var pixelValue = pixelData[iteration];
-
-                for (var x = 0; x < width; x++)
-                {
-                    image.Pixels[x, y] = Color.FromArgb(pixelValue, 255, 255, 255);
-                    iteration += 1;
-                }
-            }
-
-            return image;
         }
     }
 }

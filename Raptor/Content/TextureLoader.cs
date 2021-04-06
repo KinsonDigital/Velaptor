@@ -57,11 +57,11 @@ namespace Raptor.Content
         {
             var filePath = this.pathResolver.ResolveFilePath(name);
 
-            return this.textures.GetOrAdd(filePath, (key) =>
+            return this.textures.GetOrAdd(filePath, (path) =>
             {
-                var imageData = this.imageService.Load(key);
+                var imageData = this.imageService.Load(path);
 
-                return new Texture(this.gl, name, key, imageData);
+                return new Texture(this.gl, name, path, imageData);
             });
         }
 

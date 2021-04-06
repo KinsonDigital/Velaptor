@@ -1,4 +1,4 @@
-// <copyright file="Texture.cs" company="KinsonDigital">
+﻿// <copyright file="Texture.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -33,7 +33,6 @@ namespace Raptor.Graphics
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
-        /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="name">The name of the texture.</param>

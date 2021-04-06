@@ -1,4 +1,4 @@
-// <copyright file="SoundPathResolver.cs" company="KinsonDigital">
+﻿// <copyright file="SoundPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

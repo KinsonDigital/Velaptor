@@ -190,9 +190,9 @@ namespace Raptor.Graphics
             }
         }
 
-        private string CreateErrorMessage(string freeTypeMsg)
+        private static string CreateErrorMessage(string freeTypeMsg)
         {
-            freeTypeMsg = freeTypeMsg.Replace("FT_Err", "");
+            freeTypeMsg = freeTypeMsg.Replace("FT_Err", string.Empty);
 
             var result = string.Empty;
 

@@ -2,7 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional | Reason: The pixel array does not waist space
 namespace Raptor.Services
 {
     using Raptor.Graphics;

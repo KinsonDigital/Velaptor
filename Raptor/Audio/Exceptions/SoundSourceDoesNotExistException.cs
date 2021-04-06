@@ -1,8 +1,8 @@
-﻿// <copyright file="SoundSourceDoesNotExistException.cs" company="KinsonDigital">
+﻿
+// <copyright file="SoundSourceDoesNotExistException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1064 // Exceptions should be public
 namespace Raptor.Audio.Exceptions
 {
     using System;

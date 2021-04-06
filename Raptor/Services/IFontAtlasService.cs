@@ -1,4 +1,4 @@
-// <copyright file="IFontAtlasService.cs" company="KinsonDigital">
+﻿// <copyright file="IFontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -27,6 +27,8 @@ namespace Raptor.Services
         ///     </item>
         /// </list>
         /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown if the <paramref name="fontFilePath"/> is null or empty.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the file cannot be found.</exception>
         (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, int size);
 
         /// <summary>
