@@ -6,57 +6,105 @@ namespace Raptor.Content
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Newtonsoft.Json;
+    using Raptor.Exceptions;
     using Raptor.Graphics;
+    using Raptor.OpenGL;
+    using Raptor.Services;
 
     /// <summary>
     /// Loads atlas data.
     /// </summary>
-    /// <typeparam name="T">The type of data to load.</typeparam>
     public class AtlasLoader : ILoader<IAtlasData>
     {
         private readonly ConcurrentDictionary<string, IAtlasData> atlases = new ConcurrentDictionary<string, IAtlasData>();
+        private readonly IGLInvoker gl;
+        private readonly IImageService imageService;
         private readonly IPathResolver atlasDataPathResolver;
-        private readonly ILoader<ITexture> textureLoader;
         private readonly IFile file;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
         /// </summary>
-        /// <param name="textureLoader">The texture loader.</param>
-        /// <param name="atlasDataPathResolver">The source of the atlas JSON data.</param>
+        /// <param name="imageService">Loads image data from disk.</param>
+        /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
         /// <param name="file">Used to load the texture atlas.</param>
-        public AtlasLoader(ILoader<ITexture> textureLoader, IPathResolver atlasDataPathResolver, IFile file)
+        [ExcludeFromCodeCoverage]
+        public AtlasLoader(
+            IImageService imageService,
+            IPathResolver atlasDataPathResolver,
+            IFile file)
         {
+            this.gl = IoC.Container.GetInstance<IGLInvoker>();
+            this.imageService = imageService;
             this.atlasDataPathResolver = atlasDataPathResolver;
-            this.textureLoader = textureLoader;
+            this.file = file;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
+        /// </summary>
+        /// <param name="gl">Makes calls to OpenGL.</param>
+        /// <param name="imageService">Loads image data from disk.</param>
+        /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
+        /// <param name="file">Used to load the texture atlas.</param>
+        internal AtlasLoader(
+            IGLInvoker gl,
+            IImageService imageService,
+            IPathResolver atlasDataPathResolver,
+            IFile file)
+        {
+            this.gl = gl;
+            this.imageService = imageService;
+            this.atlasDataPathResolver = atlasDataPathResolver;
             this.file = file;
         }
 
         /// <inheritdoc/>
         public IAtlasData Load(string name)
         {
-            var atlasDataFilePath = this.atlasDataPathResolver.ResolveFilePath(name);
+            var atlasDataDirPath = this.atlasDataPathResolver.ResolveDirPath();
 
-            return this.atlases.GetOrAdd(atlasDataFilePath, (key) =>
+            return this.atlases.GetOrAdd($"{atlasDataDirPath}{name}", (path) =>
             {
-                var rawData = this.file.ReadAllText($"{key}");
-                var atlasSpriteData = JsonConvert.DeserializeObject<AtlasSubTextureData[]>(rawData);
+                var atlasDataFilePath = $"{path}.json";
+                var atlasImageFilePath = $"{path}.png";
 
-                var atlasTexture = this.textureLoader.Load(name);
+                var rawData = this.file.ReadAllText(atlasDataFilePath);
 
-                return new AtlasData(atlasSpriteData, atlasTexture, name, key);
+                AtlasSubTextureData[]? atlasSpriteData;
+
+                try
+                {
+                    atlasSpriteData = JsonConvert.DeserializeObject<AtlasSubTextureData[]>(rawData);
+
+                    if (atlasSpriteData is null)
+                    {
+                        throw new Exception($"Deserialized atlas sub texture data is null.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{atlasDataFilePath}'.\n{ex.Message}");
+                }
+
+                ImageData data = this.imageService.Load(atlasImageFilePath);
+
+                var atlasTexture = new Texture(this.gl, name, path, data);
+
+                return new AtlasData(atlasTexture, atlasSpriteData, name, path);
             });
         }
 
         /// <inheritdoc/>
         public void Unload(string name)
         {
-            var atlasDataFilePath = this.atlasDataPathResolver.ResolveFilePath(name);
+            var filePathNoExtension = $"{this.atlasDataPathResolver.ResolveDirPath()}{name}";
 
-            if (this.atlases.TryRemove(atlasDataFilePath, out var atlas))
+            if (this.atlases.TryRemove(filePathNoExtension, out var atlas))
             {
                 atlas.Dispose();
             }

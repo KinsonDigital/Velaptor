@@ -1,4 +1,4 @@
-// <copyright file="AtlasData.cs" company="KinsonDigital">
+﻿// <copyright file="AtlasData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,11 +19,11 @@ namespace Raptor.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasData"/> class.
         /// </summary>
-        /// <param name="atlasSubTexutureData">The sub texture data of all of the sub textures in the atlas.</param>
         /// <param name="texture">The texture data of the atlas.</param>
+        /// <param name="atlasSubTexutureData">The sub texture data of all of the sub textures in the atlas.</param>
         /// <param name="atlasName">The name of the atlas.</param>
         /// <param name="path">The path to the content.</param>
-        public AtlasData(AtlasSubTextureData[] atlasSubTexutureData, ITexture texture, string atlasName, string path)
+        public AtlasData(ITexture texture, AtlasSubTextureData[] atlasSubTexutureData, string atlasName, string path)
         {
             this.subTextures = atlasSubTexutureData.OrderBy(data => data.FrameIndex).ToArray();
             Texture = texture;
@@ -69,7 +69,10 @@ namespace Raptor.Graphics
         public ITexture Texture { get; private set; }
 
         /// <inheritdoc/>
-        public int Width => Texture.Width;
+        public int Width => Texture is null ? 0 : Texture.Width;
+
+        /// <inheritdoc/>
+        public int Height => Texture is null ? 0 : Texture.Height;
 
         /// <inheritdoc/>
         public bool Unloaded { get; private set; }
