@@ -1,4 +1,4 @@
-// <copyright file="ContentPathResolver.cs" company="KinsonDigital">
+﻿// <copyright file="ContentPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -54,27 +54,9 @@ namespace Raptor.Content
             }
         }
 
-        /// <summary>
-        /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
-        /// </summary>
-        /// <param name="contentName">The name of the content item with or without the file extension.</param>
-        /// <returns>The resolved file path to the content item.</returns>
-        /// <remarks>
-        ///     If the <paramref name="contentName"/> contains a file extension, it will be ignored
-        ///     and the file extension '.json' will be used.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        ///     Occurs when the given <paramref name="contentName"/> is null or emtpy.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     Occurs when the given <paramref name="contentName"/> ends with a directory separator.
-        /// </exception>"
+        /// <inheritdoc/>
         public virtual string ResolveFilePath(string contentName)
         {
-            contentName = Path.HasExtension(contentName)
-                ? Path.GetFileNameWithoutExtension(contentName)
-                : contentName;
-
             if (string.IsNullOrEmpty(contentName))
             {
                 throw new ArgumentNullException(nameof(contentName), $"The parameter must not be null or empty.");

@@ -47,6 +47,10 @@ namespace Raptor.Content
             // Performs other checks on the content name
             contentName = base.ResolveFilePath(contentName);
 
+            contentName = Path.HasExtension(contentName)
+                ? Path.GetFileNameWithoutExtension(contentName)
+                : contentName;
+
             var contentDirPath = GetContentDirPath();
 
             // Check if there are any files that match the name

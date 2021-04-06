@@ -1,4 +1,4 @@
-// <copyright file="TexturePathResolver.cs" company="KinsonDigital">
+﻿// <copyright file="TexturePathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -35,6 +35,10 @@ namespace Raptor.Content
         {
             // Performs other checks on the content name
             contentName = base.ResolveFilePath(contentName);
+
+            contentName = Path.HasExtension(contentName)
+                ? Path.GetFileNameWithoutExtension(contentName)
+                : contentName;
 
             var contentDirPath = GetContentDirPath();
 
