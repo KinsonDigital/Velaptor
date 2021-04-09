@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
@@ -61,10 +62,14 @@ namespace Raptor.Content
                             var allowedExtensions = new[] { ".ogg", ".mp3" };
                             var currentExtension = Path.GetExtension(f);
 
-                            return fileNameNoExt == contentName && allowedExtensions.Contains(currentExtension);
+                            return string.Compare(fileNameNoExt, contentName, StringComparison.OrdinalIgnoreCase) == 0
+                                && allowedExtensions.Any(e => string.Compare(e, currentExtension, StringComparison.OrdinalIgnoreCase) == 0);
                         }).ToArray();
 
-            var oggFiles = files.Where(f => Path.GetExtension(f) == ".ogg").ToArray();
+            var oggFiles = files.Where(f =>
+            {
+                return string.Compare(Path.GetExtension(f), ".ogg", StringComparison.OrdinalIgnoreCase) == 0;
+            }).ToArray();
 
             // If therre are any ogg files, choose this first
             if (oggFiles.Length > 0)
