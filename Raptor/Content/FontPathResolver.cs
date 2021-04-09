@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
@@ -39,7 +40,10 @@ namespace Raptor.Content
 
             // Check if there are any files that match the name
             var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
-                         where f == $"{contentDirPath}{contentName}{FileExtension}"
+                         where string.Compare(
+                             f,
+                             $"{contentDirPath}{contentName}{FileExtension}",
+                             StringComparison.OrdinalIgnoreCase) == 0
                          select f).ToArray();
 
             if (files.Length <= 0)

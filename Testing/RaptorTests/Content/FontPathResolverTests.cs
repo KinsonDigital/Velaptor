@@ -78,6 +78,7 @@ namespace RaptorTests.Content
         [Theory]
         [InlineData("test-content")]
         [InlineData("test-content.ttf")]
+        [InlineData("TEST-CONTENT.ttf")]
         public void ResolveFilePath_WhenInvoked_ResolvesFilepath(string contentName)
         {
             // Arrange
