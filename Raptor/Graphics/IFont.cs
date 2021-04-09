@@ -5,13 +5,14 @@
 namespace Raptor.Graphics
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using Raptor.Content;
 
     /// <summary>
     /// The font to use when rendering text to the screen.
     /// </summary>
-    public interface IFont : IContent, IDisposable, IEnumerable<GlyphMetrics>
+    public interface IFont : IContent, IDisposable
     {
         /// <summary>
         /// Gets the font atlas texture that contains all of the glyphs for the font for rendering.
@@ -29,15 +30,20 @@ namespace Raptor.Graphics
         FontStyle Style { get; }
 
         /// <summary>
-        /// Gets the total number of glyph metrics in the font.
+        /// Gets a value indicating whether the font has kerning for text rendering layout.
         /// </summary>
-        int Length { get; }
+        bool HasKerning { get; }
 
         /// <summary>
-        /// The iterator for the atlas sub glyph texture data.
+        /// Gets the list of metrics for all of the glyphs supported by the font.
         /// </summary>
-        /// <param name="index">The index of the glyph data to retrieve.</param>
-        /// <returns>The glyph sub texture data.</returns>
-        GlyphMetrics this[int index] { get; }
+        /// <returns>The glyph metrics.</returns>
+        GlyphMetrics[] Metrics { get; }
+
+        /// <summary>
+        /// Returns a list of all the available glyph characters for the font.
+        /// </summary>
+        /// <returns>The list of glyph characters that can be rendered.</returns>
+        char[] GetAvailableGlyphCharacters();
     }
 }

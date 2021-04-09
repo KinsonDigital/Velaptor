@@ -1,5 +1,4 @@
-﻿
-// <copyright file="ImageData.cs" company="KinsonDigital">
+﻿// <copyright file="ImageData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

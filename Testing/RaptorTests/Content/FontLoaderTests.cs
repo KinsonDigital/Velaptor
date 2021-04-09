@@ -5,6 +5,7 @@
 namespace RaptorTests.Content
 {
     using System.Drawing;
+    using System.IO;
     using System.IO.Abstractions;
     using Moq;
     using Newtonsoft.Json;
@@ -23,18 +24,20 @@ namespace RaptorTests.Content
     {
         private const string FontContentName = "test-font";
         private readonly string fontsDirPath;
-        private readonly string fontDataFilepath;
+        private readonly string fontDataFilePath;
         private readonly string fontFilepath;
-        private readonly Mock<IGLInvoker> mockGLInvoker;
         private readonly GlyphMetrics[] glyphMetricData;
+        private readonly Mock<IGLInvoker> mockGLInvoker;
+        private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
+        private readonly Mock<IFile> mockFile;
+        private readonly Mock<IPathResolver> mockFontPathResolver;
+        private readonly Mock<IImageService> mockImageService;
         private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Objects,
         };
-        private readonly Mock<IFile> mockFile;
-        private readonly Mock<IPathResolver> mockFontPathResolver;
         private readonly FontSettings fontSettings;
 
         /// <summary>
@@ -43,10 +46,11 @@ namespace RaptorTests.Content
         public FontLoaderTests()
         {
             this.fontsDirPath = @"C:\temp\Content\Fonts\";
-            this.fontDataFilepath = $@"{this.fontsDirPath}{FontContentName}.json";
+            this.fontDataFilePath = $@"{this.fontsDirPath}{FontContentName}.json";
             this.fontFilepath = $@"{this.fontsDirPath}{FontContentName}.ttf";
 
             this.mockGLInvoker = new Mock<IGLInvoker>();
+            this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
 
             this.glyphMetricData = new GlyphMetrics[]
                 {
@@ -71,10 +75,13 @@ namespace RaptorTests.Content
             };
 
             this.mockFile = new Mock<IFile>();
-            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilepath)).Returns(() =>
+            this.mockFile.Setup(m => m.Exists(this.fontDataFilePath)).Returns(true);
+            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(() =>
             {
                 return JsonConvert.SerializeObject(this.fontSettings, this.jsonSettings);
             });
+
+            this.mockImageService = new Mock<IImageService>();
         }
 
         #region Method Tests
@@ -88,12 +95,13 @@ namespace RaptorTests.Content
             var actual = loader.Load(FontContentName);
 
             // Assert
-            this.mockFile.Verify(m => m.ReadAllText(this.fontDataFilepath), Times.Once());
+            this.mockFile.Verify(m => m.ReadAllText(this.fontDataFilePath), Times.Once());
+            this.mockImageService.Verify(m => m.FlipVertically(It.IsAny<ImageData>()), Times.Once());
             Assert.Equal(this.fontSettings.Size, actual.Size);
             Assert.Equal(this.fontSettings.Style, actual.Style);
             Assert.Equal(FontContentName, actual.Name);
             Assert.Equal($"{this.fontsDirPath}{FontContentName}", actual.Path);
-            Assert.Equal(this.glyphMetricData.Length, actual.Length);
+            Assert.Equal(this.glyphMetricData.Length, actual.Metrics.Length);
         }
 
         [Fact]
@@ -107,15 +115,30 @@ namespace RaptorTests.Content
             var actual = loader.Load(FontContentName);
 
             // Assert
-            this.mockFile.Verify(m => m.ReadAllText(this.fontDataFilepath), Times.Once());
+            this.mockFile.Verify(m => m.ReadAllText(this.fontDataFilePath), Times.Once());
             Assert.Equal(FontContentName, actual.Name);
+        }
+
+        [Fact]
+        public void Load_WithMissingFontJSONDataFile_ThrowsException()
+        {
+            // Arrange
+            this.mockFile.Setup(m => m.Exists(this.fontDataFilePath)).Returns(false);
+
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
+            {
+                loader.Load(FontContentName);
+            }, $"The JSON data file '{this.fontDataFilePath}' describing the font settings for font content '{FontContentName}' is missing.");
         }
 
         [Fact]
         public void Load_WithIssuesDeserializingJSONAtlasData_ThrowsException()
         {
             // Arrange
-            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilepath)).Returns(() =>
+            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(() =>
             {
                 return "invalid-data";
             });
@@ -127,14 +150,14 @@ namespace RaptorTests.Content
             AssertHelpers.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(FontContentName);
-            }, $"There was an issue deserializing the JSON atlas data file at '{this.fontDataFilepath}'.\n{newtonsoftErrorMsg}");
+            }, $"There was an issue deserializing the JSON atlas data file at '{this.fontDataFilePath}'.\n{newtonsoftErrorMsg}");
         }
 
         [Fact]
         public void Load_WithNullDeserializeResult_ThrowsException()
         {
             // Arrange
-            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilepath)).Returns(() =>
+            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(() =>
             {
                 return string.Empty;
             });
@@ -146,7 +169,7 @@ namespace RaptorTests.Content
             AssertHelpers.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(FontContentName);
-            }, $"There was an issue deserializing the JSON atlas data file at '{this.fontDataFilepath}'.\n{exceptionMessage}");
+            }, $"There was an issue deserializing the JSON atlas data file at '{this.fontDataFilePath}'.\n{exceptionMessage}");
         }
 
         [Fact]
@@ -214,8 +237,10 @@ namespace RaptorTests.Content
         /// <returns>The instnace to test.</returns>
         private FontLoader CreateLoader() => new FontLoader(
             this.mockGLInvoker.Object,
+            this.mockFreeTypeInvoker.Object,
             this.mockFontAtlasService.Object,
             this.mockFontPathResolver.Object,
-            this.mockFile.Object);
+            this.mockFile.Object,
+            this.mockImageService.Object);
     }
 }

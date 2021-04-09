@@ -18,24 +18,33 @@ namespace Raptor.Graphics
     public class Font : IFont, IDisposable
     {
         private readonly GlyphMetrics[] fontAtlasData;
+        private char[] availableGlyphCharacters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
         /// </summary>
         /// <param name="texture">The font atlas texture that contains all of the glyph bitmap data.</param>
         /// <param name="fontAtlasData">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
+        /// <param name="fontSettings">The various font settings.</param>
+        /// <param name="availableGlyphChars">The list of available glyph characters for this font.</param>
         /// <param name="name">The name of the font content.</param>
         /// <param name="path">The path to the font content.</param>
-        /// <param name="fontSettings">The various font settings.</param>
-        public Font(ITexture texture, GlyphMetrics[] fontAtlasData, string name, string path, FontSettings fontSettings)
+        public Font(
+            ITexture texture,
+            GlyphMetrics[] fontAtlasData,
+            FontSettings fontSettings,
+            char[] availableGlyphChars,
+            string name,
+            string path)
         {
             FontTextureAtlas = texture;
             this.fontAtlasData = fontAtlasData;
 
-            Name = name;
-            Path = path;
             Size = fontSettings.Size;
             Style = fontSettings.Style;
+            this.availableGlyphCharacters = availableGlyphChars;
+            Name = name;
+            Path = path;
         }
 
         /// <inheritdoc/>
@@ -54,21 +63,16 @@ namespace Raptor.Graphics
         public FontStyle Style { get; private set; }
 
         /// <inheritdoc/>
-        public int Length => this.fontAtlasData.Length;
+        public bool HasKerning { get; internal set; }
 
         /// <inheritdoc/>
         public bool Unloaded { get; private set; }
 
         /// <inheritdoc/>
-        public GlyphMetrics this[int index] => this.fontAtlasData[index];
+        public GlyphMetrics[] Metrics => this.fontAtlasData;
 
         /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
-        public IEnumerator<GlyphMetrics> GetEnumerator() => this.fontAtlasData.ToList().GetEnumerator();
-
-        /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
-        IEnumerator IEnumerable.GetEnumerator() => this.fontAtlasData.GetEnumerator();
+        public char[] GetAvailableGlyphCharacters() => this.availableGlyphCharacters;
 
         /// <inheritdoc/>
         public void Dispose()

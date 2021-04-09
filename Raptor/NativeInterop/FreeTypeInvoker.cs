@@ -2,22 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable SA1124 // Do not use regions
+#pragma warning disable SA1514 // Element documentation header should be preceded by blank line
 namespace Raptor.NativeInterop
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using FreeTypeSharp.Native;
-
-    // Refer to => https://github.com/ryancheung/FreeTypeSharp/issues/11 for cleanup questions being answered
-
-    /*TODO List:
-        1. Need to get the interop code implemented in here to avoid needing to use the FreeTypeSharp library
-            * This will involve using PInvoke/Interop as well as bringing over some of the structs from FreeTypeSharp
-        2. The invoker keeps track of the pointers library internally.  For every function that needs a library
-            pointer as a param to do something, check if the library ptr does not and throw exception if it doesn't
-        3. After implemented and working, convert all the pointers to SafeHandle types instead.  This will require some research
-    */
 
     /// <summary>
     /// Invokes calls to the FreeType library for loading and managing fonts.
@@ -29,8 +20,9 @@ namespace Raptor.NativeInterop
     [ExcludeFromCodeCoverage]
     internal class FreeTypeInvoker : IFreeTypeInvoker
     {
-        private readonly List<IntPtr> libraryPtrs = new List<IntPtr>();
+        private IntPtr libraryPtr;
         private bool isDisposed;
+        private IntPtr facePtr;
 
         /// <summary>
         /// Finalizes an instance of the <see cref="FreeTypeInvoker"/> class.
@@ -43,8 +35,11 @@ namespace Raptor.NativeInterop
         /// <inheritdoc/>
         public event EventHandler<FreeTypeErrorEventArgs>? OnError;
 
+        #region Original Interop Calls
         /// <inheritdoc/>
         public FT_Vector FT_Get_Kerning(IntPtr face, uint left_glyph, uint right_glyph, uint kern_mode)
+#pragma warning restore SA1514 // Element documentation header should be preceded by blank line
+#pragma warning restore SA1124 // Do not use regions
         {
             var error = FT.FT_Get_Kerning(face, left_glyph, right_glyph, kern_mode, out FT_Vector akerning);
 
@@ -61,8 +56,8 @@ namespace Raptor.NativeInterop
         public uint FT_Get_Char_Index(IntPtr face, uint charcode) => FT.FT_Get_Char_Index(face, charcode);
 
         /// <inheritdoc/>
-        public FT_Error FT_Load_Glyph(IntPtr face, uint glyph_index, int laod_flags)
-            => FT.FT_Load_Glyph(face, glyph_index, laod_flags);
+        public FT_Error FT_Load_Glyph(IntPtr face, uint glyph_index, int load_flags)
+            => FT.FT_Load_Glyph(face, glyph_index, load_flags);
 
         /// <inheritdoc/>
         public FT_Error FT_Load_Char(IntPtr face, uint char_code, int load_flags)
@@ -82,7 +77,7 @@ namespace Raptor.NativeInterop
                 return IntPtr.Zero;
             }
 
-            this.libraryPtrs.Add(result);
+            this.libraryPtr = result;
 
             return result;
         }
@@ -90,7 +85,7 @@ namespace Raptor.NativeInterop
         /// <inheritdoc/>
         public IntPtr FT_New_Face(IntPtr library, string filepathname, int face_index)
         {
-            if (this.libraryPtrs.Contains(library) is false)
+            if (this.libraryPtr != library)
             {
                 OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
                 return IntPtr.Zero;
@@ -103,6 +98,8 @@ namespace Raptor.NativeInterop
                 OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
                 return IntPtr.Zero;
             }
+
+            this.facePtr = aface;
 
             return aface;
         }
@@ -119,16 +116,6 @@ namespace Raptor.NativeInterop
         }
 
         /// <inheritdoc/>
-        public unsafe bool FT_Has_Kerning(IntPtr face)
-        {
-            var faceRec = (FT_FaceRec*)face;
-
-            var result = (((int)faceRec->face_flags) & FT.FT_FACE_FLAG_KERNING) != 0;
-
-            return result;
-        }
-
-        /// <inheritdoc/>
         public void FT_Done_Face(IntPtr face)
         {
             var error = FT.FT_Done_Face(face);
@@ -137,6 +124,8 @@ namespace Raptor.NativeInterop
             {
                 OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
             }
+
+            this.facePtr = IntPtr.Zero;
         }
 
         /// <inheritdoc/>
@@ -145,7 +134,7 @@ namespace Raptor.NativeInterop
         /// <inheritdoc/>
         public void FT_Done_FreeType(IntPtr library)
         {
-            if (this.libraryPtrs.Contains(library) is false)
+            if (this.libraryPtr != library)
             {
                 OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
                 return;
@@ -159,8 +148,32 @@ namespace Raptor.NativeInterop
                 return;
             }
 
-            this.libraryPtrs.Remove(library);
+            this.libraryPtr = IntPtr.Zero;
         }
+        #endregion
+
+#pragma warning disable SA1124 // Do not use regions
+
+        #region Helper Methods
+        /// <inheritdoc/>
+        public IntPtr GetFace() => this.facePtr;
+
+        /// <inheritdoc/>
+        public unsafe bool FT_Has_Kerning()
+        {
+            if (this.facePtr == IntPtr.Zero)
+            {
+                // TODO: This should invoke the error callback instead
+                throw new Exception("The font face has not been created yet.");
+            }
+
+            var faceRec = (FT_FaceRec*)this.facePtr;
+
+            var result = (((int)faceRec->face_flags) & FT.FT_FACE_FLAG_KERNING) != 0;
+
+            return result;
+        }
+        #endregion
 
         /// <inheritdoc/>
         public void Dispose()
@@ -178,18 +191,21 @@ namespace Raptor.NativeInterop
         {
             if (!this.isDisposed)
             {
-                foreach (var libPtr in this.libraryPtrs)
-                {
-                    if (libPtr != IntPtr.Zero)
-                    {
-                        FT.FT_Done_FreeType(libPtr);
-                    }
-                }
+                FT.FT_Done_Face(this.facePtr);
+                FT.FT_Done_FreeType(this.libraryPtr);
 
                 this.isDisposed = true;
             }
         }
 
+        /// <summary>
+        /// Creates n error message from the standard Free Type message.
+        /// </summary>
+        /// <param name="freeTypeMsg">The free type message to change.</param>
+        /// <returns>The C# friendly exception message.</returns>
+        /// <remarks>
+        ///     The standard free type error messages come from the <see cref="FT_Error"/> enum.
+        /// </remarks>
         private static string CreateErrorMessage(string freeTypeMsg)
         {
             freeTypeMsg = freeTypeMsg.Replace("FT_Err", string.Empty);

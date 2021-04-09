@@ -98,6 +98,14 @@ namespace RaptorTests.Helpers
             ToSixLaborImage(image).SaveAsPng(imageResultPath);
         }
 
+        /// <summary>
+        /// Draws the given <paramref name="src"/> image onto the given <paramref name="dest"/>
+        /// at the given <paramref name="location"/>.
+        /// </summary>
+        /// <param name="src">The source image to draw.</param>
+        /// <param name="dest">The destination image to draw the source onto.</param>
+        /// <param name="location">The location of where to draw the <paramref name="src"/> image.</param>
+        /// <returns>The resulting image after the draw operationi.</returns>
         public static ImageData Draw(ImageData src, ImageData dest, NETPoint location)
         {
             var srcImage = src.ToSixLaborImage();

@@ -2,10 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable SA1124 // Do n
+#pragma warning disable SA1514 // Element documentation header should be preceded by blank lineot use regions
 namespace Raptor.NativeInterop
 {
     using System;
     using FreeTypeSharp.Native;
+
+    // TODO: Refactor invoke calls to follow this => https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
 
     /// <summary>
     /// Invokes calls to the FreeType library for loading and managing fonts.
@@ -21,6 +25,7 @@ namespace Raptor.NativeInterop
         /// </summary>
         event EventHandler<FreeTypeErrorEventArgs> OnError;
 
+        #region Original Interop Calls
         /// <summary>
         /// Initialize a new FreeType library object. The set of modules that are registered by this function is determined at build time.
         /// </summary>
@@ -118,13 +123,6 @@ namespace Raptor.NativeInterop
         void FT_Set_Char_Size(IntPtr face, IntPtr char_width, IntPtr char_height, uint horz_resolution, uint vert_resolution);
 
         /// <summary>
-        /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
-        /// </summary>
-        /// <param name="face">A handle to a source face object.</param>
-        /// <returns>True if the face uses kerning.</returns>
-        unsafe bool FT_Has_Kerning(IntPtr face);
-
-        /// <summary>
         /// Discard a given face object, as well as all of its child slots and sizes.
         /// </summary>
         /// <param name="face">A handle to a target face object.</param>
@@ -143,5 +141,20 @@ namespace Raptor.NativeInterop
         /// <param name="library">A handle to the target library object.</param>
         /// <returns>FreeType error code. 0 means success.</returns>
         void FT_Done_FreeType(IntPtr library);
+        #endregion
+
+        #region Helper Methods
+        /// <summary>
+        /// Returns the face pointer that was created using the <see cref="FT_New_Face(IntPtr, string, int)"/> call.
+        /// </summary>
+        /// <returns>The pointer to the font face.</returns>
+        IntPtr GetFace();
+
+        /// <summary>
+        /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
+        /// </summary>
+        /// <returns>True if the face uses kerning.</returns>
+        unsafe bool FT_Has_Kerning();
+        #endregion
     }
 }

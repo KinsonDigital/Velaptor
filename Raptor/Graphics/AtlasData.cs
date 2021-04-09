@@ -25,6 +25,11 @@ namespace Raptor.Graphics
         /// <param name="path">The path to the content.</param>
         public AtlasData(ITexture texture, AtlasSubTextureData[] atlasSubTexutureData, string atlasName, string path)
         {
+            if (texture is null)
+            {
+                throw new ArgumentNullException(nameof(Texture), "The parameter must not be null.");
+            }
+
             this.subTextures = atlasSubTexutureData.OrderBy(data => data.FrameIndex).ToArray();
             Texture = texture;
             Name = atlasName;
@@ -69,10 +74,10 @@ namespace Raptor.Graphics
         public ITexture Texture { get; private set; }
 
         /// <inheritdoc/>
-        public int Width => Texture is null ? 0 : Texture.Width;
+        public int Width => Texture.Width;
 
         /// <inheritdoc/>
-        public int Height => Texture is null ? 0 : Texture.Height;
+        public int Height => Texture.Height;
 
         /// <inheritdoc/>
         public bool Unloaded { get; private set; }

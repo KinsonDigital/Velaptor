@@ -1,4 +1,4 @@
-// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,14 +6,17 @@ namespace Raptor.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
     using System.Runtime.InteropServices;
     using FreeTypeSharp.Native;
+    using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
+    using NETColor = System.Drawing.Color;
+    using NETPoint = System.Drawing.Point;
+    using NETRectangle = System.Drawing.Rectangle;
 
     /* TODO List:
         ✔ 1. Check if the class consuming/injecting this service can be used by the library user.
@@ -42,6 +45,7 @@ namespace Raptor.Services
             * This could make things faster
         9. Find a way to render an empty magenta box to the screen with the with of a space character when the attempted
             * glyph does not exist.
+        10. Improve performance.  Example: font size of 54 renders a much bigger atlas and its too slow
     */
 
     /// <summary>
@@ -50,6 +54,7 @@ namespace Raptor.Services
     internal class FontAtlasService : IFontAtlasService
     {
         private const int AntiEdgeCroppingMargin = 3;
+        private const char InvalidCharacter = '□';
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IImageService imageService;
         private readonly ISystemMonitorService monitorService;
@@ -57,9 +62,7 @@ namespace Raptor.Services
         private readonly IntPtr freeTypeLibPtr;
         private IntPtr facePtr;
         private string fontFilePath = string.Empty;
-
-        // TODO: Need to add more characters to this to cover all the letters, numbers and symbols as well as uppercase letters
-        private char[] glyphChars = new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+        private char[]? glyphChars;
         private bool isDisposed;
 
         /// <summary>
@@ -93,6 +96,11 @@ namespace Raptor.Services
         /// <inheritdoc/>
         public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, int size)
         {
+            if (this.glyphChars is null)
+            {
+                throw new InvalidOperationException("The available glyph characters must be set first before creating a font texture atlas.");
+            }
+
             if (string.IsNullOrEmpty(fontFilePath))
             {
                 throw new ArgumentNullException(nameof(fontFilePath), "The font file path argument must not be null.");
@@ -117,7 +125,7 @@ namespace Raptor.Services
             var fontAtlasMetrics = CalcAtlasMetrics(glyphImages);
 
             ImageData atlasImage = default;
-            atlasImage.Pixels = new Color[fontAtlasMetrics.Width, fontAtlasMetrics.Height];
+            atlasImage.Pixels = new NETColor[fontAtlasMetrics.Width, fontAtlasMetrics.Height];
             atlasImage.Width = fontAtlasMetrics.Width;
             atlasImage.Height = fontAtlasMetrics.Height;
 
@@ -126,7 +134,7 @@ namespace Raptor.Services
             // Render each glyph image to the atlas
             foreach (var glyphImage in glyphImages)
             {
-                var drawLocation = new Point(glyphMetrics[glyphImage.Key].AtlasBounds.X, glyphMetrics[glyphImage.Key].AtlasBounds.Y);
+                var drawLocation = new NETPoint(glyphMetrics[glyphImage.Key].AtlasBounds.X, glyphMetrics[glyphImage.Key].AtlasBounds.Y);
 
                 atlasImage = this.imageService.Draw(glyphImage.Value, atlasImage, drawLocation);
             }
@@ -135,7 +143,19 @@ namespace Raptor.Services
         }
 
         /// <inheritdoc/>
-        public void SetAvailableCharacters(char[] glyphChars) => this.glyphChars = glyphChars;
+        public void SetAvailableCharacters(char[] glyphChars)
+        {
+            // Make sure to add the '□' character to represent missing characters
+            // This will be rendered in place of characters that do not exist
+            var currentList = glyphChars.ToList();
+
+            if (currentList.Contains(InvalidCharacter) is false)
+            {
+                currentList.Add(InvalidCharacter);
+            }
+
+            this.glyphChars = currentList.ToArray();
+        }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -157,13 +177,16 @@ namespace Raptor.Services
                     this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
                 }
 
-                unsafe
-                {
-                    var unsafePtr = (FT_FaceRec*)this.facePtr;
-                    var glyphPtr = (IntPtr)unsafePtr->glyph;
+                // TODO: Need to figure out how to call FT_Done_Glyph() in a safe way
+                // This implimentation below is causing issuess
+                //unsafe
+                //{
+                //    var unsafePtr = (FT_FaceRec*)this.facePtr;
 
-                    this.freeTypeInvoker.FT_Done_Glyph(glyphPtr);
-                }
+                //    var glyphPtr = (IntPtr)unsafePtr->glyph;
+
+                //    this.freeTypeInvoker.FT_Done_Glyph(glyphPtr);
+                //}
 
                 this.freeTypeInvoker.FT_Done_Face(this.facePtr);
                 this.freeTypeInvoker.FT_Done_FreeType(this.freeTypeLibPtr);
@@ -230,7 +253,7 @@ namespace Raptor.Services
                                    where m.Value.Glyph == glyph.Key
                                    select m.Value).FirstOrDefault();
 
-                glyphMetric.AtlasBounds = new Rectangle(xPos, yPos, glyph.Value.Width, glyph.Value.Height);
+                glyphMetric.AtlasBounds = new NETRectangle(xPos, yPos, glyph.Value.Width, glyph.Value.Height);
                 glyphMetrics[glyph.Key] = glyphMetric;
 
                 if (cellX >= columnCount - 1)
@@ -259,20 +282,17 @@ namespace Raptor.Services
         private static ImageData ToImage(byte[] pixelData, int width, int height)
         {
             ImageData image = default;
-            image.Pixels = new Color[width, height];
+            image.Pixels = new NETColor[width, height];
             image.Width = width;
             image.Height = height;
 
             var iteration = 0;
-
             for (var y = 0; y < height; y++)
             {
-                var pixelValue = pixelData[iteration];
-
                 for (var x = 0; x < width; x++)
                 {
-                    image.Pixels[x, y] = Color.FromArgb(pixelValue, 255, 255, 255);
-                    iteration += 1;
+                    image.Pixels[x, y] = NETColor.FromArgb(pixelData[iteration], 255, 255, 255);
+                    iteration++;
                 }
             }
 
@@ -317,12 +337,16 @@ namespace Raptor.Services
         {
             var result = new Dictionary<char, ImageData>();
 
-            foreach (var glyphIndex in glyphIndices)
+            foreach (var glyphKeyvalue in glyphIndices)
             {
-                // TODO: Flip the glyph image vertial using the ImageService
-                var glyphImage = CreateGlyphImage(glyphIndex.Key, glyphIndex.Value);
+                if (glyphKeyvalue.Key == ' ')
+                {
+                    continue;
+                }
 
-                result.Add(glyphIndex.Key, glyphImage);
+                var glyphImage = CreateGlyphImage(glyphKeyvalue.Key, glyphKeyvalue.Value);
+
+                result.Add(glyphKeyvalue.Key, glyphImage);
             }
 
             return result;
@@ -340,9 +364,14 @@ namespace Raptor.Services
         {
             var result = new Dictionary<char, GlyphMetrics>();
 
-            foreach (var glyphIndex in glyphIndices)
+            foreach (var glyphKeyValue in glyphIndices)
             {
                 GlyphMetrics metric = default;
+
+                this.freeTypeInvoker.FT_Load_Glyph(
+                    this.facePtr,
+                    glyphKeyValue.Value,
+                    FT.FT_LOAD_BITMAP_METRICS_ONLY);
 
                 unsafe
                 {
@@ -350,8 +379,8 @@ namespace Raptor.Services
 
                     metric.Ascender = face->size->metrics.ascender.ToInt32() >> 6;
                     metric.Descender = face->size->metrics.descender.ToInt32() >> 6;
-                    metric.Glyph = glyphIndex.Key;
-                    metric.CharIndex = glyphIndex.Value;
+                    metric.Glyph = glyphKeyValue.Key;
+                    metric.CharIndex = glyphKeyValue.Value;
 
                     metric.XMin = face->bbox.xMin.ToInt32() >> 6;
                     metric.XMax = face->bbox.xMax.ToInt32() >> 6;
@@ -365,8 +394,12 @@ namespace Raptor.Services
                     metric.HoriBearingY = face->glyph->metrics.horiBearingY.ToInt32() >> 6;
                 }
 
-                result.Add(glyphIndex.Key, metric);
+                result.Add(glyphKeyValue.Key, metric);
             }
+
+            var filteredItems = (from i in result
+                                 where i.Value.HorizontalAdvance == 48
+                                 select i).ToArray();
 
             return result;
         }
@@ -380,8 +413,7 @@ namespace Raptor.Services
 
             if (this.facePtr == IntPtr.Zero)
             {
-                // TODO: Create custom Font kind of exception here
-                throw new Exception("The face pointer cannot be null.");
+                throw new LoadFontException("An invalid pointer value of zero was returned when creating a new font face.");
             }
         }
 

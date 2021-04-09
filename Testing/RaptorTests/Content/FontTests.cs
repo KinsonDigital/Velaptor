@@ -33,11 +33,11 @@ namespace RaptorTests.Content
             };
 
             // Act
-            var font = new Font(this.mockFontTexture.Object, glyphMetrics, "test-name", "test-path", settings);
+            var font = new Font(this.mockFontTexture.Object, glyphMetrics, settings, It.IsAny<char[]>(), "test-name", "test-path");
 
             // Assert
             Assert.Same(font.FontTextureAtlas, this.mockFontTexture.Object);
-            Assert.Equal(font.Length, glyphMetrics.Length);
+            Assert.Equal(font.Metrics.Length, glyphMetrics.Length);
             Assert.Equal("test-name", font.Name);
             Assert.Equal(14, font.Size);
             Assert.Equal(FontStyle.Regular, font.Style);
@@ -69,19 +69,51 @@ namespace RaptorTests.Content
                     HorizontalAdvance = 333, AtlasBounds = new Rectangle(444, 555, 666, 777),
                 },
             };
+
             var settings = new FontSettings()
             {
                 Size = 14,
                 Style = FontStyle.Regular,
             };
 
-            var font = new Font(this.mockFontTexture.Object, glyphMetrics, It.IsAny<string>(), It.IsAny<string>(), settings);
+            var font = new Font(
+                this.mockFontTexture.Object,
+                glyphMetrics,
+                settings,
+                It.IsAny<char[]>(),
+                It.IsAny<string>(),
+                It.IsAny<string>());
 
             // Act
-            var actual = font[0];
+            var actual = font.Metrics[0];
 
             // Assert
             Assert.Equal(glyphMetrics[0], actual);
+        }
+
+        [Fact]
+        public void GetAvailableGlyphCharacters_WhenInvoked_ReturnsCorrectResult()
+        {
+            // Arrange
+            var settings = new FontSettings()
+            {
+                Size = 14,
+                Style = FontStyle.Regular,
+            };
+
+            var font = new Font(
+                this.mockFontTexture.Object,
+                It.IsAny<GlyphMetrics[]>(),
+                settings,
+                new[] { 'a', 'b', 'c', 'd' },
+                It.IsAny<string>(),
+                It.IsAny<string>());
+
+            // Act
+            var actual = font.GetAvailableGlyphCharacters();
+
+            // Assert
+            Assert.Equal(new[] { 'a', 'b', 'c', 'd' }, actual);
         }
 
         [Fact]
@@ -94,7 +126,13 @@ namespace RaptorTests.Content
                 Style = FontStyle.Regular,
             };
 
-            var font = new Font(this.mockFontTexture.Object, Array.Empty<GlyphMetrics>(), It.IsAny<string>(), It.IsAny<string>(), settings);
+            var font = new Font(
+                this.mockFontTexture.Object,
+                Array.Empty<GlyphMetrics>(),
+                settings,
+                It.IsAny<char[]>(),
+                It.IsAny<string>(),
+                It.IsAny<string>());
 
             // Act
             font.Dispose();

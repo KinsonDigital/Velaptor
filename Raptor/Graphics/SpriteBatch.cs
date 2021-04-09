@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,6 +9,7 @@ namespace Raptor.Graphics
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
+    using FreeTypeSharp.Native;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using Raptor.Exceptions;
@@ -18,9 +19,11 @@ namespace Raptor.Graphics
     /// <inheritdoc/>
     internal class SpriteBatch : ISpriteBatch
     {
+        private const char InvalidCharacter = '□';
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
         private readonly IGLInvoker gl;
+        private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
         private CachedValue<Color> cachedClearColor;
@@ -38,6 +41,7 @@ namespace Raptor.Graphics
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="freeTypeInvoker">Manages fonts by calling out to the native FreeType library.</param>
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
         [ExcludeFromCodeCoverage]
@@ -46,7 +50,7 @@ namespace Raptor.Graphics
 // The reason for ignoring this warning for the `cachedClearColor` not being set in constructor while
 // it is set to not be null is due to the fact that we do not want warnings expressing an issue that
 // does not exist.  The SetupPropertyCaches() method takes care of making sure it is not null.
-        public SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
+        public SpriteBatch(IGLInvoker gl, IFreeTypeInvoker freeTypeInvoker, IShaderProgram shader, IGPUBuffer gpuBuffer)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             if (gl is null)
@@ -65,6 +69,7 @@ namespace Raptor.Graphics
             }
 
             this.gl = gl;
+            this.freeTypeInvoker = freeTypeInvoker;
             this.shader = shader;
             this.gpuBuffer = gpuBuffer;
 
@@ -121,7 +126,7 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y, Color tintColor) => Render(texture, x, y, tintColor, RenderEffects.None);
 
-        /// <inheritdoc/>///
+        /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y, Color tintColor, RenderEffects effects)
         {
             if (!this.hasBegun)
@@ -134,6 +139,7 @@ namespace Raptor.Graphics
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
+            // Render the entire texture
             var srcRect = new Rectangle()
             {
                 X = 0,
@@ -145,6 +151,76 @@ namespace Raptor.Graphics
             var destRect = new Rectangle(x, y, texture.Width, texture.Height);
 
             Render(texture, srcRect, destRect, 1, 0, tintColor, effects);
+        }
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y) => Render(font, text, x, y, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, Color tintColor)
+        {
+            var leftGlyghIndex = 0u;
+
+            var facePtr = this.freeTypeInvoker.GetFace();
+
+            var availableCharacters = font.GetAvailableGlyphCharacters();
+
+            foreach (var character in text)
+            {
+                var charToRender = character;
+
+                if (availableCharacters.Contains(character) is false)
+                {
+                    charToRender = InvalidCharacter;
+                }
+
+                var glyphMetrics = (from f in font.Metrics
+                                    where f.Glyph == charToRender
+                                    select f).FirstOrDefault();
+
+                if (font.HasKerning && leftGlyghIndex != 0 && glyphMetrics.CharIndex != 0)
+                {
+                    // TODO: Before committing this if block, check the perf for curiousity reasons
+                    FT_Vector delta = this.freeTypeInvoker.FT_Get_Kerning(
+                        facePtr,
+                        leftGlyghIndex,
+                        glyphMetrics.CharIndex,
+                        (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
+
+                    x += delta.x.ToInt32() >> 6;
+                }
+
+                Rectangle srcRect = default;
+                srcRect.X = glyphMetrics.AtlasBounds.X;
+                srcRect.Y = glyphMetrics.AtlasBounds.Y;
+                srcRect.Width = glyphMetrics.AtlasBounds.Width;
+                srcRect.Height = glyphMetrics.AtlasBounds.Height;
+
+                var verticalOffset = glyphMetrics.AtlasBounds.Height - glyphMetrics.HoriBearingY;
+
+                Rectangle destRect = default;
+                destRect.X = x + (glyphMetrics.AtlasBounds.Width / 2);
+                destRect.Y = y - (glyphMetrics.AtlasBounds.Height / 2) + verticalOffset;
+                destRect.Width = font.FontTextureAtlas.Width;
+                destRect.Height = font.FontTextureAtlas.Height;
+
+                // Only render characters that are not a space (32 char code)
+                if (character != ' ')
+                {
+                    Render(
+                        font.FontTextureAtlas,
+                        srcRect: srcRect,
+                        destRect: destRect,
+                        size: 1,
+                        angle: 0,
+                        tintColor: tintColor,
+                        effects: RenderEffects.None);
+                }
+
+                // Horizontally advance the current glyph
+                x += glyphMetrics.HorizontalAdvance;
+                leftGlyghIndex = glyphMetrics.CharIndex;
+            }
         }
 
         /// <inheritdoc/>
@@ -282,13 +358,12 @@ namespace Raptor.Graphics
         /// </summary>
         private void Gl_OpenGLInitialized(object? sender, EventArgs e)
         {
-            if (this.cachedClearColor is null)
-            {
-                throw new NullReferenceException($"The clear color caching mechanism in the class '{nameof(SpriteBatch)}' must not be null.");
-            }
-
             this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            this.cachedClearColor.IsCaching = false;
+
+            if (!(this.cachedClearColor is null))
+            {
+                this.cachedClearColor.IsCaching = false;
+            }
 
             Init();
         }
@@ -412,7 +487,7 @@ namespace Raptor.Graphics
             }
 
             // Only render the amount of elements for the amount of batch items to render.
-            // 6 = the number of vertices/quad and each batch is a quad. batchAmontToRender is the total quads to render
+            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
             if (batchAmountToRender > 0)
             {
                 this.gl.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero);

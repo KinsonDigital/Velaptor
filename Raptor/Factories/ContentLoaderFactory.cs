@@ -119,14 +119,17 @@ namespace Raptor.Factories
             if (fontLoader is null)
             {
                 var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+                var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
                 var fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
                 var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
 
                 fontLoader = new FontLoader(
                     glInvoker,
+                    freeTypeInvoker,
                     fontAtlasService,
                     fontPathResolver,
-                    IoC.Container.GetInstance<IFile>());
+                    IoC.Container.GetInstance<IFile>(),
+                    IoC.Container.GetInstance<IImageService>());
             }
 
             return fontLoader;
