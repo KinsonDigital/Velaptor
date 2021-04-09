@@ -69,7 +69,7 @@ namespace RaptorTests.Content
             var resolver = new TexturePathResolver(mockDirectory.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The texture image file '{this.contentFilePath}' does not exist.");

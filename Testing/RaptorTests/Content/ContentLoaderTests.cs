@@ -73,7 +73,7 @@ namespace RaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<UnknownContentException>(() =>
+            AssertExtensions.ThrowsWithMessage<UnknownContentException>(() =>
             {
                 loader.Load<IInvalidContent>("test-texture");
             }, "Content of type 'RaptorTests.Fakes.IInvalidContent' invalid.  Content types must inherit from interface 'IContent'.");
@@ -128,7 +128,7 @@ namespace RaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<UnknownContentException>(() =>
+            AssertExtensions.ThrowsWithMessage<UnknownContentException>(() =>
             {
                 loader.Unload<IUnknownContentItem>("unknown-content");
             }, $"The content of type '{typeof(IUnknownContentItem)}' is unknown.");

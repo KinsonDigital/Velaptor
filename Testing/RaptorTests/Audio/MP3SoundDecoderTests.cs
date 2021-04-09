@@ -33,7 +33,7 @@ namespace RaptorTests.Audio
             var decoder = new MP3SoundDecoder(this.mockDataStream.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
                 decoder.LoadData(fileName);
             }, "The param must not be null or empty. (Parameter 'fileName')");
@@ -46,7 +46,7 @@ namespace RaptorTests.Audio
             var decoder = new MP3SoundDecoder(this.mockDataStream.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
                 decoder.LoadData("sound.wav");
             }, "The file name must have an mp3 file extension. (Parameter 'fileName')");

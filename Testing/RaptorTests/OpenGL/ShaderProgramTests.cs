@@ -169,7 +169,7 @@ namespace RaptorTests.OpenGL
             var program = CreateProgram();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 program.Init();
             }, $"Error occurred while compiling shader with ID '{this.vertextShaderID}'\nVertex Shader Compile Error");
@@ -186,7 +186,7 @@ namespace RaptorTests.OpenGL
             var program = CreateProgram();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 program.Init();
             }, $"Error occurred while linking program with ID '{this.shaderProgramID}'\nProgram Linking Error");

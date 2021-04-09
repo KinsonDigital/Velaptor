@@ -268,30 +268,30 @@ namespace RaptorTests.Services
         [ExcludeFromCodeCoverage]
         private void AssertThatPixelsMatch(NETColor[,] pixels, int width, int height, NETRectangle assertRect, NETColor expectedClr)
         {
-            AssertHelpers.All(pixels, width, height, (pixel, x, y) =>
+            AssertExtensions.All(pixels, width, height, (pixel, x, y) =>
             {
                 if (assertRect.Contains(x, y))
                 {
                     var message = $"The pixel at location '{x},{y}' is incorrect with the ARGB value of '{pixel}'.";
-                    AssertHelpers.True(
+                    AssertExtensions.True(
                         condition: pixel.A == expectedClr.A,
                         message: message,
                         expected: $"Alpha {expectedClr.A}",
                         actual: $"Alpha {pixel.A}");
 
-                    AssertHelpers.True(
+                    AssertExtensions.True(
                         condition: pixel.R == expectedClr.R,
                         message: message,
                         expected: $"Red {expectedClr.R}",
                         actual: $"Red {pixel.R}");
 
-                    AssertHelpers.True(
+                    AssertExtensions.True(
                         condition: pixel.G == expectedClr.G,
                         message: message,
                         expected: $"Green {expectedClr.G}",
                         actual: $"Green {pixel.G}");
 
-                    AssertHelpers.True(
+                    AssertExtensions.True(
                         condition: pixel.B == expectedClr.B,
                         message: message,
                         expected: $"Blue {expectedClr.B}",

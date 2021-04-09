@@ -191,7 +191,7 @@ namespace RaptorTests.UI
         public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullWindow_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var window = new WindowFake(null);
             }, "Window must not be null. (Parameter 'window')");

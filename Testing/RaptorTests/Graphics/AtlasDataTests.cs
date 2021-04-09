@@ -201,7 +201,7 @@ namespace RaptorTests.Graphics
             var data = CreateAtlasData();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 data.GetFrame("missing-texture");
             }, "The frame 'missing-texture' was not found in the atlas 'test-atlas'.");

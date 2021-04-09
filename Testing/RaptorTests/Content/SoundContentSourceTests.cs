@@ -69,7 +69,7 @@ namespace RaptorTests.Content
             var resolver = new SoundPathResolver(mockDirectory.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The sound file '{this.contentFilePath}' does not exist.");

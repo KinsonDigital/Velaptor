@@ -36,7 +36,7 @@ namespace RaptorTests.Input
             var actual = keyboard.GetState();
 
             // Assert
-            AssertHelpers.AllItemsAre(actual.GetKeyStates(), state =>
+            AssertExtensions.AllItemsAre(actual.GetKeyStates(), state =>
             {
                 if (state.Key == KeyCode.T)
                 {
@@ -58,7 +58,7 @@ namespace RaptorTests.Input
             var actual = keyboard.GetState();
 
             // Assert
-            AssertHelpers.AllItemsAre(actual.GetKeyStates(), state =>
+            AssertExtensions.AllItemsAre(actual.GetKeyStates(), state =>
             {
                 if (state.Key == KeyCode.F)
                 {

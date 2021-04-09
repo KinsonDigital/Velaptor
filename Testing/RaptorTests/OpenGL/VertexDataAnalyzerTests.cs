@@ -22,7 +22,7 @@ namespace RaptorTests.OpenGL
         public void GetTotalBytesForStruct_WithNullParam_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 VertexDataAnalyzer.GetTotalBytesForStruct(null);
             }, "The argument must not be null (Parameter 'type')");
@@ -42,7 +42,7 @@ namespace RaptorTests.OpenGL
         public void GetPrimitiveByteSize_WhenUsingNonPrimitiveType_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
                 VertexDataAnalyzer.GetPrimitiveByteSize(typeof(Rectangle));
             }, "The param 'type' must be a primitive type.");

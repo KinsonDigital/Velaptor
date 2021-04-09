@@ -111,7 +111,7 @@ namespace RaptorTests.Audio
                 });
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound = CreateSound(this.oggContentFilePath);
             }, "Invalid or unknown audio format.");
@@ -144,7 +144,7 @@ namespace RaptorTests.Audio
         public void Ctor_WhenUsingUnsupportedFileType_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound = new Sound(@"C:\temp\Content\Sounds\sound.wav", this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
             }, "The file extension '.wav' is not supported file type.");
@@ -171,7 +171,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 _ = this.sound.IsLooping;
             }, "The sound is disposed.  You must create another sound instance.");
@@ -199,7 +199,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.IsLooping = true;
             }, "The sound is disposed.  You must create another sound instance.");
@@ -227,7 +227,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 _ = this.sound.Volume;
             }, "The sound is disposed.  You must create another sound instance.");
@@ -255,7 +255,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.Volume = 0.5f;
             }, "The sound is disposed.  You must create another sound instance.");
@@ -287,7 +287,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 _ = this.sound.TimePositionSeconds;
             }, "The sound is disposed.  You must create another sound instance.");
@@ -363,7 +363,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.PlaySound();
             }, "The sound is disposed.  You must create another sound instance.");
@@ -391,7 +391,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.PauseSound();
             }, "The sound is disposed.  You must create another sound instance.");
@@ -419,7 +419,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.StopSound();
             }, "The sound is disposed.  You must create another sound instance.");
@@ -447,7 +447,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.Reset();
             }, "The sound is disposed.  You must create another sound instance.");
@@ -475,7 +475,7 @@ namespace RaptorTests.Audio
             // Act & Assert
             this.sound.Dispose();
 
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.SetTimePosition(5);
             }, "The sound is disposed.  You must create another sound instance.");
