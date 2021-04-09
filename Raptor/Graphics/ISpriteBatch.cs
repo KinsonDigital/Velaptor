@@ -119,7 +119,7 @@ namespace Raptor.Graphics
         /// <param name="x">The X coordinate location to render the text.</param>
         /// <param name="y">The Y coordinate location to render the text.</param>
         /// <remarks>
-        ///     The X and Y coordinates is the bottom left corner of the string of text being rendered.
+        ///     The X and Y coordinates represent the bottom left corner of the entire string of text that is being rendered.
         /// <para>
         ///     The color of the text will be white.
         /// </para>
@@ -137,7 +137,7 @@ namespace Raptor.Graphics
         /// <param name="y">The Y coordinate location to render the text.</param>
         /// <param name="tintColor">The color of the text.</param>
         /// <remarks>
-        ///     The X and Y coordinates is the bottom left corner of the string of text being rendered.
+        ///     The X and Y coordinates represent the bottom left corner of the entire string of text that is being rendered.
         /// </remarks>
         void Render(IFont font, string text, int x, int y, Color tintColor);
     }

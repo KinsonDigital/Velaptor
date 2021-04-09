@@ -9,7 +9,7 @@ namespace RaptorTests.Exceptions
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="UnknownContentException"/> class.
+    /// Tests the <see cref="LoadContentException"/> class.
     /// </summary>
     public class LoadContentExceptionTests
     {

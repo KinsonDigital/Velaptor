@@ -32,7 +32,7 @@ namespace Raptor.Services
         (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, int size);
 
         /// <summary>
-        /// Sets the list of available characters in the glyph characters.
+        /// Sets the list of available characters that will be rendered into the font texture atlas.
         /// </summary>
         /// <param name="glyphChars">The list of characters to make available.</param>
         void SetAvailableCharacters(char[] glyphChars);

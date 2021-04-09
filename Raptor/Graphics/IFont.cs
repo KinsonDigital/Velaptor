@@ -15,7 +15,7 @@ namespace Raptor.Graphics
     public interface IFont : IContent, IDisposable
     {
         /// <summary>
-        /// Gets the font atlas texture that contains all of the glyphs for the font for rendering.
+        /// Gets the font atlas texture that contains all of the bitmap data for all of the available glyphs for the font.
         /// </summary>
         ITexture FontTextureAtlas { get; }
 

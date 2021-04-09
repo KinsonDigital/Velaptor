@@ -12,8 +12,8 @@ namespace Raptor.Graphics
     using Raptor.Content;
 
     /// <summary>
-    /// Represents a font with a particular size that can be used
-    /// to render texture to the screen.
+    /// Represents a font with a particular size that
+    /// can be used to render text to the screen.
     /// </summary>
     public class Font : IFont, IDisposable
     {
@@ -22,7 +22,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
         /// </summary>
-        /// <param name="texture">The font atlas texture that contains all of the glyph bitmap data.</param>
+        /// <param name="texture">The font atlas texture that contains bitmap data for all of the available glpyhs.</param>
         /// <param name="fontAtlasData">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
         /// <param name="fontSettings">The various font settings.</param>
         /// <param name="availableGlyphChars">The list of available glyph characters for this font.</param>

@@ -7,6 +7,9 @@ namespace RaptorTests.NativeInterop
     using Raptor.NativeInterop;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="FreeTypeErrorEventArgs"/> class.
+    /// </summary>
     public class FreeTypeErrorEventArgsTests
     {
         #region Constructor Tests

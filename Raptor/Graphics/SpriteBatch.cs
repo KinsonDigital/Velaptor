@@ -41,7 +41,7 @@ namespace Raptor.Graphics
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="freeTypeInvoker">Manages fonts by calling out to the native FreeType library.</param>
+        /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
         [ExcludeFromCodeCoverage]

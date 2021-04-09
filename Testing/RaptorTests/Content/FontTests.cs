@@ -47,7 +47,7 @@ namespace RaptorTests.Content
 
         #region Method Tests
         [Fact]
-        public void Iterator_WhenGettingValueAtIndex_ReturnsCorrectReuslt()
+        public void Metrics_WhenGettingValueAtIndex_ReturnsCorrectReuslt()
         {
             // Arrange
             var glyphMetrics = new GlyphMetrics[]

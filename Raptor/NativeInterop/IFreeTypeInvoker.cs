@@ -14,7 +14,6 @@ namespace Raptor.NativeInterop
     /// <summary>
     /// Invokes calls to the FreeType library for loading and managing fonts.
     /// </summary>
-    /// <link
     /// <remarks>
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
     /// </remarks>
