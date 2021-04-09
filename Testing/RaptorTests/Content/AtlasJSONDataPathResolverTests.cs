@@ -11,6 +11,7 @@ namespace RaptorTests.Content
     using Raptor.Content;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasJSONDataPathResolver"/> class.
@@ -69,7 +70,7 @@ namespace RaptorTests.Content
             var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
 
             // Act & Assert
-            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
+            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The texture atlas data file '{this.contentFilePath}' does not exist.");

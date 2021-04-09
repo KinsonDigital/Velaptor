@@ -11,6 +11,7 @@ namespace RaptorTests.OpenGL
     using Raptor.OpenGL;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="VertexDataAnalyzer"/> class.
@@ -22,7 +23,7 @@ namespace RaptorTests.OpenGL
         public void GetTotalBytesForStruct_WithNullParam_ThrowsException()
         {
             // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 VertexDataAnalyzer.GetTotalBytesForStruct(null);
             }, "The argument must not be null (Parameter 'type')");
@@ -42,7 +43,7 @@ namespace RaptorTests.OpenGL
         public void GetPrimitiveByteSize_WhenUsingNonPrimitiveType_ThrowsException()
         {
             // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+            Assert.ThrowsWithMessage<ArgumentException>(() =>
             {
                 VertexDataAnalyzer.GetPrimitiveByteSize(typeof(Rectangle));
             }, "The param 'type' must be a primitive type.");

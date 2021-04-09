@@ -1,4 +1,4 @@
-﻿// <copyright file="AssertHelpers.cs" company="KinsonDigital">
+﻿// <copyright file="AssertExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace RaptorTests.Helpers
     /// Provides helper methods for the <see cref="XUnit"/>'s <see cref="Assert"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class AssertExtensions
+    public class AssertExtensions : Assert
     {
         /// <summary>
         /// Verifies that the exact exception is thrown (and not a derived exception type) and that

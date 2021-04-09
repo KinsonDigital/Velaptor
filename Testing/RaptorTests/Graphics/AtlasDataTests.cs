@@ -10,6 +10,7 @@ namespace RaptorTests.Graphics
     using Raptor.Graphics;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasData"/> class.
@@ -201,7 +202,7 @@ namespace RaptorTests.Graphics
             var data = CreateAtlasData();
 
             // Act & Assert
-            AssertExtensions.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<Exception>(() =>
             {
                 data.GetFrame("missing-texture");
             }, "The frame 'missing-texture' was not found in the atlas 'test-atlas'.");
