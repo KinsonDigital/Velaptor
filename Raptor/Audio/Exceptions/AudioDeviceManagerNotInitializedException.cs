@@ -1,5 +1,4 @@
-﻿
-// <copyright file="AudioDeviceManagerNotInitializedException.cs" company="KinsonDigital">
+﻿// <copyright file="AudioDeviceManagerNotInitializedException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

@@ -1,5 +1,4 @@
-﻿
-// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

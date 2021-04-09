@@ -101,7 +101,7 @@ namespace RaptorTests.Content
             Assert.Equal(this.fontSettings.Style, actual.Style);
             Assert.Equal(FontContentName, actual.Name);
             Assert.Equal($"{this.fontsDirPath}{FontContentName}", actual.Path);
-            Assert.Equal(this.glyphMetricData.Length, actual.Metrics.Length);
+            Assert.Equal(this.glyphMetricData.Length, actual.Metrics.Count);
         }
 
         [Fact]

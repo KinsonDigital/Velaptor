@@ -7,6 +7,7 @@ namespace Raptor.Graphics
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using Raptor.Content;
 
     /// <summary>
@@ -38,7 +39,7 @@ namespace Raptor.Graphics
         /// Gets the list of metrics for all of the glyphs supported by the font.
         /// </summary>
         /// <returns>The glyph metrics.</returns>
-        GlyphMetrics[] Metrics { get; }
+        ReadOnlyCollection<GlyphMetrics> Metrics { get; }
 
         /// <summary>
         /// Returns a list of all the available glyph characters for the font.

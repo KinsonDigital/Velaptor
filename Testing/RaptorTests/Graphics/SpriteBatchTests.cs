@@ -7,6 +7,7 @@ namespace RaptorTests.Graphics
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Drawing;
     using System.IO.Abstractions;
     using FreeTypeSharp.Native;
@@ -630,7 +631,7 @@ namespace RaptorTests.Graphics
 
             var mockFont = new Mock<IFont>();
             mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTexture.Object);
-            mockFont.SetupGet(p => p.Metrics).Returns(metrics.ToArray());
+            mockFont.SetupGet(p => p.Metrics).Returns(new ReadOnlyCollection<GlyphMetrics>(metrics.ToArray()));
             mockFont.Setup(m => m.GetAvailableGlyphCharacters()).Returns(stringToRender.ToCharArray());
 
             var expectedTransform = new Matrix4()
@@ -688,7 +689,7 @@ namespace RaptorTests.Graphics
             var mockFont = new Mock<IFont>();
             mockFont.SetupGet(p => p.HasKerning).Returns(true);
             mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTexture.Object);
-            mockFont.SetupGet(p => p.Metrics).Returns(metrics.ToArray());
+            mockFont.SetupGet(p => p.Metrics).Returns(new ReadOnlyCollection<GlyphMetrics>(metrics.ToArray()));
             mockFont.Setup(m => m.GetAvailableGlyphCharacters()).Returns(stringToRender.ToCharArray());
 
             var expectedTransform = new Matrix4()
@@ -746,7 +747,7 @@ namespace RaptorTests.Graphics
             var mockFont = new Mock<IFont>();
             mockFont.SetupGet(p => p.HasKerning).Returns(true);
             mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTexture.Object);
-            mockFont.SetupGet(p => p.Metrics).Returns(metrics.ToArray());
+            mockFont.SetupGet(p => p.Metrics).Returns(new ReadOnlyCollection<GlyphMetrics>(metrics.ToArray()));
             mockFont.Setup(m => m.GetAvailableGlyphCharacters()).Returns("c".ToCharArray());
 
             var expectedTransform = new Matrix4()

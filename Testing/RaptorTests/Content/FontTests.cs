@@ -37,7 +37,7 @@ namespace RaptorTests.Content
 
             // Assert
             Assert.Same(font.FontTextureAtlas, this.mockFontTexture.Object);
-            Assert.Equal(font.Metrics.Length, glyphMetrics.Length);
+            Assert.Equal(font.Metrics.Count, glyphMetrics.Length);
             Assert.Equal("test-name", font.Name);
             Assert.Equal(14, font.Size);
             Assert.Equal(FontStyle.Regular, font.Style);
@@ -45,7 +45,7 @@ namespace RaptorTests.Content
         }
         #endregion
 
-        #region Method Tests
+        #region Prop Tests
         [Fact]
         public void Metrics_WhenGettingValueAtIndex_ReturnsCorrectReuslt()
         {
@@ -90,7 +90,9 @@ namespace RaptorTests.Content
             // Assert
             Assert.Equal(glyphMetrics[0], actual);
         }
+        #endregion
 
+        #region Method Tests
         [Fact]
         public void GetAvailableGlyphCharacters_WhenInvoked_ReturnsCorrectResult()
         {

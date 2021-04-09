@@ -7,6 +7,7 @@ namespace Raptor.Graphics
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Raptor.Content;
@@ -18,6 +19,7 @@ namespace Raptor.Graphics
     public class Font : IFont, IDisposable
     {
         private readonly char[] availableGlyphCharacters;
+        private readonly GlyphMetrics[] metrics;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
@@ -37,7 +39,7 @@ namespace Raptor.Graphics
             string path)
         {
             FontTextureAtlas = texture;
-            Metrics = fontAtlasData;
+            metrics = fontAtlasData;
 
             Size = fontSettings.Size;
             Style = fontSettings.Style;
@@ -68,7 +70,7 @@ namespace Raptor.Graphics
         public bool Unloaded { get; private set; }
 
         /// <inheritdoc/>
-        public GlyphMetrics[] Metrics { get; }
+        public ReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.ToReadOnlyCollection();
 
         /// <inheritdoc/>
         public char[] GetAvailableGlyphCharacters() => this.availableGlyphCharacters;
