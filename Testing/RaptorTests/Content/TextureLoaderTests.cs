@@ -7,7 +7,7 @@ namespace RaptorTests.Content
     using Moq;
     using OpenTK.Graphics.OpenGL4;
     using Raptor.Content;
-    using Raptor.OpenGL;
+    using Raptor.NativeInterop;
     using Raptor.Services;
     using Xunit;
 

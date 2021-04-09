@@ -43,7 +43,7 @@ namespace RaptorTests.Content
 
             // Act
             var resolver = new TexturePathResolver(mockDirectory.Object);
-            var actual = resolver.FileDirectoryName;
+            var actual = resolver.ContentDirectoryName;
 
             // Assert
             Assert.Equal("Graphics", actual);

@@ -55,11 +55,7 @@ namespace Raptor.OpenGL
         /// <returns>True if both <see cref="VertexData"/> objects are equal.</returns>
         public static bool operator ==(VertexData left, VertexData right) => left.Equals(right);
 
-        /// <summary>
-        /// Determines whether the specified object is equal to the current object.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns>True if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
             if (!(obj is VertexData data))
@@ -70,21 +66,14 @@ namespace Raptor.OpenGL
             return this == data;
         }
 
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
+        /// <inheritdoc/>
         public bool Equals(VertexData other)
             => other.Vertex == this.Vertex &&
                other.TextureCoord == this.TextureCoord &&
                other.TintColor == this.TintColor &&
                other.TransformIndex == this.TransformIndex;
 
-        /// <summary>
-        /// Serves as the default hash function.
-        /// </summary>
-        /// <returns>A hash code for the current object.</returns>
+        /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override int GetHashCode() => this.Vertex.GetHashCode() + this.TextureCoord.GetHashCode() + this.TintColor.GetHashCode() + this.TransformIndex.GetHashCode();
     }

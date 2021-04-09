@@ -23,51 +23,40 @@ namespace Raptor.Content
             get => this.contentRootDirectory;
             set
             {
-                value = string.IsNullOrEmpty(value) ? BaseDir : value;
+                var wasNullOrEmpty = string.IsNullOrEmpty(value);
+
+                value = wasNullOrEmpty ? BaseDir : value;
 
                 // If the value ends with a backslash, leave as is, else add one
                 value = value.EndsWith(Path.DirectorySeparatorChar) ? value : $@"{value}{Path.DirectorySeparatorChar}";
 
-                this.contentRootDirectory = $@"{value}Content{Path.DirectorySeparatorChar}";
+                if (wasNullOrEmpty)
+                {
+                    return;
+                }
+
+                this.contentRootDirectory = value;
             }
         }
 
         /// <inheritdoc/>
-        public string FileDirectoryName
+        public string ContentDirectoryName
         {
             get => this.contentDirName;
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new Exception($"The '{nameof(FileDirectoryName)}' must not be null or empty.");
+                    throw new Exception($"The '{nameof(ContentDirectoryName)}' must not be null or empty.");
                 }
 
                 this.contentDirName = value.GetLastDirName();
             }
         }
 
-        /// <summary>
-        /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
-        /// </summary>
-        /// <param name="contentName">The name of the content item with or without the file extension.</param>
-        /// <returns>The resolved file path to the content item.</returns>
-        /// <remarks>
-        ///     If the <paramref name="contentName"/> contains a file extension, it will be ignored
-        ///     and the file extension '.json' will be used.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        ///     Occurs when the given <paramref name="contentName"/> is null or emtpy.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     Occurs when the given <paramref name="contentName"/> ends with a directory separator.
-        /// </exception>"
+        /// <inheritdoc/>
         public virtual string ResolveFilePath(string contentName)
         {
-            contentName = Path.HasExtension(contentName)
-                ? Path.GetFileNameWithoutExtension(contentName)
-                : contentName;
-
             if (string.IsNullOrEmpty(contentName))
             {
                 throw new ArgumentNullException(nameof(contentName), $"The parameter must not be null or empty.");
@@ -80,6 +69,9 @@ namespace Raptor.Content
 
             return contentName;
         }
+
+        /// <inheritdoc/>
+        public string ResolveDirPath() => $@"{this.contentRootDirectory}{this.contentDirName}\";
 
         /// <summary>
         /// Gets the directory path of the content.

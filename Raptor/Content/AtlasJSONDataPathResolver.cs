@@ -23,7 +23,7 @@ namespace Raptor.Content
         public AtlasJSONDataPathResolver(IDirectory directory)
         {
             this.directory = directory;
-            FileDirectoryName = "Atlas";
+            ContentDirectoryName = "Atlas";
         }
 
         /// <summary>
@@ -35,6 +35,10 @@ namespace Raptor.Content
         {
             // Performs other checks on the content name
             contentName = base.ResolveFilePath(contentName);
+
+            contentName = Path.HasExtension(contentName)
+                ? Path.GetFileNameWithoutExtension(contentName)
+                : contentName;
 
             var contentDirPath = GetContentDirPath();
 

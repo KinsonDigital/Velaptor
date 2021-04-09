@@ -215,9 +215,7 @@ namespace Raptor.Audio
         /// </summary>
         /// <param name="errorMsg">The error message from OpenAL.</param>
         [ExcludeFromCodeCoverage]
-#pragma warning disable CA1801 // Review unused parameters
         private static void ErrorCallback(string errorMsg)
-#pragma warning restore CA1801 // Review unused parameters
         {
 #if DEBUG
 #pragma warning disable IDE0022 // Use expression body for methods

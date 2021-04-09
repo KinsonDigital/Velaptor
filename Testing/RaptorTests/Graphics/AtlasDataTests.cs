@@ -16,6 +16,7 @@ namespace RaptorTests.Graphics
     /// </summary>
     public class AtlasDataTests
     {
+        private const string AtlasImagePath = @"C:\temp\test-atlas.png";
         private readonly AtlasSubTextureData[] spriteData;
         private readonly Mock<ITexture> mockTexture;
 
@@ -50,6 +51,18 @@ namespace RaptorTests.Graphics
             this.mockTexture.SetupGet(p => p.Width).Returns(100);
             this.mockTexture.SetupGet(p => p.Height).Returns(200);
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WhenTextureIsNull_ThrowException()
+        {
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new AtlasData(null, null, It.IsAny<string>(), It.IsAny<string>());
+            }, "The parameter must not be null. (Parameter 'Texture')");
+        }
+        #endregion
 
         #region Prop Tests
         [Fact]
@@ -86,21 +99,6 @@ namespace RaptorTests.Graphics
 
             // Assert
             Assert.Equal("test-atlas", actual);
-        }
-
-        [Fact]
-        public void Texture_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var otherTexture = new Mock<ITexture>();
-            var data = CreateAtlasData();
-
-            // Act
-            data.Texture = otherTexture.Object;
-            var actual = data.Texture;
-
-            // Assert
-            Assert.Same(otherTexture.Object, actual);
         }
 
         [Fact]
@@ -246,6 +244,7 @@ namespace RaptorTests.Graphics
         /// Creates a new instance of <see cref="AtlasData"/> for testing purposes.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private AtlasData CreateAtlasData() => new AtlasData(this.spriteData, this.mockTexture.Object, "test-atlas", $@"C:\temp\test-atlas.png");
+        private AtlasData CreateAtlasData()
+            => new AtlasData(this.mockTexture.Object, this.spriteData, "test-atlas", AtlasImagePath);
     }
 }

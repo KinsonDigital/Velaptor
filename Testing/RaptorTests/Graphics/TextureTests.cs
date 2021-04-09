@@ -9,7 +9,7 @@ namespace RaptorTests.Graphics
     using Moq;
     using OpenTK.Graphics.OpenGL4;
     using Raptor.Graphics;
-    using Raptor.OpenGL;
+    using Raptor.NativeInterop;
     using Xunit;
 
     /// <summary>

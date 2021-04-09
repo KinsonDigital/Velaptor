@@ -23,7 +23,7 @@ namespace Raptor.Content
         public TexturePathResolver(IDirectory directory)
         {
             this.directory = directory;
-            FileDirectoryName = "Graphics";
+            ContentDirectoryName = "Graphics";
         }
 
         /// <summary>
@@ -35,6 +35,10 @@ namespace Raptor.Content
         {
             // Performs other checks on the content name
             contentName = base.ResolveFilePath(contentName);
+
+            contentName = Path.HasExtension(contentName)
+                ? Path.GetFileNameWithoutExtension(contentName)
+                : contentName;
 
             var contentDirPath = GetContentDirPath();
 

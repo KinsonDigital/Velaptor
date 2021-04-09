@@ -9,7 +9,11 @@ namespace RaptorTests.Content
     using Moq;
     using Newtonsoft.Json;
     using Raptor.Content;
+    using Raptor.Exceptions;
     using Raptor.Graphics;
+    using Raptor.NativeInterop;
+    using Raptor.Services;
+    using RaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -19,7 +23,9 @@ namespace RaptorTests.Content
     {
         private const string AtlasContentName = "test-atlas";
         private readonly string atlasDirPath;
-        private readonly string atlasFilePath;
+        private readonly string atlasDataFilePath;
+        private readonly string atlasImageFilePath;
+        private readonly Mock<IGLInvoker> mockGLInvoker;
         private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
@@ -27,8 +33,7 @@ namespace RaptorTests.Content
         };
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPathResolver> mockAtlasPathResolver;
-        private readonly Mock<ITexture> mockTexture;
-        private readonly Mock<ILoader<ITexture>> mockTextureLoader;
+        private readonly Mock<IImageService> mockImageService;
         private readonly AtlasSubTextureData[] atlasSpriteData;
 
         /// <summary>
@@ -37,16 +42,17 @@ namespace RaptorTests.Content
         public AtlasLoaderTests()
         {
             this.atlasDirPath = @"C:\temp\Content\Atlas\";
-            this.atlasFilePath = $@"{this.atlasDirPath}{AtlasContentName}.png";
+            this.atlasDataFilePath = $@"{this.atlasDirPath}{AtlasContentName}.json";
+            this.atlasImageFilePath = $@"{this.atlasDirPath}{AtlasContentName}.png";
+
+            this.mockGLInvoker = new Mock<IGLInvoker>();
+            this.mockGLInvoker.Name = nameof(this.mockGLInvoker);
 
             this.mockAtlasPathResolver = new Mock<IPathResolver>();
-            this.mockAtlasPathResolver.Setup(m => m.ResolveFilePath(AtlasContentName)).Returns(this.atlasFilePath);
+            this.mockAtlasPathResolver.Setup(m => m.ResolveDirPath()).Returns(this.atlasDirPath);
 
-            this.mockTexture = new Mock<ITexture>();
-
-            this.mockTextureLoader = new Mock<ILoader<ITexture>>();
-            this.mockTextureLoader.Setup(m => m.Load(AtlasContentName))
-                .Returns(this.mockTexture.Object);
+            this.mockImageService = new Mock<IImageService>();
+            this.mockImageService.Name = nameof(this.mockImageService);
 
             this.atlasSpriteData = new AtlasSubTextureData[]
             {
@@ -63,7 +69,7 @@ namespace RaptorTests.Content
             };
 
             this.mockFile = new Mock<IFile>();
-            this.mockFile.Setup(m => m.ReadAllText(this.atlasFilePath)).Returns(() =>
+            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath)).Returns(() =>
             {
                 return JsonConvert.SerializeObject(this.atlasSpriteData, this.jsonSettings);
             });
@@ -80,10 +86,11 @@ namespace RaptorTests.Content
             var actual = loader.Load(AtlasContentName);
 
             // Assert
-            this.mockFile.Verify(m => m.ReadAllText(this.atlasFilePath), Times.Once());
             Assert.Equal(this.atlasSpriteData[0], actual[0]);
             Assert.Equal(this.atlasSpriteData[1], actual[1]);
-            Assert.Same(this.mockTexture.Object, actual.Texture);
+            this.mockAtlasPathResolver.Verify(m => m.ResolveDirPath(), Times.Once());
+            this.mockFile.Verify(m => m.ReadAllText(this.atlasDataFilePath), Times.Once());
+            this.mockImageService.Verify(m => m.Load(this.atlasImageFilePath), Times.Once());
         }
 
         [Fact]
@@ -99,8 +106,47 @@ namespace RaptorTests.Content
             // Assert
             Assert.Equal(this.atlasSpriteData[0], actual[0]);
             Assert.Equal(this.atlasSpriteData[1], actual[1]);
-            Assert.Same(this.mockTexture.Object, actual.Texture);
             Assert.Equal(AtlasContentName, actual.Name);
+            this.mockFile.Verify(m => m.ReadAllText(this.atlasDataFilePath), Times.Once());
+            this.mockImageService.Verify(m => m.Load(this.atlasImageFilePath), Times.Once());
+        }
+
+        [Fact]
+        public void Load_WithIssuesDeserializingJSONAtlasData_ThrowsException()
+        {
+            // Arrange
+            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath)).Returns(() =>
+            {
+                return "invalid-data";
+            });
+
+            var loader = CreateLoader();
+            var newtonsoftErrorMsg = "Unexpected character encountered while parsing value: i. Path '', line 0, position 0.";
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<LoadContentException>(() =>
+            {
+                loader.Load(AtlasContentName);
+            }, $"There was an issue deserializing the JSON atlas data file at '{this.atlasDataFilePath}'.\n{newtonsoftErrorMsg}");
+        }
+
+        [Fact]
+        public void Load_WithNullDeserializeResult_ThrowsException()
+        {
+            // Arrange
+            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath)).Returns(() =>
+            {
+                return string.Empty;
+            });
+
+            var loader = CreateLoader();
+            var exceptionMessage = "Deserialized atlas sub texture data is null.";
+
+            // Act & Assert
+            AssertHelpers.ThrowsWithMessage<LoadContentException>(() =>
+            {
+                loader.Load(AtlasContentName);
+            }, $"There was an issue deserializing the JSON atlas data file at '{this.atlasDataFilePath}'.\n{exceptionMessage}");
         }
 
         [Fact]
@@ -108,13 +154,13 @@ namespace RaptorTests.Content
         {
             // Arrange
             var loader = CreateLoader();
-            loader.Load(AtlasContentName);
+            var atlasData = loader.Load(AtlasContentName);
 
             // Act
             loader.Unload(AtlasContentName);
 
             // Assert
-            this.mockTexture.Verify(m => m.Dispose(), Times.Once());
+            Assert.True(atlasData.Unloaded);
         }
 
         [Fact]
@@ -122,14 +168,14 @@ namespace RaptorTests.Content
         {
             // Arrange
             var loader = CreateLoader();
-            loader.Load(AtlasContentName);
+            var atlasData = loader.Load(AtlasContentName);
 
             // Act
             loader.Dispose();
             loader.Dispose();
 
             // Assert
-            this.mockTexture.Verify(m => m.Dispose(), Times.Once());
+            Assert.True(atlasData.Unloaded);
         }
         #endregion
 
@@ -137,6 +183,11 @@ namespace RaptorTests.Content
         /// Creates an instance of <see cref="AtlasLoader"/> for the purpoase of testing.
         /// </summary>
         /// <returns>The instnace to test.</returns>
-        private AtlasLoader CreateLoader() => new AtlasLoader(this.mockTextureLoader.Object, this.mockAtlasPathResolver.Object, this.mockFile.Object);
+        private AtlasLoader CreateLoader()
+            => new AtlasLoader(
+                this.mockGLInvoker.Object,
+                this.mockImageService.Object,
+                this.mockAtlasPathResolver.Object,
+                this.mockFile.Object);
     }
 }

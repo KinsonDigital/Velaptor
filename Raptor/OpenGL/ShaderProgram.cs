@@ -7,6 +7,7 @@ namespace Raptor.OpenGL
     using System;
     using System.Text;
     using OpenTK.Graphics.OpenGL4;
+    using Raptor.NativeInterop;
     using Raptor.Services;
 
     /// <inheritdoc/>

@@ -8,7 +8,7 @@ namespace Raptor.Graphics
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using OpenTK.Graphics.OpenGL4;
-    using Raptor.OpenGL;
+    using Raptor.NativeInterop;
 
     /// <summary>
     /// The texture to render to a screen.
@@ -16,7 +16,6 @@ namespace Raptor.Graphics
     public class Texture : ITexture
     {
         private readonly IGLInvoker gl;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
@@ -34,7 +33,6 @@ namespace Raptor.Graphics
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
-        /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="name">The name of the texture.</param>
@@ -62,6 +60,9 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public int Height { get; protected set; }
 
+        /// <inheritdoc/>
+        public bool Unloaded { get; private set; }
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting
         /// unmanaged resources.
@@ -79,14 +80,14 @@ namespace Raptor.Graphics
         /// <param name="disposing">True if managed resources should be disposed of.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 return;
             }
 
             this.gl.DeleteTexture(ID);
 
-            this.isDisposed = true;
+            Unloaded = true;
         }
 
         /// <summary>

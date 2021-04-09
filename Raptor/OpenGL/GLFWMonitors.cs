@@ -10,6 +10,7 @@ namespace Raptor.OpenGL
     using System.Numerics;
     using OpenTK.Windowing.GraphicsLibraryFramework;
     using Raptor.Hardware;
+    using Raptor.NativeInterop;
 
     /// <summary>
     /// Gets all of the monitors in the system.

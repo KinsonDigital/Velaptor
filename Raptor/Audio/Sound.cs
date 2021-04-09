@@ -1,8 +1,7 @@
-// <copyright file="Sound.cs" company="KinsonDigital">
+﻿// <copyright file="Sound.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1065 // Do not raise exceptions in unexpected locations
 namespace Raptor.Audio
 {
     using System;
@@ -27,15 +26,12 @@ namespace Raptor.Audio
         // This AudioManager implementation as a singleton is being managed by the IoC container class.
         // Disposing of the audio manager when any sound is disposed would cause issues with how the
         // audio manager implementation is suppose to behave.
-#pragma warning disable CA2213 // Disposable fields should be disposed
         private readonly IAudioDeviceManager audioManager;
-#pragma warning restore CA2213 // Disposable fields should be disposed
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
         private readonly IALInvoker alInvoker;
         private int srcId;
         private int bufferId;
-        private bool isDisposed;
         private float totalSeconds;
 
         /// <summary>
@@ -96,7 +92,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -109,7 +105,7 @@ namespace Raptor.Audio
             }
             set
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -134,7 +130,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -162,7 +158,7 @@ namespace Raptor.Audio
         {
             get
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -171,7 +167,7 @@ namespace Raptor.Audio
             }
             set
             {
-                if (this.isDisposed)
+                if (Unloaded)
                 {
                     throw new Exception(IsDisposedExceptionMessage);
                 }
@@ -181,9 +177,12 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
+        public bool Unloaded { get; private set; }
+
+        /// <inheritdoc/>
         public void PlaySound()
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -194,7 +193,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void PauseSound()
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -205,7 +204,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void StopSound()
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -216,7 +215,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void Reset()
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -227,7 +226,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public void SetTimePosition(float seconds)
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 throw new Exception(IsDisposedExceptionMessage);
             }
@@ -253,7 +252,7 @@ namespace Raptor.Audio
         /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (!Unloaded)
             {
                 if (disposing)
                 {
@@ -266,7 +265,7 @@ namespace Raptor.Audio
 
                 this.alInvoker.ErrorCallback -= ErrorCallback;
 
-                this.isDisposed = true;
+                Unloaded = true;
             }
         }
 
