@@ -9,8 +9,8 @@ namespace RaptorTests.Content
     using System.Reflection;
     using Moq;
     using Raptor.Content;
-    using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="FontPathResolver"/> class.
@@ -69,7 +69,7 @@ namespace RaptorTests.Content
             var resolver = new FontPathResolver(mockDirectory.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
+            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The font file '{this.contentFilePath}' does not exist.");

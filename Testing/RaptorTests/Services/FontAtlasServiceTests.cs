@@ -21,6 +21,7 @@ namespace RaptorTests.Services
     using Raptor.Services;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="FontAtlasService"/> class.
@@ -120,7 +121,7 @@ namespace RaptorTests.Services
             var service = CreateService(false);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<InvalidOperationException>(() =>
+            Assert.ThrowsWithMessage<InvalidOperationException>(() =>
             {
                 service.CreateFontAtlas(It.IsAny<string>(), It.IsAny<int>());
             }, "The available glyph characters must be set first before creating a font texture atlas.");
@@ -135,7 +136,7 @@ namespace RaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
             }, "The font file path argument must not be null. (Parameter 'fontFilePath')");
@@ -149,7 +150,7 @@ namespace RaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
+            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
             }, $"The file '{FontFilePath}' does not exist.");
@@ -275,9 +276,9 @@ namespace RaptorTests.Services
             this.mockFreeTypeInvoker.Verify(m => m.FT_Load_Glyph(this.facePtr, It.IsAny<uint>(), FT.FT_LOAD_RENDER), Times.Exactly(totalGlyphs - 1));
             this.mockImageService.Verify(m => m.Draw(It.IsAny<ImageData>(), It.IsAny<ImageData>(), It.IsAny<Point>()), Times.Exactly(totalGlyphs - 1));
 
-            AssertHelpers.Equals(16, actualImage.Width, $"The resulting font atlas texture width is invalid.");
-            AssertHelpers.Equals(36, actualImage.Height, $"The resulting font atlas texture height is invalid.");
-            AssertHelpers.Equals(576, actualImage.Pixels.Length, $"The number of atlas image pixels is invalid.");
+            Assert.Equals(16, actualImage.Width, $"The resulting font atlas texture width is invalid.");
+            Assert.Equals(36, actualImage.Height, $"The resulting font atlas texture height is invalid.");
+            Assert.Equals(576, actualImage.Pixels.Length, $"The number of atlas image pixels is invalid.");
             Assert.Equal(this.glyphChars.Length + 1, actualData.Length);
         }
 
@@ -291,7 +292,7 @@ namespace RaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<LoadFontException>(() =>
+            Assert.ThrowsWithMessage<LoadFontException>(() =>
             {
                 service.CreateFontAtlas(FontFilePath, 12);
             }, "An invalid pointer value of zero was returned when creating a new font face.");

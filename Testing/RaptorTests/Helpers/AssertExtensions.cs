@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Helpers
 {
     using System;

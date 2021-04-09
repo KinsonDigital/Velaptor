@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Content
 {
     using System.Drawing;
@@ -14,8 +15,8 @@ namespace RaptorTests.Content
     using Raptor.Graphics;
     using Raptor.NativeInterop;
     using Raptor.Services;
-    using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="FontLoader"/> class.
@@ -128,7 +129,7 @@ namespace RaptorTests.Content
             var loader = CreateLoader();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
+            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 loader.Load(FontContentName);
             }, $"The JSON data file '{this.fontDataFilePath}' describing the font settings for font content '{FontContentName}' is missing.");
@@ -147,7 +148,7 @@ namespace RaptorTests.Content
             var newtonsoftErrorMsg = "Unexpected character encountered while parsing value: i. Path '', line 0, position 0.";
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<LoadContentException>(() =>
+            Assert.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(FontContentName);
             }, $"There was an issue deserializing the JSON atlas data file at '{this.fontDataFilePath}'.\n{newtonsoftErrorMsg}");
@@ -166,7 +167,7 @@ namespace RaptorTests.Content
             var exceptionMessage = "Deserialized font settings are null.";
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<LoadContentException>(() =>
+            Assert.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(FontContentName);
             }, $"There was an issue deserializing the JSON atlas data file at '{this.fontDataFilePath}'.\n{exceptionMessage}");

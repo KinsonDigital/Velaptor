@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Graphics
 {
     using System;
@@ -58,7 +59,7 @@ namespace RaptorTests.Graphics
         public void Ctor_WhenTextureIsNull_ThrowException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new AtlasData(null, null, It.IsAny<string>(), It.IsAny<string>());
             }, "The parameter must not be null. (Parameter 'Texture')");

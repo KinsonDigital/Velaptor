@@ -13,8 +13,8 @@ namespace RaptorTests.Content
     using Raptor.Graphics;
     using Raptor.NativeInterop;
     using Raptor.Services;
-    using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasDataLoader{T}"/> class.
@@ -124,7 +124,7 @@ namespace RaptorTests.Content
             var newtonsoftErrorMsg = "Unexpected character encountered while parsing value: i. Path '', line 0, position 0.";
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<LoadContentException>(() =>
+            Assert.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(AtlasContentName);
             }, $"There was an issue deserializing the JSON atlas data file at '{this.atlasDataFilePath}'.\n{newtonsoftErrorMsg}");
@@ -143,7 +143,7 @@ namespace RaptorTests.Content
             var exceptionMessage = "Deserialized atlas sub texture data is null.";
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<LoadContentException>(() =>
+            Assert.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(AtlasContentName);
             }, $"There was an issue deserializing the JSON atlas data file at '{this.atlasDataFilePath}'.\n{exceptionMessage}");
