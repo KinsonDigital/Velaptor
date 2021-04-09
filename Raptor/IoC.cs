@@ -14,6 +14,7 @@ namespace Raptor
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
+    using Raptor.NativeInterop;
     using Raptor.OpenAL;
     using Raptor.OpenGL;
     using Raptor.Services;
@@ -56,6 +57,8 @@ namespace Raptor
 
             SetupContent();
 
+            IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
+
             isInitialized = true;
         }
 
@@ -64,8 +67,8 @@ namespace Raptor
         /// </summary>
         private static void SetupOpenGL()
         {
-            IoCContainer.Register(() => FileSystem.File);
-            IoCContainer.Register(() => FileSystem.Directory);
+            IoCContainer.Register(() => FileSystem.File, Lifestyle.Singleton);
+            IoCContainer.Register(() => FileSystem.Directory, Lifestyle.Singleton);
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IALInvoker, ALInvoker>(Lifestyle.Singleton);
@@ -73,11 +76,11 @@ namespace Raptor
 
             IoCContainer.Register<GLFWMonitors>();
 
-            IoCContainer.Register<IGPUBuffer, GPUBuffer<VertexData>>(Lifestyle.Singleton); // Suppressed Disposal
+            IoCContainer.Register<IGPUBuffer, GPUBuffer<VertexData>>(Lifestyle.Singleton);
 
-            IoCContainer.Register<IShaderProgram, ShaderProgram>(Lifestyle.Singleton); // Suppressed Disposal
+            IoCContainer.Register<IShaderProgram, ShaderProgram>(Lifestyle.Singleton);
 
-            IoCContainer.Register<ISpriteBatch, SpriteBatch>(Lifestyle.Singleton); // Suppressed Disposal
+            IoCContainer.Register<ISpriteBatch, SpriteBatch>(Lifestyle.Singleton);
 
             SetupAudio();
         }
@@ -109,9 +112,10 @@ namespace Raptor
         /// </summary>
         private static void SetupServices()
         {
-            IoCContainer.Register<IImageService, ImageService>();
+            IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>(Lifestyle.Singleton);
-            IoCContainer.Register<ISystemMonitorService, SystemMonitorService>();
+            IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
+            IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
         }
 
         /// <summary>

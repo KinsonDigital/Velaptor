@@ -44,7 +44,7 @@ namespace RaptorTests.Content
 
             // Act
             var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
-            var actual = resolver.FileDirectoryName;
+            var actual = resolver.ContentDirectoryName;
 
             // Assert
             Assert.Equal("Atlas", actual);
@@ -79,6 +79,7 @@ namespace RaptorTests.Content
         [Theory]
         [InlineData("test-content")]
         [InlineData("test-content.json")]
+        [InlineData("TEST-CONTENT.json")]
         public void ResolveFilePath_WhenInvoked_ResolvesFilepath(string contentName)
         {
             // Arrange

@@ -108,5 +108,37 @@ namespace Raptor.Graphics
         /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
         /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
         void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor, RenderEffects effects);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// at the position described by the given <paramref name="x"/> and <paramref name="y"/>
+        /// coordinates.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="x">The X coordinate location to render the text.</param>
+        /// <param name="y">The Y coordinate location to render the text.</param>
+        /// <remarks>
+        ///     The X and Y coordinates represent the bottom left corner of the entire string of text that is being rendered.
+        /// <para>
+        ///     The color of the text will be white.
+        /// </para>
+        /// </remarks>
+        void Render(IFont font, string text, int x, int y);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// with the given <paramref name="tintColor"/> at the position described by
+        /// the given <paramref name="x"/> and <paramref name="y"/> coordinates.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="x">The X coordinate location to render the text.</param>
+        /// <param name="y">The Y coordinate location to render the text.</param>
+        /// <param name="tintColor">The color of the text.</param>
+        /// <remarks>
+        ///     The X and Y coordinates represent the bottom left corner of the entire string of text that is being rendered.
+        /// </remarks>
+        void Render(IFont font, string text, int x, int y, Color tintColor);
     }
 }

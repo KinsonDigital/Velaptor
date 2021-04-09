@@ -19,7 +19,7 @@ namespace RaptorTests.Content
     /// </summary>
     public class ContentPathResolverTests
     {
-        private const string ContentName = "test-content";
+        private const string ContentName = "test-content.png";
         private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
 
         /// <summary>
@@ -29,8 +29,8 @@ namespace RaptorTests.Content
             new List<object[]>
             {
                 new object[] { null, @$"{BaseDir}Content\" },
-                new object[] { @"C:\temp\", @"C:\temp\Content\" },
-                new object[] { @"C:\temp", @"C:\temp\Content\" },
+                new object[] { @"C:\base-content\", @"C:\base-content\" },
+                new object[] { @"C:\base-content", @"C:\base-content\" },
             };
 
         #region Prop Tests
@@ -56,8 +56,8 @@ namespace RaptorTests.Content
             var resolver = new ContentPathResolverFake();
 
             // Act
-            resolver.FileDirectoryName = @"C:\temp\test-dir-name";
-            var actual = resolver.FileDirectoryName;
+            resolver.ContentDirectoryName = @"C:\temp\test-dir-name";
+            var actual = resolver.ContentDirectoryName;
 
             // Assert
             Assert.Equal("test-dir-name", actual);
@@ -72,13 +72,12 @@ namespace RaptorTests.Content
             // Act & Assert
             Assert.ThrowsWithMessage<Exception>(() =>
             {
-                resolver.FileDirectoryName = null;
-            }, "The 'FileDirectoryName' must not be null or empty.");
+                resolver.ContentDirectoryName = null;
+            }, "The 'ContentDirectoryName' must not be null or empty.");
         }
 
         [Theory]
-        [InlineData("test-content")]
-        [InlineData("test-content.json")]
+        [InlineData("test-content.png")]
         public void ResolveFilePath_WhenInvoked_ResolvesContentFilePath(string contentName)
         {
             // Arrange
@@ -89,6 +88,21 @@ namespace RaptorTests.Content
 
             // Assert
             Assert.Equal(ContentName, actual);
+        }
+
+        [Fact]
+        public void ResolveDirPath_WhenInvoked_ResolvesContentDirPath()
+        {
+            // Arrange
+            var resolver = new ContentPathResolverFake();
+            resolver.RootDirectory = @"C:\temp\my-content\";
+            resolver.ContentDirectoryName = "test-content";
+
+            // Act
+            var actual = resolver.ResolveDirPath();
+
+            // Assert
+            Assert.Equal(@"C:\temp\my-content\test-content\", actual);
         }
 
         [Fact]

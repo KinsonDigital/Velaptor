@@ -35,7 +35,6 @@ namespace RaptorTests.Services
         private readonly string basePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
         private readonly string testAssetDirPath;
         private readonly string testAssetFilePath;
-        private readonly string testResultDirPath;
         private Image<Rgba32> testCompareImage;
 
         /// <summary>
@@ -45,14 +44,8 @@ namespace RaptorTests.Services
         {
             this.testAssetDirPath = $@"{this.basePath}{TestAssetDirName}\";
             this.testAssetFilePath = $"{this.testAssetDirPath}{TestImageFileName}";
-            this.testResultDirPath = $@"{this.basePath}{TestResultDirName}\";
 
-            if (Directory.Exists(this.testResultDirPath))
-            {
-                Directory.Delete(this.testResultDirPath, true);
-            }
-
-            Directory.CreateDirectory(this.testResultDirPath);
+            TestHelpers.SetupTestResultDirPath();
 
             this.testCompareImage = Image.Load<Rgba32>(this.testAssetFilePath);
             this.testCompareImage.Mutate(context => context.Flip(FlipMode.Vertical));
@@ -120,7 +113,7 @@ namespace RaptorTests.Services
             };
 
             var service = new ImageService();
-            var saveResultImageFilePath = $"{this.testResultDirPath}{nameof(Save_WhenInvoked_CorrectlySavesImage)}.png";
+            var saveResultImageFilePath = $"{TestHelpers.GetTestResultDirPath()}{nameof(Save_WhenInvoked_CorrectlySavesImage)}.png";
 
             // Act
             service.Save(saveResultImageFilePath, imageData);

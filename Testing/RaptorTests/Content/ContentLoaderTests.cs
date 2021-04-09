@@ -22,9 +22,11 @@ namespace RaptorTests.Content
         private const string TextureName = "test-texture";
         private const string AtlasName = "test-atlas";
         private const string SoundName = "test-sound";
+        private const string FontName = "test-font";
         private readonly Mock<ILoader<ITexture>> mockTextureLoader;
         private readonly Mock<ILoader<ISound>> mockSoundLoader;
         private readonly Mock<ILoader<IAtlasData>> mockAtlasLoader;
+        private readonly Mock<ILoader<IFont>> mockFontLoader;
         private readonly Mock<ITexture> mockTexture;
 
         /// <summary>
@@ -38,33 +40,60 @@ namespace RaptorTests.Content
 
             this.mockSoundLoader = new Mock<ILoader<ISound>>();
             this.mockAtlasLoader = new Mock<ILoader<IAtlasData>>();
+            this.mockFontLoader = new Mock<ILoader<IFont>>();
         }
 
         #region Method Tests
         [Fact]
-        public void Load_WhenInvoked_LoadsTexture()
+        public void Load_WhenLoadingTextures_LoadsTexture()
         {
             // Arrange
             var loader = CreateContentLoader();
 
             // Act
-            loader.Load<ITexture>("test-texture");
+            loader.Load<ITexture>(TextureName);
 
             // Assert
-            this.mockTextureLoader.Verify(m => m.Load("test-texture"), Times.Once());
+            this.mockTextureLoader.Verify(m => m.Load(TextureName), Times.Once());
         }
 
         [Fact]
-        public void Load_WhenInvoked_LoadsSound()
+        public void Load_WhenLoadingSounds_LoadsSound()
         {
             // Arrange
             var loader = CreateContentLoader();
 
             // Act
-            loader.Load<ISound>("test-sound");
+            loader.Load<ISound>(SoundName);
 
             // Assert
-            this.mockSoundLoader.Verify(m => m.Load("test-sound"), Times.Once());
+            this.mockSoundLoader.Verify(m => m.Load(SoundName), Times.Once());
+        }
+
+        [Fact]
+        public void Load_WhenLoadingAtlasData_LoadsAtlasData()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+
+            // Act
+            loader.Load<IAtlasData>(AtlasName);
+
+            // Assert
+            this.mockAtlasLoader.Verify(m => m.Load(AtlasName), Times.Once());
+        }
+
+        [Fact]
+        public void Load_WhenLoadingFonts_LoadsFont()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+
+            // Act
+            loader.Load<IFont>(FontName);
+
+            // Assert
+            this.mockFontLoader.Verify(m => m.Load(FontName), Times.Once());
         }
 
         [Fact]
@@ -81,7 +110,7 @@ namespace RaptorTests.Content
         }
 
         [Fact]
-        public void Unload_WhenUnloadingTexture_UnloadsTexture()
+        public void Unload_WhenUnloadingTextures_UnloadsTexture()
         {
             // Arrange
             var loader = CreateContentLoader();
@@ -92,6 +121,20 @@ namespace RaptorTests.Content
 
             // Assert
             this.mockTextureLoader.Verify(m => m.Unload(TextureName), Times.Once());
+        }
+
+        [Fact]
+        public void Unload_WhenUnloadingSounds_UnloadsSound()
+        {
+            // Arrange
+            var loader = CreateContentLoader();
+            loader.Load<ISound>(SoundName);
+
+            // Act
+            loader.Unload<ISound>(SoundName);
+
+            // Assert
+            this.mockSoundLoader.Verify(m => m.Unload(SoundName), Times.Once());
         }
 
         [Fact]
@@ -109,17 +152,17 @@ namespace RaptorTests.Content
         }
 
         [Fact]
-        public void Unload_WhenUnloadingSound_UnloadsSound()
+        public void Unload_WhenUnloadingFonts_UnloadsFont()
         {
             // Arrange
             var loader = CreateContentLoader();
-            loader.Load<ISound>(SoundName);
+            loader.Load<IFont>(FontName);
 
             // Act
-            loader.Unload<ISound>(SoundName);
+            loader.Unload<IFont>(FontName);
 
             // Assert
-            this.mockSoundLoader.Verify(m => m.Unload(SoundName), Times.Once());
+            this.mockFontLoader.Verify(m => m.Unload(FontName), Times.Once());
         }
 
         [Fact]
@@ -159,6 +202,7 @@ namespace RaptorTests.Content
         private ContentLoader CreateContentLoader()
             => new ContentLoader(this.mockTextureLoader.Object,
                                  this.mockSoundLoader.Object,
-                                 this.mockAtlasLoader.Object);
+                                 this.mockAtlasLoader.Object,
+                                 this.mockFontLoader.Object);
     }
 }

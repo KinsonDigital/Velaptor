@@ -16,6 +16,6 @@ namespace Raptor.Content
         /// </summary>
         /// <param name="directory">Manages directories.</param>
         public AtlasTexturePathResolver(IDirectory directory)
-            : base(directory) => FileDirectoryName = "Atlas";
+            : base(directory) => ContentDirectoryName = "Atlas";
     }
 }

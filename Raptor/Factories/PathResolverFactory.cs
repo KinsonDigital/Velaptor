@@ -17,6 +17,7 @@ namespace Raptor.Factories
         private static IPathResolver? texturePathResolver;
         private static IPathResolver? atlasJSONDataPathResolver;
         private static IPathResolver? soundPathResolver;
+        private static IPathResolver? fontPathResolver;
 
         /// <summary>
         /// Creates a path resolver that resolves paths to texture content.
@@ -44,6 +45,20 @@ namespace Raptor.Factories
             }
 
             return atlasJSONDataPathResolver;
+        }
+
+        /// <summary>
+        /// Creates a path resolver that resolves paths to font content.
+        /// </summary>
+        /// <returns>The resolver to atlas content.</returns>
+        public static IPathResolver CreateFontPathResolver()
+        {
+            if (fontPathResolver is null)
+            {
+                fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
+            }
+
+            return fontPathResolver;
         }
 
         /// <summary>

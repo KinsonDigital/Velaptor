@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundContentSourceTests.cs" company="KinsonDigital">
+﻿// <copyright file="SoundPathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,7 +16,7 @@ namespace RaptorTests.Content
     /// <summary>
     /// Tests the <see cref="SoundPathResolver"/> class.
     /// </summary>
-    public class SoundContentSourceTests
+    public class SoundPathResolverTests
     {
         private const string ContentName = "test-content";
         private readonly string contentFilePath;
@@ -25,9 +25,9 @@ namespace RaptorTests.Content
         private readonly string atlasContentDir;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SoundContentSourceTests"/> class.
+        /// Initializes a new instance of the <see cref="SoundPathResolverTests"/> class.
         /// </summary>
-        public SoundContentSourceTests()
+        public SoundPathResolverTests()
         {
             this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
             this.baseContentDir = $@"{this.baseDir}Content\";
@@ -44,7 +44,7 @@ namespace RaptorTests.Content
 
             // Act
             var source = new SoundPathResolver(mockDirectory.Object);
-            var actual = source.FileDirectoryName;
+            var actual = source.ContentDirectoryName;
 
             // Assert
             Assert.Equal("Sounds", actual);
@@ -77,9 +77,14 @@ namespace RaptorTests.Content
         }
 
         [Theory]
-        [InlineData(".ogg")]
-        [InlineData(".mp3")]
-        public void ResolveFilePath_WhenBothOggAndMp3FilesExist_ResolvesToOggFile(string extension)
+        [InlineData(".ogg", ".OGG")]
+        [InlineData(".ogg", ".ogg")]
+        [InlineData(".OGG", ".ogg")]
+        [InlineData(".mp3", ".ogg")]
+        [InlineData(".mp3", ".OGG")]
+        [InlineData(".MP3", ".ogg")]
+        [InlineData(".MP3", ".OGG")]
+        public void ResolveFilePath_WhenBothOggAndMp3FilesExist_ResolvesToOggFile(string resolvePathExtension, string actualFileExtension)
         {
             // Arrange
             var mockDirectory = new Mock<IDirectory>();
@@ -89,7 +94,7 @@ namespace RaptorTests.Content
                     return new[]
                     {
                         $"{this.atlasContentDir}other-file.txt",
-                        $"{this.contentFilePath}.ogg",
+                        $"{this.contentFilePath}{actualFileExtension}",
                         $"{this.contentFilePath}.mp3",
                     };
                 });
@@ -97,10 +102,10 @@ namespace RaptorTests.Content
             var resolver = new SoundPathResolver(mockDirectory.Object);
 
             // Act
-            var actual = resolver.ResolveFilePath($"{ContentName}{extension}");
+            var actual = resolver.ResolveFilePath($"{ContentName}{resolvePathExtension}");
 
             // Assert
-            Assert.Equal($"{this.contentFilePath}.ogg", actual);
+            Assert.Equal($"{this.contentFilePath}{actualFileExtension}", actual);
         }
 
         [Fact]

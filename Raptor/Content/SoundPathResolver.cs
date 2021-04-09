@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
@@ -22,7 +23,7 @@ namespace Raptor.Content
         public SoundPathResolver(IDirectory directory)
         {
             this.directory = directory;
-            FileDirectoryName = "Sounds";
+            ContentDirectoryName = "Sounds";
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Raptor.Content
         /// <para>
         ///     Precedence is taken with '.ogg' fles over '.mp3'.  What this means is that if
         ///     there are 2 files <br/> with the same name but with different extensions in the
-        ///     same <see cref="ContentPathResolver.FileDirectoryName"/>, <br/> the '.ogg'
+        ///     same <see cref="ContentPathResolver.ContentDirectoryName"/>, <br/> the '.ogg'
         ///     file will be loaded, not the '.mp3' file.
         /// </para>
         /// <para>
@@ -47,6 +48,10 @@ namespace Raptor.Content
             // Performs other checks on the content name
             contentName = base.ResolveFilePath(contentName);
 
+            contentName = Path.HasExtension(contentName)
+                ? Path.GetFileNameWithoutExtension(contentName)
+                : contentName;
+
             var contentDirPath = GetContentDirPath();
 
             // Check if there are any files that match the name
@@ -57,10 +62,14 @@ namespace Raptor.Content
                             var allowedExtensions = new[] { ".ogg", ".mp3" };
                             var currentExtension = Path.GetExtension(f);
 
-                            return fileNameNoExt == contentName && allowedExtensions.Contains(currentExtension);
+                            return string.Compare(fileNameNoExt, contentName, StringComparison.OrdinalIgnoreCase) == 0
+                                && allowedExtensions.Any(e => string.Compare(e, currentExtension, StringComparison.OrdinalIgnoreCase) == 0);
                         }).ToArray();
 
-            var oggFiles = files.Where(f => Path.GetExtension(f) == ".ogg").ToArray();
+            var oggFiles = files.Where(f =>
+            {
+                return string.Compare(Path.GetExtension(f), ".ogg", StringComparison.OrdinalIgnoreCase) == 0;
+            }).ToArray();
 
             // If therre are any ogg files, choose this first
             if (oggFiles.Length > 0)
