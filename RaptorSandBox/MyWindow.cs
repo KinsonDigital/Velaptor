@@ -32,6 +32,8 @@ namespace RaptorSandBox
         private AtlasSubTextureData bubbleFrame;
         private List<Rectangle> bubbles = new List<Rectangle>();
         private ITexture linkTexture;
+        private int elapsedFrameTime = 0;
+        private IFont myFont;
 
         public MyWindow(IWindow window)
             : base(window)
@@ -74,10 +76,10 @@ namespace RaptorSandBox
             this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
             this.quietPlaceMusic.SetTimePosition(50);
 
+            this.myFont = ContentLoader.Load<IFont>("TimesNewRoman");
+
             base.OnLoad();
         }
-
-        private int elapsedFrameTime = 0;
 
         public override void OnUpdate(FrameTime frameTime)
         {
@@ -126,19 +128,6 @@ namespace RaptorSandBox
             base.OnUpdate(frameTime);
         }
 
-        private void ProcessAnimation(FrameTime frameTime)
-        {
-            if (this.elapsedFrameTime >= 62)
-            {
-                this.elapsedFrameTime = 0;
-                this.currentFrameIndex = this.currentFrameIndex >= this.subFrames.Length - 1 ? 0 : this.currentFrameIndex + 1;
-            }
-            else
-            {
-                this.elapsedFrameTime += frameTime.ElapsedTime.Milliseconds;
-            }
-        }
-
         public override void OnDraw(FrameTime frameTime)
         {
             this.spriteBatch?.BeginBatch();
@@ -168,6 +157,16 @@ namespace RaptorSandBox
 
             //this.spriteBatch?.Render(this.linkTexture, 400, 500);
 
+            var lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+            var upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var numbers = "1234567890";
+            var numSymbols = "~!@#$%^&*()_+ⱠⱣⱦⱧ`-=[]\\;',./{}|:\"<>?";
+
+            this.spriteBatch?.Render(this.myFont, lowerCaseLetters, 50, 200, Color.AliceBlue);
+            this.spriteBatch?.Render(this.myFont, upperCaseLetters, 50, 300, Color.Crimson);
+            this.spriteBatch?.Render(this.myFont, numbers, 50, 400, Color.MediumPurple);
+            this.spriteBatch?.Render(this.myFont, numSymbols, 50, 500, Color.IndianRed);
+
             this.spriteBatch?.EndBatch();
 
             base.OnDraw(frameTime);
@@ -190,6 +189,19 @@ namespace RaptorSandBox
             }
 
             base.Dispose(disposing);
+        }
+
+        private void ProcessAnimation(FrameTime frameTime)
+        {
+            if (this.elapsedFrameTime >= 62)
+            {
+                this.elapsedFrameTime = 0;
+                this.currentFrameIndex = this.currentFrameIndex >= this.subFrames.Length - 1 ? 0 : this.currentFrameIndex + 1;
+            }
+            else
+            {
+                this.elapsedFrameTime += frameTime.ElapsedTime.Milliseconds;
+            }
         }
     }
 }
