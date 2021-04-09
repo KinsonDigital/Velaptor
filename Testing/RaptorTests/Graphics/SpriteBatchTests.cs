@@ -790,24 +790,13 @@ namespace RaptorTests.Graphics
         #endregion
 
         /// <summary>
-        /// Creates a new instance of <see cref="SpriteBatch"/> for the purpose of testing.
-        /// </summary>
-        /// <returns>The instance to test with.</returns>
-        private SpriteBatch CreateSpriteBatch()
-            => new SpriteBatch(
-                this.mockGLInvoker.Object,
-                this.mockFreeTypeInvoker.Object,
-                this.mockShader.Object,
-                this.mockBuffer.Object);
-
-        /// <summary>
         /// Creates a texture mock for the purpose of testing.
         /// </summary>
         /// <param name="textureId">The ID of the texture.</param>
         /// <param name="width">The width of the texture.</param>
         /// <param name="height">The height of the texture.</param>
         /// <returns>The texture mock to use for testing.</returns>
-        private Mock<ITexture> CreateTextureMock(uint textureId, int width, int height)
+        private static Mock<ITexture> CreateTextureMock(uint textureId, int width, int height)
         {
             var result = new Mock<ITexture>();
 
@@ -817,5 +806,16 @@ namespace RaptorTests.Graphics
 
             return result;
         }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="SpriteBatch"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test with.</returns>
+        private SpriteBatch CreateSpriteBatch()
+            => new SpriteBatch(
+                this.mockGLInvoker.Object,
+                this.mockFreeTypeInvoker.Object,
+                this.mockShader.Object,
+                this.mockBuffer.Object);
     }
 }

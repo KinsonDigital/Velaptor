@@ -29,8 +29,6 @@ namespace Raptor.Services
             we want a single invoker (singleton) to manage all initiated lib pointers to free type?
             * I am thinking we should have each instance of the invoker manage its own pointer
               to a single initiated free type library
-        5. Think about creating a internal FreeTypeService that could be used to consolidate all of the
-            FreeType related operations to simplify this class.  Do this once this class is up and runing.
         6. This service is only needed for the font atlas creation process in the FontLoaderService class.
             Look into possibly disposing of this service which in turn will dipose of the FreeTypeInvoker
             after the atlas is created.  If this is the route that is taken, make sure that the FreeType lib
@@ -179,14 +177,16 @@ namespace Raptor.Services
 
                 // TODO: Need to figure out how to call FT_Done_Glyph() in a safe way
                 // This implimentation below is causing issuess
-                //unsafe
-                //{
-                //    var unsafePtr = (FT_FaceRec*)this.facePtr;
+                /*
+                unsafe
+                {
+                    var unsafePtr = (FT_FaceRec*)this.facePtr;
 
-                //    var glyphPtr = (IntPtr)unsafePtr->glyph;
+                    var glyphPtr = (IntPtr)unsafePtr->glyph;
 
-                //    this.freeTypeInvoker.FT_Done_Glyph(glyphPtr);
-                //}
+                    this.freeTypeInvoker.FT_Done_Glyph(glyphPtr);
+                }
+                 */
 
                 this.freeTypeInvoker.FT_Done_Face(this.facePtr);
                 this.freeTypeInvoker.FT_Done_FreeType(this.freeTypeLibPtr);
@@ -313,6 +313,11 @@ namespace Raptor.Services
         /// <returns>The index for each glyph.</returns>
         private Dictionary<char, uint> GetGlyphIndices()
         {
+            if (this.glyphChars is null)
+            {
+                return new Dictionary<char, uint>();
+            }
+
             var result = new Dictionary<char, uint>();
 
             for (var i = 0; i < this.glyphChars.Length; i++)

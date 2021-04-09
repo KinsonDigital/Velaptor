@@ -17,8 +17,7 @@ namespace Raptor.Graphics
     /// </summary>
     public class Font : IFont, IDisposable
     {
-        private readonly GlyphMetrics[] fontAtlasData;
-        private char[] availableGlyphCharacters;
+        private readonly char[] availableGlyphCharacters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
@@ -38,7 +37,7 @@ namespace Raptor.Graphics
             string path)
         {
             FontTextureAtlas = texture;
-            this.fontAtlasData = fontAtlasData;
+            Metrics = fontAtlasData;
 
             Size = fontSettings.Size;
             Style = fontSettings.Style;
@@ -69,7 +68,7 @@ namespace Raptor.Graphics
         public bool Unloaded { get; private set; }
 
         /// <inheritdoc/>
-        public GlyphMetrics[] Metrics => this.fontAtlasData;
+        public GlyphMetrics[] Metrics { get; }
 
         /// <inheritdoc/>
         public char[] GetAvailableGlyphCharacters() => this.availableGlyphCharacters;

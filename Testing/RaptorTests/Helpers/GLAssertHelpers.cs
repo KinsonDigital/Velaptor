@@ -23,6 +23,7 @@ namespace RaptorTests.Helpers
         // TODO: Look into creating a custom assertion that checks how many times a method has
         // been invoked against a single argument value by giving the argument type and value
         // expected number of times of execution.  This should be a generic method
+
         /// <summary>
         /// Verifies that the transform update been executed the given amount of <paramref name="times"/>.
         /// </summary>
