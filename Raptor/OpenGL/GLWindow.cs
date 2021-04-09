@@ -642,7 +642,7 @@ namespace Raptor.OpenGL
 
             if (!(mainMonitor is null))
             {
-                defaultPosition = new SysVector2(mainMonitor.Center.X - halfHeight, mainMonitor.Center.Y - halfHeight);
+                defaultPosition = new SysVector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
             }
 
             this.cachedPosition = new CachedValue<SysVector2>(
