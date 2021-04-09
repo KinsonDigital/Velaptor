@@ -10,6 +10,7 @@ namespace RaptorTests.Audio
     using Raptor.Audio;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="OggSoundDecoder"/> class.
@@ -33,7 +34,7 @@ namespace RaptorTests.Audio
             var decoder = new OggSoundDecoder(this.mockDataStream.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            Assert.ThrowsWithMessage<ArgumentException>(() =>
             {
                 decoder.LoadData(fileName);
             }, "The param must not be null or empty. (Parameter 'fileName')");
@@ -46,7 +47,7 @@ namespace RaptorTests.Audio
             var decoder = new OggSoundDecoder(this.mockDataStream.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            Assert.ThrowsWithMessage<ArgumentException>(() =>
             {
                 decoder.LoadData("sound.wav");
             }, "The file name must have an ogg file extension. (Parameter 'fileName')");

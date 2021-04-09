@@ -16,6 +16,9 @@ namespace RaptorTests.Services
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
     using Xunit;
+#pragma warning disable IDE0001 // Name can be simplified
+    using Assert = RaptorTests.Helpers.AssertExtensions;
+#pragma warning restore IDE0001 // Name can be simplified
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
@@ -259,32 +262,32 @@ namespace RaptorTests.Services
         ///     color will be asserted againt the given <paramref name="expectedClr"/>.
         /// </remarks>
         [ExcludeFromCodeCoverage]
-        private void AssertThatPixelsMatch(NETColor[,] pixels, int width, int height, NETRectangle assertRect, NETColor expectedClr)
+        private static void AssertThatPixelsMatch(NETColor[,] pixels, int width, int height, NETRectangle assertRect, NETColor expectedClr)
         {
-            AssertHelpers.All(pixels, width, height, (pixel, x, y) =>
+            Assert.All(pixels, width, height, (pixel, x, y) =>
             {
                 if (assertRect.Contains(x, y))
                 {
                     var message = $"The pixel at location '{x},{y}' is incorrect with the ARGB value of '{pixel}'.";
-                    AssertHelpers.True(
+                    Assert.True(
                         condition: pixel.A == expectedClr.A,
                         message: message,
                         expected: $"Alpha {expectedClr.A}",
                         actual: $"Alpha {pixel.A}");
 
-                    AssertHelpers.True(
+                    Assert.True(
                         condition: pixel.R == expectedClr.R,
                         message: message,
                         expected: $"Red {expectedClr.R}",
                         actual: $"Red {pixel.R}");
 
-                    AssertHelpers.True(
+                    Assert.True(
                         condition: pixel.G == expectedClr.G,
                         message: message,
                         expected: $"Green {expectedClr.G}",
                         actual: $"Green {pixel.G}");
 
-                    AssertHelpers.True(
+                    Assert.True(
                         condition: pixel.B == expectedClr.B,
                         message: message,
                         expected: $"Blue {expectedClr.B}",

@@ -13,6 +13,7 @@ namespace RaptorTests.UI
     using RaptorTests.Fakes;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="Window"/> class.
@@ -191,7 +192,7 @@ namespace RaptorTests.UI
         public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullWindow_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var window = new WindowFake(null);
             }, "Window must not be null. (Parameter 'window')");

@@ -93,7 +93,8 @@ namespace Raptor.UI
             // not best for performance as well as taking extra memory.
             // _visibleText = contentLoader.LoadText(FontName);
             // _textRuler = contentLoader.LoadText(FontName);
-            //this.deferredActions.ExecuteAll();
+
+            // this.deferredActions.ExecuteAll();
         }
 
         /// <summary>

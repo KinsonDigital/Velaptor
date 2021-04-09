@@ -118,14 +118,12 @@ namespace Raptor.NativeInterop
         /// <param name="char_height">The nominal height, in 26.6 fractional points.</param>
         /// <param name="horz_resolution">The horizontal resolution in dpi.</param>
         /// <param name="vert_resolution">The vertical resolution in dpi.</param>
-        /// <returns>FreeType error code. 0 means success.</returns>
         void FT_Set_Char_Size(IntPtr face, IntPtr char_width, IntPtr char_height, uint horz_resolution, uint vert_resolution);
 
         /// <summary>
         /// Discard a given face object, as well as all of its child slots and sizes.
         /// </summary>
         /// <param name="face">A handle to a target face object.</param>
-        /// <returns>FreeType error code. 0 means success.</returns>
         void FT_Done_Face(IntPtr face);
 
         /// <summary>
@@ -138,7 +136,6 @@ namespace Raptor.NativeInterop
         /// Destroy a given FreeType library object and all of its children, including resources, drivers, faces, sizes, etc.
         /// </summary>
         /// <param name="library">A handle to the target library object.</param>
-        /// <returns>FreeType error code. 0 means success.</returns>
         void FT_Done_FreeType(IntPtr library);
         #endregion
 

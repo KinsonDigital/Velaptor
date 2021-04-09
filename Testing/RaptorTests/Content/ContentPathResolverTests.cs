@@ -12,6 +12,7 @@ namespace RaptorTests.Content
     using RaptorTests.Fakes;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="ContentPathResolver"/> class.
@@ -69,7 +70,7 @@ namespace RaptorTests.Content
             var resolver = new ContentPathResolverFake();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<Exception>(() =>
             {
                 resolver.ContentDirectoryName = null;
             }, "The 'ContentDirectoryName' must not be null or empty.");
@@ -111,7 +112,7 @@ namespace RaptorTests.Content
             var resolver = new ContentPathResolverFake();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 resolver.ResolveFilePath(null);
             }, "The parameter must not be null or empty. (Parameter 'contentName')");
@@ -124,7 +125,7 @@ namespace RaptorTests.Content
             var resolver = new ContentPathResolverFake();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            Assert.ThrowsWithMessage<ArgumentException>(() =>
             {
                 resolver.ResolveFilePath($@"{ContentName}\");
             }, $@"The '{ContentName}\' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");

@@ -11,6 +11,7 @@ namespace RaptorTests.Content
     using Raptor.Content;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="SoundPathResolver"/> class.
@@ -69,7 +70,7 @@ namespace RaptorTests.Content
             var resolver = new SoundPathResolver(mockDirectory.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
+            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The sound file '{this.contentFilePath}' does not exist.");

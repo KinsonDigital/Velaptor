@@ -7,6 +7,7 @@ namespace RaptorTests.Input
     using Raptor.Input;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="Keyboard"/> class.
@@ -36,7 +37,7 @@ namespace RaptorTests.Input
             var actual = keyboard.GetState();
 
             // Assert
-            AssertHelpers.AllItemsAre(actual.GetKeyStates(), state =>
+            Assert.AllItemsAre(actual.GetKeyStates(), state =>
             {
                 if (state.Key == KeyCode.T)
                 {
@@ -58,7 +59,7 @@ namespace RaptorTests.Input
             var actual = keyboard.GetState();
 
             // Assert
-            AssertHelpers.AllItemsAre(actual.GetKeyStates(), state =>
+            Assert.AllItemsAre(actual.GetKeyStates(), state =>
             {
                 if (state.Key == KeyCode.F)
                 {

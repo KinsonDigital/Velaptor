@@ -13,6 +13,7 @@ namespace RaptorTests.Audio
     using Raptor.OpenAL;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AudioDeviceManager"/> class.
@@ -69,7 +70,7 @@ namespace RaptorTests.Audio
             this.manager.Dispose();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
+            Assert.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
             {
                 _ = this.manager.DeviceNames;
             }, IsDisposedExceptionMessage);
@@ -122,7 +123,7 @@ namespace RaptorTests.Audio
             this.manager = CreateManager();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<SettingContextCurrentException>(() =>
+            Assert.ThrowsWithMessage<SettingContextCurrentException>(() =>
             {
                 this.manager.InitDevice("test-device");
             }, "There was an issue setting the audio context as the current context.");
@@ -136,7 +137,7 @@ namespace RaptorTests.Audio
             this.manager.Dispose();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
+            Assert.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
             {
                 this.manager.InitSound();
             }, IsDisposedExceptionMessage);
@@ -166,7 +167,7 @@ namespace RaptorTests.Audio
             this.manager = CreateManager();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
+            Assert.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
             {
                 this.manager.UpdateSoundSource(It.IsAny<SoundSource>());
             }, IsDisposedExceptionMessage);
@@ -180,7 +181,7 @@ namespace RaptorTests.Audio
             this.manager.InitDevice();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<SoundSourceDoesNotExistException>(() =>
+            Assert.ThrowsWithMessage<SoundSourceDoesNotExistException>(() =>
             {
                 var soundSrc = new SoundSource()
                 {
@@ -199,7 +200,7 @@ namespace RaptorTests.Audio
             this.manager.InitSound();
 
             // Act & Assert
-            AssertHelpers.DoesNotThrow<Exception>(() =>
+            Assert.DoesNotThrow<Exception>(() =>
             {
                 var otherSoundSrc = new SoundSource()
                 {
@@ -216,7 +217,7 @@ namespace RaptorTests.Audio
             this.manager = CreateManager();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
+            Assert.ThrowsWithMessage<AudioDeviceManagerNotInitializedException>(() =>
             {
                 this.manager.ChangeDevice("test-device");
             }, IsDisposedExceptionMessage);
@@ -233,7 +234,7 @@ namespace RaptorTests.Audio
             this.manager.InitDevice();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<AudioDeviceDoesNotExistException>(() =>
+            Assert.ThrowsWithMessage<AudioDeviceDoesNotExistException>(() =>
             {
                 this.manager.ChangeDevice("test-device-1");
             }, "Device Name: test-device-1\nThe audio device does not exist.");

@@ -20,6 +20,7 @@ namespace RaptorTests.Graphics
     using Raptor.OpenGL;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="SpriteBatch"/> class.
@@ -60,7 +61,7 @@ namespace RaptorTests.Graphics
         public void Ctor_WhenInvokedWithNullGLInvoker_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var buffer = new SpriteBatch(null, this.mockFreeTypeInvoker.Object, this.mockShader.Object, this.mockBuffer.Object);
             }, $"The '{nameof(IGLInvoker)}' must not be null. (Parameter 'gl')");
@@ -70,7 +71,7 @@ namespace RaptorTests.Graphics
         public void Ctor_WhenInvokedWithNullShader_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var buffer = new SpriteBatch(this.mockGLInvoker.Object, this.mockFreeTypeInvoker.Object, null, this.mockBuffer.Object);
             }, $"The '{nameof(IShaderProgram)}' must not be null. (Parameter 'shader')");
@@ -80,7 +81,7 @@ namespace RaptorTests.Graphics
         public void Ctor_WhenInvokedWithNullGPUBuffer_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var buffer = new SpriteBatch(this.mockGLInvoker.Object, this.mockFreeTypeInvoker.Object, this.mockShader.Object, null);
             }, $"The '{nameof(IGPUBuffer)}' must not be null. (Parameter 'gpuBuffer')");
@@ -177,7 +178,7 @@ namespace RaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<Exception>(() =>
             {
                 batch.Render(mockTexture.Object, 10, 20);
             }, $"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
@@ -190,7 +191,7 @@ namespace RaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 batch.BeginBatch();
                 batch.Render(null, 10, 20);
@@ -264,7 +265,7 @@ namespace RaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<Exception>(() =>
             {
                 var srcRect = new Rectangle(1, 2, 3, 4);
                 var destRect = new Rectangle(5, 6, 7, 8);
@@ -281,7 +282,7 @@ namespace RaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var srcRect = new Rectangle(0, 0, 10, 20);
                 batch.BeginBatch();
@@ -299,7 +300,7 @@ namespace RaptorTests.Graphics
             batch.BeginBatch();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            Assert.ThrowsWithMessage<ArgumentException>(() =>
             {
                 var srcRect = new Rectangle(0, 0, 0, 20);
                 var destRect = new Rectangle(10, 20, 100, 200);
@@ -318,7 +319,7 @@ namespace RaptorTests.Graphics
             batch.BeginBatch();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentException>(() =>
+            Assert.ThrowsWithMessage<ArgumentException>(() =>
             {
                 var srcRect = new Rectangle(0, 0, 10, 0);
                 var destRect = new Rectangle(10, 20, 100, 200);
@@ -583,7 +584,7 @@ namespace RaptorTests.Graphics
                             Color.FromArgb(11, 22, 33, 44),
                             (RenderEffects)44);
 
-            AssertHelpers.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
+            Assert.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
             {
                 batch.EndBatch();
             }, $"The '{nameof(RenderEffects)}' value of '44' is not valid.");
@@ -604,7 +605,7 @@ namespace RaptorTests.Graphics
             batch.BeginBatch();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<Exception>(() =>
             {
                 batch.Render(texture.Object, 10, 20);
                 batch.EndBatch();

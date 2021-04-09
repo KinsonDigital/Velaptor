@@ -154,6 +154,7 @@ namespace Raptor.NativeInterop
 
 #pragma warning disable SA1124 // Do not use regions
 
+#pragma warning disable SA1514 // Element documentation header should be preceded by blank line
         #region Helper Methods
         /// <inheritdoc/>
         public IntPtr GetFace() => this.facePtr;

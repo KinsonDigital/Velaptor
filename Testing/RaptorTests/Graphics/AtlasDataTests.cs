@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Graphics
 {
     using System;
@@ -10,6 +11,7 @@ namespace RaptorTests.Graphics
     using Raptor.Graphics;
     using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasData"/> class.
@@ -57,7 +59,7 @@ namespace RaptorTests.Graphics
         public void Ctor_WhenTextureIsNull_ThrowException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new AtlasData(null, null, It.IsAny<string>(), It.IsAny<string>());
             }, "The parameter must not be null. (Parameter 'Texture')");
@@ -199,7 +201,7 @@ namespace RaptorTests.Graphics
             var data = CreateAtlasData();
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<Exception>(() =>
             {
                 data.GetFrame("missing-texture");
             }, "The frame 'missing-texture' was not found in the atlas 'test-atlas'.");

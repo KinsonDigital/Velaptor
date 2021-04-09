@@ -1,7 +1,8 @@
-﻿// <copyright file="AssertHelpers.cs" company="KinsonDigital">
+﻿// <copyright file="AssertExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Helpers
 {
     using System;
@@ -15,7 +16,7 @@ namespace RaptorTests.Helpers
     /// Provides helper methods for the <see cref="XUnit"/>'s <see cref="Assert"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class AssertHelpers
+    public class AssertExtensions : Assert
     {
         /// <summary>
         /// Verifies that the exact exception is thrown (and not a derived exception type) and that
@@ -230,7 +231,7 @@ namespace RaptorTests.Helpers
                 }
             }
 
-            Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertHelpers)}.{nameof(All)}<T>.  Are there any items?");
+            Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.  Are there any items?");
         }
 
         /// <summary>
@@ -249,7 +250,7 @@ namespace RaptorTests.Helpers
                 action(collection[i], i);
             }
 
-            Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertHelpers)}.{nameof(All)}<T>.  Are there any items?");
+            Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.  Are there any items?");
         }
 
         /// <summary>

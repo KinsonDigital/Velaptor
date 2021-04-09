@@ -39,7 +39,7 @@ namespace Raptor.Graphics
             string path)
         {
             FontTextureAtlas = texture;
-            metrics = fontAtlasData;
+            this.metrics = fontAtlasData;
 
             Size = fontSettings.Size;
             Style = fontSettings.Style;
