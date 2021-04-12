@@ -29,6 +29,7 @@ namespace Raptor.Factories
                 IoC.Container.GetInstance<IGLInvoker>(),
                 IoC.Container.GetInstance<ISystemMonitorService>(),
                 IoC.Container.GetInstance<IGameWindowFacade>(),
-                IoC.Container.GetInstance<IPlatform>());
+                IoC.Container.GetInstance<IPlatform>(),
+                ContentLoaderFactory.CreateContentLoader());
     }
 }

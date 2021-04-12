@@ -57,24 +57,25 @@ namespace Raptor.OpenGL
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
         /// <param name="windowFacade">The internal OpenGL window facade.</param>
         /// <param name="platform">Information about the platform that is running the application.</param>
+        /// <param name="contentLoader">Loads various kinds of content.</param>
         public GLWindow(
             int width,
             int height,
             IGLInvoker glInvoker,
             ISystemMonitorService systemMonitorService,
             IGameWindowFacade windowFacade,
-            IPlatform platform)
+            IPlatform platform,
+            IContentLoader contentLoader)
         {
             // TODO: Add null checks to these items and implement unit tests for them
             this.gl = glInvoker;
             this.systemMonitorService = systemMonitorService;
             this.windowFacade = windowFacade;
             this.platform = platform;
+            ContentLoader = contentLoader;
 
             SetupWidthHeightPropCaches(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
             SetupOtherPropCaches();
-
-            ContentLoader = ContentLoaderFactory.CreateContentLoader();
 
             IGLInvoker.OpenGLInitialized += IGLInvoker_OpenGLInitialized;
         }
