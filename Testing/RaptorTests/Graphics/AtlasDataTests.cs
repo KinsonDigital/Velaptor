@@ -9,7 +9,6 @@ namespace RaptorTests.Graphics
     using System.Drawing;
     using Moq;
     using Raptor.Graphics;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 

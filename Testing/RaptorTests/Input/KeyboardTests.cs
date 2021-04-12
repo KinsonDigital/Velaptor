@@ -9,7 +9,6 @@ namespace RaptorTests.Input
     using System;
     using System.Linq;
     using Raptor.Input;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified

@@ -8,7 +8,6 @@ namespace RaptorTests.Audio
     using System.Collections.ObjectModel;
     using Moq;
     using Raptor.Audio;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 

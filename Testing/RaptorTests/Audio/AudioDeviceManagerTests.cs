@@ -11,7 +11,6 @@ namespace RaptorTests.Audio
     using Raptor.Audio;
     using Raptor.Audio.Exceptions;
     using Raptor.OpenAL;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 

@@ -11,7 +11,6 @@ namespace Raptor
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
-    using OpenTK.Windowing.Desktop;
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;

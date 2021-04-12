@@ -10,7 +10,6 @@ namespace RaptorTests.OpenGL
     using Raptor.NativeInterop;
     using Raptor.OpenGL;
     using Raptor.Services;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 

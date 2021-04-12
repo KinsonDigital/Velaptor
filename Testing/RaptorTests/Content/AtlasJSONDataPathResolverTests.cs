@@ -9,7 +9,6 @@ namespace RaptorTests.Content
     using System.Reflection;
     using Moq;
     using Raptor.Content;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 

@@ -10,7 +10,6 @@ namespace RaptorTests.Audio
     using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
     using Raptor.OpenAL;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 
