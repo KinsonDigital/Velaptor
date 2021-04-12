@@ -15,7 +15,6 @@ namespace Raptor.OpenGL
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
     using Raptor.Content;
-    using Raptor.Factories;
     using Raptor.Input;
     using Raptor.NativeInterop;
     using Raptor.Services;
@@ -230,6 +229,9 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
+        public bool Initialized { get; private set; }
+
+        /// <inheritdoc/>
         public void Show()
         {
             // If the window is showing asynchronously, exit
@@ -342,6 +344,8 @@ namespace Raptor.OpenGL
             {
                 this.cachedTypeOfBorder.IsCaching = false;
             }
+
+            Initialized = true;
         }
 
         /// <summary>
