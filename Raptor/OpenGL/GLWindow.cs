@@ -1,12 +1,12 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Raptor.OpenGL
 {
+#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading;
@@ -14,7 +14,6 @@ namespace Raptor.OpenGL
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
-    using OpenTK.Windowing.Desktop;
     using Raptor.Content;
     using Raptor.Factories;
     using Raptor.Input;
@@ -25,26 +24,25 @@ namespace Raptor.OpenGL
     using GLWindowState = OpenTK.Windowing.Common.WindowState;
     using RaptorMouseButton = Raptor.Input.MouseButton;
     using SysVector2 = System.Numerics.Vector2;
+#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     internal sealed class GLWindow : IWindow
     {
         private readonly Dictionary<string, CachedValue<string>> cachedStringProps = new Dictionary<string, CachedValue<string>>();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
         private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new Dictionary<string, CachedValue<bool>>();
         private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
+        private readonly IGLInvoker gl;
         private readonly ISystemMonitorService systemMonitorService;
-        private GameWindowSettings? gameWinSettings;
-        private NativeWindowSettings? nativeWinSettings;
+        private readonly IGameWindowFacade windowFacade;
+        private readonly IPlatform platform;
         private CachedValue<StateOfWindow>? cachedWindowState;
         private CachedValue<BorderType>? cachedTypeOfBorder;
         private CachedValue<SysVector2>? cachedPosition;
-        private InternalGLWindow? appWindow;
         private DebugProc? debugProc;
-        private IGLInvoker? gl;
         private bool isShuttingDown;
         private bool isDiposed;
         private bool firstRenderInvoked;
@@ -53,13 +51,25 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
         /// </summary>
-        /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glInvoker">Invokes OpenGL functions.</param>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
-        public GLWindow(int width, int height, ISystemMonitorService systemMonitorService)
+        /// <param name="windowFacade">The internal OpenGL window facade.</param>
+        /// <param name="platform">Information about the platform that is running the application.</param>
+        public GLWindow(
+            int width,
+            int height,
+            IGLInvoker glInvoker,
+            ISystemMonitorService systemMonitorService,
+            IGameWindowFacade windowFacade,
+            IPlatform platform)
         {
+            // TODO: Add null checks to these items and implement unit tests for them
+            this.gl = glInvoker;
             this.systemMonitorService = systemMonitorService;
+            this.windowFacade = windowFacade;
+            this.platform = platform;
 
             SetupWidthHeightPropCaches(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
             SetupOtherPropCaches();
@@ -205,7 +215,7 @@ namespace Raptor.OpenGL
 
             SetupWindow();
 
-            this.appWindow?.Run();
+            this.windowFacade?.Run();
         }
 
         /// <inheritdoc/>
@@ -215,7 +225,7 @@ namespace Raptor.OpenGL
                 () =>
                 {
                     SetupWindow();
-                    this.appWindow?.Run();
+                    this.windowFacade?.Run();
                 }, this.tokenSrc.Token);
 
             this.showTask.Start();
@@ -234,12 +244,7 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public void Close()
         {
-            if (this.appWindow is null)
-            {
-                throw new Exception($"There was an issue trying to close the '{nameof(IWindow)}'.");
-            }
-
-            this.appWindow.Close();
+            this.windowFacade.Close();
         }
 
         /// <inheritdoc/>
@@ -367,33 +372,19 @@ namespace Raptor.OpenGL
         /// </summary>
         private void SetupWindow()
         {
-            this.gameWinSettings = new GameWindowSettings();
-            this.nativeWinSettings = new NativeWindowSettings()
-            {
-                Size = new Vector2i(Width, Height),
-                StartVisible = false,
-            };
+            this.windowFacade.Init(Width, Height);
 
-            this.appWindow = new InternalGLWindow(this.gameWinSettings, this.nativeWinSettings);
-
-            /*NOTE:
-             * The IoC container get instance must be called after the
-             * window has been called.  This is because an OpenGL context
-             * must be created first before any GL calls can be made.
-             */
-            this.gl = IoC.Container.GetInstance<IGLInvoker>();
-
-            this.appWindow.Load += GameWindow_Load;
-            this.appWindow.Unload += GameWindow_Unload;
-            this.appWindow.UpdateFrame += GameWindow_UpdateFrame;
-            this.appWindow.RenderFrame += GameWindow_RenderFrame;
-            this.appWindow.Resize += GameWindow_Resize;
-            this.appWindow.KeyDown += GameWindow_KeyDown;
-            this.appWindow.KeyUp += GameWindow_KeyUp;
-            this.appWindow.MouseDown += GameWindow_MouseDown;
-            this.appWindow.MouseUp += GameWindow_MouseUp;
-            this.appWindow.MouseMove += GameWindow_MouseMove;
-            this.appWindow.Closed += GameWindow_Closed;
+            this.windowFacade.Load += GameWindow_Load;
+            this.windowFacade.Unload += GameWindow_Unload;
+            this.windowFacade.UpdateFrame += GameWindow_UpdateFrame;
+            this.windowFacade.RenderFrame += GameWindow_RenderFrame;
+            this.windowFacade.Resize += GameWindow_Resize;
+            this.windowFacade.KeyDown += GameWindow_KeyDown;
+            this.windowFacade.KeyUp += GameWindow_KeyUp;
+            this.windowFacade.MouseDown += GameWindow_MouseDown;
+            this.windowFacade.MouseUp += GameWindow_MouseUp;
+            this.windowFacade.MouseMove += GameWindow_MouseMove;
+            this.windowFacade.Closed += GameWindow_Closed;
 
             this.debugProc = DebugCallback;
 
@@ -424,23 +415,26 @@ namespace Raptor.OpenGL
             {
                 if (disposing)
                 {
-                    if (!(this.appWindow is null))
-                    {
-                        this.tokenSrc.Dispose();
-                        this.showTask?.Dispose();
-                        this.cachedStringProps.Clear();
-                        this.cachedIntProps.Clear();
-                        this.cachedBoolProps.Clear();
-                        IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
-                        this.appWindow.Load -= GameWindow_Load;
-                        this.appWindow.Unload -= GameWindow_Unload;
-                        this.appWindow.UpdateFrame -= GameWindow_UpdateFrame;
-                        this.appWindow.RenderFrame -= GameWindow_RenderFrame;
-                        this.appWindow.Resize -= GameWindow_Resize;
-                        this.appWindow.Unload -= GameWindow_Unload;
-                        this.appWindow.Closed -= GameWindow_Closed;
-                        this.appWindow.Dispose();
-                    }
+                    this.tokenSrc.Dispose();
+                    this.showTask?.Dispose();
+                    this.cachedStringProps.Clear();
+                    this.cachedIntProps.Clear();
+                    this.cachedBoolProps.Clear();
+
+                    IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
+
+                    this.windowFacade.Load -= GameWindow_Load;
+                    this.windowFacade.Unload -= GameWindow_Unload;
+                    this.windowFacade.UpdateFrame -= GameWindow_UpdateFrame;
+                    this.windowFacade.RenderFrame -= GameWindow_RenderFrame;
+                    this.windowFacade.Resize -= GameWindow_Resize;
+                    this.windowFacade.KeyDown -= GameWindow_KeyDown;
+                    this.windowFacade.KeyUp -= GameWindow_KeyUp;
+                    this.windowFacade.MouseDown -= GameWindow_MouseDown;
+                    this.windowFacade.MouseUp -= GameWindow_MouseUp;
+                    this.windowFacade.MouseMove -= GameWindow_MouseMove;
+                    this.windowFacade.Closed -= GameWindow_Closed;
+                    this.windowFacade.Dispose();
                 }
 
                 this.isDiposed = true;
@@ -500,22 +494,12 @@ namespace Raptor.OpenGL
 
             if (AutoClearBuffer)
             {
-                if (this.gl is null)
-                {
-                    throw new Exception($"There was an issue rendering the '{nameof(IWindow)}'.");
-                }
-
                 this.gl.Clear(ClearBufferMask.ColorBufferBit);
             }
 
             Draw?.Invoke(frameTime);
 
-            if (this.appWindow is null)
-            {
-                throw new Exception($"There was an issue rendering the '{nameof(IWindow)}'.");
-            }
-
-            this.appWindow.SwapBuffers();
+            this.windowFacade.SwapBuffers();
         }
 
         /// <summary>
@@ -524,11 +508,6 @@ namespace Raptor.OpenGL
         /// <param name="currentSize">Resize event args.</param>
         private void GameWindow_Resize(ResizeEventArgs currentSize)
         {
-            if (this.gl is null)
-            {
-                throw new Exception($"There was an issue resizing the '{nameof(IWindow)}'.");
-            }
-
             // Update the view port so it is the same size as the window
             this.gl.Viewport(0, 0, currentSize.Width, currentSize.Height);
             WinResize?.Invoke();
@@ -556,21 +535,11 @@ namespace Raptor.OpenGL
                     defaultValue: width,
                     getterWhenNotCaching: () =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Width)}' property value.");
-                        }
-
-                        return this.appWindow.Size.X;
+                        return this.windowFacade.Size.X;
                     },
                     setterWhenNotCaching: (value) =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Width)}' property value.");
-                        }
-
-                        this.appWindow.Size = new Vector2i(value, this.appWindow.Size.Y);
+                        this.windowFacade.Size = new Vector2i(value, this.windowFacade.Size.Y);
                     }));
 
             this.cachedIntProps.Add(
@@ -579,21 +548,11 @@ namespace Raptor.OpenGL
                     defaultValue: height,
                     getterWhenNotCaching: () =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Height)}' property value.");
-                        }
-
-                        return this.appWindow.Size.Y;
+                        return this.windowFacade.Size.Y;
                     },
                     setterWhenNotCaching: (value) =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Height)}' property value.");
-                        }
-
-                        this.appWindow.Size = new Vector2i(this.appWindow.Size.X, value);
+                        this.windowFacade.Size = new Vector2i(this.windowFacade.Size.X, value);
                     }));
         }
 
@@ -608,33 +567,21 @@ namespace Raptor.OpenGL
                     defaultValue: "Raptor Application",
                     getterWhenNotCaching: () =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Title)}' property value.");
-                        }
-
-                        return this.appWindow.Title;
+                        return this.windowFacade.Title;
                     },
                     setterWhenNotCaching: (value) =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Title)}' property value.");
-                        }
-
-                        this.appWindow.Title = value;
+                        this.windowFacade.Title = value;
                     }));
 
             SysVector2 defaultPosition = SysVector2.Zero;
 
             var mainMonitor = this.systemMonitorService.MainMonitor;
 
-            var platform = new Platform();
-
             float ToMonitorScale(float value)
             {
                 return value * (mainMonitor is null ? 0 : mainMonitor.HorizontalDPI) /
-                    (platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
+                    (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
             }
 
             var halfWidth = ToMonitorScale(Width / 2f);
@@ -649,21 +596,11 @@ namespace Raptor.OpenGL
                 defaultValue: defaultPosition,
                 getterWhenNotCaching: () =>
                 {
-                    if (this.appWindow is null)
-                    {
-                        throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
-                    }
-
-                    return new SysVector2(this.appWindow.Location.X, this.appWindow.Location.Y);
+                    return new SysVector2(this.windowFacade.Location.X, this.windowFacade.Location.Y);
                 },
                 setterWhenNotCaching: (value) =>
                 {
-                    if (this.appWindow is null)
-                    {
-                        throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
-                    }
-
-                    this.appWindow.Location = new Vector2i((int)value.X, (int)value.Y);
+                    this.windowFacade.Location = new Vector2i((int)value.X, (int)value.Y);
                 });
 
             this.cachedIntProps.Add(
@@ -672,21 +609,11 @@ namespace Raptor.OpenGL
                     defaultValue: 60,
                     getterWhenNotCaching: () =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(UpdateFrequency)}' property value.");
-                        }
-
-                        return (int)this.appWindow.UpdateFrequency;
+                        return (int)this.windowFacade.UpdateFrequency;
                     },
                     setterWhenNotCaching: (value) =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(UpdateFrequency)}' property value.");
-                        }
-
-                        this.appWindow.UpdateFrequency = value;
+                        this.windowFacade.UpdateFrequency = value;
                     }));
 
             this.cachedBoolProps.Add(
@@ -695,63 +622,33 @@ namespace Raptor.OpenGL
                     defaultValue: true,
                     getterWhenNotCaching: () =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(MouseCursorVisible)}' property value.");
-                        }
-
-                        return this.appWindow.CursorVisible;
+                        return this.windowFacade.CursorVisible;
                     },
                     setterWhenNotCaching: (value) =>
                     {
-                        if (this.appWindow is null)
-                        {
-                            throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(MouseCursorVisible)}' property value.");
-                        }
-
-                        this.appWindow.CursorVisible = value;
+                        this.windowFacade.CursorVisible = value;
                     }));
 
             this.cachedWindowState = new CachedValue<StateOfWindow>(
                 defaultValue: StateOfWindow.Normal,
                 getterWhenNotCaching: () =>
                 {
-                    if (this.appWindow is null)
-                    {
-                        throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
-                    }
-
-                    return (StateOfWindow)this.appWindow.WindowState;
+                    return (StateOfWindow)this.windowFacade.WindowState;
                 },
                 setterWhenNotCaching: (value) =>
                 {
-                    if (this.appWindow is null)
-                    {
-                        throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
-                    }
-
-                    this.appWindow.WindowState = (GLWindowState)value;
+                    this.windowFacade.WindowState = (GLWindowState)value;
                 });
 
             this.cachedTypeOfBorder = new CachedValue<BorderType>(
                 defaultValue: BorderType.Resizable,
                 getterWhenNotCaching: () =>
                 {
-                    if (this.appWindow is null)
-                    {
-                        throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
-                    }
-
-                    return (BorderType)this.appWindow.WindowBorder;
+                    return (BorderType)this.windowFacade.WindowBorder;
                 },
                 setterWhenNotCaching: (value) =>
                 {
-                    if (this.appWindow is null)
-                    {
-                        throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
-                    }
-
-                    this.appWindow.WindowBorder = (WindowBorder)value;
+                    this.windowFacade.WindowBorder = (WindowBorder)value;
                 });
         }
 

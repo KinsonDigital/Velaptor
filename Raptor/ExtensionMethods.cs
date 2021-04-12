@@ -252,13 +252,13 @@ namespace Raptor
         [ExcludeFromCodeCoverage]
         internal static void SuppressDisposableTransientWarning<T>(this Container container)
         {
-            var spriteBatchRegistration = container.GetRegistration(typeof(T))?.Registration;
-            spriteBatchRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
+            var registration = container.GetRegistration(typeof(T))?.Registration;
+            registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
         }
 
         /// <summary>
-        ///     Conditionally registers that a new instance of TImplementation will be returned
-        ///     every time a TService is requested (transient) and where the supplied predicate
+        ///     Conditionally registers that a new instance of <typeparamref name="TImplementation"/> will be returned
+        ///     every time a <typeparamref name="TService"/> is requested (transient) and where the supplied predicate
         ///     returns true. The predicate will only be evaluated a finite number of times;
         ///     the predicate is unsuited for making decisions based on runtime conditions.
         /// </summary>
@@ -266,7 +266,7 @@ namespace Raptor
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
         /// <param name="predicate">
-        ///     The predicate that determines whether the TImplementation can be applied for
+        ///     The predicate that determines whether the <typeparamref name="TImplementation"/> can be applied for
         ///     the requested service type. This predicate can be used to build a fallback mechanism
         ///     where multiple registrations for the same service type are made. Note that the
         ///     predicate will be called a finite number of times and its result will be cached
@@ -294,8 +294,8 @@ namespace Raptor
         }
 
         /// <summary>
-        ///     Registers that a new instance of TImplementation will be returned every time
-        ///     a TService is requested (transient).
+        ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
+        ///     a <typeparamref name="TService"/> is requested (transient).
         /// </summary>
         /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
@@ -321,20 +321,26 @@ namespace Raptor
         }
 
         /// <summary>
-        ///     Registers the specified delegate that allows returning transient instances of
-        ///     TService. The delegate is expected to always return a new instance on each call.
+        ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
+        ///     a <typeparamref name="TService"/> is requested (transient).
         /// </summary>
-        /// <typeparam name="TService">The interface or base type that can be used to retrieve instances.</typeparam>
+        /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
+        /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
-        /// <param name="instanceCreator">The delegate that allows building or creating new instances.</param>
+        /// <param name="lifestyle">The lifestyle that specifies how the returned instance will be cached.</param>
         /// <param name="suppressDisposal">True to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <remarks>
+        ///     This method uses the container's LifestyleSelectionBehavior to select the exact
+        ///     lifestyle for the specified type. By default this will be Transient.
+        /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
         [ExcludeFromCodeCoverage]
-        internal static void Register<TService>(this Container container, Func<TService> instanceCreator, bool suppressDisposal = false)
+        internal static void Register<TService, TImplementation>(this Container container, Lifestyle lifestyle, bool suppressDisposal = false)
             where TService : class
+            where TImplementation : class, TService
         {
-            container.Register(instanceCreator);
+            container.Register<TService, TImplementation>(lifestyle);
 
             if (suppressDisposal)
             {

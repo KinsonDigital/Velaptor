@@ -15,38 +15,25 @@ namespace Raptor
     [ExcludeFromCodeCoverage]
     public class Platform : IPlatform
     {
-        private static OSPlatform[]? platforms;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Platform"/> class.
-        /// </summary>
-        public Platform()
+        private static readonly OSPlatform[] Platforms = new OSPlatform[]
         {
-            if (!(platforms is null))
-            {
-                return;
-            }
-
-            platforms = new OSPlatform[]
-            {
-                OSPlatform.Windows,
-                OSPlatform.OSX,
-                OSPlatform.Linux,
-                OSPlatform.FreeBSD,
-            };
-        }
+            OSPlatform.Windows,
+            OSPlatform.OSX,
+            OSPlatform.Linux,
+            OSPlatform.FreeBSD,
+        };
 
         /// <inheritdoc/>
         public OSPlatform CurrentPlatform
         {
             get
             {
-                if (platforms is null)
+                if (Platforms is null)
                 {
                     throw new InvalidOperationException($"The '{nameof(IPlatform)}' implementation has not created all possible platforms.");
                 }
 
-                foreach (var platform in platforms)
+                foreach (var platform in Platforms)
                 {
                     if (RuntimeInformation.IsOSPlatform(platform))
                     {

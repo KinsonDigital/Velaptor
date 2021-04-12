@@ -11,6 +11,7 @@ namespace Raptor
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
+    using OpenTK.Windowing.Desktop;
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
@@ -81,6 +82,8 @@ namespace Raptor
             IoCContainer.Register<IShaderProgram, ShaderProgram>(Lifestyle.Singleton);
 
             IoCContainer.Register<ISpriteBatch, SpriteBatch>(Lifestyle.Singleton);
+
+            IoCContainer.Register<IGameWindowFacade, GameWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
 
             SetupAudio();
         }
