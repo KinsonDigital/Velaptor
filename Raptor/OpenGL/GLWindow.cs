@@ -1,4 +1,4 @@
-// <copyright file="GLWindow.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -67,7 +67,31 @@ namespace Raptor.OpenGL
             IPlatform platform,
             IContentLoader contentLoader)
         {
-            // TODO: Add null checks to these items and implement unit tests for them
+            if (glInvoker is null)
+            {
+                throw new ArgumentNullException(nameof(glInvoker), "The parameter must not be null.");
+            }
+
+            if (systemMonitorService is null)
+            {
+                throw new ArgumentNullException(nameof(systemMonitorService), "The parameter must not be null.");
+            }
+
+            if (windowFacade is null)
+            {
+                throw new ArgumentNullException(nameof(windowFacade), "The parameter must not be null.");
+            }
+
+            if (platform is null)
+            {
+                throw new ArgumentNullException(nameof(platform), "The parameter must not be null.");
+            }
+
+            if (contentLoader is null)
+            {
+                throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
+            }
+
             this.gl = glInvoker;
             this.systemMonitorService = systemMonitorService;
             this.windowFacade = windowFacade;
