@@ -1,0 +1,18 @@
+﻿// <copyright file="IKeyboardInput.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Raptor.Input
+{
+    using System;
+
+    /// <summary>
+    /// Gets the state of game-specific input such as a mouse or keyboard.
+    /// </summary>
+    /// <typeparam name="TInputs">The inputs available.</typeparam>
+    /// <typeparam name="TInputState">The state of the input.</typeparam>
+    public interface IKeyboardInput<TInputs, TInputState> : IGameInput<TInputs, TInputState>
+        where TInputs : struct, Enum
+    {
+    }
+}

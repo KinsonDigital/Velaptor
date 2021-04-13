@@ -31,5 +31,21 @@ namespace Raptor.Input
         /// </summary>
         /// <returns>The state of the input.</returns>
         TInputState GetState();
+
+        /// <summary>
+        /// Sets the given <paramref name="input"/> to the given <paramref name="state"/>.
+        /// </summary>
+        /// <param name="input">The input to set.</param>
+        /// <param name="state">The state to set the input to.</param>
+        /// <remarks>
+        ///     When the <paramref name="state"/> is the value of <see langword=""="true"/>,
+        ///     this means that the input is in the down state.
+        /// </remarks>
+        void SetState(TInputs input, bool state);
+
+        /// <summary>
+        /// Resets the state of the input.
+        /// </summary>
+        void Reset();
     }
 }

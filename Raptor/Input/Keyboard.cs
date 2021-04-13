@@ -10,7 +10,7 @@ namespace Raptor.Input
     /// <summary>
     /// Provides functionality for the keyboard.
     /// </summary>
-    public class Keyboard : IGameInput<KeyCode, KeyboardState>
+    public class Keyboard : IKeyboardInput<KeyCode, KeyboardState>
     {
         /// <summary>
         /// Gets the current state of the keyboard.
@@ -18,14 +18,14 @@ namespace Raptor.Input
         /// <returns>The state of the keyboard.</returns>
         public KeyboardState GetState()
         {
-            if (IGameInput<KeyCode, KeyboardState>.InputStates.Count <= 0)
+            if (IKeyboardInput<KeyCode, KeyboardState>.InputStates.Count <= 0)
             {
-                InitializepKeyStates();
+                InitializeKeyStates();
             }
 
             var keyboardState = default(KeyboardState);
 
-            foreach (var state in IGameInput<KeyCode, KeyboardState>.InputStates)
+            foreach (var state in IKeyboardInput<KeyCode, KeyboardState>.InputStates)
             {
                 keyboardState.SetKeyState(state.Key, state.Value);
             }
@@ -34,25 +34,43 @@ namespace Raptor.Input
         }
 
         /// <summary>
-        /// Sets the state of the given <paramref name="key"/> to the given <paramref name="state"/>.
+        /// Sets the state of the given <paramref name="input"/> to the given <paramref name="state"/>.
         /// </summary>
-        /// <param name="key">The key to set.</param>
+        /// <param name="input">The key to set.</param>
         /// <param name="state">The state of the given key.</param>
         /// <remarks>
-        ///     If the <paramref name="state"/> paramemter is true, means the key is in the down position.
+        ///     When <paramref name="state"/> is the value of <see langword=""="true"/>,
+        ///     this means the keyboard key is being pressed down.
         /// </remarks>
-        internal static void SetKeyState(KeyCode key, bool state) => IGameInput<KeyCode, KeyboardState>.InputStates[key] = state;
+        public void SetState(KeyCode input, bool state)
+            => IKeyboardInput<KeyCode, KeyboardState>.InputStates[input] = state;
+
+        /// <inheritdoc/>
+        public void Reset()
+        {
+            if (IKeyboardInput<KeyCode, KeyboardState>.InputStates.Count <= 0)
+            {
+                InitializeKeyStates();
+            }
+
+            var keys = IKeyboardInput<KeyCode, KeyboardState>.InputStates.Keys.ToArray();
+
+            for (var i = 0; i < keys.Length; i++)
+            {
+                IKeyboardInput<KeyCode, KeyboardState>.InputStates[keys[i]] = false;
+            }
+        }
 
         /// <summary>
         /// Initializes all of the available keys and default states.
         /// </summary>
-        private static void InitializepKeyStates()
+        private static void InitializeKeyStates()
         {
             var keyCodes = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
             for (var i = 0; i < keyCodes.Length; i++)
             {
-                IGameInput<KeyCode, KeyboardState>.InputStates.Add(keyCodes[i], false);
+                IKeyboardInput<KeyCode, KeyboardState>.InputStates.Add(keyCodes[i], false);
             }
         }
     }
