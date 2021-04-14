@@ -34,7 +34,7 @@ namespace RaptorTests.OpenGL
     /// <summary>
     /// Tests the <see cref="GLWindow"/> class.
     /// </summary>
-    public class GLWindowTests : IDisposable
+    public class GLWindowTests
     {
         private readonly Mock<IGLInvoker> mockGLInvoker;
         private readonly Mock<ISystemMonitorService> mockMonitorService;
@@ -567,7 +567,8 @@ namespace RaptorTests.OpenGL
 
             /* NOTE: this is a local function to act as a handler to the event
              * This also allows the unregistration of the event as well to prevent
-             */ memory leaks during test execution
+             * memory leaks during test execution
+             */
             void TestHandler() => loadInvoked = true;
 
             window.Initialize += TestHandler;
@@ -1137,97 +1138,76 @@ namespace RaptorTests.OpenGL
         public void Dispose_WhenInvoked_UnregistersKeyDownEvent()
         {
             // Arrange
-            var keyboard = new Keyboard();
-
-            var keyEventArgs = new KeyboardKeyEventArgs(Keys.Space, It.IsAny<int>(), It.IsAny<KeyModifiers>(), It.IsAny<bool>());
-
             var window = CreateWindow();
             window.Show();
 
             // Act
             window.Dispose();
-            this.mockWindowFacade.Raise(m => m.KeyDown += null, keyEventArgs);
+            this.mockWindowFacade.Raise(m => m.KeyDown += null, It.IsAny<KeyboardKeyEventArgs>());
 
             // Assert
-            Assert.False(keyboard.GetState().IsKeyDown(KeyCode.Space));
+            this.mockKeyboard.Verify(m => m.SetState(It.IsAny<KeyCode>(), It.IsAny<bool>()), Times.Never());
         }
 
         [Fact]
         public void Dispose_WhenInvoked_UnregistersKeyUpEvent()
         {
             // Arrange
-            var keyboard = new Keyboard();
-            keyboard.SetState(KeyCode.Space, true);
-
-            var keyEventArgs = new KeyboardKeyEventArgs(Keys.Space, It.IsAny<int>(), It.IsAny<KeyModifiers>(), It.IsAny<bool>());
-
             var window = CreateWindow();
             window.Show();
 
             // Act
             window.Dispose();
-            this.mockWindowFacade.Raise(m => m.KeyUp += null, keyEventArgs);
+            this.mockWindowFacade.Raise(m => m.KeyUp += null, It.IsAny<KeyboardKeyEventArgs>());
 
             // Assert
-            Assert.True(keyboard.GetState().IsKeyDown(KeyCode.Space));
+            this.mockKeyboard.Verify(m => m.SetState(It.IsAny<KeyCode>(), It.IsAny<bool>()), Times.Never());
         }
 
         [Fact]
         public void Dispose_WhenInvoked_UnregistersMouseDownEvent()
         {
             // Arrange
-            var mouse = new Mouse();
-
-            var mouseButtonEventArgs = new MouseButtonEventArgs(TKMouseButton.Right, It.IsAny<InputAction>(), It.IsAny<KeyModifiers>());
-
             var window = CreateWindow();
             window.Show();
 
             // Act
             window.Dispose();
-            this.mockWindowFacade.Raise(m => m.MouseDown += null, mouseButtonEventArgs);
+            this.mockWindowFacade.Raise(m => m.MouseDown += null, It.IsAny<MouseButtonEventArgs>());
 
             // Assert
-            Assert.False(mouse.GetState().IsRightButtonDown());
+            this.mockMouse.Verify(m => m.SetState(It.IsAny<RaptorMouseButton>(), It.IsAny<bool>()), Times.Never());
         }
 
         [Fact]
         public void Dispose_WhenInvoked_UnregistersMouseUpEvent()
         {
             // Arrange
-            var mouse = new Mouse();
-            mouse.SetState(RaptorMouseButton.RightButton, true);
-
-            var mouseButtonEventArgs = new MouseButtonEventArgs(TKMouseButton.Right, It.IsAny<InputAction>(), It.IsAny<KeyModifiers>());
-
             var window = CreateWindow();
             window.Show();
 
             // Act
             window.Dispose();
-            this.mockWindowFacade.Raise(m => m.MouseUp += null, mouseButtonEventArgs);
+            this.mockWindowFacade.Raise(m => m.MouseUp += null, It.IsAny<MouseButtonEventArgs>());
 
             // Assert
-            Assert.True(mouse.GetState().IsRightButtonDown());
+            this.mockMouse.Verify(m => m.SetState(It.IsAny<RaptorMouseButton>(), It.IsAny<bool>()), Times.Never());
         }
 
         [Fact]
         public void Dispose_WhenInvoked_UnregistersMouseMoveEvent()
         {
             // Arrange
-            var mouse = new Mouse();
-
-            var mouseMoveEventArgs = new MouseMoveEventArgs(new TKVector2(100, 200), It.IsAny<TKVector2>());
-
             var window = CreateWindow();
             window.Show();
 
             // Act
             window.Dispose();
-            this.mockWindowFacade.Raise(m => m.MouseMove += null, mouseMoveEventArgs);
+            this.mockWindowFacade.Raise(m => m.MouseMove += null, It.IsAny<MouseMoveEventArgs>());
 
             // Assert
-            Assert.Equal(new SysVector2(0, 0), mouse.GetState().GetPosition());
+            this.mockMouse.Verify(m => m.SetXPos(It.IsAny<int>()), Times.Never());
+            this.mockMouse.Verify(m => m.SetYPos(It.IsAny<int>()), Times.Never());
         }
 
         [Fact]
@@ -1288,19 +1268,5 @@ namespace RaptorTests.OpenGL
                 this.mockKeyboard.Object,
                 this.mockMouse.Object,
                 this.mockContentLoader.Object);
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            // TODO: This can be removed
-
-            // Set the keyboard key and mouse right button back to default states for testing purposes.
-            // These values are static so they need to be reset between each test so one test does not effect another
-            var keyboard = new Keyboard();
-            keyboard.SetState(KeyCode.Space, false);
-
-            var mouse = new Mouse();
-            mouse.SetState(RaptorMouseButton.RightButton, false);
-        }
     }
 }
