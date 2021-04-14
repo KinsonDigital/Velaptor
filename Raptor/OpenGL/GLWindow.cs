@@ -30,9 +30,6 @@ namespace Raptor.OpenGL
     internal sealed class GLWindow : IWindow
     {
         private const string NullParamExceptionMessage = "The parameter must not be null.";
-        private readonly Dictionary<string, CachedValue<string>> cachedStringProps = new Dictionary<string, CachedValue<string>>();
-        private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
-        private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new Dictionary<string, CachedValue<bool>>();
         private readonly IGLInvoker gl;
         private readonly ISystemMonitorService systemMonitorService;
         private readonly IGameWindowFacade windowFacade;
@@ -40,9 +37,6 @@ namespace Raptor.OpenGL
         private readonly ITaskService taskService;
         private readonly IKeyboardInput<KeyCode, KeyboardState> keyboard;
         private readonly IMouseInput<RaptorMouseButton, MouseState> mouse;
-        private CachedValue<StateOfWindow>? cachedWindowState;
-        private CachedValue<BorderType>? cachedTypeOfBorder;
-        private CachedValue<SysVector2>? cachedPosition;
         private DebugProc? debugProc;
         private bool isShuttingDown;
         private bool isDiposed;
@@ -132,8 +126,8 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public string Title
         {
-            get => this.cachedStringProps[nameof(Title)].GetValue();
-            set => this.cachedStringProps[nameof(Title)].SetValue(value);
+            get => CachedStringProps[nameof(Title)].GetValue();
+            set => CachedStringProps[nameof(Title)].SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -141,36 +135,36 @@ namespace Raptor.OpenGL
         {
             get
             {
-                if (this.cachedPosition is null)
+                if (CachedPosition is null)
                 {
                     throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
                 }
 
-                return this.cachedPosition.GetValue();
+                return CachedPosition.GetValue();
             }
             set
             {
-                if (this.cachedPosition is null)
+                if (CachedPosition is null)
                 {
                     throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
                 }
 
-                this.cachedPosition.SetValue(value);
+                CachedPosition.SetValue(value);
             }
         }
 
         /// <inheritdoc/>
         public int Width
         {
-            get => this.cachedIntProps[nameof(Width)].GetValue();
-            set => this.cachedIntProps[nameof(Width)].SetValue(value);
+            get => CachedIntProps[nameof(Width)].GetValue();
+            set => CachedIntProps[nameof(Width)].SetValue(value);
         }
 
         /// <inheritdoc/>
         public int Height
         {
-            get => this.cachedIntProps[nameof(Height)].GetValue();
-            set => this.cachedIntProps[nameof(Height)].SetValue(value);
+            get => CachedIntProps[nameof(Height)].GetValue();
+            set => CachedIntProps[nameof(Height)].SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -179,8 +173,8 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public bool MouseCursorVisible
         {
-            get => this.cachedBoolProps[nameof(MouseCursorVisible)].GetValue();
-            set => this.cachedBoolProps[nameof(MouseCursorVisible)].SetValue(value);
+            get => CachedBoolProps[nameof(MouseCursorVisible)].GetValue();
+            set => CachedBoolProps[nameof(MouseCursorVisible)].SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -188,21 +182,21 @@ namespace Raptor.OpenGL
         {
             get
             {
-                if (this.cachedWindowState is null)
+                if (CachedWindowState is null)
                 {
                     throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
                 }
 
-                return this.cachedWindowState.GetValue();
+                return CachedWindowState.GetValue();
             }
             set
             {
-                if (this.cachedWindowState is null)
+                if (CachedWindowState is null)
                 {
                     throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
                 }
 
-                this.cachedWindowState.SetValue(value);
+                CachedWindowState.SetValue(value);
             }
         }
 
@@ -226,21 +220,21 @@ namespace Raptor.OpenGL
         {
             get
             {
-                if (this.cachedTypeOfBorder is null)
+                if (CachedTypeOfBorder is null)
                 {
                     throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
                 }
 
-                return this.cachedTypeOfBorder.GetValue();
+                return CachedTypeOfBorder.GetValue();
             }
             set
             {
-                if (this.cachedTypeOfBorder is null)
+                if (CachedTypeOfBorder is null)
                 {
                     throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
                 }
 
-                this.cachedTypeOfBorder.SetValue(value);
+                CachedTypeOfBorder.SetValue(value);
             }
         }
 
@@ -250,8 +244,8 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public int UpdateFrequency
         {
-            get => this.cachedIntProps[nameof(UpdateFrequency)].GetValue();
-            set => this.cachedIntProps[nameof(UpdateFrequency)].SetValue(value);
+            get => CachedIntProps[nameof(UpdateFrequency)].GetValue();
+            set => CachedIntProps[nameof(UpdateFrequency)].SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -260,32 +254,32 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Gets the list of caches for <see langword=""="string"/> properties.
         /// </summary>
-        public Dictionary<string, CachedValue<string>> CachedStringProps => this.cachedStringProps;
+        public Dictionary<string, CachedValue<string>> CachedStringProps { get; } = new Dictionary<string, CachedValue<string>>();
 
         /// <summary>
         /// Gets the list of caches for <see langword=""="int"/> properties.
         /// </summary>
-        public Dictionary<string, CachedValue<int>> CachedIntProps => this.cachedIntProps;
+        public Dictionary<string, CachedValue<int>> CachedIntProps { get; } = new Dictionary<string, CachedValue<int>>();
 
         /// <summary>
         /// Gets the list of caches for <see langword=""="bool"/> properties.
         /// </summary>
-        public Dictionary<string, CachedValue<bool>> CachedBoolProps => this.cachedBoolProps;
+        public Dictionary<string, CachedValue<bool>> CachedBoolProps { get; } = new Dictionary<string, CachedValue<bool>>();
 
         /// <summary>
         /// Gets the cache for the <see cref="WindowState"/> property.
         /// </summary>
-        public CachedValue<StateOfWindow>? CachedWindowState => this.cachedWindowState;
+        public CachedValue<StateOfWindow>? CachedWindowState { get; private set; }
 
         /// <summary>
         /// Gets the cache for the <see cref="TypeOfBorder"/> property.
         /// </summary>
-        public CachedValue<BorderType>? CachedTypeOfBorder => this.cachedTypeOfBorder;
+        public CachedValue<BorderType>? CachedTypeOfBorder { get; private set; }
 
         /// <summary>
         /// Gets the cache for the <see cref="Position"/> property.
         /// </summary>
-        public CachedValue<SysVector2>? CachedPosition => this.cachedPosition;
+        public CachedValue<SysVector2>? CachedPosition { get; private set; }
 
         /// <inheritdoc/>
         public void Show()
@@ -376,23 +370,23 @@ namespace Raptor.OpenGL
         /// </summary>
         private void IGLInvoker_OpenGLInitialized(object? sender, EventArgs e)
         {
-            this.cachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            this.cachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
-            if (!(this.cachedPosition is null))
+            if (!(CachedPosition is null))
             {
-                this.cachedPosition.IsCaching = false;
+                CachedPosition.IsCaching = false;
             }
 
-            if (!(this.cachedWindowState is null))
+            if (!(CachedWindowState is null))
             {
-                this.cachedWindowState.IsCaching = false;
+                CachedWindowState.IsCaching = false;
             }
 
-            if (!(this.cachedTypeOfBorder is null))
+            if (!(CachedTypeOfBorder is null))
             {
-                this.cachedTypeOfBorder.IsCaching = false;
+                CachedTypeOfBorder.IsCaching = false;
             }
 
             Initialized = true;
@@ -580,9 +574,9 @@ namespace Raptor.OpenGL
                 if (disposing)
                 {
                     this.taskService?.Dispose();
-                    this.cachedStringProps.Clear();
-                    this.cachedIntProps.Clear();
-                    this.cachedBoolProps.Clear();
+                    CachedStringProps.Clear();
+                    CachedIntProps.Clear();
+                    CachedBoolProps.Clear();
 
                     IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
 
@@ -611,7 +605,7 @@ namespace Raptor.OpenGL
         /// <param name="height">The window height.</param>
         private void SetupWidthHeightPropCaches(int width, int height)
         {
-            this.cachedIntProps.Add(
+            CachedIntProps.Add(
                 nameof(Width), // key
                 new CachedValue<int>( // value
                     defaultValue: width,
@@ -624,7 +618,7 @@ namespace Raptor.OpenGL
                         this.windowFacade.Size = new Vector2i(value, this.windowFacade.Size.Y);
                     }));
 
-            this.cachedIntProps.Add(
+            CachedIntProps.Add(
                 nameof(Height), // key
                 new CachedValue<int>( // value
                     defaultValue: height,
@@ -643,7 +637,7 @@ namespace Raptor.OpenGL
         /// </summary>
         private void SetupOtherPropCaches()
         {
-            this.cachedStringProps.Add(
+            CachedStringProps.Add(
                 nameof(Title), // key
                 new CachedValue<string>( // value
                     defaultValue: "Raptor Application",
@@ -674,7 +668,7 @@ namespace Raptor.OpenGL
                 defaultPosition = new SysVector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
             }
 
-            this.cachedPosition = new CachedValue<SysVector2>(
+            CachedPosition = new CachedValue<SysVector2>(
                 defaultValue: defaultPosition,
                 getterWhenNotCaching: () =>
                 {
@@ -685,7 +679,7 @@ namespace Raptor.OpenGL
                     this.windowFacade.Location = new Vector2i((int)value.X, (int)value.Y);
                 });
 
-            this.cachedIntProps.Add(
+            CachedIntProps.Add(
                 nameof(UpdateFrequency), // key
                 new CachedValue<int>( // value
                     defaultValue: 60,
@@ -698,7 +692,7 @@ namespace Raptor.OpenGL
                         this.windowFacade.UpdateFrequency = value;
                     }));
 
-            this.cachedBoolProps.Add(
+            CachedBoolProps.Add(
                 nameof(MouseCursorVisible), // key
                 new CachedValue<bool>( // value
                     defaultValue: true,
@@ -711,7 +705,7 @@ namespace Raptor.OpenGL
                         this.windowFacade.CursorVisible = value;
                     }));
 
-            this.cachedWindowState = new CachedValue<StateOfWindow>(
+            CachedWindowState = new CachedValue<StateOfWindow>(
                 defaultValue: StateOfWindow.Normal,
                 getterWhenNotCaching: () =>
                 {
@@ -722,7 +716,7 @@ namespace Raptor.OpenGL
                     this.windowFacade.WindowState = (GLWindowState)value;
                 });
 
-            this.cachedTypeOfBorder = new CachedValue<BorderType>(
+            CachedTypeOfBorder = new CachedValue<BorderType>(
                 defaultValue: BorderType.Resizable,
                 getterWhenNotCaching: () =>
                 {
