@@ -533,7 +533,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public void Run()
+        public void Show()
         {
             if (this.gameWindow is null)
             {
