@@ -8,6 +8,9 @@ namespace RaptorTests.Exceptions
     using Raptor.Exceptions;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="InvalidInputException"/> class.
+    /// </summary>
     public class InvalidInputExceptionTests
     {
         #region Constructor Tests

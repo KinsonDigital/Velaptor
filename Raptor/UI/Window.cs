@@ -111,7 +111,7 @@ namespace Raptor.UI
             set => this.window.ContentLoader = value;
         }
 
-        // TODO: Unit test this
+        /// <inheritdoc/>
         public bool Initialized => this.window.Initialized;
 
         /// <summary>

@@ -50,12 +50,12 @@ namespace Raptor.OpenGL
         event Action<KeyboardKeyEventArgs>? KeyUp;
 
         /// <summary>
-        /// Occurs whenever a OpenTK.Windowing.GraphicsLibraryFramework.MouseButton is clicked.
+        /// Occurs whenever a <see cref="MouseButton"/> is clicked.
         /// </summary>
         event Action<MouseButtonEventArgs>? MouseDown;
 
         /// <summary>
-        /// Occurs whenever a OpenTK.Windowing.GraphicsLibraryFramework.MouseButton is released.
+        /// Occurs whenever a <see cref="MouseButton"/> is released.
         /// </summary>
         event Action<MouseButtonEventArgs>? MouseUp;
 
@@ -70,17 +70,17 @@ namespace Raptor.OpenGL
         event Action? Closed;
 
         /// <summary>
-        /// Gets or sets a OpenTK.Mathematics.Vector2i structure that contains the external size of this window.
+        /// Gets or sets a <see cref="Vector2i"/> structure that contains the external size of this window.
         /// </summary>
         unsafe Vector2i Size { get; set; }
 
         /// <summary>
-        /// Gets or sets a OpenTK.Mathematics.Vector2i structure that contains the location of this window on the desktop.
+        /// Gets or sets a <see cref="Vector2i"/> structure that contains the location of this window on the desktop.
         /// </summary>
         unsafe Vector2i Location { get; set; }
 
         /// <summary>
-        /// Gets or sets a double representing the update frequency, in hertz.
+        /// Gets or sets a value representing the update frequency, in hertz.
         /// </summary>
         /// <remarks>
         ///     A value of 0.0 indicates that UpdateFrame events are generated at the maximum
@@ -95,12 +95,12 @@ namespace Raptor.OpenGL
         unsafe bool CursorVisible { get; set; }
 
         /// <summary>
-        /// Gets or sets the OpenTK.Windowing.Desktop.NativeWindow.WindowState for this window.
+        /// Gets or sets the <see cref="OpenTK.Windowing.Common.WindowState"/> for this window.
         /// </summary>
         unsafe WindowState WindowState { get; set; }
 
         /// <summary>
-        /// Gets or sets the OpenTK.Windowing.Desktop.NativeWindow.WindowBorder for this window.
+        /// Gets or sets the <see cref="OpenTK.Windowing.Common.WindowBorder"/> for this window.
         /// </summary>
         unsafe WindowBorder WindowBorder { get; set; }
 
@@ -132,7 +132,7 @@ namespace Raptor.OpenGL
         void SwapBuffers();
 
         /// <summary>
-        /// Closes the window facade.
+        /// Closes the window.
         /// </summary>
         void Close();
     }

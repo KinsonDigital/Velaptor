@@ -558,16 +558,16 @@ namespace RaptorTests.OpenGL
         {
             /* NOTE: The way testing is done here does not use the
              * Assert.Raises<T>() assertion because due to OpenTK, we are
-             * stuck events that do not use the generic EventHandler<T>
+             * stuck with events that do not use the generic EventHandler<T>
              * type of events.  Assert.Raises<T>() only works with EventHandler<T>.
              */
             // Arrange
             var loadInvoked = false;
             var window = CreateWindow();
 
-            // NOTE: this is a local function to act as a handler to the event
-            // This also allows the unregistration of the event as well to prevent
-            // memory leaks during test execution
+            /* NOTE: this is a local function to act as a handler to the event
+             * This also allows the unregistration of the event as well to prevent
+             */ memory leaks during test execution
             void TestHandler() => loadInvoked = true;
 
             window.Initialize += TestHandler;
@@ -857,7 +857,7 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public void Show_WhenUpdatingFrameWhileShuttingDown_DoesNotInvokedUpdateEvent()
+        public void Show_WhenUpdatingFrameWhileShuttingDown_DoesNotInvokeUpdateEvent()
         {
             // Arrange
             var updateInvoked = false;
@@ -878,7 +878,7 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public void Show_WhenRenderingFrameWhileShuttingDown_DoesNotInvokedRenderEvent()
+        public void Show_WhenRenderingFrameWhileShuttingDown_DoesNotInvokeRenderEvent()
         {
             // Arrange
             var renderInvoked = false;
@@ -918,7 +918,7 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public async void ShowAsync_WhenInvoked_ExecutesWindowRun()
+        public async void ShowAsync_WhenInvoked_ExecutesWindowShow()
         {
             // Arrange
             this.mockTaskService.Setup(m => m.SetAction(It.IsAny<Action>()))

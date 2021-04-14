@@ -156,7 +156,7 @@ namespace RaptorTests.Input
         public void Dispose() => ClearMouseState();
 
         /// <summary>
-        /// Clears all of the state for the mouse for testing purposes.
+        /// Clears the state for the mouse for testing purposes.
         /// </summary>
         private void ClearMouseState()
         {
