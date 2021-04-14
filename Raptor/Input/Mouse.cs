@@ -4,28 +4,31 @@
 
 namespace Raptor.Input
 {
-    /// <summary>
-    /// Provides functionality for the mouse.
-    /// </summary>
-    public class Mouse : IGameInput<MouseButton, MouseState>
-    {
-        private static int xPos;
-        private static int yPos;
-        private static int scrollWheelValue;
+    using System;
+    using System.Linq;
 
+    /// <summary>
+    /// Gets or sets the state of the mouse.
+    /// </summary>
+    public class Mouse : IMouseInput<MouseButton, MouseState>
+    {
         /// <summary>
         /// Gets the current state of the mouse.
         /// </summary>
         /// <returns>The state of the mouse.</returns>
         public MouseState GetState()
         {
-            var result = default(MouseState);
+            if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 0)
+            {
+                InitializeButtonStates();
+            }
 
-            result.SetPosition(xPos, yPos);
-            result.SetScrollWheelValue(scrollWheelValue);
+            var result = default(MouseState);
+            result.SetPosition(IMouseInput<MouseButton, MouseState>.XPos, IMouseInput<MouseButton, MouseState>.XPos);
+            result.SetScrollWheelValue(IMouseInput<MouseButton, MouseState>.ScrollWheelValue);
 
             // Set all of the states for the buttons
-            foreach (var state in IGameInput<MouseButton, MouseState>.InputStates)
+            foreach (var state in IMouseInput<MouseButton, MouseState>.InputStates)
             {
                 result.SetButtonState(state.Key, state.Value);
             }
@@ -34,27 +37,57 @@ namespace Raptor.Input
         }
 
         /// <summary>
-        /// Sets the position of the mouse state using the given <paramref name="x"/> and <paramref name="y"/>.
+        /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
         /// </summary>
-        /// <param name="x">The X position of the mouse.</param>
-        /// <param name="y">The Y position of the mouse.</param>
-        internal static void SetPosition(int x, int y)
+        /// <param name="input">The mouse button to set.</param>
+        /// <param name="state">The state to set the button to.</param>
+        /// <remarks>
+        ///     When <paramref name="state"/> is the value of <see langword=""="true"/>,
+        ///     this means the mouse button is being pressed down.
+        /// </remarks>
+        public void SetState(MouseButton input, bool state)
+            => IMouseInput<MouseButton, MouseState>.InputStates[input] = state;
+
+        /// <inheritdoc/>
+        public void SetXPos(int x) => IMouseInput<MouseButton, MouseState>.XPos = x;
+
+        /// <inheritdoc/>
+        public void SetYPos(int y) => IMouseInput<MouseButton, MouseState>.YPos = y;
+
+        /// <inheritdoc/>
+        public void SetScrollWheelValue(int value) => IMouseInput<MouseButton, MouseState>.ScrollWheelValue = value;
+
+        /// <inheritdoc/>
+        public void Reset()
         {
-            xPos = x;
-            yPos = y;
+            if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 0)
+            {
+                InitializeButtonStates();
+            }
+
+            for (var i = 0; i < IMouseInput<MouseButton, MouseState>.InputStates.Count; i++)
+            {
+                var key = IMouseInput<MouseButton, MouseState>.InputStates.Keys.ToArray()[i];
+
+                IMouseInput<MouseButton, MouseState>.InputStates[key] = false;
+            }
+
+            IMouseInput<MouseButton, MouseState>.XPos = 0;
+            IMouseInput<MouseButton, MouseState>.YPos = 0;
+            IMouseInput<MouseButton, MouseState>.ScrollWheelValue = 0;
         }
 
         /// <summary>
-        /// Sets the value of the mouse scroll wheel.
+        /// Initializes all of the available keys and default states.
         /// </summary>
-        /// <param name="value">The value of the scroll wheel.</param>
-        internal static void SetScrollWheelValue(int value) => scrollWheelValue = value;
+        private static void InitializeButtonStates()
+        {
+            var keyCodes = Enum.GetValues(typeof(MouseButton)).Cast<MouseButton>().ToArray();
 
-        /// <summary>
-        /// Sets the state of the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
-        /// </summary>
-        /// <param name="mouseButton">The button to set.</param>
-        /// <param name="state">The state to set the button to.</param>
-        internal static void SetButtonState(MouseButton mouseButton, bool state) => IGameInput<MouseButton, MouseState>.InputStates[mouseButton] = state;
+            for (var i = 0; i < keyCodes.Length; i++)
+            {
+                IMouseInput<MouseButton, MouseState>.InputStates.Add(keyCodes[i], false);
+            }
+        }
     }
 }

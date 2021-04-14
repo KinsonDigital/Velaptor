@@ -5,6 +5,8 @@
 namespace Raptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
+    using Raptor.Input;
+    using Raptor.NativeInterop;
     using Raptor.OpenGL;
     using Raptor.Services;
     using Raptor.UI;
@@ -22,6 +24,16 @@ namespace Raptor.Factories
         /// <param name="height">The height of the window.</param>
         /// <returns>A raptor framework window implementation.</returns>
         public static IWindow CreateWindow(int width, int height)
-            => new GLWindow(width, height, IoC.Container.GetInstance<ISystemMonitorService>());
+            => new GLWindow(
+                width,
+                height,
+                IoC.Container.GetInstance<IGLInvoker>(),
+                IoC.Container.GetInstance<ISystemMonitorService>(),
+                IoC.Container.GetInstance<IGameWindowFacade>(),
+                IoC.Container.GetInstance<IPlatform>(),
+                IoC.Container.GetInstance<ITaskService>(),
+                IoC.Container.GetInstance<IKeyboardInput<KeyCode, KeyboardState>>(),
+                IoC.Container.GetInstance<IMouseInput<MouseButton, MouseState>>(),
+                ContentLoaderFactory.CreateContentLoader());
     }
 }

@@ -111,6 +111,9 @@ namespace Raptor.UI
             set => this.window.ContentLoader = value;
         }
 
+        /// <inheritdoc/>
+        public bool Initialized => this.window.Initialized;
+
         /// <summary>
         /// Shows the window.
         /// </summary>

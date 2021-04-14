@@ -5,7 +5,6 @@
 namespace RaptorTests.Helpers
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Moq;
     using OpenTK.Graphics.OpenGL4;

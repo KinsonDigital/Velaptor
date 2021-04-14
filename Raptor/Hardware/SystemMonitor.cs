@@ -60,11 +60,17 @@ namespace Raptor.Hardware
         /// <summary>
         /// Gets or sets the scale of the monitor on the horizontal axis.
         /// </summary>
+        /// <remarks>
+        ///     If the monitor was set to a scale of 150%, this value of 1.5 should be used.
+        /// </remarks>
         public float HorizontalScale { get; set; }
 
         /// <summary>
         /// Gets or sets the scale of the monitor on the vertical axis.
         /// </summary>
+        /// <remarks>
+        ///     If the monitor was set to a scale of 150%, this value of 1.5 should be used.
+        /// </remarks>
         public float VerticalScale { get; set; }
 
         /// <summary>

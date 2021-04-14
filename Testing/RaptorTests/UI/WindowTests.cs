@@ -11,7 +11,6 @@ namespace RaptorTests.UI
     using Raptor.Content;
     using Raptor.UI;
     using RaptorTests.Fakes;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 

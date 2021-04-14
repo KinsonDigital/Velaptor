@@ -10,7 +10,6 @@ namespace RaptorTests.Content
     using System.Reflection;
     using Raptor.Content;
     using RaptorTests.Fakes;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 

@@ -9,7 +9,6 @@ namespace RaptorTests.OpenGL
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using Raptor.OpenGL;
-    using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 
