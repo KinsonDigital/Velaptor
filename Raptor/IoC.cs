@@ -14,6 +14,7 @@ namespace Raptor
     using Raptor.Audio;
     using Raptor.Content;
     using Raptor.Graphics;
+    using Raptor.Input;
     using Raptor.NativeInterop;
     using Raptor.OpenAL;
     using Raptor.OpenGL;
@@ -58,6 +59,8 @@ namespace Raptor
             SetupContent();
 
             IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
+            IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
 
             isInitialized = true;
         }
@@ -118,6 +121,9 @@ namespace Raptor
             IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
+
+            IoCContainer.Register<ITaskService, TaskService>();
+            IoCContainer.SuppressDisposableTransientWarning<ITaskService>();
         }
 
         /// <summary>

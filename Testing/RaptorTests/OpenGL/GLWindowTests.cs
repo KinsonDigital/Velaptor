@@ -1,13 +1,16 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 #pragma warning disable IDE0001 // Name can be simplified
 #pragma warning disable IDE0002 // Name can be simplified
+#pragma warning disable SA1202 // Elements should be ordered by access
 namespace RaptorTests.OpenGL
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Moq;
     using Raptor;
     using Raptor.Content;
@@ -29,6 +32,9 @@ namespace RaptorTests.OpenGL
         private readonly Mock<IGameWindowFacade> mockWindowFacade;
         private readonly Mock<IPlatform> mockPlatform;
         private readonly Mock<IContentLoader> mockContentLoader;
+        private readonly Mock<ITaskService> mockTaskService;
+        private readonly Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>> mockKeyboard;
+        private readonly Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>> mockMouse;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -40,6 +46,9 @@ namespace RaptorTests.OpenGL
             this.mockWindowFacade = new Mock<IGameWindowFacade>();
             this.mockPlatform = new Mock<IPlatform>();
             this.mockContentLoader = new Mock<IContentLoader>();
+            this.mockTaskService = new Mock<ITaskService>();
+            this.mockKeyboard = new Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>>();
+            this.mockMouse = new Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>>();
         }
 
         #region Contructor Tests
@@ -56,6 +65,9 @@ namespace RaptorTests.OpenGL
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockKeyboard.Object,
+                    this.mockMouse.Object,
                     this.mockContentLoader.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
         }
@@ -73,6 +85,9 @@ namespace RaptorTests.OpenGL
                     null,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockKeyboard.Object,
+                    this.mockMouse.Object,
                     this.mockContentLoader.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
         }
@@ -90,6 +105,9 @@ namespace RaptorTests.OpenGL
                     this.mockMonitorService.Object,
                     null,
                     this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockKeyboard.Object,
+                    this.mockMouse.Object,
                     this.mockContentLoader.Object);
             }, "The parameter must not be null. (Parameter 'windowFacade')");
         }
@@ -107,6 +125,9 @@ namespace RaptorTests.OpenGL
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     null,
+                    this.mockTaskService.Object,
+                    this.mockKeyboard.Object,
+                    this.mockMouse.Object,
                     this.mockContentLoader.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
         }
@@ -124,6 +145,9 @@ namespace RaptorTests.OpenGL
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockKeyboard.Object,
+                    this.mockMouse.Object,
                     null);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
         }
@@ -430,6 +454,47 @@ namespace RaptorTests.OpenGL
 
             // Assert
             Assert.True(window.Initialized);
+        }
+        #endregion
+
+        #region Method Tests
+        [Fact]
+        public void Dispose_WhenInvoked_UnregistersCloseEvent()
+        {
+            // Arrange
+            var uninitializeInvoked = false;
+
+            var window = CreateWindow();
+
+            void UninitializeHandler() => uninitializeInvoked = true;
+
+            window.Uninitialize += UninitializeHandler;
+
+            window.Show();
+
+            // Act
+            window.Dispose();
+            this.mockWindowFacade.Raise(m => m.Closed += null);
+
+            window.Uninitialize -= UninitializeHandler;
+
+            // Assert
+            Assert.False(uninitializeInvoked);
+        }
+
+        [Fact]
+        public void Dispose_WhenInvoked_DisposesOfWindowFacade()
+        {
+            // Arrange
+            var window = CreateWindow();
+            window.Show();
+
+            // Act
+            window.Dispose();
+            window.Dispose();
+
+            // Assert
+            this.mockWindowFacade.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 

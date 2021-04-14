@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,6 @@ namespace Raptor.OpenGL
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
-    using System.Threading;
     using System.Threading.Tasks;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
@@ -30,14 +29,17 @@ namespace Raptor.OpenGL
     /// </summary>
     internal sealed class GLWindow : IWindow
     {
+        private const string NullParamExceptionMessage = "The parameter must not be null.";
         private readonly Dictionary<string, CachedValue<string>> cachedStringProps = new Dictionary<string, CachedValue<string>>();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
         private readonly Dictionary<string, CachedValue<bool>> cachedBoolProps = new Dictionary<string, CachedValue<bool>>();
-        private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
         private readonly IGLInvoker gl;
         private readonly ISystemMonitorService systemMonitorService;
         private readonly IGameWindowFacade windowFacade;
         private readonly IPlatform platform;
+        private readonly ITaskService taskService;
+        private readonly IKeyboardInput<KeyCode, KeyboardState> keyboard;
+        private readonly IMouseInput<RaptorMouseButton, MouseState> mouse;
         private CachedValue<StateOfWindow>? cachedWindowState;
         private CachedValue<BorderType>? cachedTypeOfBorder;
         private CachedValue<SysVector2>? cachedPosition;
@@ -45,7 +47,6 @@ namespace Raptor.OpenGL
         private bool isShuttingDown;
         private bool isDiposed;
         private bool firstRenderInvoked;
-        private Task? showTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
@@ -56,6 +57,9 @@ namespace Raptor.OpenGL
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
         /// <param name="windowFacade">The internal OpenGL window facade.</param>
         /// <param name="platform">Information about the platform that is running the application.</param>
+        /// <param name="taskService">Runs asynchronous tasks.</param>
+        /// <param name="keyboard">Provides keyboard input.</param>
+        /// <param name="mouse">Provides mouse input.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         public GLWindow(
             int width,
@@ -64,37 +68,59 @@ namespace Raptor.OpenGL
             ISystemMonitorService systemMonitorService,
             IGameWindowFacade windowFacade,
             IPlatform platform,
+            ITaskService taskService,
+            IKeyboardInput<KeyCode, KeyboardState> keyboard,
+            IMouseInput<RaptorMouseButton, MouseState> mouse,
             IContentLoader contentLoader)
         {
             if (glInvoker is null)
             {
-                throw new ArgumentNullException(nameof(glInvoker), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(glInvoker), NullParamExceptionMessage);
             }
 
             if (systemMonitorService is null)
             {
-                throw new ArgumentNullException(nameof(systemMonitorService), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(systemMonitorService), NullParamExceptionMessage);
             }
 
             if (windowFacade is null)
             {
-                throw new ArgumentNullException(nameof(windowFacade), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(windowFacade), NullParamExceptionMessage);
             }
 
             if (platform is null)
             {
-                throw new ArgumentNullException(nameof(platform), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(platform), NullParamExceptionMessage);
+            }
+
+            if (taskService is null)
+            {
+                throw new ArgumentNullException(nameof(taskService), NullParamExceptionMessage);
+            }
+
+            if (keyboard is null)
+            {
+                throw new ArgumentNullException(nameof(keyboard), NullParamExceptionMessage);
+            }
+
+            if (mouse is null)
+            {
+                throw new ArgumentNullException(nameof(mouse), NullParamExceptionMessage);
             }
 
             if (contentLoader is null)
             {
-                throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(contentLoader), NullParamExceptionMessage);
             }
 
             this.gl = glInvoker;
             this.systemMonitorService = systemMonitorService;
             this.windowFacade = windowFacade;
             this.platform = platform;
+            this.taskService = taskService;
+            this.keyboard = keyboard;
+            this.mouse = mouse;
+
             ContentLoader = contentLoader;
 
             SetupWidthHeightPropCaches(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
@@ -157,7 +183,7 @@ namespace Raptor.OpenGL
             set => this.cachedBoolProps[nameof(MouseCursorVisible)].SetValue(value);
         }
 
-        /// <inheritdoc/>3
+        /// <inheritdoc/>
         public StateOfWindow WindowState
         {
             get
@@ -234,12 +260,6 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public void Show()
         {
-            // If the window is showing asynchronously, exit
-            if (this.showTask is null)
-            {
-                return;
-            }
-
             SetupWindow();
 
             this.windowFacade?.Run();
@@ -248,24 +268,22 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public async Task ShowAsync(Action dispose)
         {
-            this.showTask = new Task(
+            this.taskService.SetAction(
                 () =>
                 {
                     SetupWindow();
                     this.windowFacade?.Run();
-                }, this.tokenSrc.Token);
+                });
 
-            this.showTask.Start();
+            this.taskService.Start();
 
-            await this.showTask.ConfigureAwait(true);
-            await this.showTask.ContinueWith(
+            await this.taskService.ContinueWith(
                 (t) =>
                 {
                     dispose();
                 },
-                this.tokenSrc.Token,
                 TaskContinuationOptions.ExecuteSynchronously, // Execute the continuation on the same thread as the show task
-                TaskScheduler.Default).ConfigureAwait(true);
+                TaskScheduler.Default);
         }
 
         /// <inheritdoc/>
@@ -356,7 +374,7 @@ namespace Raptor.OpenGL
         {
             var mappedKey = (KeyCode)e.Key;
 
-            Keyboard.SetKeyState(mappedKey, true);
+            this.keyboard.SetState(mappedKey, true);
         }
 
         /// <summary>
@@ -367,7 +385,7 @@ namespace Raptor.OpenGL
         {
             var mappedKey = (KeyCode)e.Key;
 
-            Keyboard.SetKeyState(mappedKey, false);
+            this.keyboard.SetState(mappedKey, false);
         }
 
         /// <summary>
@@ -377,7 +395,7 @@ namespace Raptor.OpenGL
         private void GameWindow_MouseDown(MouseButtonEventArgs e)
         {
             var mappedButton = MapMouseButton(e.Button);
-            Mouse.SetButtonState(mappedButton, true);
+            this.mouse.SetState(mappedButton, true);
         }
 
         /// <summary>
@@ -387,14 +405,18 @@ namespace Raptor.OpenGL
         private void GameWindow_MouseUp(MouseButtonEventArgs e)
         {
             var mappedButton = MapMouseButton(e.Button);
-            Mouse.SetButtonState(mappedButton, false);
+            this.mouse.SetState(mappedButton, false);
         }
 
         /// <summary>
         /// Occurs every time the mouse is moved over the window.
         /// </summary>
         /// <param name="e">Information about the mouse move event.</param>
-        private void GameWindow_MouseMove(MouseMoveEventArgs e) => Mouse.SetPosition((int)e.X, (int)e.Y);
+        private void GameWindow_MouseMove(MouseMoveEventArgs e)
+        {
+            this.mouse.SetXPos((int)e.X);
+            this.mouse.SetYPos((int)e.Y);
+        }
 
         /// <summary>
         /// Sets up the OpenGL window.
@@ -444,8 +466,7 @@ namespace Raptor.OpenGL
             {
                 if (disposing)
                 {
-                    this.tokenSrc.Dispose();
-                    this.showTask?.Dispose();
+                    this.taskService?.Dispose();
                     this.cachedStringProps.Clear();
                     this.cachedIntProps.Clear();
                     this.cachedBoolProps.Clear();
@@ -695,7 +716,6 @@ namespace Raptor.OpenGL
         {
             var errorMessage = Marshal.PtrToStringAnsi(message);
 
-            errorMessage += errorMessage;
             errorMessage += $"\n\tSrc: {src}";
             errorMessage += $"\n\tType: {type}";
             errorMessage += $"\n\tID: {id}";
