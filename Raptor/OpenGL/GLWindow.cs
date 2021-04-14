@@ -306,37 +306,42 @@ namespace Raptor.OpenGL
         /// <returns>The mouse button.</returns>
         private static RaptorMouseButton MapMouseButton(GLMouseButton from)
         {
-            switch (from)
-            {
-                case GLMouseButton.Button1: // Same as LeftButton
-                    return RaptorMouseButton.LeftButton;
-                case GLMouseButton.Button2: // Same as RightButton
-                    return RaptorMouseButton.RightButton;
-                case GLMouseButton.Button3: // Same as MiddleButton
-                    return RaptorMouseButton.MiddleButton;
-                case GLMouseButton.Last:
-                    return RaptorMouseButton.None;
-            }
+            var result = (RaptorMouseButton)123456789; // Invalid raptor mouse button to start
 
-            // By default, Button 1, 2 and 3 are fired for left, middle and right
-            // This is here just in case the OpenTK implementation changes.
             switch (from)
             {
                 case GLMouseButton.Left: // Same as Button1
-                    return RaptorMouseButton.LeftButton;
+                    result = RaptorMouseButton.LeftButton;
+                    break;
                 case GLMouseButton.Middle: // Same as Button3
-                    return RaptorMouseButton.MiddleButton;
+                case GLMouseButton.Last:
+                    result = RaptorMouseButton.MiddleButton;
+                    break;
                 case GLMouseButton.Right: // Same as Button2
-                    return RaptorMouseButton.RightButton;
+                    result = RaptorMouseButton.RightButton;
+                    break;
+            }
+
+            switch (from)
+            {
+                case GLMouseButton.Button1: // Same as LeftButton
+                    result = RaptorMouseButton.LeftButton;
+                    break;
+                case GLMouseButton.Button2: // Same as RightButton
+                    result = RaptorMouseButton.RightButton;
+                    break;
+                case GLMouseButton.Button3: // Same as MiddleButton
+                    result = RaptorMouseButton.MiddleButton;
+                    break;
                 case GLMouseButton.Button4:
                 case GLMouseButton.Button5:
                 case GLMouseButton.Button6:
                 case GLMouseButton.Button7:
                 case GLMouseButton.Button8:
-                    return RaptorMouseButton.None;
+                    throw new Exception("Unrecognized OpenGL mouse button.");
             }
 
-            return RaptorMouseButton.None;
+            return result;
         }
 
         /// <summary>
