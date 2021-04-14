@@ -257,6 +257,36 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public bool Initialized { get; private set; }
 
+        /// <summary>
+        /// Gets the list of caches for <see langword=""="string"/> properties.
+        /// </summary>
+        public Dictionary<string, CachedValue<string>> CachedStringProps => this.cachedStringProps;
+
+        /// <summary>
+        /// Gets the list of caches for <see langword=""="int"/> properties.
+        /// </summary>
+        public Dictionary<string, CachedValue<int>> CachedIntProps => this.cachedIntProps;
+
+        /// <summary>
+        /// Gets the list of caches for <see langword=""="bool"/> properties.
+        /// </summary>
+        public Dictionary<string, CachedValue<bool>> CachedBoolProps => this.cachedBoolProps;
+
+        /// <summary>
+        /// Gets the cache for the <see cref="WindowState"/> property.
+        /// </summary>
+        public CachedValue<StateOfWindow>? CachedWindowState => this.cachedWindowState;
+
+        /// <summary>
+        /// Gets the cache for the <see cref="TypeOfBorder"/> property.
+        /// </summary>
+        public CachedValue<BorderType>? CachedTypeOfBorder => this.cachedTypeOfBorder;
+
+        /// <summary>
+        /// Gets the cache for the <see cref="Position"/> property.
+        /// </summary>
+        public CachedValue<SysVector2>? CachedPosition => this.cachedPosition;
+
         /// <inheritdoc/>
         public void Show()
         {

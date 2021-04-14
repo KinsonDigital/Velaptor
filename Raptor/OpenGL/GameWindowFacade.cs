@@ -527,6 +527,8 @@ namespace Raptor.OpenGL
                 StartVisible = false,
             };
 
+            // The creation of the OpenTK.GameWindow is when the current context is created.
+            // All OpenGL calls can be made after this has occurred.
             this.gameWindow = new GameWindow(gameWindowSettings, nativeWindowSettings);
         }
 

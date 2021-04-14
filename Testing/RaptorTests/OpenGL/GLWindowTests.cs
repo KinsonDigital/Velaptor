@@ -244,7 +244,7 @@ namespace RaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            IGLInvoker.SetOpenGLAsInitialized();
+            window.CachedIntProps[nameof(window.Width)].IsCaching = false;
 
             // Act
             window.Width = 111;
@@ -275,7 +275,7 @@ namespace RaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            IGLInvoker.SetOpenGLAsInitialized();
+            window.CachedIntProps[nameof(window.Height)].IsCaching = false;
 
             // Act
             window.Height = 111;
@@ -306,7 +306,7 @@ namespace RaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            IGLInvoker.SetOpenGLAsInitialized();
+            window.CachedStringProps[nameof(window.Title)].IsCaching = false;
 
             // Act
             window.Title = "test-title";
@@ -378,7 +378,7 @@ namespace RaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            IGLInvoker.SetOpenGLAsInitialized();
+            window.CachedPosition.IsCaching = false;
 
             // Act
             window.Position = new SysVector2(123, 456);
@@ -409,7 +409,7 @@ namespace RaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            IGLInvoker.SetOpenGLAsInitialized();
+            window.CachedIntProps[nameof(window.UpdateFrequency)].IsCaching = false;
 
             // Act
             window.UpdateFrequency = 30;
@@ -440,7 +440,7 @@ namespace RaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            IGLInvoker.SetOpenGLAsInitialized();
+            window.CachedBoolProps[nameof(window.MouseCursorVisible)].IsCaching = false;
 
             // Act
             window.MouseCursorVisible = false;
@@ -471,7 +471,7 @@ namespace RaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            IGLInvoker.SetOpenGLAsInitialized();
+            window.CachedWindowState.IsCaching = false;
 
             // Act
             window.WindowState = StateOfWindow.FullScreen;
@@ -502,7 +502,7 @@ namespace RaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            IGLInvoker.SetOpenGLAsInitialized();
+            window.CachedTypeOfBorder.IsCaching = false;
 
             // Act
             window.TypeOfBorder = BorderType.Fixed;
