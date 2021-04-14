@@ -34,6 +34,11 @@ namespace Raptor.NativeInterop
         }
 
         /// <summary>
+        /// Sets OpenGL as uninitialized.
+        /// </summary>
+        public static void SetOpenGLAsUnitialized() => isOpenGLInitialized = false;
+
+        /// <summary>
         /// Returns a value indicating if OpenGL is initialized and ready for use.
         /// </summary>
         /// <returns>True if OpenGL is initialized.</returns>

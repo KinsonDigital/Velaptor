@@ -287,10 +287,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public void Close()
-        {
-            this.windowFacade.Close();
-        }
+        public void Close() => this.windowFacade.Close();
 
         /// <inheritdoc/>
         public void Dispose()

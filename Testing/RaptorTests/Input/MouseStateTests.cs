@@ -5,7 +5,6 @@
 #pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Input
 {
-    using System;
 #pragma warning disable IDE0001 // Name can be simplified
     using System.Numerics;
     using Raptor.Exceptions;

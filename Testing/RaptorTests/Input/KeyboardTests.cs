@@ -110,7 +110,6 @@ namespace RaptorTests.Input
             {
                 Assert.False(state.Value);
             });
-
         }
         #endregion
 

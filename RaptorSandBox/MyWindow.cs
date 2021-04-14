@@ -21,10 +21,11 @@ namespace RaptorSandBox
         private ISound? zapSound;
         private ISound? deadShipsMusic;
         private ISound? quietPlaceMusic;
-        private IGameInput<KeyCode, KeyboardState> keyboard;
-        private readonly IGameInput<MouseButton, MouseState> mouse;
+        private IKeyboardInput<KeyCode, KeyboardState> keyboard;
+        private readonly IMouseInput<MouseButton, MouseState> mouse;
         private float timeElapsed;
         private int subPositionX;
+        private int subPositionY = 200;
         private bool isDisposed;
         private int currentFrameIndex;
         private Rectangle currentFrame;
@@ -92,6 +93,21 @@ namespace RaptorSandBox
                 this.subPositionX += 1;
             }
 
+            if (this.currentKeyboardState.IsKeyDown(KeyCode.Left))
+            {
+                this.subPositionX -= 1;
+            }
+
+            if (this.currentKeyboardState.IsKeyDown(KeyCode.Down))
+            {
+                this.subPositionY += 1;
+            }
+
+            if (this.currentKeyboardState.IsKeyDown(KeyCode.Up))
+            {
+                this.subPositionY -= 1;
+            }
+
             if (this.currentMouseState.IsLeftButtonUp() && this.previousMouseState.IsLeftButtonDown())
             {
                 this.quietPlaceMusic.PlaySound();
@@ -137,7 +153,7 @@ namespace RaptorSandBox
             this.spriteBatch?.Render(
                 this.mainAtlas.Texture,
                 subTexture.Bounds,
-                new Rectangle(subPositionX, 100, 500, 100),
+                new Rectangle(subPositionX, subPositionY, 500, 100),
                 1,
                 0,
                 Color.White,

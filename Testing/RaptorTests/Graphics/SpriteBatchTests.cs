@@ -24,7 +24,7 @@ namespace RaptorTests.Graphics
     /// <summary>
     /// Tests the <see cref="SpriteBatch"/> class.
     /// </summary>
-    public class SpriteBatchTests
+    public class SpriteBatchTests : IDisposable
     {
         private const uint ProgramId = 1111;
         private const uint UniformTransformLocation = 2222;
@@ -789,6 +789,9 @@ namespace RaptorTests.Graphics
             this.mockBuffer.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
+
+        /// <inheritdoc/>
+        public void Dispose() => IGLInvoker.SetOpenGLAsUnitialized();
 
         /// <summary>
         /// Creates a texture mock for the purpose of testing.

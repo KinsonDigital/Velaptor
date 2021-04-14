@@ -5,6 +5,7 @@
 #pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Content
 {
+#pragma warning disable IDE0001 // Name can be simplified
     using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
@@ -17,6 +18,7 @@ namespace RaptorTests.Content
     using Raptor.Services;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
+#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="FontLoader"/> class.
