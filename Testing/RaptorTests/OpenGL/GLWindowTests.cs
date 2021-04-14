@@ -550,7 +550,7 @@ namespace RaptorTests.OpenGL
             window.Show();
 
             // Assert
-            this.mockWindowFacade.Verify(m => m.Run(), Times.Once());
+            this.mockWindowFacade.Verify(m => m.Show(), Times.Once());
         }
 
         [Fact]
@@ -934,7 +934,7 @@ namespace RaptorTests.OpenGL
             await window.ShowAsync(It.IsAny<Action>());
 
             // Assert
-            this.mockWindowFacade.Verify(m => m.Run(), Times.Once());
+            this.mockWindowFacade.Verify(m => m.Show(), Times.Once());
         }
 
         [Fact]

@@ -292,7 +292,7 @@ namespace Raptor.OpenGL
         {
             SetupWindow();
 
-            this.windowFacade?.Run();
+            this.windowFacade?.Show();
         }
 
         /// <inheritdoc/>
@@ -302,7 +302,7 @@ namespace Raptor.OpenGL
                 () =>
                 {
                     SetupWindow();
-                    this.windowFacade?.Run();
+                    this.windowFacade?.Show();
                 });
 
             this.taskService.Start();
@@ -451,79 +451,6 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Sets up the OpenGL window.
-        /// </summary>
-        private void SetupWindow()
-        {
-            this.windowFacade.Init(Width, Height);
-
-            this.windowFacade.Load += GameWindow_Load;
-            this.windowFacade.Unload += GameWindow_Unload;
-            this.windowFacade.UpdateFrame += GameWindow_UpdateFrame;
-            this.windowFacade.RenderFrame += GameWindow_RenderFrame;
-            this.windowFacade.Resize += GameWindow_Resize;
-            this.windowFacade.KeyDown += GameWindow_KeyDown;
-            this.windowFacade.KeyUp += GameWindow_KeyUp;
-            this.windowFacade.MouseDown += GameWindow_MouseDown;
-            this.windowFacade.MouseUp += GameWindow_MouseUp;
-            this.windowFacade.MouseMove += GameWindow_MouseMove;
-            this.windowFacade.Closed += GameWindow_Closed;
-
-            this.debugProc = DebugCallback;
-
-            /*NOTE:
-             * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
-             * The garbage collector performs a collect on the delegate passed into GL.DebugMesageCallback()
-             * without the native system knowing about it which causes this exception. The GC.KeepAlive()
-             * method tells the garbage collector to not collect the delegate to prevent this from happening.
-             */
-            GC.KeepAlive(this.debugProc);
-
-            this.gl.Enable(EnableCap.DebugOutput);
-            this.gl.Enable(EnableCap.DebugOutputSynchronous);
-            this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
-
-            // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
-            // that means OpenGL has been initialized by OpenTK itself.
-            IGLInvoker.SetOpenGLAsInitialized();
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <param name="disposing">True to release managed resources.</param>
-        private void Dispose(bool disposing)
-        {
-            if (!this.isDiposed)
-            {
-                if (disposing)
-                {
-                    this.taskService?.Dispose();
-                    this.cachedStringProps.Clear();
-                    this.cachedIntProps.Clear();
-                    this.cachedBoolProps.Clear();
-
-                    IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
-
-                    this.windowFacade.Load -= GameWindow_Load;
-                    this.windowFacade.Unload -= GameWindow_Unload;
-                    this.windowFacade.UpdateFrame -= GameWindow_UpdateFrame;
-                    this.windowFacade.RenderFrame -= GameWindow_RenderFrame;
-                    this.windowFacade.Resize -= GameWindow_Resize;
-                    this.windowFacade.KeyDown -= GameWindow_KeyDown;
-                    this.windowFacade.KeyUp -= GameWindow_KeyUp;
-                    this.windowFacade.MouseDown -= GameWindow_MouseDown;
-                    this.windowFacade.MouseUp -= GameWindow_MouseUp;
-                    this.windowFacade.MouseMove -= GameWindow_MouseMove;
-                    this.windowFacade.Closed -= GameWindow_Closed;
-                    this.windowFacade.Dispose();
-                }
-
-                this.isDiposed = true;
-            }
-        }
-
-        /// <summary>
         /// Invokes the <see cref="Initialize"/> action property.
         /// </summary>
         private void GameWindow_Load() => Initialize?.Invoke();
@@ -602,6 +529,79 @@ namespace Raptor.OpenGL
         {
             this.isShuttingDown = true;
             Uninitialize?.Invoke();
+        }
+
+        /// <summary>
+        /// Sets up the OpenGL window.
+        /// </summary>
+        private void SetupWindow()
+        {
+            this.windowFacade.Init(Width, Height);
+
+            this.windowFacade.Load += GameWindow_Load;
+            this.windowFacade.Unload += GameWindow_Unload;
+            this.windowFacade.UpdateFrame += GameWindow_UpdateFrame;
+            this.windowFacade.RenderFrame += GameWindow_RenderFrame;
+            this.windowFacade.Resize += GameWindow_Resize;
+            this.windowFacade.KeyDown += GameWindow_KeyDown;
+            this.windowFacade.KeyUp += GameWindow_KeyUp;
+            this.windowFacade.MouseDown += GameWindow_MouseDown;
+            this.windowFacade.MouseUp += GameWindow_MouseUp;
+            this.windowFacade.MouseMove += GameWindow_MouseMove;
+            this.windowFacade.Closed += GameWindow_Closed;
+
+            this.debugProc = DebugCallback;
+
+            /*NOTE:
+             * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
+             * The garbage collector performs a collect on the delegate passed into GL.DebugMesageCallback()
+             * without the native system knowing about it which causes this exception. The GC.KeepAlive()
+             * method tells the garbage collector to not collect the delegate to prevent this from happening.
+             */
+            GC.KeepAlive(this.debugProc);
+
+            this.gl.Enable(EnableCap.DebugOutput);
+            this.gl.Enable(EnableCap.DebugOutputSynchronous);
+            this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
+
+            // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
+            // that means OpenGL has been initialized by OpenTK itself.
+            IGLInvoker.SetOpenGLAsInitialized();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">True to release managed resources.</param>
+        private void Dispose(bool disposing)
+        {
+            if (!this.isDiposed)
+            {
+                if (disposing)
+                {
+                    this.taskService?.Dispose();
+                    this.cachedStringProps.Clear();
+                    this.cachedIntProps.Clear();
+                    this.cachedBoolProps.Clear();
+
+                    IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
+
+                    this.windowFacade.Load -= GameWindow_Load;
+                    this.windowFacade.Unload -= GameWindow_Unload;
+                    this.windowFacade.UpdateFrame -= GameWindow_UpdateFrame;
+                    this.windowFacade.RenderFrame -= GameWindow_RenderFrame;
+                    this.windowFacade.Resize -= GameWindow_Resize;
+                    this.windowFacade.KeyDown -= GameWindow_KeyDown;
+                    this.windowFacade.KeyUp -= GameWindow_KeyUp;
+                    this.windowFacade.MouseDown -= GameWindow_MouseDown;
+                    this.windowFacade.MouseUp -= GameWindow_MouseUp;
+                    this.windowFacade.MouseMove -= GameWindow_MouseMove;
+                    this.windowFacade.Closed -= GameWindow_Closed;
+                    this.windowFacade.Dispose();
+                }
+
+                this.isDiposed = true;
+            }
         }
 
         /// <summary>

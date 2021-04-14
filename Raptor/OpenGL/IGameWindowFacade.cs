@@ -1,4 +1,4 @@
-﻿// <copyright file="IGameWindowFacade.cs" company="KinsonDigital">
+// <copyright file="IGameWindowFacade.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -122,9 +122,9 @@ namespace Raptor.OpenGL
         void Init(int width, int height);
 
         /// <summary>
-        /// Initialize the update thread (if using a multi-threaded context, and enter the game loop of the GameWindow.
+        /// Shows the window.
         /// </summary>
-        void Run();
+        void Show();
 
         /// <summary>
         /// Swaps the front and back buffers of the current GraphicsContext, presenting the rendered scene to the user.
