@@ -26,7 +26,7 @@ namespace RaptorTests.Services
     /// <summary>
     /// Tests the <see cref="FontAtlasService"/> class.
     /// </summary>
-    public unsafe class FontAtlasServiceTests
+    public unsafe class FontAtlasServiceTests : IDisposable
     {
         private const string FontFilePath = @"C:\temp\test-font.ttf";
         private const int GlyphWidth = 5;
@@ -44,6 +44,8 @@ namespace RaptorTests.Services
             'd', ' ',
         };
         private readonly Mock<IFile> mockFile;
+        private byte[]? bitmapBufferData;
+        private GCHandle bitmapBufferDataHandle;
         private FT_FaceRec faceRec = default;
         private FT_GlyphSlotRec glyphSlotRec = default;
         private FT_SizeRec sizeRec = default;
@@ -56,30 +58,12 @@ namespace RaptorTests.Services
         {
             TestHelpers.SetupTestResultDirPath();
 
+            SetupTestGlyphData();
+
             this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
             this.mockFreeTypeInvoker.Setup(m => m.FT_Init_FreeType()).Returns(this.freeTypeLibPtr);
             this.mockFreeTypeInvoker.Setup(m => m.FT_New_Face(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(() =>
-                {
-                    // TODO: Eventually put this mocked glyph buffer data into a helper method
-                    var faceBitmap = CreateGlyphBMPData(GlyphWidth, GlyphHeight);
-
-                    this.glyphSlotRec.bitmap = faceBitmap;
-
-                    // Setup the size metric data
-                    this.sizeRec.metrics = CreateSizeMetrics(8, 5);
-
-                    this.faceRec.size = TestHelpers.ToUnsafePointer(ref this.sizeRec);
-
-                    // Setup the glyph metrics
-                    this.glyphSlotRec.metrics = CreateGlypMetrics(5, 6, 13, 15, 7);
-
-                    this.faceRec.glyph = TestHelpers.ToUnsafePointer(ref this.glyphSlotRec);
-
-                    this.facePtr = TestHelpers.ToIntPtr(ref this.faceRec);
-
-                    return this.facePtr;
-                });
+                .Returns(() => this.facePtr);
 
             this.mockImageService = new Mock<IImageService>();
 
@@ -229,6 +213,21 @@ namespace RaptorTests.Services
         }
 
         [Fact]
+        public void CreateFontAtlas_WhenSettingCharacterSizeWithNullMainMonitor_ThrowsException()
+        {
+            // Arrange
+            this.mockMonitorService.SetupGet(p => p.MainMonitor).Returns(() => null);
+
+            var service = CreateService();
+
+            // Act & Assert
+            Assert.ThrowsWithMessage<SystemDisplayException>(() =>
+            {
+                service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
+            }, "The main system display must not be null.");
+        }
+
+        [Fact]
         public void CreateFontAtlas_WhenInvoked_SetsCharacterSize()
         {
             // Arrange
@@ -319,39 +318,30 @@ namespace RaptorTests.Services
         }
         #endregion
 
-        /// <summary>
-        /// Creates native <see cref="FT_Bitmap"/> data for the purpose of testing.
-        /// </summary>
-        /// <param name="width">The width of the glyph bitmap.</param>
-        /// <param name="height">The height of the glyph bitmap.</param>
-        /// <returns>The glyph bitmap data to use for testing.</returns>
-        [ExcludeFromCodeCoverage]
-        private static FT_Bitmap CreateGlyphBMPData(int width, int height)
+        /// <inheritdoc/>
+        public void Dispose()
         {
-            var bmpBufferBytes = new List<byte>();
-
-            for (var y = 0; y < height; y++)
+            /*NOTE:
+             * The purpose of 'bitmapBufferDataHandle' is to create a handle to
+             * the byte data that represents the bitmap data of the glyph.  It is
+             * pinned so the GC cannot collect it.  This is necessary so there
+             * is no way for the GC to clean up the data "before" it is used
+             * in the FontAtlasService which would cause issues while the test is running.
+             */
+            if (this.bitmapBufferDataHandle.IsAllocated is false)
             {
-                for (var x = 0; x < width; x++)
-                {
-                    bmpBufferBytes.Add(255);
-                }
+                return;
             }
 
-            // Setup the face data required to satisfy the test
-            var faceBitmap = default(FT_Bitmap);
-            faceBitmap.width = 5;
-            faceBitmap.rows = 6;
+            // This is required to clean up the data manually because it is pinned in place.
+            // If we did not do this, then we would have a memory leak.
+            this.bitmapBufferDataHandle.Free();
 
-            fixed (byte* bufferPtr = bmpBufferBytes.ToArray())
-            {
-                faceBitmap.buffer = (IntPtr)bufferPtr;
-            }
-
-            return faceBitmap;
+            // Clean up the fact data
+            Marshal.FreeHGlobal(this.facePtr);
         }
 
-        /// <summary>
+       /// <summary>
         /// Creates native <see cref="FT_Size_Metrics"/> data for the purpose of testing.
         /// </summary>
         /// <param name="width">The width of the size.</param>
@@ -386,6 +376,62 @@ namespace RaptorTests.Services
             glyphMetrics.horiBearingY = new IntPtr(horiBearingY << 6);
 
             return glyphMetrics;
+        }
+
+        /// <summary>
+        /// Creats all of the glyph data for testing purposes.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        private void SetupTestGlyphData()
+        {
+            var faceBitmap = CreateGlyphBMPData(GlyphWidth, GlyphHeight);
+
+            this.glyphSlotRec.bitmap = faceBitmap;
+
+            // Setup the size metric data
+            this.sizeRec.metrics = CreateSizeMetrics(8, 5);
+
+            this.faceRec.size = TestHelpers.ToUnsafePointer(ref this.sizeRec);
+
+            // Setup the glyph metrics
+            this.glyphSlotRec.metrics = CreateGlypMetrics(5, 6, 13, 15, 7);
+
+            this.faceRec.glyph = TestHelpers.ToUnsafePointer(ref this.glyphSlotRec);
+
+            this.facePtr = Marshal.AllocHGlobal(Marshal.SizeOf(this.faceRec));
+            Marshal.StructureToPtr(this.faceRec, this.facePtr, false);
+        }
+
+        /// <summary>
+        /// Creates native <see cref="FT_Bitmap"/> data for the purpose of testing.
+        /// </summary>
+        /// <param name="width">The width of the glyph bitmap.</param>
+        /// <param name="height">The height of the glyph bitmap.</param>
+        /// <returns>The glyph bitmap data to use for testing.</returns>
+        [ExcludeFromCodeCoverage]
+        private FT_Bitmap CreateGlyphBMPData(uint width, uint height)
+        {
+            this.bitmapBufferData = new byte[width * height];
+
+            for (var y = 0; y < height; y++)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    var arrayIndex = (width * (height == 0 ? height : height - 1)) + x;
+
+                    this.bitmapBufferData[arrayIndex] = 255;
+                }
+            }
+
+            this.bitmapBufferDataHandle = GCHandle.Alloc(this.bitmapBufferData, GCHandleType.Pinned);
+
+            // Setup the face data required to satisfy the test
+            var faceBitmap = default(FT_Bitmap);
+            faceBitmap.width = width;
+            faceBitmap.rows = height;
+            faceBitmap.buffer = this.bitmapBufferDataHandle.AddrOfPinnedObject();
+
+            return faceBitmap;
         }
 
         /// <summary>
