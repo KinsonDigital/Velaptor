@@ -380,23 +380,23 @@ namespace Raptor.Services
 
                 unsafe
                 {
-                    var face = (FT_FaceRec*)this.facePtr;
+                    var face = Marshal.PtrToStructure<FT_FaceRec>(this.facePtr);
 
-                    metric.Ascender = face->size->metrics.ascender.ToInt32() >> 6;
-                    metric.Descender = face->size->metrics.descender.ToInt32() >> 6;
+                    metric.Ascender = face.size->metrics.ascender.ToInt32() >> 6;
+                    metric.Descender = face.size->metrics.descender.ToInt32() >> 6;
                     metric.Glyph = glyphKeyValue.Key;
                     metric.CharIndex = glyphKeyValue.Value;
 
-                    metric.XMin = face->bbox.xMin.ToInt32() >> 6;
-                    metric.XMax = face->bbox.xMax.ToInt32() >> 6;
-                    metric.YMin = face->bbox.yMin.ToInt32() >> 6;
-                    metric.YMax = face->bbox.yMax.ToInt32() >> 6;
+                    metric.XMin = face.bbox.xMin.ToInt32() >> 6;
+                    metric.XMax = face.bbox.xMax.ToInt32() >> 6;
+                    metric.YMin = face.bbox.yMin.ToInt32() >> 6;
+                    metric.YMax = face.bbox.yMax.ToInt32() >> 6;
 
-                    metric.GlyphWidth = face->glyph->metrics.width.ToInt32() >> 6;
-                    metric.GlyphHeight = face->glyph->metrics.height.ToInt32() >> 6;
-                    metric.HorizontalAdvance = face->glyph->metrics.horiAdvance.ToInt32() >> 6;
-                    metric.HoriBearingX = face->glyph->metrics.horiBearingX.ToInt32() >> 6;
-                    metric.HoriBearingY = face->glyph->metrics.horiBearingY.ToInt32() >> 6;
+                    metric.GlyphWidth = face.glyph->metrics.width.ToInt32() >> 6;
+                    metric.GlyphHeight = face.glyph->metrics.height.ToInt32() >> 6;
+                    metric.HorizontalAdvance = face.glyph->metrics.horiAdvance.ToInt32() >> 6;
+                    metric.HoriBearingX = face.glyph->metrics.horiBearingX.ToInt32() >> 6;
+                    metric.HoriBearingY = face.glyph->metrics.horiBearingY.ToInt32() >> 6;
                 }
 
                 result.Add(glyphKeyValue.Key, metric);
@@ -430,6 +430,11 @@ namespace Raptor.Services
         {
             var sizeInPointsPtr = (IntPtr)(sizeInPoints << 6);
 
+            if (this.monitorService.MainMonitor is null)
+            {
+                throw new SystemDisplayException("The main system display must not be null.");
+            }
+
             // TODO: Check if the main monitor is null and if so, throw exception
             this.freeTypeInvoker.FT_Set_Char_Size(
                 this.facePtr,
@@ -448,15 +453,15 @@ namespace Raptor.Services
         /// <returns>The 32-bit RGBA iamge of the glyph.</returns>
         private unsafe ImageData CreateGlyphImage(char glyphChar, uint glyphIndex)
         {
-            var faceRec = (FT_FaceRec*)this.facePtr;
+            var face = Marshal.PtrToStructure<FT_FaceRec>(this.facePtr);
 
             this.freeTypeInvoker.FT_Load_Glyph(this.facePtr, glyphIndex, FT.FT_LOAD_RENDER);
 
-            var width = (int)faceRec->glyph->bitmap.width;
-            var height = (int)faceRec->glyph->bitmap.rows;
+            var width = (int)face.glyph->bitmap.width;
+            var height = (int)face.glyph->bitmap.rows;
 
             var glyphBitmapData = new byte[width * height];
-            Marshal.Copy(faceRec->glyph->bitmap.buffer, glyphBitmapData, 0, glyphBitmapData.Length);
+            Marshal.Copy(face.glyph->bitmap.buffer, glyphBitmapData, 0, glyphBitmapData.Length);
 
             var glyphImage = ToImage(glyphBitmapData, width, height);
 

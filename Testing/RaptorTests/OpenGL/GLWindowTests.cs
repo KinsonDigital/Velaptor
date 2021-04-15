@@ -4,7 +4,6 @@
 
 #pragma warning disable IDE0001 // Name can be simplified
 #pragma warning disable IDE0002 // Name can be simplified
-#pragma warning disable SA1202 // Elements should be ordered by access
 namespace RaptorTests.OpenGL
 {
     using System;
