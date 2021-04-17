@@ -16,6 +16,7 @@ namespace Raptor
     using Raptor.Graphics;
     using Raptor.Input;
     using Raptor.NativeInterop;
+    using Raptor.Observables;
     using Raptor.OpenAL;
     using Raptor.OpenGL;
     using Raptor.Services;
@@ -61,6 +62,8 @@ namespace Raptor
             IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
+
+            IoCContainer.Register<OpenGLObservable>(Lifestyle.Singleton);
 
             isInitialized = true;
         }
