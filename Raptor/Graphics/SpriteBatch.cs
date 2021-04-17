@@ -274,7 +274,8 @@ namespace Raptor.Graphics
 
             this.currentTextureID = texture.ID;
 
-            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID && !this.firstRenderMethodInvoke;
+            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID
+                && this.firstRenderMethodInvoke is false;
             var batchIsFull = this.batchItems.Values.ToArray().All(i => !i.IsEmpty);
 
             // Has the textures switched
@@ -337,10 +338,10 @@ namespace Raptor.Graphics
 
             if (disposing)
             {
-                this.shader.Dispose();
-                this.gpuBuffer.Dispose();
                 this.batchItems.Clear();
                 this.cachedIntProps.Clear();
+                this.shader.Dispose();
+                this.gpuBuffer.Dispose();
                 GLObservableUnsubscriber.Dispose();
             }
 

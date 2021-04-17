@@ -5,7 +5,6 @@
 namespace RaptorTests.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.IO;

@@ -123,6 +123,7 @@ namespace RaptorSandBox
                 var bubble = this.bubbles[i];
 
                 bubble.Y -= 1;
+                bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
 
                 this.bubbles[i] = bubble;
             }

@@ -802,9 +802,10 @@ namespace RaptorTests.Graphics
         [Fact]
         public void Dispose_WhenInvoked_DisposesOfMangedResources()
         {
-            // Act
+            // Arrange
             var batch = CreateSpriteBatch();
 
+            // Act
             batch.Dispose();
             batch.Dispose();
 

@@ -41,8 +41,8 @@ namespace Raptor.OpenGL
         private readonly OpenGLObservable glObservable;
         private DebugProc? debugProc;
         private bool isShuttingDown;
-        private bool isDiposed;
         private bool firstRenderInvoked;
+        private bool isDiposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.

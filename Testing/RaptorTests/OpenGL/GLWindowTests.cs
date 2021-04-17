@@ -1,4 +1,4 @@
-// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,7 +8,6 @@ namespace RaptorTests.OpenGL
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Threading;
     using System.Threading.Tasks;
     using Moq;
     using OpenTK.Graphics.OpenGL4;
@@ -29,7 +28,6 @@ namespace RaptorTests.OpenGL
     using RaptorMouseState = Raptor.Input.MouseState;
     using SysVector2 = System.Numerics.Vector2;
     using TKMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
-    using TKVector2 = OpenTK.Mathematics.Vector2;
 
     /// <summary>
     /// Tests the <see cref="GLWindow"/> class.
