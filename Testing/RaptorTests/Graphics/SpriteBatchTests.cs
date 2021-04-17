@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
+// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,6 +16,7 @@ namespace RaptorTests.Graphics
     using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
+    using Raptor.Observables;
     using Raptor.OpenGL;
     using RaptorTests.Helpers;
     using Xunit;
@@ -24,7 +25,7 @@ namespace RaptorTests.Graphics
     /// <summary>
     /// Tests the <see cref="SpriteBatch"/> class.
     /// </summary>
-    public class SpriteBatchTests : IDisposable
+    public class SpriteBatchTests
     {
         private const uint ProgramId = 1111;
         private const uint UniformTransformLocation = 2222;
@@ -33,6 +34,9 @@ namespace RaptorTests.Graphics
         private readonly Mock<IShaderProgram> mockShader;
         private readonly Mock<IGPUBuffer> mockBuffer;
         private readonly Mock<IFile> mockFile;
+        private readonly Mock<IDisposable> mockGLUnsubscriber;
+        private readonly Mock<OpenGLObservable> mockGLObservable;
+        private IObserver<bool>? spriteBatchGLObserver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatchTests"/> class.
@@ -53,6 +57,15 @@ namespace RaptorTests.Graphics
             this.mockBuffer = new Mock<IGPUBuffer>();
 
             this.mockFile = new Mock<IFile>();
+
+            this.mockGLUnsubscriber = new Mock<IDisposable>();
+            this.mockGLObservable = new Mock<OpenGLObservable>();
+            this.mockGLObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(this.mockGLUnsubscriber.Object)
+                .Callback<IObserver<bool>>(observer =>
+                {
+                    this.spriteBatchGLObserver = observer;
+                });
         }
 
         #region Constructor Tests
@@ -62,7 +75,12 @@ namespace RaptorTests.Graphics
             // Act & Assert
             Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var buffer = new SpriteBatch(null, this.mockFreeTypeInvoker.Object, this.mockShader.Object, this.mockBuffer.Object);
+                var buffer = new SpriteBatch(
+                    null,
+                    this.mockFreeTypeInvoker.Object,
+                    this.mockShader.Object,
+                    this.mockBuffer.Object,
+                    this.mockGLObservable.Object);
             }, $"The '{nameof(IGLInvoker)}' must not be null. (Parameter 'gl')");
         }
 
@@ -72,7 +90,12 @@ namespace RaptorTests.Graphics
             // Act & Assert
             Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var buffer = new SpriteBatch(this.mockGLInvoker.Object, this.mockFreeTypeInvoker.Object, null, this.mockBuffer.Object);
+                var buffer = new SpriteBatch(
+                    this.mockGLInvoker.Object,
+                    this.mockFreeTypeInvoker.Object,
+                    null,
+                    this.mockBuffer.Object,
+                    this.mockGLObservable.Object);
             }, $"The '{nameof(IShaderProgram)}' must not be null. (Parameter 'shader')");
         }
 
@@ -82,7 +105,12 @@ namespace RaptorTests.Graphics
             // Act & Assert
             Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var buffer = new SpriteBatch(this.mockGLInvoker.Object, this.mockFreeTypeInvoker.Object, this.mockShader.Object, null);
+                var buffer = new SpriteBatch(
+                    this.mockGLInvoker.Object,
+                    this.mockFreeTypeInvoker.Object,
+                    this.mockShader.Object,
+                    null,
+                    this.mockGLObservable.Object);
             }, $"The '{nameof(IGPUBuffer)}' must not be null. (Parameter 'gpuBuffer')");
         }
         #endregion
@@ -783,6 +811,7 @@ namespace RaptorTests.Graphics
             // Assert
             this.mockShader.Verify(m => m.Dispose(), Times.Once());
             this.mockBuffer.Verify(m => m.Dispose(), Times.Once());
+            this.mockGLUnsubscriber.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 
@@ -809,10 +838,23 @@ namespace RaptorTests.Graphics
         /// </summary>
         /// <returns>The instance to test with.</returns>
         private SpriteBatch CreateSpriteBatch()
-            => new SpriteBatch(
+        {
+            var result = new SpriteBatch(
                 this.mockGLInvoker.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockShader.Object,
-                this.mockBuffer.Object);
+                this.mockBuffer.Object,
+                this.mockGLObservable.Object);
+
+            SimulateGLInitPushNotification();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Simulates an OpenGL intialized push notification for the <see cref="OpenGLObservable"/>
+        /// subscription that is setup inside of <see cref="SpriteBatch"/>.
+        /// </summary>
+        private void SimulateGLInitPushNotification() => this.spriteBatchGLObserver.OnNext(It.IsAny<bool>());
     }
 }

@@ -14,6 +14,8 @@ namespace Raptor.Graphics
     using OpenTK.Mathematics;
     using Raptor.Exceptions;
     using Raptor.NativeInterop;
+    using Raptor.Observables;
+    using Raptor.Observables.Core;
     using Raptor.OpenGL;
 
     /// <inheritdoc/>
@@ -44,13 +46,23 @@ namespace Raptor.Graphics
         /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
+        /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
+        /// <remarks>
+        ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+        ///     pushes the notification that OpenGL has been intialized.
+        /// </remarks>
         [ExcludeFromCodeCoverage]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 // The reason for ignoring this warning for the `cachedClearColor` not being set in constructor while
 // it is set to not be null is due to the fact that we do not want warnings expressing an issue that
 // does not exist.  The SetupPropertyCaches() method takes care of making sure it is not null.
-        public SpriteBatch(IGLInvoker gl, IFreeTypeInvoker freeTypeInvoker, IShaderProgram shader, IGPUBuffer gpuBuffer)
+        public SpriteBatch(
+            IGLInvoker gl,
+            IFreeTypeInvoker freeTypeInvoker,
+            IShaderProgram shader,
+            IGPUBuffer gpuBuffer,
+            OpenGLObservable glObservable)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             if (gl is null)
@@ -73,21 +85,21 @@ namespace Raptor.Graphics
             this.shader = shader;
             this.gpuBuffer = gpuBuffer;
 
-            SetupPropertyCaches();
+            // Recieve a push notification that OpenGL has intialized
+            GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
+                onNext: (isInitialized) =>
+                {
+                    this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
                     if (!(this.cachedClearColor is null))
-        }
+                    {
+                        this.cachedClearColor.IsCaching = false;
+                    }
 
-        /// <inheritdoc/>
-        public uint BatchSize
-        {
-            get => this.batchSize;
-            set
-            {
-                Dispose(true);
-                this.batchSize = value;
-                Init();
-            }
+                    Init();
+                }));
+
+            SetupPropertyCaches();
         }
 
         /// <inheritdoc/>
@@ -110,6 +122,15 @@ namespace Raptor.Graphics
             get => this.cachedClearColor is null ? Color.Empty : this.cachedClearColor.GetValue();
             set => this.cachedClearColor.SetValue(value);
         }
+
+        /// <summary>
+        /// Gets the unsubscriber for the subcription
+        /// to the <see cref="OpenGLObservable"/>.
+        /// </summary>
+        internal IDisposable GLObservableUnsubscriber { get; private set; }
+
+        /// <inheritdoc/>
+        public uint BatchSize { get; internal set; } = 10;
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
@@ -320,6 +341,7 @@ namespace Raptor.Graphics
                 this.gpuBuffer.Dispose();
                 this.batchItems.Clear();
                 this.cachedIntProps.Clear();
+                GLObservableUnsubscriber.Dispose();
             }
 
             this.isDisposed = true;
@@ -331,7 +353,7 @@ namespace Raptor.Graphics
         private void Init()
         {
             this.shader.Init();
-            this.gpuBuffer.TotalQuads = this.batchSize;
+            this.gpuBuffer.TotalQuads = BatchSize;
             this.gpuBuffer.Init();
 
             this.batchItems.Clear();
