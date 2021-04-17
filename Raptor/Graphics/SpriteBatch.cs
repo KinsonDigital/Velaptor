@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -75,7 +75,7 @@ namespace Raptor.Graphics
 
             SetupPropertyCaches();
 
-            IGLInvoker.OpenGLInitialized += Gl_OpenGLInitialized;
+                    if (!(this.cachedClearColor is null))
         }
 
         /// <inheritdoc/>
@@ -316,7 +316,6 @@ namespace Raptor.Graphics
 
             if (disposing)
             {
-                IGLInvoker.OpenGLInitialized -= Gl_OpenGLInitialized;
                 this.shader.Dispose();
                 this.gpuBuffer.Dispose();
                 this.batchItems.Clear();
@@ -351,21 +350,6 @@ namespace Raptor.Graphics
 
             this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
             this.isDisposed = false;
-        }
-
-        /// <summary>
-        /// Invoked when OpenGL has been initialized.
-        /// </summary>
-        private void Gl_OpenGLInitialized(object? sender, EventArgs e)
-        {
-            this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-
-            if (!(this.cachedClearColor is null))
-            {
-                this.cachedClearColor.IsCaching = false;
-            }
-
-            Init();
         }
 
         /// <summary>

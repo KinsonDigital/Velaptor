@@ -119,8 +119,6 @@ namespace Raptor.OpenGL
 
             SetupWidthHeightPropCaches(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
             SetupOtherPropCaches();
-
-            IGLInvoker.OpenGLInitialized += IGLInvoker_OpenGLInitialized;
         }
 
         /// <inheritdoc/>
@@ -366,33 +364,6 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Occurs when OpenGL has been initialized.
-        /// </summary>
-        private void IGLInvoker_OpenGLInitialized(object? sender, EventArgs e)
-        {
-            CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-
-            if (!(CachedPosition is null))
-            {
-                CachedPosition.IsCaching = false;
-            }
-
-            if (!(CachedWindowState is null))
-            {
-                CachedWindowState.IsCaching = false;
-            }
-
-            if (!(CachedTypeOfBorder is null))
-            {
-                CachedTypeOfBorder.IsCaching = false;
-            }
-
-            Initialized = true;
-        }
-
-        /// <summary>
         /// Occurs when a keyboard key is pressed into the down position.
         /// </summary>
         /// <param name="e">The keyboard info of the event.</param>
@@ -558,9 +529,9 @@ namespace Raptor.OpenGL
             this.gl.Enable(EnableCap.DebugOutputSynchronous);
             this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
 
-            // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
-            // that means OpenGL has been initialized by OpenTK itself.
-            IGLInvoker.SetOpenGLAsInitialized();
+            CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
         }
 
         /// <summary>
@@ -577,8 +548,6 @@ namespace Raptor.OpenGL
                     CachedStringProps.Clear();
                     CachedIntProps.Clear();
                     CachedBoolProps.Clear();
-
-                    IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
 
                     this.windowFacade.Load -= GameWindow_Load;
                     this.windowFacade.Unload -= GameWindow_Unload;

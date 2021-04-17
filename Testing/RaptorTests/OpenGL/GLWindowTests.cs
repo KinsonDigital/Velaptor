@@ -510,19 +510,6 @@ namespace RaptorTests.OpenGL
             // Assert
             Assert.Equal(BorderType.Fixed, actual);
         }
-
-        [Fact]
-        public void Initialized_WhenInvoked_RegistersToOpenGLInitEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-
-            // Act
-            IGLInvoker.SetOpenGLAsInitialized();
-
-            // Assert
-            Assert.True(window.Initialized);
-        }
         #endregion
 
         #region Method Tests
@@ -983,34 +970,6 @@ namespace RaptorTests.OpenGL
 
             // Assert
             Assert.True(disposeInvoked);
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_DisposesOfShowTask()
-        {
-            // Arrange
-            var window = CreateWindow();
-
-            // Act
-            window.Dispose();
-            window.Dispose();
-
-            // Assert
-            this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersOpenGLInitialzedEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-
-            // Act
-            window.Dispose();
-            IGLInvoker.SetOpenGLAsInitialized();
-
-            // Assert
-            Assert.False(window.Initialized);
         }
 
         [Fact]

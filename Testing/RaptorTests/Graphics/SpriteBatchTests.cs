@@ -93,7 +93,6 @@ namespace RaptorTests.Graphics
         {
             // Arrange
             var batch = CreateSpriteBatch();
-            IGLInvoker.SetOpenGLAsInitialized();
 
             // Act
             batch.RenderSurfaceWidth = 100;
@@ -109,7 +108,6 @@ namespace RaptorTests.Graphics
         {
             // Arrange
             var batch = CreateSpriteBatch();
-            IGLInvoker.SetOpenGLAsInitialized();
 
             // Act
             batch.RenderSurfaceHeight = 100;
@@ -125,8 +123,6 @@ namespace RaptorTests.Graphics
         {
             // Arrange
             var batch = CreateSpriteBatch();
-
-            IGLInvoker.SetOpenGLAsInitialized();
 
             // Act
             batch.ClearColor = Color.FromArgb(11, 22, 33, 44);
@@ -789,9 +785,6 @@ namespace RaptorTests.Graphics
             this.mockBuffer.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
-
-        /// <inheritdoc/>
-        public void Dispose() => IGLInvoker.SetOpenGLAsUnitialized();
 
         /// <summary>
         /// Creates a texture mock for the purpose of testing.
