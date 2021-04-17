@@ -7,6 +7,7 @@ namespace Raptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Input;
     using Raptor.NativeInterop;
+    using Raptor.Observables;
     using Raptor.OpenGL;
     using Raptor.Services;
     using Raptor.UI;
@@ -34,6 +35,7 @@ namespace Raptor.Factories
                 IoC.Container.GetInstance<ITaskService>(),
                 IoC.Container.GetInstance<IKeyboardInput<KeyCode, KeyboardState>>(),
                 IoC.Container.GetInstance<IMouseInput<MouseButton, MouseState>>(),
-                ContentLoaderFactory.CreateContentLoader());
+                ContentLoaderFactory.CreateContentLoader(),
+                IoC.Container.GetInstance<OpenGLObservable>());
     }
 }

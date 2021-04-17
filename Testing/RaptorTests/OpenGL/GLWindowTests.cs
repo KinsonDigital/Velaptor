@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,6 +19,7 @@ namespace RaptorTests.OpenGL
     using Raptor.Hardware;
     using Raptor.Input;
     using Raptor.NativeInterop;
+    using Raptor.Observables;
     using Raptor.OpenGL;
     using Raptor.Services;
     using Xunit;
@@ -43,6 +44,7 @@ namespace RaptorTests.OpenGL
         private readonly Mock<ITaskService> mockTaskService;
         private readonly Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>> mockKeyboard;
         private readonly Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>> mockMouse;
+        private readonly Mock<OpenGLObservable> mockGLObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -57,6 +59,7 @@ namespace RaptorTests.OpenGL
             this.mockTaskService = new Mock<ITaskService>();
             this.mockKeyboard = new Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>>();
             this.mockMouse = new Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>>();
+            this.mockGLObservable = new Mock<OpenGLObservable>();
         }
 
         #region Contructor Tests
@@ -76,7 +79,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
         }
 
@@ -96,7 +100,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
         }
 
@@ -116,7 +121,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'windowFacade')");
         }
 
@@ -136,7 +142,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
         }
 
@@ -156,7 +163,8 @@ namespace RaptorTests.OpenGL
                     null,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'taskService')");
         }
 
@@ -176,7 +184,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     null,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'keyboard')");
         }
 
@@ -196,7 +205,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     null,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'mouse')");
         }
 
@@ -216,7 +226,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    null);
+                    null,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
         }
         #endregion
@@ -1204,7 +1215,9 @@ namespace RaptorTests.OpenGL
             window.Dispose();
 
             // Assert
+            this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
             this.mockWindowFacade.Verify(m => m.Dispose(), Times.Once());
+            this.mockGLObservable.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 
@@ -1225,6 +1238,7 @@ namespace RaptorTests.OpenGL
                 this.mockTaskService.Object,
                 this.mockKeyboard.Object,
                 this.mockMouse.Object,
-                this.mockContentLoader.Object);
+                this.mockContentLoader.Object,
+                this.mockGLObservable.Object);
     }
 }
