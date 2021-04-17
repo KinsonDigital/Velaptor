@@ -29,7 +29,6 @@ namespace Raptor.Graphics
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
         private CachedValue<Color> cachedClearColor;
-        private uint batchSize = 10;
         private uint transDataLocation;
         private bool isDisposed;
         private bool hasBegun;
@@ -272,6 +271,17 @@ namespace Raptor.Graphics
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
+            // Check that the batch size matches the amount of items.  If not, reinitialize the batch items
+            if (this.batchItems.Count != BatchSize)
+            {
+                this.batchItems.Clear();
+
+                for (uint i = 0; i < BatchSize; i++)
+                {
+                    this.batchItems.Add(i, SpriteBatchItem.Empty);
+                }
+            }
+
             this.currentTextureID = texture.ID;
 
             var hasSwitchedTexture = this.currentTextureID != this.previousTextureID
@@ -356,13 +366,6 @@ namespace Raptor.Graphics
             this.shader.Init();
             this.gpuBuffer.TotalQuads = BatchSize;
             this.gpuBuffer.Init();
-
-            this.batchItems.Clear();
-
-            for (uint i = 0; i < this.batchSize; i++)
-            {
-                this.batchItems.Add(i, SpriteBatchItem.Empty);
-            }
 
             this.gl.Enable(EnableCap.Blend);
             this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);

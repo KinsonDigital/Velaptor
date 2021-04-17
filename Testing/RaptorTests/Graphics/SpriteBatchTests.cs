@@ -174,13 +174,12 @@ namespace RaptorTests.Graphics
         {
             // Arrange
             var batch = CreateSpriteBatch();
-            batch.BatchSize = 3;
 
             // Act
             var actual = batch.BatchSize;
 
             // Assert
-            Assert.Equal(3u, actual);
+            Assert.Equal(10u, actual);
         }
         #endregion
 
