@@ -2,8 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Graphics
 {
+#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -21,6 +23,7 @@ namespace RaptorTests.Graphics
     using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
+#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="SpriteBatch"/> class.
