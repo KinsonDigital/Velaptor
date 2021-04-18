@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -45,9 +45,12 @@ namespace RaptorTests.Services
         private readonly Mock<IFile> mockFile;
         private byte[]? bitmapBufferData;
         private GCHandle bitmapBufferDataHandle;
+        private FT_Bitmap faceBitmap = default;
         private FT_FaceRec faceRec = default;
         private FT_GlyphSlotRec glyphSlotRec = default;
         private FT_SizeRec sizeRec = default;
+        private FT_Size_Metrics sizeMetrics = default;
+        private FT_Glyph_Metrics glyphMetrics = default;
         private IntPtr facePtr;
 
         /// <summary>
@@ -347,13 +350,10 @@ namespace RaptorTests.Services
         /// <param name="height">The height of the size.</param>
         /// <returns>The size metric data to use for testing.</returns>
         [ExcludeFromCodeCoverage]
-        private static FT_Size_Metrics CreateSizeMetrics(int width, int height)
+        private void CreateSizeMetrics(int width, int height)
         {
-            FT_Size_Metrics sizeMetrics = default;
-            sizeMetrics.ascender = new IntPtr(width << 6);
-            sizeMetrics.descender = new IntPtr(height << 6);
-
-            return sizeMetrics;
+            this.sizeMetrics.ascender = new IntPtr(width << 6);
+            this.sizeMetrics.descender = new IntPtr(height << 6);
         }
 
         /// <summary>
@@ -365,16 +365,13 @@ namespace RaptorTests.Services
         /// <param name="horiBearingX">The X coordinate of the horizontal bearing.</param>
         /// <param name="horiBearingY">The Y coordinate of the horizontal bearing.</param>
         /// <returns>The glyph metrics used for testing.</returns>
-        private static FT_Glyph_Metrics CreateGlypMetrics(int width, int height, int horiAdvance, int horiBearingX, int horiBearingY)
+        private void CreateGlypMetrics(int width, int height, int horiAdvance, int horiBearingX, int horiBearingY)
         {
-            FT_Glyph_Metrics glyphMetrics = default;
-            glyphMetrics.width = new IntPtr(width << 6);
-            glyphMetrics.height = new IntPtr(height << 6);
-            glyphMetrics.horiAdvance = new IntPtr(horiAdvance << 6);
-            glyphMetrics.horiBearingX = new IntPtr(horiBearingX << 6);
-            glyphMetrics.horiBearingY = new IntPtr(horiBearingY << 6);
-
-            return glyphMetrics;
+            this.glyphMetrics.width = new IntPtr(width << 6);
+            this.glyphMetrics.height = new IntPtr(height << 6);
+            this.glyphMetrics.horiAdvance = new IntPtr(horiAdvance << 6);
+            this.glyphMetrics.horiBearingX = new IntPtr(horiBearingX << 6);
+            this.glyphMetrics.horiBearingY = new IntPtr(horiBearingY << 6);
         }
 
         /// <summary>
@@ -383,17 +380,19 @@ namespace RaptorTests.Services
         [ExcludeFromCodeCoverage]
         private void SetupTestGlyphData()
         {
-            var faceBitmap = CreateGlyphBMPData(GlyphWidth, GlyphHeight);
+            CreateGlyphBMPData(GlyphWidth, GlyphHeight);
 
-            this.glyphSlotRec.bitmap = faceBitmap;
+            this.glyphSlotRec.bitmap = this.faceBitmap;
 
             // Setup the size metric data
-            this.sizeRec.metrics = CreateSizeMetrics(8, 5);
+            CreateSizeMetrics(8, 5);
+            this.sizeRec.metrics = this.sizeMetrics;
 
             this.faceRec.size = TestHelpers.ToUnsafePointer(ref this.sizeRec);
 
             // Setup the glyph metrics
-            this.glyphSlotRec.metrics = CreateGlypMetrics(5, 6, 13, 15, 7);
+            CreateGlypMetrics(5, 6, 13, 15, 7);
+            this.glyphSlotRec.metrics = this.glyphMetrics;
 
             this.faceRec.glyph = TestHelpers.ToUnsafePointer(ref this.glyphSlotRec);
 
@@ -408,7 +407,7 @@ namespace RaptorTests.Services
         /// <param name="height">The height of the glyph bitmap.</param>
         /// <returns>The glyph bitmap data to use for testing.</returns>
         [ExcludeFromCodeCoverage]
-        private FT_Bitmap CreateGlyphBMPData(uint width, uint height)
+        private void CreateGlyphBMPData(uint width, uint height)
         {
             this.bitmapBufferData = new byte[width * height];
 
@@ -425,12 +424,9 @@ namespace RaptorTests.Services
             this.bitmapBufferDataHandle = GCHandle.Alloc(this.bitmapBufferData, GCHandleType.Pinned);
 
             // Setup the face data required to satisfy the test
-            var faceBitmap = default(FT_Bitmap);
-            faceBitmap.width = width;
-            faceBitmap.rows = height;
-            faceBitmap.buffer = this.bitmapBufferDataHandle.AddrOfPinnedObject();
-
-            return faceBitmap;
+            this.faceBitmap.width = width;
+            this.faceBitmap.rows = height;
+            this.faceBitmap.buffer = this.bitmapBufferDataHandle.AddrOfPinnedObject();
         }
 
         /// <summary>

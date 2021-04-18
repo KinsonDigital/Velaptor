@@ -6,6 +6,7 @@ namespace Raptor.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
@@ -382,21 +383,42 @@ namespace Raptor.Services
                 {
                     var face = Marshal.PtrToStructure<FT_FaceRec>(this.facePtr);
 
-                    metric.Ascender = face.size->metrics.ascender.ToInt32() >> 6;
-                    metric.Descender = face.size->metrics.descender.ToInt32() >> 6;
-                    metric.Glyph = glyphKeyValue.Key;
-                    metric.CharIndex = glyphKeyValue.Value;
+                    if (Environment.Is64BitProcess)
+                    {
+                        metric.Ascender = (int)face.size->metrics.ascender.ToInt64() >> 6;
+                        metric.Descender = (int)face.size->metrics.descender.ToInt64() >> 6;
+                        metric.Glyph = glyphKeyValue.Key;
+                        metric.CharIndex = glyphKeyValue.Value;
 
-                    metric.XMin = face.bbox.xMin.ToInt32() >> 6;
-                    metric.XMax = face.bbox.xMax.ToInt32() >> 6;
-                    metric.YMin = face.bbox.yMin.ToInt32() >> 6;
-                    metric.YMax = face.bbox.yMax.ToInt32() >> 6;
+                        metric.XMin = (int)face.bbox.xMin.ToInt64() >> 6;
+                        metric.XMax = (int)face.bbox.xMax.ToInt64() >> 6;
+                        metric.YMin = (int)face.bbox.yMin.ToInt64() >> 6;
+                        metric.YMax = (int)face.bbox.yMax.ToInt64() >> 6;
 
-                    metric.GlyphWidth = face.glyph->metrics.width.ToInt32() >> 6;
-                    metric.GlyphHeight = face.glyph->metrics.height.ToInt32() >> 6;
-                    metric.HorizontalAdvance = face.glyph->metrics.horiAdvance.ToInt32() >> 6;
-                    metric.HoriBearingX = face.glyph->metrics.horiBearingX.ToInt32() >> 6;
-                    metric.HoriBearingY = face.glyph->metrics.horiBearingY.ToInt32() >> 6;
+                        metric.GlyphWidth = (int)face.glyph->metrics.width.ToInt64() >> 6;
+                        metric.GlyphHeight = (int)face.glyph->metrics.height.ToInt64() >> 6;
+                        metric.HorizontalAdvance = (int)face.glyph->metrics.horiAdvance.ToInt64() >> 6;
+                        metric.HoriBearingX = (int)face.glyph->metrics.horiBearingX.ToInt64() >> 6;
+                        metric.HoriBearingY = (int)face.glyph->metrics.horiBearingY.ToInt64() >> 6;
+                    }
+                    else
+                    {
+                        metric.Ascender = face.size->metrics.ascender.ToInt32() >> 6;
+                        metric.Descender = face.size->metrics.descender.ToInt32() >> 6;
+                        metric.Glyph = glyphKeyValue.Key;
+                        metric.CharIndex = glyphKeyValue.Value;
+
+                        metric.XMin = face.bbox.xMin.ToInt32() >> 6;
+                        metric.XMax = face.bbox.xMax.ToInt32() >> 6;
+                        metric.YMin = face.bbox.yMin.ToInt32() >> 6;
+                        metric.YMax = face.bbox.yMax.ToInt32() >> 6;
+
+                        metric.GlyphWidth = face.glyph->metrics.width.ToInt32() >> 6;
+                        metric.GlyphHeight = face.glyph->metrics.height.ToInt32() >> 6;
+                        metric.HorizontalAdvance = face.glyph->metrics.horiAdvance.ToInt32() >> 6;
+                        metric.HoriBearingX = face.glyph->metrics.horiBearingX.ToInt32() >> 6;
+                        metric.HoriBearingY = face.glyph->metrics.horiBearingY.ToInt32() >> 6;
+                    }
                 }
 
                 result.Add(glyphKeyValue.Key, metric);
