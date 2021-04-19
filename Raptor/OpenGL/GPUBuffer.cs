@@ -10,6 +10,7 @@ namespace Raptor.OpenGL
     using System.Linq;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
+    using Raptor.NativeInterop;
 
     /// <inheritdoc/>
     internal class GPUBuffer<T> : IGPUBuffer
@@ -155,7 +156,6 @@ namespace Raptor.OpenGL
         {
             var quad = CreateQuad();
 
-            // TODO: Condense this code down
             var topLeftCornerX = srcRect.Left.MapValue(0, textureWidth, 0, 1);
             var topLeftCornerY = srcRect.Top.MapValue(0, textureHeight, 1, 0);
             var topLeftCoord = new Vector2(topLeftCornerX, topLeftCornerY);

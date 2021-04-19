@@ -18,6 +18,7 @@ namespace Raptor.Content
         private readonly ILoader<ITexture> textureLoader;
         private readonly ILoader<ISound> soundLoader;
         private readonly ILoader<IAtlasData> atlasLoader;
+        private readonly ILoader<IFont> fontLoader;
         private bool isDisposed;
 
         /// <summary>
@@ -26,11 +27,17 @@ namespace Raptor.Content
         /// <param name="textureLoader">The loader used to load textures.</param>
         /// <param name="soundLoader">Loads sounds.</param>
         /// <param name="atlasLoader">Loads a texture atlas.</param>
-        public ContentLoader(ILoader<ITexture> textureLoader, ILoader<ISound> soundLoader, ILoader<IAtlasData> atlasLoader)
+        /// <param name="fontLoader">Loads fonts for rendering test.</param>
+        public ContentLoader(
+            ILoader<ITexture> textureLoader,
+            ILoader<ISound> soundLoader,
+            ILoader<IAtlasData> atlasLoader,
+            ILoader<IFont> fontLoader)
         {
             this.textureLoader = textureLoader;
             this.soundLoader = soundLoader;
             this.atlasLoader = atlasLoader;
+            this.fontLoader = fontLoader;
         }
 
         /// <inheritdoc/>
@@ -52,6 +59,11 @@ namespace Raptor.Content
             if (typeof(T) == typeof(IAtlasData))
             {
                 return (T)this.atlasLoader.Load(name);
+            }
+
+            if (typeof(T) == typeof(IFont))
+            {
+                return (T)this.fontLoader.Load(name);
             }
 
             throw new UnknownContentException($"Content of type '{typeof(T)}' invalid.  Content types must inherit from interface '{nameof(IContent)}'.");
@@ -81,6 +93,12 @@ namespace Raptor.Content
                 return;
             }
 
+            if (typeof(T) == typeof(IFont))
+            {
+                this.fontLoader.Unload(name);
+                return;
+            }
+
             throw new UnknownContentException($"The content of type '{typeof(T)}' is unknown.");
         }
 
@@ -107,6 +125,7 @@ namespace Raptor.Content
                 this.textureLoader.Dispose();
                 this.soundLoader.Dispose();
                 this.atlasLoader.Dispose();
+                this.fontLoader.Dispose();
             }
 
             this.isDisposed = true;

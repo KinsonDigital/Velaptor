@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Raptor.NativeInterop
 {
     using System;
     using OpenTK.Graphics.OpenGL4;
@@ -13,32 +13,6 @@ namespace Raptor.OpenGL
     /// </summary>
     internal interface IGLInvoker
     {
-        /// <summary>
-        /// Value indicating if OpenGL has been initialized.
-        /// </summary>
-        private static bool isOpenGLInitialized;
-
-        /// <summary>
-        /// Invoked when OpenGL has been initialized.
-        /// </summary>
-        public static event EventHandler<EventArgs>? OpenGLInitialized;
-
-        /// <summary>
-        /// Sets OpenGL as initialized.
-        /// </summary>
-        public static void SetOpenGLAsInitialized()
-        {
-            isOpenGLInitialized = true;
-
-            OpenGLInitialized?.Invoke(null, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Returns a value indicating if OpenGL is initialized and ready for use.
-        /// </summary>
-        /// <returns>True if OpenGL is initialized.</returns>
-        public static bool IsOpenGLInitialized() => isOpenGLInitialized;
-
         /// <summary>
         /// [requires: v1.0] Enable or disable server-side GL capabilities.
         /// </summary>
@@ -166,7 +140,7 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="pname">The parameter name.</param>
         /// <param name="data">The values to return.</param>
-        void GetFloat(GetPName pname, float[] data) => GL.GetFloat(pname, data);
+        void GetFloat(GetPName pname, float[] data);
 
         /// <summary>
         /// Gets the size of the viewport.

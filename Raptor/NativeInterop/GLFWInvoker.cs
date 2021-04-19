@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Raptor.NativeInterop
 {
     using System;
     using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace Raptor.OpenGL
     /// Invokes GLFW calls.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class GLFWInvoker : IGLFWInvoker
+    internal class GLFWInvoker : IGLFWInvoker
     {
         /// <inheritdoc/>
         public bool Init() => GLFW.Init();

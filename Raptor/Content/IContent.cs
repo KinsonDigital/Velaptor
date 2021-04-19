@@ -18,5 +18,10 @@ namespace Raptor.Content
         /// Gets the path to the content.
         /// </summary>
         string Path { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the content item has been unloaded.
+        /// </summary>
+        bool Unloaded { get; }
     }
 }

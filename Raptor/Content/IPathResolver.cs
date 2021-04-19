@@ -27,15 +27,27 @@ namespace Raptor.Content
         ///     deepest child directory name will be used.
         /// </para>
         /// </remarks>
-        string FileDirectoryName { get; set; }
+        string ContentDirectoryName { get; set; }
 
         /// <summary>
         /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
         /// </summary>
-        /// <param name="contentName">The name of the file with or without the file extension.</param>
+        /// <param name="contentName">The name of the content item with or without the file extension.</param>
         /// <returns>
-        ///     The <see cref="RootDirectory"/>, <see cref="FileDirectoryName"/> and file directory name combined.
+        ///     The <see cref="RootDirectory"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
         /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///     Occurs when the given <paramref name="contentName"/> is null or emtpy.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     Occurs when the given <paramref name="contentName"/> ends with a directory separator.
+        /// </exception>
         string ResolveFilePath(string contentName);
+
+        /// <summary>
+        /// Resolves the full directory path to some content.
+        /// </summary>
+        /// <returns>The directory only path to some content.</returns>
+        string ResolveDirPath();
     }
 }

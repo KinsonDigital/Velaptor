@@ -2,7 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CA1064 // Exceptions should be public
 namespace Raptor.Audio.Exceptions
 {
     using System;

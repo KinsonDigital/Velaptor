@@ -2,11 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Input
 {
+#pragma warning disable IDE0001 // Name can be simplified
     using System.Numerics;
+    using Raptor.Exceptions;
     using Raptor.Input;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
+#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="MouseState"/> struct.
@@ -75,7 +80,6 @@ namespace RaptorTests.Input
         [InlineData(MouseButton.LeftButton, true, false, false)]
         [InlineData(MouseButton.MiddleButton, false, true, false)]
         [InlineData(MouseButton.RightButton, false, false, true)]
-        [InlineData(MouseButton.None, false, false, false)]
         public void SetButtonState_WhenInvoked_SetsState(MouseButton mouseButton, bool expectedLeft, bool expectedMiddle, bool expectedRight)
         {
             // Arrange
@@ -181,7 +185,6 @@ namespace RaptorTests.Input
         [InlineData(MouseButton.LeftButton, true)]
         [InlineData(MouseButton.MiddleButton, true)]
         [InlineData(MouseButton.RightButton, true)]
-        [InlineData((MouseButton)123, false)]
         public void GetButtonState_WhenInvoked_ReturnsCorrectResult(MouseButton mouseButton, bool expected)
         {
             // Arrange
@@ -195,48 +198,35 @@ namespace RaptorTests.Input
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [InlineData(new MouseButton[0], true)]
-        [InlineData(new[] { MouseButton.LeftButton }, false)]
-        [InlineData(new[] { MouseButton.MiddleButton }, false)]
-        [InlineData(new[] { MouseButton.RightButton }, false)]
-        [InlineData(new[] { MouseButton.LeftButton, MouseButton.MiddleButton }, false)]
-        [InlineData(new[] { MouseButton.RightButton, MouseButton.MiddleButton }, false)]
-        [InlineData(new[] { MouseButton.LeftButton, MouseButton.RightButton }, false)]
-        [InlineData(new[] { MouseButton.LeftButton, MouseButton.MiddleButton, MouseButton.RightButton }, false)]
-        public void GetButtonState_WhenAnyButtonIsDown_ReturnsCorrectResult(MouseButton[] downButtons, bool expected)
+        [Fact]
+        public void GetButtonState_WithInvalidState_ThrowsException()
         {
             // Arrange
             var state = default(MouseState);
 
-            foreach (var button in downButtons)
+            // Act & Assert
+            Assert.ThrowsWithMessage<InvalidInputException>(() =>
             {
-                state.SetButtonState(button, true);
-            }
+                state.SetButtonState((MouseButton)123, true);
+            }, "Invalid Mouse Input");
+        }
+
+        [Theory]
+        [InlineData(MouseButton.LeftButton, true)]
+        [InlineData(MouseButton.MiddleButton, true)]
+        [InlineData(MouseButton.RightButton, true)]
+        public void GetButtonState_WhenButtonIsDown_ReturnsTrue(MouseButton downButton, bool expected)
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            state.SetButtonState(downButton, true);
 
             // Act
-            var actual = state.GetButtonState(MouseButton.None);
+            var actual = state.GetButtonState(downButton);
 
             // Assert
             Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void SetButtonState_WhenInvokedWithButtonSetToNone_DoesNotChangeAnything()
-        {
-            // Arrange
-            var state = default(MouseState);
-
-            // Act
-            state.SetButtonState(MouseButton.None, true);
-            var actualLeftButton = state.IsLeftButtonDown();
-            var actualMiddleButton = state.IsMiddleButtonDown();
-            var actualRightButton = state.IsRightButtonDown();
-
-            // Assert
-            Assert.False(actualLeftButton);
-            Assert.False(actualMiddleButton);
-            Assert.False(actualRightButton);
         }
 
         [Fact]

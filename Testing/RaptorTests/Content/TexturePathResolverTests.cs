@@ -9,8 +9,8 @@ namespace RaptorTests.Content
     using System.Reflection;
     using Moq;
     using Raptor.Content;
-    using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="TexturePathResolver"/> class.
@@ -43,7 +43,7 @@ namespace RaptorTests.Content
 
             // Act
             var resolver = new TexturePathResolver(mockDirectory.Object);
-            var actual = resolver.FileDirectoryName;
+            var actual = resolver.ContentDirectoryName;
 
             // Assert
             Assert.Equal("Graphics", actual);
@@ -69,7 +69,7 @@ namespace RaptorTests.Content
             var resolver = new TexturePathResolver(mockDirectory.Object);
 
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<FileNotFoundException>(() =>
+            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The texture image file '{this.contentFilePath}' does not exist.");
@@ -78,6 +78,7 @@ namespace RaptorTests.Content
         [Theory]
         [InlineData("test-content")]
         [InlineData("test-content.png")]
+        [InlineData("TEST-CONTENT.png")]
         public void ResolveFilePath_WhenInvoked_ResolvesFilepath(string contentName)
         {
             // Arrange

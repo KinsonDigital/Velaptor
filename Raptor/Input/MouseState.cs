@@ -7,6 +7,7 @@ namespace Raptor.Input
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
+    using Raptor.Exceptions;
 
     /// <summary>
     /// Represents the state of the mouse.
@@ -97,7 +98,6 @@ namespace Raptor.Input
         public bool GetButtonState(MouseButton mouseButton)
             => mouseButton switch
             {
-                MouseButton.None => !this.isLeftButtonDown && !this.isMiddleButtonDown && !this.isRightButtonDown,
                 MouseButton.LeftButton => this.isLeftButtonDown,
                 MouseButton.RightButton => this.isRightButtonDown,
                 MouseButton.MiddleButton => this.isMiddleButtonDown,
@@ -164,11 +164,6 @@ namespace Raptor.Input
         {
             switch (mouseButton)
             {
-                case MouseButton.None:
-                    this.isLeftButtonDown = false;
-                    this.isMiddleButtonDown = false;
-                    this.isRightButtonDown = false;
-                    return;
                 case MouseButton.LeftButton:
                     this.isLeftButtonDown = state;
                     break;
@@ -178,6 +173,8 @@ namespace Raptor.Input
                 case MouseButton.MiddleButton:
                     this.isMiddleButtonDown = state;
                     break;
+                default:
+                    throw new InvalidInputException("Invalid Mouse Input");
             }
         }
     }

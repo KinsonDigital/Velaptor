@@ -4,6 +4,7 @@
 
 namespace Raptor.Content
 {
+    using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
@@ -23,7 +24,7 @@ namespace Raptor.Content
         public TexturePathResolver(IDirectory directory)
         {
             this.directory = directory;
-            FileDirectoryName = "Graphics";
+            ContentDirectoryName = "Graphics";
         }
 
         /// <summary>
@@ -36,11 +37,18 @@ namespace Raptor.Content
             // Performs other checks on the content name
             contentName = base.ResolveFilePath(contentName);
 
+            contentName = Path.HasExtension(contentName)
+                ? Path.GetFileNameWithoutExtension(contentName)
+                : contentName;
+
             var contentDirPath = GetContentDirPath();
 
             // Check if there are any files that match the name
             var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
-                         where f == $"{contentDirPath}{contentName}{FileExtension}"
+                         where string.Compare(
+                             f,
+                             $"{contentDirPath}{contentName}{FileExtension}",
+                             StringComparison.OrdinalIgnoreCase) == 0
                          select f).ToArray();
 
             if (files.Length <= 0)

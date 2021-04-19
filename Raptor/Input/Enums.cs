@@ -611,11 +611,6 @@ namespace Raptor.Input
     public enum MouseButton
     {
         /// <summary>
-        /// Represents no mouse input at all.
-        /// </summary>
-        None = -1,
-
-        /// <summary>
         /// Represents the left mouse button.
         /// </summary>
         LeftButton = 0,

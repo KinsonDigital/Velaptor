@@ -51,11 +51,11 @@ namespace RaptorTests.Audio.Exceptions
             var innerException = new Exception("inner-exception");
 
             // Act
-            var deviceException = new AudioDeviceDoesNotExistException("device-exception", innerException);
+            var deviceException = new AudioDeviceDoesNotExistException("test-exception", innerException);
 
             // Assert
             Assert.Equal("inner-exception", deviceException.InnerException.Message);
-            Assert.Equal("device-exception", deviceException.Message);
+            Assert.Equal("test-exception", deviceException.Message);
         }
         #endregion
     }

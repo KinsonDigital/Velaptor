@@ -11,8 +11,8 @@ namespace RaptorTests.UI
     using Raptor.Content;
     using Raptor.UI;
     using RaptorTests.Fakes;
-    using RaptorTests.Helpers;
     using Xunit;
+    using Assert = RaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="Window"/> class.
@@ -30,7 +30,7 @@ namespace RaptorTests.UI
             this.mockContentLoader = new Mock<IContentLoader>();
 
             this.mockWindow = new Mock<IWindow>();
-            this.mockWindow.SetupGet(m => m.ContentLoader).Returns(this.mockContentLoader.Object);
+            this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
         }
 
         #region Prop Tests
@@ -191,7 +191,7 @@ namespace RaptorTests.UI
         public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullWindow_ThrowsException()
         {
             // Act & Assert
-            AssertHelpers.ThrowsWithMessage<ArgumentNullException>(() =>
+            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var window = new WindowFake(null);
             }, "Window must not be null. (Parameter 'window')");

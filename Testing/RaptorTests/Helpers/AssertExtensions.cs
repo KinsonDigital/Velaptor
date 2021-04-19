@@ -1,7 +1,8 @@
-﻿// <copyright file="AssertHelpers.cs" company="KinsonDigital">
+﻿// <copyright file="AssertExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Helpers
 {
     using System;
@@ -9,12 +10,13 @@ namespace RaptorTests.Helpers
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Xunit;
+    using Xunit.Sdk;
 
     /// <summary>
     /// Provides helper methods for the <see cref="XUnit"/>'s <see cref="Assert"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class AssertHelpers
+    public class AssertExtensions : Assert
     {
         /// <summary>
         /// Verifies that the exact exception is thrown (and not a derived exception type) and that
@@ -157,6 +159,116 @@ namespace RaptorTests.Helpers
                 }
 
                 Assert.True(false, $"The item '{itemsToCheck[i]}' at index '{i}' returned false with the '{nameof(arePredicate)}'");
+            }
+        }
+
+        /// <summary>
+        /// Verifies that an expression is true.
+        /// </summary>
+        /// <param name="condition">The condition to be inspected.</param>
+        /// <param name="message">The message to be shown when the condition is false.</param>
+        /// <param name="expected">The expected message to display if the condition is false.</param>
+        /// <param name="actual">The actual message to display if the condition is false.</param>
+        public static void True(bool condition, string message, string expected = "", string actual = "")
+        {
+            XunitException assertExcption;
+
+            if (!string.IsNullOrEmpty(expected) && string.IsNullOrEmpty(actual))
+            {
+                assertExcption = new XunitException(
+                    $"Message: {message}\n" +
+                    $"Expected: {expected}");
+            }
+            else if (string.IsNullOrEmpty(expected) && !string.IsNullOrEmpty(actual))
+            {
+                assertExcption = new XunitException(
+                    $"Message: {message}\n" +
+                    $"Actual: {actual}\n");
+            }
+            else if (!string.IsNullOrEmpty(expected) && !string.IsNullOrEmpty(actual))
+            {
+                assertExcption = new XunitException(
+                    $"Message: {message}\n" +
+                    $"Expected: {expected}\n" +
+                    $"Actual:   {actual}");
+            }
+            else
+            {
+                assertExcption = new AssertActualExpectedException(
+                    true,
+                    condition,
+                    message);
+            }
+
+            if (condition is false)
+            {
+                throw assertExcption;
+            }
+        }
+
+        /// <summary>
+        /// Verifies that all items in the collection pass when executed against the given action.
+        /// </summary>
+        /// <typeparam name="T">The type of object to be verified.</typeparam>
+        /// <param name="collection">The 2-dimensional collection.</param>
+        /// <param name="width">The width of the first dimension.</param>
+        /// <param name="height">The height of the second dimension.</param>
+        /// <param name="action">The action to test each item against.</param>
+        /// <remarks>
+        ///     The last 2 <see langword="in"/> parameters T2 and T3 of type <see langword="int"/> of the <paramref name="action"/>
+        ///     is the X and Y location within the <paramref name="collection"/> that failed the assertion.
+        /// </remarks>
+        public static void All<T>(T[,] collection, int width, int height, Action<T, int, int> action)
+        {
+            var actionInvoked = false;
+
+            for (var y = 0; y < height; y++)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    actionInvoked = true;
+                    action(collection[x, y], x, y);
+                }
+            }
+
+            Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.  Are there any items?");
+        }
+
+        /// <summary>
+        /// Verifies that all items in the collection pass when executed against the given action.
+        /// </summary>
+        /// <typeparam name="T">The type of object to be verified.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="action">The action to test each item against.</param>
+        public static void All<T>(T[] collection, Action<T, int> action)
+        {
+            var actionInvoked = false;
+
+            for (var i = 0; i < collection.Length; i++)
+            {
+                actionInvoked = true;
+                action(collection[i], i);
+            }
+
+            Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.  Are there any items?");
+        }
+
+        /// <summary>
+        /// Verifies that the two integers are equivalent.
+        /// </summary>
+        /// <param name="expected">The expected <see langword="int"/> value.</param>
+        /// <param name="actual">The actual <see langword="int"/> value.</param>
+        /// <param name="message">The message to be shown about the failed assertion.</param>
+        public static void Equals(int expected, int actual, string message)
+        {
+            var assertException = new AssertActualExpectedException(expected, actual, message);
+            try
+            {
+                Assert.Equal(expected, actual);
+            }
+            catch (Exception)
+            {
+                throw assertException;
             }
         }
     }

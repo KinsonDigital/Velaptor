@@ -8,17 +8,20 @@ namespace Raptor
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
     using System.IO;
     using System.Linq;
     using OpenTK.Mathematics;
+    using Raptor.Graphics;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
+    using SixLabors.ImageSharp;
+    using SixLabors.ImageSharp.PixelFormats;
+    using NETColor = System.Drawing.Color;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.
     /// </summary>
-    internal static class ExtensionMethods
+    public static class ExtensionMethods
     {
         /// <summary>
         /// Converts the given <paramref name="radians"/> value into degrees.
@@ -92,7 +95,7 @@ namespace Raptor
         /// <param name="angle">The angle in degrees to rotate <paramref name="vector"/>.  Value must be positive.</param>
         /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/>.</param>
         /// <returns>The <paramref name="vector"/> rotated around the <paramref name="origin"/>.</returns>
-        internal static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
+        public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
         {
             var angleRadians = clockWise ? angle.ToRadians() : angle.ToRadians() * -1;
 
@@ -123,14 +126,14 @@ namespace Raptor
         ///     Z = blue.
         ///     W = alpha.
         /// </returns>
-        internal static Vector4 ToVector4(this Color clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
+        public static Vector4 ToVector4(this NETColor clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
         /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A color represented by a 4 component vector.</returns>
-        internal static Vector4 ToGLColor(this Color value)
+        public static Vector4 ToGLColor(this NETColor value)
         {
             var vec4 = value.ToVector4();
             return vec4.MapValues(0, 255, 0, 1);
@@ -145,7 +148,7 @@ namespace Raptor
         /// <param name="toStart">The to starting range value.</param>
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A 4 component vector with each value mapped from one range to another.</returns>
-        internal static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
+        public static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
             => new Vector4
             {
                 X = value.X.MapValue(fromStart, fromStop, toStart, toStop),
@@ -249,13 +252,13 @@ namespace Raptor
         [ExcludeFromCodeCoverage]
         internal static void SuppressDisposableTransientWarning<T>(this Container container)
         {
-            var spriteBatchRegistration = container.GetRegistration(typeof(T))?.Registration;
-            spriteBatchRegistration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
+            var registration = container.GetRegistration(typeof(T))?.Registration;
+            registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
         }
 
         /// <summary>
-        ///     Conditionally registers that a new instance of TImplementation will be returned
-        ///     every time a TService is requested (transient) and where the supplied predicate
+        ///     Conditionally registers that a new instance of <typeparamref name="TImplementation"/> will be returned
+        ///     every time a <typeparamref name="TService"/> is requested (transient) and where the supplied predicate
         ///     returns true. The predicate will only be evaluated a finite number of times;
         ///     the predicate is unsuited for making decisions based on runtime conditions.
         /// </summary>
@@ -263,7 +266,7 @@ namespace Raptor
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
         /// <param name="predicate">
-        ///     The predicate that determines whether the TImplementation can be applied for
+        ///     The predicate that determines whether the <typeparamref name="TImplementation"/> can be applied for
         ///     the requested service type. This predicate can be used to build a fallback mechanism
         ///     where multiple registrations for the same service type are made. Note that the
         ///     predicate will be called a finite number of times and its result will be cached
@@ -291,8 +294,8 @@ namespace Raptor
         }
 
         /// <summary>
-        ///     Registers that a new instance of TImplementation will be returned every time
-        ///     a TService is requested (transient).
+        ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
+        ///     a <typeparamref name="TService"/> is requested (transient).
         /// </summary>
         /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
@@ -318,25 +321,89 @@ namespace Raptor
         }
 
         /// <summary>
-        ///     Registers the specified delegate that allows returning transient instances of
-        ///     TService. The delegate is expected to always return a new instance on each call.
+        ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
+        ///     a <typeparamref name="TService"/> is requested (transient).
         /// </summary>
-        /// <typeparam name="TService">The interface or base type that can be used to retrieve instances.</typeparam>
+        /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
+        /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
-        /// <param name="instanceCreator">The delegate that allows building or creating new instances.</param>
+        /// <param name="lifestyle">The lifestyle that specifies how the returned instance will be cached.</param>
         /// <param name="suppressDisposal">True to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <remarks>
+        ///     This method uses the container's LifestyleSelectionBehavior to select the exact
+        ///     lifestyle for the specified type. By default this will be Transient.
+        /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
         [ExcludeFromCodeCoverage]
-        internal static void Register<TService>(this Container container, Func<TService> instanceCreator, bool suppressDisposal = false)
+        internal static void Register<TService, TImplementation>(this Container container, Lifestyle lifestyle, bool suppressDisposal = false)
             where TService : class
+            where TImplementation : class, TService
         {
-            container.Register(instanceCreator);
+            container.Register<TService, TImplementation>(lifestyle);
 
             if (suppressDisposal)
             {
                 SuppressDisposableTransientWarning<TService>(container);
             }
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="ImageData"/>
+        /// to the type of <see cref="Image{Rgba32}"/>.
+        /// </summary>
+        /// <param name="image">The image data to convert.</param>
+        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
+        internal static Image<Rgba32> ToSixLaborImage(this ImageData image)
+        {
+            var result = new Image<Rgba32>(image.Width, image.Height);
+
+            for (var y = 0; y < result.Height; y++)
+            {
+                var pixelRowSpan = result.GetPixelRowSpan(y);
+
+                for (var x = 0; x < result.Width; x++)
+                {
+                    pixelRowSpan[x] = new Rgba32(
+                        image.Pixels[x, y].R,
+                        image.Pixels[x, y].G,
+                        image.Pixels[x, y].B,
+                        image.Pixels[x, y].A);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        internal static ImageData ToImageData(this Image<Rgba32> image)
+        {
+            ImageData result = default;
+
+            result.Pixels = new NETColor[image.Width, image.Height];
+            result.Width = image.Width;
+            result.Height = image.Height;
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    result.Pixels[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
+            }
+
+            return result;
         }
     }
 }

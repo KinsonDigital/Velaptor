@@ -9,21 +9,26 @@ namespace Raptor.Graphics
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
+    using FreeTypeSharp.Native;
     using OpenTK.Graphics.OpenGL4;
     using OpenTK.Mathematics;
     using Raptor.Exceptions;
+    using Raptor.NativeInterop;
+    using Raptor.Observables;
+    using Raptor.Observables.Core;
     using Raptor.OpenGL;
 
     /// <inheritdoc/>
     internal class SpriteBatch : ISpriteBatch
     {
+        private const char InvalidCharacter = '□';
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
         private readonly IGLInvoker gl;
+        private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
-        private CachedValue<Color>? cachedClearColor;
-        private uint batchSize = 10;
+        private CachedValue<Color> cachedClearColor;
         private uint transDataLocation;
         private bool isDisposed;
         private bool hasBegun;
@@ -37,10 +42,27 @@ namespace Raptor.Graphics
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
+        /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
+        /// <remarks>
+        ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+        ///     pushes the notification that OpenGL has been intialized.
+        /// </remarks>
         [ExcludeFromCodeCoverage]
-        public SpriteBatch(IGLInvoker gl, IShaderProgram shader, IGPUBuffer gpuBuffer)
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+// The reason for ignoring this warning for the `cachedClearColor` not being set in constructor while
+// it is set to not be null is due to the fact that we do not want warnings expressing an issue that
+// does not exist.  The SetupPropertyCaches() method takes care of making sure it is not null.
+        public SpriteBatch(
+            IGLInvoker gl,
+            IFreeTypeInvoker freeTypeInvoker,
+            IShaderProgram shader,
+            IGPUBuffer gpuBuffer,
+            OpenGLObservable glObservable)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             if (gl is null)
             {
@@ -58,24 +80,25 @@ namespace Raptor.Graphics
             }
 
             this.gl = gl;
+            this.freeTypeInvoker = freeTypeInvoker;
             this.shader = shader;
             this.gpuBuffer = gpuBuffer;
 
+            // Recieve a push notification that OpenGL has intialized
+            GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
+                onNext: (isInitialized) =>
+                {
+                    this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+                    if (!(this.cachedClearColor is null))
+                    {
+                        this.cachedClearColor.IsCaching = false;
+                    }
+
+                    Init();
+                }));
+
             SetupPropertyCaches();
-
-            IGLInvoker.OpenGLInitialized += Gl_OpenGLInitialized;
-        }
-
-        /// <inheritdoc/>
-        public uint BatchSize
-        {
-            get => this.batchSize;
-            set
-            {
-                Dispose(true);
-                this.batchSize = value;
-                Init();
-            }
         }
 
         /// <inheritdoc/>
@@ -96,16 +119,17 @@ namespace Raptor.Graphics
         public Color ClearColor
         {
             get => this.cachedClearColor is null ? Color.Empty : this.cachedClearColor.GetValue();
-            set
-            {
-                if (this.cachedClearColor is null)
-                {
-                    throw new NullReferenceException($"The clear color caching mechanism in the class '{nameof(SpriteBatch)}' must not be null.");
-                }
-
-                this.cachedClearColor.SetValue(value);
-            }
+            set => this.cachedClearColor.SetValue(value);
         }
+
+        /// <inheritdoc/>
+        public uint BatchSize { get; internal set; } = 10;
+
+        /// <summary>
+        /// Gets the unsubscriber for the subcription
+        /// to the <see cref="OpenGLObservable"/>.
+        /// </summary>
+        internal IDisposable GLObservableUnsubscriber { get; private set; }
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
@@ -122,7 +146,7 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y, Color tintColor) => Render(texture, x, y, tintColor, RenderEffects.None);
 
-        /// <inheritdoc/>///
+        /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y, Color tintColor, RenderEffects effects)
         {
             if (!this.hasBegun)
@@ -135,6 +159,7 @@ namespace Raptor.Graphics
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
+            // Render the entire texture
             var srcRect = new Rectangle()
             {
                 X = 0,
@@ -146,6 +171,76 @@ namespace Raptor.Graphics
             var destRect = new Rectangle(x, y, texture.Width, texture.Height);
 
             Render(texture, srcRect, destRect, 1, 0, tintColor, effects);
+        }
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y) => Render(font, text, x, y, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, Color tintColor)
+        {
+            var leftGlyghIndex = 0u;
+
+            var facePtr = this.freeTypeInvoker.GetFace();
+
+            var availableCharacters = font.GetAvailableGlyphCharacters();
+
+            foreach (var character in text)
+            {
+                var charToRender = character;
+
+                if (availableCharacters.Contains(character) is false)
+                {
+                    charToRender = InvalidCharacter;
+                }
+
+                var glyphMetrics = (from f in font.Metrics
+                                    where f.Glyph == charToRender
+                                    select f).FirstOrDefault();
+
+                if (font.HasKerning && leftGlyghIndex != 0 && glyphMetrics.CharIndex != 0)
+                {
+                    // TODO: Before committing this if block, check the perf for curiousity reasons
+                    FT_Vector delta = this.freeTypeInvoker.FT_Get_Kerning(
+                        facePtr,
+                        leftGlyghIndex,
+                        glyphMetrics.CharIndex,
+                        (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
+
+                    x += delta.x.ToInt32() >> 6;
+                }
+
+                Rectangle srcRect = default;
+                srcRect.X = glyphMetrics.AtlasBounds.X;
+                srcRect.Y = glyphMetrics.AtlasBounds.Y;
+                srcRect.Width = glyphMetrics.AtlasBounds.Width;
+                srcRect.Height = glyphMetrics.AtlasBounds.Height;
+
+                var verticalOffset = glyphMetrics.AtlasBounds.Height - glyphMetrics.HoriBearingY;
+
+                Rectangle destRect = default;
+                destRect.X = x + (glyphMetrics.AtlasBounds.Width / 2);
+                destRect.Y = y - (glyphMetrics.AtlasBounds.Height / 2) + verticalOffset;
+                destRect.Width = font.FontTextureAtlas.Width;
+                destRect.Height = font.FontTextureAtlas.Height;
+
+                // Only render characters that are not a space (32 char code)
+                if (character != ' ')
+                {
+                    Render(
+                        font.FontTextureAtlas,
+                        srcRect: srcRect,
+                        destRect: destRect,
+                        size: 1,
+                        angle: 0,
+                        tintColor: tintColor,
+                        effects: RenderEffects.None);
+                }
+
+                // Horizontally advance the current glyph
+                x += glyphMetrics.HorizontalAdvance;
+                leftGlyghIndex = glyphMetrics.CharIndex;
+            }
         }
 
         /// <inheritdoc/>
@@ -176,9 +271,21 @@ namespace Raptor.Graphics
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
+            // Check that the batch size matches the amount of items.  If not, reinitialize the batch items
+            if (this.batchItems.Count != BatchSize)
+            {
+                this.batchItems.Clear();
+
+                for (uint i = 0; i < BatchSize; i++)
+                {
+                    this.batchItems.Add(i, SpriteBatchItem.Empty);
+                }
+            }
+
             this.currentTextureID = texture.ID;
 
-            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID && !this.firstRenderMethodInvoke;
+            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID
+                && this.firstRenderMethodInvoke is false;
             var batchIsFull = this.batchItems.Values.ToArray().All(i => !i.IsEmpty);
 
             // Has the textures switched
@@ -241,11 +348,11 @@ namespace Raptor.Graphics
 
             if (disposing)
             {
-                IGLInvoker.OpenGLInitialized -= Gl_OpenGLInitialized;
-                this.shader.Dispose();
-                this.gpuBuffer.Dispose();
                 this.batchItems.Clear();
                 this.cachedIntProps.Clear();
+                this.shader.Dispose();
+                this.gpuBuffer.Dispose();
+                GLObservableUnsubscriber.Dispose();
             }
 
             this.isDisposed = true;
@@ -257,15 +364,8 @@ namespace Raptor.Graphics
         private void Init()
         {
             this.shader.Init();
-            this.gpuBuffer.TotalQuads = this.batchSize;
+            this.gpuBuffer.TotalQuads = BatchSize;
             this.gpuBuffer.Init();
-
-            this.batchItems.Clear();
-
-            for (uint i = 0; i < this.batchSize; i++)
-            {
-                this.batchItems.Add(i, SpriteBatchItem.Empty);
-            }
 
             this.gl.Enable(EnableCap.Blend);
             this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -276,22 +376,6 @@ namespace Raptor.Graphics
 
             this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
             this.isDisposed = false;
-        }
-
-        /// <summary>
-        /// Invoked when OpenGL has been initialized.
-        /// </summary>
-        private void Gl_OpenGLInitialized(object? sender, EventArgs e)
-        {
-            if (this.cachedClearColor is null)
-            {
-                throw new NullReferenceException($"The clear color caching mechanism in the class '{nameof(SpriteBatch)}' must not be null.");
-            }
-
-            this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            this.cachedClearColor.IsCaching = false;
-
-            Init();
         }
 
         /// <summary>
@@ -413,7 +497,7 @@ namespace Raptor.Graphics
             }
 
             // Only render the amount of elements for the amount of batch items to render.
-            // 6 = the number of vertices/quad and each batch is a quad. batchAmontToRender is the total quads to render
+            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
             if (batchAmountToRender > 0)
             {
                 this.gl.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero);

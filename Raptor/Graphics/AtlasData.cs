@@ -15,17 +15,21 @@ namespace Raptor.Graphics
     public class AtlasData : IAtlasData
     {
         private readonly AtlasSubTextureData[] subTextures;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasData"/> class.
         /// </summary>
-        /// <param name="atlasSubTexutureData">The sub texture data of all of the sub textures in the atlas.</param>
         /// <param name="texture">The texture data of the atlas.</param>
+        /// <param name="atlasSubTexutureData">The sub texture data of all of the sub textures in the atlas.</param>
         /// <param name="atlasName">The name of the atlas.</param>
         /// <param name="path">The path to the content.</param>
-        public AtlasData(AtlasSubTextureData[] atlasSubTexutureData, ITexture texture, string atlasName, string path)
+        public AtlasData(ITexture texture, AtlasSubTextureData[] atlasSubTexutureData, string atlasName, string path)
         {
+            if (texture is null)
+            {
+                throw new ArgumentNullException(nameof(Texture), "The parameter must not be null.");
+            }
+
             this.subTextures = atlasSubTexutureData.OrderBy(data => data.FrameIndex).ToArray();
             Texture = texture;
             Name = atlasName;
@@ -67,13 +71,16 @@ namespace Raptor.Graphics
         public string Path { get; }
 
         /// <inheritdoc/>
-        public ITexture Texture { get; set; }
+        public ITexture Texture { get; private set; }
 
         /// <inheritdoc/>
         public int Width => Texture.Width;
 
         /// <inheritdoc/>
         public int Height => Texture.Height;
+
+        /// <inheritdoc/>
+        public bool Unloaded { get; private set; }
 
         /// <inheritdoc/>
         public AtlasSubTextureData this[int index] => this.subTextures[index];
@@ -113,7 +120,7 @@ namespace Raptor.Graphics
         /// <param name="disposing">True to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (this.isDisposed)
+            if (Unloaded)
             {
                 return;
             }
@@ -123,7 +130,7 @@ namespace Raptor.Graphics
                 Texture.Dispose();
             }
 
-            this.isDisposed = true;
+            Unloaded = true;
         }
     }
 }

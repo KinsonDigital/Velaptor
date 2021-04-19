@@ -11,6 +11,7 @@ namespace RaptorTests.OpenGL
     using OpenTK.Windowing.GraphicsLibraryFramework;
     using Raptor;
     using Raptor.Hardware;
+    using Raptor.NativeInterop;
     using Raptor.OpenGL;
     using Xunit;
 

@@ -40,4 +40,25 @@ namespace Raptor.Content
         /// </summary>
         SubTexture,
     }
+
+    /// <summary>
+    /// The kind of font styles.
+    /// </summary>
+    public enum FontStyle
+    {
+        /// <summary>
+        /// Regular font style.
+        /// </summary>
+        Regular,
+
+        /// <summary>
+        /// Bold font style.
+        /// </summary>
+        Bold,
+
+        /// <summary>
+        /// Italic font style.
+        /// </summary>
+        Italic,
+    }
 }
