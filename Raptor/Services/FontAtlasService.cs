@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,8 +9,6 @@ namespace Raptor.Services
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using System.Runtime.InteropServices;
-    using FreeTypeSharp.Native;
     using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
@@ -18,48 +16,19 @@ namespace Raptor.Services
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
 
-    /* TODO List:
-        ✔ 1. Check if the class consuming/injecting this service can be used by the library user.
-        If so, then this class cannot be internal.  You might have to make an internal constructor
-        or possibly do something different.
-
-        ✔ 2. Add interface with IDisposble
-        ✔ 3. Unregister invoker event in Dispose()
-        4. Invoke dispose on invoker.  Do we want each invoker to represent a single lib and lib pointer?  Or doe
-            we want a single invoker (singleton) to manage all initiated lib pointers to free type?
-            * I am thinking we should have each instance of the invoker manage its own pointer
-              to a single initiated free type library
-        6. This service is only needed for the font atlas creation process in the FontLoaderService class.
-            Look into possibly disposing of this service which in turn will dipose of the FreeTypeInvoker
-            after the atlas is created.  If this is the route that is taken, make sure that the FreeType lib
-            cannot be called again indirectly from the FontLoaderService class which would attempt a FreeType
-            call after it has been disposed.
-        6. Look into finding a way to know which monitor the window is on.  This way if there are 2 monitors
-            and the window is dragged onto the 2nd monitor that has a different DPI setting, the font character
-            size can be updated accordinly.  This is a possibly major issue because it would require recreation
-            of the entire font atlas during runtime.  Also, if the FreeTypeInvoker has been disposed after the creation
-            of the first atlas, it will need to be reinitialized.
-        8. Look into this link in reguards to new unsafe class in C# 7.0 => https://ndportmann.com/system-runtime-compilerservices-unsafe/
-            * This could make things faster
-        9. Find a way to render an empty magenta box to the screen with the with of a space character when the attempted
-            * glyph does not exist.
-        10. Improve performance.  Example: font size of 54 renders a much bigger atlas and its too slow
-    */
-
     /// <summary>
     /// Creates font atlas textures for rendering text.
     /// </summary>
     internal class FontAtlasService : IFontAtlasService
     {
-        private const int AntiEdgeCroppingMargin = 3;
         private const char InvalidCharacter = '□';
         private readonly IFreeTypeInvoker freeTypeInvoker;
+        private readonly IFreeTypeExtensions freeTypeExtensions;
         private readonly IImageService imageService;
         private readonly ISystemMonitorService monitorService;
         private readonly IFile file;
         private readonly IntPtr freeTypeLibPtr;
         private IntPtr facePtr;
-        private string fontFilePath = string.Empty;
         private char[]? glyphChars;
         private bool isDisposed;
 
@@ -67,18 +36,21 @@ namespace Raptor.Services
         /// Initializes a new instance of the <see cref="FontAtlasService"/> class.
         /// </summary>
         /// <param name="freeTypeInvoker">Provides low level calls to the FreeType2 library.</param>
+        /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="imageService">Manages image data.</param>
-        /// <param name="monitorService">Provids information about the system monitors.</param>
+        /// <param name="systemMonitorService">Provides information about the system monitor.</param>
         /// <param name="file">Performs file operations.</param>
         public FontAtlasService(
             IFreeTypeInvoker freeTypeInvoker,
+            IFreeTypeExtensions freeTypeExtensions,
             IImageService imageService,
-            ISystemMonitorService monitorService,
+            ISystemMonitorService systemMonitorService,
             IFile file)
         {
             this.freeTypeInvoker = freeTypeInvoker;
+            this.freeTypeExtensions = freeTypeExtensions;
             this.imageService = imageService;
-            this.monitorService = monitorService;
+            this.monitorService = systemMonitorService;
             this.file = file;
 
             this.freeTypeLibPtr = this.freeTypeInvoker.FT_Init_FreeType();
@@ -109,16 +81,24 @@ namespace Raptor.Services
                 throw new FileNotFoundException($"The file '{fontFilePath}' does not exist.");
             }
 
-            this.fontFilePath = fontFilePath;
+            this.facePtr = this.freeTypeExtensions.CreateFontFace(this.freeTypeLibPtr, fontFilePath);
 
-            CreateFontFace();
-            SetCharacterSize(size);
+            if (this.monitorService.MainMonitor is null)
+            {
+                throw new SystemDisplayException("The main system display must not be null.");
+            }
 
-            var glyphIndices = GetGlyphIndices();
+            this.freeTypeExtensions.SetCharacterSize(
+                this.facePtr,
+                size,
+                (uint)this.monitorService.MainMonitor.HorizontalDPI,
+                (uint)this.monitorService.MainMonitor.VerticalDPI);
+
+            var glyphIndices = this.freeTypeExtensions.GetGlyphIndices(this.facePtr, this.glyphChars);
 
             var glyphImages = CreateGlyphImages(glyphIndices);
 
-            var glyphMetrics = CreateGlyphMetrics(glyphIndices);
+            var glyphMetrics = this.freeTypeExtensions.CreateGlyphMetrics(this.facePtr, glyphIndices);
 
             var fontAtlasMetrics = CalcAtlasMetrics(glyphImages);
 
@@ -173,23 +153,8 @@ namespace Raptor.Services
                 if (disposing)
                 {
                     this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
+                    this.freeTypeInvoker.Dispose();
                 }
-
-                // TODO: Need to figure out how to call FT_Done_Glyph() in a safe way
-                // This implimentation below is causing issuess
-                /*
-                unsafe
-                {
-                    var unsafePtr = (FT_FaceRec*)this.facePtr;
-
-                    var glyphPtr = (IntPtr)unsafePtr->glyph;
-
-                    this.freeTypeInvoker.FT_Done_Glyph(glyphPtr);
-                }
-                 */
-
-                this.freeTypeInvoker.FT_Done_Face(this.facePtr);
-                this.freeTypeInvoker.FT_Done_FreeType(this.freeTypeLibPtr);
 
                 this.isDisposed = true;
             }
@@ -279,7 +244,7 @@ namespace Raptor.Services
         /// <param name="width">The width of the glyph bitmap.</param>
         /// <param name="height">The height of the glyph bitmap.</param>
         /// <returns>The 32-bit RGBA glyph image data.</returns>
-        private static ImageData ToImage(byte[] pixelData, int width, int height)
+        private static ImageData ToImageData(byte[] pixelData, int width, int height)
         {
             ImageData image = default;
             image.Pixels = new NETColor[width, height];
@@ -308,32 +273,6 @@ namespace Raptor.Services
         }
 
         /// <summary>
-        /// Gets all of the font indices fron the font file for each glyph.
-        /// </summary>
-        /// <returns>The index for each glyph.</returns>
-        private Dictionary<char, uint> GetGlyphIndices()
-        {
-            if (this.glyphChars is null)
-            {
-                return new Dictionary<char, uint>();
-            }
-
-            var result = new Dictionary<char, uint>();
-
-            for (var i = 0; i < this.glyphChars.Length; i++)
-            {
-                var glyphChar = this.glyphChars[i];
-
-                // Get the glyph image and the character map index
-                var charIndex = this.freeTypeInvoker.FT_Get_Char_Index(this.facePtr, glyphChar);
-
-                result.Add(glyphChar, charIndex);
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Creates all of the glyph images for each glyph.
         /// </summary>
         /// <param name="glyphIndices">The glyph index for each glyph.</param>
@@ -342,130 +281,21 @@ namespace Raptor.Services
         {
             var result = new Dictionary<char, ImageData>();
 
-            foreach (var glyphKeyvalue in glyphIndices)
+            foreach (var glyphKeyValue in glyphIndices)
             {
-                if (glyphKeyvalue.Key == ' ')
+                if (glyphKeyValue.Key == ' ')
                 {
                     continue;
                 }
 
-                var glyphImage = CreateGlyphImage(glyphKeyvalue.Key, glyphKeyvalue.Value);
+                var (pixelData, width, height) = this.freeTypeExtensions.CreateGlyphImage(this.facePtr, glyphKeyValue.Key, glyphKeyValue.Value);
 
-                result.Add(glyphKeyvalue.Key, glyphImage);
+                var glyphImage = ToImageData(pixelData, width, height);
+
+                result.Add(glyphKeyValue.Key, glyphImage);
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Creates all of the glyph metrics for each glyph.
-        /// </summary>
-        /// <param name="glyphIndices">The glyph index for each glyph.</param>
-        /// <returns>The glyph metrics for each glyph/character.</returns>
-        /// <remarks>
-        ///     The <paramref name="glyphMetrics"/> is the font atlas texture data that will eventually be returned.
-        /// </remarks>
-        private Dictionary<char, GlyphMetrics> CreateGlyphMetrics(Dictionary<char, uint> glyphIndices)
-        {
-            var result = new Dictionary<char, GlyphMetrics>();
-
-            foreach (var glyphKeyValue in glyphIndices)
-            {
-                GlyphMetrics metric = default;
-
-                this.freeTypeInvoker.FT_Load_Glyph(
-                    this.facePtr,
-                    glyphKeyValue.Value,
-                    FT.FT_LOAD_BITMAP_METRICS_ONLY);
-
-                unsafe
-                {
-                    var face = Marshal.PtrToStructure<FT_FaceRec>(this.facePtr);
-
-                    metric.Ascender = face.size->metrics.ascender.ToInt32() >> 6;
-                    metric.Descender = face.size->metrics.descender.ToInt32() >> 6;
-                    metric.Glyph = glyphKeyValue.Key;
-                    metric.CharIndex = glyphKeyValue.Value;
-
-                    metric.XMin = face.bbox.xMin.ToInt32() >> 6;
-                    metric.XMax = face.bbox.xMax.ToInt32() >> 6;
-                    metric.YMin = face.bbox.yMin.ToInt32() >> 6;
-                    metric.YMax = face.bbox.yMax.ToInt32() >> 6;
-
-                    metric.GlyphWidth = face.glyph->metrics.width.ToInt32() >> 6;
-                    metric.GlyphHeight = face.glyph->metrics.height.ToInt32() >> 6;
-                    metric.HorizontalAdvance = face.glyph->metrics.horiAdvance.ToInt32() >> 6;
-                    metric.HoriBearingX = face.glyph->metrics.horiBearingX.ToInt32() >> 6;
-                    metric.HoriBearingY = face.glyph->metrics.horiBearingY.ToInt32() >> 6;
-                }
-
-                result.Add(glyphKeyValue.Key, metric);
-            }
-
-            var filteredItems = (from i in result
-                                 where i.Value.HorizontalAdvance == 48
-                                 select i).ToArray();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Creates a new font face from the font file.
-        /// </summary>
-        private unsafe void CreateFontFace()
-        {
-            this.facePtr = this.freeTypeInvoker.FT_New_Face(this.freeTypeLibPtr, this.fontFilePath, 0);
-
-            if (this.facePtr == IntPtr.Zero)
-            {
-                throw new LoadFontException("An invalid pointer value of zero was returned when creating a new font face.");
-            }
-        }
-
-        /// <summary>
-        /// Sets the nominal character size in points.
-        /// </summary>
-        /// <param name="sizeInPoints">The size in points to set the characters.</param>
-        private void SetCharacterSize(int sizeInPoints)
-        {
-            var sizeInPointsPtr = (IntPtr)(sizeInPoints << 6);
-
-            if (this.monitorService.MainMonitor is null)
-            {
-                throw new SystemDisplayException("The main system display must not be null.");
-            }
-
-            // TODO: Check if the main monitor is null and if so, throw exception
-            this.freeTypeInvoker.FT_Set_Char_Size(
-                this.facePtr,
-                sizeInPointsPtr,
-                sizeInPointsPtr,
-                (uint)this.monitorService.MainMonitor.HorizontalDPI,
-                (uint)this.monitorService.MainMonitor.VerticalDPI);
-        }
-
-        /// <summary>
-        /// Pulls the 8-bit grayscale bitmap data for the given <paramref name="glyphChar"/>
-        /// and returns it as a 32-bit RGBA image.
-        /// </summary>
-        /// <param name="glyphChar">The glyph character to create the image from.</param>
-        /// <param name="glyphIndex">The index of the glyph in the font file.</param>
-        /// <returns>The 32-bit RGBA iamge of the glyph.</returns>
-        private unsafe ImageData CreateGlyphImage(char glyphChar, uint glyphIndex)
-        {
-            var face = Marshal.PtrToStructure<FT_FaceRec>(this.facePtr);
-
-            this.freeTypeInvoker.FT_Load_Glyph(this.facePtr, glyphIndex, FT.FT_LOAD_RENDER);
-
-            var width = (int)face.glyph->bitmap.width;
-            var height = (int)face.glyph->bitmap.rows;
-
-            var glyphBitmapData = new byte[width * height];
-            Marshal.Copy(face.glyph->bitmap.buffer, glyphBitmapData, 0, glyphBitmapData.Length);
-
-            var glyphImage = ToImage(glyphBitmapData, width, height);
-
-            return glyphImage;
         }
     }
 }

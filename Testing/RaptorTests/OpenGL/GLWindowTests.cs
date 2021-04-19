@@ -8,7 +8,6 @@ namespace RaptorTests.OpenGL
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Threading;
     using System.Threading.Tasks;
     using Moq;
     using OpenTK.Graphics.OpenGL4;
@@ -19,6 +18,7 @@ namespace RaptorTests.OpenGL
     using Raptor.Hardware;
     using Raptor.Input;
     using Raptor.NativeInterop;
+    using Raptor.Observables;
     using Raptor.OpenGL;
     using Raptor.Services;
     using Xunit;
@@ -28,7 +28,6 @@ namespace RaptorTests.OpenGL
     using RaptorMouseState = Raptor.Input.MouseState;
     using SysVector2 = System.Numerics.Vector2;
     using TKMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
-    using TKVector2 = OpenTK.Mathematics.Vector2;
 
     /// <summary>
     /// Tests the <see cref="GLWindow"/> class.
@@ -43,6 +42,7 @@ namespace RaptorTests.OpenGL
         private readonly Mock<ITaskService> mockTaskService;
         private readonly Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>> mockKeyboard;
         private readonly Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>> mockMouse;
+        private readonly Mock<OpenGLObservable> mockGLObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -57,6 +57,7 @@ namespace RaptorTests.OpenGL
             this.mockTaskService = new Mock<ITaskService>();
             this.mockKeyboard = new Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>>();
             this.mockMouse = new Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>>();
+            this.mockGLObservable = new Mock<OpenGLObservable>();
         }
 
         #region Contructor Tests
@@ -76,7 +77,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
         }
 
@@ -96,7 +98,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
         }
 
@@ -116,7 +119,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'windowFacade')");
         }
 
@@ -136,7 +140,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
         }
 
@@ -156,7 +161,8 @@ namespace RaptorTests.OpenGL
                     null,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'taskService')");
         }
 
@@ -176,7 +182,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     null,
                     this.mockMouse.Object,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'keyboard')");
         }
 
@@ -196,7 +203,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     null,
-                    this.mockContentLoader.Object);
+                    this.mockContentLoader.Object,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'mouse')");
         }
 
@@ -216,7 +224,8 @@ namespace RaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockKeyboard.Object,
                     this.mockMouse.Object,
-                    null);
+                    null,
+                    this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
         }
         #endregion
@@ -509,19 +518,6 @@ namespace RaptorTests.OpenGL
 
             // Assert
             Assert.Equal(BorderType.Fixed, actual);
-        }
-
-        [Fact]
-        public void Initialized_WhenInvoked_RegistersToOpenGLInitEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-
-            // Act
-            IGLInvoker.SetOpenGLAsInitialized();
-
-            // Assert
-            Assert.True(window.Initialized);
         }
         #endregion
 
@@ -986,34 +982,6 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public void Dispose_WhenInvoked_DisposesOfShowTask()
-        {
-            // Arrange
-            var window = CreateWindow();
-
-            // Act
-            window.Dispose();
-            window.Dispose();
-
-            // Assert
-            this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersOpenGLInitialzedEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-
-            // Act
-            window.Dispose();
-            IGLInvoker.SetOpenGLAsInitialized();
-
-            // Assert
-            Assert.False(window.Initialized);
-        }
-
-        [Fact]
         public void Dispose_WhenInvoked_UnregistersLoadEvent()
         {
             // Arrange
@@ -1245,7 +1213,9 @@ namespace RaptorTests.OpenGL
             window.Dispose();
 
             // Assert
+            this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
             this.mockWindowFacade.Verify(m => m.Dispose(), Times.Once());
+            this.mockGLObservable.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 
@@ -1266,6 +1236,7 @@ namespace RaptorTests.OpenGL
                 this.mockTaskService.Object,
                 this.mockKeyboard.Object,
                 this.mockMouse.Object,
-                this.mockContentLoader.Object);
+                this.mockContentLoader.Object,
+                this.mockGLObservable.Object);
     }
 }

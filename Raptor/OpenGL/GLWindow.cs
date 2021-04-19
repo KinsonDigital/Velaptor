@@ -16,6 +16,7 @@ namespace Raptor.OpenGL
     using Raptor.Content;
     using Raptor.Input;
     using Raptor.NativeInterop;
+    using Raptor.Observables;
     using Raptor.Services;
     using Raptor.UI;
     using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
@@ -37,10 +38,11 @@ namespace Raptor.OpenGL
         private readonly ITaskService taskService;
         private readonly IKeyboardInput<KeyCode, KeyboardState> keyboard;
         private readonly IMouseInput<RaptorMouseButton, MouseState> mouse;
+        private readonly OpenGLObservable glObservable;
         private DebugProc? debugProc;
         private bool isShuttingDown;
-        private bool isDiposed;
         private bool firstRenderInvoked;
+        private bool isDiposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
@@ -55,6 +57,7 @@ namespace Raptor.OpenGL
         /// <param name="keyboard">Provides keyboard input.</param>
         /// <param name="mouse">Provides mouse input.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
+        /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
         public GLWindow(
             int width,
             int height,
@@ -65,7 +68,8 @@ namespace Raptor.OpenGL
             ITaskService taskService,
             IKeyboardInput<KeyCode, KeyboardState> keyboard,
             IMouseInput<RaptorMouseButton, MouseState> mouse,
-            IContentLoader contentLoader)
+            IContentLoader contentLoader,
+            OpenGLObservable glObservable)
         {
             if (glInvoker is null)
             {
@@ -114,13 +118,12 @@ namespace Raptor.OpenGL
             this.taskService = taskService;
             this.keyboard = keyboard;
             this.mouse = mouse;
+            this.glObservable = glObservable;
 
             ContentLoader = contentLoader;
 
             SetupWidthHeightPropCaches(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
             SetupOtherPropCaches();
-
-            IGLInvoker.OpenGLInitialized += IGLInvoker_OpenGLInitialized;
         }
 
         /// <inheritdoc/>
@@ -366,33 +369,6 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Occurs when OpenGL has been initialized.
-        /// </summary>
-        private void IGLInvoker_OpenGLInitialized(object? sender, EventArgs e)
-        {
-            CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
-            CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-
-            if (!(CachedPosition is null))
-            {
-                CachedPosition.IsCaching = false;
-            }
-
-            if (!(CachedWindowState is null))
-            {
-                CachedWindowState.IsCaching = false;
-            }
-
-            if (!(CachedTypeOfBorder is null))
-            {
-                CachedTypeOfBorder.IsCaching = false;
-            }
-
-            Initialized = true;
-        }
-
-        /// <summary>
         /// Occurs when a keyboard key is pressed into the down position.
         /// </summary>
         /// <param name="e">The keyboard info of the event.</param>
@@ -558,9 +534,31 @@ namespace Raptor.OpenGL
             this.gl.Enable(EnableCap.DebugOutputSynchronous);
             this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
 
-            // Set OpenGL as initialized.  Once the InternalGLWindow has been created,
-            // that means OpenGL has been initialized by OpenTK itself.
-            IGLInvoker.SetOpenGLAsInitialized();
+            CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+            if (!(CachedPosition is null))
+            {
+                CachedPosition.IsCaching = false;
+            }
+
+            if (!(CachedWindowState is null))
+            {
+                CachedWindowState.IsCaching = false;
+            }
+
+            if (!(CachedTypeOfBorder is null))
+            {
+                CachedTypeOfBorder.IsCaching = false;
+            }
+
+            Initialized = true;
+
+            // Send a push notification to all subscribers that OpenGL is initialized.
+            // The context of initialized here is that the OpenGL context is set
+            // and the related GLFW window has been created and is ready to go.
+            this.glObservable.OnOpenGLInitialized();
         }
 
         /// <summary>
@@ -574,11 +572,11 @@ namespace Raptor.OpenGL
                 if (disposing)
                 {
                     this.taskService?.Dispose();
+                    this.glObservable.Dispose();
+
                     CachedStringProps.Clear();
                     CachedIntProps.Clear();
                     CachedBoolProps.Clear();
-
-                    IGLInvoker.OpenGLInitialized -= IGLInvoker_OpenGLInitialized;
 
                     this.windowFacade.Load -= GameWindow_Load;
                     this.windowFacade.Unload -= GameWindow_Unload;

@@ -14,6 +14,8 @@ namespace Raptor.Graphics
     using OpenTK.Mathematics;
     using Raptor.Exceptions;
     using Raptor.NativeInterop;
+    using Raptor.Observables;
+    using Raptor.Observables.Core;
     using Raptor.OpenGL;
 
     /// <inheritdoc/>
@@ -27,7 +29,6 @@ namespace Raptor.Graphics
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
         private CachedValue<Color> cachedClearColor;
-        private uint batchSize = 10;
         private uint transDataLocation;
         private bool isDisposed;
         private bool hasBegun;
@@ -44,13 +45,23 @@ namespace Raptor.Graphics
         /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
+        /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
+        /// <remarks>
+        ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+        ///     pushes the notification that OpenGL has been intialized.
+        /// </remarks>
         [ExcludeFromCodeCoverage]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 // The reason for ignoring this warning for the `cachedClearColor` not being set in constructor while
 // it is set to not be null is due to the fact that we do not want warnings expressing an issue that
 // does not exist.  The SetupPropertyCaches() method takes care of making sure it is not null.
-        public SpriteBatch(IGLInvoker gl, IFreeTypeInvoker freeTypeInvoker, IShaderProgram shader, IGPUBuffer gpuBuffer)
+        public SpriteBatch(
+            IGLInvoker gl,
+            IFreeTypeInvoker freeTypeInvoker,
+            IShaderProgram shader,
+            IGPUBuffer gpuBuffer,
+            OpenGLObservable glObservable)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             if (gl is null)
@@ -73,21 +84,21 @@ namespace Raptor.Graphics
             this.shader = shader;
             this.gpuBuffer = gpuBuffer;
 
+            // Recieve a push notification that OpenGL has intialized
+            GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
+                onNext: (isInitialized) =>
+                {
+                    this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+
+                    if (!(this.cachedClearColor is null))
+                    {
+                        this.cachedClearColor.IsCaching = false;
+                    }
+
+                    Init();
+                }));
+
             SetupPropertyCaches();
-
-            IGLInvoker.OpenGLInitialized += Gl_OpenGLInitialized;
-        }
-
-        /// <inheritdoc/>
-        public uint BatchSize
-        {
-            get => this.batchSize;
-            set
-            {
-                Dispose(true);
-                this.batchSize = value;
-                Init();
-            }
         }
 
         /// <inheritdoc/>
@@ -110,6 +121,15 @@ namespace Raptor.Graphics
             get => this.cachedClearColor is null ? Color.Empty : this.cachedClearColor.GetValue();
             set => this.cachedClearColor.SetValue(value);
         }
+
+        /// <inheritdoc/>
+        public uint BatchSize { get; internal set; } = 10;
+
+        /// <summary>
+        /// Gets the unsubscriber for the subcription
+        /// to the <see cref="OpenGLObservable"/>.
+        /// </summary>
+        internal IDisposable GLObservableUnsubscriber { get; private set; }
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
@@ -251,9 +271,21 @@ namespace Raptor.Graphics
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
+            // Check that the batch size matches the amount of items.  If not, reinitialize the batch items
+            if (this.batchItems.Count != BatchSize)
+            {
+                this.batchItems.Clear();
+
+                for (uint i = 0; i < BatchSize; i++)
+                {
+                    this.batchItems.Add(i, SpriteBatchItem.Empty);
+                }
+            }
+
             this.currentTextureID = texture.ID;
 
-            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID && !this.firstRenderMethodInvoke;
+            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID
+                && this.firstRenderMethodInvoke is false;
             var batchIsFull = this.batchItems.Values.ToArray().All(i => !i.IsEmpty);
 
             // Has the textures switched
@@ -316,11 +348,11 @@ namespace Raptor.Graphics
 
             if (disposing)
             {
-                IGLInvoker.OpenGLInitialized -= Gl_OpenGLInitialized;
-                this.shader.Dispose();
-                this.gpuBuffer.Dispose();
                 this.batchItems.Clear();
                 this.cachedIntProps.Clear();
+                this.shader.Dispose();
+                this.gpuBuffer.Dispose();
+                GLObservableUnsubscriber.Dispose();
             }
 
             this.isDisposed = true;
@@ -332,15 +364,8 @@ namespace Raptor.Graphics
         private void Init()
         {
             this.shader.Init();
-            this.gpuBuffer.TotalQuads = this.batchSize;
+            this.gpuBuffer.TotalQuads = BatchSize;
             this.gpuBuffer.Init();
-
-            this.batchItems.Clear();
-
-            for (uint i = 0; i < this.batchSize; i++)
-            {
-                this.batchItems.Add(i, SpriteBatchItem.Empty);
-            }
 
             this.gl.Enable(EnableCap.Blend);
             this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -351,21 +376,6 @@ namespace Raptor.Graphics
 
             this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
             this.isDisposed = false;
-        }
-
-        /// <summary>
-        /// Invoked when OpenGL has been initialized.
-        /// </summary>
-        private void Gl_OpenGLInitialized(object? sender, EventArgs e)
-        {
-            this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
-
-            if (!(this.cachedClearColor is null))
-            {
-                this.cachedClearColor.IsCaching = false;
-            }
-
-            Init();
         }
 
         /// <summary>
