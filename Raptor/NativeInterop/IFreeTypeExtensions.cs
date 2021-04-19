@@ -14,7 +14,7 @@ namespace Raptor.NativeInterop
     internal interface IFreeTypeExtensions
     {
         /// <summary>
-        /// Creates a new font face from the font file.
+        /// Creates a new font face from a font file at the given <paramref name="fontFilepath"/>.
         /// </summary>
         /// <param name="freeTypeLibPtr">The pointer to the free type library.</param>
         /// <param name="fontFilePath">The path to the font file to create the face from.</param>
@@ -24,13 +24,12 @@ namespace Raptor.NativeInterop
         IntPtr CreateFontFace(IntPtr freeTypeLibPtr, string fontFilePath);
 
         /// <summary>
-        /// Pulls the 8-bit grayscale bitmap data for the given <paramref name="glyphChar"/>
-        /// and returns it as a 32-bit RGBA image.
+        /// Pulls the 8-bit grayscale bitmap data for the given <paramref name="glyphChar"/>.
         /// </summary>
         /// <param name="facePtr">The pointer to the font face.</param>
         /// <param name="glyphChar">The glyph character to create the image from.</param>
         /// <param name="glyphIndex">The index of the glyph in the font file.</param>
-        /// <returns>The 8-bit gray scale iamge of the glyph.</returns>
+        /// <returns>The 8-bit gray scale image pixel data with the width and height.</returns>
         (byte[] pixelData, int width, int height) CreateGlyphImage(IntPtr facePtr, char glyphChar, uint glyphIndex);
 
         /// <summary>
@@ -39,9 +38,6 @@ namespace Raptor.NativeInterop
         /// <param name="facePtr">The pointer to the font face.</param>
         /// <param name="glyphIndices">The glyph index for each glyph.</param>
         /// <returns>The glyph metrics for each glyph/character.</returns>
-        /// <remarks>
-        ///     The <paramref name="glyphMetrics"/> is the font atlas texture data that will eventually be returned.
-        /// </remarks>
         Dictionary<char, GlyphMetrics> CreateGlyphMetrics(IntPtr facePtr, Dictionary<char, uint> glyphIndices);
 
         /// <summary>
