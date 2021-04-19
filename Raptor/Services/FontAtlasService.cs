@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -410,10 +410,6 @@ namespace Raptor.Services
 
                 result.Add(glyphKeyValue.Key, metric);
             }
-
-            var filteredItems = (from i in result
-                                 where i.Value.HorizontalAdvance == 48
-                                 select i).ToArray();
 
             return result;
         }
