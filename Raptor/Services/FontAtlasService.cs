@@ -6,7 +6,6 @@ namespace Raptor.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
@@ -26,25 +25,13 @@ namespace Raptor.Services
 
         ✔ 2. Add interface with IDisposble
         ✔ 3. Unregister invoker event in Dispose()
-        4. Invoke dispose on invoker.  Do we want each invoker to represent a single lib and lib pointer?  Or doe
-            we want a single invoker (singleton) to manage all initiated lib pointers to free type?
-            * I am thinking we should have each instance of the invoker manage its own pointer
-              to a single initiated free type library
         6. This service is only needed for the font atlas creation process in the FontLoaderService class.
             Look into possibly disposing of this service which in turn will dipose of the FreeTypeInvoker
             after the atlas is created.  If this is the route that is taken, make sure that the FreeType lib
             cannot be called again indirectly from the FontLoaderService class which would attempt a FreeType
             call after it has been disposed.
-        6. Look into finding a way to know which monitor the window is on.  This way if there are 2 monitors
-            and the window is dragged onto the 2nd monitor that has a different DPI setting, the font character
-            size can be updated accordinly.  This is a possibly major issue because it would require recreation
-            of the entire font atlas during runtime.  Also, if the FreeTypeInvoker has been disposed after the creation
-            of the first atlas, it will need to be reinitialized.
         8. Look into this link in reguards to new unsafe class in C# 7.0 => https://ndportmann.com/system-runtime-compilerservices-unsafe/
             * This could make things faster
-        9. Find a way to render an empty magenta box to the screen with the with of a space character when the attempted
-            * glyph does not exist.
-        10. Improve performance.  Example: font size of 54 renders a much bigger atlas and its too slow
     */
 
     /// <summary>
