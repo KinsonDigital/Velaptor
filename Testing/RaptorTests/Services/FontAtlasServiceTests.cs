@@ -1,10 +1,12 @@
-// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace RaptorTests.Services
 {
+#pragma warning disable IDE0001 // Name can be simplified
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.IO;
@@ -21,6 +23,7 @@ namespace RaptorTests.Services
     using RaptorTests.Helpers;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
+#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="FontAtlasService"/> class.
@@ -31,6 +34,7 @@ namespace RaptorTests.Services
         private const int GlyphWidth = 5;
         private const int GlyphHeight = 6;
         private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
+        private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<ISystemMonitorService> mockMonitorService;
         private readonly Mock<IPlatform> mockPlatform;
@@ -41,6 +45,19 @@ namespace RaptorTests.Services
             'l', 'o',
             'w', 'r',
             'd', ' ',
+            '□',
+        };
+        private readonly Dictionary<char, uint> glyphIndices = new Dictionary<char, uint>()
+        {
+            { 'h', 0 },
+            { 'e', 1 },
+            { 'l', 2 },
+            { 'o', 3 },
+            { 'w', 4 },
+            { 'r', 5 },
+            { 'd', 6 },
+            { ' ', 7 },
+            { '□', 8 },
         };
         private readonly Mock<IFile> mockFile;
         private byte[]? bitmapBufferData;
@@ -64,8 +81,53 @@ namespace RaptorTests.Services
 
             this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
             this.mockFreeTypeInvoker.Setup(m => m.FT_Init_FreeType()).Returns(this.freeTypeLibPtr);
-            this.mockFreeTypeInvoker.Setup(m => m.FT_New_Face(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<int>()))
+
+            this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
+            this.mockFreeTypeExtensions.Setup(m => m.CreateFontFace(this.freeTypeLibPtr, FontFilePath))
                 .Returns(() => this.facePtr);
+
+            this.mockFreeTypeExtensions.Setup(m => m.GetGlyphIndices(this.facePtr, this.glyphChars))
+                .Returns(() => this.glyphIndices);
+
+            this.mockFreeTypeExtensions.Setup(m => m.CreateGlyphMetrics(
+                this.facePtr,
+                this.mockFreeTypeExtensions.Object.GetGlyphIndices(this.facePtr, this.glyphChars)))
+                    .Returns(() =>
+                    {
+                        var result = new Dictionary<char, GlyphMetrics>();
+
+                        for (var i = 0; i < this.glyphChars.Length; i++)
+                        {
+                            GlyphMetrics newMetric = default;
+
+                            newMetric.Glyph = this.glyphChars[i];
+                            newMetric.CharIndex = this.glyphIndices[this.glyphChars[i]];
+                            newMetric.Ascender = (i + 1) * 10;
+                            newMetric.Descender = (i + 2) * 10;
+                            newMetric.GlyphWidth = (i + 3) * 10;
+                            newMetric.GlyphHeight = (i + 4) * 10;
+                            newMetric.HoriBearingX = (i + 5) * 10;
+                            newMetric.HoriBearingY = (i + 6) * 10;
+                            newMetric.HorizontalAdvance = (i + 7) * 10;
+                            newMetric.XMin = (i + 8) * 10;
+                            newMetric.XMax = (i + 9) * 10;
+                            newMetric.YMin = (i + 10) * 10;
+                            newMetric.YMax = (i + 11) * 10;
+
+                            result.Add(this.glyphChars[i], newMetric);
+                        }
+
+                        return result;
+                    });
+
+            this.mockFreeTypeExtensions.Setup(m => m.CreateGlyphImage(this.facePtr, It.IsAny<char>(), It.IsAny<uint>()))
+                .Returns(() =>
+                {
+                    return (new byte[]
+                    {
+                        255, 255,
+                    }, 1, 2);
+                });
 
             this.mockImageService = new Mock<IImageService>();
 
@@ -143,78 +205,6 @@ namespace RaptorTests.Services
         }
 
         [Fact]
-        public void CreateFontAtlas_WhenInvoked_LoadsFontFace()
-        {
-            // Arrange
-            var fontFilePath = $@"C:\temp\test-font.ttf";
-            var service = CreateService();
-
-            // Act
-            var (actualAtlasTexture, atlasData) = service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
-
-            // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_New_Face(this.freeTypeLibPtr, fontFilePath, 0), Times.Once());
-        }
-
-        [Theory]
-        [InlineData(new[] { '1', })]
-        [InlineData(new[] { '2', '3', })]
-        [InlineData(new[] { '4', '5', '6' })]
-        [InlineData(new[] { '7', '8', '9', '0' })]
-        public void CreateFontAtlas_WhenInvoked_CalculatesAtlasMetrics(char[] glyphChars)
-        {
-            // Arrange
-            var fontFilePath = $@"C:\temp\test-font.ttf";
-            var service = CreateService();
-            service.SetAvailableCharacters(glyphChars);
-
-            // Act
-            var (actualAtlasTexture, atlasData) = service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
-
-            // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_New_Face(this.freeTypeLibPtr, fontFilePath, 0), Times.Once());
-        }
-
-        [Fact]
-        public void CreateFontAtlas_WhenInvoked_GetsGlyphIndices()
-        {
-            // Arrange
-            var fontFilePath = $@"C:\temp\test-font.ttf";
-            var glyphChars = new char[] { 'a', 'b' };
-            var service = CreateService();
-            service.SetAvailableCharacters(glyphChars);
-
-            // Act
-            var (actualAtlasTexture, atlasData) = service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
-
-            // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Get_Char_Index(this.facePtr, 'a'), Times.Once());
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Get_Char_Index(this.facePtr, 'b'), Times.Once());
-        }
-
-        [Fact]
-        public void CreateFontAtlas_WhenInvoked_CreatesGlyphMetrics()
-        {
-            // Arrange
-            var fontFilePath = $@"C:\temp\test-font.ttf";
-            var glyphChars = new char[] { 'a', 'b' };
-            this.mockFreeTypeInvoker.Setup(m => m.FT_Get_Char_Index(It.IsAny<IntPtr>(), 97))
-                .Returns(11u);
-            this.mockFreeTypeInvoker.Setup(m => m.FT_Get_Char_Index(It.IsAny<IntPtr>(), 98))
-                .Returns(22u);
-
-            var service = CreateService();
-            service.SetAvailableCharacters(glyphChars);
-
-            // Act
-            var (actualAtlasTexture, atlasData) = service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
-
-            // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Load_Glyph(It.IsAny<IntPtr>(), 11, FT.FT_LOAD_BITMAP_METRICS_ONLY), Times.Once());
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Load_Glyph(It.IsAny<IntPtr>(), 22, FT.FT_LOAD_BITMAP_METRICS_ONLY), Times.Once());
-        }
-
-        [Fact]
         public void CreateFontAtlas_WhenSettingCharacterSizeWithNullMainMonitor_ThrowsException()
         {
             // Arrange
@@ -242,12 +232,7 @@ namespace RaptorTests.Services
             service.CreateFontAtlas(FontFilePath, fontSize);
 
             // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Set_Char_Size(
-                this.facePtr,
-                sizeInPointsPtr,
-                sizeInPointsPtr,
-                96,
-                96), Times.Once());
+            this.mockFreeTypeExtensions.Verify(m => m.SetCharacterSize(this.facePtr, 12, 96, 96), Times.Once());
         }
 
         [Fact]
@@ -273,30 +258,8 @@ namespace RaptorTests.Services
             TestHelpers.SaveImageForTest(actualImage);
 
             // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Get_Char_Index(this.facePtr, It.IsAny<uint>()), Times.Exactly(totalGlyphs));
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Load_Glyph(this.facePtr, It.IsAny<uint>(), FT.FT_LOAD_RENDER), Times.Exactly(totalGlyphs - 1));
-            this.mockImageService.Verify(m => m.Draw(It.IsAny<ImageData>(), It.IsAny<ImageData>(), It.IsAny<Point>()), Times.Exactly(totalGlyphs - 1));
-
-            Assert.Equals(16, actualImage.Width, $"The resulting font atlas texture width is invalid.");
-            Assert.Equals(36, actualImage.Height, $"The resulting font atlas texture height is invalid.");
-            Assert.Equals(576, actualImage.Pixels.Length, $"The number of atlas image pixels is invalid.");
-            Assert.Equal(this.glyphChars.Length + 1, actualData.Length);
-        }
-
-        [Fact]
-        public void CreateFontAtlas_WithIssueCreatingFontFace_ThrowsException()
-        {
-            // Arrange
-            this.mockFreeTypeInvoker.Setup(m => m.FT_New_Face(It.IsAny<IntPtr>(), It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(IntPtr.Zero);
-
-            var service = CreateService();
-
-            // Act & Assert
-            Assert.ThrowsWithMessage<LoadFontException>(() =>
-            {
-                service.CreateFontAtlas(FontFilePath, 12);
-            }, "An invalid pointer value of zero was returned when creating a new font face.");
+            this.mockFreeTypeExtensions.Verify(
+                m => m.CreateGlyphImage(this.facePtr, It.IsAny<char>(), It.IsAny<uint>()), Times.Exactly(8));
         }
 
         [Fact]
@@ -314,9 +277,7 @@ namespace RaptorTests.Services
             service.Dispose();
 
             // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Done_Face(this.facePtr), Times.Once());
-            //this.mockFreeTypeInvoker.Verify(m => m.FT_Done_Glyph(TestHelpers.ToIntPtr(ref this.glyphSlotRec)), Times.Once());
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Done_FreeType(this.freeTypeLibPtr), Times.Once());
+            this.mockFreeTypeInvoker.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 
@@ -343,12 +304,11 @@ namespace RaptorTests.Services
             Marshal.FreeHGlobal(this.facePtr);
         }
 
-       /// <summary>
+        /// <summary>
         /// Creates native <see cref="FT_Size_Metrics"/> data for the purpose of testing.
         /// </summary>
         /// <param name="width">The width of the size.</param>
         /// <param name="height">The height of the size.</param>
-        /// <returns>The size metric data to use for testing.</returns>
         [ExcludeFromCodeCoverage]
         private void CreateSizeMetrics(int width, int height)
         {
@@ -364,7 +324,6 @@ namespace RaptorTests.Services
         /// <param name="horiAdvance">The horizontal advance of the glyph.</param>
         /// <param name="horiBearingX">The X coordinate of the horizontal bearing.</param>
         /// <param name="horiBearingY">The Y coordinate of the horizontal bearing.</param>
-        /// <returns>The glyph metrics used for testing.</returns>
         private void CreateGlypMetrics(int width, int height, int horiAdvance, int horiBearingX, int horiBearingY)
         {
             this.glyphMetrics.width = new IntPtr(width << 6);
@@ -405,7 +364,6 @@ namespace RaptorTests.Services
         /// </summary>
         /// <param name="width">The width of the glyph bitmap.</param>
         /// <param name="height">The height of the glyph bitmap.</param>
-        /// <returns>The glyph bitmap data to use for testing.</returns>
         [ExcludeFromCodeCoverage]
         private void CreateGlyphBMPData(uint width, uint height)
         {
@@ -437,6 +395,7 @@ namespace RaptorTests.Services
         {
             var result = new FontAtlasService(
                 this.mockFreeTypeInvoker.Object,
+                this.mockFreeTypeExtensions.Object,
                 this.mockImageService.Object,
                 this.mockMonitorService.Object,
                 this.mockFile.Object);
