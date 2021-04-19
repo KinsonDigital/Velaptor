@@ -190,6 +190,19 @@ namespace Raptor.NativeInterop
         /// <param name="disposing">True to dispose of manged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
+            // TODO: Need to figure out how to call FT_Done_Glyph() in a safe way
+            // This implimentation below is causing issuess
+            /*
+            unsafe
+            {
+                var unsafePtr = (FT_FaceRec*)this.facePtr;
+
+                var glyphPtr = (IntPtr)unsafePtr->glyph;
+
+                this.freeTypeInvoker.FT_Done_Glyph(glyphPtr);
+            }
+             */
+
             if (!this.isDisposed)
             {
                 FT.FT_Done_Face(this.facePtr);

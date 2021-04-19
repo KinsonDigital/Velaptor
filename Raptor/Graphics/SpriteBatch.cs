@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -122,14 +122,14 @@ namespace Raptor.Graphics
             set => this.cachedClearColor.SetValue(value);
         }
 
+        /// <inheritdoc/>
+        public uint BatchSize { get; internal set; } = 10;
+
         /// <summary>
         /// Gets the unsubscriber for the subcription
         /// to the <see cref="OpenGLObservable"/>.
         /// </summary>
         internal IDisposable GLObservableUnsubscriber { get; private set; }
-
-        /// <inheritdoc/>
-        public uint BatchSize { get; internal set; } = 10;
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
