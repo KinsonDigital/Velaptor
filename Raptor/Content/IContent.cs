@@ -4,10 +4,12 @@
 
 namespace Raptor.Content
 {
+    using System;
+
     /// <summary>
     /// Represents loadable content data.
     /// </summary>
-    public interface IContent
+    public interface IContent : IDisposable
     {
         /// <summary>
         /// Gets the name of the content.
