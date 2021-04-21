@@ -45,6 +45,14 @@ namespace Raptor.Graphics
             Init(name, imageData);
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="Texture"/> class.
+        /// </summary>
+        ~Texture()
+        {
+            Dispose(false);
+        }
+
         /// <inheritdoc/>
         public uint ID { get; protected set; }
 
