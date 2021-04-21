@@ -10,7 +10,7 @@ namespace Raptor.Graphics
     /// <summary>
     /// The texture to render to a screen.
     /// </summary>
-    public interface ITexture : IContent, IDisposable
+    public interface ITexture : IContent
     {
         /// <summary>
         /// Gets he ID of the texture.

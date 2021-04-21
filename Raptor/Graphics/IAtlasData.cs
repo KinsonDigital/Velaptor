@@ -11,7 +11,7 @@ namespace Raptor.Graphics
     /// <summary>
     /// Holds data for a texture atlas.
     /// </summary>
-    public interface IAtlasData : IContent, IDisposable
+    public interface IAtlasData : IContent
     {
         /// <summary>
         /// Gets the list of frame names.
