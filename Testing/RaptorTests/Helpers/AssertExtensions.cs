@@ -136,7 +136,7 @@ namespace RaptorTests.Helpers
         }
 
         /// <summary>
-        /// Asserts that all of the given <paramref name="items"/> are true which is dictacted
+        /// Asserts that all of the given <paramref name="items"/> are <see langword="true"/> which is dictacted
         /// by the given <paramref name="arePredicate"/> predicate.
         /// </summary>
         /// <typeparam name="T">The type of item in the list of items.</typeparam>

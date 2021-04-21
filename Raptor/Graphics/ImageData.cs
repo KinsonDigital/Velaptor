@@ -40,7 +40,7 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
-        /// <returns>True if both are equal.</returns>
+        /// <returns><see langword="true"/> if both are equal.</returns>
         public static bool operator ==(ImageData left, ImageData right) => left.Equals(right);
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Raptor.Graphics
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
-        /// <returns>True if both are not equal.</returns>
+        /// <returns><see langword="true"/> if both are not equal.</returns>
         public static bool operator !=(ImageData left, ImageData right) => !(left == right);
 
         /// <inheritdoc/>

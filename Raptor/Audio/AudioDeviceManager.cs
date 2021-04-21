@@ -191,7 +191,7 @@ namespace Raptor.Audio
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to disose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to disose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)
@@ -289,7 +289,7 @@ namespace Raptor.Audio
         /// <summary>
         /// Returns a value indicating if the audio device and context are null.
         /// </summary>
-        /// <returns>True if the device and context are null.</returns>
+        /// <returns><see langword="true"/> if the device and context are null.</returns>
         private bool AudioIsNull() => this.device == ALDevice.Null && this.context == ALContext.Null && this.attributes is null;
 
         /// <summary>

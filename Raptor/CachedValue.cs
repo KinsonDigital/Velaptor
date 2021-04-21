@@ -29,7 +29,7 @@ namespace Raptor
         ///     Executed to set the value of type <typeparamref name="T"/> when the <see cref="SetValue(T)"/>
         ///     is invoked while the caching is turned off.
         /// </param>
-        /// <param name="isCaching">True to turn on caching by default.</param>
+        /// <param name="isCaching"><see langword="true"/> to turn on caching by default.</param>
         /// <remarks>
         ///     <para>
         ///         If caching is turned on, then getting a value will return the cached value.  Otherwise it will return the value

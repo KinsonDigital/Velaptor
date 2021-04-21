@@ -93,7 +93,7 @@ namespace Raptor.Hardware
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns>True if both operands are equal.</returns>
+        /// <returns><see langword="true"/> if both operands are equal.</returns>
         public static bool operator ==(SystemMonitor left, SystemMonitor right) => !(left is null) && left.Equals(right);
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Raptor.Hardware
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns>True if both operands are not equal.</returns>
+        /// <returns><see langword="true"/> if both operands are not equal.</returns>
         public static bool operator !=(SystemMonitor left, SystemMonitor right) => !(left == right);
 
         /// <inheritdoc/>

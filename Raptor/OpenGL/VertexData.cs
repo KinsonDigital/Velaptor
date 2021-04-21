@@ -44,7 +44,7 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns>True if both <see cref="VertexData"/> objects are not equal.</returns>
+        /// <returns><see langword="true"/> if both <see cref="VertexData"/> objects are not equal.</returns>
         public static bool operator !=(VertexData left, VertexData right) => !left.Equals(right);
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns>True if both <see cref="VertexData"/> objects are equal.</returns>
+        /// <returns><see langword="true"/> if both <see cref="VertexData"/> objects are equal.</returns>
         public static bool operator ==(VertexData left, VertexData right) => left.Equals(right);
 
         /// <inheritdoc/>

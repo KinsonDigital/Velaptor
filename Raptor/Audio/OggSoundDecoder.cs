@@ -84,7 +84,7 @@ namespace Raptor.Audio
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)
