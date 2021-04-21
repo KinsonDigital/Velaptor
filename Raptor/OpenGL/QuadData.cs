@@ -40,7 +40,7 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns>True if the 2 operands are equal.</returns>
+        /// <returns><see langword="true"/> if the 2 operands are equal.</returns>
         public static bool operator ==(QuadData left, QuadData right) => left.Equals(right);
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns>True if the 2 operands are equal.</returns>
+        /// <returns><see langword="true"/> if the 2 operands are equal.</returns>
         public static bool operator !=(QuadData left, QuadData right) => !(left == right);
 
         /// <inheritdoc/>

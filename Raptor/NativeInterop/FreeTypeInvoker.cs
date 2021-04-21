@@ -187,7 +187,7 @@ namespace Raptor.NativeInterop
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of manged resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of manged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             // TODO: Need to figure out how to call FT_Done_Glyph() in a safe way

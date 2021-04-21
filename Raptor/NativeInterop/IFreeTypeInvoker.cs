@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable SA1124 // Do n
+#pragma warning disable SA1124 // Do not use regions
 #pragma warning disable SA1514 // Element documentation header should be preceded by blank lineot use regions
 namespace Raptor.NativeInterop
 {
@@ -149,7 +149,7 @@ namespace Raptor.NativeInterop
         /// <summary>
         /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
         /// </summary>
-        /// <returns>True if the face uses kerning.</returns>
+        /// <returns><see langword="true"/> if the face uses kerning.</returns>
         unsafe bool FT_Has_Kerning();
         #endregion
     }

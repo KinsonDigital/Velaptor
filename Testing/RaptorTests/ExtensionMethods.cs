@@ -23,7 +23,7 @@ namespace RaptorTests
         /// <param name="fieldContainer">The object that contains the field with the given <paramref name="name"/>.</param>
         /// <param name="name">The name of the field to check for.</param>
         /// <returns>
-        ///     True if the field is null or zero and false if the field does not exist.
+        ///     <see langword="true"/> if the field is null or zero and <see langword="false"/> if the field does not exist.
         /// </returns>
         public static bool IsNullOrZeroField(this object fieldContainer, string name)
         {
@@ -65,7 +65,7 @@ namespace RaptorTests
         /// Returns a value indicating whether this <see cref="Vector4"/> is empty.
         /// </summary>
         /// <param name="vector">The vector to check.</param>
-        /// <returns>True if empty.</returns>
+        /// <returns><see langword="true"/> if empty.</returns>
         public static bool IsEmpty(this Vector4 vector) =>
             vector.X == 0 &&
             vector.Y == 0 &&
@@ -76,7 +76,7 @@ namespace RaptorTests
         /// Returns a value indicating whether this <see cref="Matrix4"/> is empty.
         /// </summary>
         /// <param name="matrix">The <see cref="Matrix4"/> to check.</param>
-        /// <returns>True if empty.</returns>
+        /// <returns><see langword="true"/> if empty.</returns>
         public static bool IsEmpty(this Matrix4 matrix) =>
             matrix.Column0.IsEmpty() &&
             matrix.Column1.IsEmpty() &&

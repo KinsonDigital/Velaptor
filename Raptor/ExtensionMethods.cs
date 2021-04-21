@@ -162,7 +162,7 @@ namespace Raptor
         /// only contains a root drive path with no directories.
         /// </summary>
         /// <param name="fileOrDirPath">The path to check.</param>
-        /// <returns>True if there are no directories and is just a root drive.</returns>
+        /// <returns><see langword="true"/> if there are no directories and is just a root drive.</returns>
         internal static bool IsDirectoryRootDrive(this string fileOrDirPath)
         {
             if (string.IsNullOrEmpty(fileOrDirPath))
@@ -273,7 +273,7 @@ namespace Raptor
         ///     for the lifetime of the container. It can't be used for selecting a type based
         ///     on runtime conditions.
         /// </param>
-        /// <param name="suppressDisposal">True to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <remarks>
         ///     This method uses the container's LifestyleSelectionBehavior to select the exact
         ///     lifestyle for the specified type. By default this will be Transient.
@@ -300,7 +300,7 @@ namespace Raptor
         /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
-        /// <param name="suppressDisposal">True to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <remarks>
         ///     This method uses the container's LifestyleSelectionBehavior to select the exact
         ///     lifestyle for the specified type. By default this will be Transient.
@@ -328,7 +328,7 @@ namespace Raptor
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
         /// <param name="lifestyle">The lifestyle that specifies how the returned instance will be cached.</param>
-        /// <param name="suppressDisposal">True to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <remarks>
         ///     This method uses the container's LifestyleSelectionBehavior to select the exact
         ///     lifestyle for the specified type. By default this will be Transient.

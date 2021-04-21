@@ -19,7 +19,7 @@ namespace Raptor.Input
         /// The state of each input.
         /// </summary>
         /// <remarks>
-        ///     True means that the input is being used.
+        ///     <see langword="true"/> means that the input is being used.
         /// <para>
         ///     Example: A mouse button or keyboard key is being pressed down.
         /// </para>

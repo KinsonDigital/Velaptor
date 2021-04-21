@@ -62,7 +62,7 @@ namespace Raptor.OpenAL
         /// This function makes a specified context the current context.
         /// </summary>
         /// <param name="context">A pointer to the new context.</param>
-        /// <returns>Returns True on success, or False on failure.</returns>
+        /// <returns>Returns <see langword="true"/> on success, or <see langword="false"/> on failure.</returns>
         bool MakeContextCurrent(ALContext context);
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace Raptor.OpenAL
         /// </summary>
         /// <param name="device">A pointer to an opened device.</param>
         /// <returns>
-        ///     True will be returned on success or False on failure. Closing a device will fail
+        ///     <see langword="true"/> will be returned on success or <see langword="false"/> on failure. Closing a device will fail
         ///     if the device contains any contexts or buffers.
         /// </returns>
         bool CloseDevice(ALDevice device);

@@ -564,7 +564,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <param name="disposing">True to release managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
         private void Dispose(bool disposing)
         {
             if (!this.isDiposed)

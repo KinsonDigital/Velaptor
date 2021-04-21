@@ -136,12 +136,12 @@ namespace RaptorTests.Helpers
         }
 
         /// <summary>
-        /// Asserts that all of the given <paramref name="items"/> are true which is dictacted
+        /// Asserts that all of the given <paramref name="items"/> are <see langword="true"/> which is dictacted
         /// by the given <paramref name="arePredicate"/> predicate.
         /// </summary>
         /// <typeparam name="T">The type of item in the list of items.</typeparam>
         /// <param name="items">The list of items to assert.</param>
-        /// <param name="arePredicate">Fails the assertion when returning false.</param>
+        /// <param name="arePredicate">Fails the assertion when returning <see langword="false"/>.</param>
         public static void AllItemsAre<T>(IEnumerable<T> items, Predicate<T> arePredicate)
         {
             if (arePredicate is null)
@@ -166,9 +166,9 @@ namespace RaptorTests.Helpers
         /// Verifies that an expression is true.
         /// </summary>
         /// <param name="condition">The condition to be inspected.</param>
-        /// <param name="message">The message to be shown when the condition is false.</param>
-        /// <param name="expected">The expected message to display if the condition is false.</param>
-        /// <param name="actual">The actual message to display if the condition is false.</param>
+        /// <param name="message">The message to be shown when the condition is <see langword="false"/>.</param>
+        /// <param name="expected">The expected message to display if the condition is <see langword="false"/>.</param>
+        /// <param name="actual">The actual message to display if the condition is <see langword="false"/>.</param>
         public static void True(bool condition, string message, string expected = "", string actual = "")
         {
             XunitException assertExcption;
