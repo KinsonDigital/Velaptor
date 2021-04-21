@@ -30,7 +30,7 @@ namespace Raptor.NativeInterop
         /// but before termination will return <see langword="true"/> immediately.
         /// </para>
         /// </summary>
-        /// <returns><see langword="true"/> if successful, or <c>false</c> if an error occurred.</returns>
+        /// <returns><see langword="true"/> if successful, or <see langword="false"/> if an error occurred.</returns>
         /// <remarks>
         /// <para>
         /// OS X: This function will change the current directory of the application

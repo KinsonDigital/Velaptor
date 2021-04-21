@@ -23,7 +23,7 @@ namespace RaptorTests
         /// <param name="fieldContainer">The object that contains the field with the given <paramref name="name"/>.</param>
         /// <param name="name">The name of the field to check for.</param>
         /// <returns>
-        ///     <see langword="true"/> if the field is null or zero and false if the field does not exist.
+        ///     <see langword="true"/> if the field is null or zero and <see langword="false"/> if the field does not exist.
         /// </returns>
         public static bool IsNullOrZeroField(this object fieldContainer, string name)
         {

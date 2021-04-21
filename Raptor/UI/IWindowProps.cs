@@ -48,7 +48,7 @@ namespace Raptor.UI
         ///     use or invoke the <see cref="ISpriteBatch.Clear"/>() method.
         /// </para>
         /// <para>
-        ///     Set to the value of false if you want more control over when
+        ///     Set to the value of <see langword="false"/> if you want more control over when
         ///     the back buffers will be cleared.
         /// </para>
         /// <para>

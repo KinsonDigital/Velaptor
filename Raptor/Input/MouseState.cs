@@ -159,7 +159,6 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
         /// <param name="state">The state to set the button to.</param>
-        /// <remarks>If the button is set to <see cref="MouseButton.None"/>, all buttons will be set to false/up.</remarks>
         public void SetButtonState(MouseButton mouseButton, bool state)
         {
             switch (mouseButton)
