@@ -10,12 +10,12 @@ namespace Raptor.OpenGL
     /// <summary>
     /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.
     /// </summary>
-    internal struct SpriteBatchItem
+    public struct SpriteBatchItem
     {
         /// <summary>
         /// The ID of the texture.
         /// </summary>
-        public uint TextureID;
+        internal uint TextureID;
 
         /// <summary>
         /// The source rectangle inside of the texture to render.

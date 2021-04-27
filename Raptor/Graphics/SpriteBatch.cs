@@ -17,6 +17,8 @@ namespace Raptor.Graphics
     using Raptor.Observables;
     using Raptor.Observables.Core;
     using Raptor.OpenGL;
+    using Raptor.Services;
+    using SysVector2 = System.Numerics.Vector2;
 
     /// <inheritdoc/>
     internal class SpriteBatch : ISpriteBatch
@@ -28,14 +30,11 @@ namespace Raptor.Graphics
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
+        private readonly IBatchManagerService batchManagerService;
         private CachedValue<Color> cachedClearColor;
         private uint transDataLocation;
         private bool isDisposed;
         private bool hasBegun;
-        private uint currentBatchItem;
-        private uint currentTextureID;
-        private uint previousTextureID;
-        private bool firstRenderMethodInvoke = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatch"/> class.
@@ -45,6 +44,7 @@ namespace Raptor.Graphics
         /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
+        /// <param name="batchManagerService">Manages the batch of textures to render.</param>
         /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
         /// <remarks>
         ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
@@ -61,6 +61,7 @@ namespace Raptor.Graphics
             IFreeTypeInvoker freeTypeInvoker,
             IShaderProgram shader,
             IGPUBuffer gpuBuffer,
+            IBatchManagerService batchManagerService,
             OpenGLObservable glObservable)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
@@ -83,6 +84,9 @@ namespace Raptor.Graphics
             this.freeTypeInvoker = freeTypeInvoker;
             this.shader = shader;
             this.gpuBuffer = gpuBuffer;
+            this.batchManagerService = batchManagerService;
+
+            this.batchManagerService.BatchReady += BatchManagerService_BatchReady;
 
             // Recieve a push notification that OpenGL has intialized
             GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
@@ -123,7 +127,11 @@ namespace Raptor.Graphics
         }
 
         /// <inheritdoc/>
-        public uint BatchSize { get; internal set; } = 10;
+        public uint BatchSize
+        {
+            get => this.batchManagerService.BatchSize;
+            set => this.batchManagerService.BatchSize = value;
+        }
 
         /// <summary>
         /// Gets the unsubscriber for the subcription
@@ -200,7 +208,7 @@ namespace Raptor.Graphics
 
                 if (font.HasKerning && leftGlyghIndex != 0 && glyphMetrics.CharIndex != 0)
                 {
-                    // TODO: Before committing this if block, check the perf for curiousity reasons
+                    // TODO: Check the perf for curiousity reasons
                     FT_Vector delta = this.freeTypeInvoker.FT_Get_Kerning(
                         facePtr,
                         leftGlyghIndex,
@@ -271,59 +279,26 @@ namespace Raptor.Graphics
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
-            // Check that the batch size matches the amount of items.  If not, reinitialize the batch items
-            if (this.batchItems.Count != BatchSize)
-            {
-                this.batchItems.Clear();
-
-                for (uint i = 0; i < BatchSize; i++)
-                {
-                    this.batchItems.Add(i, SpriteBatchItem.Empty);
-                }
-            }
-
-            this.currentTextureID = texture.ID;
-
-            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID
-                && this.firstRenderMethodInvoke is false;
-            var batchIsFull = this.batchItems.Values.ToArray().All(i => !i.IsEmpty);
-
-            // Has the textures switched
-            if (hasSwitchedTexture || batchIsFull)
-            {
-                RenderBatch();
-                this.currentBatchItem = 0u;
-                this.previousTextureID = 0u;
-            }
-
-            var batchItem = this.batchItems[this.currentBatchItem];
-            batchItem.TextureID = texture.ID;
-            batchItem.SrcRect = srcRect;
-            batchItem.DestRect = destRect;
-            batchItem.Size = size;
-            batchItem.Angle = angle;
-            batchItem.TintColor = tintColor;
-            batchItem.Effects = effects;
-
-            this.batchItems[this.currentBatchItem] = batchItem;
-
-            this.currentBatchItem += 1;
-            this.previousTextureID = this.currentTextureID;
-            this.firstRenderMethodInvoke = false;
+            this.batchManagerService.UpdateBatch(
+                texture,
+                srcRect,
+                destRect,
+                size,
+                angle,
+                tintColor,
+                effects);
         }
 
         /// <inheritdoc/>
         public void EndBatch()
         {
-            if (this.batchItems.All(i => i.Value.IsEmpty))
+            if (this.batchManagerService.EntireBatchEmpty)
             {
                 return;
             }
 
             RenderBatch();
 
-            this.currentBatchItem = 0;
-            this.previousTextureID = 0;
             this.hasBegun = false;
         }
 
@@ -348,6 +323,7 @@ namespace Raptor.Graphics
 
             if (disposing)
             {
+                this.batchManagerService.BatchReady -= BatchManagerService_BatchReady;
                 this.batchItems.Clear();
                 this.cachedIntProps.Clear();
                 this.shader.Dispose();
@@ -357,6 +333,8 @@ namespace Raptor.Graphics
 
             this.isDisposed = true;
         }
+
+        private void BatchManagerService_BatchReady(object? sender, EventArgs e) => RenderBatch();
 
         /// <summary>
         /// Initializes the sprite batch.
@@ -437,63 +415,70 @@ namespace Raptor.Graphics
         /// </summary>
         private void RenderBatch()
         {
-            var batchAmountToRender = (uint)this.batchItems.Count(i => !i.Value.IsEmpty);
+            var batchAmountToRender = this.batchManagerService.TotalItemsToRender;
             var textureIsBound = false;
 
-            for (uint i = 0; i < this.batchItems.Values.Count; i++)
+            for (uint i = 0; i < this.batchManagerService.BatchItems.Values.Count; i++)
             {
-                if (this.batchItems[i].IsEmpty)
+                var quadID = i;
+                var batchItem = this.batchManagerService.BatchItems[quadID];
+
+                if (batchItem.IsEmpty)
                 {
                     continue;
                 }
 
                 if (!textureIsBound)
                 {
-                    this.gl.BindTexture(TextureTarget.Texture2D, this.batchItems[i].TextureID);
+                    // TODO: Verify that this is being invoked with proper values
+                    this.gl.BindTexture(TextureTarget.Texture2D, batchItem.TextureID);
                     textureIsBound = true;
                 }
 
-                var srcRectWidth = this.batchItems[i].SrcRect.Width;
-                var srcRectHeight = this.batchItems[i].SrcRect.Height;
+                var srcRectWidth = batchItem.SrcRect.Width;
+                var srcRectHeight = batchItem.SrcRect.Height;
 
                 // Set the source rectangle width and height based on the render effects
-                switch (this.batchItems[i].Effects)
+                switch (batchItem.Effects)
                 {
                     case RenderEffects.None:
-                        srcRectWidth = this.batchItems[i].SrcRect.Width;
-                        srcRectHeight = this.batchItems[i].SrcRect.Height;
+                        srcRectWidth = batchItem.SrcRect.Width;
+                        srcRectHeight = batchItem.SrcRect.Height;
                         break;
                     case RenderEffects.FlipHorizontally:
-                        srcRectWidth = this.batchItems[i].SrcRect.Width * -1;
-                        srcRectHeight = this.batchItems[i].SrcRect.Height;
+                        srcRectWidth = batchItem.SrcRect.Width * -1;
+                        srcRectHeight = batchItem.SrcRect.Height;
                         break;
                     case RenderEffects.FlipVertically:
-                        srcRectWidth = this.batchItems[i].SrcRect.Width;
-                        srcRectHeight = this.batchItems[i].SrcRect.Height * -1;
+                        srcRectWidth = batchItem.SrcRect.Width;
+                        srcRectHeight = batchItem.SrcRect.Height * -1;
                         break;
                     case RenderEffects.FlipBothDirections:
-                        srcRectWidth = this.batchItems[i].SrcRect.Width * -1;
-                        srcRectHeight = this.batchItems[i].SrcRect.Height * -1;
+                        srcRectWidth = batchItem.SrcRect.Width * -1;
+                        srcRectHeight = batchItem.SrcRect.Height * -1;
                         break;
                     default:
-                        throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)this.batchItems[i].Effects}' is not valid.");
+                        throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid.");
                 }
 
-                UpdateGPUTransform(
-                    i,
-                    this.batchItems[i].DestRect.X,
-                    this.batchItems[i].DestRect.Y,
+                var viewPortSize = this.gl.GetViewPortSize();
+                var transMatrix = this.batchManagerService.BuildTransformationMatrix(
+                    new SysVector2(viewPortSize.X, viewPortSize.Y),
+                    batchItem.DestRect.X,
+                    batchItem.DestRect.Y,
                     srcRectWidth,
                     srcRectHeight,
-                    this.batchItems[i].Size,
-                    this.batchItems[i].Angle);
+                    batchItem.Size,
+                    batchItem.Angle);
+
+                this.gl.UniformMatrix4(this.transDataLocation + quadID, true, ref transMatrix);
 
                 this.gpuBuffer.UpdateQuad(
-                    i,
-                    this.batchItems[i].SrcRect,
-                    this.batchItems[i].DestRect.Width,
-                    this.batchItems[i].DestRect.Height,
-                    this.batchItems[i].TintColor);
+                    quadID,
+                    batchItem.SrcRect,
+                    batchItem.DestRect.Width,
+                    batchItem.DestRect.Height,
+                    batchItem.TintColor);
             }
 
             // Only render the amount of elements for the amount of batch items to render.
@@ -504,79 +489,7 @@ namespace Raptor.Graphics
             }
 
             // Empty the batch items
-            for (uint i = 0; i < this.batchItems.Count; i++)
-            {
-                this.batchItems[i] = SpriteBatchItem.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Updates the transform for the quad using the given data that matches the given <paramref name="quadID"/>.
-        /// </summary>
-        /// <param name="quadID">The ID of the quad to update.</param>
-        /// <param name="x">The X location of the quad.</param>
-        /// <param name="y">The Y location of the quad.</param>
-        /// <param name="width">The width of the quad.</param>
-        /// <param name="height">The height of the quad.</param>
-        /// <param name="size">The size of the quad. 1 represents normal size of 100%.</param>
-        /// <param name="angle">The angle of the quad in degrees.</param>
-        private void UpdateGPUTransform(uint quadID, float x, float y, int width, int height, float size, float angle)
-        {
-            // Create and send the transformation data to the GPU
-            var transMatrix = BuildTransformationMatrix(
-                x,
-                y,
-                width,
-                height,
-                size,
-                angle);
-
-            this.gl.UniformMatrix4(this.transDataLocation + quadID, true, ref transMatrix);
-        }
-
-        /// <summary>
-        /// Builds a complete transformation matrix using the given parameters.
-        /// </summary>
-        /// <param name="x">The x position of a texture.</param>
-        /// <param name="y">The y position of a texture.</param>
-        /// <param name="width">The width of a texture.</param>
-        /// <param name="height">The height of a texture.</param>
-        /// <param name="size">The size of a texture. 1 represents normal size and 1.5 represents 150%.</param>
-        /// <param name="angle">The angle of the texture.</param>
-        private Matrix4 BuildTransformationMatrix(float x, float y, int width, int height, float size, float angle)
-        {
-            var viewPortSize = this.gl.GetViewPortSize();
-
-            if (viewPortSize.X <= 0)
-            {
-                throw new Exception("The port size width cannot be a negative or zero value.");
-            }
-
-            if (viewPortSize.Y <= 0)
-            {
-                throw new Exception("The port size height cannot be a negative or zero value.");
-            }
-
-            var scaleX = width / viewPortSize.X;
-            var scaleY = height / viewPortSize.Y;
-
-            scaleX *= size;
-            scaleY *= size;
-
-            var ndcX = x.MapValue(0f, viewPortSize.X, -1f, 1f);
-            var ndcY = y.MapValue(0f, viewPortSize.Y, 1f, -1f);
-
-            // NOTE: (+ degrees) rotates CCW and (- degrees) rotates CW
-            var angleRadians = MathHelper.DegreesToRadians(angle);
-
-            // Invert angle to rotate CW instead of CCW
-            angleRadians *= -1;
-
-            var rotation = Matrix4.CreateRotationZ(angleRadians);
-            var scaleMatrix = Matrix4.CreateScale(scaleX, scaleY, 1f);
-            var positionMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
-
-            return rotation * scaleMatrix * positionMatrix;
+            this.batchManagerService.EmptyBatch();
         }
     }
 }

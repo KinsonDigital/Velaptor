@@ -61,7 +61,7 @@ namespace RaptorSandBox
 
             var random = new Random();
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 1; i++)
             {
                 this.bubbles.Add(new Rectangle()
                 {
@@ -122,8 +122,9 @@ namespace RaptorSandBox
             {
                 var bubble = this.bubbles[i];
 
-                bubble.Y -= 1;
-                bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
+                //bubble.Y -= 1;
+                //bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
+                bubble.Y = Height / 2;
 
                 this.bubbles[i] = bubble;
             }
@@ -151,14 +152,14 @@ namespace RaptorSandBox
 
             var subTexture = this.subFrames[this.currentFrameIndex];
 
-            this.spriteBatch?.Render(
-                this.mainAtlas.Texture,
-                subTexture.Bounds,
-                new Rectangle(subPositionX, subPositionY, 500, 100),
-                1,
-                0,
-                Color.White,
-                RenderEffects.None);
+            //this.spriteBatch?.Render(
+            //    this.mainAtlas.Texture,
+            //    subTexture.Bounds,
+            //    new Rectangle(subPositionX, subPositionY, 500, 100),
+            //    1,
+            //    0,
+            //    Color.White,
+            //    RenderEffects.None);
 
             foreach (var bubble in this.bubbles)
             {
@@ -174,15 +175,15 @@ namespace RaptorSandBox
 
             //this.spriteBatch?.Render(this.linkTexture, 400, 500);
 
-            var lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
-            var upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            var numbers = "1234567890";
-            var numSymbols = "~!@#$%^&*()_+ⱠⱣⱦⱧ`-=[]\\;',./{}|:\"<>?";
+            //var lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+            //var upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            //var numbers = "1234567890";
+            //var numSymbols = "~!@#$%^&*()_+ⱠⱣⱦⱧ`-=[]\\;',./{}|:\"<>?";
 
-            this.spriteBatch?.Render(this.myFont, lowerCaseLetters, 50, 200, Color.AliceBlue);
-            this.spriteBatch?.Render(this.myFont, upperCaseLetters, 50, 300, Color.Crimson);
-            this.spriteBatch?.Render(this.myFont, numbers, 50, 400, Color.MediumPurple);
-            this.spriteBatch?.Render(this.myFont, numSymbols, 50, 500, Color.IndianRed);
+            //this.spriteBatch?.Render(this.myFont, lowerCaseLetters, 50, 200, Color.AliceBlue);
+            //this.spriteBatch?.Render(this.myFont, upperCaseLetters, 50, 300, Color.Crimson);
+            //this.spriteBatch?.Render(this.myFont, numbers, 50, 400, Color.MediumPurple);
+            //this.spriteBatch?.Render(this.myFont, numSymbols, 50, 500, Color.IndianRed);
 
             this.spriteBatch?.EndBatch();
 
