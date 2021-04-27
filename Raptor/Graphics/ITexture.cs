@@ -4,7 +4,6 @@
 
 namespace Raptor.Graphics
 {
-    using System;
     using Raptor.Content;
 
     /// <summary>

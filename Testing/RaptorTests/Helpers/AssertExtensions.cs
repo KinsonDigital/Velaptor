@@ -271,5 +271,27 @@ namespace RaptorTests.Helpers
                 throw assertException;
             }
         }
+
+        /// <summary>
+        /// Verifies that an event with the exact event args is not raised.
+        /// </summary>
+        /// <typeparam name="T">The type of the event arguments to expect.</typeparam>
+        /// <param name="attach">Code to attach the event handler.</param>
+        /// <param name="detach">Code to detatch the event handler.</param>
+        /// <param name="testCode">A delegate to the code to be tested.</param>
+        public static void DoesNotRaise<T>(Action<EventHandler<T>> attach, Action<EventHandler<T>> detach, Action testCode)
+            where T : EventArgs
+        {
+            try
+            {
+                Assert.Raises(attach, detach, testCode);
+
+                Assert.Equal("No event was raised", "An event was raised.");
+            }
+            catch (Exception ex)
+            {
+                Assert.Equal("(No event was raised)\r\nEventArgs\r\n(No event was raised)", ex.Message);
+            }
+        }
     }
 }

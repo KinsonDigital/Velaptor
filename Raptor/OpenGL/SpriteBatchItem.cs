@@ -13,11 +13,6 @@ namespace Raptor.OpenGL
     public struct SpriteBatchItem
     {
         /// <summary>
-        /// The ID of the texture.
-        /// </summary>
-        internal uint TextureID;
-
-        /// <summary>
         /// The source rectangle inside of the texture to render.
         /// </summary>
         public Rectangle SrcRect;
@@ -48,6 +43,11 @@ namespace Raptor.OpenGL
         /// The type of effects to apply to the texture when rendering.
         /// </summary>
         public RenderEffects Effects;
+
+        /// <summary>
+        /// The ID of the texture.
+        /// </summary>
+        internal uint TextureID;
 
         /// <summary>
         /// Gets an empty <see cref="SpriteBatchItem"/>.
