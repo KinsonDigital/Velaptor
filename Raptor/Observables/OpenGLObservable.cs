@@ -9,7 +9,7 @@ namespace Raptor.Observables
     /// <summary>
     /// Creates an observable to send push notifications of OpenGL events.
     /// </summary>
-    public class OpenGLObservable : Observable<bool>
+    internal class OpenGLObservable : Observable<bool>
     {
         /// <summary>
         /// Sends a push notification that OpenGL has been initialized.
