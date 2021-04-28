@@ -23,14 +23,14 @@ namespace Raptor.Content
             get => this.contentRootDirectory;
             set
             {
-                var wasNullOrEmpty = string.IsNullOrEmpty(value);
+                var isNullOrEmpty = string.IsNullOrEmpty(value);
 
-                value = wasNullOrEmpty ? BaseDir : value;
+                value = isNullOrEmpty ? BaseDir : value;
 
                 // If the value ends with a backslash, leave as is, else add one
                 value = value.EndsWith(Path.DirectorySeparatorChar) ? value : $@"{value}{Path.DirectorySeparatorChar}";
 
-                if (wasNullOrEmpty)
+                if (isNullOrEmpty)
                 {
                     return;
                 }
