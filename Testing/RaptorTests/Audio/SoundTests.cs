@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundTests.cs" company="KinsonDigital">
+// <copyright file="SoundTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,7 +16,7 @@ namespace RaptorTests.Audio
     /// <summary>
     /// Tests the <see cref="Sound"/> class.
     /// </summary>
-    public class SoundTests : IDisposable
+    public class SoundTests
     {
         private readonly Mock<IAudioDeviceManager> mockAudioManager;
         private readonly Mock<ISoundDecoder<float>> mockOggDecoder;
@@ -543,13 +543,6 @@ namespace RaptorTests.Audio
             this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new[] { 1f, 2f }, 8, 44100), Times.Exactly(2));
         }
         #endregion
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            this.sound?.Dispose();
-            GC.SuppressFinalize(this);
-        }
 
         /// <summary>
         /// Creates an instance of <see cref="Sound"/> for testing.
