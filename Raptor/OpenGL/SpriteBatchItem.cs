@@ -10,7 +10,7 @@ namespace Raptor.OpenGL
     /// <summary>
     /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.
     /// </summary>
-    public struct SpriteBatchItem
+    internal struct SpriteBatchItem
     {
         /// <summary>
         /// The source rectangle inside of the texture to render.
@@ -47,7 +47,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// The ID of the texture.
         /// </summary>
-        internal uint TextureID;
+        public uint TextureID;
 
         /// <summary>
         /// Gets an empty <see cref="SpriteBatchItem"/>.

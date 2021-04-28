@@ -77,7 +77,6 @@ namespace RaptorTests.Graphics
         }
 
         #region Constructor Tests
-
         [Fact]
         public void Ctor_WhenInvoked_SubscribesToBatchReadyEvent()
         {

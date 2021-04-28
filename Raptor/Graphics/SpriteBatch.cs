@@ -334,6 +334,9 @@ namespace Raptor.Graphics
             this.isDisposed = true;
         }
 
+        /// <summary>
+        /// Invoked every time the batch is ready to be rendered.
+        /// </summary>
         private void BatchManagerService_BatchReady(object? sender, EventArgs e) => RenderBatch();
 
         /// <summary>

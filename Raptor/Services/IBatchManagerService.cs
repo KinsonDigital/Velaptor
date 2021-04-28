@@ -41,7 +41,7 @@ namespace Raptor.Services
         /// Gets the list of batch items.
         /// </summary>
         /// <remarks>
-        ///     Represents a list of items that are ready and not ready to be rendered.
+        ///     Represents a list of items that are ready or not ready to be rendered.
         /// </remarks>
         ReadOnlyDictionary<uint, SpriteBatchItem> BatchItems { get; }
 
@@ -76,8 +76,7 @@ namespace Raptor.Services
         void EmptyBatch();
 
         /// <summary>
-        /// Builds a transformation matrix in NDC(Normalized Device Coordinates) using the given
-        /// parameters.
+        /// Builds a transformation matrix in NDC(Normalized Device Coordinates) using the given parameters.
         /// </summary>
         /// <param name="portSize">The size of the port where rendering will occur.</param>
         /// <param name="x">The X position of the render.</param>
