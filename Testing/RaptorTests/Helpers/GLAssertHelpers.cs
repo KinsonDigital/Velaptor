@@ -5,6 +5,7 @@
 namespace RaptorTests.Helpers
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Moq;
     using OpenTK.Graphics.OpenGL4;
@@ -16,19 +17,15 @@ namespace RaptorTests.Helpers
     /// <summary>
     /// Provides assertion extensions for OpenGL functions.
     /// </summary>
-    //[ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     internal static class GLAssertHelpers
     {
-        // TODO: Look into creating a custom assertion that checks how many times a method has
-        // been invoked against a single argument value by giving the argument type and value
-        // expected number of times of execution.  This should be a generic method
-
         /// <summary>
         /// Verifies that the transform update been executed the given amount of <paramref name="times"/>.
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="transform">The updated transform data to send to the GPU.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyTransformIsUpdated(this Mock<IGLInvoker> mock, Matrix4 transform, Times times)
         {
             mock.Verify(m => m.UniformMatrix4(It.IsAny<uint>(), true, ref transform), times);
@@ -40,7 +37,7 @@ namespace RaptorTests.Helpers
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="textureId">The ID of the texture that is being bound.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void Verify2DTextureIsBound(this Mock<IGLInvoker> mock, uint textureId, Times times)
         {
             var totalExecutions = 0;
@@ -96,7 +93,7 @@ namespace RaptorTests.Helpers
         /// Verifies if the rendering was performed as a primivite triangle type.
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyDrawingWithTriangles(this Mock<IGLInvoker> mock, Times times)
         {
             var totalExecutions = 0;
@@ -137,6 +134,12 @@ namespace RaptorTests.Helpers
             }
         }
 
+        /// <summary>
+        /// Verifies if the rendering was performed with the given <paramref name="totalBatchItems"/>.
+        /// </summary>
+        /// <param name="mock">The mock being verified.</param>
+        /// <param name="totalBatchItems">The total number of batch items being checked for.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyTotalBatchItemsDrawn(this Mock<IGLInvoker> mock, uint totalBatchItems, Times times)
         {
             /*NOTES:
@@ -159,7 +162,7 @@ namespace RaptorTests.Helpers
         /// Verifies that a quad has been executed the given amount of <paramref name="times"/>.
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyQuadIsUpdated(this Mock<IGPUBuffer> mock, Times times)
         {
             var totalExecutions = 0;
@@ -203,7 +206,7 @@ namespace RaptorTests.Helpers
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="quadId">The ID of the quad being updated.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyQuadIsUpdatedWithCorrectQuadID(this Mock<IGPUBuffer> mock, uint quadId, Times times)
         {
             var totalExecutions = 0;
@@ -265,7 +268,7 @@ namespace RaptorTests.Helpers
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="srcRect">The source rectangle.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyQuadIsUpdatedWithCorrectSrcRectangle(this Mock<IGPUBuffer> mock, Rectangle srcRect, Times times)
         {
             var totalExecutions = 0;
@@ -328,7 +331,7 @@ namespace RaptorTests.Helpers
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="textureWidth">The width of the texture.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyQuadIsUpdatedWithCorrectTextureWidth(this Mock<IGPUBuffer> mock, int textureWidth, Times times)
         {
             var totalExecutions = 0;
@@ -391,7 +394,7 @@ namespace RaptorTests.Helpers
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="textureHeight">The width of the texture.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyQuadIsUpdatedWithCorrectTextureHeight(this Mock<IGPUBuffer> mock, int textureHeight, Times times)
         {
             var totalExecutions = 0;
@@ -454,7 +457,7 @@ namespace RaptorTests.Helpers
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="color">The color of the quad.</param>
-        /// <param name="times">The total number of times to expected the invocation to occur.</param>
+        /// <param name="times">The total number of times to expect the invocation to occur.</param>
         public static void VerifyQuadIsUpdatedWithCorrectColor(this Mock<IGPUBuffer> mock, Color color, Times times)
         {
             var totalExecutions = 0;

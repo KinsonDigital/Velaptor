@@ -4,7 +4,6 @@
 
 namespace RaptorTests.Helpers
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
@@ -174,21 +173,6 @@ namespace RaptorTests.Helpers
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Returns an <see cref="IntPtr"/> to the given <paramref name="unmanagedData"/>.
-        /// </summary>
-        /// <typeparam name="T">The unmanaged type.</typeparam>
-        /// <param name="unmanagedData">The unmanaged data to return a pointer to.</param>
-        /// <returns>A pointer to the unmanaged data.</returns>
-        public static IntPtr ToIntPtr<T>(ref T unmanagedData)
-            where T : unmanaged
-        {
-            fixed (T* faceRecPtr = &unmanagedData)
-            {
-                return (IntPtr)faceRecPtr;
-            }
         }
 
         /// <summary>

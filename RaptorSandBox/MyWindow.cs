@@ -61,7 +61,7 @@ namespace RaptorSandBox
 
             var random = new Random();
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 1; i++)
             {
                 this.bubbles.Add(new Rectangle()
                 {
@@ -122,8 +122,9 @@ namespace RaptorSandBox
             {
                 var bubble = this.bubbles[i];
 
-                bubble.Y -= 1;
-                bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
+                //bubble.Y -= 1;
+                //bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
+                bubble.Y = Height / 2;
 
                 this.bubbles[i] = bubble;
             }
@@ -154,7 +155,7 @@ namespace RaptorSandBox
             this.spriteBatch?.Render(
                 this.mainAtlas.Texture,
                 subTexture.Bounds,
-                new Rectangle(subPositionX, subPositionY, 500, 100),
+                new Rectangle(this.subPositionX, this.subPositionY, 500, 100),
                 1,
                 0,
                 Color.White,

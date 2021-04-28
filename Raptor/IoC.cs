@@ -129,6 +129,8 @@ namespace Raptor
 
             IoCContainer.Register<ITaskService, TaskService>();
             IoCContainer.SuppressDisposableTransientWarning<ITaskService>();
+
+            IoCContainer.Register<IBatchManagerService, BatchManagerService>(Lifestyle.Singleton);
         }
 
         /// <summary>
