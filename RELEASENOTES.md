@@ -82,7 +82,7 @@
     * This is to align more with the meaning and contextual purpose of the property
     * NOTE: All all other existing resolver types have picked this change up as well
 6. Swapped parameters for the `AtlasData` class constructor to better align for the intended public facing API of the library
-    * The position of the parameters `ITexture texture` and `AtlasSubTextureData[] atlasSubTexutureData` were swapped
+    * The position of the parameters `ITexture texture` and `AtlasSubTextureData[] atlasSubTextureData` were swapped
 7. Removed the `None` enum value from the `MouseButton` enumeration
 
 ### **Bug Fixes** 🐛
