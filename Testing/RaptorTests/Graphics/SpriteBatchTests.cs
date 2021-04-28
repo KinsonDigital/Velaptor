@@ -463,6 +463,37 @@ namespace RaptorTests.Graphics
         }
 
         [Fact]
+        public void RenderTexture_WhenTextureIsNotBound_BindsTexture()
+        {
+            // Arrange
+            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
+            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
+                .Returns(() =>
+                {
+                    var batchItem = new SpriteBatchItem()
+                    {
+                        Effects = RenderEffects.None,
+                        SrcRect = new Rectangle(0, 0, 10, 20),
+                    };
+                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(
+                        new Dictionary<uint, SpriteBatchItem>()
+                        {
+                            { 0, batchItem },
+                        });
+                });
+
+            var mockTexture = CreateTextureMock(0, 10, 20);
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(mockTexture.Object, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RenderEffects>());
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindTexture(TextureTarget.Texture2D, 0), Times.Once());
+        }
+
+        [Fact]
         public void RenderTexture_WithUnknownRenderEffect_ThrowsException()
         {
             // Arrange
