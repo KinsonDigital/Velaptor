@@ -9,7 +9,7 @@ namespace Raptor.NativeInterop
     /// <summary>
     /// Occurs when there is an error message related to the FreeType font library.
     /// </summary>
-    public class FreeTypeErrorEventArgs : EventArgs
+    internal class FreeTypeErrorEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FreeTypeErrorEventArgs"/> class.
