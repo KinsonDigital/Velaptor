@@ -65,7 +65,7 @@ namespace Raptor.UI
         bool MouseCursorVisible { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the window has been initialized.
+        /// Gets a value indicating whether the window has been initialized.
         /// </summary>
         bool Initialized { get; }
 
