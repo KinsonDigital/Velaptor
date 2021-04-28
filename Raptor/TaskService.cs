@@ -11,7 +11,7 @@ namespace Raptor
     /// <summary>
     /// Creates a new task for asynchronous operations to be performed.
     /// </summary>
-    public class TaskService : ITaskService
+    internal class TaskService : ITaskService
     {
         private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
         private Task? internalTask;
