@@ -213,10 +213,10 @@ namespace RaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<SystemDisplayException>(() =>
+            Assert.ThrowsWithMessage<SystemMonitorException>(() =>
             {
                 service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
-            }, "The main system display must not be null.");
+            }, "The main system monitor must not be null.");
         }
 
         [Fact]

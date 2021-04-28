@@ -1,4 +1,4 @@
-// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -85,7 +85,7 @@ namespace Raptor.Services
 
             if (this.monitorService.MainMonitor is null)
             {
-                throw new SystemDisplayException("The main system display must not be null.");
+                throw new SystemMonitorException("The main system monitor must not be null.");
             }
 
             this.freeTypeExtensions.SetCharacterSize(
