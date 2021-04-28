@@ -542,6 +542,27 @@ namespace RaptorTests.Audio
             this.mockOggDecoder.Verify(m => m.LoadData(this.oggContentFilePath), Times.Exactly(2));
             this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new[] { 1f, 2f }, 8, 44100), Times.Exactly(2));
         }
+
+        [Fact]
+        public void Dispose_WhenInvoked_DisposesOfSound()
+        {
+            // Arrange
+            var sound = CreateSound(this.oggContentFilePath);
+
+            // Act
+            sound.Dispose();
+            sound.Dispose();
+
+            // Assert
+            this.mockOggDecoder.Verify(m => m.Dispose(), Times.Once());
+            this.mockMp3Decoder.Verify(m => m.Dispose(), Times.Once());
+            this.mockAudioManager.VerifyRemove(m => m.DeviceChanged -= It.IsAny<EventHandler<EventArgs>>(),
+                Times.Once(),
+                $"Unsubscription to the event '{nameof(IAudioDeviceManager.DeviceChanged)}' event did not occur.");
+            this.mockALInvoker.VerifyRemove(m => m.ErrorCallback -= It.IsAny<Action<string>>(),
+                Times.Once(),
+                $"Unsubscription to the event '{nameof(IALInvoker.ErrorCallback)}' event did not occur.");
+        }
         #endregion
 
         /// <summary>

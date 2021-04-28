@@ -277,6 +277,9 @@ namespace RaptorTests.Services
             service.Dispose();
 
             // Assert
+            this.mockFreeTypeInvoker.VerifyRemove(s => s.OnError -= It.IsAny<EventHandler<FreeTypeErrorEventArgs>>(),
+                Times.Once(),
+                $"Unsubscription of the '{nameof(IFreeTypeInvoker.OnError)}' event did not occur.");
             this.mockFreeTypeInvoker.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion

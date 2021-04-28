@@ -982,226 +982,6 @@ namespace RaptorTests.OpenGL
         }
 
         [Fact]
-        public void Dispose_WhenInvoked_UnregistersLoadEvent()
-        {
-            // Arrange
-            var loadInvoked = false;
-
-            var window = CreateWindow();
-
-            void LoadHandler() => loadInvoked = true;
-
-            window.Initialize += LoadHandler;
-
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.Load += null);
-
-            window.Initialize -= LoadHandler;
-
-            // Assert
-            Assert.False(loadInvoked);
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersUnloadEvent()
-        {
-            // Arrange
-            var unloadInvoked = false;
-
-            var window = CreateWindow();
-
-            void UnloadHandler() => unloadInvoked = true;
-
-            window.Uninitialize += UnloadHandler;
-
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.Unload += null);
-
-            window.Uninitialize -= UnloadHandler;
-
-            // Assert
-            Assert.False(unloadInvoked);
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersUpdateFrameEvent()
-        {
-            // Arrange
-            var updateFrameInvoked = false;
-
-            var window = CreateWindow();
-
-            void UpdateHandler(FrameTime e) => updateFrameInvoked = true;
-
-            window.Update += UpdateHandler;
-
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.UpdateFrame += null);
-
-            window.Update -= UpdateHandler;
-
-            // Assert
-            Assert.False(updateFrameInvoked);
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersRenderFrameEvent()
-        {
-            // Arrange
-            var drawFrameInvoked = false;
-
-            var window = CreateWindow();
-
-            void DrawHandler(FrameTime e) => drawFrameInvoked = true;
-
-            window.Draw += DrawHandler;
-
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.RenderFrame += null);
-
-            window.Draw -= DrawHandler;
-
-            // Assert
-            Assert.False(drawFrameInvoked);
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersResizeEvent()
-        {
-            // Arrange
-            var winResizeFrameInvoked = false;
-
-            var window = CreateWindow();
-
-            void WinResizeHandler() => winResizeFrameInvoked = true;
-
-            window.WinResize += WinResizeHandler;
-
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.Resize += null);
-
-            window.WinResize -= WinResizeHandler;
-
-            // Assert
-            Assert.False(winResizeFrameInvoked);
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersKeyDownEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.KeyDown += null, It.IsAny<KeyboardKeyEventArgs>());
-
-            // Assert
-            this.mockKeyboard.Verify(m => m.SetState(It.IsAny<KeyCode>(), It.IsAny<bool>()), Times.Never());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersKeyUpEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.KeyUp += null, It.IsAny<KeyboardKeyEventArgs>());
-
-            // Assert
-            this.mockKeyboard.Verify(m => m.SetState(It.IsAny<KeyCode>(), It.IsAny<bool>()), Times.Never());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersMouseDownEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.MouseDown += null, It.IsAny<MouseButtonEventArgs>());
-
-            // Assert
-            this.mockMouse.Verify(m => m.SetState(It.IsAny<RaptorMouseButton>(), It.IsAny<bool>()), Times.Never());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersMouseUpEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.MouseUp += null, It.IsAny<MouseButtonEventArgs>());
-
-            // Assert
-            this.mockMouse.Verify(m => m.SetState(It.IsAny<RaptorMouseButton>(), It.IsAny<bool>()), Times.Never());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersMouseMoveEvent()
-        {
-            // Arrange
-            var window = CreateWindow();
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.MouseMove += null, It.IsAny<MouseMoveEventArgs>());
-
-            // Assert
-            this.mockMouse.Verify(m => m.SetXPos(It.IsAny<int>()), Times.Never());
-            this.mockMouse.Verify(m => m.SetYPos(It.IsAny<int>()), Times.Never());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnregistersCloseEvent()
-        {
-            // Arrange
-            var uninitializeInvoked = false;
-
-            var window = CreateWindow();
-
-            void UninitializeHandler() => uninitializeInvoked = true;
-
-            window.Uninitialize += UninitializeHandler;
-
-            window.Show();
-
-            // Act
-            window.Dispose();
-            this.mockWindowFacade.Raise(m => m.Closed += null);
-
-            window.Uninitialize -= UninitializeHandler;
-
-            // Assert
-            Assert.False(uninitializeInvoked);
-        }
-
-        [Fact]
         public void Dispose_WhenInvoked_DisposesOfWindowFacade()
         {
             // Arrange
@@ -1216,6 +996,17 @@ namespace RaptorTests.OpenGL
             this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
             this.mockWindowFacade.Verify(m => m.Dispose(), Times.Once());
             this.mockGLObservable.Verify(m => m.Dispose(), Times.Once());
+            this.mockWindowFacade.VerifyRemove(s => s.Load -= It.IsAny<Action>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Load)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.Unload -= It.IsAny<Action>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Unload)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.UpdateFrame -= It.IsAny<Action<FrameEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.RenderFrame -= It.IsAny<Action<FrameEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.RenderFrame)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.Resize -= It.IsAny<Action<ResizeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Resize)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.KeyDown -= It.IsAny<Action<KeyboardKeyEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.KeyDown)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.KeyUp -= It.IsAny<Action<KeyboardKeyEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.KeyUp)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.MouseDown -= It.IsAny<Action<MouseButtonEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.MouseDown)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.MouseUp -= It.IsAny<Action<MouseButtonEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.MouseUp)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.MouseMove -= It.IsAny<Action<MouseMoveEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.MouseMove)}' did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.Closed -= It.IsAny<Action>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Closed)}' did not occur.");
         }
         #endregion
 
