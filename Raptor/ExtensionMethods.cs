@@ -129,17 +129,6 @@ namespace Raptor
         public static Vector4 ToVector4(this NETColor clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
-        /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
-        /// </summary>
-        /// <param name="value">The value to convert.</param>
-        /// <returns>A color represented by a 4 component vector.</returns>
-        public static Vector4 ToGLColor(this NETColor value)
-        {
-            var vec4 = value.ToVector4();
-            return vec4.MapValues(0, 255, 0, 1);
-        }
-
-        /// <summary>
         /// Maps each component of the vector to from one range to another.
         /// </summary>
         /// <param name="value">The 4 component vector component to map.</param>
@@ -156,6 +145,17 @@ namespace Raptor
                 Z = value.Z.MapValue(fromStart, fromStop, toStart, toStop),
                 W = value.W.MapValue(fromStart, fromStop, toStart, toStop),
             };
+
+        /// <summary>
+        /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>A color represented by a 4 component vector.</returns>
+        internal static Vector4 ToGLColor(this NETColor value)
+        {
+            var vec4 = value.ToVector4();
+            return vec4.MapValues(0, 255, 0, 1);
+        }
 
         /// <summary>
         /// Returns a value indicating whether the given file or directory path
