@@ -411,10 +411,9 @@ namespace RaptorTests.Audio
         {
             // Arrange
             this.sound = CreateSound(this.oggContentFilePath);
-
-            // Act & Assert
             this.sound.Dispose();
 
+            // Act & Assert
             Assert.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.PauseSound();
