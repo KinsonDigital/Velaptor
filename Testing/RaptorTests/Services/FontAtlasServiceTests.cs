@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -158,6 +158,9 @@ namespace RaptorTests.Services
 
             // Assert
             this.mockFreeTypeInvoker.Verify(m => m.FT_Init_FreeType(), Times.Once());
+            this.mockFreeTypeInvoker.VerifyAdd(s => s.OnError += It.IsAny<EventHandler<FreeTypeErrorEventArgs>>(),
+                Times.Once(),
+                $"Subscription of the '{nameof(IFreeTypeInvoker.OnError)}' event did not occur.");
         }
         #endregion
 

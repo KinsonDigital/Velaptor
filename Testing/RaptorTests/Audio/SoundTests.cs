@@ -64,6 +64,30 @@ namespace RaptorTests.Audio
         }
 
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WhenInvoking_SubscribesToDeviceChangedEvent()
+        {
+            // Act
+            this.mockMp3Decoder.Setup(m => m.LoadData(this.mp3ContentFilePath))
+                .Returns(() =>
+                {
+                    var result = default(SoundData<byte>);
+                    result.BufferData = new ReadOnlyCollection<byte>(new byte[] { 1, 2 });
+                    result.TotalSeconds = 200f;
+                    result.Format = AudioFormat.Stereo16;
+                    result.Channels = 2;
+                    result.SampleRate = 44100;
+
+                    return result;
+                });
+            this.sound = CreateSound(this.mp3ContentFilePath);
+
+            // Assert
+            this.mockAudioManager.VerifyAdd(m => m.DeviceChanged += It.IsAny<EventHandler<EventArgs>>(),
+                Times.Once(),
+                $"Subscription to the event '{nameof(IAudioDeviceManager.DeviceChanged)}' event did not occur.");
+        }
+
         [Theory]
         [InlineData(AudioFormat.Mono8, ALFormat.Mono8)]
         [InlineData(AudioFormat.Mono16, ALFormat.Mono16)]
