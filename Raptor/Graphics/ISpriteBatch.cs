@@ -13,7 +13,7 @@ namespace Raptor.Graphics
     public interface ISpriteBatch : IDisposable
     {
         /// <summary>
-        /// Gets or sets the size of the batch.
+        /// Gets the size of the batch.
         /// </summary>
         uint BatchSize { get; }
 
