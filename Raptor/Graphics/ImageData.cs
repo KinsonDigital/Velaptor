@@ -11,7 +11,7 @@ namespace Raptor.Graphics
     /// <summary>
     /// Holds image data such as the pixel colors for each X and Y location, the image width, and height.
     /// </summary>
-    public struct ImageData : IEquatable<ImageData>
+    public readonly struct ImageData : IEquatable<ImageData>
     {
         /// <summary>
         /// Gets or sets the pixel colors of the image.
@@ -23,17 +23,24 @@ namespace Raptor.Graphics
         ///     The 32-bit color component byte layout is ARGB.
         /// </para>
         /// </remarks>
-        public Color[,] Pixels { get; set; }
+        public readonly Color[,] Pixels;
 
         /// <summary>
         /// Gets or sets the width of the image.
         /// </summary>
-        public int Width { get; set; }
+        public readonly int Width;
 
         /// <summary>
         /// Gets or sets the height of the iamge.
         /// </summary>
-        public int Height { get; set; }
+        public readonly int Height;
+
+        public ImageData(Color[,] pixels, int width, int height)
+        {
+            this.Pixels = pixels;
+            this.Width = width;
+            this.Height = height;
+        }
 
         /// <summary>
         /// Returns a value indicating whether 2 <see cref="ImageData"/> types are equal.
@@ -54,22 +61,22 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public bool Equals(ImageData other)
         {
-            if (Pixels.Length != other.Pixels.Length)
+            if (this.Pixels.Length != other.Pixels.Length)
             {
                 return false;
             }
 
             var arePixelsTrue = true;
 
-            if (Pixels.Length > 0 && other.Pixels.Length > 0)
+            if (this.Pixels.Length > 0 && other.Pixels.Length > 0)
             {
                 var breakOuterLoop = false;
 
-                for (var x = 0; x < Width; x++)
+                for (var x = 0; x < this.Width; x++)
                 {
-                    for (var y = 0; y < Height; y++)
+                    for (var y = 0; y < this.Height; y++)
                     {
-                        if (Pixels[x, y] != other.Pixels[x, y])
+                        if (this.Pixels[x, y] != other.Pixels[x, y])
                         {
                             arePixelsTrue = false;
                             breakOuterLoop = true;
@@ -88,7 +95,7 @@ namespace Raptor.Graphics
                 arePixelsTrue = true;
             }
 
-            return arePixelsTrue && Width == other.Width && Height == other.Height;
+            return arePixelsTrue && this.Width == other.Width && this.Height == other.Height;
         }
 
         /// <inheritdoc/>
@@ -104,6 +111,6 @@ namespace Raptor.Graphics
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
-        public override int GetHashCode() => HashCode.Combine(Pixels, Width, Height);
+        public override int GetHashCode() => HashCode.Combine(this.Pixels, this.Width, this.Height);
     }
 }

@@ -337,7 +337,7 @@ namespace Raptor
         /// </summary>
         /// <param name="image">The image data to convert.</param>
         /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        internal static Image<Rgba32> ToSixLaborImage(this ImageData image)
+        internal static Image<Rgba32> ToSixLaborImage(in this ImageData image)
         {
             var result = new Image<Rgba32>(image.Width, image.Height);
 
@@ -366,11 +366,7 @@ namespace Raptor
         /// <returns>The image data of type <see cref="ImageData"/>.</returns>
         internal static ImageData ToImageData(this Image<Rgba32> image)
         {
-            ImageData result = default;
-
-            result.Pixels = new NETColor[image.Width, image.Height];
-            result.Width = image.Width;
-            result.Height = image.Height;
+            var pixelData = new NETColor[image.Width, image.Height];
 
             for (var y = 0; y < image.Height; y++)
             {
@@ -378,7 +374,7 @@ namespace Raptor
 
                 for (var x = 0; x < image.Width; x++)
                 {
-                    result.Pixels[x, y] = NETColor.FromArgb(
+                    pixelData[x, y] = NETColor.FromArgb(
                         pixelRowSpan[x].A,
                         pixelRowSpan[x].R,
                         pixelRowSpan[x].G,
@@ -386,7 +382,7 @@ namespace Raptor
                 }
             }
 
-            return result;
+            return new ImageData(pixelData, image.Width, image.Height);
         }
     }
 }

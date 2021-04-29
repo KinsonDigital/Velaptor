@@ -19,14 +19,10 @@ namespace Raptor.Services
         /// <inheritdoc/>
         public ImageData Load(string path)
         {
-            ImageData imageData = default;
-
             var rgba32Image = Image.Load<Rgba32>(path);
             rgba32Image.Mutate(context => context.Flip(FlipMode.Vertical));
 
-            imageData.Pixels = new NETColor[rgba32Image.Width, rgba32Image.Height];
-            imageData.Width = rgba32Image.Width;
-            imageData.Height = rgba32Image.Height;
+            var imageData = new ImageData(new NETColor[rgba32Image.Width, rgba32Image.Height], rgba32Image.Width, rgba32Image.Height);
 
             for (var y = 0; y < rgba32Image.Height; y++)
             {

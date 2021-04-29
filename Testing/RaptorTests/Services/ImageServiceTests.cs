@@ -105,12 +105,7 @@ namespace RaptorTests.Services
                 }
             }
 
-            var imageData = new ImageData()
-            {
-                Pixels = expectedPixelData,
-                Width = width,
-                Height = height,
-            };
+            var imageData = new ImageData(expectedPixelData, width, height);
 
             var service = new ImageService();
             var saveResultImageFilePath = $"{TestHelpers.GetTestResultDirPath()}{nameof(Save_WhenInvoked_CorrectlySavesImage)}.png";

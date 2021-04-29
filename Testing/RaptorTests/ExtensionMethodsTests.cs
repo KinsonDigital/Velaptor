@@ -181,10 +181,7 @@ namespace RaptorTests
         public void ToSixLaborImage_WhenInvoked_CorrectlyConvertsToSixLaborImage()
         {
             // Arrange
-            ImageData imageData = default;
-            imageData.Pixels = new NETColor[2, 3];
-            imageData.Width = 2;
-            imageData.Height = 3;
+            var imageData = new ImageData(new NETColor[2, 3], 2, 3);
 
             var expectedPixels = new Rgba32[2, 3];
 
