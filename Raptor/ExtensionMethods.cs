@@ -350,9 +350,9 @@ namespace Raptor
                     var pixel = image.Pixels[x, y];
 
                     pixelRowSpan[x] = new Rgba32(
+                        pixel.R,
                         pixel.G,
                         pixel.B,
-                        pixel.R,
                         pixel.A);
                 }
             }
