@@ -347,11 +347,13 @@ namespace Raptor
 
                 for (var x = 0; x < result.Width; x++)
                 {
+                    var pixel = image.Pixels[x, y];
+
                     pixelRowSpan[x] = new Rgba32(
-                        image.Pixels[x, y].R,
-                        image.Pixels[x, y].G,
-                        image.Pixels[x, y].B,
-                        image.Pixels[x, y].A);
+                        pixel.G,
+                        pixel.B,
+                        pixel.R,
+                        pixel.A);
                 }
             }
 
