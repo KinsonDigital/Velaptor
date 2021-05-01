@@ -61,7 +61,7 @@ namespace RaptorSandBox
 
             var random = new Random();
 
-            for (var i = 0; i < 1; i++)
+            for (var i = 0; i < 10; i++)
             {
                 this.bubbles.Add(new Rectangle()
                 {
@@ -122,8 +122,8 @@ namespace RaptorSandBox
             {
                 var bubble = this.bubbles[i];
 
-                //bubble.Y -= 1;
-                //bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
+                bubble.Y -= 1;
+                bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
                 bubble.Y = Height / 2;
 
                 this.bubbles[i] = bubble;
