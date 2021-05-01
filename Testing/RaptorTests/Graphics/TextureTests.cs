@@ -27,7 +27,7 @@ namespace RaptorTests.Graphics
         public TextureTests()
         {
             this.imageData = new ImageData(new Color[2, 3], 2, 3);
-            
+
             /*NOTE:
              * Create the bytes in the ARGB byte layout.
              * OpenGL expects the layout to be RGBA.  The texture class changes this
