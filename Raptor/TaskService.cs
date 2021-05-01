@@ -11,9 +11,9 @@ namespace Raptor
     /// <summary>
     /// Creates a new task for asynchronous operations to be performed.
     /// </summary>
-    public class TaskService : ITaskService
+    internal class TaskService : ITaskService
     {
-        private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
+        private readonly CancellationTokenSource tokenSrc = new ();
         private Task? internalTask;
         private bool isDiposed;
 
@@ -75,14 +75,14 @@ namespace Raptor
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDiposed)
             {
                 if (disposing)
                 {
-                    if (!(this.internalTask is null))
+                    if (this.internalTask is not null)
                     {
                         // If the task is still running, stop it first then dispose
                         if (this.internalTask.Status == TaskStatus.Running)

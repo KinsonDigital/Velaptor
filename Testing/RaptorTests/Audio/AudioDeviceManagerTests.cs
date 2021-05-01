@@ -2,8 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.Audio
 {
+#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Collections.ObjectModel;
     using Moq;
@@ -13,6 +15,7 @@ namespace RaptorTests.Audio
     using Raptor.OpenAL;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
+#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="AudioDeviceManager"/> class.
@@ -402,6 +405,6 @@ namespace RaptorTests.Audio
         /// Creates a new instance of <see cref="AudioDeviceManager"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private AudioDeviceManager CreateManager() => new AudioDeviceManager(this.mockALInvoker.Object);
+        private AudioDeviceManager CreateManager() => new (this.mockALInvoker.Object);
     }
 }

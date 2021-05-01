@@ -9,7 +9,7 @@ namespace Raptor.Graphics
     using System.Drawing;
 
     /// <summary>
-    /// Holds dat about a texture atlas sube texture.
+    /// Holds data about a texture atlas sub texture.
     /// </summary>
     public class AtlasSubTextureData
     {
@@ -35,7 +35,7 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is AtlasSubTextureData data))
+            if (obj is not AtlasSubTextureData data)
             {
                 return false;
             }

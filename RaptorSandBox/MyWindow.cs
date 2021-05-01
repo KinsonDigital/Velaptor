@@ -1,4 +1,4 @@
-﻿using Raptor;
+using Raptor;
 using Raptor.Audio;
 using Raptor.Factories;
 using Raptor.Graphics;
@@ -31,7 +31,7 @@ namespace RaptorSandBox
         private Rectangle currentFrame;
         private AtlasSubTextureData[] subFrames;
         private AtlasSubTextureData bubbleFrame;
-        private List<Rectangle> bubbles = new List<Rectangle>();
+        private List<Rectangle> bubbles = new();
         private ITexture linkTexture;
         private int elapsedFrameTime = 0;
         private IFont myFont;
@@ -124,6 +124,7 @@ namespace RaptorSandBox
 
                 bubble.Y -= 1;
                 bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
+                bubble.Y = Height / 2;
 
                 this.bubbles[i] = bubble;
             }
@@ -154,7 +155,7 @@ namespace RaptorSandBox
             this.spriteBatch?.Render(
                 this.mainAtlas.Texture,
                 subTexture.Bounds,
-                new Rectangle(subPositionX, subPositionY, 500, 100),
+                new Rectangle(this.subPositionX, this.subPositionY, 500, 100),
                 1,
                 0,
                 Color.White,

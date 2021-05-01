@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -38,7 +38,7 @@ namespace RaptorTests.Services
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<ISystemMonitorService> mockMonitorService;
         private readonly Mock<IPlatform> mockPlatform;
-        private readonly IntPtr freeTypeLibPtr = new IntPtr(1234);
+        private readonly IntPtr freeTypeLibPtr = new (1234);
         private readonly char[] glyphChars = new[]
         { // This represents how it would be layed out in the atlas
             'h', 'e',
@@ -47,7 +47,7 @@ namespace RaptorTests.Services
             'd', ' ',
             '□',
         };
-        private readonly Dictionary<char, uint> glyphIndices = new Dictionary<char, uint>()
+        private readonly Dictionary<char, uint> glyphIndices = new ()
         {
             { 'h', 0 },
             { 'e', 1 },
@@ -158,6 +158,9 @@ namespace RaptorTests.Services
 
             // Assert
             this.mockFreeTypeInvoker.Verify(m => m.FT_Init_FreeType(), Times.Once());
+            this.mockFreeTypeInvoker.VerifyAdd(s => s.OnError += It.IsAny<EventHandler<FreeTypeErrorEventArgs>>(),
+                Times.Once(),
+                $"Subscription of the '{nameof(IFreeTypeInvoker.OnError)}' event did not occur.");
         }
         #endregion
 
@@ -213,10 +216,10 @@ namespace RaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<SystemDisplayException>(() =>
+            Assert.ThrowsWithMessage<SystemMonitorException>(() =>
             {
                 service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
-            }, "The main system display must not be null.");
+            }, "The main system monitor must not be null.");
         }
 
         [Fact]
@@ -277,6 +280,9 @@ namespace RaptorTests.Services
             service.Dispose();
 
             // Assert
+            this.mockFreeTypeInvoker.VerifyRemove(s => s.OnError -= It.IsAny<EventHandler<FreeTypeErrorEventArgs>>(),
+                Times.Once(),
+                $"Unsubscription of the '{nameof(IFreeTypeInvoker.OnError)}' event did not occur.");
             this.mockFreeTypeInvoker.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion

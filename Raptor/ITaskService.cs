@@ -11,7 +11,7 @@ namespace Raptor
     /// <summary>
     /// Creates a new task for asynchronous operations to be performed.
     /// </summary>
-    public interface ITaskService : IDisposable
+    internal interface ITaskService : IDisposable
     {
         /// <summary>
         /// Sets the delegate of type <see cref="Action"/> to be executed on another thread

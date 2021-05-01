@@ -48,7 +48,7 @@ namespace Raptor.UI
         ///     use or invoke the <see cref="ISpriteBatch.Clear"/>() method.
         /// </para>
         /// <para>
-        ///     Set to the value of false if you want more control over when
+        ///     Set to the value of <see langword="false"/> if you want more control over when
         ///     the back buffers will be cleared.
         /// </para>
         /// <para>
@@ -65,7 +65,7 @@ namespace Raptor.UI
         bool MouseCursorVisible { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the window has been initialized.
+        /// Gets a value indicating whether the window has been initialized.
         /// </summary>
         bool Initialized { get; }
 

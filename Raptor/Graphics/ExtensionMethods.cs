@@ -12,24 +12,24 @@ namespace Raptor.Graphics
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Returns true if the character is a letter.
+        /// Returns <see langword="true"/> if the character is a letter.
         /// </summary>
         /// <param name="item">The character to check.</param>
-        /// <returns>True if the character is a letter.</returns>
+        /// <returns><see langword="true"/> if the character is a letter.</returns>
         public static bool IsLetter(this char item) => (item >= 65 && item <= 90) || (item >= 97 && item <= 122);
 
         /// <summary>
-        /// Returns true if the character is a number.
+        /// Returns <see langword="true"/> if the character is a number.
         /// </summary>
         /// <param name="item">The character to check.</param>
-        /// <returns>True if the character is a number.</returns>
+        /// <returns><see langword="true"/> if the character is a number.</returns>
         public static bool IsNumber(this char item) => item >= 48 && item <= 57;
 
         /// <summary>
-        /// Returns true if the string has any single digit numbers in them.
+        /// Returns <see langword="true"/> if the string has any single digit numbers in them.
         /// </summary>
         /// <param name="item">The string to check.</param>
-        /// <returns>True if the string has numbers.</returns>
+        /// <returns><see langword="true"/> if the string has numbers.</returns>
         public static bool HasNumbers(this string item) => item.Any(IsNumber);
 
         /// <summary>
@@ -59,10 +59,10 @@ namespace Raptor.Graphics
         }
 
         /// <summary>
-        /// Returns true if the string contains only letters and numbers.
+        /// Returns <see langword="true"/> if the string contains only letters and numbers.
         /// </summary>
         /// <param name="item">The string to check.</param>
-        /// <returns>True if only letters and numbers.</returns>
+        /// <returns><see langword="true"/> if only letters and numbers.</returns>
         public static bool IsAlphaNumeric(this string item)
         {
             if (string.IsNullOrEmpty(item))

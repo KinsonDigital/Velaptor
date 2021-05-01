@@ -24,8 +24,8 @@ namespace Raptor.Audio
         private const string DeviceNamePrefix = "OpenAL Soft on "; // All device names returned are prefixed with this
         private readonly IALInvoker alInvoker;
         private readonly string isDisposedExceptionMessage = $"The '{nameof(AudioDeviceManager)}' has not been initialized.\nInvoked the '{nameof(AudioDeviceManager.InitDevice)}()' to initialize the device manager.";
-        private readonly Dictionary<int, SoundSource> soundSources = new Dictionary<int, SoundSource>();
-        private readonly List<SoundState> continuePlaybackCache = new List<SoundState>();
+        private readonly Dictionary<int, SoundSource> soundSources = new ();
+        private readonly List<SoundState> continuePlaybackCache = new ();
         private ALDevice device;
         private ALContext context;
         private ALContextAttributes? attributes;
@@ -55,7 +55,7 @@ namespace Raptor.Audio
 
                 var result = Array.Empty<string>();
 
-                if (!(this.alInvoker is null))
+                if (this.alInvoker is not null)
                 {
                     result = this.alInvoker.GetString(this.device, AlcGetStringList.AllDevicesSpecifier)
                         .Select(n => n.Replace(DeviceNamePrefix, string.Empty, StringComparison.Ordinal)).ToArray();
@@ -71,7 +71,7 @@ namespace Raptor.Audio
             var nameResult = name != null ? $"{DeviceNamePrefix}{name}" : name;
             var setCurrentResult = false;
 
-            if (!(this.alInvoker is null))
+            if (this.alInvoker is not null)
             {
                 if (this.device.Handle == IntPtr.Zero)
                 {
@@ -112,7 +112,7 @@ namespace Raptor.Audio
 
             var bufferId = 0;
 
-            if (!(this.alInvoker is null))
+            if (this.alInvoker is not null)
             {
                 soundSrc.SourceId = this.alInvoker.GenSource();
                 bufferId = this.alInvoker.GenBuffer();
@@ -191,7 +191,7 @@ namespace Raptor.Audio
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to disose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to disose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)
@@ -289,7 +289,7 @@ namespace Raptor.Audio
         /// <summary>
         /// Returns a value indicating if the audio device and context are null.
         /// </summary>
-        /// <returns>True if the device and context are null.</returns>
+        /// <returns><see langword="true"/> if the device and context are null.</returns>
         private bool AudioIsNull() => this.device == ALDevice.Null && this.context == ALContext.Null && this.attributes is null;
 
         /// <summary>

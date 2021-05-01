@@ -16,7 +16,7 @@ namespace Raptor.Content
     /// </summary>
     public class SoundLoader : ILoader<ISound>
     {
-        private readonly ConcurrentDictionary<string, ISound> sounds = new ConcurrentDictionary<string, ISound>();
+        private readonly ConcurrentDictionary<string, ISound> sounds = new ();
         private readonly IALInvoker alInvoker;
         private readonly IAudioDeviceManager audioManager;
         private readonly IPathResolver soundPathResolver;
@@ -109,7 +109,7 @@ namespace Raptor.Content
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)

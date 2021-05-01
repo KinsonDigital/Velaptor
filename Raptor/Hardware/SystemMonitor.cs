@@ -76,7 +76,7 @@ namespace Raptor.Hardware
         /// <summary>
         /// Gets the center location of the monitor.
         /// </summary>
-        public Vector2 Center => new Vector2(Width / 2f, Height / 2f);
+        public Vector2 Center => new (Width / 2f, Height / 2f);
 
         /// <summary>
         /// Gets the approximate dpi of the monitor on the horizontal axis.
@@ -93,7 +93,7 @@ namespace Raptor.Hardware
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns>True if both operands are equal.</returns>
+        /// <returns><see langword="true"/> if both operands are equal.</returns>
         public static bool operator ==(SystemMonitor left, SystemMonitor right) => !(left is null) && left.Equals(right);
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Raptor.Hardware
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns>True if both operands are not equal.</returns>
+        /// <returns><see langword="true"/> if both operands are not equal.</returns>
         public static bool operator !=(SystemMonitor left, SystemMonitor right) => !(left == right);
 
         /// <inheritdoc/>
@@ -126,7 +126,7 @@ namespace Raptor.Hardware
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is SystemMonitor monitor))
+            if (obj is not SystemMonitor monitor)
             {
                 return false;
             }

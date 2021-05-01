@@ -25,7 +25,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
-        /// <returns>True if the operands are equal.</returns>
+        /// <returns><see langword="true"/> if the operands are equal.</returns>
         public static bool operator ==(MouseState left, MouseState right) => left.Equals(right);
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
-        /// <returns>True if the operands are not equal.</returns>
+        /// <returns><see langword="true"/> if the operands are not equal.</returns>
         public static bool operator !=(MouseState left, MouseState right) => !left.Equals(right);
 
         /// <summary>
@@ -57,44 +57,44 @@ namespace Raptor.Input
         /// <summary>
         /// Gets or sets a value indicating whether the left mouse button is in the down position.
         /// </summary>
-        /// <returns>True if the button is down.</returns
+        /// <returns><see langword="true"/> if the button is down.</returns
         public bool IsLeftButtonDown() => this.isLeftButtonDown;
 
         /// <summary>
         /// Returns a value indicating whether the left mouse button is in the up position.
         /// </summary>
-        /// <returns>True if the button is up.</returns>
+        /// <returns><see langword="true"/> if the button is up.</returns>
         public bool IsLeftButtonUp() => !IsLeftButtonDown();
 
         /// <summary>
         /// Gets or sets a value indicating whether the middle mouse button is in the down position.
         /// </summary>
-        /// <returns>True if the button is down.</returns
+        /// <returns><see langword="true"/> if the button is down.</returns
         public bool IsMiddleButtonDown() => this.isMiddleButtonDown;
 
         /// <summary>
         /// Returns a value indicating whether the middle mouse button is in the up position.
         /// </summary>
-        /// <returns>True if the button is up.</returns>
+        /// <returns><see langword="true"/> if the button is up.</returns>
         public bool IsMiddleButtonUp() => !IsMiddleButtonDown();
 
         /// <summary>
         /// Gets or sets a value indicating whether the right mouse button is in the down position.
         /// </summary>
-        /// <returns>True if the button is down.</returns
+        /// <returns><see langword="true"/> if the button is down.</returns
         public bool IsRightButtonDown() => this.isRightButtonDown;
 
         /// <summary>
         /// Returns a value indicating whether the right mouse button is in the up position.
         /// </summary>
-        /// <returns>True if the button is up.</returns>
+        /// <returns><see langword="true"/> if the button is up.</returns>
         public bool IsRightButtonUp() => !IsRightButtonDown();
 
         /// <summary>
         /// Returns the state for the given <paramref name="mouseButton"/>.
         /// </summary>
         /// <param name="mouseButton">The button state to retrieve.</param>
-        /// <returns>True if the button is down.</returns>
+        /// <returns><see langword="true"/> if the button is down.</returns>
         public bool GetButtonState(MouseButton mouseButton)
             => mouseButton switch
             {
@@ -113,7 +113,7 @@ namespace Raptor.Input
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is MouseState state))
+            if (obj is not MouseState state)
             {
                 return false;
             }
@@ -159,7 +159,6 @@ namespace Raptor.Input
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
         /// <param name="state">The state to set the button to.</param>
-        /// <remarks>If the button is set to <see cref="MouseButton.None"/>, all buttons will be set to false/up.</remarks>
         public void SetButtonState(MouseButton mouseButton, bool state)
         {
             switch (mouseButton)

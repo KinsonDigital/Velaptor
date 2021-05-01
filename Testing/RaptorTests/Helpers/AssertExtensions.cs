@@ -101,7 +101,7 @@ namespace RaptorTests.Helpers
                 Assert.True(false, $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
             }
 
-            if (!(expectedItems is null) && actualItems is null)
+            if (expectedItems is not null && actualItems is null)
             {
                 Assert.True(false, $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
             }
@@ -121,7 +121,7 @@ namespace RaptorTests.Helpers
                     Assert.True(false, $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
-                if (!(expectedArrayItems[i] is null) && (actualArrayItems[i] is null))
+                if (expectedArrayItems[i] is not null && (actualArrayItems[i] is null))
                 {
                     Assert.True(false, $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
@@ -136,12 +136,12 @@ namespace RaptorTests.Helpers
         }
 
         /// <summary>
-        /// Asserts that all of the given <paramref name="items"/> are true which is dictacted
+        /// Asserts that all of the given <paramref name="items"/> are <see langword="true"/> which is dictacted
         /// by the given <paramref name="arePredicate"/> predicate.
         /// </summary>
         /// <typeparam name="T">The type of item in the list of items.</typeparam>
         /// <param name="items">The list of items to assert.</param>
-        /// <param name="arePredicate">Fails the assertion when returning false.</param>
+        /// <param name="arePredicate">Fails the assertion when returning <see langword="false"/>.</param>
         public static void AllItemsAre<T>(IEnumerable<T> items, Predicate<T> arePredicate)
         {
             if (arePredicate is null)
@@ -166,9 +166,9 @@ namespace RaptorTests.Helpers
         /// Verifies that an expression is true.
         /// </summary>
         /// <param name="condition">The condition to be inspected.</param>
-        /// <param name="message">The message to be shown when the condition is false.</param>
-        /// <param name="expected">The expected message to display if the condition is false.</param>
-        /// <param name="actual">The actual message to display if the condition is false.</param>
+        /// <param name="message">The message to be shown when the condition is <see langword="false"/>.</param>
+        /// <param name="expected">The expected message to display if the condition is <see langword="false"/>.</param>
+        /// <param name="actual">The actual message to display if the condition is <see langword="false"/>.</param>
         public static void True(bool condition, string message, string expected = "", string actual = "")
         {
             XunitException assertExcption;
@@ -269,6 +269,28 @@ namespace RaptorTests.Helpers
             catch (Exception)
             {
                 throw assertException;
+            }
+        }
+
+        /// <summary>
+        /// Verifies that an event with the exact event args is not raised.
+        /// </summary>
+        /// <typeparam name="T">The type of the event arguments to expect.</typeparam>
+        /// <param name="attach">Code to attach the event handler.</param>
+        /// <param name="detach">Code to detatch the event handler.</param>
+        /// <param name="testCode">A delegate to the code to be tested.</param>
+        public static void DoesNotRaise<T>(Action<EventHandler<T>> attach, Action<EventHandler<T>> detach, Action testCode)
+            where T : EventArgs
+        {
+            try
+            {
+                Assert.Raises(attach, detach, testCode);
+
+                Assert.Equal("No event was raised", "An event was raised.");
+            }
+            catch (Exception ex)
+            {
+                Assert.Equal("(No event was raised)\r\nEventArgs\r\n(No event was raised)", ex.Message);
             }
         }
     }

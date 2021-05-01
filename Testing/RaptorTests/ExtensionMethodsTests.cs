@@ -105,20 +105,6 @@ namespace RaptorTests
         }
 
         [Fact]
-        public void ToGLColor_WhenInvoked_ReturnsCorrectResult()
-        {
-            // Arrange
-            var color = NETColor.FromArgb(11, 22, 33, 44);
-            var expected = new Vector4(0.08627451f, 0.12941177f, 0.17254902f, 0.043137256f);
-
-            // Act
-            var actual = color.ToGLColor();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
         public void MapValue_WhenUsingFloatType_ReturnsCorrectResult()
         {
             // Arrange
@@ -195,10 +181,7 @@ namespace RaptorTests
         public void ToSixLaborImage_WhenInvoked_CorrectlyConvertsToSixLaborImage()
         {
             // Arrange
-            ImageData imageData = default;
-            imageData.Pixels = new NETColor[2, 3];
-            imageData.Width = 2;
-            imageData.Height = 3;
+            var imageData = new ImageData(new NETColor[2, 3], 2, 3);
 
             var expectedPixels = new Rgba32[2, 3];
 

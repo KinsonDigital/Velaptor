@@ -16,7 +16,7 @@ namespace Raptor.OpenAL
     internal class ALInvoker : IALInvoker
     {
         /// <inheritdoc/>
-        public Action<string>? ErrorCallback { get; set; }
+        public event Action<string>? ErrorCallback;
 
         /// <inheritdoc/>
         public ALError GetError() => AL.GetError();

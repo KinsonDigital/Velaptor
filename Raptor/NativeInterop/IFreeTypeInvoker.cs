@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable SA1124 // Do n
+#pragma warning disable SA1124 // Do not use regions
 #pragma warning disable SA1514 // Element documentation header should be preceded by blank lineot use regions
 namespace Raptor.NativeInterop
 {
@@ -25,6 +25,7 @@ namespace Raptor.NativeInterop
         event EventHandler<FreeTypeErrorEventArgs> OnError;
 
         #region Original Interop Calls
+
         /// <summary>
         /// Initialize a new FreeType library object. The set of modules that are registered by this function is determined at build time.
         /// </summary>
@@ -137,9 +138,11 @@ namespace Raptor.NativeInterop
         /// </summary>
         /// <param name="library">A handle to the target library object.</param>
         void FT_Done_FreeType(IntPtr library);
+
         #endregion
 
         #region Helper Methods
+
         /// <summary>
         /// Returns the face pointer that was created using the <see cref="FT_New_Face(IntPtr, string, int)"/> call.
         /// </summary>
@@ -149,8 +152,9 @@ namespace Raptor.NativeInterop
         /// <summary>
         /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
         /// </summary>
-        /// <returns>True if the face uses kerning.</returns>
+        /// <returns><see langword="true"/> if the face uses kerning.</returns>
         unsafe bool FT_Has_Kerning();
+
         #endregion
     }
 }

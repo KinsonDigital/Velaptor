@@ -10,7 +10,7 @@ namespace Raptor.Audio
     /// <summary>
     /// A single sound that can be played, paused etc.
     /// </summary>
-    public interface ISound : IContent, IDisposable
+    public interface ISound : IContent
     {
         /// <summary>
         /// Gets or sets the volume of the sound.

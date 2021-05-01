@@ -18,7 +18,7 @@ namespace Raptor.Audio
         /// <summary>
         /// Gets a list of devices in the system.
         /// </summary>
-        public static ReadOnlyCollection<string> DeviceNames => new ReadOnlyCollection<string>(DeviceManager.DeviceNames);
+        public static ReadOnlyCollection<string> DeviceNames => new (DeviceManager.DeviceNames);
 
         /// <summary>
         /// Changes the device tot he given <paramref name="name"/>.

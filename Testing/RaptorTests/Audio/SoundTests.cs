@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundTests.cs" company="KinsonDigital">
+// <copyright file="SoundTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,7 +16,7 @@ namespace RaptorTests.Audio
     /// <summary>
     /// Tests the <see cref="Sound"/> class.
     /// </summary>
-    public class SoundTests : IDisposable
+    public class SoundTests
     {
         private readonly Mock<IAudioDeviceManager> mockAudioManager;
         private readonly Mock<ISoundDecoder<float>> mockOggDecoder;
@@ -64,6 +64,30 @@ namespace RaptorTests.Audio
         }
 
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WhenInvoking_SubscribesToDeviceChangedEvent()
+        {
+            // Act
+            this.mockMp3Decoder.Setup(m => m.LoadData(this.mp3ContentFilePath))
+                .Returns(() =>
+                {
+                    var result = default(SoundData<byte>);
+                    result.BufferData = new ReadOnlyCollection<byte>(new byte[] { 1, 2 });
+                    result.TotalSeconds = 200f;
+                    result.Format = AudioFormat.Stereo16;
+                    result.Channels = 2;
+                    result.SampleRate = 44100;
+
+                    return result;
+                });
+            this.sound = CreateSound(this.mp3ContentFilePath);
+
+            // Assert
+            this.mockAudioManager.VerifyAdd(m => m.DeviceChanged += It.IsAny<EventHandler<EventArgs>>(),
+                Times.Once(),
+                $"Subscription to the event '{nameof(IAudioDeviceManager.DeviceChanged)}' event did not occur.");
+        }
+
         [Theory]
         [InlineData(AudioFormat.Mono8, ALFormat.Mono8)]
         [InlineData(AudioFormat.Mono16, ALFormat.Mono16)]
@@ -387,10 +411,9 @@ namespace RaptorTests.Audio
         {
             // Arrange
             this.sound = CreateSound(this.oggContentFilePath);
-
-            // Act & Assert
             this.sound.Dispose();
 
+            // Act & Assert
             Assert.ThrowsWithMessage<Exception>(() =>
             {
                 this.sound.PauseSound();
@@ -542,14 +565,28 @@ namespace RaptorTests.Audio
             this.mockOggDecoder.Verify(m => m.LoadData(this.oggContentFilePath), Times.Exactly(2));
             this.mockALInvoker.Verify(m => m.BufferData(this.bufferId, ALFormat.Stereo16, new[] { 1f, 2f }, 8, 44100), Times.Exactly(2));
         }
-        #endregion
 
-        /// <inheritdoc/>
-        public void Dispose()
+        [Fact]
+        public void Dispose_WhenInvoked_DisposesOfSound()
         {
-            this.sound?.Dispose();
-            GC.SuppressFinalize(this);
+            // Arrange
+            var sound = CreateSound(this.oggContentFilePath);
+
+            // Act
+            sound.Dispose();
+            sound.Dispose();
+
+            // Assert
+            this.mockOggDecoder.Verify(m => m.Dispose(), Times.Once());
+            this.mockMp3Decoder.Verify(m => m.Dispose(), Times.Once());
+            this.mockAudioManager.VerifyRemove(m => m.DeviceChanged -= It.IsAny<EventHandler<EventArgs>>(),
+                Times.Once(),
+                $"Unsubscription to the event '{nameof(IAudioDeviceManager.DeviceChanged)}' event did not occur.");
+            this.mockALInvoker.VerifyRemove(m => m.ErrorCallback -= It.IsAny<Action<string>>(),
+                Times.Once(),
+                $"Unsubscription to the event '{nameof(IALInvoker.ErrorCallback)}' event did not occur.");
         }
+        #endregion
 
         /// <summary>
         /// Creates an instance of <see cref="Sound"/> for testing.
@@ -557,6 +594,6 @@ namespace RaptorTests.Audio
         /// <param name="filePath">The path to the sound file.</param>
         /// <returns>The instance for testing.</returns>
         private Sound CreateSound(string filePath)
-            => new Sound(filePath, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            => new (filePath, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
     }
 }

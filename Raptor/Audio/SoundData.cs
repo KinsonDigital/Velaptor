@@ -66,7 +66,7 @@ namespace Raptor.Audio
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
-        /// <returns>True if both operands are equal.</returns>
+        /// <returns><see langword="true"/> if both operands are equal.</returns>
         public static bool operator ==(SoundData<T> left, SoundData<T> right) => left.Equals(right);
 
         /// <summary>
@@ -74,13 +74,13 @@ namespace Raptor.Audio
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
-        /// <returns>True if both operands are not equal.</returns>
+        /// <returns><see langword="true"/> if both operands are not equal.</returns>
         public static bool operator !=(SoundData<T> left, SoundData<T> right) => !(left == right);
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is SoundData<T> data))
+            if (obj is not SoundData<T> data)
             {
                 return false;
             }

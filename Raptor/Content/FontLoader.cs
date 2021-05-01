@@ -20,7 +20,7 @@ namespace Raptor.Content
     /// </summary>
     public class FontLoader : ILoader<IFont>
     {
-        private readonly ConcurrentDictionary<string, IFont> fonts = new ConcurrentDictionary<string, IFont>();
+        private readonly ConcurrentDictionary<string, IFont> fonts = new ();
         private readonly IGLInvoker gl;
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IFontAtlasService fontAtlasService;
@@ -155,7 +155,7 @@ namespace Raptor.Content
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDiposed)

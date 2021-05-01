@@ -4,7 +4,6 @@
 
 namespace RaptorTests.Helpers
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
@@ -48,15 +47,7 @@ namespace RaptorTests.Helpers
         /// <param name="height">The heightof the image that the pixels represent.</param>
         /// <returns>The struct to test.</returns>
         public static ImageData CreateImageData(NETColor color, int width, int height)
-        {
-            ImageData result = default;
-
-            result.Pixels = CreatePixels(color, width, height);
-            result.Width = width;
-            result.Height = height;
-
-            return result;
-        }
+            => new ImageData(CreatePixels(color, width, height), width, height);
 
         /// <summary>
         /// Returns all of the pixels from the given <paramref name="image"/>
@@ -153,11 +144,7 @@ namespace RaptorTests.Helpers
         /// <returns>The image data of type <see cref="ImageData"/>.</returns>
         public static ImageData ToImageData(this Image<Rgba32> image)
         {
-            ImageData result = default;
-
-            result.Pixels = new NETColor[image.Width, image.Height];
-            result.Width = image.Width;
-            result.Height = image.Height;
+            var pixelData = new NETColor[image.Width, image.Height];
 
             for (var y = 0; y < image.Height; y++)
             {
@@ -165,7 +152,7 @@ namespace RaptorTests.Helpers
 
                 for (var x = 0; x < image.Width; x++)
                 {
-                    result.Pixels[x, y] = NETColor.FromArgb(
+                    pixelData[x, y] = NETColor.FromArgb(
                         pixelRowSpan[x].A,
                         pixelRowSpan[x].R,
                         pixelRowSpan[x].G,
@@ -173,22 +160,7 @@ namespace RaptorTests.Helpers
                 }
             }
 
-            return result;
-        }
-
-        /// <summary>
-        /// Returns an <see cref="IntPtr"/> to the given <paramref name="unmanagedData"/>.
-        /// </summary>
-        /// <typeparam name="T">The unmanaged type.</typeparam>
-        /// <param name="unmanagedData">The unmanaged data to return a pointer to.</param>
-        /// <returns>A pointer to the unmanaged data.</returns>
-        public static IntPtr ToIntPtr<T>(ref T unmanagedData)
-            where T : unmanaged
-        {
-            fixed (T* faceRecPtr = &unmanagedData)
-            {
-                return (IntPtr)faceRecPtr;
-            }
+            return new ImageData(pixelData, image.Width, image.Height);
         }
 
         /// <summary>

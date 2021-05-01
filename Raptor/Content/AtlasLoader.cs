@@ -19,7 +19,7 @@ namespace Raptor.Content
     /// </summary>
     public class AtlasLoader : ILoader<IAtlasData>
     {
-        private readonly ConcurrentDictionary<string, IAtlasData> atlases = new ConcurrentDictionary<string, IAtlasData>();
+        private readonly ConcurrentDictionary<string, IAtlasData> atlases = new ();
         private readonly IGLInvoker gl;
         private readonly IImageService imageService;
         private readonly IPathResolver atlasDataPathResolver;
@@ -120,7 +120,7 @@ namespace Raptor.Content
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)

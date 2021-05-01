@@ -28,8 +28,8 @@ namespace Raptor
     [ExcludeFromCodeCoverage]
     internal static class IoC
     {
-        private static readonly FileSystem FileSystem = new FileSystem();
-        private static readonly Container IoCContainer = new Container();
+        private static readonly FileSystem FileSystem = new ();
+        private static readonly Container IoCContainer = new ();
         private static bool isInitialized;
 
         /// <summary>
@@ -129,6 +129,8 @@ namespace Raptor
 
             IoCContainer.Register<ITaskService, TaskService>();
             IoCContainer.SuppressDisposableTransientWarning<ITaskService>();
+
+            IoCContainer.Register<IBatchManagerService, BatchManagerService>(Lifestyle.Singleton);
         }
 
         /// <summary>

@@ -15,7 +15,7 @@ namespace Raptor.Observables.Core
     /// </typeparam>
     public class ObserverUnsubscriber<T> : IDisposable
     {
-        private readonly List<IObserver<T>> observers = new List<IObserver<T>>();
+        private readonly List<IObserver<T>> observers = new ();
         private bool isDisposed;
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Raptor.Observables.Core
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)

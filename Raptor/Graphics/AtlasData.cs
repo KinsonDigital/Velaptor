@@ -20,17 +20,17 @@ namespace Raptor.Graphics
         /// Initializes a new instance of the <see cref="AtlasData"/> class.
         /// </summary>
         /// <param name="texture">The texture data of the atlas.</param>
-        /// <param name="atlasSubTexutureData">The sub texture data of all of the sub textures in the atlas.</param>
+        /// <param name="atlasSubTextureData">The sub texture data of all of the sub textures in the atlas.</param>
         /// <param name="atlasName">The name of the atlas.</param>
         /// <param name="path">The path to the content.</param>
-        public AtlasData(ITexture texture, AtlasSubTextureData[] atlasSubTexutureData, string atlasName, string path)
+        public AtlasData(ITexture texture, AtlasSubTextureData[] atlasSubTextureData, string atlasName, string path)
         {
             if (texture is null)
             {
                 throw new ArgumentNullException(nameof(Texture), "The parameter must not be null.");
             }
 
-            this.subTextures = atlasSubTexutureData.OrderBy(data => data.FrameIndex).ToArray();
+            this.subTextures = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
             Texture = texture;
             Name = atlasName;
             Path = path;
@@ -117,7 +117,7 @@ namespace Raptor.Graphics
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (Unloaded)

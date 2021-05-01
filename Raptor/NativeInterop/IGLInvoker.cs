@@ -195,7 +195,7 @@ namespace Raptor.NativeInterop
         /// Returns a value indicating if the program linking process was successful.
         /// </summary>
         /// <param name="program">The ID of the program to check.</param>
-        /// <returns>True if the linking was successful.</returns>
+        /// <returns><see langword="true"/> if the linking was successful.</returns>
         bool LinkProgramSuccess(uint program);
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace Raptor.NativeInterop
         /// Returns a value indicating if the shader was compiled successfully.
         /// </summary>
         /// <param name="shaderID">The ID of the shader to check.</param>
-        /// <returns>True if the shader compiled successfully.</returns>
+        /// <returns><see langword="true"/> if the shader compiled successfully.</returns>
         bool ShaderCompileSuccess(uint shaderID);
 
         /// <summary>
@@ -374,7 +374,7 @@ namespace Raptor.NativeInterop
         /// </param>
         /// <param name="normalized">
         ///     For glVertexAttribPointer, specifies whether fixed-point data values should be
-        ///     normalized (True) or converted directly as fixed-point values (False) when they
+        ///     normalized <see langword="true"/> or converted directly as fixed-point values <see langword="false"/> when they
         ///     are accessed.
         /// </param>
         /// <param name="stride">

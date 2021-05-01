@@ -16,7 +16,7 @@ namespace Raptor.Content
     /// </summary>
     public class TextureLoader : ILoader<ITexture>
     {
-        private readonly ConcurrentDictionary<string, ITexture> textures = new ConcurrentDictionary<string, ITexture>();
+        private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IGLInvoker gl;
         private readonly IImageService imageService;
         private readonly IPathResolver pathResolver;
@@ -86,7 +86,7 @@ namespace Raptor.Content
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)

@@ -45,6 +45,14 @@ namespace Raptor.Graphics
             Init(name, imageData);
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="Texture"/> class.
+        /// </summary>
+        ~Texture()
+        {
+            Dispose(false);
+        }
+
         /// <inheritdoc/>
         public uint ID { get; protected set; }
 
@@ -77,7 +85,7 @@ namespace Raptor.Graphics
         /// Performs application-defined tasks associated with freeing, releasing, or resetting
         /// unmanaged resources.
         /// </summary>
-        /// <param name="disposing">True if managed resources should be disposed of.</param>
+        /// <param name="disposing"><see langword="true"/> if managed resources should be disposed of.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (Unloaded)

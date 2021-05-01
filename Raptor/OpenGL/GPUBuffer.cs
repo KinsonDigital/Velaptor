@@ -17,6 +17,7 @@ namespace Raptor.OpenGL
         where T : struct
     {
         private readonly IGLInvoker gl;
+        private QuadData quadData = CreateQuad();
         private uint vertexArrayID;
         private uint vertexBufferID;
         private uint indexBufferID;
@@ -71,23 +72,41 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public void UpdateQuad(uint quadID, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor)
         {
-            var quadData = CreateQuadWithTextureCoordinates(srcRect, textureWidth, textureHeight);
+            var glColor = new Vector4()
+            {
+                X = tintColor.R,
+                Y = tintColor.G,
+                Z = tintColor.B,
+                W = tintColor.A,
+            };
+
+            // Convert the tint color to a normalized 4 component vector
+            glColor.X = tintColor.R.MapValue(0f, 255f, 0f, 1f);
+            glColor.Y = tintColor.G.MapValue(0f, 255f, 0f, 1f);
+            glColor.Z = tintColor.B.MapValue(0f, 255f, 0f, 1f);
+            glColor.W = tintColor.A.MapValue(0f, 255f, 0f, 1f);
+
+            // Update the texture coordinates to NDC (Normalized Device Coordinates)
+            this.quadData.Vertex1.TextureCoord = new Vector2(srcRect.Left.MapValue(0, textureWidth, 0, 1), srcRect.Top.MapValue(0, textureHeight, 1, 0));
+            this.quadData.Vertex2.TextureCoord = new Vector2(srcRect.Right.MapValue(0, textureWidth, 0, 1), srcRect.Top.MapValue(0, textureHeight, 1, 0));
+            this.quadData.Vertex3.TextureCoord = new Vector2(srcRect.Right.MapValue(0, textureWidth, 0, 1), srcRect.Bottom.MapValue(0, textureHeight, 1, 0));
+            this.quadData.Vertex4.TextureCoord = new Vector2(srcRect.Left.MapValue(0, textureWidth, 0, 1), srcRect.Bottom.MapValue(0, textureHeight, 1, 0));
 
             // Update the color
-            quadData.Vertex1.TintColor = tintColor.ToGLColor();
-            quadData.Vertex2.TintColor = tintColor.ToGLColor();
-            quadData.Vertex3.TintColor = tintColor.ToGLColor();
-            quadData.Vertex4.TintColor = tintColor.ToGLColor();
+            this.quadData.Vertex1.TintColor = glColor;
+            this.quadData.Vertex2.TintColor = glColor;
+            this.quadData.Vertex3.TintColor = glColor;
+            this.quadData.Vertex4.TintColor = glColor;
 
             // Update the quad ID
-            quadData.Vertex1.TransformIndex = quadID;
-            quadData.Vertex2.TransformIndex = quadID;
-            quadData.Vertex3.TransformIndex = quadID;
-            quadData.Vertex4.TransformIndex = quadID;
+            this.quadData.Vertex1.TransformIndex = quadID;
+            this.quadData.Vertex2.TransformIndex = quadID;
+            this.quadData.Vertex3.TransformIndex = quadID;
+            this.quadData.Vertex4.TransformIndex = quadID;
 
             var offset = this.totalQuadSizeInBytes * quadID;
 
-            this.gl.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, ref quadData);
+            this.gl.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, ref this.quadData);
         }
 
         /// <inheritdoc/>
@@ -100,7 +119,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)
@@ -118,67 +137,28 @@ namespace Raptor.OpenGL
         /// Creates a single quad of data to be sent to the GPU.
         /// </summary>
         /// <returns>The quad data.</returns>
-        private static QuadData CreateQuad() => new QuadData
+        private static QuadData CreateQuad() => new ()
         {
             Vertex1 = new VertexData()
             {
                 Vertex = new Vector3(-1, 1, 0), // Top Left
-                TextureCoord = new Vector2(0, 1),
             },
 
             Vertex2 = new VertexData()
             {
                 Vertex = new Vector3(1, 1, 0), // Top Right
-                TextureCoord = new Vector2(1, 1),
             },
 
             Vertex3 = new VertexData()
             {
                 Vertex = new Vector3(1, -1, 0), // Bottom Right
-                TextureCoord = new Vector2(1, 0),
             },
 
             Vertex4 = new VertexData()
             {
                 Vertex = new Vector3(-1, -1, 0), // Bottom Left
-                TextureCoord = new Vector2(0, 0),
             },
         };
-
-        /// <summary>
-        /// Calculates the texture coordinates in the given <paramref name="quad"/> based on the area of the texture
-        /// to render and the texture size.
-        /// </summary>
-        /// <param name="srcRect">The area of the rectangle used to calculate the texture coordinates.</param>
-        /// <param name="textureWidth">The with of the texture.</param>
-        /// <param name="textureHeight">The height of the texture.</param>
-        private static QuadData CreateQuadWithTextureCoordinates(Rectangle srcRect, int textureWidth, int textureHeight)
-        {
-            var quad = CreateQuad();
-
-            var topLeftCornerX = srcRect.Left.MapValue(0, textureWidth, 0, 1);
-            var topLeftCornerY = srcRect.Top.MapValue(0, textureHeight, 1, 0);
-            var topLeftCoord = new Vector2(topLeftCornerX, topLeftCornerY);
-
-            var topRightCornerX = srcRect.Right.MapValue(0, textureWidth, 0, 1);
-            var topRightCornerY = srcRect.Top.MapValue(0, textureHeight, 1, 0);
-            var topRightCoord = new Vector2(topRightCornerX, topRightCornerY);
-
-            var bottomRightCornerX = srcRect.Right.MapValue(0, textureWidth, 0, 1);
-            var bottomRightCornerY = srcRect.Bottom.MapValue(0, textureHeight, 1, 0);
-            var bottomRightCoord = new Vector2(bottomRightCornerX, bottomRightCornerY);
-
-            var bottomLeftCornerX = srcRect.Left.MapValue(0, textureWidth, 0, 1);
-            var bottomLeftCornerY = srcRect.Bottom.MapValue(0, textureHeight, 1, 0);
-            var bottomLeftCoord = new Vector2(bottomLeftCornerX, bottomLeftCornerY);
-
-            quad.Vertex1.TextureCoord = topLeftCoord;
-            quad.Vertex2.TextureCoord = topRightCoord;
-            quad.Vertex3.TextureCoord = bottomRightCoord;
-            quad.Vertex4.TextureCoord = bottomLeftCoord;
-
-            return quad;
-        }
 
         /// <summary>
         /// Unbinds the index buffer that is attached to the vertex array.

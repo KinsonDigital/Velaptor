@@ -142,7 +142,7 @@ namespace RaptorTests.Content
         /// Creates a new instance of a <see cref="SoundLoader"/> for testing purposes.
         /// </summary>
         /// <returns>The sound loader isntance used for testing.</returns>
-        private SoundLoader CreateSoundLoader() => new SoundLoader(
+        private SoundLoader CreateSoundLoader() => new (
             this.mockAlInvoker.Object,
             this.mockAudioManager.Object,
             this.mockSoundPathResolver.Object,

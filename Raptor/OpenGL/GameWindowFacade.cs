@@ -18,7 +18,7 @@ namespace Raptor.OpenGL
     [ExcludeFromCodeCoverage]
     internal class GameWindowFacade : IGameWindowFacade
     {
-        private readonly object objectLock = new object();
+        private readonly object objectLock = new ();
         private GameWindow? gameWindow;
         private bool isDisposed;
 
@@ -575,14 +575,14 @@ namespace Raptor.OpenGL
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)
             {
                 if (disposing)
                 {
-                    if (!(this.gameWindow is null))
+                    if (this.gameWindow is not null)
                     {
                         this.gameWindow.Dispose();
                     }

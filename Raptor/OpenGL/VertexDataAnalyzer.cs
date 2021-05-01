@@ -15,7 +15,7 @@ namespace Raptor.OpenGL
     /// </summary>
     internal static class VertexDataAnalyzer
     {
-        private static readonly Dictionary<Type, uint> PrimitiveTypeSizes = new Dictionary<Type, uint>()
+        private static readonly Dictionary<Type, uint> PrimitiveTypeSizes = new ()
         {
             // In order from least to greatest bytes
             { typeof(byte), sizeof(byte) },
@@ -30,7 +30,7 @@ namespace Raptor.OpenGL
             { typeof(double), sizeof(double) },
         };
 
-        private static readonly Dictionary<Type, uint> TotalItemsForTypes = new Dictionary<Type, uint>()
+        private static readonly Dictionary<Type, uint> TotalItemsForTypes = new ()
         {
             // In order from least to greatest bytes
             { typeof(byte), 1 },
@@ -55,7 +55,7 @@ namespace Raptor.OpenGL
             { typeof(Matrix4), 16 },
         };
 
-        private static readonly Dictionary<Type, VertexAttribPointerType> PointerTypeMappings = new Dictionary<Type, VertexAttribPointerType>()
+        private static readonly Dictionary<Type, VertexAttribPointerType> PointerTypeMappings = new ()
         {
             { typeof(float), VertexAttribPointerType.Float },
             { typeof(Vector2), VertexAttribPointerType.Float },
@@ -84,7 +84,7 @@ namespace Raptor.OpenGL
             {
                 var otherAttrs = field.GetCustomAttribute<FieldDataAttribute>();
 
-                if (!(otherAttrs is null))
+                if (otherAttrs is not null)
                 {
                     result += otherAttrs.TotalBytes;
                 }
