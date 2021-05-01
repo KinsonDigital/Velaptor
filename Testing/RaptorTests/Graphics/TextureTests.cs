@@ -26,10 +26,7 @@ namespace RaptorTests.Graphics
         /// </summary>
         public TextureTests()
         {
-            this.imageData = default;
-            this.imageData.Pixels = new Color[2, 3];
-            this.imageData.Width = 2;
-            this.imageData.Height = 3;
+            this.imageData = new ImageData(new Color[2, 3], 2, 3);
 
             /*NOTE:
              * Create the bytes in the ARGB byte layout.
