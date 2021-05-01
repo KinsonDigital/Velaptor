@@ -1,4 +1,4 @@
-// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -173,6 +173,11 @@ namespace Raptor
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
                 ? Path.GetDirectoryName(fileOrDirPath)
                 : fileOrDirPath;
+
+            if (onlyDirPath is null)
+            {
+                return false;
+            }
 
             if (onlyDirPath.Count(c => c == ':') == 1 && onlyDirPath.Count(c => c == '\\') == 1)
             {
