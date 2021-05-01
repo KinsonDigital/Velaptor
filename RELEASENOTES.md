@@ -14,7 +14,6 @@
 2. Update code documentation throughout the library related to explanations of true and false values
    * This is about making the true and false values show as key words in the documentation
 3. Fixed spelling issue in `AtlasSubTextureData` constructor code documentation
-4. 
 
 ### **Improvements** 🌟
 
@@ -48,7 +47,7 @@
 10. Changed the `OpenGLObservable` class from public to internal
    * This was not meant to be exposed to the library user
 11. Changed the `ImageData` struct to a readonly structure
-    * This will enforce the use of the constructor to be used to set the `ImageData.Color`, `ImageData.Width`, and `ImageData.Height` values
+   * This will enforce the use of the constructor to be used to set the `ImageData.Color`, `ImageData.Width`, and `ImageData.Height` values
 12. Changed the `ImageData` `Width`, `Height`, and `Color` properties to public fields
 
 ---
