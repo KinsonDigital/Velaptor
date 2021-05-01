@@ -35,6 +35,12 @@ namespace Raptor.Graphics
         /// </summary>
         public readonly int Height;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageData"/> struct.
+        /// </summary>
+        /// <param name="pixels">The pixel data of the image.</param>
+        /// <param name="width">The width of the image.</param>
+        /// <param name="height">The height of the image.</param>
         public ImageData(Color[,] pixels, int width, int height)
         {
             this.Pixels = pixels;
