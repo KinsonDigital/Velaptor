@@ -102,10 +102,10 @@ namespace Raptor.Services
 
             var fontAtlasMetrics = CalcAtlasMetrics(glyphImages);
 
-            ImageData atlasImage = default;
-            atlasImage.Pixels = new NETColor[fontAtlasMetrics.Width, fontAtlasMetrics.Height];
-            atlasImage.Width = fontAtlasMetrics.Width;
-            atlasImage.Height = fontAtlasMetrics.Height;
+            var atlasImage = new ImageData(
+                new NETColor[fontAtlasMetrics.Width, fontAtlasMetrics.Height],
+                fontAtlasMetrics.Width,
+                fontAtlasMetrics.Height);
 
             glyphMetrics = SetGlyphMetricsAtlasBounds(glyphImages, glyphMetrics, fontAtlasMetrics.Columns);
 
@@ -246,22 +246,19 @@ namespace Raptor.Services
         /// <returns>The 32-bit RGBA glyph image data.</returns>
         private static ImageData ToImageData(byte[] pixelData, int width, int height)
         {
-            ImageData image = default;
-            image.Pixels = new NETColor[width, height];
-            image.Width = width;
-            image.Height = height;
-
+            var imageData = new NETColor[width, height];
             var iteration = 0;
+
             for (var y = 0; y < height; y++)
             {
                 for (var x = 0; x < width; x++)
                 {
-                    image.Pixels[x, y] = NETColor.FromArgb(pixelData[iteration], 255, 255, 255);
+                    imageData[x, y] = NETColor.FromArgb(pixelData[iteration], 255, 255, 255);
                     iteration++;
                 }
             }
 
-            return image;
+            return new ImageData(imageData, width, height);
         }
 
         /// <summary>

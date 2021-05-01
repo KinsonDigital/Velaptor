@@ -88,6 +88,18 @@ namespace Raptor
             => (byte)(toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart))));
 
         /// <summary>
+        /// Maps the given <paramref name="value"/> from one range to another.
+        /// </summary>
+        /// <param name="value">The value to map.</param>
+        /// <param name="fromStart">The from starting range value.</param>
+        /// <param name="fromStop">The from ending range value.</param>
+        /// <param name="toStart">The to starting range value.</param>
+        /// <param name="toStop">The to ending range value.</param>
+        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
+        public static float MapValue(this byte value, float fromStart, float fromStop, float toStart, float toStop)
+            => toStart + ((toStop - (float)toStart) * (((float)value - (float)fromStart) / (fromStop - (float)fromStart)));
+
+        /// <summary>
         /// Rotates the <paramref name="vector"/> around the <paramref name="origin"/> at the given <paramref name="angle"/>.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
@@ -127,35 +139,6 @@ namespace Raptor
         ///     W = alpha.
         /// </returns>
         public static Vector4 ToVector4(this NETColor clr) => new (clr.R, clr.G, clr.B, clr.A);
-
-        /// <summary>
-        /// Maps each component of the vector to from one range to another.
-        /// </summary>
-        /// <param name="value">The 4 component vector component to map.</param>
-        /// <param name="fromStart">The from starting range value.</param>
-        /// <param name="fromStop">The from ending range value.</param>
-        /// <param name="toStart">The to starting range value.</param>
-        /// <param name="toStop">The to ending range value.</param>
-        /// <returns>A 4 component vector with each value mapped from one range to another.</returns>
-        public static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
-            => new ()
-            {
-                X = value.X.MapValue(fromStart, fromStop, toStart, toStop),
-                Y = value.Y.MapValue(fromStart, fromStop, toStart, toStop),
-                Z = value.Z.MapValue(fromStart, fromStop, toStart, toStop),
-                W = value.W.MapValue(fromStart, fromStop, toStart, toStop),
-            };
-
-        /// <summary>
-        /// Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>.
-        /// </summary>
-        /// <param name="value">The value to convert.</param>
-        /// <returns>A color represented by a 4 component vector.</returns>
-        internal static Vector4 ToGLColor(this NETColor value)
-        {
-            var vec4 = value.ToVector4();
-            return vec4.MapValues(0, 255, 0, 1);
-        }
 
         /// <summary>
         /// Returns a value indicating whether the given file or directory path
@@ -359,7 +342,7 @@ namespace Raptor
         /// </summary>
         /// <param name="image">The image data to convert.</param>
         /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        internal static Image<Rgba32> ToSixLaborImage(this ImageData image)
+        internal static Image<Rgba32> ToSixLaborImage(in this ImageData image)
         {
             var result = new Image<Rgba32>(image.Width, image.Height);
 
@@ -369,11 +352,13 @@ namespace Raptor
 
                 for (var x = 0; x < result.Width; x++)
                 {
+                    var pixel = image.Pixels[x, y];
+
                     pixelRowSpan[x] = new Rgba32(
-                        image.Pixels[x, y].R,
-                        image.Pixels[x, y].G,
-                        image.Pixels[x, y].B,
-                        image.Pixels[x, y].A);
+                        pixel.R,
+                        pixel.G,
+                        pixel.B,
+                        pixel.A);
                 }
             }
 
@@ -388,11 +373,7 @@ namespace Raptor
         /// <returns>The image data of type <see cref="ImageData"/>.</returns>
         internal static ImageData ToImageData(this Image<Rgba32> image)
         {
-            ImageData result = default;
-
-            result.Pixels = new NETColor[image.Width, image.Height];
-            result.Width = image.Width;
-            result.Height = image.Height;
+            var pixelData = new NETColor[image.Width, image.Height];
 
             for (var y = 0; y < image.Height; y++)
             {
@@ -400,7 +381,7 @@ namespace Raptor
 
                 for (var x = 0; x < image.Width; x++)
                 {
-                    result.Pixels[x, y] = NETColor.FromArgb(
+                    pixelData[x, y] = NETColor.FromArgb(
                         pixelRowSpan[x].A,
                         pixelRowSpan[x].R,
                         pixelRowSpan[x].G,
@@ -408,7 +389,7 @@ namespace Raptor
                 }
             }
 
-            return result;
+            return new ImageData(pixelData, image.Width, image.Height);
         }
     }
 }
