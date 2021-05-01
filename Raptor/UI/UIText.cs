@@ -1,4 +1,4 @@
-﻿// <copyright file="UIText.cs" company="KinsonDigital">
+// <copyright file="UIText.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -92,7 +92,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets the size of the text. <see cref="Vector2.X"/> is for the width and <see cref="Vector2.Y"/> is for the height.
         /// </summary>
-        public Vector2 TextItemSize => new Vector2(Width, Height);
+        public Vector2 TextItemSize => new (Width, Height);
 
         /// <summary>
         /// Gets the width of the entire text.

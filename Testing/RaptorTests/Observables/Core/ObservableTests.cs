@@ -66,6 +66,6 @@ namespace RaptorTests.Observables.Core
         /// <typeparam name="T">The type of data that the observable will deal with.</typeparam>
         /// <returns>The instance to test.</returns>
         private static ObservableFake<T> CreateObservable<T>()
-            => new ObservableFake<T>();
+            => new ();
     }
 }

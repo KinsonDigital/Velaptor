@@ -24,7 +24,7 @@ namespace Raptor.Input
         ///     Example: A mouse button or keyboard key is being pressed down.
         /// </para>
         /// </remarks>
-        internal static readonly Dictionary<TInputs, bool> InputStates = new Dictionary<TInputs, bool>();
+        internal static readonly Dictionary<TInputs, bool> InputStates = new ();
 
         /// <summary>
         /// Returns the current state of the input.

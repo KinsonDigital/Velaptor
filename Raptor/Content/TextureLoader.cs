@@ -16,7 +16,7 @@ namespace Raptor.Content
     /// </summary>
     public class TextureLoader : ILoader<ITexture>
     {
-        private readonly ConcurrentDictionary<string, ITexture> textures = new ConcurrentDictionary<string, ITexture>();
+        private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IGLInvoker gl;
         private readonly IImageService imageService;
         private readonly IPathResolver pathResolver;

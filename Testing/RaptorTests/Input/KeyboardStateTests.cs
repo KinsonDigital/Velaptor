@@ -15,7 +15,7 @@ namespace RaptorTests.Input
     /// </summary>
     public class KeyboardStateTests
     {
-        private readonly Dictionary<KeyCode, bool> keyStates = new Dictionary<KeyCode, bool>();
+        private readonly Dictionary<KeyCode, bool> keyStates = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyboardStateTests"/> class.

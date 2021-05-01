@@ -19,7 +19,7 @@ namespace Raptor.Services
     /// </summary>
     internal class BatchManagerService : IBatchManagerService
     {
-        private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
+        private readonly Dictionary<uint, SpriteBatchItem> batchItems = new ();
         private bool firstRenderMethodInvoke = true;
         private uint currentTextureID;
         private uint previousTextureID;
@@ -33,7 +33,7 @@ namespace Raptor.Services
 
         /// <inheritdoc/>
         public ReadOnlyDictionary<uint, SpriteBatchItem> BatchItems
-            => new ReadOnlyDictionary<uint, SpriteBatchItem>(this.batchItems);
+            => new (this.batchItems);
 
         /// <inheritdoc/>
         public uint TotalItemsToRender => (uint)this.batchItems.Count(i => !i.Value.IsEmpty);

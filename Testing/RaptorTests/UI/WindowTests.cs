@@ -231,6 +231,6 @@ namespace RaptorTests.UI
         /// of testing the abstract <see cref="Window"/> class.
         /// </summary>
         /// <returns>The instance used for testing.</returns>
-        private WindowFake CreateWindow() => new WindowFake(this.mockWindow.Object);
+        private WindowFake CreateWindow() => new (this.mockWindow.Object);
     }
 }

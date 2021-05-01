@@ -1,4 +1,4 @@
-﻿// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
+// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -126,7 +126,7 @@ namespace Raptor
         ///     Z = blue.
         ///     W = alpha.
         /// </returns>
-        public static Vector4 ToVector4(this NETColor clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
+        public static Vector4 ToVector4(this NETColor clr) => new (clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
         /// Maps each component of the vector to from one range to another.
@@ -138,7 +138,7 @@ namespace Raptor
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A 4 component vector with each value mapped from one range to another.</returns>
         public static Vector4 MapValues(this Vector4 value, float fromStart, float fromStop, float toStart, float toStop)
-            => new Vector4
+            => new ()
             {
                 X = value.X.MapValue(fromStart, fromStop, toStart, toStop),
                 Y = value.Y.MapValue(fromStart, fromStop, toStart, toStop),
@@ -241,7 +241,7 @@ namespace Raptor
         /// <param name="items">The items to convert.</param>
         /// <returns>The items as a read only collection.</returns>
         internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
-            => new ReadOnlyCollection<T>(items.ToList());
+            => new (items.ToList());
 
         /// <summary>
         /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they

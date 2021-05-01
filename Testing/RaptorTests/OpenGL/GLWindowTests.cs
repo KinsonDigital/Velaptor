@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -1226,7 +1226,7 @@ namespace RaptorTests.OpenGL
         /// <param name="height">The height of the window.</param>
         /// <returns>The instance to test.</returns>
         private GLWindow CreateWindow(int width = 10, int height = 20)
-            => new GLWindow(
+            => new (
                 width,
                 height,
                 this.mockGLInvoker.Object,

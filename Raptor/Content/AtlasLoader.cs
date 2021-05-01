@@ -19,7 +19,7 @@ namespace Raptor.Content
     /// </summary>
     public class AtlasLoader : ILoader<IAtlasData>
     {
-        private readonly ConcurrentDictionary<string, IAtlasData> atlases = new ConcurrentDictionary<string, IAtlasData>();
+        private readonly ConcurrentDictionary<string, IAtlasData> atlases = new ();
         private readonly IGLInvoker gl;
         private readonly IImageService imageService;
         private readonly IPathResolver atlasDataPathResolver;

@@ -16,7 +16,7 @@ namespace Raptor.Content
     /// </summary>
     public class SoundLoader : ILoader<ISound>
     {
-        private readonly ConcurrentDictionary<string, ISound> sounds = new ConcurrentDictionary<string, ISound>();
+        private readonly ConcurrentDictionary<string, ISound> sounds = new ();
         private readonly IALInvoker alInvoker;
         private readonly IAudioDeviceManager audioManager;
         private readonly IPathResolver soundPathResolver;

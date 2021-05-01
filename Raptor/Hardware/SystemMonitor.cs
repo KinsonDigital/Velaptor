@@ -1,4 +1,4 @@
-﻿// <copyright file="SystemMonitor.cs" company="KinsonDigital">
+// <copyright file="SystemMonitor.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -76,7 +76,7 @@ namespace Raptor.Hardware
         /// <summary>
         /// Gets the center location of the monitor.
         /// </summary>
-        public Vector2 Center => new Vector2(Width / 2f, Height / 2f);
+        public Vector2 Center => new (Width / 2f, Height / 2f);
 
         /// <summary>
         /// Gets the approximate dpi of the monitor on the horizontal axis.

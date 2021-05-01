@@ -227,6 +227,6 @@ namespace RaptorTests.OpenGL
         /// Creates an instance of <see cref="ShaderProgram"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test with.</returns>
-        private ShaderProgram CreateProgram() => new ShaderProgram(this.mockGLInvoker.Object, this.mockLoader.Object);
+        private ShaderProgram CreateProgram() => new (this.mockGLInvoker.Object, this.mockLoader.Object);
     }
 }

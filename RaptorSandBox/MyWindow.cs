@@ -1,4 +1,4 @@
-﻿using Raptor;
+using Raptor;
 using Raptor.Audio;
 using Raptor.Factories;
 using Raptor.Graphics;
@@ -31,7 +31,7 @@ namespace RaptorSandBox
         private Rectangle currentFrame;
         private AtlasSubTextureData[] subFrames;
         private AtlasSubTextureData bubbleFrame;
-        private List<Rectangle> bubbles = new List<Rectangle>();
+        private List<Rectangle> bubbles = new();
         private ITexture linkTexture;
         private int elapsedFrameTime = 0;
         private IFont myFont;

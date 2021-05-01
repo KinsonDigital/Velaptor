@@ -246,6 +246,6 @@ namespace RaptorTests.Graphics
         /// </summary>
         /// <returns>The instance to test.</returns>
         private AtlasData CreateAtlasData()
-            => new AtlasData(this.mockTexture.Object, this.spriteData, "test-atlas", AtlasImagePath);
+            => new (this.mockTexture.Object, this.spriteData, "test-atlas", AtlasImagePath);
     }
 }

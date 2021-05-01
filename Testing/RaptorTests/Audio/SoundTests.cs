@@ -557,6 +557,6 @@ namespace RaptorTests.Audio
         /// <param name="filePath">The path to the sound file.</param>
         /// <returns>The instance for testing.</returns>
         private Sound CreateSound(string filePath)
-            => new Sound(filePath, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
+            => new (filePath, this.mockALInvoker.Object, this.mockAudioManager.Object, this.mockOggDecoder.Object, this.mockMp3Decoder.Object);
     }
 }

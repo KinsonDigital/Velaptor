@@ -402,6 +402,6 @@ namespace RaptorTests.Audio
         /// Creates a new instance of <see cref="AudioDeviceManager"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private AudioDeviceManager CreateManager() => new AudioDeviceManager(this.mockALInvoker.Object);
+        private AudioDeviceManager CreateManager() => new (this.mockALInvoker.Object);
     }
 }

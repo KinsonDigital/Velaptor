@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -24,8 +24,8 @@ namespace Raptor.Graphics
     internal class SpriteBatch : ISpriteBatch
     {
         private const char InvalidCharacter = '□';
-        private readonly Dictionary<uint, SpriteBatchItem> batchItems = new Dictionary<uint, SpriteBatchItem>();
-        private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new Dictionary<string, CachedValue<int>>();
+        private readonly Dictionary<uint, SpriteBatchItem> batchItems = new ();
+        private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new ();
         private readonly IGLInvoker gl;
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IShaderProgram shader;

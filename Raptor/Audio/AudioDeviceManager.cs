@@ -1,4 +1,4 @@
-﻿// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
+// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -24,8 +24,8 @@ namespace Raptor.Audio
         private const string DeviceNamePrefix = "OpenAL Soft on "; // All device names returned are prefixed with this
         private readonly IALInvoker alInvoker;
         private readonly string isDisposedExceptionMessage = $"The '{nameof(AudioDeviceManager)}' has not been initialized.\nInvoked the '{nameof(AudioDeviceManager.InitDevice)}()' to initialize the device manager.";
-        private readonly Dictionary<int, SoundSource> soundSources = new Dictionary<int, SoundSource>();
-        private readonly List<SoundState> continuePlaybackCache = new List<SoundState>();
+        private readonly Dictionary<int, SoundSource> soundSources = new ();
+        private readonly List<SoundState> continuePlaybackCache = new ();
         private ALDevice device;
         private ALContext context;
         private ALContextAttributes? attributes;

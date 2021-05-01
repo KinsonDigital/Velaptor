@@ -15,7 +15,7 @@ namespace Raptor.Observables.Core
     /// </typeparam>
     public class ObserverUnsubscriber<T> : IDisposable
     {
-        private readonly List<IObserver<T>> observers = new List<IObserver<T>>();
+        private readonly List<IObserver<T>> observers = new ();
         private bool isDisposed;
 
         /// <summary>

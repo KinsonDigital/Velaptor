@@ -13,7 +13,7 @@ namespace Raptor
     /// </summary>
     internal class TaskService : ITaskService
     {
-        private readonly CancellationTokenSource tokenSrc = new CancellationTokenSource();
+        private readonly CancellationTokenSource tokenSrc = new ();
         private Task? internalTask;
         private bool isDiposed;
 
@@ -82,7 +82,7 @@ namespace Raptor
             {
                 if (disposing)
                 {
-                    if (!(this.internalTask is null))
+                    if (this.internalTask is not null)
                     {
                         // If the task is still running, stop it first then dispose
                         if (this.internalTask.Status == TaskStatus.Running)

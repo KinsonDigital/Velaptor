@@ -38,7 +38,7 @@ namespace RaptorTests.Services
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<ISystemMonitorService> mockMonitorService;
         private readonly Mock<IPlatform> mockPlatform;
-        private readonly IntPtr freeTypeLibPtr = new IntPtr(1234);
+        private readonly IntPtr freeTypeLibPtr = new (1234);
         private readonly char[] glyphChars = new[]
         { // This represents how it would be layed out in the atlas
             'h', 'e',
@@ -47,7 +47,7 @@ namespace RaptorTests.Services
             'd', ' ',
             '□',
         };
-        private readonly Dictionary<char, uint> glyphIndices = new Dictionary<char, uint>()
+        private readonly Dictionary<char, uint> glyphIndices = new ()
         {
             { 'h', 0 },
             { 'e', 1 },

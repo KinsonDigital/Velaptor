@@ -1,4 +1,4 @@
-﻿// <copyright file="TextBox.cs" company="KinsonDigital">
+// <copyright file="TextBox.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -287,13 +287,13 @@ namespace Raptor.UI
         /// Calculates the starting position of the cursor inside of the <see cref="TextBox"/>.
         /// </summary>
         /// <returns>Result of the calculated start position of the textbox cursor.</returns>
-        private Vector2 CalcCursorStart() => new Vector2(this.leftSide + CalcCursorXPos(), Position.Y - (BackgroundTexture.Height / 2) + 3);
+        private Vector2 CalcCursorStart() => new (this.leftSide + CalcCursorXPos(), Position.Y - (BackgroundTexture.Height / 2) + 3);
 
         /// <summary>
         /// Calculates the stopping position of the cursor insdie of the <see cref="TextBox"/>.
         /// </summary>
         /// <returns>Result of the calcualted end position of the textbox cursor.</returns>
-        private Vector2 CalcCursorStop() => new Vector2(this.leftSide + CalcCursorXPos(), Position.Y + (BackgroundTexture.Height / 2) - 3);
+        private Vector2 CalcCursorStop() => new (this.leftSide + CalcCursorXPos(), Position.Y + (BackgroundTexture.Height / 2) - 3);
 
         /// <summary>
         /// Removes the characters using the backspace key.

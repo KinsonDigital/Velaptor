@@ -20,7 +20,7 @@ namespace Raptor.OpenGL
         private static bool glfwInitialzed;
         private readonly IGLFWInvoker glfwInvoker;
         private readonly IPlatform platform;
-        private readonly List<SystemMonitor> monitors = new List<SystemMonitor>();
+        private readonly List<SystemMonitor> monitors = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitors"/> class.

@@ -199,7 +199,7 @@ namespace RaptorTests.Content
         /// </summary>
         /// <returns>A content loader instance to use for testing.</returns>
         private ContentLoader CreateContentLoader()
-            => new ContentLoader(this.mockTextureLoader.Object,
+            => new (this.mockTextureLoader.Object,
                                  this.mockSoundLoader.Object,
                                  this.mockAtlasLoader.Object,
                                  this.mockFontLoader.Object);
