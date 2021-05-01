@@ -14,9 +14,9 @@ namespace Raptor.OpenAL
     internal interface IALInvoker
     {
         /// <summary>
-        /// Gets or sets the callback that is invoked when an OpenAL error occurs.
+        /// Occurs when an OpenAL error occurs.
         /// </summary>
-        Action<string>? ErrorCallback { get; set; }
+        event Action<string>? ErrorCallback;
 
         /// <summary>
         ///     Error support. Obtain the most recent error generated in the AL state machine.

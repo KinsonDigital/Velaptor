@@ -43,10 +43,9 @@ namespace Raptor.Audio
         {
             Path = filePath;
 
-            this.alInvoker = new ALInvoker
-            {
-                ErrorCallback = ErrorCallback,
-            };
+            this.alInvoker = new ALInvoker();
+
+            this.alInvoker.ErrorCallback += ErrorCallback;
 
             this.oggDecoder = IoC.Container.GetInstance<ISoundDecoder<float>>();
             this.mp3Decoder = IoC.Container.GetInstance<ISoundDecoder<byte>>();
@@ -70,7 +69,7 @@ namespace Raptor.Audio
             Path = filePath;
 
             this.alInvoker = alInvoker;
-            this.alInvoker.ErrorCallback = ErrorCallback;
+            this.alInvoker.ErrorCallback += ErrorCallback;
 
             this.oggDecoder = oggDecoder;
             this.mp3Decoder = mp3Decoder;
