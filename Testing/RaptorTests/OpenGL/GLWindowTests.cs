@@ -1,4 +1,4 @@
-// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -714,7 +714,7 @@ namespace RaptorTests.OpenGL
             // Act & Assert
             window.Show();
 
-            Assert.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<ArgumentException>(() =>
             {
                 this.mockWindowFacade.Raise(m => m.MouseDown += null, mouseButtonEventArgs);
             }, "Unrecognized OpenGL mouse button.");

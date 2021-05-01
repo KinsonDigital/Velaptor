@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -442,27 +442,23 @@ namespace Raptor.Graphics
                 var srcRectHeight = batchItem.SrcRect.Height;
 
                 // Set the source rectangle width and height based on the render effects
-                switch (batchItem.Effects)
+                srcRectWidth = batchItem.Effects switch
                 {
-                    case RenderEffects.None:
-                        srcRectWidth = batchItem.SrcRect.Width;
-                        srcRectHeight = batchItem.SrcRect.Height;
-                        break;
-                    case RenderEffects.FlipHorizontally:
-                        srcRectWidth = batchItem.SrcRect.Width * -1;
-                        srcRectHeight = batchItem.SrcRect.Height;
-                        break;
-                    case RenderEffects.FlipVertically:
-                        srcRectWidth = batchItem.SrcRect.Width;
-                        srcRectHeight = batchItem.SrcRect.Height * -1;
-                        break;
-                    case RenderEffects.FlipBothDirections:
-                        srcRectWidth = batchItem.SrcRect.Width * -1;
-                        srcRectHeight = batchItem.SrcRect.Height * -1;
-                        break;
-                    default:
-                        throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid.");
-                }
+                    RenderEffects.None => batchItem.SrcRect.Width,
+                    RenderEffects.FlipHorizontally => batchItem.SrcRect.Width * -1,
+                    RenderEffects.FlipVertically => batchItem.SrcRect.Width,
+                    RenderEffects.FlipBothDirections => batchItem.SrcRect.Width * -1,
+                    _ => throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid."),
+                };
+
+                srcRectHeight = batchItem.Effects switch
+                {
+                    RenderEffects.None => batchItem.SrcRect.Height,
+                    RenderEffects.FlipHorizontally => batchItem.SrcRect.Height,
+                    RenderEffects.FlipVertically => batchItem.SrcRect.Height * -1,
+                    RenderEffects.FlipBothDirections => batchItem.SrcRect.Height * -1,
+                    _ => throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid."),
+                };
 
                 var viewPortSize = this.gl.GetViewPortSize();
                 var transMatrix = this.batchManagerService.BuildTransformationMatrix(

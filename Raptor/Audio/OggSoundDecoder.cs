@@ -58,15 +58,12 @@ namespace Raptor.Audio
 
             result.TotalSeconds = dataResult.Count / 4f / this.audioDataStream.SampleRate;
 
-            switch (this.audioDataStream.Channels)
+            result.Format = this.audioDataStream.Channels switch
             {
-                case 1:
-                    result.Format = AudioFormat.Mono32Float;
-                    break;
-                case 2:
-                    result.Format = AudioFormat.StereoFloat32;
-                    break;
-            }
+                1 => AudioFormat.Mono32Float,
+                2 => AudioFormat.StereoFloat32,
+                _ => throw new Exception("Only supported formats are Mono 32-bit and Stereo 32-bit."),
+            };
 
             result.BufferData = new ReadOnlyCollection<float>(dataResult);
 
