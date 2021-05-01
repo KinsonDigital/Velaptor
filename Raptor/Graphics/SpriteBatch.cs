@@ -94,7 +94,7 @@ namespace Raptor.Graphics
                 {
                     this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
-                    if (!(this.cachedClearColor is null))
+                    if (this.cachedClearColor is not null)
                     {
                         this.cachedClearColor.IsCaching = false;
                     }

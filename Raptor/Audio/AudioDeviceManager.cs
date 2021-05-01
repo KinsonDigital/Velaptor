@@ -1,4 +1,4 @@
-// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
+﻿// <copyright file="AudioDeviceManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -55,7 +55,7 @@ namespace Raptor.Audio
 
                 var result = Array.Empty<string>();
 
-                if (!(this.alInvoker is null))
+                if (this.alInvoker is not null)
                 {
                     result = this.alInvoker.GetString(this.device, AlcGetStringList.AllDevicesSpecifier)
                         .Select(n => n.Replace(DeviceNamePrefix, string.Empty, StringComparison.Ordinal)).ToArray();
@@ -71,7 +71,7 @@ namespace Raptor.Audio
             var nameResult = name != null ? $"{DeviceNamePrefix}{name}" : name;
             var setCurrentResult = false;
 
-            if (!(this.alInvoker is null))
+            if (this.alInvoker is not null)
             {
                 if (this.device.Handle == IntPtr.Zero)
                 {
@@ -112,7 +112,7 @@ namespace Raptor.Audio
 
             var bufferId = 0;
 
-            if (!(this.alInvoker is null))
+            if (this.alInvoker is not null)
             {
                 soundSrc.SourceId = this.alInvoker.GenSource();
                 bufferId = this.alInvoker.GenBuffer();

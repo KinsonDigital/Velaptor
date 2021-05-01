@@ -1,4 +1,4 @@
-// <copyright file="VertexDataAnalyzer.cs" company="KinsonDigital">
+﻿// <copyright file="VertexDataAnalyzer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -84,7 +84,7 @@ namespace Raptor.OpenGL
             {
                 var otherAttrs = field.GetCustomAttribute<FieldDataAttribute>();
 
-                if (!(otherAttrs is null))
+                if (otherAttrs is not null)
                 {
                     result += otherAttrs.TotalBytes;
                 }

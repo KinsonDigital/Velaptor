@@ -35,7 +35,7 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is AtlasSubTextureData data))
+            if (obj is not AtlasSubTextureData data)
             {
                 return false;
             }

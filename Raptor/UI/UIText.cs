@@ -1,4 +1,4 @@
-// <copyright file="UIText.cs" company="KinsonDigital">
+﻿// <copyright file="UIText.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -174,7 +174,7 @@ namespace Raptor.UI
         /// <param name="text">The text to set the label section to.</param>
         public void SetLabelText(string text)
         {
-            if (!(LabelText is null) && (this.updateText || UpdateFrequency == 0 || IgnoreUpdateFrequency))
+            if (LabelText is not null && (this.updateText || UpdateFrequency == 0 || IgnoreUpdateFrequency))
             {
                 LabelText.Text = text;
                 this.updateText = false;
@@ -187,7 +187,7 @@ namespace Raptor.UI
         /// <param name="text">The text to set the value section to.</param>
         public void SetValueText(string text)
         {
-            if (!(ValueText is null) && (this.updateText || UpdateFrequency == 0 || IgnoreUpdateFrequency))
+            if (ValueText is not null && (this.updateText || UpdateFrequency == 0 || IgnoreUpdateFrequency))
             {
                 ValueText.Text = text;
                 this.updateText = false;
@@ -218,10 +218,10 @@ namespace Raptor.UI
             // if (renderer is null)
             //    throw new Exception($"The renderer cannot be null.");
 
-            // if (!(LabelText is null))
+            // if (LabelText is not null)
             //    renderer.Render(LabelText, Position.X, Position.Y + VerticalLabelOffset);
 
-            // if (!(ValueText is null))
+            // if (ValueText is not null)
             //    renderer.Render(ValueText, Position.X + (LabelText is null ? 0 : LabelText.Width) + SectionSpacing, Position.Y + VerticalValueOffset);
         }
     }

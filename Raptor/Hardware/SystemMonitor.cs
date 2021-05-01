@@ -1,4 +1,4 @@
-// <copyright file="SystemMonitor.cs" company="KinsonDigital">
+﻿// <copyright file="SystemMonitor.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -126,7 +126,7 @@ namespace Raptor.Hardware
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is SystemMonitor monitor))
+            if (obj is not SystemMonitor monitor)
             {
                 return false;
             }

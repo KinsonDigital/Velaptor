@@ -58,7 +58,7 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is VertexData data))
+            if (obj is not VertexData data)
             {
                 return false;
             }

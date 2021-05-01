@@ -538,17 +538,17 @@ namespace Raptor.OpenGL
             CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
             CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
-            if (!(CachedPosition is null))
+            if (CachedPosition is not null)
             {
                 CachedPosition.IsCaching = false;
             }
 
-            if (!(CachedWindowState is null))
+            if (CachedWindowState is not null)
             {
                 CachedWindowState.IsCaching = false;
             }
 
-            if (!(CachedTypeOfBorder is null))
+            if (CachedTypeOfBorder is not null)
             {
                 CachedTypeOfBorder.IsCaching = false;
             }
@@ -661,7 +661,7 @@ namespace Raptor.OpenGL
             var halfWidth = ToMonitorScale(Width / 2f);
             var halfHeight = ToMonitorScale(Height / 2f);
 
-            if (!(mainMonitor is null))
+            if (mainMonitor is not null)
             {
                 defaultPosition = new SysVector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
             }

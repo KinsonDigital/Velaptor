@@ -113,7 +113,7 @@ namespace Raptor.Input
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is MouseState state))
+            if (obj is not MouseState state)
             {
                 return false;
             }

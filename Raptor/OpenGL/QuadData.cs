@@ -55,7 +55,7 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is QuadData data))
+            if (obj is not QuadData data)
             {
                 return false;
             }

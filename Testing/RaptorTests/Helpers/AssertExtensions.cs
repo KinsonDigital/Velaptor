@@ -101,7 +101,7 @@ namespace RaptorTests.Helpers
                 Assert.True(false, $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
             }
 
-            if (!(expectedItems is null) && actualItems is null)
+            if (expectedItems is not null && actualItems is null)
             {
                 Assert.True(false, $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
             }
@@ -121,7 +121,7 @@ namespace RaptorTests.Helpers
                     Assert.True(false, $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
-                if (!(expectedArrayItems[i] is null) && (actualArrayItems[i] is null))
+                if (expectedArrayItems[i] is not null && (actualArrayItems[i] is null))
                 {
                     Assert.True(false, $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }

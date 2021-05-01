@@ -1,4 +1,4 @@
-// <copyright file="TextBox.cs" company="KinsonDigital">
+﻿// <copyright file="TextBox.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -131,7 +131,7 @@ namespace Raptor.UI
             // _textPosition = new Vector2(_leftSide, Position.Y - (_visibleText is null ? 0 : _visibleText.Height / 2f));
 
             ////Render the text inside of the text box
-            // if (!(_visibleText is null))
+            // if (_visibleText is not null)
             // {
             //    _visibleText.Text = ClipText(Text);
             //    renderer.Render(_visibleText, _textPosition, Color.FromArgb(255, 0, 0, 0));
@@ -231,7 +231,7 @@ namespace Raptor.UI
 
             // var isShiftDown = this.keyboard.IsKeyDown(KeyCode.LeftShift) || this.keyboard.IsKeyDown(KeyCode.RightShift);
 
-            // if (!(this.visibleText is null) && !string.IsNullOrEmpty(this.visibleText.Text))
+            // if (this.visibleText is not null && !string.IsNullOrEmpty(this.visibleText.Text))
             // {
             //    // The delete keys. This is the standard one and the numpad one
             //    if (this.keyboard.IsDeleteKeyPressed())
@@ -262,7 +262,7 @@ namespace Raptor.UI
             //            letter.ToString().ToUpperInvariant();
             //    }
 
-            // if (!(this.visibleText is null))
+            // if (this.visibleText is not null)
             //        this.visibleText.Text = this.visibleText.Text.Insert(this.characterPosition, letterText);
 
             // this.characterPosition += 1;
@@ -274,7 +274,7 @@ namespace Raptor.UI
             // {
             //    var character = this.keyboard.KeyToChar(number).ToString(CultureInfo.InvariantCulture);
 
-            // if (!(this.visibleText is null))
+            // if (this.visibleText is not null)
             //        this.visibleText.Text = this.visibleText.Text.Insert(this.characterPosition, character);
 
             // this.characterPosition += 1;

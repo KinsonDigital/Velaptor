@@ -80,7 +80,7 @@ namespace Raptor.Audio
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is SoundData<T> data))
+            if (obj is not SoundData<T> data)
             {
                 return false;
             }

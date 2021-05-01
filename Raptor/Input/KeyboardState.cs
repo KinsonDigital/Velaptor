@@ -1,4 +1,4 @@
-// <copyright file="KeyboardState.cs" company="KinsonDigital">
+﻿// <copyright file="KeyboardState.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -365,7 +365,7 @@ namespace Raptor.Input
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is KeyboardState state))
+            if (obj is not KeyboardState state)
             {
                 return false;
             }
@@ -400,7 +400,7 @@ namespace Raptor.Input
         /// </summary>
         private void InitKeys()
         {
-            if (!(this.keyStates is null) && this.keyStates.Count > 0)
+            if (this.keyStates is not null && this.keyStates.Count > 0)
             {
                 return;
             }
