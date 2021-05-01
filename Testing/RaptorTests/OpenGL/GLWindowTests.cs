@@ -567,7 +567,7 @@ namespace RaptorTests.OpenGL
             // Act & Assert
             window.Show();
 
-            Assert.ThrowsWithMessage<Exception>(() =>
+            Assert.ThrowsWithMessage<ArgumentException>(() =>
             {
                 this.mockWindowFacade.Raise(m => m.MouseDown += null, mouseButtonEventArgs);
             }, "Unrecognized OpenGL mouse button.");
@@ -826,7 +826,7 @@ namespace RaptorTests.OpenGL
         /// <param name="height">The height of the window.</param>
         /// <returns>The instance to test.</returns>
         private GLWindow CreateWindow(int width = 10, int height = 20)
-            => new GLWindow(
+            => new (
                 width,
                 height,
                 this.mockGLInvoker.Object,

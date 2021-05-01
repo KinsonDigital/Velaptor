@@ -32,7 +32,7 @@ stages:
   displayName: 'Main Stage'
   pool: '$(pool)'
   jobs:
-  - job: 'Print_Variables_Job' #🟠
+  - job: 'Print_Variables_Job'
     displayName: Print Variables
     steps:
     - task: PowerShell@2

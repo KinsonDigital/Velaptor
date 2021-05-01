@@ -107,7 +107,7 @@ namespace Raptor.Graphics
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is ImageData imageData))
+            if (obj is not ImageData imageData)
             {
                 return false;
             }

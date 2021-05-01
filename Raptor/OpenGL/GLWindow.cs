@@ -1,4 +1,4 @@
-// <copyright file="GLWindow.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,7 +19,7 @@ namespace Raptor.OpenGL
     using Raptor.Observables;
     using Raptor.Services;
     using Raptor.UI;
-    using GLMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
+    using TKMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
     using GLWindowState = OpenTK.Windowing.Common.WindowState;
     using RaptorMouseButton = Raptor.Input.MouseButton;
     using SysVector2 = System.Numerics.Vector2;
@@ -328,41 +328,29 @@ namespace Raptor.OpenGL
         /// </summary>
         /// <param name="from">The OpenGL mouse button to map.</param>
         /// <returns>The mouse button.</returns>
-        private static RaptorMouseButton MapMouseButton(GLMouseButton from)
+        private static RaptorMouseButton MapMouseButton(TKMouseButton from)
         {
-            var result = (RaptorMouseButton)123456789; // Invalid raptor mouse button to start
-
-            switch (from)
+            var result = from switch
             {
-                case GLMouseButton.Left: // Same as Button1
-                    result = RaptorMouseButton.LeftButton;
-                    break;
-                case GLMouseButton.Middle: // Same as Button3
-                case GLMouseButton.Last:
-                    result = RaptorMouseButton.MiddleButton;
-                    break;
-                case GLMouseButton.Right: // Same as Button2
-                    result = RaptorMouseButton.RightButton;
-                    break;
-            }
+                TKMouseButton.Left => RaptorMouseButton.LeftButton, // Same as Button 1
+                TKMouseButton.Middle => RaptorMouseButton.MiddleButton, // Same as Button3
+                TKMouseButton.Last => RaptorMouseButton.MiddleButton, // Same as Button3
+                TKMouseButton.Right => RaptorMouseButton.RightButton, // Same as Button2
+                _ => throw new ArgumentException("Unrecognized OpenGL mouse button."), // TODO: Test for this
+            };
 
-            switch (from)
+            var unsupportedOpenTKButtons = new[]
             {
-                case GLMouseButton.Button1: // Same as LeftButton
-                    result = RaptorMouseButton.LeftButton;
-                    break;
-                case GLMouseButton.Button2: // Same as RightButton
-                    result = RaptorMouseButton.RightButton;
-                    break;
-                case GLMouseButton.Button3: // Same as MiddleButton
-                    result = RaptorMouseButton.MiddleButton;
-                    break;
-                case GLMouseButton.Button4:
-                case GLMouseButton.Button5:
-                case GLMouseButton.Button6:
-                case GLMouseButton.Button7:
-                case GLMouseButton.Button8:
-                    throw new Exception("Unrecognized OpenGL mouse button.");
+                TKMouseButton.Button4,
+                TKMouseButton.Button5,
+                TKMouseButton.Button6,
+                TKMouseButton.Button7,
+                TKMouseButton.Button8,
+            };
+
+            if (unsupportedOpenTKButtons.Contains(from))
+            {
+                throw new ArgumentException("Unrecognized OpenGL mouse button.");
             }
 
             return result;
@@ -538,17 +526,17 @@ namespace Raptor.OpenGL
             CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
             CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
-            if (!(CachedPosition is null))
+            if (CachedPosition is not null)
             {
                 CachedPosition.IsCaching = false;
             }
 
-            if (!(CachedWindowState is null))
+            if (CachedWindowState is not null)
             {
                 CachedWindowState.IsCaching = false;
             }
 
-            if (!(CachedTypeOfBorder is null))
+            if (CachedTypeOfBorder is not null)
             {
                 CachedTypeOfBorder.IsCaching = false;
             }
@@ -661,7 +649,7 @@ namespace Raptor.OpenGL
             var halfWidth = ToMonitorScale(Width / 2f);
             var halfHeight = ToMonitorScale(Height / 2f);
 
-            if (!(mainMonitor is null))
+            if (mainMonitor is not null)
             {
                 defaultPosition = new SysVector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
             }

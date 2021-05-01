@@ -35,7 +35,7 @@ namespace Raptor.Services
 
             using (var stream = assembly.GetManifestResourceStream(shaderSrcResource))
             {
-                if (!(stream is null))
+                if (stream is not null)
                 {
                     using var reader = new StreamReader(stream);
 

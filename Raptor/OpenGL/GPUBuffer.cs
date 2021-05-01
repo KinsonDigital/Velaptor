@@ -137,7 +137,7 @@ namespace Raptor.OpenGL
         /// Creates a single quad of data to be sent to the GPU.
         /// </summary>
         /// <returns>The quad data.</returns>
-        private static QuadData CreateQuad() => new QuadData
+        private static QuadData CreateQuad() => new ()
         {
             Vertex1 = new VertexData()
             {

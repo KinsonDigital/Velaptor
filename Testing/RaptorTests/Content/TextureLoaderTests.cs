@@ -104,6 +104,6 @@ namespace RaptorTests.Content
         /// Creates a new instance of <see cref="TextureLoader"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private TextureLoader CreateLoader() => new TextureLoader(this.mockGL.Object, this.mockImageService.Object, this.mockTexturePathResolver.Object);
+        private TextureLoader CreateLoader() => new (this.mockGL.Object, this.mockImageService.Object, this.mockTexturePathResolver.Object);
     }
 }

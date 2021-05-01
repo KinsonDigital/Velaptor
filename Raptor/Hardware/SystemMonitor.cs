@@ -76,7 +76,7 @@ namespace Raptor.Hardware
         /// <summary>
         /// Gets the center location of the monitor.
         /// </summary>
-        public Vector2 Center => new Vector2(Width / 2f, Height / 2f);
+        public Vector2 Center => new (Width / 2f, Height / 2f);
 
         /// <summary>
         /// Gets the approximate dpi of the monitor on the horizontal axis.
@@ -126,7 +126,7 @@ namespace Raptor.Hardware
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is SystemMonitor monitor))
+            if (obj is not SystemMonitor monitor)
             {
                 return false;
             }

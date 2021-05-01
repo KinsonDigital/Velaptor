@@ -4,6 +4,7 @@
 
 namespace RaptorTests.Graphics
 {
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
     using Moq;
@@ -38,6 +39,14 @@ namespace RaptorTests.Graphics
             {
                 for (var x = 0; x < this.imageData.Width; x++)
                 {
+                    this.imageData.Pixels[x, y] = y switch
+                    {
+                        0 => this.imageData.Pixels[x, y] = Color.FromArgb(255, 255, 0, 0), // Row 1
+                        1 =>  this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 255, 0), // Row 2
+                        2 => this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 0, 255), // Row 3
+                        _ => throw new Exception($"Row '{y}' does not exist when setting up image data for test."),
+                    };
+
                     // If the first row
                     switch (y)
                     {

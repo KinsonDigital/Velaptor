@@ -23,8 +23,8 @@ namespace RaptorTests.Input
     /// </summary>
     public class KeyCodeEnumTests
     {
-        private readonly Dictionary<string, int> raptorEnumNamesAndValues = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> openTKEnumNamesAndValues = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> raptorEnumNamesAndValues = new ();
+        private readonly Dictionary<string, int> openTKEnumNamesAndValues = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyCodeEnumTests"/> class.

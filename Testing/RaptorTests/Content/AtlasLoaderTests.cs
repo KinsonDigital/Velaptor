@@ -26,7 +26,7 @@ namespace RaptorTests.Content
         private readonly string atlasDataFilePath;
         private readonly string atlasImageFilePath;
         private readonly Mock<IGLInvoker> mockGLInvoker;
-        private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+        private readonly JsonSerializerSettings jsonSettings = new ()
         {
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Objects,
@@ -184,7 +184,7 @@ namespace RaptorTests.Content
         /// </summary>
         /// <returns>The instnace to test.</returns>
         private AtlasLoader CreateLoader()
-            => new AtlasLoader(
+            => new (
                 this.mockGLInvoker.Object,
                 this.mockImageService.Object,
                 this.mockAtlasPathResolver.Object,

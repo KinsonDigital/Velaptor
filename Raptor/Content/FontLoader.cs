@@ -20,7 +20,7 @@ namespace Raptor.Content
     /// </summary>
     public class FontLoader : ILoader<IFont>
     {
-        private readonly ConcurrentDictionary<string, IFont> fonts = new ConcurrentDictionary<string, IFont>();
+        private readonly ConcurrentDictionary<string, IFont> fonts = new ();
         private readonly IGLInvoker gl;
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IFontAtlasService fontAtlasService;

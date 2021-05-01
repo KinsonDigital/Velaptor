@@ -14,13 +14,13 @@ namespace Raptor.Observables.Core
     /// <typeparam name="T">The information related to the notification.</typeparam>
     public abstract class Observable<T> : IObservable<T>, IDisposable
     {
-        private readonly List<IObserver<T>> observers = new List<IObserver<T>>();
+        private readonly List<IObserver<T>> observers = new ();
         private bool isDisposed;
 
         /// <summary>
         /// Gets the list of observers that are subscribed to this <see cref="Observable{T}"/>.
         /// </summary>
-        public ReadOnlyCollection<IObserver<T>> Observers => new ReadOnlyCollection<IObserver<T>>(this.observers);
+        public ReadOnlyCollection<IObserver<T>> Observers => new (this.observers);
 
         /// <summary>
         /// Subscribes the given <paramref name="observer"/> to get push notifications from this <see cref="Observable{T}"/>.

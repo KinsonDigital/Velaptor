@@ -62,7 +62,7 @@ namespace Raptor.Input
         /// <summary>
         /// The characters produced by the standard number keys when no shift modifier keys are in the down position.
         /// </summary>
-        private static readonly Dictionary<KeyCode, char> NoShiftStandardNumberCharacters = new Dictionary<KeyCode, char>()
+        private static readonly Dictionary<KeyCode, char> NoShiftStandardNumberCharacters = new ()
         {
             { KeyCode.D0, '0' }, { KeyCode.D1, '1' }, { KeyCode.D2, '2' },
             { KeyCode.D3, '3' }, { KeyCode.D4, '4' }, { KeyCode.D5, '5' },
@@ -72,7 +72,7 @@ namespace Raptor.Input
         /// <summary>
         /// The symbol keys produced by the keyboard when no shift modifier keys are in the down position..
         /// </summary>
-        private static readonly Dictionary<KeyCode, char> NoShiftSymbolCharacters = new Dictionary<KeyCode, char>()
+        private static readonly Dictionary<KeyCode, char> NoShiftSymbolCharacters = new ()
         {
             { KeyCode.Equal, '=' }, { KeyCode.Comma, ',' }, { KeyCode.Minus, '-' }, { KeyCode.Period, '.' }, { KeyCode.Slash, '/' },
             { KeyCode.Backslash, '\\' }, { KeyCode.LeftBracket, '[' }, { KeyCode.RightBracket, ']' },
@@ -83,7 +83,7 @@ namespace Raptor.Input
         /// <summary>
         /// The symbol keys produced by the keyboard when any shift modifier keys are in the down position.
         /// </summary>
-        private static readonly Dictionary<KeyCode, char> WithShiftSymbolCharacters = new Dictionary<KeyCode, char>()
+        private static readonly Dictionary<KeyCode, char> WithShiftSymbolCharacters = new ()
         {
             { KeyCode.Equal, '+' }, { KeyCode.Comma, '<' }, { KeyCode.Minus, '_' }, { KeyCode.Period, '>' }, { KeyCode.Slash, '?' },
             { KeyCode.Backslash, '|' }, { KeyCode.LeftBracket, '{' }, { KeyCode.RightBracket, '}' },
@@ -365,7 +365,7 @@ namespace Raptor.Input
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (!(obj is KeyboardState state))
+            if (obj is not KeyboardState state)
             {
                 return false;
             }
@@ -400,7 +400,7 @@ namespace Raptor.Input
         /// </summary>
         private void InitKeys()
         {
-            if (!(this.keyStates is null) && this.keyStates.Count > 0)
+            if (this.keyStates is not null && this.keyStates.Count > 0)
             {
                 return;
             }

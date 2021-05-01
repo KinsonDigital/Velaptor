@@ -36,7 +36,7 @@ namespace RaptorTests.Content
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPathResolver> mockFontPathResolver;
         private readonly Mock<IImageService> mockImageService;
-        private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+        private readonly JsonSerializerSettings jsonSettings = new ()
         {
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Objects,
@@ -238,7 +238,7 @@ namespace RaptorTests.Content
         /// Creates an instance of <see cref="AtlasLoader"/> for the purpoase of testing.
         /// </summary>
         /// <returns>The instnace to test.</returns>
-        private FontLoader CreateLoader() => new FontLoader(
+        private FontLoader CreateLoader() => new (
             this.mockGLInvoker.Object,
             this.mockFreeTypeInvoker.Object,
             this.mockFontAtlasService.Object,

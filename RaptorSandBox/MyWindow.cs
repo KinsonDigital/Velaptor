@@ -1,4 +1,4 @@
-﻿using Raptor;
+using Raptor;
 using Raptor.Audio;
 using Raptor.Factories;
 using Raptor.Graphics;
@@ -31,7 +31,7 @@ namespace RaptorSandBox
         private Rectangle currentFrame;
         private AtlasSubTextureData[] subFrames;
         private AtlasSubTextureData bubbleFrame;
-        private List<Rectangle> bubbles = new List<Rectangle>();
+        private List<Rectangle> bubbles = new();
         private ITexture linkTexture;
         private int elapsedFrameTime = 0;
         private IFont myFont;
@@ -61,7 +61,7 @@ namespace RaptorSandBox
 
             var random = new Random();
 
-            for (var i = 0; i < 1; i++)
+            for (var i = 0; i < 10; i++)
             {
                 this.bubbles.Add(new Rectangle()
                 {
@@ -122,8 +122,8 @@ namespace RaptorSandBox
             {
                 var bubble = this.bubbles[i];
 
-                //bubble.Y -= 1;
-                //bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
+                bubble.Y -= 1;
+                bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
                 bubble.Y = Height / 2;
 
                 this.bubbles[i] = bubble;

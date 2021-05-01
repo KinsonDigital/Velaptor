@@ -138,7 +138,7 @@ namespace Raptor
         ///     Z = blue.
         ///     W = alpha.
         /// </returns>
-        public static Vector4 ToVector4(this NETColor clr) => new Vector4(clr.R, clr.G, clr.B, clr.A);
+        public static Vector4 ToVector4(this NETColor clr) => new (clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
         /// Returns a value indicating whether the given file or directory path
@@ -156,6 +156,11 @@ namespace Raptor
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
                 ? Path.GetDirectoryName(fileOrDirPath)
                 : fileOrDirPath;
+
+            if (onlyDirPath is null)
+            {
+                return false;
+            }
 
             if (onlyDirPath.Count(c => c == ':') == 1 && onlyDirPath.Count(c => c == '\\') == 1)
             {
@@ -224,7 +229,7 @@ namespace Raptor
         /// <param name="items">The items to convert.</param>
         /// <returns>The items as a read only collection.</returns>
         internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
-            => new ReadOnlyCollection<T>(items.ToList());
+            => new (items.ToList());
 
         /// <summary>
         /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
