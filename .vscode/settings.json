@@ -8,11 +8,14 @@
         "Unloadable",
         "dodgerblue",
         "editorconfig",
+        "finalizer",
         "indianred",
         "mediumseagreen",
         "msbuild",
         "runsettings",
+        "struct",
         "stylecop",
+        "unmanaged",
         "xunit"
     ]
 }
