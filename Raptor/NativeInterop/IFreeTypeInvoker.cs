@@ -25,6 +25,7 @@ namespace Raptor.NativeInterop
         event EventHandler<FreeTypeErrorEventArgs> OnError;
 
         #region Original Interop Calls
+
         /// <summary>
         /// Initialize a new FreeType library object. The set of modules that are registered by this function is determined at build time.
         /// </summary>
@@ -137,9 +138,11 @@ namespace Raptor.NativeInterop
         /// </summary>
         /// <param name="library">A handle to the target library object.</param>
         void FT_Done_FreeType(IntPtr library);
+
         #endregion
 
         #region Helper Methods
+
         /// <summary>
         /// Returns the face pointer that was created using the <see cref="FT_New_Face(IntPtr, string, int)"/> call.
         /// </summary>
@@ -151,6 +154,7 @@ namespace Raptor.NativeInterop
         /// </summary>
         /// <returns><see langword="true"/> if the face uses kerning.</returns>
         unsafe bool FT_Has_Kerning();
+
         #endregion
     }
 }
