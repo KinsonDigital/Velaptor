@@ -1,4 +1,4 @@
-﻿// <copyright file="FreeTypeExtensions.cs" company="KinsonDigital">
+// <copyright file="FreeTypeExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,6 +9,7 @@ namespace Raptor.NativeInterop
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using FreeTypeSharp.Native;
+    using Raptor.Content.Exceptions;
     using Raptor.Exceptions;
     using Raptor.Graphics;
 

@@ -30,7 +30,7 @@ namespace Raptor.Content
         [ExcludeFromCodeCoverage]
         public TextureLoader(IImageService imageService, IPathResolver texturePathResolver)
         {
-            this.gl = new GLInvoker();
+            this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.imageService = imageService;
             this.pathResolver = texturePathResolver;
         }

@@ -10,6 +10,7 @@ namespace Raptor.Content
     using System.IO;
     using System.IO.Abstractions;
     using Newtonsoft.Json;
+    using Raptor.Content.Exceptions;
     using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;

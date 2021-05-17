@@ -7,6 +7,7 @@ namespace RaptorTests.Content
     using Moq;
     using Raptor.Audio;
     using Raptor.Content;
+    using Raptor.Content.Exceptions;
     using Raptor.Exceptions;
     using Raptor.Graphics;
     using RaptorTests.Fakes;

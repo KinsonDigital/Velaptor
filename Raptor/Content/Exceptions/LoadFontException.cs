@@ -1,42 +1,42 @@
-﻿// <copyright file="UnknownContentException.cs" company="KinsonDigital">
+﻿// <copyright file="LoadFontException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Exceptions
+namespace Raptor.Content.Exceptions
 {
     using System;
 
     /// <summary>
-    /// The exception that is thrown when a particular type of content is unknown.
+    /// Thrown when there is an issue loading fonts.
     /// </summary>
-    public class UnknownContentException : Exception
+    public class LoadFontException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnknownContentException"/> class.
+        /// Initializes a new instance of the <see cref="LoadFontException"/> class.
         /// </summary>
-        public UnknownContentException()
-            : base("Content unknown.")
+        public LoadFontException()
+            : base($"There was an issue loading the font.")
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnknownContentException"/> class.
+        /// Initializes a new instance of the <see cref="LoadFontException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public UnknownContentException(string message)
+        public LoadFontException(string message)
             : base(message)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnknownContentException"/> class.
+        /// Initializes a new instance of the <see cref="LoadFontException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception,
         ///     or a null reference if no inner exception is specified.
         /// </param>
-        public UnknownContentException(string message, Exception innerException)
+        public LoadFontException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
