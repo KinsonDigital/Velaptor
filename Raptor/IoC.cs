@@ -1,4 +1,4 @@
-﻿// <copyright file="IoC.cs" company="KinsonDigital">
+// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,7 +17,7 @@ namespace Raptor
     using Raptor.Input;
     using Raptor.NativeInterop;
     using Raptor.Observables;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
     using Raptor.OpenGL;
     using Raptor.Services;
     using SimpleInjector;

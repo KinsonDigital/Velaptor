@@ -9,7 +9,7 @@ namespace RaptorTests.Content
     using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
     using Raptor.Content;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
     using Xunit;
 
     /// <summary>

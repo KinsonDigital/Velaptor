@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenAL
+namespace Raptor.NativeInterop.OpenAL
 {
     using System;
     using System.Collections.Generic;

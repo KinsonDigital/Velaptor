@@ -1,4 +1,4 @@
-// <copyright file="SoundTests.cs" company="KinsonDigital">
+﻿// <copyright file="SoundTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ namespace RaptorTests.Audio
     using Moq;
     using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 

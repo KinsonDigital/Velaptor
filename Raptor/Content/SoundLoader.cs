@@ -1,4 +1,4 @@
-// <copyright file="SoundLoader.cs" company="KinsonDigital">
+﻿// <copyright file="SoundLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ namespace Raptor.Content
     using System.Diagnostics.CodeAnalysis;
     using Raptor.Audio;
     using Raptor.Audio.Exceptions;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Loads sound content.

@@ -12,7 +12,7 @@ namespace Raptor.Audio
     using System.Linq;
     using OpenTK.Audio.OpenAL;
     using Raptor.Factories;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
     using IOPath = System.IO.Path;
 
     /// <summary>

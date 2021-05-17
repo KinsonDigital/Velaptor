@@ -12,7 +12,7 @@ namespace RaptorTests.Audio
     using OpenTK.Audio.OpenAL;
     using Raptor.Audio;
     using Raptor.Audio.Exceptions;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified

@@ -14,7 +14,7 @@ namespace Raptor.Audio
     using System.Linq;
     using OpenTK.Audio.OpenAL;
     using Raptor.Audio.Exceptions;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Manages audio devices on the system using OpenAL.

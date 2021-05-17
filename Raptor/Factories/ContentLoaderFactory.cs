@@ -10,7 +10,7 @@ namespace Raptor.Factories
     using Raptor.Content;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
     using Raptor.Services;
 
     /// <summary>
