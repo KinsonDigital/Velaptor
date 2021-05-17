@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.NativeInterop
+namespace RaptorTests.NativeInterop.FreeType
 {
-    using Raptor.NativeInterop;
+    using Raptor.NativeInterop.FreeType;
     using Xunit;
 
     /// <summary>

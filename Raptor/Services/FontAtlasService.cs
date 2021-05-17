@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,6 +12,7 @@ namespace Raptor.Services
     using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
+    using Raptor.NativeInterop.FreeType;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop
+namespace Raptor.NativeInterop.FreeType
 {
     using System;
     using System.Collections.Generic;
@@ -10,7 +10,6 @@ namespace Raptor.NativeInterop
     using System.Runtime.InteropServices;
     using FreeTypeSharp.Native;
     using Raptor.Content.Exceptions;
-    using Raptor.Exceptions;
     using Raptor.Graphics;
 
     /// <summary>

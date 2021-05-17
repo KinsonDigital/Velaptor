@@ -21,6 +21,7 @@ namespace Raptor
     using Raptor.OpenGL;
     using Raptor.Services;
     using SimpleInjector;
+    using Raptor.NativeInterop.FreeType;
 
     /// <summary>
     /// Provides dependency injection for the application.
