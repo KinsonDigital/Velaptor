@@ -535,7 +535,7 @@ namespace RaptorTests.OpenGL
 
             // Act
             window.Show();
-            this.mockWindowFacade.Raise(w => w.Load += null);
+            this.mockWindowFacade.Raise(w => w.Load += null, EventArgs.Empty);
 
             // Assert
             this.mockWindowFacade.Verify(m => m.Init(123, 456), Times.Once());
@@ -561,7 +561,7 @@ namespace RaptorTests.OpenGL
             var window = CreateWindow();
             window.Show();
 
-            this.mockWindowFacade.Raise(i => i.Load += null);
+            this.mockWindowFacade.Raise(i => i.Load += null, EventArgs.Empty);
 
             // Act
             Assert.ThrowsWithMessage<Exception>(() =>
@@ -586,8 +586,8 @@ namespace RaptorTests.OpenGL
 
             // Act
             window.Show();
-            this.mockWindowFacade.Raise(m => m.Unload += null);
-            this.mockWindowFacade.Raise(m => m.UpdateFrame += null, It.IsAny<double>());
+            this.mockWindowFacade.Raise(m => m.Unload += null, EventArgs.Empty);
+            this.mockWindowFacade.Raise(m => m.UpdateFrame += null, new FrameTimeEventArgs(123));
             window.Update -= TestHandler;
 
             // Assert
@@ -607,8 +607,8 @@ namespace RaptorTests.OpenGL
 
             // Act
             window.Show();
-            this.mockWindowFacade.Raise(m => m.Unload += null);
-            this.mockWindowFacade.Raise(m => m.RenderFrame += null, It.IsAny<double>());
+            this.mockWindowFacade.Raise(m => m.Unload += null, EventArgs.Empty);
+            this.mockWindowFacade.Raise(m => m.RenderFrame += null, new FrameTimeEventArgs(234));
             window.Draw -= TestHandler;
 
             // Assert
@@ -652,7 +652,7 @@ namespace RaptorTests.OpenGL
 
             // Act
             await window.ShowAsync();
-            this.mockWindowFacade.Raise(w => w.Load += null);
+            this.mockWindowFacade.Raise(w => w.Load += null, EventArgs.Empty);
 
             // Assert
             this.mockWindowFacade.Verify(m => m.Init(It.IsAny<int>(), It.IsAny<int>()), Times.Once());
