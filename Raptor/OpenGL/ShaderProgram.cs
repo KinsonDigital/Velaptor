@@ -6,7 +6,6 @@ namespace Raptor.OpenGL
 {
     using System;
     using System.Text;
-    using OpenTK.Graphics.OpenGL4;
     using Raptor.NativeInterop;
     using Raptor.Services;
 
@@ -14,6 +13,7 @@ namespace Raptor.OpenGL
     internal class ShaderProgram : IShaderProgram
     {
         private readonly IGLInvoker gl;
+        private readonly IGLInvokerExtensions glExtensions;
         private readonly IEmbeddedResourceLoaderService resourceLoaderService;
         private bool isDisposed;
         private bool isInitialized;
@@ -22,13 +22,15 @@ namespace Raptor.OpenGL
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes OpenGL extentions methods.</param>
         /// <param name="resourceLoaderService">Loads embedded resources.</param>
         /// <param name="batchSize">The batch size that the shader will support.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
         /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        public ShaderProgram(IGLInvoker gl, IEmbeddedResourceLoaderService resourceLoaderService)
+        public ShaderProgram(IGLInvoker gl, IGLInvokerExtensions glExtensions, IEmbeddedResourceLoaderService resourceLoaderService)
         {
             this.gl = gl;
+            this.glExtensions = glExtensions;
             this.resourceLoaderService = resourceLoaderService;
         }
 
@@ -53,11 +55,11 @@ namespace Raptor.OpenGL
             }
 
             var shaderSource = LoadShaderSourceCode("shader.vert");
-            VertexShaderId = CreateShader(ShaderType.VertexShader, shaderSource);
+            VertexShaderId = CreateShader(GLShaderType.VertexShader, shaderSource);
 
             // We do the same for the fragment shader
             shaderSource = LoadShaderSourceCode("shader.frag");
-            FragmentShaderId = CreateShader(ShaderType.FragmentShader, shaderSource);
+            FragmentShaderId = CreateShader(GLShaderType.FragmentShader, shaderSource);
 
             // Merge both shaders into a shader program, which can then be used by Openthis.gl.
             ProgramId = CreateShaderProgram(VertexShaderId, FragmentShaderId);
@@ -129,7 +131,7 @@ namespace Raptor.OpenGL
             this.gl.LinkProgram(shaderProgramId);
 
             // Check for linking errors
-            if (!this.gl.LinkProgramSuccess(shaderProgramId))
+            if (!this.glExtensions.LinkProgramSuccess(shaderProgramId))
             {
                 // We can use `this.gl.GetProgramInfoLog(program)` to get information about the error.
                 var programInfoLog = this.gl.GetProgramInfoLog(shaderProgramId);
@@ -145,7 +147,7 @@ namespace Raptor.OpenGL
         /// <param name="shaderType">The type of shader to create.</param>
         /// <param name="shaderSrc">The shader source code to use for the shader program.</param>
         /// <returns>The OpenGL shader ID.</returns>
-        private uint CreateShader(ShaderType shaderType, string shaderSrc)
+        private uint CreateShader(GLShaderType shaderType, string shaderSrc)
         {
             var shaderId = this.gl.CreateShader(shaderType);
 
@@ -177,7 +179,7 @@ namespace Raptor.OpenGL
             this.gl.CompileShader(shaderId);
 
             // Check for compilation errors
-            if (!this.gl.ShaderCompileSuccess(shaderId))
+            if (!this.glExtensions.ShaderCompileSuccess(shaderId))
             {
                 var errorInfo = this.gl.GetShaderInfoLog(shaderId);
 

@@ -12,9 +12,13 @@ namespace Raptor.Audio
 #endif
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using OpenTK.Audio.OpenAL;
     using Raptor.Audio.Exceptions;
     using Raptor.NativeInterop.OpenAL;
+    using RaptorALSourcef = NativeInterop.OpenAL.ALSourcef;
+    using RaptorAlcGetStringList = NativeInterop.OpenAL.AlcGetStringList;
+    using RaptorALSourceState = NativeInterop.OpenAL.ALSourceState;
 
     /// <summary>
     /// Manages audio devices on the system using OpenAL.
@@ -24,9 +28,9 @@ namespace Raptor.Audio
         private const string DeviceNamePrefix = "OpenAL Soft on "; // All device names returned are prefixed with this
         private readonly IALInvoker alInvoker;
         private readonly string isDisposedExceptionMessage = $"The '{nameof(AudioDeviceManager)}' has not been initialized.\nInvoked the '{nameof(AudioDeviceManager.InitDevice)}()' to initialize the device manager.";
-        private readonly Dictionary<int, SoundSource> soundSources = new ();
+        private readonly Dictionary<uint, SoundSource> soundSources = new ();
         private readonly List<SoundState> continuePlaybackCache = new ();
-        private ALDevice device;
+        private IntPtr device;
         private ALContext context;
         private ALContextAttributes? attributes;
         private bool isDisposed;
@@ -35,7 +39,11 @@ namespace Raptor.Audio
         /// Initializes a new instance of the <see cref="AudioDeviceManager"/> class.
         /// </summary>
         /// <param name="alInvoker">Makes calls to OpenAL.</param>
-        public AudioDeviceManager(IALInvoker alInvoker) => this.alInvoker = alInvoker;
+        public AudioDeviceManager(IALInvoker alInvoker)
+        {
+            this.alInvoker = alInvoker;
+            this.alInvoker.ErrorCallback += ErrorCallback;
+        }
 
         /// <inheritdoc/>
         public event EventHandler<EventArgs>? DeviceChanged;
@@ -57,7 +65,7 @@ namespace Raptor.Audio
 
                 if (this.alInvoker is not null)
                 {
-                    result = this.alInvoker.GetString(this.device, AlcGetStringList.AllDevicesSpecifier)
+                    result = this.alInvoker.GetListOfDevices()
                         .Select(n => n.Replace(DeviceNamePrefix, string.Empty, StringComparison.Ordinal)).ToArray();
                 }
 
@@ -73,7 +81,7 @@ namespace Raptor.Audio
 
             if (this.alInvoker is not null)
             {
-                if (this.device.Handle == IntPtr.Zero)
+                if (this.device == IntPtr.Zero)
                 {
                     this.device = this.alInvoker.OpenDevice(nameResult);
                 }
@@ -85,7 +93,7 @@ namespace Raptor.Audio
 
                 if (this.context.Handle == IntPtr.Zero)
                 {
-                    this.context = this.alInvoker.CreateContext(this.device, this.attributes);
+                    this.context = new ALContext(this.alInvoker.CreateContext(this.device, this.attributes));
                 }
 
                 setCurrentResult = this.alInvoker.MakeContextCurrent(this.context);
@@ -98,7 +106,7 @@ namespace Raptor.Audio
         }
 
         /// <inheritdoc/>
-        public (int srcId, int bufferId) InitSound()
+        public (uint srcId, uint bufferId) InitSound()
         {
             if (!IsInitialized)
             {
@@ -110,7 +118,7 @@ namespace Raptor.Audio
             soundSrc.TotalSeconds = -1f;
             soundSrc.SourceId = 0;
 
-            var bufferId = 0;
+            var bufferId = 0u;
 
             if (this.alInvoker is not null)
             {
@@ -203,6 +211,7 @@ namespace Raptor.Audio
 
             if (disposing)
             {
+                this.alInvoker.ErrorCallback -= ErrorCallback;
                 this.soundSources.Clear();
                 this.continuePlaybackCache.Clear();
             }
@@ -217,24 +226,21 @@ namespace Raptor.Audio
         [ExcludeFromCodeCoverage]
         private static void ErrorCallback(string errorMsg)
         {
-#if DEBUG
-#pragma warning disable IDE0022 // Use expression body for methods
-            Debugger.Break();
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
+            // TODO: Create custom audio exception here
+            throw new Exception(errorMsg);
         }
 
         /// <summary>
         /// Destroys the current audio device.
         /// </summary>
         /// <remarks>
-        ///     To use another audio device, the <see cref="AudioDeviceManager.InitDevice(string?)"/>
+        ///     To use another audio device, the <see cref="InitDevice(string?)"/>
         ///     will have to be invoked again.
         /// </remarks>
         private void DestroyDevice()
         {
             this.alInvoker.MakeContextCurrent(ALContext.Null);
-            this.alInvoker.DestroyContext(this.context);
+            this.alInvoker.DestroyContext(this.context.Handle);
             this.context = ALContext.Null;
 
             this.alInvoker.CloseDevice(this.device);
@@ -262,7 +268,7 @@ namespace Raptor.Audio
             {
                 var sourceState = this.alInvoker.GetSourceState(soundSrcKVP.Value.SourceId);
 
-                if (sourceState != ALSourceState.Playing && sourceState != ALSourceState.Paused)
+                if (sourceState != RaptorALSourceState.Playing && sourceState != RaptorALSourceState.Paused)
                 {
                     continue;
                 }
@@ -273,11 +279,11 @@ namespace Raptor.Audio
                 soundState.TimePosition = GetCurrentTimePosition(soundSrcKVP.Value.SourceId);
                 soundState.TotalSeconds = soundSrcKVP.Value.TotalSeconds;
 
-                if (sourceState == ALSourceState.Playing)
+                if (sourceState == RaptorALSourceState.Playing)
                 {
                     soundState.PlaybackState = PlaybackState.Playing;
                 }
-                else if (sourceState == ALSourceState.Paused)
+                else if (sourceState == RaptorALSourceState.Paused)
                 {
                     soundState.PlaybackState = PlaybackState.Paused;
                 }
@@ -297,7 +303,7 @@ namespace Raptor.Audio
         /// </summary>
         /// <param name="srcId">The OpenAL source id.</param>
         /// <returns>The position in seconds.</returns>
-        private float GetCurrentTimePosition(int srcId) => this.alInvoker.GetSource(srcId, ALSourcef.SecOffset);
+        private float GetCurrentTimePosition(uint srcId) => this.alInvoker.GetSource(srcId, RaptorALSourcef.SecOffset);
 
         /// <summary>
         /// Sets the time position of the sound to the given <paramref name="seconds"/> value.
@@ -309,14 +315,14 @@ namespace Raptor.Audio
         ///     If the <paramref name="seconds"/> value is negative,
         ///     it will be treated as positive.
         /// </remarks>
-        private void SetTimePosition(int srcId, float seconds, float totalSeconds)
+        private void SetTimePosition(uint srcId, float seconds, float totalSeconds)
         {
             // Prevent negative number
             seconds = Math.Abs(seconds);
 
             seconds = seconds > totalSeconds ? totalSeconds : seconds;
 
-            this.alInvoker.Source(srcId, ALSourcef.SecOffset, seconds);
+            this.alInvoker.Source(srcId, RaptorALSourcef.SecOffset, seconds);
         }
     }
 }

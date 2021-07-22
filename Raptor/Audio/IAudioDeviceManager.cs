@@ -49,7 +49,7 @@ namespace Raptor.Audio
         ///     Occurs if this method is executed without initializing the <see cref="IAudioDeviceManager."/>.
         ///     This can be done by invoking the <see cref="InitDevice(string?)"/>.
         /// </exception>
-        (int srcId, int bufferId) InitSound();
+        (uint srcId, uint bufferId) InitSound();
 
         /// <summary>
         /// Changes the audio device that matches the given <paramref name="name"/>.

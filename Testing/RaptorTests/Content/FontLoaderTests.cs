@@ -13,7 +13,6 @@ namespace RaptorTests.Content
     using Newtonsoft.Json;
     using Raptor.Content;
     using Raptor.Content.Exceptions;
-    using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
     using Raptor.Services;

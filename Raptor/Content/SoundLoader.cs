@@ -30,15 +30,20 @@ namespace Raptor.Content
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="oggDecoder">Decodes ogg sound files.</param>
         /// <param name="mp3Decoder">Decodes mp3 sound files.</param>
-        [ExcludeFromCodeCoverage]
-        public SoundLoader(IPathResolver soundPathResolver, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
-        {
-            this.soundPathResolver = soundPathResolver;
-            this.oggDecoder = oggDecoder;
-            this.mp3Decoder = mp3Decoder;
-            this.alInvoker = new ALInvoker();
-            this.audioManager = IoC.Container.GetInstance<IAudioDeviceManager>();
-        }
+        // TODO: The decoders were turned into internals.  This had to be commented out 
+        // because it would expose those internals because this class is public and has
+        // to stay there.  With no public constructor, the user could not create a new instance
+        // of this class.  To allow this, refactor this CTOR to internally in the CTOR code
+        // to use the IoC container to load up the intenal types
+        //[ExcludeFromCodeCoverage]
+        //public SoundLoader(IPathResolver soundPathResolver, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
+        //{
+        //    this.soundPathResolver = soundPathResolver;
+        //    this.oggDecoder = oggDecoder;
+        //    this.mp3Decoder = mp3Decoder;
+        //    this.alInvoker = new OpenTKALInvoker();
+        //    this.audioManager = IoC.Container.GetInstance<IAudioDeviceManager>();
+        //}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
@@ -48,7 +53,12 @@ namespace Raptor.Content
         /// <param name="soundPathResolver">Resolves paths to sound content.</param>
         /// <param name="oggDecoder">Decodes ogg sound files.</param>
         /// <param name="mp3Decoder">Decodes mp3 sound files.</param>
-        internal SoundLoader(IALInvoker alInvoker, IAudioDeviceManager audioManager, IPathResolver soundPathResolver, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
+        internal SoundLoader(
+            IALInvoker alInvoker,
+            IAudioDeviceManager audioManager,
+            IPathResolver soundPathResolver,
+            ISoundDecoder<float> oggDecoder,
+            ISoundDecoder<byte> mp3Decoder)
         {
             this.alInvoker = alInvoker;
             this.audioManager = audioManager;

@@ -9,10 +9,9 @@ namespace Raptor.Services
     using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Linq;
-    using OpenTK.Mathematics;
+    using System.Numerics;
     using Raptor.Graphics;
     using Raptor.OpenGL;
-    using SysVector2 = System.Numerics.Vector2;
 
     /// <summary>
     /// Manages the process of batching textures together when rendering them.
@@ -110,7 +109,7 @@ namespace Raptor.Services
         }
 
         /// <inheritdoc/>
-        public Matrix4 BuildTransformationMatrix(SysVector2 viewPortSize, float x, float y, int width, int height, float size, float angle)
+        public Matrix4x4 BuildTransformationMatrix(Vector2 viewPortSize, float x, float y, int width, int height, float size, float angle)
         {
             if (viewPortSize.X <= 0)
             {
@@ -132,14 +131,14 @@ namespace Raptor.Services
             var ndcY = y.MapValue(0f, viewPortSize.Y, 1f, -1f);
 
             // NOTE: (+ degrees) rotates CCW and (- degrees) rotates CW
-            var angleRadians = MathHelper.DegreesToRadians(angle);
+            var angleRadians = angle.ToRadians();
 
             // Invert angle to rotate CW instead of CCW
             angleRadians *= -1;
 
-            var rotation = Matrix4.CreateRotationZ(angleRadians);
-            var scaleMatrix = Matrix4.CreateScale(scaleX, scaleY, 1f);
-            var positionMatrix = Matrix4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
+            var rotation = Matrix4x4.CreateRotationZ(angleRadians);
+            var scaleMatrix = Matrix4x4.CreateScale(scaleX, scaleY, 1f);
+            var positionMatrix = Matrix4x4.CreateTranslation(new Vector3(ndcX, ndcY, 0));
 
             return rotation * scaleMatrix * positionMatrix;
         }

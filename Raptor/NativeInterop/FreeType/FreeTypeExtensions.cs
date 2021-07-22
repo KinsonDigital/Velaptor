@@ -40,20 +40,20 @@ namespace Raptor.NativeInterop.FreeType
         }
 
         /// <inheritdoc/>
-        public (byte[] pixelData, int width, int height) CreateGlyphImage(IntPtr facePtr, char glyphChar, uint glyphIndex)
+        public (byte[] pixelData, uint width, uint height) CreateGlyphImage(IntPtr facePtr, char glyphChar, uint glyphIndex)
         {
             var face = Marshal.PtrToStructure<FT_FaceRec>(facePtr);
 
             this.freeTypeInvoker.FT_Load_Glyph(facePtr, glyphIndex, FT.FT_LOAD_RENDER);
 
-            int width;
-            int height;
+            uint width;
+            uint height;
             byte[] glyphBitmapData;
 
             unsafe
             {
-                width = (int)face.glyph->bitmap.width;
-                height = (int)face.glyph->bitmap.rows;
+                width = face.glyph->bitmap.width;
+                height = face.glyph->bitmap.rows;
 
                 glyphBitmapData = new byte[width * height];
                 Marshal.Copy(face.glyph->bitmap.buffer, glyphBitmapData, 0, glyphBitmapData.Length);
@@ -80,7 +80,7 @@ namespace Raptor.NativeInterop.FreeType
                 {
                     var face = Marshal.PtrToStructure<FT_FaceRec>(facePtr);
 
-                    // TODO: Create helper method that can be used to simplify this 65 bit logic
+                    // TODO: Create helper method that can be used to simplify this 64 bit logic
                     if (Environment.Is64BitProcess)
                     {
                         metric.Ascender = (int)face.size->metrics.ascender.ToInt64() >> 6;

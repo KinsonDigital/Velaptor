@@ -12,7 +12,7 @@ namespace Raptor.Audio
         /// <summary>
         /// The OpenAL id of the sound source that this state links to.
         /// </summary>
-        public int SourceId;
+        public uint SourceId;
 
         /// <summary>
         /// The current time position of the sound.

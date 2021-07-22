@@ -9,12 +9,13 @@ namespace Raptor.Audio
     using System.IO;
     using MP3Sharp;
     using Raptor.Exceptions;
+    using Raptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Streams mp3 audio data from a mp3 file.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class Mp3AudioDataStream : IAudioDataStream<byte>
+    internal class Mp3AudioDataStream : IAudioDataStream<byte>
     {
         // NOTE: the Mp3Sharp decoder library only deals with 16bit mp3 files.  Which is 99% of what is used now days anyways
         private MP3Stream? mp3Reader;
@@ -64,7 +65,7 @@ namespace Raptor.Audio
         public int Channels => string.IsNullOrEmpty(this.fileName) ? 0 : this.mp3Reader?.ChannelCount ?? 0;
 
         /// <inheritdoc/>
-        public AudioFormat Format
+        public ALFormat Format
         {
             get
             {
@@ -74,8 +75,8 @@ namespace Raptor.Audio
                 }
 
                 return this.mp3Reader.Format == SoundFormat.Pcm16BitMono
-                    ? AudioFormat.Mono16
-                    : AudioFormat.Stereo16;
+                    ? ALFormat.Mono16
+                    : ALFormat.Stereo16;
             }
         }
 

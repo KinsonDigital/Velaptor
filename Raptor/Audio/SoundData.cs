@@ -8,12 +8,13 @@ namespace Raptor.Audio
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Raptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Holds data related to a single sound.
     /// </summary>
     /// <typeparam name="T">The type of buffer data of the sound.</typeparam>
-    public struct SoundData<T> : IEquatable<SoundData<T>>
+    internal struct SoundData<T> : IEquatable<SoundData<T>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundData{T}"/> struct.
@@ -23,7 +24,7 @@ namespace Raptor.Audio
         /// <param name="channels">The total number of channels.</param>
         /// <param name="format">The audio format.</param>
         /// <param name="totalSeconds">The total number of seconds of the sound.</param>
-        public SoundData(T[] bufferData, int sampleRate, int channels, AudioFormat format, float totalSeconds)
+        public SoundData(T[] bufferData, int sampleRate, int channels, ALFormat format, float totalSeconds)
             : this()
         {
             BufferData = new ReadOnlyCollection<T>(bufferData);
@@ -54,7 +55,7 @@ namespace Raptor.Audio
         /// <summary>
         /// Gets or sets the audio format of the audio file.
         /// </summary>
-        public AudioFormat Format { get; set; }
+        public ALFormat Format { get; set; }
 
         /// <summary>
         /// Gets or sets the total number of seconds of the audio file.
@@ -90,7 +91,7 @@ namespace Raptor.Audio
 
         /// <inheritdoc/>
         public bool Equals(SoundData<T> other)
-            => Enumerable.SequenceEqual<T>(other.BufferData.ToArray(), BufferData.ToArray()) &&
+            => Enumerable.SequenceEqual(other.BufferData.ToArray(), BufferData.ToArray()) &&
             other.Channels == Channels &&
             other.Format == Format &&
             other.SampleRate == SampleRate &&

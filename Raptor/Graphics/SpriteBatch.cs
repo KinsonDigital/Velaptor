@@ -9,16 +9,14 @@ namespace Raptor.Graphics
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
+    using System.Numerics;
     using FreeTypeSharp.Native;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
     using Raptor.Exceptions;
     using Raptor.NativeInterop;
     using Raptor.Observables;
     using Raptor.Observables.Core;
     using Raptor.OpenGL;
     using Raptor.Services;
-    using SysVector2 = System.Numerics.Vector2;
 
     /// <inheritdoc/>
     internal class SpriteBatch : ISpriteBatch
@@ -27,12 +25,13 @@ namespace Raptor.Graphics
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new ();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new ();
         private readonly IGLInvoker gl;
+        private readonly IGLInvokerExtensions glExtensions;
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IShaderProgram shader;
         private readonly IGPUBuffer gpuBuffer;
         private readonly IBatchManagerService batchManagerService;
         private CachedValue<Color> cachedClearColor;
-        private uint transDataLocation;
+        private int transDataLocation;
         private bool isDisposed;
         private bool hasBegun;
 
@@ -41,6 +40,7 @@ namespace Raptor.Graphics
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes OpenGL extentions methods.</param>
         /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
@@ -58,16 +58,22 @@ namespace Raptor.Graphics
 // does not exist.  The SetupPropertyCaches() method takes care of making sure it is not null.
         public SpriteBatch(
             IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
             IFreeTypeInvoker freeTypeInvoker,
             IShaderProgram shader,
             IGPUBuffer gpuBuffer,
             IBatchManagerService batchManagerService,
-            OpenGLObservable glObservable)
+            OpenGLInitObservable glObservable)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             if (gl is null)
             {
                 throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
+            }
+
+            if (glExtensions is null)
+            {
+                throw new ArgumentNullException(nameof(glExtensions), $"The '{nameof(IGLInvokerExtensions)}' must not be null.");
             }
 
             if (shader is null)
@@ -81,6 +87,7 @@ namespace Raptor.Graphics
             }
 
             this.gl = gl;
+            this.glExtensions = glExtensions;
             this.freeTypeInvoker = freeTypeInvoker;
             this.shader = shader;
             this.gpuBuffer = gpuBuffer;
@@ -135,7 +142,7 @@ namespace Raptor.Graphics
 
         /// <summary>
         /// Gets the unsubscriber for the subcription
-        /// to the <see cref="OpenGLObservable"/>.
+        /// to the <see cref="OpenGLInitObservable"/>.
         /// </summary>
         internal IDisposable GLObservableUnsubscriber { get; private set; }
 
@@ -143,7 +150,7 @@ namespace Raptor.Graphics
         public void BeginBatch() => this.hasBegun = true;
 
         /// <inheritdoc/>
-        public void Clear() => this.gl.Clear(ClearBufferMask.ColorBufferBit);
+        public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
 
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
@@ -348,10 +355,10 @@ namespace Raptor.Graphics
             this.gpuBuffer.TotalQuads = BatchSize;
             this.gpuBuffer.Init();
 
-            this.gl.Enable(EnableCap.Blend);
-            this.gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            this.gl.Enable(GLEnableCap.Blend);
+            this.gl.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
 
-            this.gl.ActiveTexture(TextureUnit.Texture0);
+            this.gl.ActiveTexture(GLTextureUnit.Texture0);
 
             this.shader.UseProgram();
 
@@ -368,24 +375,24 @@ namespace Raptor.Graphics
                 nameof(RenderSurfaceWidth),
                 new CachedValue<int>(
                     defaultValue: 0,
-                    getterWhenNotCaching: () => (int)this.gl.GetViewPortSize().X,
+                    getterWhenNotCaching: () => this.glExtensions.GetViewPortSize().Width,
                     setterWhenNotCaching: (value) =>
                     {
-                        var viewPortSize = this.gl.GetViewPortSize();
+                        var viewPortSize = this.glExtensions.GetViewPortSize();
 
-                        this.gl.SetViewPortSize(new Vector2(value, viewPortSize.Y));
+                        this.glExtensions.SetViewPortSize(new Size(value, viewPortSize.Height));
                     }));
 
             this.cachedIntProps.Add(
                 nameof(RenderSurfaceHeight),
                 new CachedValue<int>(
                     defaultValue: 0,
-                    getterWhenNotCaching: () => (int)this.gl.GetViewPortSize().Y,
+                    getterWhenNotCaching: () => this.glExtensions.GetViewPortSize().Height,
                     setterWhenNotCaching: (value) =>
                     {
-                        var viewPortSize = this.gl.GetViewPortSize();
+                        var viewPortSize = this.glExtensions.GetViewPortSize();
 
-                        this.gl.SetViewPortSize(new Vector2(viewPortSize.X, value));
+                        this.glExtensions.SetViewPortSize(new Size(viewPortSize.Width, value));
                     }));
 
             this.cachedClearColor = new CachedValue<Color>(
@@ -393,7 +400,7 @@ namespace Raptor.Graphics
                 getterWhenNotCaching: () =>
                 {
                     var colorValues = new float[4];
-                    this.gl.GetFloat(GetPName.ColorClearValue, colorValues);
+                    this.gl.GetFloat(GLGetPName.ColorClearValue, colorValues);
 
                     var red = colorValues[0].MapValue(0, 1, 0, 255);
                     var green = colorValues[1].MapValue(0, 1, 0, 255);
@@ -421,10 +428,10 @@ namespace Raptor.Graphics
             var batchAmountToRender = this.batchManagerService.TotalItemsToRender;
             var textureIsBound = false;
 
-            for (uint i = 0; i < this.batchManagerService.BatchItems.Values.Count; i++)
+            for (var i = 0; i < this.batchManagerService.BatchItems.Values.Count; i++)
             {
                 var quadID = i;
-                var batchItem = this.batchManagerService.BatchItems[quadID];
+                var batchItem = this.batchManagerService.BatchItems[(uint)quadID];
 
                 if (batchItem.IsEmpty)
                 {
@@ -433,8 +440,8 @@ namespace Raptor.Graphics
 
                 if (!textureIsBound)
                 {
-                    // TODO: Verify that this is being invoked with proper values
-                    this.gl.BindTexture(TextureTarget.Texture2D, batchItem.TextureID);
+                    // TODO: Verify that this is being invoked with proper values with unit tests
+                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureID);
                     textureIsBound = true;
                 }
 
@@ -460,9 +467,9 @@ namespace Raptor.Graphics
                     _ => throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid."),
                 };
 
-                var viewPortSize = this.gl.GetViewPortSize();
+                var viewPortSize = this.glExtensions.GetViewPortSize();
                 var transMatrix = this.batchManagerService.BuildTransformationMatrix(
-                    new SysVector2(viewPortSize.X, viewPortSize.Y),
+                    new Vector2(viewPortSize.Width, viewPortSize.Height),
                     batchItem.DestRect.X,
                     batchItem.DestRect.Y,
                     srcRectWidth,
@@ -470,10 +477,10 @@ namespace Raptor.Graphics
                     batchItem.Size,
                     batchItem.Angle);
 
-                this.gl.UniformMatrix4(this.transDataLocation + quadID, true, ref transMatrix);
+                this.gl.UniformMatrix4(this.transDataLocation + quadID, 1u, true, transMatrix);
 
                 this.gpuBuffer.UpdateQuad(
-                    quadID,
+                    (uint)quadID,
                     batchItem.SrcRect,
                     batchItem.DestRect.Width,
                     batchItem.DestRect.Height,
@@ -484,7 +491,7 @@ namespace Raptor.Graphics
             // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
             if (batchAmountToRender > 0)
             {
-                this.gl.DrawElements(PrimitiveType.Triangles, 6 * batchAmountToRender, DrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.gl.DrawElements(GLPrimitiveType.Triangles, 6 * batchAmountToRender, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
             }
 
             // Empty the batch items

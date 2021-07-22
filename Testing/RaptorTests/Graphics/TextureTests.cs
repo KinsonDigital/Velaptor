@@ -8,9 +8,9 @@ namespace RaptorTests.Graphics
     using System.Collections.Generic;
     using System.Drawing;
     using Moq;
-    using OpenTK.Graphics.OpenGL4;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
+    using Raptor.OpenGL;
     using Xunit;
 
     /// <summary>
@@ -91,43 +91,45 @@ namespace RaptorTests.Graphics
                 rowBytes.Clear();
             }
 
-            var expectedPixelBytes = expectedPixelData.ToArray();
+            var expectedPixelBytes = new ReadOnlySpan<byte>(expectedPixelData.ToArray());
 
             // Act
             var texture = new Texture(this.mockGL.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
 
             // Assert
-            this.mockGL.Verify(m => m.ObjectLabel(ObjectLabelIdentifier.Texture, this.textureID, -1, "test-texture.png"), Times.Once());
+            this.mockGL.Verify(m => m.ObjectLabel(GLObjectIdentifier.Texture, this.textureID, 1u, "test-texture.png"), Times.Once());
             this.mockGL.Verify(m => m.TexParameter(
-                TextureTarget.Texture2D,
-                TextureParameterName.TextureMinFilter,
-                (int)TextureMinFilter.Linear), Times.Once());
+                GLTextureTarget.Texture2D,
+                GLTextureParameterName.TextureMinFilter,
+                GLTextureMinFilter.Linear), Times.Once());
 
             this.mockGL.Verify(m => m.TexParameter(
-                TextureTarget.Texture2D,
-                TextureParameterName.TextureMagFilter,
-                (int)TextureMinFilter.Linear), Times.Once());
+                GLTextureTarget.Texture2D,
+                GLTextureParameterName.TextureMagFilter,
+                GLTextureMagFilter.Linear), Times.Once());
 
             this.mockGL.Verify(m => m.TexParameter(
-                TextureTarget.Texture2D,
-                TextureParameterName.TextureWrapS,
-                (int)TextureWrapMode.ClampToEdge), Times.Once());
+                GLTextureTarget.Texture2D,
+                GLTextureParameterName.TextureWrapS,
+                GLTextureWrapMode.ClampToEdge), Times.Once());
 
             this.mockGL.Verify(m => m.TexParameter(
-                TextureTarget.Texture2D,
-                TextureParameterName.TextureWrapT,
-                (int)TextureWrapMode.ClampToEdge), Times.Once());
+                GLTextureTarget.Texture2D,
+                GLTextureParameterName.TextureWrapT,
+                GLTextureWrapMode.ClampToEdge), Times.Once());
 
-            this.mockGL.Verify(m => m.TexImage2D(
-                TextureTarget.Texture2D,
+            var expectedPixelArray = expectedPixelData.ToArray();
+
+            this.mockGL.Verify(m => m.TexImage2D<byte>(
+                GLTextureTarget.Texture2D,
                 0,
-                PixelInternalFormat.Rgba,
-                2,
-                3,
+                GLInternalFormat.Rgba,
+                2u,
+                3u,
                 0,
-                PixelFormat.Rgba,
-                PixelType.UnsignedByte,
-                expectedPixelBytes), Times.Once());
+                GLPixelFormat.Rgba,
+                GLPixelType.UnsignedByte,
+                expectedPixelArray), Times.Once());
         }
         #endregion
 

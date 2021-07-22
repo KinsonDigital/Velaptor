@@ -10,12 +10,11 @@ namespace RaptorTests.Content
     using Newtonsoft.Json;
     using Raptor.Content;
     using Raptor.Content.Exceptions;
-    using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
     using Raptor.Services;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasDataLoader{T}"/> class.

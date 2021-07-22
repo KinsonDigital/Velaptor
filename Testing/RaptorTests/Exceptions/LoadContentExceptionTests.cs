@@ -6,7 +6,6 @@ namespace RaptorTests.Exceptions
 {
     using System;
     using Raptor.Content.Exceptions;
-    using Raptor.Exceptions;
     using Xunit;
 
     /// <summary>

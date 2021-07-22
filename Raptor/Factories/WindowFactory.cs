@@ -29,6 +29,7 @@ namespace Raptor.Factories
                 width,
                 height,
                 IoC.Container.GetInstance<IGLInvoker>(),
+                IoC.Container.GetInstance<IGLFWInvoker>(),
                 IoC.Container.GetInstance<ISystemMonitorService>(),
                 IoC.Container.GetInstance<IGameWindowFacade>(),
                 IoC.Container.GetInstance<IPlatform>(),
@@ -36,6 +37,6 @@ namespace Raptor.Factories
                 IoC.Container.GetInstance<IKeyboardInput<KeyCode, KeyboardState>>(),
                 IoC.Container.GetInstance<IMouseInput<MouseButton, MouseState>>(),
                 ContentLoaderFactory.CreateContentLoader(),
-                IoC.Container.GetInstance<OpenGLObservable>());
+                IoC.Container.GetInstance<OpenGLInitObservable>());
     }
 }

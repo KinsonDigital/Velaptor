@@ -97,7 +97,7 @@ namespace Raptor
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
         public static float MapValue(this byte value, float fromStart, float fromStop, float toStart, float toStop)
-            => toStart + ((toStop - (float)toStart) * (((float)value - (float)fromStart) / (fromStop - (float)fromStart)));
+            => toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart)));
 
         /// <summary>
         /// Rotates the <paramref name="vector"/> around the <paramref name="origin"/> at the given <paramref name="angle"/>.
@@ -309,6 +309,26 @@ namespace Raptor
         }
 
         /// <summary>
+        ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned.
+        /// </summary>
+        /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
+        /// <param name="container">The container that the registration applies to.</param>
+        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
+        [ExcludeFromCodeCoverage]
+        internal static void Register<TImplementation>(this Container container, bool suppressDisposal = false)
+            where TImplementation : class
+        {
+            container.Register<TImplementation>();
+
+            if (suppressDisposal)
+            {
+                SuppressDisposableTransientWarning<TImplementation>(container);
+            }
+        }
+
+        /// <summary>
         ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
         ///     a <typeparamref name="TService"/> is requested (transient).
         /// </summary>
@@ -344,7 +364,7 @@ namespace Raptor
         /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
         internal static Image<Rgba32> ToSixLaborImage(in this ImageData image)
         {
-            var result = new Image<Rgba32>(image.Width, image.Height);
+            var result = new Image<Rgba32>((int)image.Width, (int)image.Height);
 
             for (var y = 0; y < result.Height; y++)
             {
@@ -389,7 +409,7 @@ namespace Raptor
                 }
             }
 
-            return new ImageData(pixelData, image.Width, image.Height);
+            return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
         }
     }
 }

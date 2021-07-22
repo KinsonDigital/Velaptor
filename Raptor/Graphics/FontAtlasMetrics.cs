@@ -15,22 +15,22 @@ namespace Raptor.Graphics
         /// <summary>
         /// The number of rows in the atlas.
         /// </summary>
-        public int Rows;
+        public uint Rows;
 
         /// <summary>
         /// The number of columns in the atlas.
         /// </summary>
-        public int Columns;
+        public uint Columns;
 
         /// <summary>
         /// The width of the atlas.
         /// </summary>
-        public int Width;
+        public uint Width;
 
         /// <summary>
         /// The height of the atlas.
         /// </summary>
-        public int Height;
+        public uint Height;
 
         /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is FontAtlasMetrics other &&

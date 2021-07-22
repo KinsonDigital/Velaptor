@@ -4,6 +4,7 @@
 
 namespace RaptorTests.Helpers
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
@@ -46,7 +47,7 @@ namespace RaptorTests.Helpers
         /// <param name="width">The width of the image that the pixels represent.</param>
         /// <param name="height">The heightof the image that the pixels represent.</param>
         /// <returns>The struct to test.</returns>
-        public static ImageData CreateImageData(NETColor color, int width, int height)
+        public static ImageData CreateImageData(NETColor color, uint width, uint height)
             => new ImageData(CreatePixels(color, width, height), width, height);
 
         /// <summary>
@@ -99,6 +100,16 @@ namespace RaptorTests.Helpers
         /// <returns>The resulting image after the draw operationi.</returns>
         public static ImageData Draw(ImageData src, ImageData dest, NETPoint location)
         {
+            if ((location.X < 0 && location.X > dest.Width) ||
+                (location.Y < 0 && location.Y > dest.Height))
+            {
+                var exMsg = "The location to draw is outside of the bounds of the destination image.";
+                exMsg = $"\n\tDestination Size: W:{dest.Width}, H: {dest.Height}";
+                exMsg = $"\n\tDestination Location: X:{location.X}, Y: {location.Y}";
+
+                throw new ArgumentException(nameof(location), exMsg);
+            }
+
             var srcImage = src.ToSixLaborImage();
             var destImage = dest.ToSixLaborImage();
 
@@ -117,7 +128,7 @@ namespace RaptorTests.Helpers
         /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
         public static Image<Rgba32> ToSixLaborImage(this ImageData image)
         {
-            var result = new Image<Rgba32>(image.Width, image.Height);
+            var result = new Image<Rgba32>((int)image.Width, (int)image.Height);
 
             for (var y = 0; y < result.Height; y++)
             {
@@ -160,7 +171,7 @@ namespace RaptorTests.Helpers
                 }
             }
 
-            return new ImageData(pixelData, image.Width, image.Height);
+            return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
         }
 
         /// <summary>
@@ -186,7 +197,7 @@ namespace RaptorTests.Helpers
         /// <param name="width">The width of the image represented by the <see cref="ImageData.Pixels"/>.</param>
         /// <param name="height">The height of the image represented by the <see cref="ImageData.Pixels"/>.</param>
         /// <returns>The 2 dimensional array of pixels to test.</returns>
-        private static NETColor[,] CreatePixels(NETColor color, int width, int height)
+        private static NETColor[,] CreatePixels(NETColor color, uint width, uint height)
         {
             var result = new NETColor[width, height];
 

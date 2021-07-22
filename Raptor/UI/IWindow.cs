@@ -22,9 +22,8 @@ namespace Raptor.UI
         /// <summary>
         /// Shows the window asynchronously.
         /// </summary>
-        /// <param name="dispose">The action to use to dispose of resources once the window has been shut down.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task ShowAsync(Action dispose);
+        Task ShowAsync();
 
         /// <summary>
         /// Closes the window.

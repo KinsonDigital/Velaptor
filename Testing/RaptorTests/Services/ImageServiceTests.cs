@@ -70,8 +70,8 @@ namespace RaptorTests.Services
         public void Save_WhenInvoked_CorrectlySavesImage()
         {
             // Arrange
-            var width = 8;
-            var height = 8;
+            var width = 8u;
+            var height = 8u;
             var expectedPixelData = new NETColor[width, height];
 
             // Fill the pixel data with 3 rows of pixels
@@ -257,7 +257,7 @@ namespace RaptorTests.Services
         ///     color will be asserted againt the given <paramref name="expectedClr"/>.
         /// </remarks>
         [ExcludeFromCodeCoverage]
-        private static void AssertThatPixelsMatch(NETColor[,] pixels, int width, int height, NETRectangle assertRect, NETColor expectedClr)
+        private static void AssertThatPixelsMatch(NETColor[,] pixels, uint width, uint height, NETRectangle assertRect, NETColor expectedClr)
         {
             Assert.All(pixels, width, height, (pixel, x, y) =>
             {

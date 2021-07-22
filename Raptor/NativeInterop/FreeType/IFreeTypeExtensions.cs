@@ -1,4 +1,4 @@
-﻿// <copyright file="IFreeTypeExtensions.cs" company="KinsonDigital">
+// <copyright file="IFreeTypeExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -30,7 +30,7 @@ namespace Raptor.NativeInterop.FreeType
         /// <param name="glyphChar">The glyph character to create the image from.</param>
         /// <param name="glyphIndex">The index of the glyph in the font file.</param>
         /// <returns>The 8-bit gray scale image pixel data with the width and height.</returns>
-        (byte[] pixelData, int width, int height) CreateGlyphImage(IntPtr facePtr, char glyphChar, uint glyphIndex);
+        (byte[] pixelData, uint width, uint height) CreateGlyphImage(IntPtr facePtr, char glyphChar, uint glyphIndex);
 
         /// <summary>
         /// Creates all of the glyph metrics for each glyph.

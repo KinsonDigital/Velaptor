@@ -22,7 +22,7 @@ namespace Raptor.Services
             var rgba32Image = Image.Load<Rgba32>(path);
             rgba32Image.Mutate(context => context.Flip(FlipMode.Vertical));
 
-            var imageData = new ImageData(new NETColor[rgba32Image.Width, rgba32Image.Height], rgba32Image.Width, rgba32Image.Height);
+            var imageData = new ImageData(new NETColor[rgba32Image.Width, rgba32Image.Height], (uint)rgba32Image.Width, (uint)rgba32Image.Height);
 
             for (var y = 0; y < rgba32Image.Height; y++)
             {

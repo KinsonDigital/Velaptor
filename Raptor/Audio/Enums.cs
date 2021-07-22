@@ -4,10 +4,11 @@
 
 namespace Raptor.Audio
 {
+    // TODO: This should eventually be replaced by the Raptor.NativeInterop.OpenAL.ALFormat type
     /// <summary>
     /// Represents different audio formats.
     /// </summary>
-    public enum AudioFormat
+    internal enum AudioFormat
     {
         /// <summary>
         /// 8 bit single channel format.

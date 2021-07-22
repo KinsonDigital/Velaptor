@@ -11,7 +11,7 @@ namespace RaptorTests.Helpers
     using System.Linq;
     using Xunit;
     using Xunit.Sdk;
-
+    
     /// <summary>
     /// Provides helper methods for the <see cref="XUnit"/>'s <see cref="Assert"/> class.
     /// </summary>
@@ -218,7 +218,7 @@ namespace RaptorTests.Helpers
         ///     The last 2 <see langword="in"/> parameters T2 and T3 of type <see langword="int"/> of the <paramref name="action"/>
         ///     is the X and Y location within the <paramref name="collection"/> that failed the assertion.
         /// </remarks>
-        public static void All<T>(T[,] collection, int width, int height, Action<T, int, int> action)
+        public static void All<T>(T[,] collection, uint width, uint height, Action<T, int, int> action)
         {
             var actionInvoked = false;
 

@@ -77,7 +77,7 @@ namespace Raptor.UI
         /// <summary>
         /// Gets or sets the type of border that the <see cref="IWindow"/> will have.
         /// </summary>
-        BorderType TypeOfBorder { get; set; }
+        WindowBorder TypeOfBorder { get; set; }
 
         /// <summary>
         /// Gets or sets the content loader for loading content.

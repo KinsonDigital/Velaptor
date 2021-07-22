@@ -98,7 +98,7 @@ namespace Raptor.UI
         }
 
         /// <inheritdoc/>
-        public BorderType TypeOfBorder
+        public WindowBorder TypeOfBorder
         {
             get => this.window.TypeOfBorder;
             set => this.window.TypeOfBorder = value;
@@ -122,9 +122,11 @@ namespace Raptor.UI
         /// <summary>
         /// Shows the window asynchronously.
         /// </summary>
-        /// <param name="dispose">The action to use to dispose of resources once the window has been shut down.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        public async Task ShowAsync(Action dispose) => await this.window.ShowAsync(dispose).ConfigureAwait(true);
+        /// <remarks>
+        ///     This runs the window on another thread.
+        /// </remarks>
+        public async Task ShowAsync() => await this.window.ShowAsync().ConfigureAwait(true);
 
         /// <summary>
         /// Invoked when the window is loaded.
@@ -189,7 +191,6 @@ namespace Raptor.UI
             {
                 if (disposing)
                 {
-                    ContentLoader.Dispose();
                     this.window.Dispose();
                 }
 

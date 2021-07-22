@@ -6,12 +6,11 @@ namespace RaptorTests.OpenGL
 {
     using System;
     using Moq;
-    using OpenTK.Graphics.OpenGL4;
     using Raptor.NativeInterop;
     using Raptor.OpenGL;
     using Raptor.Services;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Initializes a new instance of <see cref="ShaderProgramTests"/>.
@@ -25,6 +24,7 @@ namespace RaptorTests.OpenGL
         private readonly uint vertextShaderID = 1234;
         private readonly uint fragShaderID = 5678;
         private readonly uint shaderProgramID = 1928;
+        private readonly Mock<IGLInvokerExtensions> mockGLInvokerExtensions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
@@ -49,14 +49,16 @@ namespace RaptorTests.OpenGL
 
             var getShaderStatusCode = 1;
             var getProgramStatusCode = 1;
-            this.mockGLInvoker.Setup(m => m.CreateShader(ShaderType.VertexShader)).Returns(this.vertextShaderID);
-            this.mockGLInvoker.Setup(m => m.CreateShader(ShaderType.FragmentShader)).Returns(this.fragShaderID);
-            this.mockGLInvoker.Setup(m => m.GetShader(It.IsAny<uint>(), ShaderParameter.CompileStatus, out getShaderStatusCode));
-            this.mockGLInvoker.Setup(m => m.GetProgram(It.IsAny<uint>(), GetProgramParameterName.LinkStatus, out getProgramStatusCode));
+            this.mockGLInvoker.Setup(m => m.CreateShader(GLShaderType.VertexShader)).Returns(this.vertextShaderID);
+            this.mockGLInvoker.Setup(m => m.CreateShader(GLShaderType.FragmentShader)).Returns(this.fragShaderID);
+            this.mockGLInvoker.Setup(m => m.GetShader(It.IsAny<uint>(), GLShaderParameter.CompileStatus, out getShaderStatusCode));
+            this.mockGLInvoker.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus, out getProgramStatusCode));
             this.mockGLInvoker.Setup(m => m.CreateProgram()).Returns(this.shaderProgramID);
 
-            this.mockGLInvoker.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLInvoker.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
+
+            this.mockGLInvokerExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLInvokerExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLInvokerExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
         }
 
         #region Method Tests
@@ -86,11 +88,11 @@ namespace RaptorTests.OpenGL
 
             // Assert
             this.mockLoader.Verify(m => m.LoadResource(It.IsAny<string>()), Times.Exactly(2));
-            this.mockGLInvoker.Verify(m => m.CreateShader(It.IsAny<ShaderType>()), Times.Exactly(2));
+            this.mockGLInvoker.Verify(m => m.CreateShader(It.IsAny<GLShaderType>()), Times.Exactly(2));
             this.mockGLInvoker.Verify(m => m.CreateProgram(), Times.Once());
             this.mockGLInvoker.Verify(m => m.AttachShader(It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
             this.mockGLInvoker.Verify(m => m.LinkProgram(It.IsAny<uint>()), Times.Once());
-            this.mockGLInvoker.Verify(m => m.LinkProgramSuccess(It.IsAny<uint>()), Times.Once());
+            this.mockGLInvokerExtensions.Verify(m => m.LinkProgramSuccess(It.IsAny<uint>()), Times.Once());
             this.mockGLInvoker.Verify(m => m.DetachShader(It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
             this.mockGLInvoker.Verify(m => m.DeleteShader(It.IsAny<uint>()), Times.Exactly(2));
         }
@@ -106,7 +108,7 @@ namespace RaptorTests.OpenGL
             program.Init();
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.CreateShader(ShaderType.VertexShader), Times.Once());
+            this.mockGLInvoker.Verify(m => m.CreateShader(GLShaderType.VertexShader), Times.Once());
             this.mockGLInvoker.Verify(m => m.ShaderSource(this.vertextShaderID, expected), Times.Once());
             this.mockGLInvoker.Verify(m => m.CompileShader(this.vertextShaderID), Times.Once());
         }
@@ -122,7 +124,7 @@ namespace RaptorTests.OpenGL
             program.Init();
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.CreateShader(ShaderType.FragmentShader), Times.Once());
+            this.mockGLInvoker.Verify(m => m.CreateShader(GLShaderType.FragmentShader), Times.Once());
             this.mockGLInvoker.Verify(m => m.ShaderSource(this.fragShaderID, expected), Times.Once());
             this.mockGLInvoker.Verify(m => m.CompileShader(this.fragShaderID), Times.Once());
         }
@@ -164,9 +166,9 @@ namespace RaptorTests.OpenGL
         {
             // Arrange
             var statusCode = 0;
-            this.mockGLInvoker.Setup(m => m.GetShader(this.vertextShaderID, ShaderParameter.CompileStatus, out statusCode));
+            this.mockGLInvoker.Setup(m => m.GetShader(this.vertextShaderID, GLShaderParameter.CompileStatus, out statusCode));
             this.mockGLInvoker.Setup(m => m.GetShaderInfoLog(this.vertextShaderID)).Returns("Vertex Shader Compile Error");
-            this.mockGLInvoker.Setup(m => m.ShaderCompileSuccess(this.vertextShaderID)).Returns(false);
+            this.mockGLInvokerExtensions.Setup(m => m.ShaderCompileSuccess(this.vertextShaderID)).Returns(false);
             var program = CreateProgram();
 
             // Act & Assert
@@ -181,9 +183,9 @@ namespace RaptorTests.OpenGL
         {
             // Arrange
             var statusCode = 0;
-            this.mockGLInvoker.Setup(m => m.GetProgram(this.shaderProgramID, GetProgramParameterName.LinkStatus, out statusCode));
+            this.mockGLInvoker.Setup(m => m.GetProgram(this.shaderProgramID, GLProgramParameterName.LinkStatus, out statusCode));
             this.mockGLInvoker.Setup(m => m.GetProgramInfoLog(this.shaderProgramID)).Returns("Program Linking Error");
-            this.mockGLInvoker.Setup(m => m.LinkProgramSuccess(this.shaderProgramID)).Returns(false);
+            this.mockGLInvokerExtensions.Setup(m => m.LinkProgramSuccess(this.shaderProgramID)).Returns(false);
             var program = CreateProgram();
 
             // Act & Assert
@@ -227,6 +229,6 @@ namespace RaptorTests.OpenGL
         /// Creates an instance of <see cref="ShaderProgram"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test with.</returns>
-        private ShaderProgram CreateProgram() => new (this.mockGLInvoker.Object, this.mockLoader.Object);
+        private ShaderProgram CreateProgram() => new (this.mockGLInvoker.Object, this.mockGLInvokerExtensions.Object, this.mockLoader.Object);
     }
 }

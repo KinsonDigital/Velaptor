@@ -15,8 +15,12 @@ namespace RaptorSandBox
             window = WindowFactory.CreateWindow(1020, 800);
             gameWindow = new MyWindow(window);
 
+            // Run the game synchronously
+            //gameWindow.Show();
+
             // Run the game asynchronously
             RunGame().Wait();
+            gameWindow.Dispose();
         }
 
         /// <summary>
@@ -30,11 +34,7 @@ namespace RaptorSandBox
                 throw new NullReferenceException($"The '{nameof(gameWindow)}' must not be null.");
             }
 
-            await gameWindow.ShowAsync(() =>
-            {
-                // Dispose of the game window on the same thread that the window was shown on
-                gameWindow.Dispose();
-            });
+            await gameWindow.ShowAsync();
         }
     }
 }

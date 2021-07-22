@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLObservableTests.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLContextObservableTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,25 +10,27 @@ namespace RaptorTests.Observables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="OpenGLObservable"/>.
+    /// Tests the <see cref="OpenGLContextObservable"/> class.
     /// </summary>
-    public class OpenGLObservableTests
+    public class OpenGLContextObservableTests
     {
         #region Method Tests
         [Fact]
         public void OnOpenGLInitialized_WhenInvoked_SendsPushNotification()
         {
             // Arrange
-            var observer = new Mock<IObserver<bool>>();
+            var notificationData = new object();
 
-            var openGLObservable = new OpenGLObservable();
+            var observer = new Mock<IObserver<object>>();
+
+            var openGLObservable = new OpenGLContextObservable();
             openGLObservable.Subscribe(observer.Object);
 
             // Act
-            openGLObservable.OnOpenGLInitialized();
+            openGLObservable.OnGLContextCreated(notificationData);
 
             // Assert
-            observer.Verify(m => m.OnNext(true), Times.Once());
+            observer.Verify(m => m.OnNext(notificationData), Times.Once());
         }
         #endregion
     }

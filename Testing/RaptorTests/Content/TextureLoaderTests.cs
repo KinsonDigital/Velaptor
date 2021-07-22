@@ -5,9 +5,9 @@
 namespace RaptorTests.Content
 {
     using Moq;
-    using OpenTK.Graphics.OpenGL4;
     using Raptor.Content;
     using Raptor.NativeInterop;
+    using Raptor.OpenGL;
     using Raptor.Services;
     using Xunit;
 
@@ -51,7 +51,7 @@ namespace RaptorTests.Content
             Assert.NotNull(actual);
             Assert.Equal(actual.Path, this.textureFilePath);
             this.mockGL.Verify(m => m.GenTexture(), Times.Once());
-            this.mockGL.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
+            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace RaptorTests.Content
             // Assert
             Assert.Equal(textureA.Name, textureB.Name);
             Assert.Equal(textureA.Path, textureB.Path);
-            this.mockGL.Verify(m => m.ObjectLabel(ObjectLabelIdentifier.Texture, It.IsAny<uint>(), -1, TextureFileName), Times.Once());
+            this.mockGL.Verify(m => m.ObjectLabel(GLObjectIdentifier.Texture, It.IsAny<uint>(), 1u, TextureFileName), Times.Once());
         }
 
         [Fact]

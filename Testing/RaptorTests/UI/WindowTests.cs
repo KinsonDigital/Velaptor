@@ -4,6 +4,7 @@
 
 namespace RaptorTests.UI
 {
+#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Numerics;
     using Moq;
@@ -13,6 +14,7 @@ namespace RaptorTests.UI
     using RaptorTests.Fakes;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
+#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="Window"/> class.
@@ -161,11 +163,11 @@ namespace RaptorTests.UI
             var window = CreateWindow();
 
             // Act
-            window.TypeOfBorder = BorderType.Resizable;
+            window.TypeOfBorder = WindowBorder.Resizable;
             _ = window.TypeOfBorder;
 
             // Assert
-            this.mockWindow.VerifySet(p => p.TypeOfBorder = BorderType.Resizable, Times.Once());
+            this.mockWindow.VerifySet(p => p.TypeOfBorder = WindowBorder.Resizable, Times.Once());
             this.mockWindow.VerifyGet(p => p.TypeOfBorder, Times.Once());
         }
 
@@ -222,7 +224,6 @@ namespace RaptorTests.UI
 
             // Assert
             this.mockWindow.Verify(m => m.Dispose(), Times.Once());
-            this.mockContentLoader.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 

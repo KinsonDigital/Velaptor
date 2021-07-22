@@ -8,8 +8,7 @@ namespace Raptor.OpenGL
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
+    using System.Numerics;
     using Raptor.NativeInterop;
 
     /// <inheritdoc/>
@@ -21,7 +20,7 @@ namespace Raptor.OpenGL
         private uint vertexArrayID;
         private uint vertexBufferID;
         private uint indexBufferID;
-        private uint totalQuads = 10;
+        private uint totalQuads = 10u;
         private uint totalVertexBytes;
         private uint totalQuadSizeInBytes;
         private bool isDisposed;
@@ -106,7 +105,7 @@ namespace Raptor.OpenGL
 
             var offset = this.totalQuadSizeInBytes * quadID;
 
-            this.gl.BufferSubData(BufferTarget.ArrayBuffer, new IntPtr(offset), this.totalQuadSizeInBytes, ref this.quadData);
+            this.gl.BufferSubData(GLBufferTarget.ArrayBuffer, (nint)offset, this.totalQuadSizeInBytes, ref this.quadData);
         }
 
         /// <inheritdoc/>
@@ -163,12 +162,12 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Unbinds the index buffer that is attached to the vertex array.
         /// </summary>
-        private void UnbindIndexBuffer() => this.gl.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+        private void UnbindIndexBuffer() => this.gl.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
 
         /// <summary>
         /// Unbinds the vertex buffer.
         /// </summary>
-        private void UnbindVertexBuffer() => this.gl.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        private void UnbindVertexBuffer() => this.gl.BindBuffer(GLBufferTarget.ArrayBuffer, 0);
 
         /// <summary>
         /// Sets up the attribute pointers in the vertex buffer to hold vertex buffer data for each pixel.
@@ -199,7 +198,7 @@ namespace Raptor.OpenGL
                 this.gl.EnableVertexArrayAttrib(vertexArrayID, i);
 
                 offset = i == 0 ? 0 : offset + (previousSize * VertexDataAnalyzer.GetPrimitiveByteSize(typeof(float)));
-                this.gl.VertexAttribPointer(i, totalElements, attribType, false, stride, offset);
+                this.gl.VertexAttribPointer(i, (int)totalElements, attribType, false, stride, offset);
 
                 previousSize = totalElements;
             }
@@ -212,9 +211,8 @@ namespace Raptor.OpenGL
         /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
         private void CreateVertexBuffer()
         {
-            // TODO: Convert values that should be uint to uint
             this.totalVertexBytes = VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
-            this.totalQuadSizeInBytes = this.totalVertexBytes * 4;
+            this.totalQuadSizeInBytes = this.totalVertexBytes * 4u;
 
             this.vertexBufferID = this.gl.GenBuffer();
 
@@ -259,14 +257,14 @@ namespace Raptor.OpenGL
             var sizeInBytes = this.totalQuadSizeInBytes * this.totalQuads;
 
             BindVertexBuffer();
-            this.gl.BufferData(BufferTarget.ArrayBuffer, sizeInBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            this.gl.BufferData(GLBufferTarget.ArrayBuffer, sizeInBytes, IntPtr.Zero, GLBufferUsageHint.DynamicDraw);
             UnbindVertexBuffer();
         }
 
         /// <summary>
         /// Binds the vertex buffer.
         /// </summary>
-        private void BindVertexBuffer() => this.gl.BindBuffer(BufferTarget.ArrayBuffer, this.vertexBufferID);
+        private void BindVertexBuffer() => this.gl.BindBuffer(GLBufferTarget.ArrayBuffer, this.vertexBufferID);
 
         /// <summary>
         /// Uploads the given <paramref name="data"/> to the GPU.
@@ -276,11 +274,17 @@ namespace Raptor.OpenGL
         {
             BindIndexBuffer();
 
-            this.gl.BufferData(
-                BufferTarget.ElementArrayBuffer,
-                (uint)data.Length * sizeof(uint),
-                data,
-                BufferUsageHint.DynamicDraw);
+            unsafe
+            {
+                fixed (uint* dataPtr = data)
+                {
+                    this.gl.BufferData(
+                        GLBufferTarget.ElementArrayBuffer,
+                        (uint)(data.Length * sizeof(uint)),
+                        (IntPtr)dataPtr,
+                        GLBufferUsageHint.DynamicDraw);
+                }
+            }
 
             UnbindIndexBuffer();
         }
@@ -288,7 +292,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Binds the index buffer.
         /// </summary>
-        private void BindIndexBuffer() => this.gl.BindBuffer(BufferTarget.ElementArrayBuffer, this.indexBufferID);
+        private void BindIndexBuffer() => this.gl.BindBuffer(GLBufferTarget.ElementArrayBuffer, this.indexBufferID);
 
         /// <summary>
         /// Binds the vertex array.

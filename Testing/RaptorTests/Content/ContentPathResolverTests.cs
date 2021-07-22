@@ -11,7 +11,7 @@ namespace RaptorTests.Content
     using Raptor.Content;
     using RaptorTests.Fakes;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="ContentPathResolver"/> class.

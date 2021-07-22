@@ -8,7 +8,6 @@ namespace Raptor.Content
     using System.IO;
     using Raptor.Audio;
     using Raptor.Content.Exceptions;
-    using Raptor.Exceptions;
     using Raptor.Graphics;
 
     /// <summary>

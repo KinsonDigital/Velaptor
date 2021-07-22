@@ -13,10 +13,34 @@
     <Description>2D game or application development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
     <Copyright>Copyright ©2020 Kinson Digital</Copyright>
     <PackageTags>raptor 2D game games framework</PackageTags>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>DebugOPENTK;ReleaseOPENTK;DebugSILK;ReleaseSILK</Configurations>
     <Version>0.27.0</Version>
     <AssemblyVersion>0.27.0</AssemblyVersion>
     <FileVersion>0.27.0</FileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(OPENTK)|AnyCPU'">
+    <DefineConstants>TRACE;OPENTK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(SILK)|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE;SILK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(OPENTK)|AnyCPU'">
+    <DefineConstants>TRACE;OPENTK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(SILK)|AnyCPU'">
+    <DefineConstants>TRACE;SILK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOPENTK|AnyCPU'">
+    <DefineConstants>TRACE;OPENTK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOPENTK|AnyCPU'">
+    <DefineConstants>TRACE;OPENTK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugSILK|AnyCPU'">
+    <DefineConstants>TRACE;SILK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseSILK|AnyCPU'">
+    <DefineConstants>TRACE;SILK</DefineConstants>
   </PropertyGroup>
 
 
@@ -52,6 +76,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NVorbis" Version="0.10.1" />
     <PackageReference Include="OpenTK" Version="4.2.0" />
+    <PackageReference Include="Silk.NET" Version="2.4.0" />
+    <PackageReference Include="Silk.NET.OpenAL.Extensions.EXT" Version="2.4.0" />
     <PackageReference Include="SimpleInjector" Version="5.3.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -81,7 +107,7 @@
 
 
   <ItemGroup>
-    <Folder Include="Libs\win-x64\" />
     <Folder Include="Libs\win-x86\" />
+    <Folder Include="NativeInterop\OpenGL\" />
   </ItemGroup>
 </Project>

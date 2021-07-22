@@ -28,12 +28,12 @@ namespace Raptor.Graphics
         /// <summary>
         /// Gets or sets the width of the image.
         /// </summary>
-        public readonly int Width;
+        public readonly uint Width;
 
         /// <summary>
         /// Gets or sets the height of the iamge.
         /// </summary>
-        public readonly int Height;
+        public readonly uint Height;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageData"/> struct.
@@ -41,7 +41,7 @@ namespace Raptor.Graphics
         /// <param name="pixels">The pixel data of the image.</param>
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
-        public ImageData(Color[,] pixels, int width, int height)
+        public ImageData(Color[,] pixels, uint width, uint height)
         {
             this.Pixels = pixels;
             this.Width = width;
