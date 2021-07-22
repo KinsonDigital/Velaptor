@@ -7,8 +7,8 @@ namespace Raptor.Graphics
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using OpenTK.Graphics.OpenGL4;
     using Raptor.NativeInterop;
+    using Raptor.OpenGL;
 
     /// <summary>
     /// The texture to render to a screen.
@@ -26,7 +26,7 @@ namespace Raptor.Graphics
         [ExcludeFromCodeCoverage]
         public Texture(string name, string path, ImageData imageData)
         {
-            this.gl = new GLInvoker();
+            this.gl = IoC.Container.GetInstance<IGLInvoker>();
             Path = path;
             Init(name, imageData);
         }
@@ -107,17 +107,18 @@ namespace Raptor.Graphics
         {
             ID = this.gl.GenTexture();
 
-            this.gl.BindTexture(TextureTarget.Texture2D, ID);
+            this.gl.BindTexture(GLTextureTarget.Texture2D, ID);
 
-            Width = imageData.Width;
-            Height = imageData.Height;
+            // TODO: Make the Texture.Width and Texture.Height uint data type
+            Width = (int)imageData.Width;
+            Height = (int)imageData.Height;
 
             Name = name;
 
             UploadDataToGPU(name, imageData);
 
             // Unbind
-            this.gl.BindTexture(TextureTarget.Texture2D, 0);
+            this.gl.BindTexture(GLTextureTarget.Texture2D, 0);
         }
 
         /// <summary>
@@ -149,40 +150,40 @@ namespace Raptor.Graphics
                 rowBytes.Clear();
             }
 
-            this.gl.ObjectLabel(ObjectLabelIdentifier.Texture, ID, -1, name);
+            this.gl.ObjectLabel(GLObjectIdentifier.Texture, ID, 1u, name);
 
             // Set the min and mag filters to linear
             this.gl.TexParameter(
-                target: TextureTarget.Texture2D,
-                pname: TextureParameterName.TextureMinFilter,
-                param: (int)TextureMinFilter.Linear);
+                target: GLTextureTarget.Texture2D,
+                pname: GLTextureParameterName.TextureMinFilter,
+                param: GLTextureMinFilter.Linear);
 
             this.gl.TexParameter(
-                target: TextureTarget.Texture2D,
-                pname: TextureParameterName.TextureMagFilter,
-                param: (int)TextureMagFilter.Linear);
+                target: GLTextureTarget.Texture2D,
+                pname: GLTextureParameterName.TextureMagFilter,
+                param: GLTextureMagFilter.Linear);
 
-            // Sett the x(S) and y(T) axis wrap mode to repeat
+            // Set the x(S) and y(T) axis wrap mode to repeat
             this.gl.TexParameter(
-                target: TextureTarget.Texture2D,
-                pname: TextureParameterName.TextureWrapS,
-                param: (int)TextureWrapMode.ClampToEdge);
+                target: GLTextureTarget.Texture2D,
+                pname: GLTextureParameterName.TextureWrapS,
+                param: GLTextureWrapMode.ClampToEdge);
 
             this.gl.TexParameter(
-                target: TextureTarget.Texture2D,
-                pname: TextureParameterName.TextureWrapT,
-                param: (int)TextureWrapMode.ClampToEdge);
+                target: GLTextureTarget.Texture2D,
+                pname: GLTextureParameterName.TextureWrapT,
+                param: GLTextureWrapMode.ClampToEdge);
 
             // Load the texture data to the GPU for the currently active texture slot
-            this.gl.TexImage2D(
-                target: TextureTarget.Texture2D,
+            this.gl.TexImage2D<byte>(
+                target: GLTextureTarget.Texture2D,
                 level: 0,
-                PixelInternalFormat.Rgba,
+                GLInternalFormat.Rgba,
                 width: imageData.Width,
                 height: imageData.Height,
                 border: 0,
-                format: PixelFormat.Rgba,
-                type: PixelType.UnsignedByte,
+                format: GLPixelFormat.Rgba,
+                type: GLPixelType.UnsignedByte,
                 pixels: pixelData.ToArray());
         }
     }

@@ -8,6 +8,7 @@ namespace Raptor.Audio
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
+    using Raptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Decodes OGG audio data files.
@@ -60,8 +61,8 @@ namespace Raptor.Audio
 
             result.Format = this.audioDataStream.Channels switch
             {
-                1 => AudioFormat.Mono32Float,
-                2 => AudioFormat.StereoFloat32,
+                1 => ALFormat.MonoFloat32,
+                2 => ALFormat.StereoFloat32,
                 _ => throw new Exception("Only supported formats are Mono 32-bit and Stereo 32-bit."),
             };
 

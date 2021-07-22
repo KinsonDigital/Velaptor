@@ -10,19 +10,17 @@ namespace Raptor.OpenGL
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
-    using OpenTK.Windowing.Common;
     using Raptor.Content;
     using Raptor.Input;
     using Raptor.NativeInterop;
     using Raptor.Observables;
     using Raptor.Services;
     using Raptor.UI;
-    using TKMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
-    using GLWindowState = OpenTK.Windowing.Common.WindowState;
-    using RaptorMouseButton = Raptor.Input.MouseButton;
     using SysVector2 = System.Numerics.Vector2;
+
+    // TODO: Need to normalize these 2 enums and figure out which one to use if any at all
+    using RaptorMouseButton = Raptor.Input.MouseButton;
+    using TKMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
@@ -32,14 +30,14 @@ namespace Raptor.OpenGL
     {
         private const string NullParamExceptionMessage = "The parameter must not be null.";
         private readonly IGLInvoker gl;
+        private readonly IGLFWInvoker glfw;
         private readonly ISystemMonitorService systemMonitorService;
         private readonly IGameWindowFacade windowFacade;
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
         private readonly IKeyboardInput<KeyCode, KeyboardState> keyboard;
         private readonly IMouseInput<RaptorMouseButton, MouseState> mouse;
-        private readonly OpenGLObservable glObservable;
-        private DebugProc? debugProc;
+        private readonly OpenGLInitObservable glObservable;
         private bool isShuttingDown;
         private bool firstRenderInvoked;
         private bool isDiposed;
@@ -62,6 +60,7 @@ namespace Raptor.OpenGL
             int width,
             int height,
             IGLInvoker glInvoker,
+            IGLFWInvoker glfwInvoker,
             ISystemMonitorService systemMonitorService,
             IGameWindowFacade windowFacade,
             IPlatform platform,
@@ -69,11 +68,16 @@ namespace Raptor.OpenGL
             IKeyboardInput<KeyCode, KeyboardState> keyboard,
             IMouseInput<RaptorMouseButton, MouseState> mouse,
             IContentLoader contentLoader,
-            OpenGLObservable glObservable)
+            OpenGLInitObservable glObservable)
         {
             if (glInvoker is null)
             {
                 throw new ArgumentNullException(nameof(glInvoker), NullParamExceptionMessage);
+            }
+
+            if (glfwInvoker is null)
+            {
+                throw new ArgumentNullException(nameof(glfwInvoker), NullParamExceptionMessage);
             }
 
             if (systemMonitorService is null)
@@ -112,6 +116,7 @@ namespace Raptor.OpenGL
             }
 
             this.gl = glInvoker;
+            this.glfw = glfwInvoker;
             this.systemMonitorService = systemMonitorService;
             this.windowFacade = windowFacade;
             this.platform = platform;
@@ -140,7 +145,7 @@ namespace Raptor.OpenGL
             {
                 if (CachedPosition is null)
                 {
-                    throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
+                    throw new Exception($"There was an issue getting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(Position)}' property value.");
                 }
 
                 return CachedPosition.GetValue();
@@ -149,7 +154,7 @@ namespace Raptor.OpenGL
             {
                 if (CachedPosition is null)
                 {
-                    throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(Position)}' property value.");
+                    throw new Exception($"There was an issue getting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(Position)}' property value.");
                 }
 
                 CachedPosition.SetValue(value);
@@ -187,7 +192,7 @@ namespace Raptor.OpenGL
             {
                 if (CachedWindowState is null)
                 {
-                    throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
+                    throw new Exception($"There was an issue getting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(WindowState)}' property value.");
                 }
 
                 return CachedWindowState.GetValue();
@@ -196,7 +201,7 @@ namespace Raptor.OpenGL
             {
                 if (CachedWindowState is null)
                 {
-                    throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(WindowState)}' property value.");
+                    throw new Exception($"There was an issue setting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(WindowState)}' property value.");
                 }
 
                 CachedWindowState.SetValue(value);
@@ -219,13 +224,13 @@ namespace Raptor.OpenGL
         public Action? WinResize { get; set; }
 
         /// <inheritdoc/>
-        public BorderType TypeOfBorder
+        public WindowBorder TypeOfBorder
         {
             get
             {
                 if (CachedTypeOfBorder is null)
                 {
-                    throw new Exception($"There was an issue getting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
+                    throw new Exception($"There was an issue getting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(TypeOfBorder)}' property value.");
                 }
 
                 return CachedTypeOfBorder.GetValue();
@@ -234,7 +239,7 @@ namespace Raptor.OpenGL
             {
                 if (CachedTypeOfBorder is null)
                 {
-                    throw new Exception($"There was an issue setting the '{nameof(IWindow)}.{nameof(TypeOfBorder)}' property value.");
+                    throw new Exception($"There was an issue setting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(TypeOfBorder)}' property value.");
                 }
 
                 CachedTypeOfBorder.SetValue(value);
@@ -277,7 +282,7 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Gets the cache for the <see cref="TypeOfBorder"/> property.
         /// </summary>
-        public CachedValue<BorderType>? CachedTypeOfBorder { get; private set; }
+        public CachedValue<WindowBorder>? CachedTypeOfBorder { get; private set; }
 
         /// <summary>
         /// Gets the cache for the <see cref="Position"/> property.
@@ -287,28 +292,26 @@ namespace Raptor.OpenGL
         /// <inheritdoc/>
         public void Show()
         {
-            SetupWindow();
-
+            this.windowFacade?.PreInit();
+            RegisterEvents();
             this.windowFacade?.Show();
         }
 
         /// <inheritdoc/>
-        public async Task ShowAsync(Action dispose)
+        public async Task ShowAsync()
         {
             this.taskService.SetAction(
                 () =>
                 {
-                    SetupWindow();
+                    this.windowFacade?.PreInit();
+                    RegisterEvents();
                     this.windowFacade?.Show();
                 });
 
             this.taskService.Start();
 
             await this.taskService.ContinueWith(
-                (t) =>
-                {
-                    dispose();
-                },
+                _ => { },
                 TaskContinuationOptions.ExecuteSynchronously, // Execute the continuation on the same thread as the show task
                 TaskScheduler.Default);
         }
@@ -324,7 +327,7 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Maps the given OpenGL mouse button to a <see cref="Raptor.Input.MouseButton"/>.
+        /// Maps the given OpenGL mouse button to a <see cref="RaptorMouseButton"/>.
         /// </summary>
         /// <param name="from">The OpenGL mouse button to map.</param>
         /// <returns>The mouse button.</returns>
@@ -357,170 +360,19 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Occurs when a keyboard key is pressed into the down position.
-        /// </summary>
-        /// <param name="e">The keyboard info of the event.</param>
-        private void GameWindow_KeyDown(KeyboardKeyEventArgs e)
-        {
-            var mappedKey = (KeyCode)e.Key;
-
-            this.keyboard.SetState(mappedKey, true);
-        }
-
-        /// <summary>
-        /// Occurs when a keyboard key is released to the up position.
-        /// </summary>
-        /// <param name="e">The keyboard info of the event.</param>
-        private void GameWindow_KeyUp(KeyboardKeyEventArgs e)
-        {
-            var mappedKey = (KeyCode)e.Key;
-
-            this.keyboard.SetState(mappedKey, false);
-        }
-
-        /// <summary>
-        /// Occurs every time any mouse is pressed into the down position.
-        /// </summary>
-        /// <param name="e">Information about the mouse event.</param>
-        private void GameWindow_MouseDown(MouseButtonEventArgs e)
-        {
-            var mappedButton = MapMouseButton(e.Button);
-            this.mouse.SetState(mappedButton, true);
-        }
-
-        /// <summary>
-        /// Occurs every time any mouse is released into the up position.
-        /// </summary>
-        /// <param name="e">Information about the mouse event.</param>
-        private void GameWindow_MouseUp(MouseButtonEventArgs e)
-        {
-            var mappedButton = MapMouseButton(e.Button);
-            this.mouse.SetState(mappedButton, false);
-        }
-
-        /// <summary>
-        /// Occurs every time the mouse is moved over the window.
-        /// </summary>
-        /// <param name="e">Information about the mouse move event.</param>
-        private void GameWindow_MouseMove(MouseMoveEventArgs e)
-        {
-            this.mouse.SetXPos((int)e.X);
-            this.mouse.SetYPos((int)e.Y);
-        }
-
-        /// <summary>
         /// Invokes the <see cref="Initialize"/> action property.
         /// </summary>
-        private void GameWindow_Load() => Initialize?.Invoke();
-
-        /// <summary>
-        /// Starts the unload process.
-        /// </summary>
-        private void GameWindow_Closed() => GameWindow_Unload();
-
-        /// <summary>
-        /// Invokes the <see cref="Update"/> action property.
-        /// </summary>
-        /// <param name="deltaTime">The frame event args.</param>
-        private void GameWindow_UpdateFrame(FrameEventArgs deltaTime)
+        private void GameWindow_Load(object? sender, EventArgs e)
         {
-            if (this.isShuttingDown)
-            {
-                return;
-            }
-
-            var frameTime = new FrameTime()
-            {
-                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(deltaTime.Time * 1000.0)),
-            };
-
-            Update?.Invoke(frameTime);
-        }
-
-        /// <summary>
-        /// Invokes the <see cref="Draw"/> action property.
-        /// </summary>
-        /// <param name="deltaTime">The frame event args.</param>
-        private void GameWindow_RenderFrame(FrameEventArgs deltaTime)
-        {
-            if (this.firstRenderInvoked is false)
-            {
-                GameWindow_UpdateFrame(deltaTime);
-                this.firstRenderInvoked = true;
-            }
-
-            if (this.isShuttingDown)
-            {
-                return;
-            }
-
-            var frameTime = new FrameTime()
-            {
-                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(deltaTime.Time * 1000.0)),
-            };
-
-            if (AutoClearBuffer)
-            {
-                this.gl.Clear(ClearBufferMask.ColorBufferBit);
-            }
-
-            Draw?.Invoke(frameTime);
-
-            this.windowFacade.SwapBuffers();
-        }
-
-        /// <summary>
-        /// Invokes the <see cref="WinResize"/> action property..
-        /// </summary>
-        /// <param name="currentSize">Resize event args.</param>
-        private void GameWindow_Resize(ResizeEventArgs currentSize)
-        {
-            // Update the view port so it is the same size as the window
-            this.gl.Viewport(0, 0, currentSize.Width, currentSize.Height);
-            WinResize?.Invoke();
-        }
-
-        /// <summary>
-        /// Sets the state of the window as shutting down and starts the uninitialize process.
-        /// </summary>
-        private void GameWindow_Unload()
-        {
-            this.isShuttingDown = true;
-            Uninitialize?.Invoke();
-        }
-
-        /// <summary>
-        /// Sets up the OpenGL window.
-        /// </summary>
-        private void SetupWindow()
-        {
+            // OpenGL is ready to take function calls after this Init() call has ran
+            // TODO: Verify that this Init() is being called in unit tests
             this.windowFacade.Init(Width, Height);
 
-            this.windowFacade.Load += GameWindow_Load;
-            this.windowFacade.Unload += GameWindow_Unload;
-            this.windowFacade.UpdateFrame += GameWindow_UpdateFrame;
-            this.windowFacade.RenderFrame += GameWindow_RenderFrame;
-            this.windowFacade.Resize += GameWindow_Resize;
-            this.windowFacade.KeyDown += GameWindow_KeyDown;
-            this.windowFacade.KeyUp += GameWindow_KeyUp;
-            this.windowFacade.MouseDown += GameWindow_MouseDown;
-            this.windowFacade.MouseUp += GameWindow_MouseUp;
-            this.windowFacade.MouseMove += GameWindow_MouseMove;
-            this.windowFacade.Closed += GameWindow_Closed;
+            this.gl.SetupErrorCallback();
+            this.gl.Enable(GLEnableCap.DebugOutput);
+            this.gl.Enable(GLEnableCap.DebugOutputSynchronous);
 
-            this.debugProc = DebugCallback;
-
-            /*NOTE:
-             * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
-             * The garbage collector performs a collect on the delegate passed into GL.DebugMesageCallback()
-             * without the native system knowing about it which causes this exception. The GC.KeepAlive()
-             * method tells the garbage collector to not collect the delegate to prevent this from happening.
-             */
-            GC.KeepAlive(this.debugProc);
-
-            this.gl.Enable(EnableCap.DebugOutput);
-            this.gl.Enable(EnableCap.DebugOutputSynchronous);
-            this.gl.DebugMessageCallback(this.debugProc, Marshal.StringToHGlobalAnsi(string.Empty));
+            this.gl.GLError += GL_GLError;
 
             CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
             CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -541,13 +393,106 @@ namespace Raptor.OpenGL
                 CachedTypeOfBorder.IsCaching = false;
             }
 
+            /* Send a push notification to all subscribers that OpenGL is initialized.
+             * The context of initialized here is that the OpenGL context is set
+             *and the related GLFW window has been created and is ready to go.
+             */
+            this.glObservable.OnOpenGLInitialized();
+
             Initialized = true;
 
-            // Send a push notification to all subscribers that OpenGL is initialized.
-            // The context of initialized here is that the OpenGL context is set
-            // and the related GLFW window has been created and is ready to go.
-            this.glObservable.OnOpenGLInitialized();
+            Initialize?.Invoke();
         }
+
+        /// <summary>
+        /// Sets the state of the window as shutting down and starts the uninitialize process.
+        /// </summary>
+        private void GameWindow_Unload(object? sender, EventArgs e)
+        {
+            this.isShuttingDown = true;
+
+            ContentLoader.Dispose();
+            Uninitialize?.Invoke();
+        }
+
+        /// <summary>
+        /// Invokes the <see cref="WinResize"/> action property..
+        /// </summary>
+        /// <param name="e">Resize event args.</param>
+        private void GameWindow_Resize(object? sender, WindowSizeEventArgs e)
+        {
+            // Update the view port so it is the same size as the window
+            this.gl.Viewport(0, 0, (uint)e.Width, (uint)e.Height);
+            WinResize?.Invoke();
+        }
+
+        /// <summary>
+        /// Invokes the <see cref="Update"/> action property.
+        /// </summary>
+        /// <param name="deltaTime">The frame event args.</param>
+        private void GameWindow_UpdateFrame(object? sender, FrameTimeEventArgs e)
+        {
+            if (this.isShuttingDown)
+            {
+                return;
+            }
+
+            var frameTime = new FrameTime()
+            {
+                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(e.FrameTime * 1000.0)),
+            };
+
+            Update?.Invoke(frameTime);
+        }
+
+        /// <summary>
+        /// Invokes the <see cref="Draw"/> action property.
+        /// </summary>
+        /// <param name="deltaTime">The frame event args.</param>
+        private void GameWindow_RenderFrame(object? sender, FrameTimeEventArgs e)
+        {
+            if (this.firstRenderInvoked is false)
+            {
+                GameWindow_UpdateFrame(sender, e);
+                this.firstRenderInvoked = true;
+            }
+
+            if (this.isShuttingDown)
+            {
+                return;
+            }
+
+            var frameTime = new FrameTime()
+            {
+                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(e.FrameTime * 1000.0)),
+            };
+
+            if (AutoClearBuffer)
+            {
+                this.gl.Clear(GLClearBufferMask.ColorBufferBit);
+            }
+
+            Draw?.Invoke(frameTime);
+
+            this.windowFacade.SwapBuffers();
+        }
+
+        /// <summary>
+        /// Sets up the OpenGL window.
+        /// </summary>
+        private void RegisterEvents()
+        {
+            this.windowFacade.Load += GameWindow_Load;
+            this.windowFacade.Unload += GameWindow_Unload;
+            this.windowFacade.UpdateFrame += GameWindow_UpdateFrame;
+            this.windowFacade.RenderFrame += GameWindow_RenderFrame;
+            this.windowFacade.Resize += GameWindow_Resize;
+        }
+
+        /// <summary>
+        /// Invoked when an OpenGL error occurs.
+        /// </summary>
+        private void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -559,25 +504,25 @@ namespace Raptor.OpenGL
             {
                 if (disposing)
                 {
-                    this.taskService?.Dispose();
                     this.glObservable.Dispose();
 
                     CachedStringProps.Clear();
                     CachedIntProps.Clear();
                     CachedBoolProps.Clear();
 
+                    // TODO: Unit test for this unsubscription
+                    this.gl.GLError -= GL_GLError;
+
                     this.windowFacade.Load -= GameWindow_Load;
                     this.windowFacade.Unload -= GameWindow_Unload;
                     this.windowFacade.UpdateFrame -= GameWindow_UpdateFrame;
                     this.windowFacade.RenderFrame -= GameWindow_RenderFrame;
                     this.windowFacade.Resize -= GameWindow_Resize;
-                    this.windowFacade.KeyDown -= GameWindow_KeyDown;
-                    this.windowFacade.KeyUp -= GameWindow_KeyUp;
-                    this.windowFacade.MouseDown -= GameWindow_MouseDown;
-                    this.windowFacade.MouseUp -= GameWindow_MouseUp;
-                    this.windowFacade.MouseMove -= GameWindow_MouseMove;
-                    this.windowFacade.Closed -= GameWindow_Closed;
                     this.windowFacade.Dispose();
+                    this.taskService?.Dispose();
+
+                    this.gl.Dispose();
+                    this.glfw.Dispose();
                 }
 
                 this.isDiposed = true;
@@ -597,11 +542,11 @@ namespace Raptor.OpenGL
                     defaultValue: width,
                     getterWhenNotCaching: () =>
                     {
-                        return this.windowFacade.Size.X;
+                        return (int)this.windowFacade.Size.X;
                     },
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.Size = new Vector2i(value, this.windowFacade.Size.Y);
+                        this.windowFacade.Size = new (value, this.windowFacade.Size.Y);
                     }));
 
             CachedIntProps.Add(
@@ -610,11 +555,11 @@ namespace Raptor.OpenGL
                     defaultValue: height,
                     getterWhenNotCaching: () =>
                     {
-                        return this.windowFacade.Size.Y;
+                        return (int)this.windowFacade.Size.Y;
                     },
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.Size = new Vector2i(this.windowFacade.Size.X, value);
+                        this.windowFacade.Size = new (this.windowFacade.Size.X, value);
                     }));
         }
 
@@ -662,7 +607,7 @@ namespace Raptor.OpenGL
                 },
                 setterWhenNotCaching: (value) =>
                 {
-                    this.windowFacade.Location = new Vector2i((int)value.X, (int)value.Y);
+                    this.windowFacade.Location = value;
                 });
 
             CachedIntProps.Add(
@@ -695,50 +640,23 @@ namespace Raptor.OpenGL
                 defaultValue: StateOfWindow.Normal,
                 getterWhenNotCaching: () =>
                 {
-                    return (StateOfWindow)this.windowFacade.WindowState;
+                    return this.windowFacade.WindowState;
                 },
                 setterWhenNotCaching: (value) =>
                 {
-                    this.windowFacade.WindowState = (GLWindowState)value;
+                    this.windowFacade.WindowState = value;
                 });
 
-            CachedTypeOfBorder = new CachedValue<BorderType>(
-                defaultValue: BorderType.Resizable,
+            CachedTypeOfBorder = new CachedValue<WindowBorder>(
+                defaultValue: Raptor.WindowBorder.Resizable,
                 getterWhenNotCaching: () =>
                 {
-                    return (BorderType)this.windowFacade.WindowBorder;
+                    return this.windowFacade.WindowBorder;
                 },
                 setterWhenNotCaching: (value) =>
                 {
-                    this.windowFacade.WindowBorder = (WindowBorder)value;
+                    this.windowFacade.WindowBorder = value;
                 });
-        }
-
-        /// <summary>
-        /// Invoked when an OpenGL error occurs.
-        /// </summary>
-        /// <param name="src">The source of the debug message.</param>
-        /// <param name="type">The type of debug message.</param>
-        /// <param name="id">The id of the debug message.</param>
-        /// <param name="severity">The severity of debug message.</param>
-        /// <param name="length">The length of this debug message.</param>
-        /// <param name="message">A pointer to a null-terminated ASCII C string, representing the content of this debug message.</param>
-        /// <param name="userParam">A pointer to a user-specified parameter.</param>
-        private void DebugCallback(DebugSource src, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
-        {
-            var errorMessage = Marshal.PtrToStringAnsi(message);
-
-            errorMessage += $"\n\tSrc: {src}";
-            errorMessage += $"\n\tType: {type}";
-            errorMessage += $"\n\tID: {id}";
-            errorMessage += $"\n\tSeverity: {severity}";
-            errorMessage += $"\n\tLength: {length}";
-            errorMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
-
-            if (severity != DebugSeverity.DebugSeverityNotification)
-            {
-                throw new Exception(errorMessage);
-            }
         }
     }
 }

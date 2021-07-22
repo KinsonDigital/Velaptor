@@ -6,21 +6,20 @@ namespace Raptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
-    using OpenTK.Windowing.GraphicsLibraryFramework;
     using Raptor.Hardware;
     using Raptor.NativeInterop;
 
     /// <summary>
     /// Gets all of the monitors in the system.
     /// </summary>
-    internal class GLFWMonitors
+    internal class GLFWMonitors : IDisposable
     {
         private static bool glfwInitialzed;
         private readonly IGLFWInvoker glfwInvoker;
         private readonly IPlatform platform;
         private readonly List<SystemMonitor> monitors = new ();
+        private bool isDiposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitors"/> class.
@@ -40,7 +39,7 @@ namespace Raptor.OpenGL
 
             Refresh();
 
-            this.glfwInvoker.SetMonitorCallback(MonitorCallback);
+            this.glfwInvoker.OnMonitorChanged += GLFWInvoker_OnMonitorChanged;
         }
 
         /// <summary>
@@ -86,12 +85,34 @@ namespace Raptor.OpenGL
             }
         }
 
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
-        /// Invoked when a monitor is connected or disconnected.
+        /// <inheritdoc/>
         /// </summary>
-        /// <param name="monitor">The handle/pointer to the monitor that just go connected.</param>
-        /// <param name="state">The state of the monitor.</param>
-        [ExcludeFromCodeCoverage]
-        private unsafe void MonitorCallback(Monitor* monitor, ConnectedState state) => Refresh();
+        /// <param name="disposing">True to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.isDiposed)
+            {
+                if (disposing)
+                {
+                    this.glfwInvoker.OnMonitorChanged -= GLFWInvoker_OnMonitorChanged;
+                }
+
+                this.isDiposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Occurs when a monitor is connected or disconnected.
+        /// </summary>
+        private void GLFWInvoker_OnMonitorChanged(object? sender, GLFWMonitorChangedEventArgs e)
+            => Refresh();
     }
 }

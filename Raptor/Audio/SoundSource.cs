@@ -12,7 +12,7 @@ namespace Raptor.Audio
         /// <summary>
         /// The OpenAL id of the sound source.
         /// </summary>
-        public int SourceId;
+        public uint SourceId;
 
         /// <summary>
         /// The total number of seconds of the sound.

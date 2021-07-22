@@ -9,14 +9,13 @@ namespace RaptorTests.Services
     using System;
     using System.Drawing;
     using System.Linq;
+    using System.Numerics;
     using Moq;
-    using OpenTK.Mathematics;
     using Raptor.Graphics;
     using Raptor.Services;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
     using SysVector2 = System.Numerics.Vector2;
-    using TKVector4 = OpenTK.Mathematics.Vector4;
 #pragma warning restore IDE0001 // Name can be simplified
 
     public class BatchManagerServiceTests
@@ -158,11 +157,35 @@ namespace RaptorTests.Services
         public void BuildTransformationMatrix_WhenInvoked_ReturnsCorrectMatrix()
         {
             // Arrange
-            var expected = default(Matrix4);
-            expected.Row0 = new TKVector4(1.4917829f, -0.104528464f, 0f, 0f);
-            expected.Row1 = new TKVector4(0.1567927f, 0.9945219f, 0f, 0f);
-            expected.Row2 = new TKVector4(0f, 0f, 1f, 0f);
-            expected.Row3 = new TKVector4(-0.8f, 0.8f, 0f, 1f);
+            var expected = default(Matrix4x4);
+
+            // Row 0
+            expected.M11 = 1.4917829f;
+            expected.M12 = -0.104528464f;
+            expected.M13 = 0f;
+            expected.M14 = 0f;
+            //expected.Row0 = new TKVector4(1.4917829f, -0.104528464f, 0f, 0f);
+
+            // Row 1
+            expected.M21 = 0.1567927f;
+            expected.M22 = 0.9945219f;
+            expected.M23 = 0f;
+            expected.M24 = 0f;
+            //expected.Row1 = new TKVector4(0.1567927f, 0.9945219f, 0f, 0f);
+
+            // Row 2
+            expected.M31 = 0f;
+            expected.M32 = 0f;
+            expected.M33 = 1f;
+            expected.M34 = 0f;
+            //expected.Row2 = new TKVector4(0f, 0f, 1f, 0f);
+
+            // Row 3
+            expected.M41 = -0.8f;
+            expected.M42 = 0.8f;
+            expected.M43 = 0f;
+            expected.M44 = 1f;
+            //expected.Row3 = new TKVector4(-0.8f, 0.8f, 0f, 1f);
 
             var service = new BatchManagerService();
 

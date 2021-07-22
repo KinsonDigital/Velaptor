@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,6 +12,7 @@ namespace Raptor.Services
     using Raptor.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
+    using Raptor.NativeInterop.FreeType;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
@@ -176,13 +177,13 @@ namespace Raptor.Services
             var possibleRowAndColumnCount = Math.Sqrt(glyphImages.Count);
 
             result.Rows = possibleRowAndColumnCount % 2 != 0
-                ? (int)Math.Round(possibleRowAndColumnCount + 1.0, MidpointRounding.ToZero)
-                : (int)possibleRowAndColumnCount;
+                ? (uint)Math.Round(possibleRowAndColumnCount + 1.0, MidpointRounding.ToZero)
+                : (uint)possibleRowAndColumnCount;
 
             // Add an extra row for certain situations where there are couple extra glyph chars
             result.Rows++;
 
-            result.Columns = (int)possibleRowAndColumnCount;
+            result.Columns = result.Rows;
 
             result.Width = maxGlyphWidth * result.Columns;
             result.Height = maxGlyphHeight * result.Rows;
@@ -199,7 +200,7 @@ namespace Raptor.Services
         /// <returns>
         ///     The <paramref name="glyphMetrics"/> is the font atlas texture data that will eventually be returned.
         /// </returns>
-        private static Dictionary<char, GlyphMetrics> SetGlyphMetricsAtlasBounds(Dictionary<char, ImageData> glyphImages, Dictionary<char, GlyphMetrics> glyphMetrics, int columnCount)
+        private static Dictionary<char, GlyphMetrics> SetGlyphMetricsAtlasBounds(Dictionary<char, ImageData> glyphImages, Dictionary<char, GlyphMetrics> glyphMetrics, uint columnCount)
         {
             const int antiEdgeCroppingMargin = 3;
 
@@ -218,7 +219,7 @@ namespace Raptor.Services
                                    where m.Value.Glyph == glyph.Key
                                    select m.Value).FirstOrDefault();
 
-                glyphMetric.AtlasBounds = new NETRectangle(xPos, yPos, glyph.Value.Width, glyph.Value.Height);
+                glyphMetric.AtlasBounds = new NETRectangle((int)xPos, (int)yPos, (int)glyph.Value.Width, (int)glyph.Value.Height);
                 glyphMetrics[glyph.Key] = glyphMetric;
 
                 if (cellX >= columnCount - 1)
@@ -244,7 +245,7 @@ namespace Raptor.Services
         /// <param name="width">The width of the glyph bitmap.</param>
         /// <param name="height">The height of the glyph bitmap.</param>
         /// <returns>The 32-bit RGBA glyph image data.</returns>
-        private static ImageData ToImageData(byte[] pixelData, int width, int height)
+        private static ImageData ToImageData(byte[] pixelData, uint width, uint height)
         {
             var imageData = new NETColor[width, height];
             var iteration = 0;

@@ -8,11 +8,11 @@ namespace RaptorTests.OpenGL
     using System.Numerics;
     using System.Runtime.InteropServices;
     using Moq;
-    using OpenTK.Windowing.GraphicsLibraryFramework;
     using Raptor;
     using Raptor.Hardware;
     using Raptor.NativeInterop;
     using Raptor.OpenGL;
+    using Silk.NET.GLFW;
     using Xunit;
 
     /// <summary>
@@ -26,8 +26,8 @@ namespace RaptorTests.OpenGL
         private readonly Monitor monitorB;
         private readonly IntPtr monitorHandleA;
         private readonly IntPtr monitorHandleB;
-        private VideoMode videoModeA;
-        private VideoMode videoModeB;
+        private GLFWVideoMode videoModeA;
+        private GLFWVideoMode videoModeB;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitorsTests"/> class.
@@ -37,7 +37,7 @@ namespace RaptorTests.OpenGL
             this.mockPlatform = new Mock<IPlatform>();
             this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
 
-            this.videoModeA = new VideoMode()
+            this.videoModeA = new GLFWVideoMode()
             {
                 Width = 1,
                 Height = 2,
@@ -47,7 +47,7 @@ namespace RaptorTests.OpenGL
                 RefreshRate = 6,
             };
 
-            this.videoModeB = new VideoMode()
+            this.videoModeB = new GLFWVideoMode()
             {
                 Width = 11,
                 Height = 22,
@@ -104,7 +104,7 @@ namespace RaptorTests.OpenGL
             var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
 
             // Assert
-            this.mockGLFWInvoker.Verify(m => m.SetMonitorCallback(It.IsAny<GLFWCallbacks.MonitorCallback>()), Times.Once());
+            this.mockGLFWInvoker.VerifyAdd(m => m.OnMonitorChanged += It.IsAny<EventHandler<GLFWMonitorChangedEventArgs>>(), Times.Once());
         }
 
         [Fact]

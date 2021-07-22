@@ -1,4 +1,4 @@
-using Raptor;
+﻿using Raptor;
 using Raptor.Audio;
 using Raptor.Factories;
 using Raptor.Graphics;
@@ -74,8 +74,9 @@ namespace RaptorSandBox
 
             this.linkTexture = ContentLoader.Load<ITexture>("Link");
 
-            this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
-            this.quietPlaceMusic.SetTimePosition(50);
+            //this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
+            //this.quietPlaceMusic.SetTimePosition(50);
+            //this.quietPlaceMusic.Volume = 10;
 
             this.myFont = ContentLoader.Load<IFont>("TimesNewRoman");
 
@@ -124,7 +125,6 @@ namespace RaptorSandBox
 
                 bubble.Y -= 1;
                 bubble.Y = bubble.Y < 0 ? this.Height : bubble.Y;
-                bubble.Y = Height / 2;
 
                 this.bubbles[i] = bubble;
             }
@@ -185,6 +185,9 @@ namespace RaptorSandBox
             this.spriteBatch?.Render(this.myFont, numbers, 50, 400, Color.MediumPurple);
             this.spriteBatch?.Render(this.myFont, numSymbols, 50, 500, Color.IndianRed);
 
+            // Print mouse location
+            this.spriteBatch?.Render(this.myFont, $"X: {this.currentMouseState.GetX()}, Y: {this.currentMouseState.GetY()}", 10, 35);
+
             this.spriteBatch?.EndBatch();
 
             base.OnDraw(frameTime);
@@ -192,17 +195,19 @@ namespace RaptorSandBox
 
         public override void OnResize() => base.OnResize();
 
+        public override void OnUnload()
+        {
+            this.mainAtlas?.Dispose();
+            this.spriteBatch?.Dispose();
+            this.quietPlaceMusic?.Dispose();
+
+            base.OnUnload();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!this.isDisposed)
             {
-                if (disposing)
-                {
-                    this.mainAtlas?.Dispose();
-                    this.spriteBatch?.Dispose();
-                    this.quietPlaceMusic?.Dispose();
-                }
-
                 this.isDisposed = true;
             }
 

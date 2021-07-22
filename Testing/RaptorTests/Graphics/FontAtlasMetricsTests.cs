@@ -14,12 +14,12 @@ namespace RaptorTests.Graphics
     {
         #region Method Tests
         [Theory]
-        [InlineData(11, 22, 33, 44, true)]
-        [InlineData(1111, 22, 33, 44, false)]
-        [InlineData(11, 2222, 33, 44, false)]
-        [InlineData(11, 22, 3333, 44, false)]
-        [InlineData(11, 22, 33, 4444, false)]
-        public void Equals_WhenObjectsAreEqual_ReturnsTrue(int rows, int cols, int width, int height, bool expected)
+        [InlineData(11u, 22u, 33u, 44u, true)]
+        [InlineData(1111u, 22u, 33u, 44u, false)]
+        [InlineData(11u, 2222u, 33u, 44u, false)]
+        [InlineData(11u, 22u, 3333u, 44u, false)]
+        [InlineData(11u, 22u, 33u, 4444u, false)]
+        public void Equals_WhenObjectsAreEqual_ReturnsTrue(uint rows, uint cols, uint width, uint height, bool expected)
         {
             // Arrange
             var metricsA = default(FontAtlasMetrics);

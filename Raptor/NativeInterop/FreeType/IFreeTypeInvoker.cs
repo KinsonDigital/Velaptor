@@ -3,11 +3,11 @@
 // </copyright>
 
 #pragma warning disable SA1124 // Do not use regions
-#pragma warning disable SA1514 // Element documentation header should be preceded by blank lineot use regions
 namespace Raptor.NativeInterop
 {
     using System;
     using FreeTypeSharp.Native;
+    using Raptor.NativeInterop.FreeType;
 
     // TODO: Refactor invoke calls to follow this => https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
 

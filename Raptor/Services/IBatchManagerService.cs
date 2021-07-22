@@ -7,10 +7,9 @@ namespace Raptor.Services
     using System;
     using System.Collections.ObjectModel;
     using System.Drawing;
-    using OpenTK.Mathematics;
+    using System.Numerics;
     using Raptor.Graphics;
     using Raptor.OpenGL;
-    using SysVector2 = System.Numerics.Vector2;
 
     /// <summary>
     /// Manages the process of batching textures together when rendering them.
@@ -86,6 +85,6 @@ namespace Raptor.Services
         /// <param name="size">The size of the render.</param>
         /// <param name="angle">The angle of the render.</param>
         /// <returns>A 4x4 matrix result of all the parameters to send to the GPU.</returns>
-        Matrix4 BuildTransformationMatrix(SysVector2 portSize, float x, float y, int width, int height, float size, float angle);
+        Matrix4x4 BuildTransformationMatrix(Vector2 portSize, float x, float y, int width, int height, float size, float angle);
     }
 }

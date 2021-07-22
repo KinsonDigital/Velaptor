@@ -7,9 +7,8 @@ namespace RaptorTests.Helpers
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using System.Numerics;
     using Moq;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
     using Raptor.NativeInterop;
     using Raptor.OpenGL;
     using Xunit.Sdk;
@@ -26,9 +25,9 @@ namespace RaptorTests.Helpers
         /// <param name="mock">The mock being verified.</param>
         /// <param name="transform">The updated transform data to send to the GPU.</param>
         /// <param name="times">The total number of times to expect the invocation to occur.</param>
-        public static void VerifyTransformIsUpdated(this Mock<IGLInvoker> mock, Matrix4 transform, Times times)
+        public static void VerifyTransformIsUpdated(this Mock<IGLInvoker> mock, Matrix4x4 transform, Times times)
         {
-            mock.Verify(m => m.UniformMatrix4(It.IsAny<uint>(), true, ref transform), times);
+            mock.Verify(m => m.UniformMatrix4(It.IsAny<int>(), It.IsAny<uint>(), true, transform), times);
         }
 
         /// <summary>
@@ -59,7 +58,7 @@ namespace RaptorTests.Helpers
 
             try
             {
-                mock.Verify(m => m.BindTexture(TextureTarget.Texture2D, It.Is<uint>(arg => isCorrectId(arg))), times);
+                mock.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.Is<uint>(arg => isCorrectId(arg))), times);
 
                 if (textureId != invalidId)
                 {
@@ -98,21 +97,21 @@ namespace RaptorTests.Helpers
         {
             var totalExecutions = 0;
 
-            Func<PrimitiveType, bool> isTriangle = (PrimitiveType arg) =>
+            Func<GLPrimitiveType, bool> isTriangle = (GLPrimitiveType arg) =>
             {
-                if (arg == PrimitiveType.Triangles)
+                if (arg == GLPrimitiveType.Triangles)
                 {
                     totalExecutions++;
                 }
 
-                return arg == PrimitiveType.Triangles;
+                return arg == GLPrimitiveType.Triangles;
             };
 
             try
             {
-                mock.Verify(m => m.DrawElements(It.Is<PrimitiveType>((arg) => isTriangle(arg)),
+                mock.Verify(m => m.DrawElements(It.Is<GLPrimitiveType>((arg) => isTriangle(arg)),
                                                 It.IsAny<uint>(),
-                                                It.IsAny<DrawElementsType>(),
+                                                It.IsAny<GLDrawElementsType>(),
                                                 It.IsAny<IntPtr>()),
                     times);
             }
@@ -151,9 +150,9 @@ namespace RaptorTests.Helpers
              *      Example: 1 * 6 = 6
              *      Example: 2 * 6 = 12
              */
-            mock.Verify(m => m.DrawElements(PrimitiveType.Triangles,
+            mock.Verify(m => m.DrawElements(GLPrimitiveType.Triangles,
                                             6 * totalBatchItems,
-                                            DrawElementsType.UnsignedInt,
+                                            GLDrawElementsType.UnsignedInt,
                                             IntPtr.Zero),
                 times);
         }

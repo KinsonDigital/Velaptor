@@ -9,7 +9,7 @@ namespace Raptor.Content
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Newtonsoft.Json;
-    using Raptor.Exceptions;
+    using Raptor.Content.Exceptions;
     using Raptor.Graphics;
     using Raptor.NativeInterop;
     using Raptor.Services;

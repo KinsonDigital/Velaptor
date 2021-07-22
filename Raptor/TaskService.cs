@@ -88,6 +88,12 @@ namespace Raptor
                         if (this.internalTask.Status == TaskStatus.Running)
                         {
                             Cancel();
+                        }
+
+                        if (this.internalTask.Status == TaskStatus.RanToCompletion ||
+                            this.internalTask.Status == TaskStatus.Faulted ||
+                            this.internalTask.Status == TaskStatus.Canceled)
+                        {
                             this.internalTask.Dispose();
                         }
                     }

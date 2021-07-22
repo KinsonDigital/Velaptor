@@ -9,12 +9,13 @@ namespace Raptor.Audio
     using System.IO;
     using NVorbis;
     using Raptor.Exceptions;
+    using Raptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Streams ogg audio data from a ogg file.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class OggAudioDataStream : IAudioDataStream<float>
+    internal class OggAudioDataStream : IAudioDataStream<float>
     {
         private VorbisReader? vorbisReader;
         private string? fileName;
@@ -63,7 +64,7 @@ namespace Raptor.Audio
         public int Channels => string.IsNullOrEmpty(this.fileName) ? 0 : this.vorbisReader?.Channels ?? 0;
 
         /// <inheritdoc/>
-        public AudioFormat Format
+        public ALFormat Format
         {
             get
             {
@@ -72,7 +73,7 @@ namespace Raptor.Audio
                     return default;
                 }
 
-                return Channels == 1 ? AudioFormat.Mono32Float : AudioFormat.StereoFloat32;
+                return Channels == 1 ? ALFormat.MonoFloat32 : ALFormat.StereoFloat32;
             }
         }
 

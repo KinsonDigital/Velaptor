@@ -8,11 +8,7 @@ namespace RaptorTests.OpenGL
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Threading.Tasks;
     using Moq;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Windowing.Common;
-    using OpenTK.Windowing.GraphicsLibraryFramework;
     using Raptor;
     using Raptor.Content;
     using Raptor.Hardware;
@@ -27,7 +23,6 @@ namespace RaptorTests.OpenGL
     using RaptorMouseButton = Raptor.Input.MouseButton;
     using RaptorMouseState = Raptor.Input.MouseState;
     using SysVector2 = System.Numerics.Vector2;
-    using TKMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 
     /// <summary>
     /// Tests the <see cref="GLWindow"/> class.
@@ -35,6 +30,7 @@ namespace RaptorTests.OpenGL
     public class GLWindowTests
     {
         private readonly Mock<IGLInvoker> mockGLInvoker;
+        private readonly Mock<IGLFWInvoker> mockGLFWInvoker;
         private readonly Mock<ISystemMonitorService> mockMonitorService;
         private readonly Mock<IGameWindowFacade> mockWindowFacade;
         private readonly Mock<IPlatform> mockPlatform;
@@ -42,7 +38,7 @@ namespace RaptorTests.OpenGL
         private readonly Mock<ITaskService> mockTaskService;
         private readonly Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>> mockKeyboard;
         private readonly Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>> mockMouse;
-        private readonly Mock<OpenGLObservable> mockGLObservable;
+        private readonly Mock<OpenGLInitObservable> mockGLObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -50,6 +46,7 @@ namespace RaptorTests.OpenGL
         public GLWindowTests()
         {
             this.mockGLInvoker = new Mock<IGLInvoker>();
+            this.mockGLFWInvoker = new Mock<IGLFWInvoker>();
             this.mockMonitorService = new Mock<ISystemMonitorService>();
             this.mockWindowFacade = new Mock<IGameWindowFacade>();
             this.mockPlatform = new Mock<IPlatform>();
@@ -57,7 +54,7 @@ namespace RaptorTests.OpenGL
             this.mockTaskService = new Mock<ITaskService>();
             this.mockKeyboard = new Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>>();
             this.mockMouse = new Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>>();
-            this.mockGLObservable = new Mock<OpenGLObservable>();
+            this.mockGLObservable = new Mock<OpenGLInitObservable>();
         }
 
         #region Contructor Tests
@@ -71,6 +68,7 @@ namespace RaptorTests.OpenGL
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     null,
+                    this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -92,6 +90,7 @@ namespace RaptorTests.OpenGL
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     this.mockGLInvoker.Object,
+                    this.mockGLFWInvoker.Object,
                     null,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -113,6 +112,7 @@ namespace RaptorTests.OpenGL
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     this.mockGLInvoker.Object,
+                    this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     null,
                     this.mockPlatform.Object,
@@ -134,6 +134,7 @@ namespace RaptorTests.OpenGL
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     this.mockGLInvoker.Object,
+                    this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     null,
@@ -155,6 +156,7 @@ namespace RaptorTests.OpenGL
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     this.mockGLInvoker.Object,
+                    this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -176,6 +178,7 @@ namespace RaptorTests.OpenGL
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     this.mockGLInvoker.Object,
+                    this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -197,6 +200,7 @@ namespace RaptorTests.OpenGL
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     this.mockGLInvoker.Object,
+                    this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -218,6 +222,7 @@ namespace RaptorTests.OpenGL
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     this.mockGLInvoker.Object,
+                    this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -499,7 +504,7 @@ namespace RaptorTests.OpenGL
             var actual = window.TypeOfBorder;
 
             // Assert
-            Assert.Equal(BorderType.Resizable, actual);
+            Assert.Equal(Raptor.WindowBorder.Resizable, actual);
         }
 
         [Fact]
@@ -513,11 +518,11 @@ namespace RaptorTests.OpenGL
             window.CachedTypeOfBorder.IsCaching = false;
 
             // Act
-            window.TypeOfBorder = BorderType.Fixed;
+            window.TypeOfBorder = Raptor.WindowBorder.Fixed;
             var actual = window.TypeOfBorder;
 
             // Assert
-            Assert.Equal(BorderType.Fixed, actual);
+            Assert.Equal(Raptor.WindowBorder.Fixed, actual);
         }
         #endregion
 
@@ -530,6 +535,7 @@ namespace RaptorTests.OpenGL
 
             // Act
             window.Show();
+            this.mockWindowFacade.Raise(w => w.Load += null, EventArgs.Empty);
 
             // Assert
             this.mockWindowFacade.Verify(m => m.Init(123, 456), Times.Once());
@@ -548,88 +554,23 @@ namespace RaptorTests.OpenGL
             this.mockWindowFacade.Verify(m => m.Show(), Times.Once());
         }
 
-        [Theory]
-        [InlineData(TKMouseButton.Button4)]
-        [InlineData(TKMouseButton.Button5)]
-        [InlineData(TKMouseButton.Button6)]
-        [InlineData(TKMouseButton.Button7)]
-        [InlineData(TKMouseButton.Button8)]
-        public void Show_WithInvalidGLMouseButton_ThrowsException(
-            TKMouseButton from)
-        {
-            // Arrange
-            var window = CreateWindow();
-            var mouseButtonEventArgs = new MouseButtonEventArgs(
-                from,
-                It.IsAny<InputAction>(),
-                It.IsAny<KeyModifiers>());
-
-            // Act & Assert
-            window.Show();
-
-            Assert.ThrowsWithMessage<ArgumentException>(() =>
-            {
-                this.mockWindowFacade.Raise(m => m.MouseDown += null, mouseButtonEventArgs);
-            }, "Unrecognized OpenGL mouse button.");
-        }
-
-        [Theory]
-        [InlineData(TKMouseButton.Left, RaptorMouseButton.LeftButton)]
-        [InlineData(TKMouseButton.Right, RaptorMouseButton.RightButton)]
-        [InlineData(TKMouseButton.Middle, RaptorMouseButton.MiddleButton)]
-        public void Show_WhenInvoked_ProperlyMapsMouseButtons(
-            TKMouseButton from, RaptorMouseButton to)
-        {
-            // Arrange
-            var window = CreateWindow();
-            var mouseButtonEventArgs = new MouseButtonEventArgs(
-                from,
-                It.IsAny<InputAction>(),
-                It.IsAny<KeyModifiers>());
-
-            // Act
-            window.Show();
-            this.mockWindowFacade.Raise(m => m.MouseDown += null, mouseButtonEventArgs);
-
-            // Assert
-            this.mockMouse.Verify(m => m.SetState(to, true), Times.Once());
-        }
-
         [Fact]
         public void Show_WhenInvoked_SetsUpOpenGLErrorCallback()
         {
             // Arrange
-            const string testMessage = "test-message";
-            const string testUserParam = "test-param";
-
-            var testMessagePtr = Marshal.StringToHGlobalAnsi(testMessage);
-            var testUserParamPtr = Marshal.StringToHGlobalAnsi(testUserParam);
-
-            DebugProc? testCallback = null;
             var window = CreateWindow();
-            this.mockGLInvoker.Setup(m => m.DebugMessageCallback(It.IsAny<DebugProc>(), It.IsAny<IntPtr>()))
-                .Callback<DebugProc, IntPtr>((callback, userParam) =>
-                {
-                    testCallback = callback;
-                });
-
-            // Act
             window.Show();
 
+            this.mockWindowFacade.Raise(i => i.Load += null, EventArgs.Empty);
+
+            // Act
             Assert.ThrowsWithMessage<Exception>(() =>
             {
-                testCallback(
-                    DebugSource.DebugSourceOther,
-                    DebugType.DebugTypePerformance,
-                    1234,
-                    DebugSeverity.DebugSeverityHigh,
-                    456,
-                    testMessagePtr,
-                    testUserParamPtr);
-            }, "test-message\n\tSrc: DebugSourceOther\n\tType: DebugTypePerformance\n\tID: 1234\n\tSeverity: DebugSeverityHigh\n\tLength: 456\n\tUser Param: test-param");
+                this.mockGLInvoker.Raise(i => i.GLError += null, new GLErrorEventArgs("gl-error"));
+            }, "gl-error");
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.DebugMessageCallback(It.IsAny<DebugProc>(), It.IsAny<IntPtr>()), Times.Once());
+            this.mockGLInvoker.VerifyAdd(i => i.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>(), Times.Once());
         }
 
         [Fact]
@@ -645,8 +586,8 @@ namespace RaptorTests.OpenGL
 
             // Act
             window.Show();
-            this.mockWindowFacade.Raise(m => m.Unload += null);
-            this.mockWindowFacade.Raise(m => m.UpdateFrame += null, It.IsAny<FrameEventArgs>());
+            this.mockWindowFacade.Raise(m => m.Unload += null, EventArgs.Empty);
+            this.mockWindowFacade.Raise(m => m.UpdateFrame += null, new FrameTimeEventArgs(123));
             window.Update -= TestHandler;
 
             // Assert
@@ -666,8 +607,8 @@ namespace RaptorTests.OpenGL
 
             // Act
             window.Show();
-            this.mockWindowFacade.Raise(m => m.Unload += null);
-            this.mockWindowFacade.Raise(m => m.RenderFrame += null, It.IsAny<FrameEventArgs>());
+            this.mockWindowFacade.Raise(m => m.Unload += null, EventArgs.Empty);
+            this.mockWindowFacade.Raise(m => m.RenderFrame += null, new FrameTimeEventArgs(234));
             window.Draw -= TestHandler;
 
             // Assert
@@ -687,20 +628,14 @@ namespace RaptorTests.OpenGL
             var window = CreateWindow();
 
             // Act
-            await window.ShowAsync(It.IsAny<Action>());
+            await window.ShowAsync();
 
             // Assert
-            this.mockWindowFacade.VerifyAdd(s => s.Load += It.IsAny<Action>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Load)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.Unload += It.IsAny<Action>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Unload)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.UpdateFrame += It.IsAny<Action<FrameEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.RenderFrame += It.IsAny<Action<FrameEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.RenderFrame)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.Resize += It.IsAny<Action<ResizeEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Resize)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.KeyDown += It.IsAny<Action<KeyboardKeyEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.KeyDown)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.KeyUp += It.IsAny<Action<KeyboardKeyEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.KeyUp)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.MouseDown += It.IsAny<Action<MouseButtonEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.MouseDown)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.MouseUp += It.IsAny<Action<MouseButtonEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.MouseUp)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.MouseMove += It.IsAny<Action<MouseMoveEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.MouseMove)}' event did not occur.");
-            this.mockWindowFacade.VerifyAdd(s => s.Closed += It.IsAny<Action>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Closed)}' event did not occur.");
+            this.mockWindowFacade.VerifyAdd(s => s.Load += It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Load)}' event did not occur.");
+            this.mockWindowFacade.VerifyAdd(s => s.Unload += It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Unload)}' event did not occur.");
+            this.mockWindowFacade.VerifyAdd(s => s.UpdateFrame += It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' event did not occur.");
+            this.mockWindowFacade.VerifyAdd(s => s.RenderFrame += It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.RenderFrame)}' event did not occur.");
+            this.mockWindowFacade.VerifyAdd(s => s.Resize += It.IsAny<EventHandler<WindowSizeEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Resize)}' event did not occur.");
         }
 
         [Fact]
@@ -716,7 +651,8 @@ namespace RaptorTests.OpenGL
             var window = CreateWindow();
 
             // Act
-            await window.ShowAsync(It.IsAny<Action>());
+            await window.ShowAsync();
+            this.mockWindowFacade.Raise(w => w.Load += null, EventArgs.Empty);
 
             // Assert
             this.mockWindowFacade.Verify(m => m.Init(It.IsAny<int>(), It.IsAny<int>()), Times.Once());
@@ -735,7 +671,7 @@ namespace RaptorTests.OpenGL
             var window = CreateWindow();
 
             // Act
-            await window.ShowAsync(It.IsAny<Action>());
+            await window.ShowAsync();
 
             // Assert
             this.mockWindowFacade.Verify(m => m.Show(), Times.Once());
@@ -754,40 +690,10 @@ namespace RaptorTests.OpenGL
             var window = CreateWindow();
 
             // Act
-            await window.ShowAsync(It.IsAny<Action>());
+            await window.ShowAsync();
 
             // Assert
             this.mockTaskService.Verify(m => m.Start(), Times.Once());
-        }
-
-        [Fact]
-        public async void ShowAsync_WhenTaskIsFinished_InvokesDisposeParam()
-        {
-            // Arrange
-            var disposeInvoked = false;
-            this.mockTaskService.Setup(m => m.SetAction(It.IsAny<Action>()))
-                .Callback<Action>(action =>
-                {
-                    action();
-                });
-
-            this.mockTaskService.Setup(m => m.ContinueWith(
-                It.IsAny<Action<Task>>(),
-                TaskContinuationOptions.ExecuteSynchronously,
-                TaskScheduler.Default))
-                    .Callback<Action<Task>, TaskContinuationOptions, TaskScheduler>(
-                        (action, options, schedular) =>
-                        {
-                            action(Task.CompletedTask);
-                        });
-
-            var window = CreateWindow();
-
-            // Act
-            await window.ShowAsync(() => disposeInvoked = true);
-
-            // Assert
-            Assert.True(disposeInvoked);
         }
 
         [Fact]
@@ -802,20 +708,16 @@ namespace RaptorTests.OpenGL
             window.Dispose();
 
             // Assert
-            this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
-            this.mockWindowFacade.Verify(m => m.Dispose(), Times.Once());
             this.mockGLObservable.Verify(m => m.Dispose(), Times.Once());
-            this.mockWindowFacade.VerifyRemove(s => s.Load -= It.IsAny<Action>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Load)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.Unload -= It.IsAny<Action>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Unload)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.UpdateFrame -= It.IsAny<Action<FrameEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.RenderFrame -= It.IsAny<Action<FrameEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.RenderFrame)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.Resize -= It.IsAny<Action<ResizeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Resize)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.KeyDown -= It.IsAny<Action<KeyboardKeyEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.KeyDown)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.KeyUp -= It.IsAny<Action<KeyboardKeyEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.KeyUp)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.MouseDown -= It.IsAny<Action<MouseButtonEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.MouseDown)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.MouseUp -= It.IsAny<Action<MouseButtonEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.MouseUp)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.MouseMove -= It.IsAny<Action<MouseMoveEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.MouseMove)}' event did not occur.");
-            this.mockWindowFacade.VerifyRemove(s => s.Closed -= It.IsAny<Action>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Closed)}' event did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.Load -= It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Load)}' event did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.Unload -= It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Unload)}' event did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.UpdateFrame -= It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' event did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.RenderFrame -= It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.RenderFrame)}' event did not occur.");
+            this.mockWindowFacade.VerifyRemove(s => s.Resize -= It.IsAny<EventHandler<WindowSizeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Resize)}' event did not occur.");
+            this.mockWindowFacade.Verify(m => m.Dispose(), Times.Once());
+            this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
+            this.mockGLInvoker.Verify(m => m.Dispose(), Times.Once());
+            this.mockGLFWInvoker.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 
@@ -826,10 +728,11 @@ namespace RaptorTests.OpenGL
         /// <param name="height">The height of the window.</param>
         /// <returns>The instance to test.</returns>
         private GLWindow CreateWindow(int width = 10, int height = 20)
-            => new (
+            => new(
                 width,
                 height,
                 this.mockGLInvoker.Object,
+                this.mockGLFWInvoker.Object,
                 this.mockMonitorService.Object,
                 this.mockWindowFacade.Object,
                 this.mockPlatform.Object,

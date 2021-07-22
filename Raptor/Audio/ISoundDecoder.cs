@@ -10,7 +10,7 @@ namespace Raptor.Audio
     /// Decodes audio data files.
     /// </summary>
     /// <typeparam name="T">The type of audio data being returned.</typeparam>
-    public interface ISoundDecoder<T> : IDisposable
+    internal interface ISoundDecoder<T> : IDisposable
     {
         /// <summary>
         /// Loads audio data from an audio file using the given <paramref name="fileName"/>.

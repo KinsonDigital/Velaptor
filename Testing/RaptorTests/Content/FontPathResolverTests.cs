@@ -10,7 +10,7 @@ namespace RaptorTests.Content
     using Moq;
     using Raptor.Content;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="FontPathResolver"/> class.

@@ -16,8 +16,9 @@ namespace Raptor
     using Raptor.Graphics;
     using Raptor.Input;
     using Raptor.NativeInterop;
+    using Raptor.NativeInterop.FreeType;
+    using Raptor.NativeInterop.OpenAL;
     using Raptor.Observables;
-    using Raptor.OpenAL;
     using Raptor.OpenGL;
     using Raptor.Services;
     using SimpleInjector;
@@ -55,6 +56,8 @@ namespace Raptor
         {
             SetupOpenGL();
 
+            SetupAudio();
+
             SetupServices();
 
             SetupContent();
@@ -65,7 +68,8 @@ namespace Raptor
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
 
-            IoCContainer.Register<OpenGLObservable>(Lifestyle.Singleton);
+            IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
+            IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
 
             isInitialized = true;
         }
@@ -78,28 +82,57 @@ namespace Raptor
             IoCContainer.Register(() => FileSystem.File, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Directory, Lifestyle.Singleton);
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
-            IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IALInvoker, ALInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
 
-            IoCContainer.Register<GLFWMonitors>();
+#if OPENTK
+            SetupInteropWithOpenTK();
+#elif SILK
+            SetupInteropWithSILK();
+#endif
+
+            IoCContainer.Register<IGLInvokerExtensions, GLInvokerExtensions>(Lifestyle.Singleton);
+
+            IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
 
             IoCContainer.Register<IGPUBuffer, GPUBuffer<VertexData>>(Lifestyle.Singleton);
 
             IoCContainer.Register<IShaderProgram, ShaderProgram>(Lifestyle.Singleton);
 
             IoCContainer.Register<ISpriteBatch, SpriteBatch>(Lifestyle.Singleton);
-
-            IoCContainer.Register<IGameWindowFacade, GameWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
-
-            SetupAudio();
         }
+
+#pragma warning disable IDE0051 // Remove unused private members
+        /// <summary>
+        /// Sets up all of the OpenGL interop with the SILK library.
+        /// </summary>
+        private static void SetupInteropWithSILK()
+        {
+            IoCContainer.Register<IGLInvoker, SilkGLInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IGLFWInvoker, SilkGLFWInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IGameWindowFacade, SilkWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
+        }
+
+        /// <summary>
+        /// Sets up all of the OpenGL interop with the OpenTK library.
+        /// </summary>
+        private static void SetupInteropWithOpenTK()
+        {
+            IoCContainer.Register<IGLInvoker, OpenTKGLInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IGLFWInvoker, OpenTKGLFWInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IGameWindowFacade, OpenTKWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
+        }
+#pragma warning restore IDE0051 // Remove unused private members
 
         /// <summary>
         /// Setup container registration related to audio.
         /// </summary>
         private static void SetupAudio()
         {
+#if OPENTK
+            IoCContainer.Register<IALInvoker, OpenTKALInvoker>(Lifestyle.Singleton);
+#elif SILK
+            IoCContainer.Register<IALInvoker, SilkALInvoker>(Lifestyle.Singleton);
+#endif
+
             IoCContainer.Register<IAudioDeviceManager, AudioDeviceManager>(Lifestyle.Singleton);
 
             // Register the proper data stream to be the implementation if the consumer is a certain decoder

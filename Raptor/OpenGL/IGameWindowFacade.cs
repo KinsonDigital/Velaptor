@@ -1,83 +1,51 @@
-// <copyright file="IGameWindowFacade.cs" company="KinsonDigital">
+﻿// <copyright file="IGameWindowFacade.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Raptor.OpenGL
 {
     using System;
-    using OpenTK.Mathematics;
-    using OpenTK.Windowing.Common;
-    using OpenTK.Windowing.GraphicsLibraryFramework;
+    using System.Numerics;
 
     /// <summary>
-    /// The internal OpenGL window for the purpose of getting access to the window's pointer.
+    /// The internal OpenGL window.
     /// </summary>
     internal interface IGameWindowFacade : IDisposable
     {
         /// <summary>
         /// Occurs before the window is displayed for the first time.
         /// </summary>
-        event Action? Load;
+        event EventHandler<EventArgs>? Load;
 
         /// <summary>
         /// Occurs before the window is destroyed.
         /// </summary>
-        event Action? Unload;
+        event EventHandler<EventArgs>? Unload;
 
         /// <summary>
         /// Occurs when it is time to update a frame.
         /// </summary>
-        event Action<FrameEventArgs>? UpdateFrame;
+        event EventHandler<FrameTimeEventArgs>? UpdateFrame;
 
         /// <summary>
         /// Occurs when it is time to render a frame.
         /// </summary>
-        event Action<FrameEventArgs>? RenderFrame;
+        event EventHandler<FrameTimeEventArgs>? RenderFrame;
 
         /// <summary>
         /// Occurs whenever the window is resized.
         /// </summary>
-        event Action<ResizeEventArgs>? Resize;
-
-        /// <summary>
-        /// Occurs whenever a keyboard key is pressed.
-        /// </summary>
-        event Action<KeyboardKeyEventArgs>? KeyDown;
-
-        /// <summary>
-        /// Occurs whenever a keyboard key is released.
-        /// </summary>
-        event Action<KeyboardKeyEventArgs>? KeyUp;
-
-        /// <summary>
-        /// Occurs whenever a <see cref="MouseButton"/> is clicked.
-        /// </summary>
-        event Action<MouseButtonEventArgs>? MouseDown;
-
-        /// <summary>
-        /// Occurs whenever a <see cref="MouseButton"/> is released.
-        /// </summary>
-        event Action<MouseButtonEventArgs>? MouseUp;
-
-        /// <summary>
-        /// Occurs whenever the mouse cursor is moved;
-        /// </summary>
-        event Action<MouseMoveEventArgs>? MouseMove;
-
-        /// <summary>
-        /// Occurs after the window has closed.
-        /// </summary>
-        event Action? Closed;
+        event EventHandler<WindowSizeEventArgs>? Resize;
 
         /// <summary>
         /// Gets or sets a <see cref="Vector2i"/> structure that contains the external size of this window.
         /// </summary>
-        unsafe Vector2i Size { get; set; }
+        Vector2 Size { get; set; }
 
         /// <summary>
         /// Gets or sets a <see cref="Vector2i"/> structure that contains the location of this window on the desktop.
         /// </summary>
-        unsafe Vector2i Location { get; set; }
+        Vector2 Location { get; set; }
 
         /// <summary>
         /// Gets or sets a value representing the update frequency, in hertz.
@@ -92,27 +60,27 @@ namespace Raptor.OpenGL
         /// <summary>
         /// Gets or sets a value indicating whether the mouse cursor is visible.
         /// </summary>
-        unsafe bool CursorVisible { get; set; }
+        bool CursorVisible { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="OpenTK.Windowing.Common.WindowState"/> for this window.
+        /// Gets or sets state of the window.
         /// </summary>
-        unsafe WindowState WindowState { get; set; }
+        StateOfWindow WindowState { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="OpenTK.Windowing.Common.WindowBorder"/> for this window.
+        /// Gets or sets the type of border for this window.
         /// </summary>
-        unsafe WindowBorder WindowBorder { get; set; }
+        WindowBorder WindowBorder { get; set; }
 
         /// <summary>
         /// Gets or sets the title of the window.
         /// </summary>
-        unsafe string Title { get; set; }
+        string Title { get; set; }
 
         /// <summary>
-        /// Gets the pointer to the window.
+        /// Runs initilization code before the <see cref="Init(int, int)"/> code is ran.
         /// </summary>
-        unsafe Window* WindowPtr { get; }
+        void PreInit();
 
         /// <summary>
         /// Initializes the window.

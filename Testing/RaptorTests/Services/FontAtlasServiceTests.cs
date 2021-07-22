@@ -1,4 +1,4 @@
-// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,6 +19,7 @@ namespace RaptorTests.Services
     using Raptor.Graphics;
     using Raptor.Hardware;
     using Raptor.NativeInterop;
+    using Raptor.NativeInterop.FreeType;
     using Raptor.Services;
     using RaptorTests.Helpers;
     using Xunit;

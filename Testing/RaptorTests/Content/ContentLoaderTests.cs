@@ -7,11 +7,11 @@ namespace RaptorTests.Content
     using Moq;
     using Raptor.Audio;
     using Raptor.Content;
-    using Raptor.Exceptions;
+    using Raptor.Content.Exceptions;
     using Raptor.Graphics;
     using RaptorTests.Fakes;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="ContentLoader"/> class.

@@ -7,7 +7,7 @@ namespace Raptor
     /// <summary>
     /// The different kinds of borders that a <see cref="IWindow"/> can have.
     /// </summary>
-    public enum BorderType
+    public enum WindowBorder
     {
         /// <summary>
         /// The window has a re-sizable border. A window with a re-sizable border can be resized

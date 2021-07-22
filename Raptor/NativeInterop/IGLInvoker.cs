@@ -5,19 +5,32 @@
 namespace Raptor.NativeInterop
 {
     using System;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
+    using System.Numerics;
+    using Raptor.OpenGL;
 
     /// <summary>
     /// Invokes OpenGL calls.
     /// </summary>
-    internal interface IGLInvoker
+    internal interface IGLInvoker : IDisposable
     {
+        /// <summary>
+        /// Invoked when there is an OpenGL related error.
+        /// </summary>
+        event EventHandler<GLErrorEventArgs> GLError;
+
+        /// <summary>
+        /// Sets up the error callback.
+        /// </summary>
+        /// <remarks>
+        ///     This cannot be invoked until the OpenGL context has been created.
+        /// </remarks>
+        void SetupErrorCallback();
+
         /// <summary>
         /// [requires: v1.0] Enable or disable server-side GL capabilities.
         /// </summary>
         /// <param name="cap">Specifies a symbolic constant indicating a GL capability.</param>
-        void Enable(EnableCap cap);
+        void Enable(GLEnableCap cap);
 
         /// <summary>
         /// [requires: v1.0] Specify pixel arithmetic.
@@ -33,7 +46,7 @@ namespace Raptor.NativeInterop
         ///     OneMinusDstAlpha. ConstantColor, OneMinusConstantColor, ConstantAlpha, and OneMinusConstantAlpha.
         ///     The initial value is Zero.
         /// </param>
-        void BlendFunc(BlendingFactor sfactor, BlendingFactor dfactor);
+        void BlendFunc(GLBlendingFactor sfactor, GLBlendingFactor dfactor);
 
         /// <summary>
         /// Clear buffers to preset values.
@@ -42,7 +55,7 @@ namespace Raptor.NativeInterop
         ///     Bitwise OR of masks that indicate the buffers to be cleared. The three masks
         ///     are ColorBufferBit, DepthBufferBit, and StencilBufferBit.
         /// </param>
-        void Clear(ClearBufferMask mask);
+        void Clear(GLClearBufferMask mask);
 
         /// <summary>
         /// [requires: v1.0] Specify clear values for the color buffers.
@@ -62,7 +75,7 @@ namespace Raptor.NativeInterop
         ///     ranges from zero to the value of MaxCombinedTextureImageUnits minus one. The
         ///     initial value is Texture0.
         /// </param>
-        void ActiveTexture(TextureUnit texture);
+        void ActiveTexture(GLTextureUnit texture);
 
         /// <summary>
         /// [requires: v2.0] Returns the location of a uniform variable.
@@ -73,7 +86,7 @@ namespace Raptor.NativeInterop
         ///     name of the uniform variable whose location is to be queried.
         /// </param>
         /// <returns>The location/ID of the uniform.</returns>
-        uint GetUniformLocation(uint program, string name);
+        int GetUniformLocation(uint program, string name);
 
         /// <summary>
         /// [requires: v1.1] Bind a named texture to a texturing target.
@@ -84,7 +97,7 @@ namespace Raptor.NativeInterop
         ///     TextureCubeMapArray, TextureBuffer, Texture2DMultisample or Texture2DMultisampleArray.
         /// </param>
         /// <param name="texture">Specifies the name of a texture.</param>
-        void BindTexture(TextureTarget target, uint texture);
+        void BindTexture(GLTextureTarget target, uint texture);
 
         /// <summary>
         /// [requires: v1.1] Render primitives from array data.
@@ -97,15 +110,19 @@ namespace Raptor.NativeInterop
         /// <param name="count">Specifies the number of elements to be rendered.</param>
         /// <param name="type">Specifies the type of the values in indices. Must be one of UnsignedByte, UnsignedShort, or UnsignedInt.</param>
         /// <param name="indices">[length: COMPSIZE(count,type)] Specifies a pointer to the location where the indices are stored.</param>
-        void DrawElements(PrimitiveType mode, uint count, DrawElementsType type, IntPtr indices);
+        void DrawElements(GLPrimitiveType mode, uint count, GLDrawElementsType type, nint indices);
 
         /// <summary>
         /// [requires: v4.0 or ARB_gpu_shader_fp64|VERSION_4_0].
         /// </summary>
         /// <param name="location">Specifies the location of the uniform variable to be modified.</param>
+        /// <param name="count">
+        ///     For the vector (glUniform*v) commands, specifies the number of elements that are to be modified.
+        ///     This should be 1 if the targeted uniform variable is not an array, and 1 or more if it is an array.
+        /// </param>
         /// <param name="transpose">For the matrix commands, specifies whether to transpose the matrix as the values are loaded into the uniform variable.</param>
         /// <param name="matrix">The matrix data to send to the GPU.</param>
-        void UniformMatrix4(uint location, bool transpose, ref Matrix4 matrix);
+        void UniformMatrix4(int location, uint count, bool transpose, Matrix4x4 matrix);
 
         /// <summary>
         /// [requires: v2.0] Returns a parameter from a program object.
@@ -120,7 +137,7 @@ namespace Raptor.NativeInterop
         ///     GeometryInputType, and GeometryOutputType.
         /// </param>
         /// <param name="programParams">[length: COMPSIZE(pname)] Returns the requested object parameter.</param>
-        void GetProgram(uint program, GetProgramParameterName pname, out int programParams);
+        void GetProgram(uint program, GLProgramParameterName pname, out int programParams);
 
         /// <summary>
         /// Returns parameter values of type integer.
@@ -133,48 +150,14 @@ namespace Raptor.NativeInterop
         /// <remarks>
         ///     Refer to http://docs.gl/gl4/glGet for more information.
         /// </remarks>
-        void GetInteger(GetPName pname, int[] data);
+        void GetInteger(GLGetPName pname, int[] data);
 
         /// <summary>
         /// Returns the floating point values of the given parameter name.
         /// </summary>
         /// <param name="pname">The parameter name.</param>
         /// <param name="data">The values to return.</param>
-        void GetFloat(GetPName pname, float[] data);
-
-        /// <summary>
-        /// Gets the size of the viewport.
-        /// </summary>
-        /// <returns>The size of the viewport.</returns>
-        /// <remarks>
-        /// <para>
-        ///     The X component of the vector is the width.
-        /// </para>
-        /// <para>
-        ///     The Y component of the vector is the height.
-        /// </para>
-        /// </remarks>
-        Vector2 GetViewPortSize();
-
-        /// <summary>
-        /// Sets the size of the view port.
-        /// </summary>
-        /// <param name="vector">The vector representing the width and height of the viewport.</param>
-        /// <remarks>
-        /// <para>
-        ///     The X component is the width of the viewport.
-        /// </para>
-        /// <para>
-        ///     The Y component is the height of the viewport.
-        /// </para>
-        /// </remarks>
-        void SetViewPortSize(Vector2 vector);
-
-        /// <summary>
-        /// Gets the position of the viewport.
-        /// </summary>
-        /// <returns>The position of the viewport.</returns>
-        Vector2 GetViewPortPosition();
+        void GetFloat(GLGetPName pname, float[] data);
 
         /// <summary>
         /// Set the viewport.
@@ -189,14 +172,7 @@ namespace Raptor.NativeInterop
         ///     Specify the width of the viewport.When a GL context is first attached to a window,
         ///     width are set to the width dimension of that window.
         /// </param>
-        void Viewport(int x, int y, int width, int height);
-
-        /// <summary>
-        /// Returns a value indicating if the program linking process was successful.
-        /// </summary>
-        /// <param name="program">The ID of the program to check.</param>
-        /// <returns><see langword="true"/> if the linking was successful.</returns>
-        bool LinkProgramSuccess(uint program);
+        void Viewport(int x, int y, uint width, uint height);
 
         /// <summary>
         /// [requires: v2.0] Installs a program object as part of current rendering state.
@@ -244,7 +220,7 @@ namespace Raptor.NativeInterop
         ///     TessControlShader, TessEvaluationShader, GeometryShader, or FragmentShader.
         /// </param>
         /// <returns>The ID of the shader.</returns>
-        uint CreateShader(ShaderType type);
+        uint CreateShader(GLShaderType type);
 
         /// <summary>
         /// [requires: v2.0] Replaces the source code in a shader object.
@@ -278,14 +254,7 @@ namespace Raptor.NativeInterop
         ///     CompileStatus, InfoLogLength, ShaderSourceLength.
         /// </param>
         /// <param name="shaderParams">[length: COMPSIZE(pname)] Returns the requested object parameter.</param>
-        void GetShader(uint shader, ShaderParameter pname, out int shaderParams);
-
-        /// <summary>
-        /// Returns a value indicating if the shader was compiled successfully.
-        /// </summary>
-        /// <param name="shaderID">The ID of the shader to check.</param>
-        /// <returns><see langword="true"/> if the shader compiled successfully.</returns>
-        bool ShaderCompileSuccess(uint shaderID);
+        void GetShader(uint shader, GLShaderParameter pname, out int shaderParams);
 
         /// <summary>
         /// [requires: v2.0] Returns the information log for a shader object.
@@ -307,9 +276,44 @@ namespace Raptor.NativeInterop
         uint GenVertexArray();
 
         /// <summary>
+        /// [requires: v1.5] Creates and initializes a buffer object's data store.
+        /// </summary>
+        /// <param name="target">
+        ///     Specifies the target buffer object. The symbolic constant must be ArrayBuffer,
+        ///     AtomicCounterBuffer, CopyReadBuffer, CopyWriteBuffer, DrawIndirectBuffer, DispatchIndirectBuffer,
+        ///     ElementArrayBuffer, PixelPackBuffer, PixelUnpackBuffer, QueryBuffer, ShaderStorageBuffer,
+        ///     TextureBuffer, TransformFeedbackBuffer, or UniformBuffer.
+        /// </param>
+        /// <param name="size">Specifies the size in bytes of the buffer object's new data store.</param>
+        /// <param name="data">
+        ///     [length: size] Specifies a pointer to data that will be copied into the data
+        ///     store for initialization, or Null if no data is to be copied.
+        /// </param>
+        /// <param name="usage">
+        ///     Specifies the expected usage pattern of the data store. The symbolic constant
+        ///     must be StreamDraw, StreamRead, StreamCopy, StaticDraw, StaticRead, StaticCopy,
+        ///     DynamicDraw, DynamicRead, or DynamicCopy.
+        /// </param>
+        void BufferData(GLBufferTarget target, uint size, nint data, GLBufferUsageHint usage);
+
+        /*
+        * TODO: Need to eventually convert the BufferSubData<T> method `data` param from a `ref`
+        * param to an `in` param.  Currently this cannot be done due to an issue found in NET 5 runtime.
+        *
+        * The issue was suppose to be fixed in NET 6 preview at the link below, but the issue seems to have
+        * moved from the test failing at the actual method call to the `Mock<T>.Verify()` call in the
+        * unit test `UpdateQuad_WhenInvoked_UpdatesGPUVertexBuffer`, and is should be passing.
+        *
+        * Links to GITHUB issues:
+        *      1. https://github.com/moq/moq4/issues/555
+        *      2. https://github.com/moq/moq4/issues/1136
+        *          * This one is related to the first
+        */
+
+        /// <summary>
         /// [requires: v1.5] Updates a subset of a buffer object's data store.
         /// </summary>
-        /// <typeparam name="T3">The type of data in the buffer.</typeparam>
+        /// <typeparam name="T">The type of data in the buffer.</typeparam>
         /// <param name="target">
         ///     Specifies the target buffer object. The symbolic constant must be ArrayBuffer,
         ///     AtomicCounterBuffer, CopyReadBuffer, CopyWriteBuffer, DrawIndirectBuffer, DispatchIndirectBuffer,
@@ -319,8 +323,8 @@ namespace Raptor.NativeInterop
         /// <param name="offset">Specifies the offset into the buffer object's data store where data replacement will begin, measured in bytes.</param>
         /// <param name="size">Specifies the size in bytes of the data store region being replaced.</param>
         /// <param name="data">[length: size] Specifies a pointer to the new data that will be copied into the data store.</param>
-        void BufferSubData<T3>(BufferTarget target, IntPtr offset, uint size, ref T3 data)
-            where T3 : struct;
+        unsafe void BufferSubData<T>(GLBufferTarget target, nint offset, nuint size, ref T data)
+            where T : unmanaged;
 
         /// <summary>
         /// [requires: v3.0 or ARB_vertex_array_object|VERSION_3_0] Delete vertex array objects.
@@ -345,7 +349,7 @@ namespace Raptor.NativeInterop
         ///     UniformBuffer.
         /// </param>
         /// <param name="buffer">Specifies the name of a buffer object.</param>
-        void BindBuffer(BufferTarget target, uint buffer);
+        void BindBuffer(GLBufferTarget target, uint buffer);
 
         /// <summary>
         /// [requires: v4.5 or ARB_direct_state_access|VERSION_4_5].
@@ -383,57 +387,13 @@ namespace Raptor.NativeInterop
         ///     array. The initial value is 0.
         /// </param>
         /// <param name="offset">The byte offset into the buffer object's data store.</param>
-        void VertexAttribPointer(uint index, uint size, VertexAttribPointerType type, bool normalized, uint stride, uint offset);
+        void VertexAttribPointer(uint index, int size, GLVertexAttribPointerType type, bool normalized, uint stride, uint offset);
 
         /// <summary>
         /// [requires: v1.5] Generate buffer object names.
         /// </summary>
         /// <returns>The ID of the buffer object.</returns>
         uint GenBuffer();
-
-        /// <summary>
-        /// [requires: v1.5] Creates and initializes a buffer object's data store.
-        /// </summary>
-        /// <param name="target">
-        ///     Specifies the target buffer object. The symbolic constant must be ArrayBuffer,
-        ///     AtomicCounterBuffer, CopyReadBuffer, CopyWriteBuffer, DrawIndirectBuffer, DispatchIndirectBuffer,
-        ///     ElementArrayBuffer, PixelPackBuffer, PixelUnpackBuffer, QueryBuffer, ShaderStorageBuffer,
-        ///     TextureBuffer, TransformFeedbackBuffer, or UniformBuffer.
-        /// </param>
-        /// <param name="size">Specifies the size in bytes of the buffer object's new data store.</param>
-        /// <param name="data">
-        ///     [length: size] Specifies a pointer to data that will be copied into the data
-        ///     store for initialization, or Null if no data is to be copied.
-        /// </param>
-        /// <param name="usage">
-        ///     Specifies the expected usage pattern of the data store. The symbolic constant
-        ///     must be StreamDraw, StreamRead, StreamCopy, StaticDraw, StaticRead, StaticCopy,
-        ///     DynamicDraw, DynamicRead, or DynamicCopy.
-        /// </param>
-        void BufferData(BufferTarget target, uint size, IntPtr data, BufferUsageHint usage);
-
-        /// <summary>
-        /// [requires: v1.5] Creates and initializes a buffer object's data store.
-        /// </summary>
-        /// <typeparam name="T2">The type of data in the buffer.</typeparam>
-        /// <param name="target">
-        ///     Specifies the target buffer object. The symbolic constant must be ArrayBuffer,
-        ///     AtomicCounterBuffer, CopyReadBuffer, CopyWriteBuffer, DrawIndirectBuffer, DispatchIndirectBuffer,
-        ///     ElementArrayBuffer, PixelPackBuffer, PixelUnpackBuffer, QueryBuffer, ShaderStorageBuffer,
-        ///     TextureBuffer, TransformFeedbackBuffer, or UniformBuffer.
-        /// </param>
-        /// <param name="size">Specifies the size in bytes of the buffer object's new data store.</param>
-        /// <param name="data">
-        ///     [length: size] Specifies a pointer to data that will be copied into the data
-        ///     store for initialization, or Null if no data is to be copied.
-        /// </param>
-        /// <param name="usage">
-        ///     Specifies the expected usage pattern of the data store. The symbolic constant
-        ///     must be StreamDraw, StreamRead, StreamCopy, StaticDraw, StaticRead, StaticCopy,
-        ///     DynamicDraw, DynamicRead, or DynamicCopy.
-        /// </param>
-        void BufferData<T2>(BufferTarget target, uint size, T2[] data, BufferUsageHint usage)
-            where T2 : struct;
 
         /// <summary>
         /// [requires: v3.0 or ARB_vertex_array_object|VERSION_3_0] Bind a vertex array object.
@@ -460,7 +420,7 @@ namespace Raptor.NativeInterop
         /// <param name="name">The name of the object to label.</param>
         /// <param name="length">The length of the label to be used for the object.</param>
         /// <param name="label">[length: COMPSIZE(label,length)] The address of a string containing the label to assign to the object.</param>
-        void ObjectLabel(ObjectLabelIdentifier identifier, uint name, int length, string label);
+        void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label);
 
         /// <summary>
         /// [requires: v1.0] Set texture parameters.
@@ -478,12 +438,48 @@ namespace Raptor.NativeInterop
         ///     commands (glTexParameter*v), pname can also be one of TextureBorderColor or TextureSwizzleRgba.
         /// </param>
         /// <param name="param">For the scalar commands, specifies the value of pname.</param>
-        void TexParameter(TextureTarget target, TextureParameterName pname, int param);
+        void TexParameter(GLTextureTarget target, GLTextureParameterName pname, GLTextureWrapMode param);
+
+        /// <summary>
+        /// [requires: v1.0] Set texture parameters.
+        /// </summary>
+        /// <param name="target">
+        ///     Specifies the target texture, which must be either Texture1D, Texture2D, Texture3D,
+        ///     Texture1DArray, Texture2DArray, TextureRectangle, or TextureCubeMap.
+        /// </param>
+        /// <param name="pname">
+        ///     Specifies the symbolic name of a single-valued texture parameter. pname can be
+        ///     one of the following: DepthStencilTextureMode, TextureBaseLevel, TextureCompareFunc,
+        ///     TextureCompareMode, TextureLodBias, TextureMinFilter, TextureMagFilter, TextureMinLod,
+        ///     TextureMaxLod, TextureMaxLevel, TextureSwizzleR, TextureSwizzleG, TextureSwizzleB,
+        ///     TextureSwizzleA, TextureWrapS, TextureWrapT, or TextureWrapR. For the vector
+        ///     commands (glTexParameter*v), pname can also be one of TextureBorderColor or TextureSwizzleRgba.
+        /// </param>
+        /// <param name="param">For the scalar commands, specifies the value of pname.</param>
+        void TexParameter(GLTextureTarget target, GLTextureParameterName pname, GLTextureMinFilter param);
+
+        /// <summary>
+        /// [requires: v1.0] Set texture parameters.
+        /// </summary>
+        /// <param name="target">
+        ///     Specifies the target texture, which must be either Texture1D, Texture2D, Texture3D,
+        ///     Texture1DArray, Texture2DArray, TextureRectangle, or TextureCubeMap.
+        /// </param>
+        /// <param name="pname">
+        ///     Specifies the symbolic name of a single-valued texture parameter. pname can be
+        ///     one of the following: DepthStencilTextureMode, TextureBaseLevel, TextureCompareFunc,
+        ///     TextureCompareMode, TextureLodBias, TextureMinFilter, TextureMagFilter, TextureMinLod,
+        ///     TextureMaxLod, TextureMaxLevel, TextureSwizzleR, TextureSwizzleG, TextureSwizzleB,
+        ///     TextureSwizzleA, TextureWrapS, TextureWrapT, or TextureWrapR. For the vector
+        ///     commands (glTexParameter*v), pname can also be one of TextureBorderColor or TextureSwizzleRgba.
+        /// </param>
+        /// <param name="param">For the scalar commands, specifies the value of pname.</param>
+        void TexParameter(GLTextureTarget target, GLTextureParameterName pname, GLTextureMagFilter param);
 
         /// <summary>
         /// [requires: v1.0] Specify a two-dimensional texture image.
         /// </summary>
-        /// <typeparam name="T8">The type of data to load to the GPU vertex buffer.</typeparam>
+        /// <typeparam name="T">The type of data to load to the GPU vertex buffer.</typeparam>
         /// <param name="target">
         ///     Specifies the target texture. Must be Texture2D, ProxyTexture2D, Texture1DArray,
         ///     ProxyTexture1DArray, TextureRectangle, ProxyTextureRectangle, TextureCubeMapPositiveX,
@@ -524,15 +520,7 @@ namespace Raptor.NativeInterop
         ///     UnsignedInt8888Rev, UnsignedInt1010102, and UnsignedInt2101010Rev.
         /// </param>
         /// <param name="pixels">[length: COMPSIZE(format,type,width,height)] Specifies a pointer to the image data in memory.</param>
-        void TexImage2D<T8>(TextureTarget target, int level, PixelInternalFormat internalformat, int width, int height, int border, PixelFormat format, PixelType type, T8[] pixels)
-            where T8 : struct;
-
-        /// <summary>
-        /// [requires: v4.3 or KHR_debug|VERSION_4_3] Specify a callback to receive debugging
-        /// messages from the GL.
-        /// </summary>
-        /// <param name="callback">The address of a callback function that will be called when a debug message is generated.</param>
-        /// <param name="userParam">A user supplied pointer that will be passed on each invocation of callback.</param>
-        void DebugMessageCallback(DebugProc callback, IntPtr userParam);
+        unsafe void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
+            where T : unmanaged;
     }
 }

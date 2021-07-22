@@ -12,8 +12,13 @@ namespace Raptor.Audio
     using System.Linq;
     using OpenTK.Audio.OpenAL;
     using Raptor.Factories;
-    using Raptor.OpenAL;
+    using Raptor.NativeInterop.OpenAL;
     using IOPath = System.IO.Path;
+    using TKALFormat = OpenTK.Audio.OpenAL.ALFormat;
+    using RaptorALFormat = NativeInterop.OpenAL.ALFormat;
+    using RaptorALSourcei = NativeInterop.OpenAL.ALSourcei;
+    using RaptorALSourceb = NativeInterop.OpenAL.ALSourceb;
+    using RaptorALSourcef = NativeInterop.OpenAL.ALSourcef;
 
     /// <summary>
     /// A single sound that can be played, paused etc.
@@ -30,8 +35,8 @@ namespace Raptor.Audio
         private readonly ISoundDecoder<float> oggDecoder;
         private readonly ISoundDecoder<byte> mp3Decoder;
         private readonly IALInvoker alInvoker;
-        private int srcId;
-        private int bufferId;
+        private uint srcId;
+        private uint bufferId;
         private float totalSeconds;
 
         /// <summary>
@@ -43,7 +48,7 @@ namespace Raptor.Audio
         {
             Path = filePath;
 
-            this.alInvoker = new ALInvoker();
+            this.alInvoker = new OpenTKALInvoker();
 
             this.alInvoker.ErrorCallback += ErrorCallback;
 
@@ -97,7 +102,7 @@ namespace Raptor.Audio
                 }
 
                 // Get the current volume between 0.0 and 1.0
-                var volume = this.alInvoker.GetSource(this.srcId, ALSourcef.Gain);
+                var volume = this.alInvoker.GetSource(this.srcId, RaptorALSourcef.Gain);
 
                 // Change the range to be between 0 and 100
                 return volume * 100f;
@@ -117,7 +122,7 @@ namespace Raptor.Audio
                 // This is the excepted range by OpenAL
                 value /= 100f;
 
-                this.alInvoker.Source(this.srcId, ALSourcef.Gain, (float)Math.Round(value, 4));
+                this.alInvoker.Source(this.srcId, RaptorALSourcef.Gain, (float)Math.Round(value, 4));
             }
         }
 
@@ -134,7 +139,7 @@ namespace Raptor.Audio
                     throw new Exception(IsDisposedExceptionMessage);
                 }
 
-                return this.alInvoker.GetSource(this.srcId, ALSourcef.SecOffset);
+                return this.alInvoker.GetSource(this.srcId, RaptorALSourcef.SecOffset);
             }
         }
 
@@ -162,7 +167,7 @@ namespace Raptor.Audio
                     throw new Exception(IsDisposedExceptionMessage);
                 }
 
-                return this.alInvoker.GetSource(this.srcId, ALSourceb.Looping);
+                return this.alInvoker.GetSource(this.srcId, RaptorALSourceb.Looping);
             }
             set
             {
@@ -171,7 +176,7 @@ namespace Raptor.Audio
                     throw new Exception(IsDisposedExceptionMessage);
                 }
 
-                this.alInvoker.Source(this.srcId, ALSourceb.Looping, value);
+                this.alInvoker.Source(this.srcId, RaptorALSourceb.Looping, value);
             }
         }
 
@@ -235,7 +240,7 @@ namespace Raptor.Audio
 
             seconds = seconds > this.totalSeconds ? this.totalSeconds : seconds;
 
-            this.alInvoker.Source(this.srcId, ALSourcef.SecOffset, seconds);
+            this.alInvoker.Source(this.srcId, RaptorALSourcef.SecOffset, seconds);
         }
 
         /// <inheritdoc/>
@@ -269,20 +274,22 @@ namespace Raptor.Audio
         }
 
         /// <summary>
-        /// Maps the given audio <paramref name="format"/> to the <see cref="ALFormat"/> type equivalent.
+        /// Maps the given audio <paramref name="format"/> to the <see cref="RaptorALFormat"/> type equivalent.
         /// </summary>
         /// <param name="format">The format to convert.</param>
-        /// <returns>The <see cref="ALFormat"/> result.</returns>
-        private static ALFormat MapFormat(AudioFormat format) => format switch
-        {
-            AudioFormat.Mono8 => ALFormat.Mono8,
-            AudioFormat.Mono16 => ALFormat.Mono16,
-            AudioFormat.Mono32Float => ALFormat.MonoFloat32Ext,
-            AudioFormat.Stereo8 => ALFormat.Stereo8,
-            AudioFormat.Stereo16 => ALFormat.Stereo16,
-            AudioFormat.StereoFloat32 => ALFormat.StereoFloat32Ext,
-            _ => throw new Exception("Invalid or unknown audio format."),
-        };
+        /// <returns>The <see cref="RaptorALFormat"/> result.</returns>
+        // TODO: Remove this.  Not needed anymore
+        //private static RaptorALFormat MapFormat(AudioFormat format) => format switch
+        //{
+        //    RaptorALFormat.Mono8 => TKALFormat.Mono8,
+        //    RaptorALFormat.Mono16 => TKALFormat.Mono16,
+        //    RaptorALFormat.Mono32Float => TKALFormat.MonoFloat32Ext,
+        //    RaptorALFormat.Stereo8 => TKALFormat.Stereo8,
+        //    RaptorALFormat.Stereo16 => TKALFormat.Stereo16,
+        //    // TODO: This one might be an issue.  It does not seem to be supported in SILKS's version of the ALFormat enum
+        //    RaptorALFormat.StereoFloat32 => TKALFormat.StereoFloat32Ext,
+        //    _ => throw new Exception("Invalid or unknown audio format."),
+        //};
 
         /// <summary>
         /// Initializes the sound.
@@ -332,13 +339,13 @@ namespace Raptor.Audio
 
             this.alInvoker.BufferData(
                 this.bufferId,
-                MapFormat(data.Format),
+                data.Format,
                 data.BufferData.ToArray(),
                 data.BufferData.Count * sizeof(float),
                 data.SampleRate);
 
             // Bind the buffer to the source
-            this.alInvoker.Source(this.srcId, ALSourcei.Buffer, this.bufferId);
+            this.alInvoker.Source(this.srcId, RaptorALSourcei.Buffer, (int)this.bufferId);
 
             this.audioManager.UpdateSoundSource(soundSrc);
         }
@@ -356,13 +363,13 @@ namespace Raptor.Audio
 
             this.alInvoker.BufferData(
                 this.bufferId,
-                MapFormat(data.Format),
+                data.Format,
                 data.BufferData.ToArray(),
                 data.BufferData.Count,
                 data.SampleRate);
 
             // Bind the buffer to the source
-            this.alInvoker.Source(this.srcId, ALSourcei.Buffer, this.bufferId);
+            this.alInvoker.Source(this.srcId, RaptorALSourcei.Buffer, (int)this.bufferId);
 
             // TODO: Call audio manager update sound source
         }
@@ -399,11 +406,8 @@ namespace Raptor.Audio
         [ExcludeFromCodeCoverage]
         private void ErrorCallback(string errorMsg)
         {
-#if DEBUG
-#pragma warning disable IDE0022 // Use expression body for methods
-            Debugger.Break();
-#pragma warning restore IDE0022 // Use expression body for methods
-#endif
+            // TODO: Create a custom audio exception type here
+            throw new Exception(errorMsg);
         }
     }
 }

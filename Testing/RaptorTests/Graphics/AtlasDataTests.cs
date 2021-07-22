@@ -10,7 +10,7 @@ namespace RaptorTests.Graphics
     using Moq;
     using Raptor.Graphics;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasData"/> class.

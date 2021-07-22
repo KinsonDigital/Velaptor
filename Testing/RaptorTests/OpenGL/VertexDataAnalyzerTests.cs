@@ -2,15 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable IDE0002 // Name can be simplified
 namespace RaptorTests.OpenGL
 {
+#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Drawing;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
+    using System.Numerics;
     using Raptor.OpenGL;
     using Xunit;
     using Assert = RaptorTests.Helpers.AssertExtensions;
+#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="VertexDataAnalyzer"/> class.
@@ -80,15 +82,8 @@ namespace RaptorTests.OpenGL
         [InlineData(typeof(ulong), 1)]
         [InlineData(typeof(double), 1)]
         [InlineData(typeof(Vector2), 2)]
-        [InlineData(typeof(Vector2i), 2)]
         [InlineData(typeof(Vector3), 3)]
-        [InlineData(typeof(Vector3i), 3)]
-        [InlineData(typeof(Vector2d), 2)]
         [InlineData(typeof(Vector4), 4)]
-        [InlineData(typeof(Vector4i), 4)]
-        [InlineData(typeof(Vector3d), 3)]
-        [InlineData(typeof(Vector4d), 3)]
-        [InlineData(typeof(Matrix4), 16)]
         public void TotalDataElementsForType_WhenInvoked_ReturnsCorrectResult(Type type, uint expected)
         {
             // Act
@@ -109,7 +104,7 @@ namespace RaptorTests.OpenGL
             var actual = VertexDataAnalyzer.GetVertexPointerType(type);
 
             // Assert
-            Assert.Equal(VertexAttribPointerType.Float, actual);
+            Assert.Equal(GLVertexAttribPointerType.Float, actual);
         }
         #endregion
     }

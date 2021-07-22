@@ -12,11 +12,11 @@ variables:
   value: 'any'
 - name: buildConfiguration
   ${{ if notIn(variables['Build.SourceBranchName'], 'develop', 'master')}}:
-    value: 'Debug'
+    value: 'DebugSILK'
   ${{ if eq(variables['Build.SourceBranchName'], 'develop')}}:
-    value: 'Debug'
+    value: 'DebugSILK'
   ${{ if eq(variables['Build.SourceBranchName'], 'master')}}:
-    value: 'Release'
+    value: 'ReleaseSILK'
 - name: projectName
   value: 'Raptor'
 - name: kinsonDigitalNugetFeed

@@ -8,8 +8,9 @@ namespace RaptorTests.Audio
     using System.Collections.ObjectModel;
     using Moq;
     using Raptor.Audio;
+    using Raptor.NativeInterop.OpenAL;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="OggSoundDecoder"/> class.
@@ -53,9 +54,9 @@ namespace RaptorTests.Audio
         }
 
         [Theory]
-        [InlineData(AudioFormat.Mono32Float, 1, new[] { 10f })]
-        [InlineData(AudioFormat.StereoFloat32, 2, new[] { 10f, 20f })]
-        public unsafe void LoadData_WhenInvoked_ReturnsCorrectResult(AudioFormat format, int channels, float[] bufferData)
+        [InlineData(ALFormat.MonoFloat32, 1, new[] { 10f })]
+        [InlineData(ALFormat.StereoFloat32, 2, new[] { 10f, 20f })]
+        internal unsafe void LoadData_WhenInvoked_ReturnsCorrectResult(ALFormat format, int channels, float[] bufferData)
         {
             // Arrange
             var invokeCount = 0;

@@ -5,12 +5,13 @@
 namespace Raptor.Audio
 {
     using System;
+    using Raptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Streams mp3 audio data from a mp3 file.
     /// </summary>
     /// <typeparam name="T">The type of data from the audio stream.</typeparam>
-    public interface IAudioDataStream<T> : IDisposable
+    internal interface IAudioDataStream<T> : IDisposable
     {
         /// <summary>
         /// Gets or sets the name of the file.
@@ -25,7 +26,7 @@ namespace Raptor.Audio
         /// <summary>
         /// Gets the audio format.
         /// </summary>
-        AudioFormat Format { get; }
+        ALFormat Format { get; }
 
         /// <summary>
         /// Gets the audio sample rate.

@@ -6,9 +6,8 @@ namespace Raptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
+    using System.Numerics;
     using System.Reflection;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
 
     /// <summary>
     /// Analyzes vertex data.
@@ -44,23 +43,16 @@ namespace Raptor.OpenGL
             { typeof(ulong), 1 },
             { typeof(double), 1 },
             { typeof(Vector2), 2 },
-            { typeof(Vector2i), 2 },
             { typeof(Vector3), 3 },
-            { typeof(Vector3i), 3 },
-            { typeof(Vector2d), 2 },
             { typeof(Vector4), 4 },
-            { typeof(Vector4i), 4 },
-            { typeof(Vector3d), 3 },
-            { typeof(Vector4d), 3 },
-            { typeof(Matrix4), 16 },
         };
 
-        private static readonly Dictionary<Type, VertexAttribPointerType> PointerTypeMappings = new ()
+        private static readonly Dictionary<Type, GLVertexAttribPointerType> PointerTypeMappings = new ()
         {
-            { typeof(float), VertexAttribPointerType.Float },
-            { typeof(Vector2), VertexAttribPointerType.Float },
-            { typeof(Vector3), VertexAttribPointerType.Float },
-            { typeof(Vector4), VertexAttribPointerType.Float },
+            { typeof(float), GLVertexAttribPointerType.Float },
+            { typeof(Vector2), GLVertexAttribPointerType.Float },
+            { typeof(Vector3), GLVertexAttribPointerType.Float },
+            { typeof(Vector4), GLVertexAttribPointerType.Float },
         };
 
         /// <summary>
@@ -117,10 +109,10 @@ namespace Raptor.OpenGL
         public static uint TotalDataElementsForType(Type type) => TotalItemsForTypes[type];
 
         /// <summary>
-        /// Returns the of <see cref="VertexAttribPointerType"/> based on the given <paramref name="type"/>.
+        /// Returns the of <see cref="GLVertexAttribPointerType"/> based on the given <paramref name="type"/>.
         /// </summary>
         /// <param name="type">The data type to check.</param>
         /// <returns>The shader attribute pointer type.</returns>
-        public static VertexAttribPointerType GetVertexPointerType(Type type) => PointerTypeMappings[type];
+        public static GLVertexAttribPointerType GetVertexPointerType(Type type) => PointerTypeMappings[type];
     }
 }

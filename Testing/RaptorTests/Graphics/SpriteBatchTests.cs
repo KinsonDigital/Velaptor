@@ -11,10 +11,9 @@ namespace RaptorTests.Graphics
     using System.Collections.ObjectModel;
     using System.Drawing;
     using System.IO.Abstractions;
+    using System.Numerics;
     using FreeTypeSharp.Native;
     using Moq;
-    using OpenTK.Graphics.OpenGL4;
-    using OpenTK.Mathematics;
     using Raptor.Content;
     using Raptor.Exceptions;
     using Raptor.Graphics;
@@ -33,14 +32,15 @@ namespace RaptorTests.Graphics
     public class SpriteBatchTests
     {
         private const uint ProgramId = 1111;
-        private const uint UniformTransformLocation = 2222;
+        private const int UniformTransformLocation = 2222;
         private readonly Mock<IGLInvoker> mockGLInvoker;
+        private readonly Mock<IGLInvokerExtensions> mockGLInvokerExtensions;
         private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
         private readonly Mock<IShaderProgram> mockShader;
         private readonly Mock<IGPUBuffer> mockBuffer;
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IDisposable> mockGLUnsubscriber;
-        private readonly Mock<OpenGLObservable> mockGLObservable;
+        private readonly Mock<OpenGLInitObservable> mockGLObservable;
         private readonly Mock<IBatchManagerService> mockBatchManagerService;
         private IObserver<bool>? spriteBatchGLObserver;
 
@@ -50,9 +50,11 @@ namespace RaptorTests.Graphics
         public SpriteBatchTests()
         {
             this.mockGLInvoker = new Mock<IGLInvoker>();
-            this.mockGLInvoker.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLInvoker.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
             this.mockGLInvoker.Setup(m => m.GetUniformLocation(ProgramId, "uTransform")).Returns(UniformTransformLocation);
+
+            this.mockGLInvokerExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLInvokerExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLInvokerExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
 
             this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
 
@@ -64,7 +66,7 @@ namespace RaptorTests.Graphics
             this.mockFile = new Mock<IFile>();
 
             this.mockGLUnsubscriber = new Mock<IDisposable>();
-            this.mockGLObservable = new Mock<OpenGLObservable>();
+            this.mockGLObservable = new Mock<OpenGLInitObservable>();
             this.mockGLObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
                 .Returns(this.mockGLUnsubscriber.Object)
                 .Callback<IObserver<bool>>(observer =>
@@ -95,6 +97,7 @@ namespace RaptorTests.Graphics
             {
                 var buffer = new SpriteBatch(
                     null,
+                    this.mockGLInvokerExtensions.Object,
                     this.mockFreeTypeInvoker.Object,
                     this.mockShader.Object,
                     this.mockBuffer.Object,
@@ -111,6 +114,7 @@ namespace RaptorTests.Graphics
             {
                 var buffer = new SpriteBatch(
                     this.mockGLInvoker.Object,
+                    this.mockGLInvokerExtensions.Object,
                     this.mockFreeTypeInvoker.Object,
                     null,
                     this.mockBuffer.Object,
@@ -127,6 +131,7 @@ namespace RaptorTests.Graphics
             {
                 var buffer = new SpriteBatch(
                     this.mockGLInvoker.Object,
+                    this.mockGLInvokerExtensions.Object,
                     this.mockFreeTypeInvoker.Object,
                     this.mockShader.Object,
                     null,
@@ -141,7 +146,7 @@ namespace RaptorTests.Graphics
         public unsafe void Width_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLInvoker.Setup(m => m.GetViewPortSize()).Returns(new Vector2(0, 22));
+            this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
             var batch = CreateSpriteBatch();
 
             // Act
@@ -149,15 +154,15 @@ namespace RaptorTests.Graphics
             _ = batch.RenderSurfaceWidth;
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
-            this.mockGLInvoker.Verify(m => m.SetViewPortSize(new Vector2(100, 22)), Times.Once());
+            this.mockGLInvokerExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGLInvokerExtensions.Verify(m => m.SetViewPortSize(new Size(100, 22)), Times.Once());
         }
 
         [Fact]
         public unsafe void Height_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLInvoker.Setup(m => m.GetViewPortSize()).Returns(new Vector2(11, 0));
+            this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
             var batch = CreateSpriteBatch();
 
             // Act
@@ -165,8 +170,8 @@ namespace RaptorTests.Graphics
             _ = batch.RenderSurfaceHeight;
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.SetViewPortSize(new Vector2(11, 100)), Times.Once());
-            this.mockGLInvoker.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGLInvokerExtensions.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
+            this.mockGLInvokerExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
         }
 
         [Fact]
@@ -180,7 +185,7 @@ namespace RaptorTests.Graphics
             var actual = batch.ClearColor;
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.GetFloat(GetPName.ColorClearValue, It.IsAny<float[]>()), Times.Once());
+            this.mockGLInvoker.Verify(m => m.GetFloat(GLGetPName.ColorClearValue, It.IsAny<float[]>()), Times.Once());
             this.mockGLInvoker.Verify(m => m.ClearColor(
                 It.IsAny<float>(),
                 It.IsAny<float>(),
@@ -212,7 +217,7 @@ namespace RaptorTests.Graphics
             batch.Clear();
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.Clear(ClearBufferMask.ColorBufferBit), Times.Once());
+            this.mockGLInvoker.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once());
         }
 
         [Fact]
@@ -245,7 +250,7 @@ namespace RaptorTests.Graphics
 
             // Assert
             this.mockBatchManagerService.VerifyAnyBuildTransformationMatrix(Times.Never());
-            this.mockGLInvoker.Setup(m => m.UniformMatrix4(It.IsAny<uint>(), It.IsAny<bool>(), ref It.Ref<Matrix4>.IsAny));
+            this.mockGLInvoker.Setup(m => m.UniformMatrix4(It.IsAny<int>(), It.IsAny<uint>(), It.IsAny<bool>(), It.IsAny<Matrix4x4>()));
             this.mockBuffer.Verify(m => m.UpdateQuad(
                 It.IsAny<uint>(),
                 It.IsAny<Rectangle>(),
@@ -284,7 +289,7 @@ namespace RaptorTests.Graphics
                 It.IsAny<RenderEffects>());
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.DrawElements(PrimitiveType.Triangles, 12, DrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
+            this.mockGLInvoker.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 12, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
         }
 
         [Fact]
@@ -490,7 +495,7 @@ namespace RaptorTests.Graphics
             batch.Render(mockTexture.Object, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RenderEffects>());
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.BindTexture(TextureTarget.Texture2D, 0), Times.Once());
+            this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, 0), Times.Once());
         }
 
         [Fact]
@@ -789,6 +794,7 @@ namespace RaptorTests.Graphics
         {
             var result = new SpriteBatch(
                 this.mockGLInvoker.Object,
+                this.mockGLInvokerExtensions.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockShader.Object,
                 this.mockBuffer.Object,
@@ -801,7 +807,7 @@ namespace RaptorTests.Graphics
         }
 
         /// <summary>
-        /// Simulates an OpenGL intialized push notification for the <see cref="OpenGLObservable"/>
+        /// Simulates an OpenGL intialized push notification for the <see cref="OpenGLInitObservable"/>
         /// subscription that is setup inside of <see cref="SpriteBatch"/>.
         /// </summary>
         private void SimulateGLInitPushNotification() => this.spriteBatchGLObserver.OnNext(It.IsAny<bool>());
