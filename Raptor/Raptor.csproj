@@ -31,6 +31,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseSILK|AnyCPU'">
     <DefineConstants>TRACE;SILK</DefineConstants>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Libs\win-x86\**" />
+    <EmbeddedResource Remove="Libs\win-x86\**" />
+    <None Remove="Libs\win-x86\**" />
+  </ItemGroup>
 
 
   <ItemGroup>
@@ -82,7 +87,6 @@
   <!--ADD LIBRARIES TO NUGET PACKAGE-->
   <Target Name="Add-Libs-To-Nuget-Package" AfterTargets="Build">
     <ItemGroup>
-      <Content Include="$(ProjectDir)Libs\win-x86\openal32.dll" Pack="true" PackagePath="\runtimes\win-x86\native" />
       <Content Include="$(ProjectDir)Libs\win-x64\openal32.dll" Pack="true" PackagePath="\runtimes\win-x64\native" />
     </ItemGroup>
   </Target>
@@ -96,7 +100,6 @@
 
 
   <ItemGroup>
-    <Folder Include="Libs\win-x86\" />
     <Folder Include="NativeInterop\OpenGL\" />
   </ItemGroup>
 </Project>
