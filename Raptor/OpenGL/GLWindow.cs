@@ -415,7 +415,6 @@ namespace Raptor.OpenGL
             Uninitialize?.Invoke();
         }
 
-
         /// <summary>
         /// Invokes the <see cref="WinResize"/> action property..
         /// </summary>

@@ -206,10 +206,5 @@ namespace Raptor.NativeInterop.OpenAL
         /// </summary>
         /// <param name="sid">The name of the source to be rewound.</param>
         void SourceRewind(uint sid);
-
-
-
-
-
     }
 }

@@ -55,7 +55,6 @@ namespace RaptorTests.OpenGL
             this.mockGLInvoker.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus, out getProgramStatusCode));
             this.mockGLInvoker.Setup(m => m.CreateProgram()).Returns(this.shaderProgramID);
 
-
             this.mockGLInvokerExtensions = new Mock<IGLInvokerExtensions>();
             this.mockGLInvokerExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
             this.mockGLInvokerExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);

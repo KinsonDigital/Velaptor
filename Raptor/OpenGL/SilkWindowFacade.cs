@@ -18,6 +18,8 @@ namespace Raptor.OpenGL
     using RaptorMouseButton = Input.MouseButton;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
 
+    // TODO: Finish documentating code
+
     /// <summary>
     /// The internal SILK OpenGL window.
     /// </summary>
