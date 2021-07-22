@@ -1,5 +1,19 @@
 # **Raptor Release Notes**
 
+## <span style='color:mediumseagreen;font-weight:bold'>Version 0.28.0</span>
+
+### **Changes** ✨
+
+1. Changed **OpenGL** library used for rendering and audio from **OpenTK** to **SILK.NET**.
+
+### **Breaking Changes** 💣
+1. Moved the following exceptions to a new namespace named ```Raptor.Content.Exceptions```
+   * ```LoadContentException```
+   * ```LoadFontException```
+   * ```UnknownContentException```
+
+---
+
 ## <span style='color:mediumseagreen;font-weight:bold'>Version 0.27.0</span>
 
 ### **New** 🎉
