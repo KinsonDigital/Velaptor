@@ -39,11 +39,6 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\Raptor\Raptor.csproj" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <None Update="Content\Atlas\Main-Atlas.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -80,6 +75,11 @@
   <ItemGroup>
     <Folder Include="Content\Atlas\" />
     <Folder Include="Content\Fonts\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Raptor\Raptor.csproj" />
   </ItemGroup>
   
   
