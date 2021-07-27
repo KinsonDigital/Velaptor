@@ -13,17 +13,17 @@ namespace Velaptor.Factories
     using Velaptor.UI;
 
     /// <summary>
-    /// Creates an instance of a raptor window.
+    /// Creates an instance of a Velaptor window.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public static class WindowFactory
     {
         /// <summary>
-        /// Creates a single instance of a raptor window implementation.
+        /// Creates a single instance of a Velaptor window implementation.
         /// </summary>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
-        /// <returns>A raptor framework window implementation.</returns>
+        /// <returns>A Velaptor framework window implementation.</returns>
         public static IWindow CreateWindow(int width, int height)
             => new GLWindow(
                 width,

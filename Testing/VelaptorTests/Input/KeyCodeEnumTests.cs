@@ -23,7 +23,7 @@ namespace VelaptorTests.Input
     /// </summary>
     public class KeyCodeEnumTests
     {
-        private readonly Dictionary<string, int> raptorEnumNamesAndValues = new ();
+        private readonly Dictionary<string, int> velaptorEnumNamesAndValues = new ();
         private readonly Dictionary<string, int> openTKEnumNamesAndValues = new ();
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace VelaptorTests.Input
         /// </summary>
         public KeyCodeEnumTests()
         {
-            this.raptorEnumNamesAndValues = GetEnumNamesAndValues<KeyCode>((enumName) =>
+            this.velaptorEnumNamesAndValues = GetEnumNamesAndValues<KeyCode>((enumName) =>
             {
                 return enumName == "LastKey";
             }, (enumName) =>
@@ -51,15 +51,15 @@ namespace VelaptorTests.Input
         [Fact]
         public void EnumTest_WhenCompared_AllNamesExistAndValuesMatchInOpenTKEnum()
         {
-            foreach (var raptorEnum in this.raptorEnumNamesAndValues)
+            foreach (var velaptorEnum in this.velaptorEnumNamesAndValues)
             {
-                Assert.True(this.openTKEnumNamesAndValues.ContainsKey(raptorEnum.Key), $"The raptor enum '{raptorEnum.Key}' does not exist in the OpenTK Keys enum.");
+                Assert.True(this.openTKEnumNamesAndValues.ContainsKey(velaptorEnum.Key), $"The Velaptor enum '{velaptorEnum.Key}' does not exist in the OpenTK Keys enum.");
 
-                var nameExists = this.openTKEnumNamesAndValues.Keys.Contains(raptorEnum.Key);
-                var openTKValue = this.openTKEnumNamesAndValues[raptorEnum.Key];
-                var valueMatches = raptorEnum.Value == openTKValue;
+                var nameExists = this.openTKEnumNamesAndValues.Keys.Contains(velaptorEnum.Key);
+                var openTKValue = this.openTKEnumNamesAndValues[velaptorEnum.Key];
+                var valueMatches = velaptorEnum.Value == openTKValue;
 
-                Assert.True(valueMatches, $"The raptor enum '{nameof(KeyCode)}.{raptorEnum.Key}' value of '{raptorEnum.Value}' does not match the '{nameof(Keys)}.{raptorEnum.Key}' value of '{openTKValue}'.");
+                Assert.True(valueMatches, $"The Velaptor enum '{nameof(KeyCode)}.{velaptorEnum.Key}' value of '{velaptorEnum.Value}' does not match the '{nameof(Keys)}.{velaptorEnum.Key}' value of '{openTKValue}'.");
             }
         }
 
