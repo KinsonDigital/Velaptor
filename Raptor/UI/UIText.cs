@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.UI
+namespace Velaptor.UI
 {
     using System;
     using System.Drawing;
     using System.Numerics;
-    using Raptor.Graphics;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// Represents a single piece of text rendered to a graphics surface.

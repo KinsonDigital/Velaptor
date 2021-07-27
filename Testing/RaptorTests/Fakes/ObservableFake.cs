@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Fakes
+namespace VelaptorTests.Fakes
 {
-    using Raptor.Observables.Core;
+    using Velaptor.Observables.Core;
 
     /// <summary>
     /// Used for test the abstract <see cref="Observable{T}"/> class.

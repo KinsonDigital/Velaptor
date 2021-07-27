@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Input
+namespace VelaptorTests.Input
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Raptor.Input;
+    using Velaptor.Input;
     using Xunit;
 
     /// <summary>

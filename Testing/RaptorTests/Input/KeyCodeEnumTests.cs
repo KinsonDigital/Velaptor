@@ -2,19 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Input
+namespace VelaptorTests.Input
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using OpenTK.Windowing.GraphicsLibraryFramework;
-    using Raptor.Input;
+    using Velaptor.Input;
     using Xunit;
 
     /*Purpose:
      * In the new OpenTK v4.0.0 update, the key code enum values of the Keys enumeration was changed.
-     * This broke related things in the KeyCode enumeration of the Raptor library.  These
+     * This broke related things in the KeyCode enumeration of the Velaptor library.  These
      * tests will check for changes when upgrading to verify that no changes were made.
      */
 

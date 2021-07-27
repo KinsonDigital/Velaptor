@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests
+namespace VelaptorTests
 {
     using Moq;
-    using Raptor;
+    using Velaptor;
     using Xunit;
 
     public class CachedValueTests

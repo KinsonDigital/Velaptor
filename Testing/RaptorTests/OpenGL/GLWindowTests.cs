@@ -4,24 +4,24 @@
 
 #pragma warning disable IDE0001 // Name can be simplified
 #pragma warning disable IDE0002 // Name can be simplified
-namespace RaptorTests.OpenGL
+namespace VelaptorTests.OpenGL
 {
     using System;
     using System.Runtime.InteropServices;
     using Moq;
-    using Raptor;
-    using Raptor.Content;
-    using Raptor.Hardware;
-    using Raptor.Input;
-    using Raptor.NativeInterop;
-    using Raptor.Observables;
-    using Raptor.OpenGL;
-    using Raptor.Services;
+    using Velaptor;
+    using Velaptor.Content;
+    using Velaptor.Hardware;
+    using Velaptor.Input;
+    using Velaptor.NativeInterop;
+    using Velaptor.Observables;
+    using Velaptor.OpenGL;
+    using Velaptor.Services;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
-    using RaptorKeyboardState = Raptor.Input.KeyboardState;
-    using RaptorMouseButton = Raptor.Input.MouseButton;
-    using RaptorMouseState = Raptor.Input.MouseState;
+    using Assert = VelaptorTests.Helpers.AssertExtensions;
+    using VelaptorKeyboardState = Velaptor.Input.KeyboardState;
+    using VelaptorMouseButton = Velaptor.Input.MouseButton;
+    using VelaptorMouseState = Velaptor.Input.MouseState;
     using SysVector2 = System.Numerics.Vector2;
 
     /// <summary>
@@ -36,8 +36,8 @@ namespace RaptorTests.OpenGL
         private readonly Mock<IPlatform> mockPlatform;
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITaskService> mockTaskService;
-        private readonly Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>> mockKeyboard;
-        private readonly Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>> mockMouse;
+        private readonly Mock<IKeyboardInput<KeyCode, VelaptorKeyboardState>> mockKeyboard;
+        private readonly Mock<IMouseInput<VelaptorMouseButton, VelaptorMouseState>> mockMouse;
         private readonly Mock<OpenGLInitObservable> mockGLObservable;
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace RaptorTests.OpenGL
             this.mockPlatform = new Mock<IPlatform>();
             this.mockContentLoader = new Mock<IContentLoader>();
             this.mockTaskService = new Mock<ITaskService>();
-            this.mockKeyboard = new Mock<IKeyboardInput<KeyCode, RaptorKeyboardState>>();
-            this.mockMouse = new Mock<IMouseInput<RaptorMouseButton, RaptorMouseState>>();
+            this.mockKeyboard = new Mock<IKeyboardInput<KeyCode, VelaptorKeyboardState>>();
+            this.mockMouse = new Mock<IMouseInput<VelaptorMouseButton, VelaptorMouseState>>();
             this.mockGLObservable = new Mock<OpenGLInitObservable>();
         }
 
@@ -308,7 +308,7 @@ namespace RaptorTests.OpenGL
             var actual = window.Title;
 
             // Assert
-            Assert.Equal("Raptor Application", actual);
+            Assert.Equal("Velaptor Application", actual);
         }
 
         [Fact]
@@ -504,7 +504,7 @@ namespace RaptorTests.OpenGL
             var actual = window.TypeOfBorder;
 
             // Assert
-            Assert.Equal(Raptor.WindowBorder.Resizable, actual);
+            Assert.Equal(Velaptor.WindowBorder.Resizable, actual);
         }
 
         [Fact]
@@ -518,11 +518,11 @@ namespace RaptorTests.OpenGL
             window.CachedTypeOfBorder.IsCaching = false;
 
             // Act
-            window.TypeOfBorder = Raptor.WindowBorder.Fixed;
+            window.TypeOfBorder = Velaptor.WindowBorder.Fixed;
             var actual = window.TypeOfBorder;
 
             // Assert
-            Assert.Equal(Raptor.WindowBorder.Fixed, actual);
+            Assert.Equal(Velaptor.WindowBorder.Fixed, actual);
         }
         #endregion
 

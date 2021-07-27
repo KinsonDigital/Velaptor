@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop
+namespace Velaptor.NativeInterop
 {
     using System;
-    using Raptor.OpenGL;
+    using Velaptor.OpenGL;
 
     /// <summary>
     /// Holds GLFW related error information.

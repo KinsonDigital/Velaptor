@@ -4,7 +4,7 @@
 
 #pragma warning disable SA1124 // Do not use regions
 #pragma warning disable SA1514 // Element documentation header should be preceded by blank line
-namespace Raptor.NativeInterop.FreeType
+namespace Velaptor.NativeInterop.FreeType
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Graphics
+namespace VelaptorTests.Graphics
 {
     using System;
     using System.Collections.Generic;
     using System.Drawing;
     using Moq;
-    using Raptor.Graphics;
-    using Raptor.NativeInterop;
-    using Raptor.OpenGL;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop;
+    using Velaptor.OpenGL;
     using Xunit;
 
     /// <summary>

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop
+namespace Velaptor.NativeInterop
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using System.Runtime.InteropServices;
     using OpenTK.Graphics.OpenGL4;
-    using Raptor.OpenGL;
+    using Velaptor.OpenGL;
 
     /// <summary>
     /// Invokes OpenGL calls.

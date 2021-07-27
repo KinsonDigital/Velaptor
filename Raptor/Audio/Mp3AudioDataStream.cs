@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using MP3Sharp;
-    using Raptor.Exceptions;
-    using Raptor.NativeInterop.OpenAL;
+    using Velaptor.Exceptions;
+    using Velaptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Streams mp3 audio data from a mp3 file.

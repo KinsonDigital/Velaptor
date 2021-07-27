@@ -1,14 +1,14 @@
-﻿using Raptor;
-using Raptor.Audio;
-using Raptor.Factories;
-using Raptor.Graphics;
-using Raptor.Input;
-using Raptor.UI;
+﻿using Velaptor;
+using Velaptor.Audio;
+using Velaptor.Factories;
+using Velaptor.Graphics;
+using Velaptor.Input;
+using Velaptor.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace RaptorSandBox
+namespace VelaptorSandBox
 {
     public class MyWindow : Window
     {

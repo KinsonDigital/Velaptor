@@ -1,4 +1,4 @@
-# **Raptor Release Notes**
+# **Velaptor Release Notes**
 
 ## <span style='color:mediumseagreen;font-weight:bold'>Version 0.28.0</span>
 
@@ -7,7 +7,7 @@
 1. Changed **OpenGL** library used for rendering and audio from **OpenTK** to **SILK.NET**.
 
 ### **Breaking Changes** 💣
-1. Moved the following exceptions to a new namespace named ```Raptor.Content.Exceptions```
+1. Moved the following exceptions to a new namespace named ```Velaptor.Content.Exceptions```
    * ```LoadContentException```
    * ```LoadFontException```
    * ```UnknownContentException```
@@ -194,8 +194,8 @@
 
 ### **Breaking Changes** 💣
 
-1. Moved the following types from the <span style='font-weight: bold; color: khaki'>Raptor.Desktop</span> namespace to the <span style='font-weight: bold; color: khaki'>Raptor.UI</span> namespace
-   * NOTE: The types below were all of the types in the <span style='font-weight: bold; color: khaki'>Raptor.Desktop</span> namespace.  The namespace has been removed entirely
+1. Moved the following types from the <span style='font-weight: bold; color: khaki'>Velaptor.Desktop</span> namespace to the <span style='font-weight: bold; color: khaki'>Velaptor.UI</span> namespace
+   * NOTE: The types below were all of the types in the <span style='font-weight: bold; color: khaki'>Velaptor.Desktop</span> namespace.  The namespace has been removed entirely
    * <span style='font-weight: bold; color: khaki'>IWindow</span>
    * <span style='font-weight: bold; color: khaki'>IWindowAction</span>
    * <span style='font-weight: bold; color: khaki'>IWindowProps</span>
@@ -365,7 +365,7 @@
 
 1. Added a method named <span style='font-weight: bold; color: khaki'>ShowAsync() </span> to the <span style='font-weight: bold; color: khaki'>IWindow </span> interface and all associated <span style='font-weight: bold; color: khaki'>IWindow </span> implementations
    * This is to provide the ability for consumers of the library/framework to create <span style='font-weight: bold; color: khaki'>IWindow </span> implementations, that can show the window asynchronously instead of on the applications main thread
-   * Example: Showing a **Raptor** window inside of a GUI application like **WPF** or **WinForms**, and not block the UI thread
+   * Example: Showing a **Velaptor** window inside of a GUI application like **WPF** or **WinForms**, and not block the UI thread
 
 ---
 
@@ -392,9 +392,9 @@
 
 ### **New** 🎉
 
-1. Added a new method to the <span style='font-weight: bold; color: khaki'>Window </span> class named <span style='font-weight: bold; color: khaki'>ShowAsync() </span> to add the ability to run a **Raptor Window** on another thread
+1. Added a new method to the <span style='font-weight: bold; color: khaki'>Window </span> class named <span style='font-weight: bold; color: khaki'>ShowAsync() </span> to add the ability to run a **Velaptor Window** on another thread
    * Currently <span style='font-weight: bold; color: khaki'>Show() </span> blocks the thread that it was invoked on due to the <span style='font-weight: bold; color: khaki'>Show() </span> method not returning until the window has been closed  This is not ideal due to how long the window needs to live.  Using <span style='font-weight: bold; color: khaki'>ShowAsync() </span> will allow the use of the window while still allowing execution after the invocation of the method
-     * Use Case: Running a **Raptor Window** from a GUI application
+     * Use Case: Running a **Velaptor Window** from a GUI application
    * Any implementation of the <span style='font-weight: bold; color: khaki'>Window </span> class will get this functionality
 
 ### **Bug Fixes** 🐛
@@ -432,12 +432,12 @@
 
 ### **Breaking Changes** 💣
 
-1. Moved the following types to to a new namespace with the name <span style='font-weight: bold; color: khaki'>Raptor.Desktop`
+1. Moved the following types to to a new namespace with the name <span style='font-weight: bold; color: khaki'>Velaptor.Desktop`
    * <span style='font-weight: bold; color: khaki'>IWindow</span>
    * <span style='font-weight: bold; color: khaki'>Window</span>
 2. Added 2 more new interfaces related to window properties for window state and actions
    * Added new interfaces called <span style='font-weight: bold; color: khaki'>IWindowProps </span> and <span style='font-weight: bold; color: khaki'>IWindowActions</span>
-   * These interfaces were added to the <span style='font-weight: bold; color: khaki'>Raptor.Desktop </span> namespace
+   * These interfaces were added to the <span style='font-weight: bold; color: khaki'>Velaptor.Desktop </span> namespace
 3. Changed the name of the <span style='font-weight: bold; color: khaki'>Window.UpdateFreq </span> property to <span style='font-weight: bold; color: khaki'>Window.UpdateFrequency</span>
 
 ### **Bug Fixes** 🐛
@@ -454,7 +454,7 @@
 
 1. Improved how content is used and managed
    * Removed <span style='font-weight: bold; color: khaki'>Window </span> class constructor dependency of the type <span style='font-weight: bold; color: khaki'>IContentLoader</span>
-   * Created a <span style='font-weight: bold; color: khaki'>ILoader<T> </span> for **Raptor** content types below
+   * Created a <span style='font-weight: bold; color: khaki'>ILoader<T> </span> for **Velaptor** content types below
      1. Graphics
      2. Sound
      3. Atlas Data
@@ -577,7 +577,7 @@
 ### **Changes** ✨
 
 1. Removed old **SDL** related code from library/project/solution
-2. Refactored code to prevent **OpenGL** related code from being exposed to the public API of the Raptor library
+2. Refactored code to prevent **OpenGL** related code from being exposed to the public API of the Velaptor library
 3. Refactored code to use unsigned integers instead of signed integers where it makes sense
    * Example: You cannot have a texture with a negative width.  This has been converted to an unsigned integer
 4. Created unit tests where applicable
@@ -622,7 +622,7 @@
 ### **Other** 👏
 
 1. Changed how **SDL** files are dealt with in the build and nuget packaging process
-   * Removes dependency on the native **SDL** libraries in **Raptor** code base and relies on **SDLCore** nuget package native **SDL** libraries
+   * Removes dependency on the native **SDL** libraries in **Velaptor** code base and relies on **SDLCore** nuget package native **SDL** libraries
 2. Cleaned up **ExtensionMethodTests** file
 3. Added a file to the code base for other developers to know how to contribute to the project
    * Refer to the **CONTRIBUTING.md** file
@@ -644,7 +644,7 @@
 
 ### **Other** 👏
 
-1. Changed name of **Raptor.Tests** unit testing project to **RaptorTests**
+1. Changed name of **Velaptor.Tests** unit testing project to **VelaptorTests**
 2. Added **runsettings** file to help facilitate better code coverage during development and during **CI/CD** operations
 
 ---

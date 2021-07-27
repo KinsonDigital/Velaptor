@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma warning disable IDE0002 // Name can be simplified
-namespace RaptorTests.Content
+namespace VelaptorTests.Content
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System.Drawing;
@@ -11,13 +11,13 @@ namespace RaptorTests.Content
     using System.IO.Abstractions;
     using Moq;
     using Newtonsoft.Json;
-    using Raptor.Content;
-    using Raptor.Content.Exceptions;
-    using Raptor.Graphics;
-    using Raptor.NativeInterop;
-    using Raptor.Services;
+    using Velaptor.Content;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop;
+    using Velaptor.Services;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = VelaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>

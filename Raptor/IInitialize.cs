@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor
+namespace Velaptor
 {
     /// <summary>
     /// Provides the ability to initialize and object.

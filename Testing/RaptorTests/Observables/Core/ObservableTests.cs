@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Observables.Core
+namespace VelaptorTests.Observables.Core
 {
-    using Raptor.Observables.Core;
-    using RaptorTests.Fakes;
+    using Velaptor.Observables.Core;
+    using VelaptorTests.Fakes;
     using Xunit;
 
     /// <summary>

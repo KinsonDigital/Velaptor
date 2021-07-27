@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Observables.Core
+namespace Velaptor.Observables.Core
 {
     using System;
     using System.Collections.Generic;

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
     using System.Numerics;
-    using Raptor.NativeInterop;
+    using Velaptor.NativeInterop;
 
     /// <inheritdoc/>
     internal class GPUBuffer<T> : IGPUBuffer

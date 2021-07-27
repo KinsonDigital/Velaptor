@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Content
+namespace VelaptorTests.Content
 {
     using System.IO.Abstractions;
     using Moq;
-    using Raptor.Content;
+    using Velaptor.Content;
     using Xunit;
 
     /// <summary>

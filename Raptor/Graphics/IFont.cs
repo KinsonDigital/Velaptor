@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Graphics
+namespace Velaptor.Graphics
 {
     using System.Collections.ObjectModel;
-    using Raptor.Content;
+    using Velaptor.Content;
 
     /// <summary>
     /// The font to use when rendering text to the screen.

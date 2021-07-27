@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
     using System;
 #if DEBUG
@@ -11,14 +11,13 @@ namespace Raptor.Audio
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using OpenTK.Audio.OpenAL;
-    using Raptor.Factories;
-    using Raptor.NativeInterop.OpenAL;
+    using Velaptor.Factories;
+    using Velaptor.NativeInterop.OpenAL;
     using IOPath = System.IO.Path;
     using TKALFormat = OpenTK.Audio.OpenAL.ALFormat;
-    using RaptorALFormat = NativeInterop.OpenAL.ALFormat;
-    using RaptorALSourcei = NativeInterop.OpenAL.ALSourcei;
-    using RaptorALSourceb = NativeInterop.OpenAL.ALSourceb;
-    using RaptorALSourcef = NativeInterop.OpenAL.ALSourcef;
+    using VelaptorALSourcei = NativeInterop.OpenAL.ALSourcei;
+    using VelaptorALSourceb = NativeInterop.OpenAL.ALSourceb;
+    using VelaptorALSourcef = NativeInterop.OpenAL.ALSourcef;
 
     /// <summary>
     /// A single sound that can be played, paused etc.
@@ -102,7 +101,7 @@ namespace Raptor.Audio
                 }
 
                 // Get the current volume between 0.0 and 1.0
-                var volume = this.alInvoker.GetSource(this.srcId, RaptorALSourcef.Gain);
+                var volume = this.alInvoker.GetSource(this.srcId, VelaptorALSourcef.Gain);
 
                 // Change the range to be between 0 and 100
                 return volume * 100f;
@@ -122,7 +121,7 @@ namespace Raptor.Audio
                 // This is the excepted range by OpenAL
                 value /= 100f;
 
-                this.alInvoker.Source(this.srcId, RaptorALSourcef.Gain, (float)Math.Round(value, 4));
+                this.alInvoker.Source(this.srcId, VelaptorALSourcef.Gain, (float)Math.Round(value, 4));
             }
         }
 
@@ -139,7 +138,7 @@ namespace Raptor.Audio
                     throw new Exception(IsDisposedExceptionMessage);
                 }
 
-                return this.alInvoker.GetSource(this.srcId, RaptorALSourcef.SecOffset);
+                return this.alInvoker.GetSource(this.srcId, VelaptorALSourcef.SecOffset);
             }
         }
 
@@ -167,7 +166,7 @@ namespace Raptor.Audio
                     throw new Exception(IsDisposedExceptionMessage);
                 }
 
-                return this.alInvoker.GetSource(this.srcId, RaptorALSourceb.Looping);
+                return this.alInvoker.GetSource(this.srcId, VelaptorALSourceb.Looping);
             }
             set
             {
@@ -176,7 +175,7 @@ namespace Raptor.Audio
                     throw new Exception(IsDisposedExceptionMessage);
                 }
 
-                this.alInvoker.Source(this.srcId, RaptorALSourceb.Looping, value);
+                this.alInvoker.Source(this.srcId, VelaptorALSourceb.Looping, value);
             }
         }
 
@@ -240,7 +239,7 @@ namespace Raptor.Audio
 
             seconds = seconds > this.totalSeconds ? this.totalSeconds : seconds;
 
-            this.alInvoker.Source(this.srcId, RaptorALSourcef.SecOffset, seconds);
+            this.alInvoker.Source(this.srcId, VelaptorALSourcef.SecOffset, seconds);
         }
 
         /// <inheritdoc/>
@@ -274,20 +273,20 @@ namespace Raptor.Audio
         }
 
         /// <summary>
-        /// Maps the given audio <paramref name="format"/> to the <see cref="RaptorALFormat"/> type equivalent.
+        /// Maps the given audio <paramref name="format"/> to the <see cref="VelaptorALFormat"/> type equivalent.
         /// </summary>
         /// <param name="format">The format to convert.</param>
-        /// <returns>The <see cref="RaptorALFormat"/> result.</returns>
+        /// <returns>The <see cref="VelaptorALFormat"/> result.</returns>
         // TODO: Remove this.  Not needed anymore
-        //private static RaptorALFormat MapFormat(AudioFormat format) => format switch
+        //private static VelaptorALFormat MapFormat(AudioFormat format) => format switch
         //{
-        //    RaptorALFormat.Mono8 => TKALFormat.Mono8,
-        //    RaptorALFormat.Mono16 => TKALFormat.Mono16,
-        //    RaptorALFormat.Mono32Float => TKALFormat.MonoFloat32Ext,
-        //    RaptorALFormat.Stereo8 => TKALFormat.Stereo8,
-        //    RaptorALFormat.Stereo16 => TKALFormat.Stereo16,
+        //    VelaptorALFormat.Mono8 => TKALFormat.Mono8,
+        //    VelaptorALFormat.Mono16 => TKALFormat.Mono16,
+        //    VelaptorALFormat.Mono32Float => TKALFormat.MonoFloat32Ext,
+        //    VelaptorALFormat.Stereo8 => TKALFormat.Stereo8,
+        //    VelaptorALFormat.Stereo16 => TKALFormat.Stereo16,
         //    // TODO: This one might be an issue.  It does not seem to be supported in SILKS's version of the ALFormat enum
-        //    RaptorALFormat.StereoFloat32 => TKALFormat.StereoFloat32Ext,
+        //    VelaptorALFormat.StereoFloat32 => TKALFormat.StereoFloat32Ext,
         //    _ => throw new Exception("Invalid or unknown audio format."),
         //};
 
@@ -345,7 +344,7 @@ namespace Raptor.Audio
                 data.SampleRate);
 
             // Bind the buffer to the source
-            this.alInvoker.Source(this.srcId, RaptorALSourcei.Buffer, (int)this.bufferId);
+            this.alInvoker.Source(this.srcId, VelaptorALSourcei.Buffer, (int)this.bufferId);
 
             this.audioManager.UpdateSoundSource(soundSrc);
         }
@@ -369,7 +368,7 @@ namespace Raptor.Audio
                 data.SampleRate);
 
             // Bind the buffer to the source
-            this.alInvoker.Source(this.srcId, RaptorALSourcei.Buffer, (int)this.bufferId);
+            this.alInvoker.Source(this.srcId, VelaptorALSourcei.Buffer, (int)this.bufferId);
 
             // TODO: Call audio manager update sound source
         }

@@ -2,11 +2,11 @@
 //// Copyright (c) KinsonDigital. All rights reserved.
 //// </copyright>
 
-//namespace RaptorTests.Audio
+//namespace VelaptorTests.Audio
 //{
 //    using System.Collections.ObjectModel;
 //    using System.Linq;
-//    using Raptor.Audio;
+//    using Velaptor.Audio;
 //    using Xunit;
 
 //    /// <summary>

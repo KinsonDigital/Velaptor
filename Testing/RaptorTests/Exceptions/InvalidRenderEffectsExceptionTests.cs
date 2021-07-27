@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Exceptions
+namespace VelaptorTests.Exceptions
 {
     using System;
-    using Raptor.Exceptions;
-    using Raptor.Graphics;
+    using Velaptor.Exceptions;
+    using Velaptor.Graphics;
     using Xunit;
 
     /// <summary>

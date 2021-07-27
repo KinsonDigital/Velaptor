@@ -2,20 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop.OpenAL
+namespace Velaptor.NativeInterop.OpenAL
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using OpenTK.Audio.OpenAL;
-    using RaptorALFormat = ALFormat;
-    using RaptorALSourcei = ALSourcei;
-    using RaptorALSourceb = ALSourceb;
-    using RaptorALSourcef = ALSourcef;
-    using RaptorALSourceState = ALSourceState;
+    using VelaptorALFormat = ALFormat;
+    using VelaptorALSourcei = ALSourcei;
+    using VelaptorALSourceb = ALSourceb;
+    using VelaptorALSourcef = ALSourcef;
+    using VelaptorALSourceState = ALSourceState;
 
-    using RaptorAlcGetStringList = AlcGetStringList;
     using TKALSourcei = OpenTK.Audio.OpenAL.ALSourcei;
     using TKALSourceb = OpenTK.Audio.OpenAL.ALSourceb;
     using TKALSourcef = OpenTK.Audio.OpenAL.ALSourcef;
@@ -36,7 +35,7 @@ namespace Raptor.NativeInterop.OpenAL
         public event Action<string>? ErrorCallback;
 
         /// <inheritdoc/>
-        public void BufferData<TBuffer>(uint bid, RaptorALFormat format, TBuffer[] buffer, int size, int freq)
+        public void BufferData<TBuffer>(uint bid, VelaptorALFormat format, TBuffer[] buffer, int size, int freq)
             where TBuffer : unmanaged
         {
             AL.BufferData((int)bid, (TKALFormat)format, buffer, freq);
@@ -144,7 +143,7 @@ namespace Raptor.NativeInterop.OpenAL
         }
 
         /// <inheritdoc/>
-        public bool GetSource(uint sid, RaptorALSourceb param)
+        public bool GetSource(uint sid, VelaptorALSourceb param)
         {
             AL.GetSource((int)sid, (TKALSourceb)param, out var result);
 
@@ -157,7 +156,7 @@ namespace Raptor.NativeInterop.OpenAL
         }
 
         /// <inheritdoc/>
-        public float GetSource(uint sid, RaptorALSourcef param)
+        public float GetSource(uint sid, VelaptorALSourcef param)
         {
             AL.GetSource((int)sid, (TKALSourcef)param, out var value);
 
@@ -170,11 +169,11 @@ namespace Raptor.NativeInterop.OpenAL
         }
 
         /// <inheritdoc/>
-        public RaptorALSourceState GetSourceState(uint sid)
+        public VelaptorALSourceState GetSourceState(uint sid)
         {
             AL.GetSource((int)sid, ALGetSourcei.SourceState, out var result);
 
-            return (RaptorALSourceState)result;
+            return (VelaptorALSourceState)result;
         }
 
         /// <inheritdoc/>
@@ -247,7 +246,7 @@ namespace Raptor.NativeInterop.OpenAL
         }
 
         /// <inheritdoc/>
-        public void Source(uint sid, RaptorALSourcei param, int value)
+        public void Source(uint sid, VelaptorALSourcei param, int value)
         {
             AL.Source((int)sid, (TKALSourcei)param, value);
 
@@ -258,7 +257,7 @@ namespace Raptor.NativeInterop.OpenAL
         }
 
         /// <inheritdoc/>
-        public void Source(uint sid, RaptorALSourceb param, bool value)
+        public void Source(uint sid, VelaptorALSourceb param, bool value)
         {
             AL.Source((int)sid, (TKALSourceb)param, value);
 
@@ -269,7 +268,7 @@ namespace Raptor.NativeInterop.OpenAL
         }
 
         /// <inheritdoc/>
-        public void Source(uint sid, RaptorALSourcef param, float value)
+        public void Source(uint sid, VelaptorALSourcef param, float value)
         {
             AL.Source((int)sid, (TKALSourcef)param, value);
 

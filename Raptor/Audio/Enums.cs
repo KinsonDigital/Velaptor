@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
-    // TODO: This should eventually be replaced by the Raptor.NativeInterop.OpenAL.ALFormat type
+    // TODO: This should eventually be replaced by the Velaptor.NativeInterop.OpenAL.ALFormat type
     /// <summary>
     /// Represents different audio formats.
     /// </summary>

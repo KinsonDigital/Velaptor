@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Helpers
+namespace VelaptorTests.Helpers
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -10,8 +10,8 @@ namespace RaptorTests.Helpers
     using System.Numerics;
     using Moq;
     using OpenTK.Mathematics;
-    using Raptor.Graphics;
-    using Raptor.Services;
+    using Velaptor.Graphics;
+    using Velaptor.Services;
     using SysVector2 = System.Numerics.Vector2;
 
     /// <summary>

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Input
+namespace Velaptor.Input
 {
     /// <summary>
     /// Specifies key codes and modifiers in US keyboard layout.

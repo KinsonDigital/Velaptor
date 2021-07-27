@@ -2,18 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.UI
+namespace VelaptorTests.UI
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Numerics;
     using Moq;
-    using Raptor;
-    using Raptor.Content;
-    using Raptor.UI;
-    using RaptorTests.Fakes;
+    using Velaptor;
+    using Velaptor.Content;
+    using Velaptor.UI;
+    using VelaptorTests.Fakes;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = VelaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>

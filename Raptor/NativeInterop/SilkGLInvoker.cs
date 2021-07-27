@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop
+namespace Velaptor.NativeInterop
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using System.Runtime.InteropServices;
-    using Raptor.Observables;
-    using Raptor.Observables.Core;
-    using Raptor.OpenGL;
+    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
+    using Velaptor.OpenGL;
     using Silk.NET.OpenGL;
     using Silk.NET.Windowing;
 

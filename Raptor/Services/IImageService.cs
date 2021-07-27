@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Services
+namespace Velaptor.Services
 {
     using System.Drawing;
-    using Raptor.Graphics;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// Saves, loads and manages image files.

@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.UI
+namespace Velaptor.UI
 {
     using System.Numerics;
-    using Raptor.Content;
+    using Velaptor.Content;
 
     /// <summary>
     /// A user interface object that can be updated and rendered to the screen.

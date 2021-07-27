@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
@@ -10,12 +10,12 @@ namespace Raptor.OpenGL
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Numerics;
-    using Raptor.Input;
-    using Raptor.Observables;
+    using Velaptor.Input;
+    using Velaptor.Observables;
     using Silk.NET.Input;
     using Silk.NET.Maths;
     using Silk.NET.Windowing;
-    using RaptorMouseButton = Input.MouseButton;
+    using VelaptorMouseButton = Input.MouseButton;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
 
     // TODO: Finish documentating code
@@ -30,7 +30,7 @@ namespace Raptor.OpenGL
         private readonly object objectLock = new ();
         private readonly OpenGLContextObservable glContextObservable;
         private readonly IKeyboardInput<KeyCode, KeyboardState> keyboard;
-        private readonly IMouseInput<RaptorMouseButton, MouseState> mouse;
+        private readonly IMouseInput<VelaptorMouseButton, MouseState> mouse;
         private IWindow? glWindow;
         private IInputContext? glInputContext;
         private bool isDisposed;
@@ -41,7 +41,7 @@ namespace Raptor.OpenGL
         /// <param name="glObservable">
         ///     Receives push notifications when the OpenGL context has been created.
         /// </param>
-        public SilkWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboard, IMouseInput<RaptorMouseButton, MouseState> mouse)
+        public SilkWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboard, IMouseInput<VelaptorMouseButton, MouseState> mouse)
         {
             this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
             this.glContextObservable = glObservable;
@@ -198,7 +198,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public Raptor.WindowBorder WindowBorder
+        public Velaptor.WindowBorder WindowBorder
         {
             get
             {
@@ -209,9 +209,9 @@ namespace Raptor.OpenGL
 
                 return this.glWindow.WindowBorder switch
                 {
-                    Silk.NET.Windowing.WindowBorder.Fixed => Raptor.WindowBorder.Fixed,
-                    Silk.NET.Windowing.WindowBorder.Hidden => Raptor.WindowBorder.Hidden,
-                    Silk.NET.Windowing.WindowBorder.Resizable => Raptor.WindowBorder.Resizable,
+                    Silk.NET.Windowing.WindowBorder.Fixed => Velaptor.WindowBorder.Fixed,
+                    Silk.NET.Windowing.WindowBorder.Hidden => Velaptor.WindowBorder.Hidden,
+                    Silk.NET.Windowing.WindowBorder.Resizable => Velaptor.WindowBorder.Resizable,
                     _ => throw new Exception("Invalid border"),
                 };
             }
@@ -224,9 +224,9 @@ namespace Raptor.OpenGL
 
                 this.glWindow.WindowBorder = value switch
                 {
-                    Raptor.WindowBorder.Fixed => Silk.NET.Windowing.WindowBorder.Fixed,
-                    Raptor.WindowBorder.Hidden => Silk.NET.Windowing.WindowBorder.Hidden,
-                    Raptor.WindowBorder.Resizable => Silk.NET.Windowing.WindowBorder.Resizable,
+                    Velaptor.WindowBorder.Fixed => Silk.NET.Windowing.WindowBorder.Fixed,
+                    Velaptor.WindowBorder.Hidden => Silk.NET.Windowing.WindowBorder.Hidden,
+                    Velaptor.WindowBorder.Resizable => Silk.NET.Windowing.WindowBorder.Resizable,
                     _ => throw new Exception("Invalid border"),
                 };
             }
@@ -352,9 +352,9 @@ namespace Raptor.OpenGL
             this.mouse.SetYPos((int)arg2.Y);
         }
 
-        private void GLMouseInput_MouseDown(IMouse arg1, SilkMouseButton arg2) => this.mouse.SetState((RaptorMouseButton)arg2, true);
+        private void GLMouseInput_MouseDown(IMouse arg1, SilkMouseButton arg2) => this.mouse.SetState((VelaptorMouseButton)arg2, true);
 
-        private void GLMouseInput_MouseUp(IMouse arg1, SilkMouseButton arg2) => this.mouse.SetState((RaptorMouseButton)arg2, false);
+        private void GLMouseInput_MouseUp(IMouse arg1, SilkMouseButton arg2) => this.mouse.SetState((VelaptorMouseButton)arg2, false);
 
         private void GLKeyboardInput_KeyDown(IKeyboard arg1, Key arg2, int arg3) => this.keyboard.SetState((KeyCode)arg2, true);
 

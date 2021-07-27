@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
     // TODO: Try and make this a stuct and see if it works as an EventArgs type
     // This means you cannot inherit from EventArgs

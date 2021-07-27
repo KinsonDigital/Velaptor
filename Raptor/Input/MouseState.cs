@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Input
+namespace Velaptor.Input
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
-    using Raptor.Exceptions;
+    using Velaptor.Exceptions;
 
     /// <summary>
     /// Represents the state of the mouse.

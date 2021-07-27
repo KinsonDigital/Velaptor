@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
     using System.Numerics;
-    using Raptor.Hardware;
-    using Raptor.NativeInterop;
+    using Velaptor.Hardware;
+    using Velaptor.NativeInterop;
 
     /// <summary>
     /// Gets all of the monitors in the system.

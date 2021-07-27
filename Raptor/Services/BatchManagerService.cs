@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Services
+namespace Velaptor.Services
 {
     using System;
     using System.Collections.Generic;
@@ -10,8 +10,8 @@ namespace Raptor.Services
     using System.Drawing;
     using System.Linq;
     using System.Numerics;
-    using Raptor.Graphics;
-    using Raptor.OpenGL;
+    using Velaptor.Graphics;
+    using Velaptor.OpenGL;
 
     /// <summary>
     /// Manages the process of batching textures together when rendering them.

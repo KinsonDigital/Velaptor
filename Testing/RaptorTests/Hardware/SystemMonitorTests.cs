@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Hardware
+namespace VelaptorTests.Hardware
 {
     using System.Collections.Generic;
     using System.Numerics;
     using System.Runtime.InteropServices;
     using Moq;
-    using Raptor;
-    using Raptor.Hardware;
+    using Velaptor;
+    using Velaptor.Hardware;
     using Xunit;
 
     /// <summary>

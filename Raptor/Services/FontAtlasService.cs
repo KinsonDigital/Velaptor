@@ -2,17 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Services
+namespace Velaptor.Services
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using Raptor.Exceptions;
-    using Raptor.Graphics;
-    using Raptor.NativeInterop;
-    using Raptor.NativeInterop.FreeType;
+    using Velaptor.Exceptions;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.FreeType;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;

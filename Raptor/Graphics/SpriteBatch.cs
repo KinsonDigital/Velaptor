@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Graphics
+namespace Velaptor.Graphics
 {
     using System;
     using System.Collections.Generic;
@@ -11,12 +11,12 @@ namespace Raptor.Graphics
     using System.Linq;
     using System.Numerics;
     using FreeTypeSharp.Native;
-    using Raptor.Exceptions;
-    using Raptor.NativeInterop;
-    using Raptor.Observables;
-    using Raptor.Observables.Core;
-    using Raptor.OpenGL;
-    using Raptor.Services;
+    using Velaptor.Exceptions;
+    using Velaptor.NativeInterop;
+    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
+    using Velaptor.OpenGL;
+    using Velaptor.Services;
 
     /// <inheritdoc/>
     internal class SpriteBatch : ISpriteBatch

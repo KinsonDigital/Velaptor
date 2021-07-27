@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Graphics
+namespace Velaptor.Graphics
 {
-    using Raptor.Content;
+    using Velaptor.Content;
 
     /// <summary>
     /// The texture to render to a screen.

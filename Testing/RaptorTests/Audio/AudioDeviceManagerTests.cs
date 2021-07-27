@@ -3,18 +3,18 @@
 //// </copyright>
 
 //#pragma warning disable IDE0002 // Name can be simplified
-//namespace RaptorTests.Audio
+//namespace VelaptorTests.Audio
 //{
 //#pragma warning disable IDE0001 // Name can be simplified
 //    using System;
 //    using System.Collections.ObjectModel;
 //    using Moq;
 //    using OpenTK.Audio.OpenAL;
-//    using Raptor.Audio;
-//    using Raptor.Audio.Exceptions;
-//    using Raptor.NativeInterop.OpenAL;
+//    using Velaptor.Audio;
+//    using Velaptor.Audio.Exceptions;
+//    using Velaptor.NativeInterop.OpenAL;
 //    using Xunit;
-//    using Assert = RaptorTests.Helpers.AssertExtensions;
+//    using Assert = VelaptorTests.Helpers.AssertExtensions;
 //#pragma warning restore IDE0001 // Name can be simplified
 
 //    /// <summary>

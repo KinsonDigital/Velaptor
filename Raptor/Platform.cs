@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma warning disable CA1724 // The type name conflicts in whole or in part with the namespace name
-namespace Raptor
+namespace Velaptor
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

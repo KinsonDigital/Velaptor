@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
-    using Raptor.NativeInterop;
+    using Velaptor.NativeInterop;
 
     /// <summary>
     /// Specifies the program parameter.

@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Factories
+namespace Velaptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
-    using Raptor.Audio;
+    using Velaptor.Audio;
 
     /// <summary>
     /// Creates a singleton instance of <see cref="AudioDeviceManager"/>.

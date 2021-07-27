@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Services
+namespace Velaptor.Services
 {
     using System;
-    using Raptor.Graphics;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// Creates font atlas textures for rendering text.

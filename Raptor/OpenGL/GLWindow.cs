@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System;
@@ -10,16 +10,16 @@ namespace Raptor.OpenGL
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
-    using Raptor.Content;
-    using Raptor.Input;
-    using Raptor.NativeInterop;
-    using Raptor.Observables;
-    using Raptor.Services;
-    using Raptor.UI;
+    using Velaptor.Content;
+    using Velaptor.Input;
+    using Velaptor.NativeInterop;
+    using Velaptor.Observables;
+    using Velaptor.Services;
+    using Velaptor.UI;
     using SysVector2 = System.Numerics.Vector2;
 
     // TODO: Need to normalize these 2 enums and figure out which one to use if any at all
-    using RaptorMouseButton = Raptor.Input.MouseButton;
+    using VelaptorMouseButton = Velaptor.Input.MouseButton;
     using TKMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 #pragma warning restore IDE0001 // Name can be simplified
 
@@ -36,7 +36,7 @@ namespace Raptor.OpenGL
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
         private readonly IKeyboardInput<KeyCode, KeyboardState> keyboard;
-        private readonly IMouseInput<RaptorMouseButton, MouseState> mouse;
+        private readonly IMouseInput<VelaptorMouseButton, MouseState> mouse;
         private readonly OpenGLInitObservable glObservable;
         private bool isShuttingDown;
         private bool firstRenderInvoked;
@@ -66,7 +66,7 @@ namespace Raptor.OpenGL
             IPlatform platform,
             ITaskService taskService,
             IKeyboardInput<KeyCode, KeyboardState> keyboard,
-            IMouseInput<RaptorMouseButton, MouseState> mouse,
+            IMouseInput<VelaptorMouseButton, MouseState> mouse,
             IContentLoader contentLoader,
             OpenGLInitObservable glObservable)
         {
@@ -327,18 +327,18 @@ namespace Raptor.OpenGL
         }
 
         /// <summary>
-        /// Maps the given OpenGL mouse button to a <see cref="RaptorMouseButton"/>.
+        /// Maps the given OpenGL mouse button to a <see cref="VelaptorMouseButton"/>.
         /// </summary>
         /// <param name="from">The OpenGL mouse button to map.</param>
         /// <returns>The mouse button.</returns>
-        private static RaptorMouseButton MapMouseButton(TKMouseButton from)
+        private static VelaptorMouseButton MapMouseButton(TKMouseButton from)
         {
             var result = from switch
             {
-                TKMouseButton.Left => RaptorMouseButton.LeftButton, // Same as Button 1
-                TKMouseButton.Middle => RaptorMouseButton.MiddleButton, // Same as Button3
-                TKMouseButton.Last => RaptorMouseButton.MiddleButton, // Same as Button3
-                TKMouseButton.Right => RaptorMouseButton.RightButton, // Same as Button2
+                TKMouseButton.Left => VelaptorMouseButton.LeftButton, // Same as Button 1
+                TKMouseButton.Middle => VelaptorMouseButton.MiddleButton, // Same as Button3
+                TKMouseButton.Last => VelaptorMouseButton.MiddleButton, // Same as Button3
+                TKMouseButton.Right => VelaptorMouseButton.RightButton, // Same as Button2
                 _ => throw new ArgumentException("Unrecognized OpenGL mouse button."), // TODO: Test for this
             };
 
@@ -571,7 +571,7 @@ namespace Raptor.OpenGL
             CachedStringProps.Add(
                 nameof(Title), // key
                 new CachedValue<string>( // value
-                    defaultValue: "Raptor Application",
+                    defaultValue: "Velaptor Application",
                     getterWhenNotCaching: () =>
                     {
                         return this.windowFacade.Title;
@@ -648,7 +648,7 @@ namespace Raptor.OpenGL
                 });
 
             CachedTypeOfBorder = new CachedValue<WindowBorder>(
-                defaultValue: Raptor.WindowBorder.Resizable,
+                defaultValue: Velaptor.WindowBorder.Resizable,
                 getterWhenNotCaching: () =>
                 {
                     return this.windowFacade.WindowBorder;

@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
     using System;
     using System.Text;
-    using Raptor.NativeInterop;
-    using Raptor.Services;
+    using Velaptor.NativeInterop;
+    using Velaptor.Services;
 
     /// <inheritdoc/>
     internal class ShaderProgram : IShaderProgram

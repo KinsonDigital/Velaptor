@@ -3,12 +3,12 @@
 // </copyright>
 
 #pragma warning disable IDE0002 // Name can be simplified
-namespace RaptorTests.Graphics
+namespace VelaptorTests.Graphics
 {
     using System;
     using System.Drawing;
     using Moq;
-    using Raptor.Graphics;
+    using Velaptor.Graphics;
     using Xunit;
     using Assert = Helpers.AssertExtensions;
 

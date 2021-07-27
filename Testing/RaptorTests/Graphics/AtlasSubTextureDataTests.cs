@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Graphics
+namespace VelaptorTests.Graphics
 {
     using System.Drawing;
-    using Raptor.Graphics;
+    using Velaptor.Graphics;
     using Xunit;
 
     /// <summary>

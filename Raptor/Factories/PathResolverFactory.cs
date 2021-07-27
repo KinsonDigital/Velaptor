@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Factories
+namespace Velaptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
-    using Raptor.Content;
+    using Velaptor.Content;
 
     /// <summary>
     /// Creates path resolver instances.

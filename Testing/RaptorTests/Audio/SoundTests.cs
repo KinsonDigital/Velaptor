@@ -2,14 +2,14 @@
 //// Copyright (c) KinsonDigital. All rights reserved.
 //// </copyright>
 
-//namespace RaptorTests.Audio
+//namespace VelaptorTests.Audio
 //{
 //    using System;
 //    using System.Collections.ObjectModel;
 //    using Moq;
 //    using OpenTK.Audio.OpenAL;
-//    using Raptor.Audio;
-//    using Raptor.NativeInterop.OpenAL;
+//    using Velaptor.Audio;
+//    using Velaptor.NativeInterop.OpenAL;
 //    using Xunit;
 //    using Assert = Helpers.AssertExtensions;
 

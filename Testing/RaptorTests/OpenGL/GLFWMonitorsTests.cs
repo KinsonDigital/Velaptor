@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.OpenGL
+namespace VelaptorTests.OpenGL
 {
     using System;
     using System.Numerics;
     using System.Runtime.InteropServices;
     using Moq;
-    using Raptor;
-    using Raptor.Hardware;
-    using Raptor.NativeInterop;
-    using Raptor.OpenGL;
+    using Velaptor;
+    using Velaptor.Hardware;
+    using Velaptor.NativeInterop;
+    using Velaptor.OpenGL;
     using Silk.NET.GLFW;
     using Xunit;
 

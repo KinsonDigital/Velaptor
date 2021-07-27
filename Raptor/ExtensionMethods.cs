@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor
+namespace Velaptor
 {
     using System;
     using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace Raptor
     using System.IO;
     using System.Linq;
     using OpenTK.Mathematics;
-    using Raptor.Graphics;
+    using Velaptor.Graphics;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
     using SixLabors.ImageSharp;

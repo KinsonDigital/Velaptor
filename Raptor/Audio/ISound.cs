@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
     using System;
-    using Raptor.Content;
+    using Velaptor.Content;
 
     /// <summary>
     /// A single sound that can be played, paused etc.

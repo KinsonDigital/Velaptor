@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Observables.Core
+namespace VelaptorTests.Observables.Core
 {
     using System;
     using Moq;
-    using Raptor.Observables.Core;
-    using RaptorTests.Helpers;
+    using Velaptor.Observables.Core;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>

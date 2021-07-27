@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.NativeInterop.FreeType
+namespace VelaptorTests.NativeInterop.FreeType
 {
-    using Raptor.NativeInterop.FreeType;
+    using Velaptor.NativeInterop.FreeType;
     using Xunit;
 
     /// <summary>

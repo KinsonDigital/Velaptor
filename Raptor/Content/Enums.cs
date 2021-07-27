@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Content
+namespace Velaptor.Content
 {
     /// <summary>
     /// The type of content that can be loaded.

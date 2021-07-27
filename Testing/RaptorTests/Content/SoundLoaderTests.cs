@@ -2,14 +2,14 @@
 //// Copyright (c) KinsonDigital. All rights reserved.
 //// </copyright>
 
-//namespace RaptorTests.Content
+//namespace VelaptorTests.Content
 //{
 //    using System.Collections.ObjectModel;
 //    using Moq;
 //    using OpenTK.Audio.OpenAL;
-//    using Raptor.Audio;
-//    using Raptor.Content;
-//    using Raptor.NativeInterop.OpenAL;
+//    using Velaptor.Audio;
+//    using Velaptor.Content;
+//    using Velaptor.NativeInterop.OpenAL;
 //    using Xunit;
 
 //    /// <summary>

@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.UI
+namespace Velaptor.UI
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using System.Threading.Tasks;
-    using Raptor.Content;
+    using Velaptor.Content;
 
     /// <summary>
     /// A system window that graphics can be rendered to.

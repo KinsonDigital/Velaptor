@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Content
+namespace Velaptor.Content
 {
     using System;
     using System.Collections.Concurrent;
@@ -10,10 +10,10 @@ namespace Raptor.Content
     using System.IO;
     using System.IO.Abstractions;
     using Newtonsoft.Json;
-    using Raptor.Content.Exceptions;
-    using Raptor.Graphics;
-    using Raptor.NativeInterop;
-    using Raptor.Services;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop;
+    using Velaptor.Services;
 
     /// <summary>
     /// Loads font content for rendering text.

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests
+namespace VelaptorTests
 {
     using System.Diagnostics.CodeAnalysis;
     using OpenTK.Mathematics;

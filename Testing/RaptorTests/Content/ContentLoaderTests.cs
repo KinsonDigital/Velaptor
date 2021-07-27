@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Content
+namespace VelaptorTests.Content
 {
     using Moq;
-    using Raptor.Audio;
-    using Raptor.Content;
-    using Raptor.Content.Exceptions;
-    using Raptor.Graphics;
-    using RaptorTests.Fakes;
+    using Velaptor.Audio;
+    using Velaptor.Content;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
+    using VelaptorTests.Fakes;
     using Xunit;
     using Assert = Helpers.AssertExtensions;
 
@@ -105,7 +105,7 @@ namespace RaptorTests.Content
             Assert.ThrowsWithMessage<UnknownContentException>(() =>
             {
                 loader.Load<IInvalidContent>("test-texture");
-            }, "Content of type 'RaptorTests.Fakes.IInvalidContent' invalid.  Content types must inherit from interface 'IContent'.");
+            }, "Content of type 'VelaptorTests.Fakes.IInvalidContent' invalid.  Content types must inherit from interface 'IContent'.");
         }
 
         [Fact]

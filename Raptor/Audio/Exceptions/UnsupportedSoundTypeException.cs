@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio.Exceptions
+namespace Velaptor.Audio.Exceptions
 {
     using System;
 

@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
     using System;
-    using Raptor.Audio.Exceptions;
+    using Velaptor.Audio.Exceptions;
 
     /// <summary>
     /// Manages audio devices on the system using OpenAL.

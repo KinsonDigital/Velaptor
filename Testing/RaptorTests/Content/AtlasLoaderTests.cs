@@ -2,17 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Content
+namespace VelaptorTests.Content
 {
     using System.Drawing;
     using System.IO.Abstractions;
     using Moq;
     using Newtonsoft.Json;
-    using Raptor.Content;
-    using Raptor.Content.Exceptions;
-    using Raptor.Graphics;
-    using Raptor.NativeInterop;
-    using Raptor.Services;
+    using Velaptor.Content;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop;
+    using Velaptor.Services;
     using Xunit;
     using Assert = Helpers.AssertExtensions;
 

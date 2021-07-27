@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Hardware
+namespace Velaptor.Hardware
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

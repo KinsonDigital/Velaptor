@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Graphics
+namespace Velaptor.Graphics
 {
     using System;
     using System.Collections.ObjectModel;
-    using Raptor.Content;
+    using Velaptor.Content;
 
     /// <summary>
     /// Represents a font with a particular size that

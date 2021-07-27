@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma warning disable IDE0002 // Name can be simplified
-namespace RaptorTests.Helpers
+namespace VelaptorTests.Helpers
 {
     using System;
     using System.Collections.Generic;

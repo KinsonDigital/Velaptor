@@ -4,23 +4,23 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("RaptorTests", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
 #pragma warning disable SA1116 // Split parameters should start on line after declaration
-namespace Raptor
+namespace Velaptor
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
-    using Raptor.Audio;
-    using Raptor.Content;
-    using Raptor.Graphics;
-    using Raptor.Input;
-    using Raptor.NativeInterop;
-    using Raptor.NativeInterop.FreeType;
-    using Raptor.NativeInterop.OpenAL;
-    using Raptor.Observables;
-    using Raptor.OpenGL;
-    using Raptor.Services;
+    using Velaptor.Audio;
+    using Velaptor.Content;
+    using Velaptor.Graphics;
+    using Velaptor.Input;
+    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.FreeType;
+    using Velaptor.NativeInterop.OpenAL;
+    using Velaptor.Observables;
+    using Velaptor.OpenGL;
+    using Velaptor.Services;
     using SimpleInjector;
 
     /// <summary>

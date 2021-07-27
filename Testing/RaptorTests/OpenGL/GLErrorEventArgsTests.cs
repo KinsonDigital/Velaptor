@@ -3,13 +3,13 @@
 // </copyright>
 
 #pragma warning disable IDE0002 // Name can be simplified
-namespace RaptorTests.OpenGL
+namespace VelaptorTests.OpenGL
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System;
-    using Raptor.OpenGL;
+    using Velaptor.OpenGL;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = VelaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>

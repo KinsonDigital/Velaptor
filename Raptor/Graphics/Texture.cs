@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Graphics
+namespace Velaptor.Graphics
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using Raptor.NativeInterop;
-    using Raptor.OpenGL;
+    using Velaptor.NativeInterop;
+    using Velaptor.OpenGL;
 
     /// <summary>
     /// The texture to render to a screen.

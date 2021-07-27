@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Content
+namespace VelaptorTests.Content
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
-    using Raptor.Content;
-    using RaptorTests.Fakes;
+    using Velaptor.Content;
+    using VelaptorTests.Fakes;
     using Xunit;
     using Assert = Helpers.AssertExtensions;
 

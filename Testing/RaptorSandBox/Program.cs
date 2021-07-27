@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Raptor.Factories;
-using Raptor.UI;
+using Velaptor.Factories;
+using Velaptor.UI;
 
-namespace RaptorSandBox
+namespace VelaptorSandBox
 {
     public class Program
     {

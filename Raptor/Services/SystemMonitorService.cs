@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Services
+namespace Velaptor.Services
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Raptor.Hardware;
-    using Raptor.OpenGL;
+    using Velaptor.Hardware;
+    using Velaptor.OpenGL;
 
     /// <summary>
     /// Gets information about the monitors in the system.

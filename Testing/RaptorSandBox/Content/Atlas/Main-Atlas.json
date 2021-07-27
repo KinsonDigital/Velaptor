@@ -1,42 +1,42 @@
 [
   {
-    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
     "Bounds": "0, 0, 75, 50",
     "FrameIndex": 0,
     "Name": "sub"
   },
   {
-    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
     "Bounds": "76, 0, 75, 50",
     "FrameIndex": 1,
     "Name": "sub"
   },
   {
-    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
     "Bounds": "152, 0, 75, 50",
     "FrameIndex": 2,
     "Name": "sub"
   },
   {
-    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
     "Bounds": "228, 0, 75, 50",
     "FrameIndex": 3,
     "Name": "sub"
   },
   {
-    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
     "Bounds": "304, 0, 75, 50",
     "FrameIndex": 4,
     "Name": "sub"
   },
   {
-    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
     "Bounds": "380, 0, 75, 50",
     "FrameIndex": 5,
     "Name": "sub"
   },
   {
-    "$type": "Raptor.Graphics.AtlasSpriteData, Raptor",
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
     "Bounds": "0, 51, 27, 27",
     "FrameIndex": -1,
     "Name": "bubble"

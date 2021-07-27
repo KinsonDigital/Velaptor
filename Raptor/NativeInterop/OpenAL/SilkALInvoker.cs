@@ -7,25 +7,23 @@ using OpenTK.Audio.OpenAL;
 using Silk.NET.OpenAL;
 using SilkAL = Silk.NET.OpenAL.AL;
 using SilkALC = Silk.NET.OpenAL.ALContext;
-using RaptorALFormat = Raptor.NativeInterop.OpenAL.ALFormat;
-using RaptorALSourcei = Raptor.NativeInterop.OpenAL.ALSourcei;
-using RaptorALSourceb = Raptor.NativeInterop.OpenAL.ALSourceb;
-using RaptorALSourcef = Raptor.NativeInterop.OpenAL.ALSourcef;
-using RaptorALSourceState = Raptor.NativeInterop.OpenAL.ALSourceState;
+using VelaptorALFormat = Velaptor.NativeInterop.OpenAL.ALFormat;
+using VelaptorALSourcei = Velaptor.NativeInterop.OpenAL.ALSourcei;
+using VelaptorALSourceb = Velaptor.NativeInterop.OpenAL.ALSourceb;
+using VelaptorALSourcef = Velaptor.NativeInterop.OpenAL.ALSourcef;
+using VelaptorALSourceState = Velaptor.NativeInterop.OpenAL.ALSourceState;
 
 using SilkALSourcei = Silk.NET.OpenAL.GetSourceInteger;
 using SilkALSourceb = Silk.NET.OpenAL.SourceBoolean;
 using SilkALSourcef = Silk.NET.OpenAL.SourceFloat;
 using SilkGetContextString = Silk.NET.OpenAL.GetContextString;
 
-using RaptorAlcGetStringList = Raptor.NativeInterop.OpenAL.AlcGetStringList;
-
 using TKALContext = OpenTK.Audio.OpenAL.ALContext;
 using Silk.NET.OpenAL.Extensions.EXT;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-namespace Raptor.NativeInterop.OpenAL
+namespace Velaptor.NativeInterop.OpenAL
 {
     internal class SilkALInvoker : IALInvoker
     {
@@ -54,23 +52,23 @@ namespace Raptor.NativeInterop.OpenAL
             this.oggFormatExtension = this.al.GetExtension<VorbisFormat>();
         }
 
-        public void BufferData<TBuffer>(uint bid, RaptorALFormat format, TBuffer[] buffer, int size, int freq)
+        public void BufferData<TBuffer>(uint bid, VelaptorALFormat format, TBuffer[] buffer, int size, int freq)
             where TBuffer : unmanaged
         {
             switch (format)
             {
-                case RaptorALFormat.Mono8:
+                case VelaptorALFormat.Mono8:
                     throw new Exception("Nope");
-                case RaptorALFormat.Mono16:
+                case VelaptorALFormat.Mono16:
                     throw new Exception("Nope");
-                case RaptorALFormat.Stereo8:
+                case VelaptorALFormat.Stereo8:
                     throw new Exception("Nope");
-                case RaptorALFormat.Stereo16:
+                case VelaptorALFormat.Stereo16:
                     this.mp3FormatExtension.BufferData(bid, MP3BufferFormat.MP3, buffer, freq);
                     break;
-                case RaptorALFormat.MonoFloat32:
+                case VelaptorALFormat.MonoFloat32:
                     throw new Exception("Nope");
-                case RaptorALFormat.StereoFloat32:
+                case VelaptorALFormat.StereoFloat32:
                     this.oggFormatExtension.BufferData(bid, VorbisBufferFormat.Vorbis, buffer, freq);
                     break;
                 default:
@@ -175,7 +173,7 @@ namespace Raptor.NativeInterop.OpenAL
             return result;
         }
 
-        public bool GetSource(uint sid, RaptorALSourceb param)
+        public bool GetSource(uint sid, VelaptorALSourceb param)
         {
             this.al.GetSourceProperty(sid, (SilkALSourceb)param, out var result);
 
@@ -187,7 +185,7 @@ namespace Raptor.NativeInterop.OpenAL
             return result;
         }
 
-        public float GetSource(uint sid, RaptorALSourcef param)
+        public float GetSource(uint sid, VelaptorALSourcef param)
         {
             this.al.GetSourceProperty(sid, (SilkALSourcef)param, out var value);
 
@@ -199,11 +197,11 @@ namespace Raptor.NativeInterop.OpenAL
             return value;
         }
 
-        public RaptorALSourceState GetSourceState(uint sid)
+        public VelaptorALSourceState GetSourceState(uint sid)
         {
             this.al.GetSourceProperty(sid, SilkALSourcei.SourceType, out var result);
 
-            return (RaptorALSourceState)result;
+            return (VelaptorALSourceState)result;
         }
 
         public IList<string> GetListOfDevices()
@@ -286,7 +284,7 @@ namespace Raptor.NativeInterop.OpenAL
             }
         }
 
-        public void Source(uint sid, RaptorALSourcei param, int value)
+        public void Source(uint sid, VelaptorALSourcei param, int value)
         {
             this.al.SetSourceProperty(sid, (SourceInteger)param, value);
 
@@ -296,7 +294,7 @@ namespace Raptor.NativeInterop.OpenAL
             InvokeErrorIfTrue(error != AudioError.NoError, errorMessage);
         }
 
-        public void Source(uint sid, RaptorALSourceb param, bool value)
+        public void Source(uint sid, VelaptorALSourceb param, bool value)
         {
             this.al.SetSourceProperty(sid, (SilkALSourceb)param, value);
 
@@ -306,7 +304,7 @@ namespace Raptor.NativeInterop.OpenAL
             InvokeErrorIfTrue(error != AudioError.NoError, errorMessage);
         }
 
-        public void Source(uint sid, RaptorALSourcef param, float value)
+        public void Source(uint sid, VelaptorALSourcef param, float value)
         {
             this.al.SetSourceProperty(sid, (SilkALSourcef)param, value);
 

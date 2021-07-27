@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Observables
+namespace Velaptor.Observables
 {
-    using Raptor.Observables.Core;
+    using Velaptor.Observables.Core;
 
     /// <summary>
     /// Creates an observable to send push notifications of OpenGL events.

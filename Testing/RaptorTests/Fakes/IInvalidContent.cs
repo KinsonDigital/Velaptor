@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Fakes
+namespace VelaptorTests.Fakes
 {
-    using Raptor.Content;
+    using Velaptor.Content;
 
     /// <summary>
     /// Used to represent invalid content for testing the <see cref="ContentLoader"/> class.

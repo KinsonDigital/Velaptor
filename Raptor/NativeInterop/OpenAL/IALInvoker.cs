@@ -2,14 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop.OpenAL
+namespace Velaptor.NativeInterop.OpenAL
 {
     using System;
     using System.Collections.Generic;
     using OpenTK.Audio.OpenAL;
-    using RaptorALFormat = ALFormat;
-    using RaptorAlcGetStringList = AlcGetStringList;
-    using RaptorALSourceState = ALSourceState;
+    using VelaptorALFormat = ALFormat;
+    using VelaptorALSourceState = ALSourceState;
 
     /// <summary>
     /// Invokes OpenAL functions.
@@ -35,7 +34,7 @@ namespace Raptor.NativeInterop.OpenAL
         /// <param name="buffer">The audio buffer.</param>
         /// <param name="size">The size of the audio buffer in bytes.</param>
         /// <param name="freq">The frequency of the audio buffer.</param>
-        void BufferData<TBuffer>(uint bid, RaptorALFormat format, TBuffer[] buffer, int size, int freq)
+        void BufferData<TBuffer>(uint bid, VelaptorALFormat format, TBuffer[] buffer, int size, int freq)
             where TBuffer : unmanaged;
 
         /// <summary>
@@ -138,7 +137,7 @@ namespace Raptor.NativeInterop.OpenAL
         /// </summary>
         /// <param name="sid">Source name whose attribute is being retrieved.</param>
         /// <returns>The source state.</returns>
-        RaptorALSourceState GetSourceState(uint sid);
+        VelaptorALSourceState GetSourceState(uint sid);
 
         /// <summary>
         /// Returns a list of all of the current audio devices in the system.

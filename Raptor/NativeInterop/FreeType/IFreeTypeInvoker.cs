@@ -3,11 +3,11 @@
 // </copyright>
 
 #pragma warning disable SA1124 // Do not use regions
-namespace Raptor.NativeInterop
+namespace Velaptor.NativeInterop
 {
     using System;
     using FreeTypeSharp.Native;
-    using Raptor.NativeInterop.FreeType;
+    using Velaptor.NativeInterop.FreeType;
 
     // TODO: Refactor invoke calls to follow this => https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
 

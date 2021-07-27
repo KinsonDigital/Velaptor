@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Exceptions
+namespace Velaptor.Exceptions
 {
     using System;
 

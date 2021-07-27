@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
     using System;
     using System.Collections.Generic;
@@ -14,11 +14,10 @@ namespace Raptor.Audio
     using System.Linq;
     using System.Runtime.InteropServices;
     using OpenTK.Audio.OpenAL;
-    using Raptor.Audio.Exceptions;
-    using Raptor.NativeInterop.OpenAL;
-    using RaptorALSourcef = NativeInterop.OpenAL.ALSourcef;
-    using RaptorAlcGetStringList = NativeInterop.OpenAL.AlcGetStringList;
-    using RaptorALSourceState = NativeInterop.OpenAL.ALSourceState;
+    using Velaptor.Audio.Exceptions;
+    using Velaptor.NativeInterop.OpenAL;
+    using VelaptorALSourcef = NativeInterop.OpenAL.ALSourcef;
+    using VelaptorALSourceState = NativeInterop.OpenAL.ALSourceState;
 
     /// <summary>
     /// Manages audio devices on the system using OpenAL.
@@ -268,7 +267,7 @@ namespace Raptor.Audio
             {
                 var sourceState = this.alInvoker.GetSourceState(soundSrcKVP.Value.SourceId);
 
-                if (sourceState != RaptorALSourceState.Playing && sourceState != RaptorALSourceState.Paused)
+                if (sourceState != VelaptorALSourceState.Playing && sourceState != VelaptorALSourceState.Paused)
                 {
                     continue;
                 }
@@ -279,11 +278,11 @@ namespace Raptor.Audio
                 soundState.TimePosition = GetCurrentTimePosition(soundSrcKVP.Value.SourceId);
                 soundState.TotalSeconds = soundSrcKVP.Value.TotalSeconds;
 
-                if (sourceState == RaptorALSourceState.Playing)
+                if (sourceState == VelaptorALSourceState.Playing)
                 {
                     soundState.PlaybackState = PlaybackState.Playing;
                 }
-                else if (sourceState == RaptorALSourceState.Paused)
+                else if (sourceState == VelaptorALSourceState.Paused)
                 {
                     soundState.PlaybackState = PlaybackState.Paused;
                 }
@@ -303,7 +302,7 @@ namespace Raptor.Audio
         /// </summary>
         /// <param name="srcId">The OpenAL source id.</param>
         /// <returns>The position in seconds.</returns>
-        private float GetCurrentTimePosition(uint srcId) => this.alInvoker.GetSource(srcId, RaptorALSourcef.SecOffset);
+        private float GetCurrentTimePosition(uint srcId) => this.alInvoker.GetSource(srcId, VelaptorALSourcef.SecOffset);
 
         /// <summary>
         /// Sets the time position of the sound to the given <paramref name="seconds"/> value.
@@ -322,7 +321,7 @@ namespace Raptor.Audio
 
             seconds = seconds > totalSeconds ? totalSeconds : seconds;
 
-            this.alInvoker.Source(srcId, RaptorALSourcef.SecOffset, seconds);
+            this.alInvoker.Source(srcId, VelaptorALSourcef.SecOffset, seconds);
         }
     }
 }

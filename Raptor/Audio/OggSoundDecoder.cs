@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
-    using Raptor.NativeInterop.OpenAL;
+    using Velaptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Decodes OGG audio data files.

@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Fakes
+namespace VelaptorTests.Fakes
 {
-    using Raptor.UI;
+    using Velaptor.UI;
 
     /// <summary>
     /// Used for the purpose of testing the abstract <see cref="Window"/> class.

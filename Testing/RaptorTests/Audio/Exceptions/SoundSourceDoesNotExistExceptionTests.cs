@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Audio.Exceptions
+namespace VelaptorTests.Audio.Exceptions
 {
     using System;
-    using Raptor.Audio.Exceptions;
+    using Velaptor.Audio.Exceptions;
     using Xunit;
 
     /// <summary>

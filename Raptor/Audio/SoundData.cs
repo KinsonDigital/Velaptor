@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Raptor.NativeInterop.OpenAL;
+    using Velaptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Holds data related to a single sound.

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Services
+namespace VelaptorTests.Services
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System;
@@ -14,16 +14,16 @@ namespace RaptorTests.Services
     using System.Runtime.InteropServices;
     using FreeTypeSharp.Native;
     using Moq;
-    using Raptor;
-    using Raptor.Exceptions;
-    using Raptor.Graphics;
-    using Raptor.Hardware;
-    using Raptor.NativeInterop;
-    using Raptor.NativeInterop.FreeType;
-    using Raptor.Services;
-    using RaptorTests.Helpers;
+    using Velaptor;
+    using Velaptor.Exceptions;
+    using Velaptor.Graphics;
+    using Velaptor.Hardware;
+    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.FreeType;
+    using Velaptor.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = VelaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>

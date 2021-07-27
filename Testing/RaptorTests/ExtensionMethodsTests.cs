@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests
+namespace VelaptorTests
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using OpenTK.Mathematics;
-    using Raptor;
-    using Raptor.Graphics;
+    using Velaptor;
+    using Velaptor.Graphics;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using Xunit;

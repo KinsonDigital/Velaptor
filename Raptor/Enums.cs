@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor
+namespace Velaptor
 {
     /// <summary>
     /// The different kinds of borders that a <see cref="IWindow"/> can have.

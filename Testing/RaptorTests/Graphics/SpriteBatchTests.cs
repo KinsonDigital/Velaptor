@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma warning disable IDE0002 // Name can be simplified
-namespace RaptorTests.Graphics
+namespace VelaptorTests.Graphics
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System;
@@ -14,16 +14,16 @@ namespace RaptorTests.Graphics
     using System.Numerics;
     using FreeTypeSharp.Native;
     using Moq;
-    using Raptor.Content;
-    using Raptor.Exceptions;
-    using Raptor.Graphics;
-    using Raptor.NativeInterop;
-    using Raptor.Observables;
-    using Raptor.OpenGL;
-    using Raptor.Services;
-    using RaptorTests.Helpers;
+    using Velaptor.Content;
+    using Velaptor.Exceptions;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop;
+    using Velaptor.Observables;
+    using Velaptor.OpenGL;
+    using Velaptor.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = VelaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Content
+namespace Velaptor.Content
 {
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
-    using Raptor.Audio;
-    using Raptor.Audio.Exceptions;
-    using Raptor.NativeInterop.OpenAL;
+    using Velaptor.Audio;
+    using Velaptor.Audio.Exceptions;
+    using Velaptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Loads sound content.

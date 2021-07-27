@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.UI
+namespace Velaptor.UI
 {
     using System;
     using System.Drawing;
     using System.Numerics;
-    using Raptor.Content;
-    using Raptor.Graphics;
+    using Velaptor.Content;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// A button that can be clicked and execute functionality.

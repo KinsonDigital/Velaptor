@@ -3,7 +3,7 @@
 // </copyright>
 
 #pragma warning disable IDE0002 // Name can be simplified
-namespace RaptorTests.Services
+namespace VelaptorTests.Services
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System;
@@ -11,10 +11,10 @@ namespace RaptorTests.Services
     using System.Linq;
     using System.Numerics;
     using Moq;
-    using Raptor.Graphics;
-    using Raptor.Services;
+    using Velaptor.Graphics;
+    using Velaptor.Services;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = VelaptorTests.Helpers.AssertExtensions;
     using SysVector2 = System.Numerics.Vector2;
 #pragma warning restore IDE0001 // Name can be simplified
 

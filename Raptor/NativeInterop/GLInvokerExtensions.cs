@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop
+namespace Velaptor.NativeInterop
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
-    using Raptor.OpenGL;
+    using Velaptor.OpenGL;
 
     /// <summary>
     /// Provides OpenTK extensions/helper methods to improve OpenGL related functionality.

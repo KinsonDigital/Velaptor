@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Raptor.NativeInterop.OpenAL
+namespace Velaptor.NativeInterop.OpenAL
 {
     /// <summary>
     /// A list of valid Int32 Source parameters.

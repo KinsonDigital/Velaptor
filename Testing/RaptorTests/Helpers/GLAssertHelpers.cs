@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Helpers
+namespace VelaptorTests.Helpers
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
     using Moq;
-    using Raptor.NativeInterop;
-    using Raptor.OpenGL;
+    using Velaptor.NativeInterop;
+    using Velaptor.OpenGL;
     using Xunit.Sdk;
 
     /// <summary>

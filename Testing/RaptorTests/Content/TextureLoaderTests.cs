@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Content
+namespace VelaptorTests.Content
 {
     using Moq;
-    using Raptor.Content;
-    using Raptor.NativeInterop;
-    using Raptor.OpenGL;
-    using Raptor.Services;
+    using Velaptor.Content;
+    using Velaptor.NativeInterop;
+    using Velaptor.OpenGL;
+    using Velaptor.Services;
     using Xunit;
 
     /// <summary>

@@ -3,14 +3,14 @@
 // </copyright>
 
 #pragma warning disable IDE0002 // Name can be simplified
-namespace RaptorTests.Input
+namespace VelaptorTests.Input
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Linq;
-    using Raptor.Input;
+    using Velaptor.Input;
     using Xunit;
-    using Assert = RaptorTests.Helpers.AssertExtensions;
+    using Assert = VelaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>

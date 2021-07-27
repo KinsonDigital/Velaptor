@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Content
+namespace Velaptor.Content
 {
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
-    using Raptor.Graphics;
-    using Raptor.NativeInterop;
-    using Raptor.Services;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop;
+    using Velaptor.Services;
 
     /// <summary>
     /// Loads textures.

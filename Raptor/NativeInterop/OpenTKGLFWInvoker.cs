@@ -4,14 +4,14 @@
 
 // OPENTK
 
-namespace Raptor.NativeInterop
+namespace Velaptor.NativeInterop
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using OpenTK.Windowing.GraphicsLibraryFramework;
-    using Raptor.OpenGL;
+    using Velaptor.OpenGL;
 
     /// <summary>
     /// Invokes GLFW calls.

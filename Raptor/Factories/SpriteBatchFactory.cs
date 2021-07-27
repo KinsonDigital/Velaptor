@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Factories
+namespace Velaptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
-    using Raptor.Graphics;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// Creates instances of the type <see cref="SpriteBatch"/>.

@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
     using System.Drawing;
-    using Raptor.Graphics;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.

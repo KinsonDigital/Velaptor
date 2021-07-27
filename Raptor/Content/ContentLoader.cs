@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Content
+namespace Velaptor.Content
 {
     using System;
     using System.IO;
-    using Raptor.Audio;
-    using Raptor.Content.Exceptions;
-    using Raptor.Graphics;
+    using Velaptor.Audio;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// Loads content.

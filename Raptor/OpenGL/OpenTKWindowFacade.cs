@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.OpenGL
+namespace Velaptor.OpenGL
 {
     using System;
     using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace Raptor.OpenGL
     using OpenTK.Mathematics;
     using OpenTK.Windowing.Common;
     using OpenTK.Windowing.Desktop;
-    using Raptor.Input;
+    using Velaptor.Input;
     using SysVector2 = System.Numerics.Vector2;
 
     /// <summary>
@@ -169,7 +169,7 @@ namespace Raptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public Raptor.WindowBorder WindowBorder
+        public Velaptor.WindowBorder WindowBorder
         {
             get
             {
@@ -178,7 +178,7 @@ namespace Raptor.OpenGL
                     throw new InvalidOperationException(this.nullWindowExceptionMsg);
                 }
 
-                return (Raptor.WindowBorder)this.glWindow.WindowBorder;
+                return (Velaptor.WindowBorder)this.glWindow.WindowBorder;
             }
             set
             {

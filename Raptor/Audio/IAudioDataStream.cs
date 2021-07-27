@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Audio
+namespace Velaptor.Audio
 {
     using System;
-    using Raptor.NativeInterop.OpenAL;
+    using Velaptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Streams mp3 audio data from a mp3 file.

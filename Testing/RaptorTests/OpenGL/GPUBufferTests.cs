@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.OpenGL
+namespace VelaptorTests.OpenGL
 {
     using System;
     using System.Collections.Generic;
     using System.Drawing;
     using Moq;
-    using Raptor.NativeInterop;
-    using Raptor.OpenGL;
+    using Velaptor.NativeInterop;
+    using Velaptor.OpenGL;
     using Xunit;
 
     /// <summary>

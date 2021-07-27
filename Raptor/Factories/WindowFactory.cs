@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Factories
+namespace Velaptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
-    using Raptor.Input;
-    using Raptor.NativeInterop;
-    using Raptor.Observables;
-    using Raptor.OpenGL;
-    using Raptor.Services;
-    using Raptor.UI;
+    using Velaptor.Input;
+    using Velaptor.NativeInterop;
+    using Velaptor.Observables;
+    using Velaptor.OpenGL;
+    using Velaptor.Services;
+    using Velaptor.UI;
 
     /// <summary>
     /// Creates an instance of a raptor window.

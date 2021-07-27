@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop.FreeType
+namespace Velaptor.NativeInterop.FreeType
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using FreeTypeSharp.Native;
-    using Raptor.Content.Exceptions;
-    using Raptor.Graphics;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// Provides extensions to free type library operations to help simplify working with free type.

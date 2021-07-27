@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.Factories
+namespace Velaptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
-    using Raptor.Audio;
-    using Raptor.Content;
-    using Raptor.Graphics;
-    using Raptor.NativeInterop;
-    using Raptor.NativeInterop.OpenAL;
-    using Raptor.Services;
+    using Velaptor.Audio;
+    using Velaptor.Content;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenAL;
+    using Velaptor.Services;
 
     /// <summary>
     /// Creates instances of a content loader.

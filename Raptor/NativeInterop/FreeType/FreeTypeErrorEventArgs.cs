@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Raptor.NativeInterop.FreeType
+namespace Velaptor.NativeInterop.FreeType
 {
     using System;
 

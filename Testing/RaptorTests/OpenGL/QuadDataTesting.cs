@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.OpenGL
+namespace VelaptorTests.OpenGL
 {
     using System.Numerics;
-    using Raptor.OpenGL;
+    using Velaptor.OpenGL;
     using Xunit;
 
     /// <summary>

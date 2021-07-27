@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.Content
+namespace VelaptorTests.Content
 {
     using System;
     using System.Drawing;
     using Moq;
-    using Raptor.Content;
-    using Raptor.Graphics;
+    using Velaptor.Content;
+    using Velaptor.Graphics;
     using Xunit;
 
     public class FontTests

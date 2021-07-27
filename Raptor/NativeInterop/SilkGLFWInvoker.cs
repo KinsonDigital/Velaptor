@@ -4,12 +4,12 @@
 
 // TODO: Move GLFW types to a GLFW folder and namespace
 
-namespace Raptor.NativeInterop
+namespace Velaptor.NativeInterop
 {
     using System;
     using System.Collections.Generic;
     using System.Numerics;
-    using Raptor.OpenGL;
+    using Velaptor.OpenGL;
     using Silk.NET.GLFW;
 
     /// <summary>

@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace RaptorTests.OpenGL
+namespace VelaptorTests.OpenGL
 {
-    using Raptor.OpenGL;
+    using Velaptor.OpenGL;
     using Xunit;
 
     /// <summary>
