@@ -44,7 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 		AzureDevOps\pipelines\templates\test-tasks-template.yml = AzureDevOps\pipelines\templates\test-tasks-template.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorSandBox", "Testing\VelaptorSandBox\VelaptorSandBox.csproj", "{63793161-2B97-4875-8633-DD6B51DACD77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorTesting", "Testing\VelaptorTesting\VelaptorTesting.csproj", "{63793161-2B97-4875-8633-DD6B51DACD77}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorTests", "Testing\VelaptorTests\VelaptorTests.csproj", "{C6AFDF55-196C-41D6-9174-0A03A934586F}"
 EndProject
