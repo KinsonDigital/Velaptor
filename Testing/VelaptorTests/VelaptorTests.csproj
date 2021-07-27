@@ -60,7 +60,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Raptor\Raptor.csproj" />
+    <ProjectReference Include="..\..\Velaptor\Velaptor.csproj" />
   </ItemGroup>
 
 
