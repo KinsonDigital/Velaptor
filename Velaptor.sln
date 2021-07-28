@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{DA2A
 		Raptor.runsettings = Raptor.runsettings
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureDevOps", "AzureDevOps", "{B97B3092-5C8C-4B11-AD8C-BD1AE1BA0A1B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -20,28 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 		RELEASENOTES.md = RELEASENOTES.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "PullRequestTemplates", "{ED067A9D-E4B5-45CB-9200-0DC485256007}"
-	ProjectSection(SolutionItems) = preProject
-		pull_request_template\feature_to_develop.md = pull_request_template\feature_to_develop.md
-		pull_request_template\hotfix_to_develop.md = pull_request_template\hotfix_to_develop.md
-		pull_request_template\hotfix_to_master.md = pull_request_template\hotfix_to_master.md
-		pull_request_template\release_to_develop.md = pull_request_template\release_to_develop.md
-		pull_request_template\release_to_master.md = pull_request_template\release_to_master.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPipeline", "BuildPipeline", "{2A451920-2E14-4F6F-A5EA-8982DDAB8118}"
-	ProjectSection(SolutionItems) = preProject
-		AzureDevOps\pipelines\raptor-pipeline.yml = AzureDevOps\pipelines\raptor-pipeline.yml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{D88293BA-31D7-46E3-A6FC-B8AEDDEF145D}"
-	ProjectSection(SolutionItems) = preProject
-		AzureDevOps\pipelines\templates\build-tasks-template.yml = AzureDevOps\pipelines\templates\build-tasks-template.yml
-		AzureDevOps\pipelines\templates\publish-tasks-template.yml = AzureDevOps\pipelines\templates\publish-tasks-template.yml
-		AzureDevOps\pipelines\templates\setup-nuget-tasks-template.yml = AzureDevOps\pipelines\templates\setup-nuget-tasks-template.yml
-		AzureDevOps\pipelines\templates\test-tasks-template.yml = AzureDevOps\pipelines\templates\test-tasks-template.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorTesting", "Testing\VelaptorTesting\VelaptorTesting.csproj", "{63793161-2B97-4875-8633-DD6B51DACD77}"
@@ -99,9 +75,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{ED067A9D-E4B5-45CB-9200-0DC485256007} = {B97B3092-5C8C-4B11-AD8C-BD1AE1BA0A1B}
-		{2A451920-2E14-4F6F-A5EA-8982DDAB8118} = {B97B3092-5C8C-4B11-AD8C-BD1AE1BA0A1B}
-		{D88293BA-31D7-46E3-A6FC-B8AEDDEF145D} = {2A451920-2E14-4F6F-A5EA-8982DDAB8118}
 		{63793161-2B97-4875-8633-DD6B51DACD77} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 		{C6AFDF55-196C-41D6-9174-0A03A934586F} = {DA2AB7CF-A778-416B-BFBF-1E27CC23855C}
 	EndGlobalSection
