@@ -6,12 +6,11 @@ namespace Velaptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
-    using Velaptor.Audio;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop;
-    using Velaptor.NativeInterop.OpenAL;
     using Velaptor.Services;
+    using IVelaptorSound = Velaptor.Content.ISound;
 
     /// <summary>
     /// Creates instances of a content loader.
@@ -22,7 +21,7 @@ namespace Velaptor.Factories
         private static IContentLoader? contentLoader;
         private static ILoader<ITexture>? textureLoader;
         private static ILoader<IAtlasData>? atlasLoader;
-        private static ILoader<ISound>? soundLoader;
+        private static ILoader<IVelaptorSound>? soundLoader;
         private static ILoader<IFont>? fontLoader;
 
         /// <summary>
@@ -89,22 +88,13 @@ namespace Velaptor.Factories
         /// Creates a loader that loads sounds from disk.
         /// </summary>
         /// <returns>A loader for loading sound data.</returns>
-        public static ILoader<ISound> CreateSoundLoader()
+        public static ILoader<IVelaptorSound> CreateSoundLoader()
         {
             if (soundLoader is null)
             {
-                var alInvoker = IoC.Container.GetInstance<IALInvoker>();
-                var audioManager = AudioDeviceManagerFactory.CreateDeviceManager();
                 var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
-                var oggDecoder = IoC.Container.GetInstance<ISoundDecoder<float>>();
-                var mp3Decoder = IoC.Container.GetInstance<ISoundDecoder<byte>>();
 
-                soundLoader = new SoundLoader(
-                    alInvoker,
-                    audioManager,
-                    soundPathResolver,
-                    oggDecoder,
-                    mp3Decoder);
+                soundLoader = new SoundLoader(soundPathResolver);
             }
 
             return soundLoader;

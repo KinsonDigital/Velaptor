@@ -1,7 +1,11 @@
-﻿using System;
+﻿// <copyright file="FrameTimeEventArgs.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Velaptor.OpenGL
 {
+    using System;
+
     // TODO: Try and make this a stuct and see if it works as an EventArgs type
     // This means you cannot inherit from EventArgs
 

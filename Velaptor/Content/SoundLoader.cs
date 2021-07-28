@@ -6,10 +6,6 @@ namespace Velaptor.Content
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Audio;
-    using Velaptor.Audio.Exceptions;
-    using Velaptor.NativeInterop.OpenAL;
 
     /// <summary>
     /// Loads sound content.
@@ -17,55 +13,14 @@ namespace Velaptor.Content
     public class SoundLoader : ILoader<ISound>
     {
         private readonly ConcurrentDictionary<string, ISound> sounds = new ();
-        private readonly IALInvoker alInvoker;
-        private readonly IAudioDeviceManager audioManager;
         private readonly IPathResolver soundPathResolver;
-        private readonly ISoundDecoder<float> oggDecoder;
-        private readonly ISoundDecoder<byte> mp3Decoder;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
-        /// <param name="oggDecoder">Decodes ogg sound files.</param>
-        /// <param name="mp3Decoder">Decodes mp3 sound files.</param>
-        // TODO: The decoders were turned into internals.  This had to be commented out 
-        // because it would expose those internals because this class is public and has
-        // to stay there.  With no public constructor, the user could not create a new instance
-        // of this class.  To allow this, refactor this CTOR to internally in the CTOR code
-        // to use the IoC container to load up the intenal types
-        //[ExcludeFromCodeCoverage]
-        //public SoundLoader(IPathResolver soundPathResolver, ISoundDecoder<float> oggDecoder, ISoundDecoder<byte> mp3Decoder)
-        //{
-        //    this.soundPathResolver = soundPathResolver;
-        //    this.oggDecoder = oggDecoder;
-        //    this.mp3Decoder = mp3Decoder;
-        //    this.alInvoker = new OpenTKALInvoker();
-        //    this.audioManager = IoC.Container.GetInstance<IAudioDeviceManager>();
-        //}
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SoundLoader"/> class.
-        /// </summary>
-        /// <param name="alInvoker">Makes calls to OpenAL.</param>
-        /// <param name="audioManager">Manages the audio devices.</param>
-        /// <param name="soundPathResolver">Resolves paths to sound content.</param>
-        /// <param name="oggDecoder">Decodes ogg sound files.</param>
-        /// <param name="mp3Decoder">Decodes mp3 sound files.</param>
-        internal SoundLoader(
-            IALInvoker alInvoker,
-            IAudioDeviceManager audioManager,
-            IPathResolver soundPathResolver,
-            ISoundDecoder<float> oggDecoder,
-            ISoundDecoder<byte> mp3Decoder)
-        {
-            this.alInvoker = alInvoker;
-            this.audioManager = audioManager;
-            this.soundPathResolver = soundPathResolver;
-            this.oggDecoder = oggDecoder;
-            this.mp3Decoder = mp3Decoder;
-        }
+        public SoundLoader(IPathResolver soundPathResolver) => this.soundPathResolver = soundPathResolver;
 
         /// <summary>
         /// Loads a sound with the given name.
@@ -80,21 +35,13 @@ namespace Velaptor.Content
         ///
         ///     Example: sound.ogg and sound.mp3 will result in an exception.
         /// </remarks>
-        /// <exception cref="UnsupportedSoundTypeException">
-        ///     Thrown when a sound file extension other then '.ogg' and '.mp3' are used.
-        /// </exception>
         public ISound Load(string name)
         {
             var filePath = this.soundPathResolver.ResolveFilePath(name);
 
             return this.sounds.GetOrAdd(filePath, (key) =>
             {
-                return new Sound(
-                    key,
-                    this.alInvoker,
-                    this.audioManager,
-                    this.oggDecoder,
-                    this.mp3Decoder);
+                return new Sound(filePath);
             });
         }
 
@@ -133,8 +80,6 @@ namespace Velaptor.Content
                 {
                     sound.Dispose();
                 }
-
-                this.audioManager.Dispose();
             }
 
             this.isDisposed = true;

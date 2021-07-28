@@ -91,6 +91,6 @@
       <Copy SourceFiles="$(SolutionDir)Velaptor\OpenGL\shader.frag" DestinationFolder="$(TargetDir)" />
     </Target>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="copy &quot;$(SolutionDir)Velaptor\Libs\win-x64\openal32.dll&quot; &quot;$(TargetDir)openal32.dll&quot; /Y" />
+      <Exec Command="copy &quot;$(TargetDir)runtimes\win-x64\native\soft_oal.dll&quot; &quot;$(TargetDir)soft_oal.dll&quot; /Y" />
     </Target>
 </Project>

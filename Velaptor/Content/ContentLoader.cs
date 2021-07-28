@@ -6,7 +6,6 @@ namespace Velaptor.Content
 {
     using System;
     using System.IO;
-    using Velaptor.Audio;
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
 

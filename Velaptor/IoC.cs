@@ -11,13 +11,11 @@ namespace Velaptor
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
-    using Velaptor.Audio;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.FreeType;
-    using Velaptor.NativeInterop.OpenAL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.Services;
@@ -55,8 +53,6 @@ namespace Velaptor
         private static void SetupContainer()
         {
             SetupOpenGL();
-
-            SetupAudio();
 
             SetupServices();
 
@@ -121,34 +117,6 @@ namespace Velaptor
             IoCContainer.Register<IGameWindowFacade, OpenTKWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
         }
 #pragma warning restore IDE0051 // Remove unused private members
-
-        /// <summary>
-        /// Setup container registration related to audio.
-        /// </summary>
-        private static void SetupAudio()
-        {
-#if OPENTK
-            IoCContainer.Register<IALInvoker, OpenTKALInvoker>(Lifestyle.Singleton);
-#elif SILK
-            IoCContainer.Register<IALInvoker, SilkALInvoker>(Lifestyle.Singleton);
-#endif
-
-            IoCContainer.Register<IAudioDeviceManager, AudioDeviceManager>(Lifestyle.Singleton);
-
-            // Register the proper data stream to be the implementation if the consumer is a certain decoder
-            IoCContainer.RegisterConditional<IAudioDataStream<float>, OggAudioDataStream>(context =>
-            {
-                return !context.HasConsumer || context.Consumer.ImplementationType == typeof(OggSoundDecoder);
-            }, true);
-
-            IoCContainer.RegisterConditional<IAudioDataStream<byte>, Mp3AudioDataStream>(context =>
-            {
-                return !context.HasConsumer || context.Consumer.ImplementationType == typeof(MP3SoundDecoder);
-            }, true);
-
-            IoCContainer.Register<ISoundDecoder<float>, OggSoundDecoder>(true);
-            IoCContainer.Register<ISoundDecoder<byte>, MP3SoundDecoder>(true);
-        }
 
         /// <summary>
         /// Setup container registration related to services.

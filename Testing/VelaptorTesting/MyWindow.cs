@@ -1,5 +1,5 @@
 ﻿using Velaptor;
-using Velaptor.Audio;
+using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Input;
@@ -74,9 +74,9 @@ namespace VelaptorSandBox
 
             this.linkTexture = ContentLoader.Load<ITexture>("Link");
 
-            //this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
-            //this.quietPlaceMusic.SetTimePosition(50);
-            //this.quietPlaceMusic.Volume = 10;
+            this.quietPlaceMusic = ContentLoader.Load<ISound>("deadships.ogg");
+            this.quietPlaceMusic.SetTimePosition(50);
+            this.quietPlaceMusic.Volume = 10;
 
             this.myFont = ContentLoader.Load<IFont>("TimesNewRoman");
 
@@ -111,12 +111,12 @@ namespace VelaptorSandBox
 
             if (this.currentMouseState.IsLeftButtonUp() && this.previousMouseState.IsLeftButtonDown())
             {
-                this.quietPlaceMusic.PlaySound();
+                this.quietPlaceMusic.Play();
             }
 
             if (this.currentMouseState.IsRightButtonUp() && this.previousMouseState.IsRightButtonDown())
             {
-                this.quietPlaceMusic.PauseSound();
+                this.quietPlaceMusic.Pause();
             }
 
             for (var i = 0; i < this.bubbles.Count; i++)
@@ -135,7 +135,7 @@ namespace VelaptorSandBox
             }
             else
             {
-                Title = $"Time: {this.quietPlaceMusic?.TimePositionSeconds ?? 0}";
+                Title = $"Time: {this.quietPlaceMusic?.Position.Seconds ?? 0}";
                 this.timeElapsed = 0;
             }
 

@@ -5,7 +5,6 @@
 namespace VelaptorTests.Content
 {
     using Moq;
-    using Velaptor.Audio;
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
