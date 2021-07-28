@@ -7,6 +7,8 @@
         "Simplelnjector",
         "Unloadable",
         "Velaptor",
+        "backticks",
+        "codecov",
         "dodgerblue",
         "editorconfig",
         "finalizer",
