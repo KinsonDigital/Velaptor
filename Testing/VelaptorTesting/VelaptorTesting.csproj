@@ -39,7 +39,6 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
-
   <ItemGroup>
     <None Update="Content\Atlas\Main-Atlas.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -73,24 +72,16 @@
     </None>
   </ItemGroup>
 
-
   <ItemGroup>
     <Folder Include="Content\Atlas\" />
     <Folder Include="Content\Fonts\" />
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\..\Velaptor\Velaptor.csproj" />
   </ItemGroup>
   
-  
-    <!--COPY SHADER FILES TO OUTPUT FOLDER-->
-    <Target Name="Copy-Shaders-To-Output" Condition="'$(ConfigurationName)|AnyCPU' == 'Debug|AnyCPU' Or '$(ConfigurationName)|AnyCPU' == 'Release|AnyCPU'" AfterTargets="Build">
-      <Copy SourceFiles="$(SolutionDir)Velaptor\OpenGL\shader.vert" DestinationFolder="$(TargetDir)" />
-      <Copy SourceFiles="$(SolutionDir)Velaptor\OpenGL\shader.frag" DestinationFolder="$(TargetDir)" />
-    </Target>
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="copy &quot;$(TargetDir)runtimes\win-x64\native\soft_oal.dll&quot; &quot;$(TargetDir)soft_oal.dll&quot; /Y" />
-    </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(TargetDir)runtimes\win-x64\native\soft_oal.dll&quot; &quot;$(TargetDir)soft_oal.dll&quot; /Y" />
+  </Target>
 </Project>
