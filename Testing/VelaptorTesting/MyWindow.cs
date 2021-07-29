@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace VelaptorSandBox
+namespace VelaptorTesting
 {
     public class MyWindow : Window
     {

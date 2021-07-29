@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Velaptor.Factories;
 using Velaptor.UI;
 
-namespace VelaptorSandBox
+namespace VelaptorTesting
 {
     public class Program
     {

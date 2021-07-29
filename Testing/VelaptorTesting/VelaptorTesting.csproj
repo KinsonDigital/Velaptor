@@ -5,8 +5,8 @@
     <Configurations>DebugOPENTK;ReleaseOPENTK;DebugSILK;ReleaseSILK</Configurations>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
-    <AssemblyName>VelaptorSandBox</AssemblyName>
-    <RootNamespace>VelaptorSandBox</RootNamespace>
+    <AssemblyName>VelaptorTesting</AssemblyName>
+    <RootNamespace>VelaptorTesting</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release(OPENTK)|AnyCPU'">
     <Optimize>true</Optimize>
