@@ -10,8 +10,8 @@ on:
     branches: [ release/v*.*.* ]
 
 jobs:
-  Preview_Release_Build:
-    name: Preview Release Build
+  Library_Build_And_Test:
+    name: Build & Test (Library)
     runs-on: windows-latest
 
     steps:
@@ -23,7 +23,7 @@ jobs:
         dotnet-version: 5.0.x
 
     - name: Restore Dependencies
-      run: dotnet restore "${{ github.workspace }}\${{ env.PROJECT_NAME }}\${{ env.PROJECT_NAME }}.csproj"
+      run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
     - name: Build
       run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" --no-restore
@@ -62,3 +62,20 @@ jobs:
     
     # - name: Publish Nuget Package
     #   run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.get-version.outputs.version }}.nupkg" --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+  Test_App_Build_And_Test:
+    name: Build & Test (Testing App)
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET 5.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj"
+
+    - name: Build
+      run: dotnet build "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" --no-restore

@@ -10,41 +10,41 @@ on:
     branches: [ develop ]
 
 jobs:
-  Library_Build_And_Test:
-    name: Build & Test (Library)
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
+  # Library_Build_And_Test:
+  #   name: Build & Test (Library)
+  #   runs-on: windows-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
 
-    - name: Setup .NET 5.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
+  #   - name: Setup .NET 5.0.x
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: 5.0.x
 
-    - name: Restore Dependencies
-      run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
+  #   - name: Restore Dependencies
+  #     run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
-    - name: Build
-      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" --no-restore
+  #   - name: Build
+  #     run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" --no-restore
 
-    - name: Execute Unit Tests
-      run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" -c Debug --collect:"XPlat Code Coverage" --no-restore
+  #   - name: Execute Unit Tests
+  #     run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" -c Debug --collect:"XPlat Code Coverage" --no-restore
 
-    - name: Publish Code Coverage Results
-      uses: codecov/codecov-action@v1.5.2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/TestResults/**/coverage.cobertura.xml
+  #   - name: Publish Code Coverage Results
+  #     uses: codecov/codecov-action@v1.5.2
+  #     with:
+  #       token: ${{ secrets.CODECOV_TOKEN }}
+  #       file: ${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/TestResults/**/coverage.cobertura.xml
 
-    - name: Publish Build Artifacts
-      uses: actions/upload-artifact@v2.2.3
-      with:
-        name: ${{ env.PROJECT_NAME }} Build Artifacts
-        path: ${{ github.workspace }}/${{ env.PROJECT_NAME }}/bin/Debug/net5.0
-        error: There was an issue uploading the build artifact
+  #   - name: Publish Build Artifacts
+  #     uses: actions/upload-artifact@v2.2.3
+  #     with:
+  #       name: ${{ env.PROJECT_NAME }} Build Artifacts
+  #       path: ${{ github.workspace }}/${{ env.PROJECT_NAME }}/bin/Debug/net5.0
+  #       error: There was an issue uploading the build artifact
 
   Test_App_Build_And_Test:
-    name: Testing App Build & Test
+    name: Build & Test (Testing App)
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -55,7 +55,7 @@ jobs:
         dotnet-version: 5.0.x
 
     - name: Restore Dependencies
-      run: dotnet restore "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}Testing.csproj"
+      run: dotnet restore "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj"
 
-    - name: Build
-      run: dotnet build "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" --no-restore
+    # - name: Build
+    #   run: dotnet build "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" --no-restore
