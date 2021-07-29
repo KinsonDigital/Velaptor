@@ -10,8 +10,8 @@ on:
     branches: [ develop ]
 
 jobs:
-  Dev_Build_And_Test:
-    name: Dev Build & Test
+  Library_Build_And_Test:
+    name: Build & Test (Library)
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
         dotnet-version: 5.0.x
 
     - name: Restore Dependencies
-      run: dotnet restore "${{ github.workspace }}\${{ env.PROJECT_NAME }}\${{ env.PROJECT_NAME }}.csproj"
+      run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
     - name: Build
       run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" --no-restore
@@ -42,3 +42,20 @@ jobs:
         name: ${{ env.PROJECT_NAME }} Build Artifacts
         path: ${{ github.workspace }}/${{ env.PROJECT_NAME }}/bin/Debug/net5.0
         error: There was an issue uploading the build artifact
+
+  Test_App_Build_And_Test:
+    name: Testing App Build & Test
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET 5.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}Testing.csproj"
+
+    - name: Build
+      run: dotnet build "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" --no-restore
