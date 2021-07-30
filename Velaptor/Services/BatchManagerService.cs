@@ -15,6 +15,7 @@ namespace Velaptor.Services
 
     /// <summary>
     /// Manages the process of batching textures together when rendering them.
+    /// THIS IS A TEST COMMENT FOR A TEST RELEASE!!
     /// </summary>
     internal class BatchManagerService : IBatchManagerService
     {
