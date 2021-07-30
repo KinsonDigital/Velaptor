@@ -8,7 +8,7 @@ env:
 on:
   workflow_dispatch:
   push:
-    branches: [ release/my-t*t-rel*se ]
+    branches: [ release/v*.*.* ]
   pull_request:
     types: [ synchronize ]
     branches: [ release/v*.*.* ]
