@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <Configurations>DebugOPENTK;ReleaseOPENTK;DebugSILK;ReleaseSILK</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
@@ -20,17 +20,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(SILK)|AnyCPU'">
     <Optimize>false</Optimize>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOPENTK|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;OPENTK</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOPENTK|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;OPENTK</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugSILK|AnyCPU'">
-    <DefineConstants>TRACE;SILK</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseSILK|AnyCPU'">
-    <DefineConstants>TRACE;SILK</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="stylecop.json" />

@@ -26,19 +26,13 @@
     <Description>2D game or application development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
     <Copyright>Copyright ©2020 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
-    <Configurations>DebugOPENTK;ReleaseOPENTK;DebugSILK;ReleaseSILK</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugOPENTK|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;OPENTK</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOPENTK|AnyCPU'">
-    <DefineConstants>TRACE;OPENTK</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugSILK|AnyCPU'">
-    <DefineConstants>TRACE;SILK</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseSILK|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;SILK</DefineConstants>
   </PropertyGroup>
 
