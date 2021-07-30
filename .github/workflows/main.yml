@@ -2,6 +2,8 @@ name: Build & Test (Development)
 
 env:
   PROJECT_NAME: Velaptor
+  BUILD_CONFIG: Debug
+  RELEASE_NAME: QA
 
 on:
   workflow_dispatch:
@@ -13,7 +15,7 @@ jobs:
   Library_Build_And_Test:
     name: Build & Test (Library)
     runs-on: windows-latest
-    environment: production
+    environment: qa
     steps:
     - uses: actions/checkout@v2
 
@@ -26,10 +28,10 @@ jobs:
       run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
     - name: Build
-      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" --no-restore
+      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -c ${{ env.BUILD_CONFIG }} --no-restore
 
     - name: Execute Unit Tests
-      run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" -c Debug --collect:"XPlat Code Coverage" --no-restore
+      run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" -c ${{ env.BUILD_CONFIG }} --collect:"XPlat Code Coverage" --no-restore
 
     - name: Publish Code Coverage Results
       uses: codecov/codecov-action@v1.5.2
@@ -41,13 +43,13 @@ jobs:
       uses: actions/upload-artifact@v2.2.3
       with:
         name: ${{ env.PROJECT_NAME }} Build Artifacts
-        path: ${{ github.workspace }}/${{ env.PROJECT_NAME }}/bin/Debug/net5.0
+        path: ${{ github.workspace }}/${{ env.PROJECT_NAME }}/bin/${{ env.BUILD_CONFIG }}/net5.0
         error: There was an issue uploading the build artifact
 
   Test_App_Build_And_Test:
     name: Build & Test (Testing App)
     runs-on: windows-latest
-    environment: production
+    environment: qa
     steps:
     - uses: actions/checkout@v2
 
@@ -60,4 +62,24 @@ jobs:
       run: dotnet restore "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj"
 
     - name: Build
-      run: dotnet build "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" --no-restore
+      run: dotnet publish "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" -c ${{ env.BUILD_CONFIG }} -o ./${{ env.RELEASE_NAME }}Release --no-restore
+
+    - name: Get Version From Project File
+      id: get-version
+      uses: KinsonDigital/vget@v0.2
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        user-name: 'kinsondigital@gmail.com'
+        password: ${{ secrets.REPO_PASSWORD }}
+
+    - name: Zip Release
+      run: Compress-Archive -Path "./${{ env.RELEASE_NAME }}Release" -DestinationPath "${{ github.workspace }}/${{ env.RELEASE_NAME }}Release.zip"
+
+    - name: Release Testing Application
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.get-version.outputs.version }}.qa.${{ github.sha }}
+        body: ${{ env.RELEASE_NAME }} Release [v${{ steps.get-version.outputs.version }}.qa.${{ github.sha }}](https://github.com/KinsonDigital/Velaptor/tree/v${{ steps.get-version.outputs.version }}.qa.${{ github.sha }})
+        files: ${{ github.workspace }}/${{ env.RELEASE_NAME }}Release.zip
