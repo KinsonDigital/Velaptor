@@ -61,8 +61,8 @@ jobs:
         user-name: 'kinsondigital@gmail.com'
         password: ${{ secrets.REPO_PASSWORD }}
     
-    # - name: Publish Nuget Package
-    #   run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.get-version.outputs.version }}.nupkg" --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
+    - name: Publish Nuget Package
+      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.get-version.outputs.version }}.nupkg" --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
 
   Test_App_Build_And_Test:
     name: Build & Test (Testing App)
