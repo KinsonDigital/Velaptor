@@ -1,4 +1,4 @@
-// <copyright file="WindowFactory.cs" company="KinsonDigital">
+﻿// <copyright file="WindowFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,6 +7,7 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Input;
     using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;

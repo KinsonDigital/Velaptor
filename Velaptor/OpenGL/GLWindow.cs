@@ -14,6 +14,7 @@ namespace Velaptor.OpenGL
     using Velaptor.Content;
     using Velaptor.Input;
     using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.Services;

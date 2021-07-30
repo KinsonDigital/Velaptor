@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -24,6 +24,7 @@ namespace VelaptorTests.OpenGL
     using VelaptorMouseState = Velaptor.Input.MouseState;
     using SysVector2 = System.Numerics.Vector2;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.NativeInterop.GLFW;
 
     /// <summary>
     /// Tests the <see cref="GLWindow"/> class.

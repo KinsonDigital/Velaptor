@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop
+namespace Velaptor.NativeInterop.GLFW
 {
     using System;
     using System.Collections.Generic;
