@@ -153,6 +153,7 @@ namespace VelaptorTests.Services
             });
         }
 
+#pragma warning disable SA1512 // Single-line comments should not be followed by blank line
         [Fact]
         public void BuildTransformationMatrix_WhenInvoked_ReturnsCorrectMatrix()
         {
@@ -164,28 +165,29 @@ namespace VelaptorTests.Services
             expected.M12 = -0.104528464f;
             expected.M13 = 0f;
             expected.M14 = 0f;
-            //expected.Row0 = new TKVector4(1.4917829f, -0.104528464f, 0f, 0f);
+            //expected.Row0 = new Vector4(1.4917829f, -0.104528464f, 0f, 0f);
 
             // Row 1
             expected.M21 = 0.1567927f;
             expected.M22 = 0.9945219f;
             expected.M23 = 0f;
             expected.M24 = 0f;
-            //expected.Row1 = new TKVector4(0.1567927f, 0.9945219f, 0f, 0f);
+            //expected.Row1 = new Vector4(0.1567927f, 0.9945219f, 0f, 0f);
 
             // Row 2
             expected.M31 = 0f;
             expected.M32 = 0f;
             expected.M33 = 1f;
             expected.M34 = 0f;
-            //expected.Row2 = new TKVector4(0f, 0f, 1f, 0f);
+
+            // expected.Row2 = new Vector4(0f, 0f, 1f, 0f);
 
             // Row 3
             expected.M41 = -0.8f;
             expected.M42 = 0.8f;
             expected.M43 = 0f;
             expected.M44 = 1f;
-            //expected.Row3 = new TKVector4(-0.8f, 0.8f, 0f, 1f);
+            // expected.Row3 = new Vector4(-0.8f, 0.8f, 0f, 1f);
 
             var service = new BatchManagerService();
 
@@ -202,6 +204,7 @@ namespace VelaptorTests.Services
             // Assert
             Assert.Equal(expected, actual);
         }
+#pragma warning restore SA1512 // Single-line comments should not be followed by blank line
 
         [Fact]
         public void UpdateBatch_WithNullTexture_ThrowsException()

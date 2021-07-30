@@ -10,7 +10,7 @@ namespace Velaptor.NativeInterop
     using Velaptor.OpenGL;
 
     /// <summary>
-    /// Provides OpenTK extensions/helper methods to improve OpenGL related functionality.
+    /// Provides extensions/helper methods to improve OpenGL related functionality.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal class GLInvokerExtensions : IGLInvokerExtensions

@@ -10,12 +10,12 @@ namespace Velaptor
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
-    using OpenTK.Mathematics;
-    using Velaptor.Graphics;
+    using System.Numerics;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
+    using Velaptor.Graphics;
     using NETColor = System.Drawing.Color;
 
     /// <summary>

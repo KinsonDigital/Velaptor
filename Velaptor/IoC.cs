@@ -71,15 +71,13 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Setup container registration related to OpenTK.
+        /// Setup container registration related to OpenGL.
         /// </summary>
         private static void SetupOpenGL()
         {
             IoCContainer.Register(() => FileSystem.File, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Directory, Lifestyle.Singleton);
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
-
-            SetupInteropWithSILK();
 
             IoCContainer.Register<IGLInvokerExtensions, GLInvokerExtensions>(Lifestyle.Singleton);
 
@@ -90,27 +88,11 @@ namespace Velaptor
             IoCContainer.Register<IShaderProgram, ShaderProgram>(Lifestyle.Singleton);
 
             IoCContainer.Register<ISpriteBatch, SpriteBatch>(Lifestyle.Singleton);
-        }
 
-#pragma warning disable IDE0051 // Remove unused private members
-        /// <summary>
-        /// Sets up all of the OpenGL interop with the SILK library.
-        /// </summary>
-        private static void SetupInteropWithSILK()
-        {
-            IoCContainer.Register<IGLInvoker, SilkGLInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IGLFWInvoker, SilkGLFWInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IGameWindowFacade, SilkWindowFacade>(Lifestyle.Singleton, suppressDisposal : true);
+            IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal : true);
         }
-
-        /// <summary>
-        /// Sets up all of the OpenGL interop with the OpenTK library.
-        /// </summary>
-        private static void SetupInteropWithOpenTK()
-        {
-            IoCContainer.Register<IGameWindowFacade, OpenTKWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
-        }
-#pragma warning restore IDE0051 // Remove unused private members
 
         /// <summary>
         /// Setup container registration related to services.

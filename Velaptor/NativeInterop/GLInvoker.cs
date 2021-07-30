@@ -1,4 +1,4 @@
-﻿// <copyright file="SilkGLInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="GLInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,17 +8,17 @@ namespace Velaptor.NativeInterop
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using System.Runtime.InteropServices;
+    using Silk.NET.OpenGL;
+    using Silk.NET.Windowing;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
     using Velaptor.OpenGL;
-    using Silk.NET.OpenGL;
-    using Silk.NET.Windowing;
 
     /// <summary>
     /// Invokes OpenGL calls.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class SilkGLInvoker : IGLInvoker
+    internal class GLInvoker : IGLInvoker
     {
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
@@ -26,13 +26,13 @@ namespace Velaptor.NativeInterop
         private GL gl = null!;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SilkGLInvoker"/> class.
+        /// Initializes a new instance of the <see cref="GLInvoker"/> class.
         /// </summary>
         /// <param name="glContextObservable">
         ///     The OpenGL context observable to subscribe to get a push notification
         ///     that the OpenGL context has been created.
         /// </param>
-        public SilkGLInvoker(OpenGLContextObservable glContextObservable)
+        public GLInvoker(OpenGLContextObservable glContextObservable)
             => this.glContextUnsubscriber = glContextObservable.Subscribe(new Observer<object>(
                 onNext: data =>
                 {
@@ -43,7 +43,7 @@ namespace Velaptor.NativeInterop
                     else
                     {
                         var exceptionMessage = $"The parameter '{nameof(data)}' of the '{nameof(Observer<object>.OnNext)}()' action delegate must be of type '{nameof(IWindow)}'.";
-                        exceptionMessage += $"\n\t{nameof(OpenGLContextObservable)} subscription location: {nameof(SilkGLInvoker)}.Ctor()";
+                        exceptionMessage += $"\n\t{nameof(OpenGLContextObservable)} subscription location: {nameof(GLInvoker)}.Ctor()";
 
                         throw new Exception(exceptionMessage);
                     }
@@ -54,9 +54,9 @@ namespace Velaptor.NativeInterop
                 }));
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="SilkGLInvoker"/> class.
+        /// Finalizes an instance of the <see cref="GLInvoker"/> class.
         /// </summary>
-        ~SilkGLInvoker()
+        ~GLInvoker()
         {
             Dispose(false);
         }

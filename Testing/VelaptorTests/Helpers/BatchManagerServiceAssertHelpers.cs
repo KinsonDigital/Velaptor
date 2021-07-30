@@ -9,10 +9,8 @@ namespace VelaptorTests.Helpers
     using System.Drawing;
     using System.Numerics;
     using Moq;
-    using OpenTK.Mathematics;
     using Velaptor.Graphics;
     using Velaptor.Services;
-    using SysVector2 = System.Numerics.Vector2;
 
     /// <summary>
     /// Provides helpers for invoke verifications of the <see cref="IBatchManagerService"/> type.
@@ -29,7 +27,7 @@ namespace VelaptorTests.Helpers
         public static void VerifyAnyBuildTransformationMatrix(this Mock<IBatchManagerService> mockService, Times times)
         {
             mockService.Verify(m => m.BuildTransformationMatrix(
-                It.IsAny<SysVector2>(),
+                It.IsAny<Vector2>(),
                 It.IsAny<float>(),
                 It.IsAny<float>(),
                 It.IsAny<int>(),
@@ -48,7 +46,7 @@ namespace VelaptorTests.Helpers
         public static void VerifyBuildTransformationMatrixSrcRectWidth(this Mock<IBatchManagerService> mockService, int width, Times times)
         {
             mockService.Verify(m => m.BuildTransformationMatrix(
-                It.IsAny<SysVector2>(),
+                It.IsAny<Vector2>(),
                 It.IsAny<float>(),
                 It.IsAny<float>(),
                 width,
@@ -67,7 +65,7 @@ namespace VelaptorTests.Helpers
         public static void VerifyBuildTransformationMatrixSrcRectHeight(this Mock<IBatchManagerService> mockService, int height, Times times)
         {
             mockService.Verify(m => m.BuildTransformationMatrix(
-                It.IsAny<SysVector2>(),
+                It.IsAny<Vector2>(),
                 It.IsAny<float>(),
                 It.IsAny<float>(),
                 It.IsAny<int>(),

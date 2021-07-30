@@ -8,6 +8,7 @@ namespace Velaptor.OpenGL
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Numerics;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using Velaptor.Content;
@@ -16,11 +17,9 @@ namespace Velaptor.OpenGL
     using Velaptor.Observables;
     using Velaptor.Services;
     using Velaptor.UI;
-    using SysVector2 = System.Numerics.Vector2;
 
     // TODO: Need to normalize these 2 enums and figure out which one to use if any at all
     using VelaptorMouseButton = Velaptor.Input.MouseButton;
-    using TKMouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
@@ -139,7 +138,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public SysVector2 Position
+        public Vector2 Position
         {
             get
             {
@@ -287,7 +286,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Gets the cache for the <see cref="Position"/> property.
         /// </summary>
-        public CachedValue<SysVector2>? CachedPosition { get; private set; }
+        public CachedValue<Vector2>? CachedPosition { get; private set; }
 
         /// <inheritdoc/>
         public void Show()
@@ -324,39 +323,6 @@ namespace Velaptor.OpenGL
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Maps the given OpenGL mouse button to a <see cref="VelaptorMouseButton"/>.
-        /// </summary>
-        /// <param name="from">The OpenGL mouse button to map.</param>
-        /// <returns>The mouse button.</returns>
-        private static VelaptorMouseButton MapMouseButton(TKMouseButton from)
-        {
-            var result = from switch
-            {
-                TKMouseButton.Left => VelaptorMouseButton.LeftButton, // Same as Button 1
-                TKMouseButton.Middle => VelaptorMouseButton.MiddleButton, // Same as Button3
-                TKMouseButton.Last => VelaptorMouseButton.MiddleButton, // Same as Button3
-                TKMouseButton.Right => VelaptorMouseButton.RightButton, // Same as Button2
-                _ => throw new ArgumentException("Unrecognized OpenGL mouse button."), // TODO: Test for this
-            };
-
-            var unsupportedOpenTKButtons = new[]
-            {
-                TKMouseButton.Button4,
-                TKMouseButton.Button5,
-                TKMouseButton.Button6,
-                TKMouseButton.Button7,
-                TKMouseButton.Button8,
-            };
-
-            if (unsupportedOpenTKButtons.Contains(from))
-            {
-                throw new ArgumentException("Unrecognized OpenGL mouse button.");
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -581,7 +547,7 @@ namespace Velaptor.OpenGL
                         this.windowFacade.Title = value;
                     }));
 
-            SysVector2 defaultPosition = SysVector2.Zero;
+            Vector2 defaultPosition = Vector2.Zero;
 
             var mainMonitor = this.systemMonitorService.MainMonitor;
 
@@ -596,14 +562,14 @@ namespace Velaptor.OpenGL
 
             if (mainMonitor is not null)
             {
-                defaultPosition = new SysVector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
+                defaultPosition = new Vector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
             }
 
-            CachedPosition = new CachedValue<SysVector2>(
+            CachedPosition = new CachedValue<Vector2>(
                 defaultValue: defaultPosition,
                 getterWhenNotCaching: () =>
                 {
-                    return new SysVector2(this.windowFacade.Location.X, this.windowFacade.Location.Y);
+                    return new Vector2(this.windowFacade.Location.X, this.windowFacade.Location.Y);
                 },
                 setterWhenNotCaching: (value) =>
                 {

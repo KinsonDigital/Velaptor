@@ -1,22 +1,24 @@
-﻿// <copyright file="SilkWindowFacade.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindowFacade.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.OpenGL
 {
+#pragma warning disable SA1135 // Using directives should be qualified
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Numerics;
-    using Velaptor.Input;
-    using Velaptor.Observables;
     using Silk.NET.Input;
     using Silk.NET.Maths;
     using Silk.NET.Windowing;
-    using VelaptorMouseButton = Input.MouseButton;
+    using Velaptor.Input;
+    using Velaptor.Observables;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
+    using VelaptorMouseButton = Input.MouseButton;
+#pragma warning restore SA1135 // Using directives should be qualified
 
     // TODO: Finish documentating code
 
@@ -24,7 +26,7 @@ namespace Velaptor.OpenGL
     /// The internal SILK OpenGL window.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class SilkWindowFacade : IGameWindowFacade
+    internal class GLWindowFacade : IGameWindowFacade
     {
         private readonly string nullWindowExceptionMsg;
         private readonly object objectLock = new ();
@@ -36,12 +38,12 @@ namespace Velaptor.OpenGL
         private bool isDisposed;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SilkWindowFacade"/> class.
+        /// Initializes a new instance of the <see cref="GLWindowFacade"/> class.
         /// </summary>
         /// <param name="glObservable">
         ///     Receives push notifications when the OpenGL context has been created.
         /// </param>
-        public SilkWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboard, IMouseInput<VelaptorMouseButton, MouseState> mouse)
+        public GLWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboard, IMouseInput<VelaptorMouseButton, MouseState> mouse)
         {
             this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
             this.glContextObservable = glObservable;
@@ -329,7 +331,7 @@ namespace Velaptor.OpenGL
 
             if (this.glInputContext.Keyboards.Count <= 0)
             {
-                throw new Exception("SILK Input Exception: No connected keyboards available.");
+                throw new Exception("Input Exception: No connected keyboards available.");
             }
 
             // TODO: unregister on dispose
@@ -338,7 +340,7 @@ namespace Velaptor.OpenGL
 
             if (this.glInputContext.Mice.Count <= 0)
             {
-                throw new Exception("SILK Input Exception: No connected mice available.");
+                throw new Exception("Input Exception: No connected mice available.");
             }
 
             this.glInputContext.Mice[0].MouseDown += GLMouseInput_MouseDown;

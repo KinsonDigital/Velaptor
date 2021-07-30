@@ -7,12 +7,12 @@ namespace VelaptorTests
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using OpenTK.Mathematics;
+    using System.Numerics;
     using Velaptor;
-    using Velaptor.Graphics;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using Xunit;
+    using Velaptor.Graphics;
     using NETColor = System.Drawing.Color;
 
     /// <summary>

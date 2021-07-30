@@ -5,7 +5,6 @@
 namespace Velaptor.OpenGL
 {
     using System;
-    using OpenTK.Mathematics;
 
     /// <summary>
     /// Describes the data layout of a field for setting up OpenGL attribute pointers.

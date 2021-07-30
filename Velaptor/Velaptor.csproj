@@ -30,10 +30,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;OPENTK</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;SILK</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
 
@@ -43,11 +43,9 @@
     <None Remove="stylecop.json" />
   </ItemGroup>
 
-
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
-
 
   <ItemGroup>
     <EmbeddedResource Include="OpenGL\shader.frag">
@@ -57,7 +55,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="FreeTypeSharp" Version="1.1.3" />

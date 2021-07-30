@@ -96,10 +96,7 @@ namespace Velaptor.Input
 
         private Dictionary<KeyCode, bool> keyStates;
 
-        /*TODO:
-            These tests are for testing caps and num lock.  Currently OpenTK 4.0
-            needs some implementation of the proper overload and enums to be able to do this.
-            Refer to https://github.com/opentk/opentk/issues/1089 for more info
+        /*TODO: Get these 2 properties working with SILK.NET
 
         /// <summary>
         /// Gets a value indicating whether gets a value indicating if the caps lock key is on.

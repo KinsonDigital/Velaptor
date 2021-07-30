@@ -1,4 +1,4 @@
-﻿// <copyright file="SilkGLFWInvoker.cs" company="KinsonDigital">
+﻿// <copyright file="GLFWInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,21 +9,21 @@ namespace Velaptor.NativeInterop
     using System;
     using System.Collections.Generic;
     using System.Numerics;
-    using Velaptor.OpenGL;
     using Silk.NET.GLFW;
+    using Velaptor.OpenGL;
 
     /// <summary>
     /// Invokes GLFW calls.
     /// </summary>
-    internal class SilkGLFWInvoker : IGLFWInvoker
+    internal class GLFWInvoker : IGLFWInvoker
     {
         private readonly Glfw glfw;
         private bool isDisposed;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SilkGLFWInvoker"/> class.
+        /// Initializes a new instance of the <see cref="GLFWInvoker"/> class.
         /// </summary>
-        public SilkGLFWInvoker()
+        public GLFWInvoker()
         {
             this.glfw = Glfw.GetApi();
 
@@ -36,9 +36,9 @@ namespace Velaptor.NativeInterop
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="SilkGLFWInvoker"/> class.
+        /// Finalizes an instance of the <see cref="GLFWInvoker"/> class.
         /// </summary>
-        ~SilkGLFWInvoker()
+        ~GLFWInvoker()
         {
             Dispose(false);
         }

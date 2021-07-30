@@ -60,12 +60,12 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Velaptor\Velaptor.csproj" />
+    <Folder Include="TestAssets\" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <Folder Include="TestAssets\" />
+    <ProjectReference Include="..\..\Velaptor\Velaptor.csproj" />
   </ItemGroup>
 
 
