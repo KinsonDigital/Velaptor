@@ -79,11 +79,7 @@ namespace Velaptor
             IoCContainer.Register(() => FileSystem.Directory, Lifestyle.Singleton);
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
 
-#if OPENTK
-            SetupInteropWithOpenTK();
-#elif SILK
             SetupInteropWithSILK();
-#endif
 
             IoCContainer.Register<IGLInvokerExtensions, GLInvokerExtensions>(Lifestyle.Singleton);
 
