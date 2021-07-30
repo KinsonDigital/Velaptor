@@ -100,7 +100,7 @@ namespace Velaptor
         {
             IoCContainer.Register<IGLInvoker, SilkGLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, SilkGLFWInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IGameWindowFacade, SilkWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
+            IoCContainer.Register<IGameWindowFacade, SilkWindowFacade>(Lifestyle.Singleton, suppressDisposal : true);
         }
 
         /// <summary>
@@ -108,8 +108,6 @@ namespace Velaptor
         /// </summary>
         private static void SetupInteropWithOpenTK()
         {
-            IoCContainer.Register<IGLInvoker, OpenTKGLInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IGLFWInvoker, OpenTKGLFWInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGameWindowFacade, OpenTKWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
         }
 #pragma warning restore IDE0051 // Remove unused private members
