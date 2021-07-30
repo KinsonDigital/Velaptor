@@ -8,7 +8,7 @@ namespace Velaptor.Content
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
     /// <summary>

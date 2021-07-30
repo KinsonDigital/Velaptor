@@ -9,7 +9,7 @@ namespace VelaptorTests.Graphics
     using System.Drawing;
     using Moq;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Xunit;
 

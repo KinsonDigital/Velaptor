@@ -6,7 +6,7 @@ namespace VelaptorTests.Content
 {
     using Moq;
     using Velaptor.Content;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Velaptor.Services;
     using Xunit;

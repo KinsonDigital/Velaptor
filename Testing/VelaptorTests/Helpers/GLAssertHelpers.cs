@@ -9,7 +9,7 @@ namespace VelaptorTests.Helpers
     using System.Drawing;
     using System.Numerics;
     using Moq;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Xunit.Sdk;
 

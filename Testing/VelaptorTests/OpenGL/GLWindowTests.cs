@@ -23,6 +23,7 @@ namespace VelaptorTests.OpenGL
     using VelaptorMouseButton = Velaptor.Input.MouseButton;
     using VelaptorMouseState = Velaptor.Input.MouseState;
     using SysVector2 = System.Numerics.Vector2;
+    using Velaptor.NativeInterop.OpenGL;
 
     /// <summary>
     /// Tests the <see cref="GLWindow"/> class.

@@ -15,6 +15,7 @@ namespace VelaptorTests.Content
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
     using Xunit;
     using Assert = VelaptorTests.Helpers.AssertExtensions;

@@ -7,7 +7,7 @@ namespace Velaptor.Graphics
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
 
     /// <summary>

@@ -18,6 +18,7 @@ namespace VelaptorTests.Graphics
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.Services;

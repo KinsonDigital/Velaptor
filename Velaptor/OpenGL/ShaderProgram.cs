@@ -6,7 +6,7 @@ namespace Velaptor.OpenGL
 {
     using System;
     using System.Text;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
     /// <inheritdoc/>

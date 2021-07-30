@@ -1,4 +1,4 @@
-﻿// <copyright file="IoC.cs" company="KinsonDigital">
+// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,6 +16,7 @@ namespace Velaptor
     using Velaptor.Input;
     using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.FreeType;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.Services;

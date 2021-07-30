@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop
+namespace Velaptor.NativeInterop.OpenGL
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

@@ -9,7 +9,7 @@ namespace Velaptor.OpenGL
     using System.Drawing;
     using System.Linq;
     using System.Numerics;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
 
     /// <inheritdoc/>
     internal class GPUBuffer<T> : IGPUBuffer

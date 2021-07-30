@@ -11,7 +11,7 @@ namespace Velaptor.Content
     using Newtonsoft.Json;
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
     /// <summary>

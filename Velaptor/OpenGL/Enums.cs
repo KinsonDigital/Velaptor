@@ -4,8 +4,6 @@
 
 namespace Velaptor.OpenGL
 {
-    using Velaptor.NativeInterop;
-
     /// <summary>
     /// Specifies the program parameter.
     /// <para>

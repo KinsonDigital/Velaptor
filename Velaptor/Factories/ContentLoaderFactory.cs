@@ -9,6 +9,7 @@ namespace Velaptor.Factories
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 

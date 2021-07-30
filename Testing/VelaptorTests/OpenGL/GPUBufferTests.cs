@@ -8,7 +8,7 @@ namespace VelaptorTests.OpenGL
     using System.Collections.Generic;
     using System.Drawing;
     using Moq;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Xunit;
 
