@@ -44,9 +44,10 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
         /// </summary>
-        /// <param name="glInvoker">Invokes OpenGL functions.</param>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
+        /// <param name="glInvoker">Invokes OpenGL functions.</param>
+        /// <param name="glfwInvoker">Invokes GLFW functions.</param>
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
         /// <param name="windowFacade">The internal OpenGL window facade.</param>
         /// <param name="platform">Information about the platform that is running the application.</param>
@@ -395,7 +396,6 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Invokes the <see cref="Update"/> action property.
         /// </summary>
-        /// <param name="deltaTime">The frame event args.</param>
         private void GameWindow_UpdateFrame(object? sender, FrameTimeEventArgs e)
         {
             if (this.isShuttingDown)
@@ -414,7 +414,6 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Invokes the <see cref="Draw"/> action property.
         /// </summary>
-        /// <param name="deltaTime">The frame event args.</param>
         private void GameWindow_RenderFrame(object? sender, FrameTimeEventArgs e)
         {
             if (this.firstRenderInvoked is false)

@@ -84,7 +84,9 @@ namespace Velaptor.Content
         public bool Unloaded => this.sound.Unloaded;
 
         /// <inheritdoc/>
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
         public void Dispose() => this.sound.Dispose();
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
 
         /// <summary>
         /// Fast forwards the sound by the given amount of <paramref name="seconds"/>.

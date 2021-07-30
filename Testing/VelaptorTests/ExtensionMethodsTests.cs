@@ -8,11 +8,11 @@ namespace VelaptorTests
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Numerics;
-    using Velaptor;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
-    using Xunit;
+    using Velaptor;
     using Velaptor.Graphics;
+    using Xunit;
     using NETColor = System.Drawing.Color;
 
     /// <summary>

@@ -176,7 +176,6 @@ namespace Velaptor.OpenGL
     /// </summary>
     internal enum GLTextureUnit
     {
-
         /// <summary>
         /// OpenGL enum name GL_TEXTURE0.
         /// </summary>

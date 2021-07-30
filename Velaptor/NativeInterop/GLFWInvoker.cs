@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// TODO: Move GLFW types to a GLFW folder and namespace
-
 namespace Velaptor.NativeInterop
 {
     using System;
@@ -65,7 +63,6 @@ namespace Velaptor.NativeInterop
                 {
                     result.Add((IntPtr)unsafeMonitorPointers[i]);
                 }
-
             }
 
             return result.ToArray();

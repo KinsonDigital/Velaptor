@@ -18,9 +18,8 @@ namespace Velaptor.OpenGL
     using Velaptor.Observables;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
     using VelaptorMouseButton = Input.MouseButton;
+    using VelaptorWindowBorder = Velaptor.WindowBorder;
 #pragma warning restore SA1135 // Using directives should be qualified
-
-    // TODO: Finish documentating code
 
     /// <summary>
     /// The internal SILK OpenGL window.
@@ -43,6 +42,8 @@ namespace Velaptor.OpenGL
         /// <param name="glObservable">
         ///     Receives push notifications when the OpenGL context has been created.
         /// </param>
+        /// <param name="keyboard">The system keyboard for handling keyboard events.</param>
+        /// <param name="mouse">The system mouse for handling mouse events.</param>
         public GLWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboard, IMouseInput<VelaptorMouseButton, MouseState> mouse)
         {
             this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
@@ -142,7 +143,7 @@ namespace Velaptor.OpenGL
             {
                 if (this.glInputContext is null)
                 {
-                    throw new InvalidOperationException($"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.");
+                    throw new InvalidOperationException($"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.Init)}()' method first.");
                 }
 
                 if (this.glInputContext.Mice[0] is null)
@@ -157,6 +158,11 @@ namespace Velaptor.OpenGL
             set
             {
                 var cursorMode = value ? CursorMode.Normal : CursorMode.Hidden;
+
+                if (this.glInputContext is null)
+                {
+                    throw new InvalidOperationException($"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.Init)}()' method first.");
+                }
 
                 this.glInputContext.Mice[0].Cursor.CursorMode = cursorMode;
             }
@@ -200,7 +206,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public Velaptor.WindowBorder WindowBorder
+        public VelaptorWindowBorder WindowBorder
         {
             get
             {
@@ -211,9 +217,9 @@ namespace Velaptor.OpenGL
 
                 return this.glWindow.WindowBorder switch
                 {
-                    Silk.NET.Windowing.WindowBorder.Fixed => Velaptor.WindowBorder.Fixed,
-                    Silk.NET.Windowing.WindowBorder.Hidden => Velaptor.WindowBorder.Hidden,
-                    Silk.NET.Windowing.WindowBorder.Resizable => Velaptor.WindowBorder.Resizable,
+                    Silk.NET.Windowing.WindowBorder.Fixed => VelaptorWindowBorder.Fixed,
+                    Silk.NET.Windowing.WindowBorder.Hidden => VelaptorWindowBorder.Hidden,
+                    Silk.NET.Windowing.WindowBorder.Resizable => VelaptorWindowBorder.Resizable,
                     _ => throw new Exception("Invalid border"),
                 };
             }
@@ -226,9 +232,9 @@ namespace Velaptor.OpenGL
 
                 this.glWindow.WindowBorder = value switch
                 {
-                    Velaptor.WindowBorder.Fixed => Silk.NET.Windowing.WindowBorder.Fixed,
-                    Velaptor.WindowBorder.Hidden => Silk.NET.Windowing.WindowBorder.Hidden,
-                    Velaptor.WindowBorder.Resizable => Silk.NET.Windowing.WindowBorder.Resizable,
+                    VelaptorWindowBorder.Fixed => Silk.NET.Windowing.WindowBorder.Fixed,
+                    VelaptorWindowBorder.Hidden => Silk.NET.Windowing.WindowBorder.Hidden,
+                    VelaptorWindowBorder.Resizable => Silk.NET.Windowing.WindowBorder.Resizable,
                     _ => throw new Exception("Invalid border"),
                 };
             }
@@ -348,20 +354,6 @@ namespace Velaptor.OpenGL
             this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
         }
 
-        private void GLMouseMove_MouseMove(IMouse arg1, Vector2 arg2)
-        {
-            this.mouse.SetXPos((int)arg2.X);
-            this.mouse.SetYPos((int)arg2.Y);
-        }
-
-        private void GLMouseInput_MouseDown(IMouse arg1, SilkMouseButton arg2) => this.mouse.SetState((VelaptorMouseButton)arg2, true);
-
-        private void GLMouseInput_MouseUp(IMouse arg1, SilkMouseButton arg2) => this.mouse.SetState((VelaptorMouseButton)arg2, false);
-
-        private void GLKeyboardInput_KeyDown(IKeyboard arg1, Key arg2, int arg3) => this.keyboard.SetState((KeyCode)arg2, true);
-
-        private void GLKeyboardInput_KeyUp(IKeyboard arg1, Key arg2, int arg3) => this.keyboard.SetState((KeyCode)arg2, false);
-
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -393,8 +385,53 @@ namespace Velaptor.OpenGL
             }
         }
 
+        /// <summary>
+        /// Invoked when the mouse moves in the window.
+        /// </summary>
+        /// <param name="mouse">The system mouse.</param>
+        /// <param name="position">The position of the mouse.</param>
+        private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
+        {
+            this.mouse.SetXPos((int)position.X);
+            this.mouse.SetYPos((int)position.Y);
+        }
+
+        /// <summary>
+        /// Invoked when any mouse buttons transitions from the up position to the down position.
+        /// </summary>
+        /// <param name="mouse">The system mouse.</param>
+        /// <param name="button">The button that was pushed down.</param>
+        private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouse.SetState((VelaptorMouseButton)button, true);
+
+        /// <summary>
+        /// Invoked when any mouse buttons transitions from the down position to the up position.
+        /// </summary>
+        /// <param name="mouse">The system mouse.</param>
+        /// <param name="button">The button that was pushed down.</param>
+        private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button) => this.mouse.SetState((VelaptorMouseButton)button, false);
+
+        /// <summary>
+        /// Invoked when any keyboard key transitions from the up position to the down position.
+        /// </summary>
+        /// <param name="keyboard">The system keyboard.</param>
+        /// <param name="key">The key that was pushed down.</param>
+        private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3) => this.keyboard.SetState((KeyCode)key, true);
+
+        /// <summary>
+        /// Invoked when any keyboard key transitions from the down position to the up position.
+        /// </summary>
+        /// <param name="keyboard">The system keyboard.</param>
+        /// <param name="key">The key that was released.</param>
+        private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3) => this.keyboard.SetState((KeyCode)key, false);
+
+        /// <summary>
+        /// Invoked when the window is loaded and invokes the <see cref="Load"/> event.
+        /// </summary>
         private void GLWindow_Load() => Load?.Invoke(this, EventArgs.Empty);
 
+        /// <summary>
+        /// Invoked when the window is in the process of closing and invokes the <see cref="Unload"/> event.
+        /// </summary>
         private void GLWindow_Closing() => Unload?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
@@ -403,24 +440,16 @@ namespace Velaptor.OpenGL
         /// </summary>
         private void GLWindow_Resize(Vector2D<int> obj) => Resize?.Invoke(this, new WindowSizeEventArgs(obj.X, obj.Y));
 
-        private void GLWindow_Render(double obj) => RenderFrame?.Invoke(this, new FrameTimeEventArgs(obj));
+        /// <summary>
+        /// Invoked once a frame and invokes the <see cref="RenderFrame"/> event.
+        /// </summary>
+        /// <param name="frameTime">The current frame time in seconds.</param>
+        private void GLWindow_Render(double frameTime) => RenderFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
 
-        private List<double> frameTimes = new List<double>();
-
-        private void GLWindow_Update(double obj)
-        {
-            this.frameTimes.Add(obj);
-
-            if (this.frameTimes.Count >= 10000)
-            {
-                this.frameTimes.RemoveRange(0, 5);
-                //0.033422924932466382
-                var average = this.frameTimes.Average();
-
-                Debugger.Break();
-            }
-
-            UpdateFrame?.Invoke(this, new FrameTimeEventArgs(obj));
-        }
+        /// <summary>
+        /// Invoked once a frame and invokes the <see cref="UpdateFrame"/> event.
+        /// </summary>
+        /// <param name="frameTime">The current frame time in seconds.</param>
+        private void GLWindow_Update(double frameTime) => UpdateFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
     }
 }

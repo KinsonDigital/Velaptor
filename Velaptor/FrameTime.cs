@@ -30,7 +30,7 @@ namespace Velaptor
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (obj == null || !(obj is FrameTime frameTime))
+            if (obj == null || obj is not FrameTime frameTime)
             {
                 return false;
             }

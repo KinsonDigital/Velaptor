@@ -8,11 +8,11 @@ namespace VelaptorTests.OpenGL
     using System.Numerics;
     using System.Runtime.InteropServices;
     using Moq;
+    using Silk.NET.GLFW;
     using Velaptor;
     using Velaptor.Hardware;
     using Velaptor.NativeInterop;
     using Velaptor.OpenGL;
-    using Silk.NET.GLFW;
     using Xunit;
 
     /// <summary>

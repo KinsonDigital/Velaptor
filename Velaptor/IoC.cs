@@ -6,11 +6,11 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
-#pragma warning disable SA1116 // Split parameters should start on line after declaration
 namespace Velaptor
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
+    using SimpleInjector;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.Input;
@@ -19,7 +19,6 @@ namespace Velaptor
     using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.Services;
-    using SimpleInjector;
 
     /// <summary>
     /// Provides dependency injection for the application.
@@ -91,7 +90,7 @@ namespace Velaptor
 
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal : true);
+            IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
         }
 
         /// <summary>

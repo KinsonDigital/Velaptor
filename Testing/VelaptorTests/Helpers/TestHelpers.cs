@@ -9,10 +9,10 @@ namespace VelaptorTests.Helpers
     using System.IO;
     using System.Reflection;
     using System.Runtime.CompilerServices;
-    using Velaptor.Graphics;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
+    using Velaptor.Graphics;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
 

@@ -15,8 +15,8 @@ namespace Velaptor.UI
     /// </summary>
     public class Button : IControl
     {
+        private readonly bool isMouseDown;
         private Rectangle rect;
-        private bool isMouseDown;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Button"/> class.
