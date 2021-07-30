@@ -7,9 +7,11 @@ env:
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ release/my-t*t-rel*se ]
   pull_request:
     types: [ synchronize ]
-    branches: [ 'release/v[0-9].[0-9].[0-9]' ]
+    branches: [ release/v*.*.* ]
 
 jobs:
   Library_Build_And_Test:
