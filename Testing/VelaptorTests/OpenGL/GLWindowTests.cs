@@ -729,7 +729,7 @@ namespace VelaptorTests.OpenGL
         /// <param name="height">The height of the window.</param>
         /// <returns>The instance to test.</returns>
         private GLWindow CreateWindow(int width = 10, int height = 20)
-            => new(
+            => new (
                 width,
                 height,
                 this.mockGLInvoker.Object,
