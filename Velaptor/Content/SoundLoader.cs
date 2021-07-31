@@ -6,6 +6,7 @@ namespace Velaptor.Content
 {
     using System;
     using System.Collections.Concurrent;
+    using Velaptor.Factories;
 
     /// <summary>
     /// Loads sound content.
@@ -14,13 +15,18 @@ namespace Velaptor.Content
     {
         private readonly ConcurrentDictionary<string, ISound> sounds = new ();
         private readonly IPathResolver soundPathResolver;
+        private readonly ISoundFactory soundFactory;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
-        public SoundLoader(IPathResolver soundPathResolver) => this.soundPathResolver = soundPathResolver;
+        public SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory)
+        {
+            this.soundPathResolver = soundPathResolver;
+            this.soundFactory = soundFactory;
+        }
 
         /// <summary>
         /// Loads a sound with the given name.
@@ -41,7 +47,7 @@ namespace Velaptor.Content
 
             return this.sounds.GetOrAdd(filePath, (key) =>
             {
-                return new Sound(filePath);
+                return this.soundFactory.CreateSound(filePath);
             });
         }
 

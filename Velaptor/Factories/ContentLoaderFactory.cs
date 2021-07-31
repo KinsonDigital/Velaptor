@@ -94,8 +94,9 @@ namespace Velaptor.Factories
             if (soundLoader is null)
             {
                 var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
+                var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
 
-                soundLoader = new SoundLoader(soundPathResolver);
+                soundLoader = new SoundLoader(soundPathResolver, soundFactory);
             }
 
             return soundLoader;

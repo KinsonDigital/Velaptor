@@ -12,6 +12,7 @@ namespace Velaptor
     using System.IO.Abstractions;
     using SimpleInjector;
     using Velaptor.Content;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.NativeInterop;
@@ -64,6 +65,8 @@ namespace Velaptor
 
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
+
+            IoCContainer.Register<ISoundFactory, SoundFactory>();
 
             IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
             IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
