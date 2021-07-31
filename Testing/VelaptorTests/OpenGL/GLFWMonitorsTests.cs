@@ -11,7 +11,6 @@ namespace VelaptorTests.OpenGL
     using Silk.NET.GLFW;
     using Velaptor;
     using Velaptor.Hardware;
-    using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.OpenGL;
     using Xunit;

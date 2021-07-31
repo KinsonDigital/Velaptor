@@ -8,7 +8,6 @@ namespace Velaptor.OpenGL
     using System.Collections.Generic;
     using System.Numerics;
     using Velaptor.Hardware;
-    using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.GLFW;
 
     /// <summary>

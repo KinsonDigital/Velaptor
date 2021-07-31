@@ -13,7 +13,6 @@ namespace Velaptor.OpenGL
     using System.Threading.Tasks;
     using Velaptor.Content;
     using Velaptor.Input;
-    using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
