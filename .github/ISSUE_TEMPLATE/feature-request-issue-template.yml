@@ -1,6 +1,6 @@
 name: ✨ Feature Request
 description: File a feature request
-title: "[Feature] <title>"
+title: "[Feature] - <title>"
 labels: [feature-request]
 body:
 - type: checkboxes
