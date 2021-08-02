@@ -1,16 +1,17 @@
-name: Build/Test/Release (Preview)
+name: Build/Test/Release (Development)
 
 env:
   PROJECT_NAME: Velaptor
   BUILD_CONFIG: Debug
-  RELEASE_NAME: Preview
+  RELEASE_NAME: QA
   NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
   ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
+  TESTING_APP_POSTFIX: .qa.${{ github.sha }}
 
 on:
   workflow_dispatch:
   push:
-    branches: [ release/v*.*.* ]
+    branches: [ develop ]
     paths-ignore:
       - ".github/**"
       - 'Documentation/**'
@@ -25,7 +26,7 @@ jobs:
   Library_Build_And_Test:
     name: Build & Test (Library)
     runs-on: windows-latest
-    environment: preview
+    environment: qa
     steps:
     - uses: actions/checkout@v2
 
@@ -56,31 +57,10 @@ jobs:
         path: ${{ github.workspace }}/${{ env.PROJECT_NAME }}/bin/${{ env.BUILD_CONFIG }}/net${{ env.ARTIFACT_FOLDER_NAME }}
         error: There was an issue uploading the build artifact
 
-    - name: Setup Nuget
-      uses: NuGet/setup-nuget@v1.0.5
-
-    - name: Create Nuget Package
-      run: dotnet pack "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -o "${{ github.workspace }}" -c ${{ env.BUILD_CONFIG }}
-
-    - name: Get Version From Project File
-      id: get-version
-      uses: KinsonDigital/vget@v0.3.0
-      with:
-        repo-owner-and-name: '${{ github.repository }}'
-        branch: '${{ github.ref }}'
-        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
-        user-name: 'kinsondigital@gmail.com'
-        password: ${{ secrets.REPO_PASSWORD }}
-        contains: '-preview.'
-    
-    # DISABLE ME FOR WORKFLOW TESTING
-    - name: Publish Nuget Package
-      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.get-version.outputs.version }}.nupkg" --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
-
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)
     runs-on: windows-latest
-    environment: preview
+    environment: qa
     steps:
     - uses: actions/checkout@v2
 
@@ -97,14 +77,13 @@ jobs:
 
     - name: Get Version From Project File
       id: get-version
-      uses: KinsonDigital/vget@v0.3.0
+      uses: KinsonDigital/vget@v0.2
       with:
         repo-owner-and-name: '${{ github.repository }}'
         branch: '${{ github.ref }}'
         relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
         user-name: 'kinsondigital@gmail.com'
         password: ${{ secrets.REPO_PASSWORD }}
-        contains: '-preview.'
 
     - name: Zip Release
       run: Compress-Archive -Path "./${{ env.RELEASE_NAME }}Release" -DestinationPath "${{ github.workspace }}/${{ env.RELEASE_NAME }}Release.zip"
@@ -112,8 +91,6 @@ jobs:
     - name: Release Testing Application
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v${{ steps.get-version.outputs.version }}
-        body: |
-          ${{ env.RELEASE_NAME }} Release [v${{ steps.get-version.outputs.version }}](https://github.com/KinsonDigital/Velaptor/tree/v${{ steps.get-version.outputs.version }})
-          Execute the testing application in the **_${{ env.RELEASE_NAME }}Release.zip_** file to perform manual testing.
+        tag_name: v${{ steps.get-version.outputs.version }}${{ env.TESTING_APP_POSTFIX }}
+        body: ${{ env.RELEASE_NAME }} Release [v${{ steps.get-version.outputs.version }}${{ env.TESTING_APP_POSTFIX }}](https://github.com/KinsonDigital/Velaptor/tree/v${{ steps.get-version.outputs.version }}${{ env.TESTING_APP_POSTFIX }})
         files: ${{ github.workspace }}/${{ env.RELEASE_NAME }}Release.zip
