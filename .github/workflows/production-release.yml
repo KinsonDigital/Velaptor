@@ -56,6 +56,26 @@ jobs:
         path: ${{ github.workspace }}/${{ env.PROJECT_NAME }}/bin/${{ env.BUILD_CONFIG }}/net${{ env.ARTIFACT_FOLDER_NAME }}
         error: There was an issue uploading the build artifact
 
+    - name: Setup Nuget
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Create Nuget Package
+      run: dotnet pack "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -o "${{ github.workspace }}" -c ${{ env.BUILD_CONFIG }}
+
+    - name: Get Version From Project File
+      id: get-version
+      uses: KinsonDigital/vget@v0.3.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        user-name: 'kinsondigital@gmail.com'
+        password: ${{ secrets.REPO_PASSWORD }}
+    
+    # DISABLE ME FOR WORKFLOW TESTING
+    - name: Publish Nuget Package
+      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.get-version.outputs.version }}.nupkg" --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
+
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)
     runs-on: windows-latest
@@ -76,7 +96,7 @@ jobs:
 
     - name: Get Version From Project File
       id: get-version
-      uses: KinsonDigital/vget@v0.2
+      uses: KinsonDigital/vget@v0.3.0
       with:
         repo-owner-and-name: '${{ github.repository }}'
         branch: '${{ github.ref }}'
