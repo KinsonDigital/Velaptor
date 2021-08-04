@@ -35,7 +35,7 @@ Loaded content such as images and sounds are cached for reuse and performance re
 <h2 style="font-weight:bold" align="center">Maintainers</h2>
 
 We currently have the following maintainers:
-* [Calvin Wilkinson](https://github.com/Perksey) [<img src="https://about.twitter.com/etc/designs/about2-twitter/public/img/favicon.ico" alt="Follow Calvin Wilkinson on Twitter" width="16" />](https://twitter.com/KDCoder)
+* [Calvin Wilkinson](https://twitter.com/KDCoder) [<img src="https://about.twitter.com/etc/designs/about2-twitter/public/img/favicon.ico" alt="Follow Calvin Wilkinson on Twitter" width="16" />](https://twitter.com/KDCoder)
 
 <h2 style="font-weight:bold" align="center">Building And Dev Environment Setup</h2>
 
