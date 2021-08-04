@@ -1,8 +1,16 @@
 name: ✨ Feature Request
 description: File a feature request
-title: "[Feature] - <title>"
+title: "✨Feature - <title>"
 labels: [enhancement]
 body:
+- type: checkboxes
+  attributes:
+    label: I have done the items below . . .
+    description: Please make sure to do the items below.
+    options:
+    - label: I have updated the title by replacing the '**_<title_**>' section.
+      required: true
+
 - type: checkboxes
   attributes:
     label: Is there an existing feature request that has already been created?

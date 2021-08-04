@@ -1,8 +1,16 @@
-name: 🐞 Bug
+name: 🐛 Bug
 description: File a bug
-title: "[Bug] - <title>"
+title: "🐛Bug - <title>"
 labels: [bug, TRIAGE]
 body:
+- type: checkboxes
+  attributes:
+    label: I have done the items below . . .
+    description: Please make sure to do the items below.
+    options:
+    - label: I have updated the title by replacing the '**_<title_**>' section.
+      required: true
+
 - type: checkboxes
   attributes:
     label: Is there an existing issue for this?

@@ -1,13 +1,13 @@
 name: 🚧 Project Item
 description: Create an issue for a project.  (Mostly for project maintainers)
-title: "[Project Item] - <title>"
+title: "🚧 Project Item - <title>"
 body:
 - type: checkboxes
   attributes:
-    label: Title Updated
-    description: Please make sure to update the issue title.
+    label: I have done the items below . . .
+    description: Please make sure to do the items below.
     options:
-    - label: I have updated the title by replacing the '\<title\>' section.
+    - label: I have updated the title by replacing the '**_<title_**>' section.
       required: true
 
 - type: textarea
