@@ -67,9 +67,9 @@ body:
     placeholder: |
       No Related Work Items Added
       Example:
-        #10 Create new class
-        #20 Add unit tests to service
-        #30 Cleanup code in UI
+        - #10 Create new class
+        - #20 Add unit tests to service
+        - #30 Cleanup code in UI
     description: |
       A list of issues that are related to this issue but that is not a dependency
       Use the '#\<number\>' syntax to link to an issue
