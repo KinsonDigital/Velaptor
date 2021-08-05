@@ -6,7 +6,6 @@ env:
   RELEASE_NAME: QA
   NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
   ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
-  TESTING_APP_POSTFIX: .qa.${{ github.sha }}
 
 on:
   workflow_dispatch:
@@ -75,22 +74,27 @@ jobs:
     - name: Build
       run: dotnet publish "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" -c ${{ env.BUILD_CONFIG }} -o ./${{ env.RELEASE_NAME }}Release --no-restore
 
-    - name: Get Version From Project File
-      id: get-version
-      uses: KinsonDigital/vget@v0.2
+    - name: Build QA Version
+      uses: actions/github-script@v4
+      id: qa-version
       with:
-        repo-owner-and-name: '${{ github.repository }}'
-        branch: '${{ github.ref }}'
-        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
-        user-name: 'kinsondigital@gmail.com'
-        password: ${{ secrets.REPO_PASSWORD }}
+        script: |
+          let commitHash = '${{ github.sha }}';
+          let day = new Date().getDate();
+          let month = new Date().getMonth();
+          let year = new Date().getFullYear();
+          return `${{ env.RELEASE_NAME }}.${year}.${month + 1}.${day}.${commitHash.slice(-5)}`;
+        result-encoding: string
 
     - name: Zip Release
-      run: Compress-Archive -Path "./${{ env.RELEASE_NAME }}Release" -DestinationPath "${{ github.workspace }}/${{ env.RELEASE_NAME }}Release.zip"
+      run: Compress-Archive -Path "./${{ env.RELEASE_NAME }}Release" -DestinationPath "${{ github.workspace }}/${{ env.PROJECT_NAME }}-${{ steps.qa-version.outputs.result }}.zip"
 
     - name: Release Testing Application
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v${{ steps.get-version.outputs.version }}${{ env.TESTING_APP_POSTFIX }}
-        body: ${{ env.RELEASE_NAME }} Release [v${{ steps.get-version.outputs.version }}${{ env.TESTING_APP_POSTFIX }}](https://github.com/KinsonDigital/Velaptor/tree/v${{ steps.get-version.outputs.version }}${{ env.TESTING_APP_POSTFIX }})
-        files: ${{ github.workspace }}/${{ env.RELEASE_NAME }}Release.zip
+        tag_name: ${{ steps.qa-version.outputs.result }}
+        body: |
+          ${{ env.PROJECT_NAME }} - ${{ env.RELEASE_NAME }} Release [${{ steps.qa-version.outputs.result }}](https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/tree/${{ steps.qa-version.outputs.result }})
+          Execute the testing application in the **_${{ env.PROJECT_NAME }}-${{ steps.qa-version.outputs.result }}.zip_** file to perform manual testing.
+        files: ${{ github.workspace }}/${{ env.PROJECT_NAME }}-${{ steps.qa-version.outputs.result }}.zip
+        prerelease: true
