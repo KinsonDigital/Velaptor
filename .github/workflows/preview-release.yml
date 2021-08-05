@@ -107,13 +107,14 @@ jobs:
         contains: '-preview.'
 
     - name: Zip Release
-      run: Compress-Archive -Path "./${{ env.RELEASE_NAME }}Release" -DestinationPath "${{ github.workspace }}/${{ env.RELEASE_NAME }}Release.zip"
+      run: Compress-Archive -Path "./${{ env.RELEASE_NAME }}Release" -DestinationPath "${{ github.workspace }}/${{ env.PROJECT_NAME }}-v${{ steps.get-version.outputs.version }}.zip"
 
     - name: Release Testing Application
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v${{ steps.get-version.outputs.version }}
         body: |
-          ${{ env.RELEASE_NAME }} Release [v${{ steps.get-version.outputs.version }}](https://github.com/KinsonDigital/Velaptor/tree/v${{ steps.get-version.outputs.version }})
-          Execute the testing application in the **_${{ env.RELEASE_NAME }}Release.zip_** file to perform manual testing.
+          ${{ env.PROJECT_NAME }} - ${{ env.RELEASE_NAME }} Release [v${{ steps.get-version.outputs.version }}](https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/tree/v${{ steps.get-version.outputs.version }})
+          Execute the testing application in the **_${{ env.PROJECT_NAME }}-v${{ steps.get-version.outputs.version }}.zip_** file to perform manual testing.
         files: ${{ github.workspace }}/${{ env.RELEASE_NAME }}Release.zip
+        prerelease: true
