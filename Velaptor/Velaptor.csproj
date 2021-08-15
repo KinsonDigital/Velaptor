@@ -6,17 +6,17 @@
     <LangVersion>9.0</LangVersion>
 
     <!--Update this for production and preview releases-->
-    <Version>0.29.0-preview.2</Version>
+    <Version>1.0.0-preview.1</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>0.29.0-preview.2</FileVersion>
+    <FileVersion>1.0.0-preview.1</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
       Visual Studio does not allow the preview syntax for this tag
       Example: v1.2.3.preview.1 is not aloud
     -->
-    <AssemblyVersion>0.28.0</AssemblyVersion>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PackageId>KinsonDigital.Velaptor.Windows</PackageId>
