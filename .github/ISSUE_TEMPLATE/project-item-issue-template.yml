@@ -1,6 +1,6 @@
 name: 🚧 Project Item
 description: Create an issue for a project.  (Mostly for project maintainers)
-title: "🚧 Project Item - <title>"
+title: "🚧<title>"
 body:
 - type: checkboxes
   attributes:
@@ -12,9 +12,7 @@ body:
 
 - type: textarea
   attributes:
-    label: |
-      ---
-      Description
+    label: Description
     description: A description of feature/change in the user's perspective
   validations:
     required: true
@@ -27,9 +25,9 @@ body:
       Add more items as needed . . .
     value: |
       **This issue is finished when:**
-      1. [ ] Code documentation added if required
-      2. [ ] Unit tests added
-      3. [ ] All unit tests pass
+      - [ ] Code documentation added if required
+      - [ ] Unit tests added
+      - [ ] All unit tests pass
   validations:
     required: true
     render: markdown
@@ -40,7 +38,7 @@ body:
     description: Complete the following items before asking for a PR review
     options:
     - label: Draft pull request created and linked to this issue
-    - label: Priority label added to issue (prio-low, prio-medium, or prio-high)
+    - label: Priority label added to issue (low priority, medium priority, or high priority)
     - label: Issue linked to the proper project
     - label: Issue linked to proper milestone
     - label: Unit tests have been written and/or adjusted for code additions or changes
