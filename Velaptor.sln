@@ -27,11 +27,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{E248AD89-D6AB-4183-88F1-133875647706}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{CE2DE8AE-0037-4159-AE95-14D261BF9122}"
-ProjectSection(SolutionItems) = preProject
-	.github\workflows\preview-release.yml = .github\workflows\preview-release.yml
-	.github\workflows\production-release.yml = .github\workflows\production-release.yml
-	.github\workflows\qa-release.yml = .github\workflows\qa-release.yml
-EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "PullRequestTemplates", "{6653D425-BD0A-42A4-A06C-715674139E0F}"
 ProjectSection(SolutionItems) = preProject
