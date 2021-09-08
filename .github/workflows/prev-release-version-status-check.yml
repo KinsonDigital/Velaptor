@@ -26,7 +26,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Validate Preview Version
-      uses: KinsonDigital/VersionValidator@v1.0.0-preview.1
+      uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
       with:
         nuget-package-name: "KinsonDigital.Velaptor"
         version: "${{ steps.get-version.outputs.version }}"
