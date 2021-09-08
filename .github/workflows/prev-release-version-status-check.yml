@@ -1,0 +1,35 @@
+name: Preview Version Status Check
+
+env:
+  PROJECT_NAME: Velaptor
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ synchronize ]
+    branches: [ release/v*.*.* ]
+
+jobs:
+  Prev_Version_Status_Check:
+    name: Preview Version Status Check
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Version From Project File
+      id: get-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Validate Preview Version
+      uses: KinsonDigital/VersionValidator@v1.0.0-preview.1
+      with:
+        nuget-package-name: "KinsonDigital.Velaptor"
+        version: "${{ steps.get-version.outputs.version }}"
+        check-nuget: "true"
+        fail-if-nuget-version-exists: "true"
+        
