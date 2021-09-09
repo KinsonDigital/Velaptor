@@ -37,4 +37,6 @@ jobs:
       run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
     - name: Build
-      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -c ${{ env.BUILD_CONFIG }} --no-restore
+      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
+        -c ${{ env.BUILD_CONFIG }} `
+        --no-restore

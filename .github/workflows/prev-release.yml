@@ -63,10 +63,15 @@ jobs:
       run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
     - name: Build
-      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -c ${{ env.BUILD_CONFIG }} --no-restore
+      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
+        -c ${{ env.BUILD_CONFIG }} `
+        --no-restore
 
     - name: Execute Unit Tests
-      run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" -c ${{ env.BUILD_CONFIG }} --collect:"XPlat Code Coverage" --no-restore
+      run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" `
+        -c ${{ env.BUILD_CONFIG }} `
+        --collect:"XPlat Code Coverage" `
+        --no-restore
 
     - name: Publish Code Coverage Results
       uses: codecov/codecov-action@v1.5.2
@@ -85,7 +90,9 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.5
 
     - name: Create Nuget Package
-      run: dotnet pack "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -o "${{ github.workspace }}" -c ${{ env.BUILD_CONFIG }}
+      run: dotnet pack "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
+        -o "${{ github.workspace }}" `
+        -c ${{ env.BUILD_CONFIG }}
 
     - name: Get Version From Project File
       id: prev-version
@@ -97,7 +104,9 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Publish Nuget Package
-      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.prev-version.outputs.version }}.nupkg" --api-key ${{ secrets.NUGET_ORG_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.prev-version.outputs.version }}.nupkg" `
+        --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
+        --source https://api.nuget.org/v3/index.json
 
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)
