@@ -13,7 +13,7 @@ jobs:
     name: Preview Unit Testing Status Check
     runs-on: windows-latest
     env:
-      MY_VAR: MyValue
+      MYVAR: MyValue
     steps:
     - uses: actions/checkout@v2
 
@@ -21,16 +21,16 @@ jobs:
     # github.head_ref is the source branch of the branch being merged into the target
 
     - name: Env Var Before Change
-      run: echo "MY_VAR Value - ${{ env.MY_VAR }}"
+      run: echo "MYVAR Value - ${{ env.MYVAR }}"
 
     - name: List All Environment Variables
       run: "[System.Environment]::GetEnvironmentVariables()"
 
     - name: Update Variable Value
-      run: echo "MY_VAR=NewValue" >> $GITHUB_MY_VAR
+      run: echo "MYVAR=NewValue" >> $GITHUB_MYVAR
 
     - name: Env Var After Change
-      run: echo "MY_VAR Value - ${{ env.MY_VAR }}"
+      run: echo "MYVAR Value - ${{ env.MYVAR }}"
 # --------------------------------------------------------------------------------
 # PULL REQUEST BRANCH TESTING
 
