@@ -1,7 +1,11 @@
 name: 🧪 Workflow Testing 🧪
 
 env:
-  MY_VAR: OriginalValue
+  if: ${{ github.ref == 'preview/v1.0.0-preview.1' }}
+  MY_VAR: IsPreview
+
+  if: ${{ github.ref != 'preview/v1.0.0-preview.1' }}
+  MY_VAR: IsNotPreview
 
 on:
   workflow_dispatch:
@@ -14,5 +18,8 @@ jobs:
     runs-on: windows-latest
     # environment: preview # TODO: Test this with variable values and if expressions
     steps:
+    - name: Print Branch Name
+      run: echo "Branch - ${{ github.ref }}"
+
     - name: Get Version From Project File
       run: echo "${{ env.MY_VAR }}"
