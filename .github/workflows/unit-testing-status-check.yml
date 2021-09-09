@@ -12,8 +12,8 @@ jobs:
   If_Expression_Testing:
     name: Preview Unit Testing Status Check
     runs-on: windows-latest
-    env:
-      MY_VAR: MyValue
+    # env:
+    #   MY_VAR: MyValue
     steps:
     - uses: actions/checkout@v2
 
