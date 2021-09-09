@@ -16,7 +16,7 @@ jobs:
 
     - name: Set Env Variable
       run: |
-        if ( "${{ github.ref }}" -eq "preview/v.1.0.0-preview.1") {
+        if ( "${{ github.ref }}" -match "preview/v.1.0.0-preview.1$") {
             echo "MY_VAR=It Is Preview" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
         } else {
             echo "MY_VAR=It Is Not Preview" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
