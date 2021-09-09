@@ -24,7 +24,7 @@ jobs:
       run: echo "MY_VAR Value - ${{ env.MY_VAR }}"
 
     - name: List All Environment Variables
-      run: echo [System.Environment]::GetEnvironmentVariables()
+      run: [System.Environment]::GetEnvironmentVariables()
 
     - name: Update Variable Value
       run: echo "MY_VAR=NewValue" >> $GITHUB_MY_VAR
