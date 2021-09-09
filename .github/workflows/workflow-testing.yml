@@ -2,8 +2,8 @@ name: 🧪 Workflow Testing 🧪
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ preview/v1.0.0-preview.1 ]
+  # push:
+  #   branches: [ preview/v1.0.0-preview.1 ]
 
 jobs:
   Test_Job:
