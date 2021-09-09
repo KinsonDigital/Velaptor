@@ -2,7 +2,6 @@ name: Preview Build Status Check
 
 env:
   PROJECT_NAME: Velaptor
-  BUILD_CONFIG: Debug
   NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
   ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
 
@@ -10,7 +9,7 @@ on:
   workflow_dispatch:
   pull_request:
     types: [ synchronize ]
-    branches: [ release/v*.*.* ]
+    branches: [ release/v*.*.*, develop, master ]
     paths-ignore:
       - ".github/**"
       - 'Documentation/**'
@@ -36,7 +35,14 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
-    - name: Build
+    - name: Build As Debug
+      if: ${{ github.base_ref != 'master' }}
       run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
-        -c ${{ env.BUILD_CONFIG }} `
+        -c Debug `
         --no-restore
+
+    - name: Build As Release
+      if: ${{ github.base_ref == 'master' }}
+      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
+        -c Release `
+        --no-restore        
