@@ -16,7 +16,8 @@ jobs:
 
     - name: Set Env Variable
       run: |
-        if ( "${{ github.ref }}" -match "preview/v.1.0.0-preview.1$") {
+        # Check if the current branch ends with the the preview branch
+        if ( "${{ github.ref }}" -match "preview/v1.0.0-preview.1$") {
             echo "MY_VAR=It Is Preview" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
         } else {
             echo "MY_VAR=It Is Not Preview" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
