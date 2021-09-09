@@ -19,7 +19,7 @@
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PackageId>KinsonDigital.Velaptor.Windows</PackageId>
+    <PackageId>KinsonDigital.Velaptor</PackageId>
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Velaptor</Product>
