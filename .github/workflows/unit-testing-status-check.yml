@@ -1,50 +1,43 @@
 name: If Expressing Testing
 
-env:
-  PROJECT_NAME: Velaptor
-  NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
-  ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
-
 on:
   workflow_dispatch:
-  pull_request:
-    types: [ synchronize ]
-    branches: [ release/v*.*.* ]
-    paths-ignore:
-      - ".github/**"
-      - 'Documentation/**'
-      - '.editorconfig'
-      - '*.runsettings'
-      - '.gitattributes'
-      - '.gitignore'
-      - '*.md'
-      - '.vscode/**'
+  push:
+    branches: [ his-branch ]
+  # pull_request:
+  #   types: [ synchronize ]
+  #   branches: [ develop ]
 
 jobs:
   If_Expression_Testing:
     name: Preview Unit Testing Status Check
     runs-on: windows-latest
+    env:
+      MY_VAR: MyValue
     steps:
     - uses: actions/checkout@v2
 
-    - name: If His Branch
-      if: ${{ github.ref == 'ref/heads/his-branch' }}
-      run: echo "THIS IS HIS BRANCH!!"
+    # github.base_ref is the target branch that the pull request is going to
+    # github.head_ref is the source branch of the branch being merged into the target
 
-    - name: If Her Branch
-      if: ${{ github.ref == 'ref/heads/her-branch' }}
-      run: echo "THIS IS HER BRANCH!!"
+    - name: Env Var Before Change
+      run: echo "MY_VAR Value - ${{ env.MY_VAR }}"
 
-    # - name: Setup .NET SDK
-    #   uses: actions/setup-dotnet@v1
-    #   with:
-    #     dotnet-version: ${{ env.NET_SDK_VERSION }}
+    - name:
+      run: echo "MY_VAR=NewValue" >> $GITHUB_ENV"
 
-    # - name: Restore Dependencies
-    #   run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
+    - name: Env Var After Change
+      run: echo "MY_VAR Value - ${{ env.MY_VAR }}"
+# --------------------------------------------------------------------------------
+# PULL REQUEST BRANCH TESTING
 
-    # - name: Execute Unit Tests
-    #   run: |
-    #     dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" `
-    #       -c ${{ env.BUILD_CONFIG }} `
-    #       --no-restore
+    # - name: Branches
+    #   run: echo "Ref - ${{ github.ref }} | Head Ref - ${{ github.head_ref }} | Base Ref - ${{ github.base_ref }}"
+
+    # - name: If His Branch
+    #   if: ${{ github.base_ref == 'develop' }}
+    #   run: echo "THIS IS HIS BRANCH!!!"
+
+    # - name: If Her Branch
+    #   if: ${{ github.base_ref == 'master' }}
+    #   run: echo "THIS IS HER BRANCH!!!"
