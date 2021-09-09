@@ -1,15 +1,18 @@
-name: Preview Build Status Check
+name: 🏗Build Status Check
 
 env:
   PROJECT_NAME: Velaptor
-  NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
-  ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
+  NET_SDK_VERSION: 5.0.x
 
 on:
   workflow_dispatch:
   pull_request:
     types: [ synchronize ]
-    branches: [ release/v*.*.*, develop, master ]
+    branches: [
+      release/v*.*.*, # Debug Build
+      develop, # Debug Build
+      master # Release Build
+    ]
     paths-ignore:
       - ".github/**"
       - 'Documentation/**'
@@ -21,11 +24,21 @@ on:
       - '.vscode/**'
 
 jobs:
-  Prev_Build_Status_Check:
-    name: Preview Build Status Check
+  Build_Status_Check:
+    name: Build Status Check
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+
+    - name: Set Build Config Variable
+      run: |
+        # If the destination branch that the pull request is merging into is master, do a release build
+        if ( "${{ github.base_ref }}" -eq "master") {
+            # Save the environment variable
+            echo "BUILD_CONFIG=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+        } else { # Any other branch than master, do a debug build
+            echo "BUILD_CONFIG=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+        }
 
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
@@ -35,14 +48,8 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
-    - name: Build As Debug
+    - name: Build Project
       if: ${{ github.base_ref != 'master' }}
       run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
-        -c Debug `
+        -c ${{ env.BUILD_CONFIG }} `
         --no-restore
-
-    - name: Build As Release
-      if: ${{ github.base_ref == 'master' }}
-      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
-        -c Release `
-        --no-restore        
