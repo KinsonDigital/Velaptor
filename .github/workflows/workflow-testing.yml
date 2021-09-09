@@ -1,9 +1,5 @@
 name: 🧪 Workflow Testing 🧪
 
-env:
-  if: ${{ github.ref == 'preview/v1.0.0-preview.1' }}
-  if: ${{ github.ref != 'preview/v1.0.0-preview.1' }}
-
 on:
   workflow_dispatch:
   push:
