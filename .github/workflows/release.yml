@@ -67,7 +67,7 @@ jobs:
                 echo "version incorrect!!"
                 exit 1 # Fail
             }
-        }      
+        }
 
     - name: Validate Version
       uses: KinsonDigital/VersionValidator@v1.0.0-preview.2

@@ -1,4 +1,4 @@
-name: 🧪Unit Testing Status Check
+name: ✔Unit Testing Status Check
 
 env:
   PROJECT_NAME: Velaptor

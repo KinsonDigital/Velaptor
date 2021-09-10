@@ -1,4 +1,4 @@
-name: Tag Does Not Exit Status Check
+name: ✔Tag Does Not Exit Status Check
 
 env:
   PROJECT_NAME: Velaptor

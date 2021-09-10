@@ -1,4 +1,4 @@
-name: 🏗Build Status Check
+name: ✔Build Status Check
 
 env:
   PROJECT_NAME: Velaptor
