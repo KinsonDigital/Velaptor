@@ -44,6 +44,7 @@ jobs:
       # Refer to the 'Validate Version Type' step in the 'release.yml' file
       # Test 1
       # Test 2
+      # Test 3
     - name: Validate Version Type
       run: |
         $projFileVersion = "${{ steps.proj-file-version.outputs.version }}";
