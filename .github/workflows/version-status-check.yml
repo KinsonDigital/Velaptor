@@ -1,0 +1,76 @@
+name: ✔Version Status Check
+
+env:
+  PROJECT_NAME: Velaptor
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ synchronize ]
+    branches: [
+      develop, # QA Releases
+      release/v*.*.*, # Preview Releases
+      master # Production Releases
+    ]
+
+# TODO: After testing, replace all references to 'github.ref' with 'github.base_ref'
+# The 'github.base_ref' env variable is the target branch that the pull request is merging into
+
+jobs:
+  Prev_Version_Status_Check:
+    name: Preview Version Status Check
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Validate Preview Version
+      uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
+      with:
+        nuget-package-name: "KinsonDigital.Velaptor"
+        version: "${{ steps.proj-file-version.outputs.version }}"
+        check-nuget: "true"
+        fail-if-nuget-version-exists: "true"
+        
+# TODO: Verify the type of version depending on the destination/target branch
+      # Refer to the 'Validate Version Type' step in the 'release.yml' file
+      # Test 1
+      # Test 2
+    - name: Validate Version Type
+      run: |
+        $projFileVersion = "${{ steps.proj-file-version.outputs.version }}";
+
+        # If the branch is develop or master
+        if ("${{ github.base_ref }}".EndsWith("develop") -or "${{ github.base_ref}}".EndsWith("master")) 
+        {
+            # If the version is a preview type, fail
+            if ($projFileVersion.Contains("-preview."))
+            {
+                $firstSection = $projFileVersion.Split("-")[0];
+
+                echo "The project file version must not be a preview type of version"
+                echo "for the develop (QA Release) or master (Production Release) branches.";
+                echo "\nDid you mean '$firstSection'?";
+
+                exit 1 # Fail
+            }
+        }
+        else # If the branch is release or manually ran under a different branch
+        {
+            # If the project version does not contain preview, fail
+            if ($projFileVersion.Contains("-preview.") -eq $false)
+            {
+                echo "The project file version must be a preview version.";
+                echo "Example: 1.2.3-preview.4"
+
+                exit 1 # Fail
+            }
+        }
