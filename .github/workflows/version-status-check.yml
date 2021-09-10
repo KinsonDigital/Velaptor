@@ -60,7 +60,7 @@ jobs:
 
                 echo "The project file version must not be a preview type of version"
                 echo "for the develop (QA Release) or master (Production Release) branches.";
-                echo "\nDid you mean '$firstSection'?";
+                echo "Did you mean '$firstSection'?";
 
                 exit 1 # Fail
             }
