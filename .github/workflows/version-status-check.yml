@@ -13,9 +13,6 @@ on:
       master # Production Releases
     ]
 
-# TODO: After testing, replace all references to 'github.ref' with 'github.base_ref'
-# The 'github.base_ref' env variable is the target branch that the pull request is merging into
-
 jobs:
   Prev_Version_Status_Check:
     name: Preview Version Status Check
