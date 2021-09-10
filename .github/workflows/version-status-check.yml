@@ -12,6 +12,15 @@ on:
       release/v*.*.*, # Preview Releases
       master # Production Releases
     ]
+    paths-ignore:
+      - ".github/**"
+      - 'Documentation/**'
+      - '.editorconfig'
+      - '*.runsettings'
+      - '.gitattributes'
+      - '.gitignore'
+      - '*.md'
+      - '.vscode/**'
 
 jobs:
   Prev_Version_Status_Check:
@@ -37,13 +46,6 @@ jobs:
         check-nuget: "true"
         fail-if-nuget-version-exists: "true"
         
-# TODO: Verify the type of version depending on the destination/target branch
-      # Refer to the 'Validate Version Type' step in the 'release.yml' file
-      # Test 1
-      # Test 2
-      # Test 3
-      # Test 4
-      # Test 
     - name: Validate Version Type
       run: |
         $projFileVersion = "${{ steps.proj-file-version.outputs.version }}";

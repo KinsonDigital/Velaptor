@@ -5,8 +5,6 @@ env:
   NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
   ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
   
-  # TODO: Setup an environment for each job
-
 on:
   workflow_dispatch:
   push:
@@ -161,11 +159,10 @@ jobs:
         relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
         github-token: ${{ secrets.GITHUB_TOKEN }}
     
-    # TODO: Re-enable after testing!!
-    # - name: Publish Nuget Package
-    #   run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
-    #     --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
-    #     --source https://api.nuget.org/v3/index.json
+    - name: Publish Nuget Package
+      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
+        --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
+        --source https://api.nuget.org/v3/index.json
 
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)

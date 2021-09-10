@@ -9,9 +9,9 @@ on:
   pull_request:
     types: [ synchronize ]
     branches: [
-      release/v*.*.*, # Debug Build
-      develop, # Debug Build
-      master # Release Build
+      develop, # QA Releases
+      release/v*.*.*, # Preview Releases
+      master # Production Releases
     ]
     paths-ignore:
       - ".github/**"
