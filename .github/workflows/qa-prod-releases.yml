@@ -6,11 +6,9 @@ env:
   ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
   
 on:
-  workflow_dispatch:
   push:
     branches: [
       develop, # QA Releases
-      release/v*.*.*, # Preview Releases
       master # Production Releases
     ]
     paths-ignore:
@@ -38,34 +36,6 @@ jobs:
         branch: '${{ github.ref }}'
         relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
         github-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Validate Version Type
-      run: |
-        $projFileVersion = "${{ steps.proj-file-version.outputs.version }}";
-
-        # If the branch is develop or master
-        if ("${{ github.ref }}".EndsWith("develop") -or "${{ github.ref}}".EndsWith("master")) 
-        {
-            # If the version is a preview type, fail
-            if ($projFileVersion.Contains("-preview."))
-            {
-                $firstSection = $projFileVersion.Split("-")[0];
-
-                echo "The version must not be a preview version type for the develop or master branches.";
-                echo "Did you mean '$firstSection'?";
-
-                exit 1 # Fail
-            }
-        }
-        else # If the branch is release or manually ran under a different branch
-        {
-            # If the project version does not contain preview, fail
-            if ($projFileVersion.Contains("-preview.") -eq $false)
-            {
-                echo "version incorrect!!"
-                exit 1 # Fail
-            }
-        }
 
     - name: Validate Version
       uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
@@ -102,8 +72,6 @@ jobs:
       project-file-path: ${{ steps.build_project_file_path.outputs.file-path}}
   
   Build_And_Test_Library:
-    # Only publish library if it is a release (preview) or master (production) branch
-    if: contains(github.ref, 'release/v') || endsWith(github.ref, 'master')
     name: Build & Test (Library)
     runs-on: windows-latest
     needs: [ Validate_Version, Determine_Build_Config, Build_Project_File_Path ]
@@ -191,11 +159,6 @@ jobs:
         {
           echo "::set-output name=release-type::Production";
         }
-        elseif ("${{ github.ref }}".Contains("release/v"))
-        { # If the branch is a release/v* branch, set the release to preview
-          echo "::set-output name=is-prerelease::true";
-          echo "::set-output name=release-type::Preview";
-        }
         elseif ("${{ github.ref }}".EndsWith("develop"))
         { # If the branch is the develop branch, set the release to qa
           echo "::set-output name=release-type::QA";
@@ -209,7 +172,7 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj"
 
-    - name: Perform App Publish
+    - name: Build Testing App
       run: |
         dotnet publish "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" `
           -c ${{ needs.Determine_Build_Config.outputs.build-config }} `
