@@ -91,22 +91,22 @@ jobs:
     outputs:
       build-config: ${{ steps.determine_build_config.outputs.build-config }}
 
-  Build_Project_Path:
+  Build_Project_File_Path:
     name: Build Project Path
     runs-on: windows-latest
     steps:
     - name: Build Project Path
-      id: build_project_path
+      id: build_project_file_path
       run: echo "::set-output name=file-path::${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
     outputs:
-      project-file-path: ${{ steps.build_project_path.outputs.file-path}}
+      project-file-path: ${{ steps.build_project_file_path.outputs.file-path}}
   
   Build_And_Test_Library:
     # Only publish library if it is a release (preview) or master (production) branch
     if: contains(github.ref, 'release/v') || endsWith(github.ref, 'master')
     name: Build & Test (Library)
     runs-on: windows-latest
-    needs: [ Validate_Version, Determine_Build_Config, Build_Project_Path ]
+    needs: [ Validate_Version, Determine_Build_Config, Build_Project_File_Path ]
     steps:
     - uses: actions/checkout@v2
 
@@ -116,10 +116,10 @@ jobs:
         dotnet-version: ${{ env.NET_SDK_VERSION }}
 
     - name: Restore Dependencies
-      run: dotnet restore "${{ needs.Build_Project_Path.outputs.project-file-path }}"
+      run: dotnet restore "${{ needs.Build_Project_File_Path.outputs.project-file-path }}"
 
     - name: Build
-      run: dotnet build "${{ needs.Build_Project_Path.outputs.project-file-path }}" `
+      run: dotnet build "${{ needs.Build_Project_File_Path.outputs.project-file-path }}" `
         -c ${{ needs.Determine_Build_Config.outputs.build-config }} `
         --no-restore
 
@@ -146,7 +146,7 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.5
 
     - name: Create Nuget Package
-      run: dotnet pack "${{ needs.Build_Project_Path.outputs.project-file-path }}" `
+      run: dotnet pack "${{ needs.Build_Project_File_Path.outputs.project-file-path }}" `
         -o "${{ github.workspace }}" `
         -c ${{ needs.Determine_Build_Config.outputs.build-config }}
 
