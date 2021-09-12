@@ -1,4 +1,4 @@
-name: 🚀Release
+name: 🚀QA/Prod Release
 
 env:
   PROJECT_NAME: Velaptor
@@ -6,6 +6,7 @@ env:
   ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
   
 on:
+  workflow_dispatch:
   push:
     branches: [
       develop, # QA Releases
@@ -20,6 +21,7 @@ on:
       - '.gitignore'
       - '*.md'
       - '.vscode/**'
+
 
 jobs:
   Validate_Version:
@@ -37,6 +39,21 @@ jobs:
         relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
+    # TODO: Remove this once the VersionValidator has its 'fail-if-contains' feature is implemented
+    - name: Validate Version Type
+      run: |
+        $projFileVersion = "${{ steps.proj-file-version.outputs.version }}";
+
+        # Fail if the version is not a preview type and this is a production release
+        if ($projFileVersion.Contains("-preview.") -and "${{ github.ref }}".EndsWith("master"))
+        {
+            echo "The version '${{ steps.proj-file-version.outputs.version }}' must not be a preview version type for QA and Production releases.";
+            echo "Valid Version Example: v1.2.3";
+
+            exit 1 # Fail
+        }
+
+    # TODO: Make use of new optional input 'fail-if-contains' for preview.3 of this action once it has been implemented
     - name: Validate Version
       uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
       with:
@@ -44,6 +61,23 @@ jobs:
         version: "${{ steps.proj-file-version.outputs.version }}"
         check-nuget: "true"
         fail-if-nuget-version-exists: "true"
+      
+
+  Validate_Branch:
+    name: Validate Branch
+    runs-on: windows-latest
+    steps:
+    # TODO: Replace this with the new upcoming branch validation github action
+    - name: Validate Branch Name
+      run: |
+        # If the branch is not a 'develop' or 'master' branch, fail the workflow
+        if ("${{ github.ref }}".EndsWith("develop") -eq $false -and "${{ github.ref }}".EndsWith("master") -eq $false)
+        {
+          echo "QA releases can only be performed with the 'develop' branch."
+          echo "Production releases can only be performed with the 'master' branch."
+          exit 1 # Fail
+        }
+
 
   Determine_Build_Config:
     name: Determine Build Config
@@ -61,20 +95,11 @@ jobs:
     outputs:
       build-config: ${{ steps.determine_build_config.outputs.build-config }}
 
-  Build_Project_File_Path:
-    name: Build Project Path
-    runs-on: windows-latest
-    steps:
-    - name: Build Project Path
-      id: build_project_file_path
-      run: echo "::set-output name=file-path::${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
-    outputs:
-      project-file-path: ${{ steps.build_project_file_path.outputs.file-path}}
-  
+
   Build_And_Test_Library:
     name: Build & Test (Library)
     runs-on: windows-latest
-    needs: [ Validate_Version, Determine_Build_Config, Build_Project_File_Path ]
+    needs: [ Validate_Version, Validate_Branch, Determine_Build_Config ]
     steps:
     - uses: actions/checkout@v2
 
@@ -83,11 +108,26 @@ jobs:
       with:
         dotnet-version: ${{ env.NET_SDK_VERSION }}
 
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Display Workflow Info
+      run: |
+        echo "Build Config: ${{ needs.Determine_Build_Config.outputs.build-config }}"
+        echo "Current Branch: ${{ github.ref }}"
+        echo "Project File Version: ${{ steps.proj-file-version.outputs.version }}"
+
     - name: Restore Dependencies
-      run: dotnet restore "${{ needs.Build_Project_File_Path.outputs.project-file-path }}"
+      run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
     - name: Build
-      run: dotnet build "${{ needs.Build_Project_File_Path.outputs.project-file-path }}" `
+      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
         -c ${{ needs.Determine_Build_Config.outputs.build-config }} `
         --no-restore
 
@@ -114,28 +154,23 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.5
 
     - name: Create Nuget Package
-      run: dotnet pack "${{ needs.Build_Project_File_Path.outputs.project-file-path }}" `
+      run: dotnet pack "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
         -o "${{ github.workspace }}" `
         -c ${{ needs.Determine_Build_Config.outputs.build-config }}
-
-    - name: Get Version From Project File
-      id: proj-file-version
-      uses: KinsonDigital/vget@v0.4.0
-      with:
-        repo-owner-and-name: '${{ github.repository }}'
-        branch: '${{ github.ref }}'
-        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-    
+   
     - name: Publish Nuget Package
-      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
-        --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
-        --source https://api.nuget.org/v3/index.json
+      if: endsWith(github.ref, 'master')
+      run: echo "Publish Nuget Package Step Invoked"
+      # TODO: Re-enable this one testing is complete
+      # run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
+      #   --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
+      #   --source https://api.nuget.org/v3/index.json
+
 
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)
     runs-on: windows-latest
-    needs: [ Validate_Version, Determine_Build_Config ]
+    needs: [ Validate_Version, Validate_Branch, Determine_Build_Config ]
     steps:
     - uses: actions/checkout@v2
 
@@ -152,15 +187,16 @@ jobs:
       id: determine_release_type
       run: |
         echo "Branch: ${{ github.ref }}"
-        echo "::set-output name=is-prerelease::false";
 
         # If the branch is master, then set the release type to production
         if ("${{ github.ref }}".EndsWith("master"))
         {
+          echo "::set-output name=is-prerelease::false";
           echo "::set-output name=release-type::Production";
         }
         elseif ("${{ github.ref }}".EndsWith("develop"))
-        { # If the branch is the develop branch, set the release to qa
+        { # If the branch is the develop branch, set the release type to qa
+          echo "::set-output name=is-prerelease::true";
           echo "::set-output name=release-type::QA";
         }
 
@@ -190,7 +226,7 @@ jobs:
       with:
         tag_name: v${{ steps.proj-file-version.outputs.version }}
         body: |
-          ${{ env.PROJECT_NAME }} - ${{ steps.determine_release_type.outputs.release-type }} Release [v${{ steps.proj-file-version.outputs.version }}](https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/tree/v${{ steps.proj-file-version.outputs.version }})
+          ${{ env.PROJECT_NAME }} - ${{ steps.determine_release_type.outputs.release-type }} Release
           Execute the testing application in the **_${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip_** file to perform manual testing.
         files: ${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip
         prerelease: ${{ steps.determine_release_type.outputs.is-prerelease }}
