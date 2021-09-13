@@ -10,7 +10,7 @@ on:
     types: [ synchronize ]
     branches: [
       develop, # QA Releases
-      release/v*.*.*, # Preview Releases
+      # release/v*.*.*, # Preview Releases
       master # Production Releases
     ]
     paths-ignore:
