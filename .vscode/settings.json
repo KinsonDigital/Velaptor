@@ -1,12 +1,6 @@
 {
     "cSpell.words": [
         "Analyers",
-        "GLFW",
-        "Kinson",
-        "Nuget",
-        "Simplelnjector",
-        "Unloadable",
-        "Velaptor",
         "backticks",
         "cobertura",
         "codecov",
@@ -14,15 +8,22 @@
         "editorconfig",
         "finalizer",
         "gitattributes",
+        "GLFW",
         "indianred",
+        "Kinson",
         "mediumseagreen",
         "msbuild",
+        "Nuget",
         "nupkg",
         "runsettings",
+        "SDLC",
+        "Simplelnjector",
         "softprops",
         "struct",
         "stylecop",
+        "Unloadable",
         "unmanaged",
+        "Velaptor",
         "xunit"
     ]
 }
