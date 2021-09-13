@@ -10,7 +10,7 @@ on:
   pull_request:
     types: [ synchronize ]
     branches: [
-      feature/v* # Feature branch pull requests
+      feature/*-* # Feature branch pull requests
     ]
     # TODO: RE-enable this after testing
     # paths-ignore:
