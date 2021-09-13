@@ -1,0 +1,65 @@
+name: ✔Validate Feature PR Branches Status Check
+
+env:
+  PROJECT_NAME: Velaptor
+
+on:
+  pull_request:
+    types: [ synchronize ]
+    branches: [
+      develop # Feature branch pull requests
+    ]
+    paths-ignore:
+      - ".github/**"
+      - 'Documentation/**'
+      - '.editorconfig'
+      - '*.runsettings'
+      - '.gitattributes'
+      - '.gitignore'
+      - '*.md'
+      - '.vscode/**'
+
+jobs:
+  Validate_Feature_PR_Branches:
+    name: Validate Feature PR Branches
+    runs-on: windows-latest
+    steps:
+    - name: Validate Feature PR Branches
+      run: |
+        [string]$srcBranch = "${{ github.head_ref }}";
+        [string]$targetBranch = "${{ github.base_ref }}";
+        [string[]]$validNumChars = @( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+
+        # If merging from a feature branch, into develop branch
+        if ($srcBranch.StartsWith("feature/") -and `
+            $srcBranch.Split("-") -gt 0 -and ` # At least one hyphen
+            $targetBranch -eq "develop") {
+            [string]$issueNumSection = $srcBranch.Split("/")[1];
+            $issueNumSection = $issueNumSection.Split("-")[0];
+
+            Write-Host "Source Feature Branch: $srcBranch";
+            Write-Host "Target Develop Branch: $targetBranch";
+            Write-Host "GitHub Issue #: $issueNumSection";
+
+            # Validate that each character of the issue number is a number
+            for ($i = 0; $i -lt $issueNumSection.Length; $i++) {
+                if ($validNumChars.Contains([string]$issueNumSection[$i]) -ne $true) {
+                    Write-Host "";
+                    Write-Host "The issue number of a feature branch must only contain numeric characters.";
+                    Write-Host "Feature branches should follow the syntax 'feature/<issue id>-*'";
+                    Write-Host "`tExample: feature/123-my-branch";
+
+                    exit 1; # Fail
+                }
+            }
+            # If merging from a release branch, into develop branch
+        } else {
+            Write-Host "The source and/or target branch syntax is incorrect.";
+            Write-Host "";
+            Write-Host "If the source branch is a feature branch, then follow the syntax 'feature/<issue id>-*'";
+            Write-Host "`tExample: feature/123-my-branch";
+            Write-Host "The target branch must be equal to 'develop'";
+            Write-Host "";
+            Write-Host "Source Feature Branch: $srcBranch";
+            Write-Host "Target Develop Branch: $targetBranch";
+        }
