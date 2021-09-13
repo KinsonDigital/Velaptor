@@ -38,14 +38,6 @@ jobs:
         relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Validate Preview Version
-      uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
-      with:
-        nuget-package-name: "KinsonDigital.Velaptor"
-        version: "${{ steps.proj-file-version.outputs.version }}"
-        check-nuget: "true"
-        fail-if-nuget-version-exists: "true"
-        
     - name: Validate Version Type
       run: |
         $projFileVersion = "${{ steps.proj-file-version.outputs.version }}";
@@ -76,3 +68,11 @@ jobs:
                 exit 1 # Fail
             }
         }
+
+    - name: Validate Version
+      uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
+      with:
+        nuget-package-name: "KinsonDigital.Velaptor"
+        version: "${{ steps.proj-file-version.outputs.version }}"
+        check-nuget: "true"
+        fail-if-nuget-version-exists: "true"
