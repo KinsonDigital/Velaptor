@@ -1,0 +1,100 @@
+name: ✔Validate Preview Release Branches Status Check
+
+env:
+  PROJECT_NAME: Velaptor
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ synchronize ]
+    branches: [
+      release/v*.*.*, # Preview Releases (Target Branch)
+    ]
+    paths-ignore:
+      - ".github/**"
+      - 'Documentation/**'
+      - '.editorconfig'
+      - '*.runsettings'
+      - '.gitattributes'
+      - '.gitignore'
+      - '*.md'
+      - '.vscode/**'
+
+jobs:
+  Validate_Preview_Release_Branches:
+    name: Validate Preview Release Branches
+    runs-on: windows-latest
+    steps:
+    - name: Validate Preview & Release Branches
+      run: |
+        [string]$srcBranch = "${{ github.head_ref }}";
+        [string]$targetBranch = "${{ github.base_ref }}";
+        [string[]]$validNumChars = @( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+
+        # If merging from a preview branch into a release branch
+        if ($srcBranch.StartsWith("preview/v") -and `
+            $srcBranch.Contains("-preview.") -and `
+            $srcBranch.Split(".").Length -eq 4 -and ` # 4 Total periods
+            $targetBranch.StartsWith("release/v")) {
+            Write-Host "Source Preview Branch: $srcBranch";
+            Write-Host "Target Release Branch: $targetBranch";
+
+            [string]$srcBranchSections = $srcBranch.Split("-")[0];
+            $srcBranchSections = $srcBranchSections.Split("/v")[1];
+
+            [string]$srcMajorNum = $srcBranchSections.Split(".")[0];
+            [string]$srcMinorNum = $srcBranchSections.Split(".")[1];
+            [string]$srcPatchNum = $srcBranchSections.Split(".")[2];
+            [string]$srcPrevNum = $srcBranch.Split("-")[1];
+            $srcPrevNum = $srcPrevNum.Split(".")[1];
+
+            [string]$numType = "NOT SET";
+            [string]$hasFailed = $false;
+
+            # If the src preview branch major number is not a number
+            if ($validNumChars.Contains($srcMajorNum) -eq $false) {
+                $numType = "major";
+                $hasFailed = $true;
+            }
+
+            # If the src preview branch minor number is not a number
+            if ($validNumChars.Contains($srcMinorNum) -eq $false) {
+                $numType = "minor";
+                $hasFailed = $true;
+            }
+
+            # If the src preview branch patch number is not a number
+            if ($validNumChars.Contains($srcPatchNum) -eq $false) {
+                $numType = "patch";
+                $hasFailed = $true;
+            }
+
+            # If the src preview branch preview number is not a number
+            if ($validNumChars.Contains($srcPrevNum) -eq $false) {
+                $numType = "preview";
+                $hasFailed = $true;
+            }
+
+            if ($hasFailed -eq $true) {
+                Write-Host ""
+                Write-Host "The $numType number in the version section of the source branch must be a numerical character.";
+                Write-Host "Source Preview Branch Syntax: preview/v*.*.*-preview.*";
+                Write-Host "`tExample: preview/v1.2.3-preview.4";
+                exit 1; # Fail;
+            }
+            
+            Write-Host "";
+            Write-Host "Source and target branches valid!!";
+        } else { # If the src branch is not preview and the target branch is not release
+            Write-Host "The source and/or target branch syntax is incorrect.";
+            Write-Host "";
+            Write-Host "The source branch must follow the syntax 'preview/v*.*.*-preview.*'";
+            Write-Host "`tExample: preview/v1.2.3-preview.4";
+            Write-Host "The target branch must follow the syntax 'release/v*.*.*'";
+            Write-Host "`tExample: release/v1.2.3";
+            Write-Host "";
+            Write-Host "Source Preview Branch: $srcBranch";
+            Write-Host "Target Release Branch: $targetBranch";
+
+            exit 1; # Fail
+        }
