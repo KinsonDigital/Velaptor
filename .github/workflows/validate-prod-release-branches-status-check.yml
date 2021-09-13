@@ -1,0 +1,91 @@
+name: ✔Validate Production Release Branches Status Check
+
+# test 1
+
+env:
+  PROJECT_NAME: Velaptor
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ synchronize ]
+    branches: [
+      master, # Production Releases (Target Branch)
+    ]
+    # paths-ignore:
+    #   - ".github/**"
+    #   - 'Documentation/**'
+    #   - '.editorconfig'
+    #   - '*.runsettings'
+    #   - '.gitattributes'
+    #   - '.gitignore'
+    #   - '*.md'
+    #   - '.vscode/**'
+
+jobs:
+  Validate_Preview_Release_Branches:
+    name: Validate Preview Release Branches
+    runs-on: windows-latest
+    steps:
+    - name: Validate Preview & Release Branches
+      run: |
+        [string]$srcBranch = "release/v1.2.3";
+        [string]$targetBranch = "master";
+        [string[]]$validNumChars = @( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+
+        # If merging from a preview branch into a release branch
+        if ($srcBranch.StartsWith("release/v") -and `
+            $srcBranch.Split(".").Length -eq 3 -and `
+            (($targetBranch -eq "develop") -or ($targetBranch -eq "master"))) {
+            Write-Host "Source Preview Branch: $srcBranch";
+            Write-Host "Target Master Branch: $targetBranch";
+
+            [string]$issueNumSection = $srcBranch.Split("/v")[1];
+            [string]$majorNum = $issueNumSection.Split(".")[0];
+            [string]$minorNum = $issueNumSection.Split(".")[1];
+            [string]$patchNum = $issueNumSection.Split(".")[2];
+            [string]$numType = "NOT SET";
+            [string]$hasFailed = $false;
+
+            Write-Host "Release Branch Major Num: $majorNum";
+            Write-Host "Release Branch Minor Num: $minorNum";
+            Write-Host "Release Branch Patch Num: $patchNum";
+
+            # If the major number is not a number
+            if ($validNumChars.Contains($majorNum) -ne $true) {
+                $numType = "major";
+                $hasFailed = $true;
+            }
+
+            # If the minor number is not a number
+            if ($validNumChars.Contains($minorNum) -ne $true) {
+                $numType = "minor";
+                $hasFailed = $true;
+            }
+
+            # If the patch number is not a number
+            if ($validNumChars.Contains($patchNum) -ne $true) {
+                $numType = "patch";
+                $hasFailed = $true;
+            }
+
+            if ($hasFailed -eq $true) {
+                Write-Host "The $numType number in the version section must be a numerical character.";
+                Write-Host "Release Branch Syntax: release/v*.*.*";
+                Write-Host "`tExample: release/v1.2.3";
+                exit 1; # Fail;
+            }
+
+            Write-Host "Source and target branches valid!!";
+        } else {
+            Write-Host "The source and/or target branch syntax is incorrect.";
+            Write-Host "";
+            Write-Host "The source branch must follow the syntax 'release/v*.*.*'";
+            Write-Host "`tExample: release/v1.2.3";
+            Write-Host "The target branch must be equal to 'master'"
+            Write-Host "";
+            Write-Host "Source Release Branch: $srcBranch";
+            Write-Host "Target Master Branch: $targetBranch";
+
+            exit 1; # Fail
+        }
