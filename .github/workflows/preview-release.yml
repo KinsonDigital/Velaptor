@@ -1,13 +1,17 @@
 name: 🚀Preview Release
 
+
 env:
   PROJECT_NAME: Velaptor
   BUILD_CONFIG: Debug
   NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
   ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
+  SHOULD_SEND_TWEET: ${{ secrets.TWITTER_BROADCAST_ENABLED }}
   
+
 on:
   workflow_dispatch: # Preview releases are only done manually
+
 
 jobs:
   Validate_Version:
@@ -120,11 +124,10 @@ jobs:
         relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
         github-token: ${{ secrets.GITHUB_TOKEN }}
     
-    # TODO: Re-enable this once testing is complete
-    # - name: Publish Nuget Package
-    #   run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
-    #     --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
-    #     --source https://api.nuget.org/v3/index.json
+    - name: Publish Nuget Package
+      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
+        --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
+        --source https://api.nuget.org/v3/index.json
 
     
   Build_And_Release_Testing_App:
@@ -173,3 +176,33 @@ jobs:
           Execute the testing application in the **_${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip_** file to perform manual testing.
         files: ${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip
         prerelease: true
+
+
+  Broadcast_To_Social_Media:
+    name: Broadcast To Social Media
+    if: env.SHOULD_SEND_TWEET == 'true'
+    runs-on: windows-latest
+    needs: [ Validate_Version, Validate_Branch, Build_And_Test_Library, Build_And_Release_Testing_App ]
+    steps:
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Send Tweet About Release
+      uses: ethomson/send-tweet-action@v1
+      with:
+        status: |
+          A new preview release '${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
+          Come check it out to take it for a spin and help support the projects. 🤘
+          Release: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/releases/tag/${{ steps.proj-file-version.outputs.version }}
+          Nuget Package: https://www.nuget.org/packages/KinsonDigital.${{ env.PROJECT_NAME }}/${{ steps.proj-file-version.outputs.version }}
+          Project: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}
+        consumer-key: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
+        consumer-secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
+        access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+        access-token-secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
