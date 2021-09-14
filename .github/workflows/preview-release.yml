@@ -196,7 +196,7 @@ jobs:
       id: determine_tweet_broadcast
       run: |
         if ("${{ secrets.TWITTER_BROADCAST_ENABLED }}" -eq "true" -and `
-            "${{ github.ref }}".EndsWith("master")) {
+            "${{ github.ref }}".StartsWith("release/v")) {
           echo "::set-output name=broadcast-tweet::true";
         } else {
           echo "::set-output name=broadcast-tweet::false";
