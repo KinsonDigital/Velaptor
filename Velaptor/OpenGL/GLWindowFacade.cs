@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Input.Exceptions;
+
 namespace Velaptor.OpenGL
 {
 #pragma warning disable SA1135 // Using directives should be qualified
@@ -334,7 +336,7 @@ namespace Velaptor.OpenGL
 
             if (this.glInputContext.Keyboards.Count <= 0)
             {
-                throw new Exception("Input Exception: No connected keyboards available.");
+                throw new NoKeyboardException("Input Exception: No connected keyboards available.");
             }
 
             // TODO: unregister on dispose
@@ -343,7 +345,7 @@ namespace Velaptor.OpenGL
 
             if (this.glInputContext.Mice.Count <= 0)
             {
-                throw new Exception("Input Exception: No connected mice available.");
+                throw new NoMouseException("Input Exception: No connected mice available.");
             }
 
             this.glInputContext.Mice[0].MouseDown += GLMouseInput_MouseDown;
