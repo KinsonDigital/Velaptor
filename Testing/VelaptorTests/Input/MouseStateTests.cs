@@ -1,4 +1,4 @@
-﻿// <copyright file="MouseStateTests.cs" company="KinsonDigital">
+// <copyright file="MouseStateTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,6 +9,7 @@ namespace VelaptorTests.Input
     using System.Numerics;
     using Velaptor.Exceptions;
     using Velaptor.Input;
+    using Velaptor.Input.Exceptions;
     using Xunit;
     using Assert = VelaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified

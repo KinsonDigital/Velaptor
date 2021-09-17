@@ -1,11 +1,11 @@
-﻿// <copyright file="InvalidInputExceptionTests.cs" company="KinsonDigital">
+// <copyright file="InvalidInputExceptionTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Exceptions
+namespace VelaptorTests.Input.Exceptions
 {
     using System;
-    using Velaptor.Exceptions;
+    using Velaptor.Input.Exceptions;
     using Xunit;
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace VelaptorTests.Exceptions
         }
 
         [Fact]
-        public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMesage()
+        public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
         {
             // Act
             var exception = new InvalidInputException("test-message");
