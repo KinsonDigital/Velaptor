@@ -1,5 +1,5 @@
 <!--
-    !! NOTE !! - ONLY PROJECT OWNERS AND MAINTAINERS MANAGE PRODUCTION PREVIEW RELEASE PULL REQUESTS
+    !! NOTE !! - ONLY PROJECT OWNERS AND MAINTAINERS MANAGE PRODUCTION AND PREVIEW RELEASE PULL REQUESTS
     If you have contributions to make, use the "feature-to-develop" pull request template.
 -->
 
@@ -20,23 +20,24 @@ This pull request performs a production release for version **_[add version here
   * **Example:** 🚀Release To Production - v1.2.3
 - [ ] The **_[add version here]_** text in the PR description replaced with the version.
 - [ ] Issue[s] exists and is linked to this PR.
-- [ ] This PR is only for bringing changes from a **_version branch_** into a the **_master_** branch
-    - 💡 A **_version_** branch is the branch used for production releases and has a syntax of **_release/v\*.\*.\*_**
+- [ ] This PR is only for bringing changes from a **_release branch_** into the **_master_** branch
+    - 💡 A **_release_** branch is the branch used for production releases and has a syntax of **_release/v\*.\*.\*_**
       - **Example:** release/v1.2.3
 - [ ] My code follows the code style of this project.
 - [ ] All tests passed locally.
   - 💡 Status checks are put in place to run unit tests every single time a change is pushed to a PR.  This does not mean that the tests pass in both the local and CI environment.
 - [ ] Update library version by updating the **_\<Version/\>_** and **_\<FileVersion/\>_** tags in the **_.csproj_** file.
-  - 💡 Every change to a PR will run a status check to confirm that the version has the correct syntax and does not already exist in the repository.
-  - 💡 Make sure to remove the **_.preview.\<number\>_** section from the end of the version
+  - 💡 Every change to a PR will run a status check to confirm that the version has the correct syntax, a tag does not exist, and that it has not already been published to nuget.org
+  - 💡 Make sure to remove the **_-preview.\<number\>_** section from the end of the version
     - **Example:**
       - The versions should be changed from:
         ``` html
-        <Version>1.2.3.preview.4</Version>
-        <FileVersion>1.2.3.preview.4</FileVersion>
+        <Version>1.2.3-preview.4</Version>
+        <FileVersion>1.2.3-preview.4</FileVersion>
         ```
       - To this:
         ``` html
         <Version>1.2.3</Version>
         <FileVersion>1.2.3</FileVersion>
         ```
+- [ ] Release notes updated to reflect all changes
