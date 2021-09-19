@@ -24,7 +24,7 @@ namespace Velaptor.OpenGL
     /// The internal SILK OpenGL window.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal abstract class GLWindowFacade : IGameWindowFacade
+    internal class GLWindowFacade : IGameWindowFacade
     {
         private readonly string nullWindowExceptionMsg;
         private readonly object objectLock = new ();
@@ -43,7 +43,7 @@ namespace Velaptor.OpenGL
         /// </param>
         /// <param name="keyboard">The system keyboard for handling keyboard events.</param>
         /// <param name="mouse">The system mouse for handling mouse events.</param>
-        protected GLWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboard, IMouseInput<VelaptorMouseButton, MouseState> mouse)
+        public GLWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboard, IMouseInput<VelaptorMouseButton, MouseState> mouse)
         {
             this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
             this.glContextObservable = glObservable;

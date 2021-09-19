@@ -5,6 +5,7 @@
 namespace VelaptorTests.Helpers
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
@@ -187,6 +188,69 @@ namespace VelaptorTests.Helpers
             {
                 return slotRecPtr;
             }
+        }
+
+        /// <summary>
+        /// Returns the color of all of the pixels in the given <paramref name="row"/>.
+        /// </summary>
+        /// <param name="image">The image data that contains the row.</param>
+        /// <param name="row">The row of pixels to return.</param>
+        /// <returns>The list of row pixel colors.</returns>
+        /// <remarks>The row is 0 index based.</remarks>
+        public static IEnumerable<NETColor> GetRow(ImageData image, uint row) => GetRow(image, row, 0, image.Width);
+
+        /// <summary>
+        /// Returns the color of all of the pixels in the given <paramref name="row"/>.
+        /// </summary>
+        /// <param name="image">The image data that contains the row.</param>
+        /// <param name="row">The row of pixels to return.</param>
+        /// <param name="colStart">The column in the row to start at.</param>
+        /// <param name="colStop">The column in the row to stop at.</param>
+        /// <returns>The list of row pixel colors.</returns>
+        /// <remarks>The row is 0 index based.</remarks>
+        public static NETColor[] GetRow(ImageData image, uint row, uint colStart, uint colStop)
+        {
+            if (row < 0 || row > image.Height - 1)
+            {
+                throw new Exception($"The row '{row}' does not exist.");
+            }
+
+            var rowPixels = new List<NETColor>(0);
+
+            for (var x = 0; x < image.Width; x++)
+            {
+                // If the current column is within the range between column start and stop
+                if (x >= colStart && x <= colStop)
+                {
+                    rowPixels.Add(image.Pixels[x, row]);
+                }
+            }
+
+            return rowPixels.ToArray();
+        }
+
+        /// <summary>
+        /// Returns the color of all of the pixels in the given <paramref name="column"/>.
+        /// </summary>
+        /// <param name="image">The image data that contains the column.</param>
+        /// <param name="column">The column of pixels to return.</param>
+        /// <returns>The list of row pixel colors.</returns>
+        /// <remarks>The row is 0 index based.</remarks>
+        public static IEnumerable<NETColor> GetColumn(ImageData image, int column)
+        {
+            if (column < 0 || column > image.Width - 1)
+            {
+                throw new Exception($"The column '{column}' does not exist.");
+            }
+
+            var columnPixels = new List<NETColor>(0);
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                columnPixels.Add(image.Pixels[column, y]);
+            }
+
+            return columnPixels.ToArray();
         }
 
         /// <summary>
