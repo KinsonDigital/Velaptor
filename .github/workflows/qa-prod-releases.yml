@@ -98,6 +98,34 @@ jobs:
       build-config: ${{ steps.determine_build_config.outputs.build-config }}
 
 
+  Validate_Release_Notes_Exist:
+    name: Validate Release Notes Exist
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 
+      run: |
+        [string]$version = "${{ steps.proj-file-version.outputs.version }}";
+        [string]$filePath = "${{ github.workspace }}\Documentation\ReleaseNotes\ProductionReleases\v$version.md";
+        
+        if (-not([System.IO.File]::Exists($filePath))) {
+          Write-Host "A production release notes file '$filePath' does not exist.";
+          Write-Host "You must add release notes for production releases.";
+        
+          exit 1 # Fail
+        }
+
+
   Build_And_Test_Library:
     name: Build & Test (Library)
     runs-on: windows-latest
