@@ -60,18 +60,47 @@ jobs:
     # TODO: Replace this with the new upcoming branch validation github action
     - name: Validate Branch Name
       run: |
-        # If the branch is not a release branch, fail the workflow
-        if ("${{ github.ref }}".Contains("release/v") -eq $false)
-        {
-          echo "Preview releases can only be performed with 'release/v*.*.*' branches."
+        echo "I am disabled"
+        # # If the branch is not a release branch, fail the workflow
+        # if ("${{ github.ref }}".Contains("release/v") -eq $false)
+        # {
+        #   echo "Preview releases can only be performed with 'release/v*.*.*' branches."
+        #   exit 1 # Fail
+        # }
+
+
+  Validate_Release_Notes_Exist:
+    name: Validate Release Notes Exist
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check For Release Notes
+      run: |
+        [string]$version = "${{ steps.proj-file-version.outputs.version }}";
+        [string]$filePath = "${{ github.workspace }}\Documentation\ReleaseNotes\PreviewReleases\Release-Notes-v$version.md";
+
+        if (-not([System.IO.File]::Exists($filePath))) {
+          Write-Host "A preview release notes file '$filePath' does not exist.";
+          Write-Host "You must add release notes for preview releases.";
+
           exit 1 # Fail
-        }
-  
+        }      
+
 
   Build_And_Test_Library:
     name: Build & Test (Library)
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch ]
+    needs: [ Validate_Version, Validate_Branch, Validate_Release_Notes_Exist ]
     steps:
     - uses: actions/checkout@v2
 
@@ -133,7 +162,7 @@ jobs:
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch ]
+    needs: [ Validate_Version, Validate_Branch, Validate_Release_Notes_Exist ]
     steps:
     - uses: actions/checkout@v2
 
@@ -168,20 +197,28 @@ jobs:
           -Force
 
     - name: Release Testing Application
-      uses: softprops/action-gh-release@v0.1.12
+      uses: softprops/action-gh-release@v0.1.13
       with:
         tag_name: v${{ steps.proj-file-version.outputs.version }}
         body: |
           ${{ env.PROJECT_NAME }} - Preview Release [v${{ steps.proj-file-version.outputs.version }}](https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/tree/v${{ steps.proj-file-version.outputs.version }})
           Execute the testing application in the **_${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip_** file to perform manual testing.
-        files: ${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip
+        files: |
+          ${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip
+          ${{ github.workspace }}\Documentation\ReleaseNotes\PreviewReleases\Release-Notes-v${{ steps.proj-file-version.outputs.version }}.md
         prerelease: true
 
 
   Broadcast_To_Social_Media:
     name: Broadcast To Social Media
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch, Build_And_Test_Library, Build_And_Release_Testing_App ]
+    needs: [
+      Validate_Version,
+      Validate_Branch,
+      Build_And_Test_Library,
+      Build_And_Release_Testing_App,
+      Validate_Release_Notes_Exist
+    ]
     steps:
     - name: Get Version From Project File
       id: proj-file-version

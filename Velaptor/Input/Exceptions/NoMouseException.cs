@@ -1,42 +1,42 @@
-﻿// <copyright file="InvalidInputException.cs" company="KinsonDigital">
+﻿// <copyright file="NoMouseException.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Exceptions
+namespace Velaptor.Input.Exceptions
 {
     using System;
 
     /// <summary>
-    /// Occurs when invalid input has occured.
+    /// Occurs when no mouse has been detected in the system.
     /// </summary>
-    public class InvalidInputException : Exception
+    public class NoMouseException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
+        /// Initializes a new instance of the <see cref="NoMouseException"/> class.
         /// </summary>
-        public InvalidInputException()
-            : base($"Invalid Input")
+        public NoMouseException()
+            : base($"No mouse detected.")
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
+        /// Initializes a new instance of the <see cref="NoMouseException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public InvalidInputException(string message)
+        public NoMouseException(string message)
             : base(message)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
+        /// Initializes a new instance of the <see cref="NoMouseException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception,
         ///     or a null reference if no inner exception is specified.
         /// </param>
-        public InvalidInputException(string message, Exception innerException)
+        public NoMouseException(string message, Exception innerException)
             : base(message, innerException)
         {
         }

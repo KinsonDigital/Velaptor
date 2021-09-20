@@ -98,10 +98,43 @@ jobs:
       build-config: ${{ steps.determine_build_config.outputs.build-config }}
 
 
+  Validate_Release_Notes_Exist:
+    name: Validate Release Notes Exist
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check For Release Notes
+      run: |
+        [string]$version = "${{ steps.proj-file-version.outputs.version }}";
+        [string]$filePath = "${{ github.workspace }}\Documentation\ReleaseNotes\ProductionReleases\Release-Notes-v$version.md";
+        
+        if (-not([System.IO.File]::Exists($filePath))) {
+          Write-Host "A production release notes file '$filePath' does not exist.";
+          Write-Host "You must add release notes for production releases.";
+        
+          exit 1 # Fail
+        }
+
+
   Build_And_Test_Library:
     name: Build & Test (Library)
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch, Determine_Build_Config ]
+    needs: [
+      Validate_Version,
+      Validate_Branch,
+      Determine_Build_Config,
+      Validate_Release_Notes_Exist
+    ]
     steps:
     - uses: actions/checkout@v2
 
@@ -171,7 +204,11 @@ jobs:
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch, Determine_Build_Config ]
+    needs: [
+      Validate_Version,
+      Validate_Branch,
+      Determine_Build_Config,
+      Validate_Release_Notes_Exist ]
     steps:
     - uses: actions/checkout@v2
 
@@ -222,7 +259,8 @@ jobs:
           -DestinationPath "${{ github.workspace }}/${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip" `
           -Force
 
-    - name: Release Testing Application
+    - name: Release Testing Application (QA)
+      if: github.ref == 'develop'
       uses: softprops/action-gh-release@v0.1.12
       with:
         tag_name: v${{ steps.proj-file-version.outputs.version }}
@@ -232,11 +270,29 @@ jobs:
         files: ${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip
         prerelease: ${{ steps.determine_release_type.outputs.is-prerelease }}
 
+    - name: Release Testing Application (Production)
+      if: github.ref == 'master'
+      uses: softprops/action-gh-release@v0.1.12
+      with:
+        tag_name: v${{ steps.proj-file-version.outputs.version }}
+        body: |
+          ${{ env.PROJECT_NAME }} - ${{ steps.determine_release_type.outputs.release-type }} Release
+          Execute the testing application in the **_${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip_** file to perform manual testing.
+        files: |
+          ${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip
+          ${{ github.workspace }}\Documentation\ReleaseNotes\ProductionReleases\Release-Notes-v${{ steps.proj-file-version.outputs.version }}.md
+        prerelease: ${{ steps.determine_release_type.outputs.is-prerelease }}
+
 
   Broadcast_To_Social_Media:
     name: Broadcast To Social Media
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch, Build_And_Test_Library, Build_And_Release_Testing_App ]
+    needs: [
+      Validate_Version,
+      Validate_Branch,
+      Build_And_Test_Library,
+      Build_And_Release_Testing_App
+    ]
     steps:
     - name: Get Version From Project File
       id: proj-file-version

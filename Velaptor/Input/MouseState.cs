@@ -1,4 +1,4 @@
-﻿// <copyright file="MouseState.cs" company="KinsonDigital">
+// <copyright file="MouseState.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace Velaptor.Input
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
-    using Velaptor.Exceptions;
+    using Velaptor.Input.Exceptions;
 
     /// <summary>
     /// Represents the state of the mouse.

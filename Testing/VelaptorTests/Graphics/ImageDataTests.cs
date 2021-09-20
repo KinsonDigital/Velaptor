@@ -16,6 +16,75 @@ namespace VelaptorTests.Graphics
     {
         #region Method Tests
         [Fact]
+        public void DrawImage_WhenDrawingWithingBounds_DrawsWholeImageOntoOther()
+        {
+            // Arrange
+            var dataA = TestHelpers.CreateImageData(Color.FromArgb(255, 0, 0, 255), 10, 10);
+            var dataB = TestHelpers.CreateImageData(Color.FromArgb(255, 0, 128, 0), 6, 6);
+
+            // Act
+            var myPoint = new Point(3, 4);
+            var actual = dataA.DrawImage(dataB, new Point(2, 2));
+
+            bool ClrMatches(Color clrA, Color clrB)
+            {
+                return clrA.A == clrB.A &&
+                       clrA.R == clrB.R &&
+                       clrA.G == clrB.G &&
+                       clrA.B == clrB.B;
+            }
+
+            // First 2 rows
+            var row0 = TestHelpers.GetRow(actual, 0);
+            var row1 = TestHelpers.GetRow(actual, 1);
+
+            // Middle rows
+            var row2 = TestHelpers.GetRow(actual, 2, 2, actual.Width - (2 + 1));
+            var row3 = TestHelpers.GetRow(actual, 3, 2, actual.Width - (2 + 1));
+            var row4 = TestHelpers.GetRow(actual, 4, 2, actual.Width - (2 + 1));
+            var row5 = TestHelpers.GetRow(actual, 5, 2, actual.Width - (2 + 1));
+            var row6 = TestHelpers.GetRow(actual, 6, 2, actual.Width - (2 + 1));
+            var row7 = TestHelpers.GetRow(actual, 7, 2, actual.Width - (2 + 1));
+
+            // Last 2 rows
+            var row8 = TestHelpers.GetRow(actual, 8);
+            var row9 = TestHelpers.GetRow(actual, 9);
+
+            // First 2 columns
+            var col0 = TestHelpers.GetColumn(actual, 0);
+            var col1 = TestHelpers.GetColumn(actual, 1);
+
+            // Last 2 columns
+            var col8 = TestHelpers.GetColumn(actual, 8);
+            var col9 = TestHelpers.GetColumn(actual, 9);
+
+            // Assert
+            // First 2 rows
+            Assert.All(row0, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+            Assert.All(row1, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+            Assert.All(row2, clr => Assert.True(ClrMatches(clr, Color.Green)));
+
+            // Middle rows
+            Assert.All(row3, clr => Assert.True(ClrMatches(clr, Color.Green)));
+            Assert.All(row4, clr => Assert.True(ClrMatches(clr, Color.Green)));
+            Assert.All(row5, clr => Assert.True(ClrMatches(clr, Color.Green)));
+            Assert.All(row6, clr => Assert.True(ClrMatches(clr, Color.Green)));
+            Assert.All(row7, clr => Assert.True(ClrMatches(clr, Color.Green)));
+
+            // Last 2 rows
+            Assert.All(row8, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+            Assert.All(row9, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+
+            // First 2 columns
+            Assert.All(col0, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+            Assert.All(col1, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+
+            // Last 2 columns
+            Assert.All(col8, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+            Assert.All(col9, clr => Assert.True(ClrMatches(clr, Color.Blue)));
+        }
+
+        [Fact]
         public void Equals_WhenBothAreSameTypeAndPixelLengthsAreNotEqual_ReturnsFalse()
         {
             // Arrange
