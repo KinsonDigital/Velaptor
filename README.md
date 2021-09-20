@@ -16,6 +16,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?style=plastic)](code_of_conduct.md)
 
 ![](https://img.shields.io/nuget/v/KinsonDigital.Velaptor?logo=nuget&style=plastic)
+![Twitter URL](https://img.shields.io/twitter/url?label=Follow%20@KDCoder&logo=twitter&style=plastic&url=https%3A%2F%2Ftwitter.com%2FKDCoder)
 
 </div>
 
