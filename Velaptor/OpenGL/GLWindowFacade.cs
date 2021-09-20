@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Input.Exceptions;
-
 namespace Velaptor.OpenGL
 {
 #pragma warning disable SA1135 // Using directives should be qualified
@@ -14,6 +12,7 @@ namespace Velaptor.OpenGL
     using Silk.NET.Maths;
     using Silk.NET.Windowing;
     using Velaptor.Input;
+    using Velaptor.Input.Exceptions;
     using Velaptor.Observables;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
     using VelaptorMouseButton = Input.MouseButton;
