@@ -207,7 +207,7 @@ namespace VelaptorTests.Helpers
         /// <param name="colStart">The column in the row to start at.</param>
         /// <param name="colStop">The column in the row to stop at.</param>
         /// <returns>The list of row pixel colors.</returns>
-        /// <remarks>The row is 0 index based.</remarks>
+        /// <remarks>The row, colStart, and colStop are 0 index based.</remarks>
         public static NETColor[] GetRow(ImageData image, uint row, uint colStart, uint colStop)
         {
             if (row < 0 || row > image.Height - 1)
