@@ -56,4 +56,5 @@ This pull request performs a preview release for version **_[add version here]_*
       <Version>1.2.3-preview.4</Version>
       <FileVersion>1.2.3-preview.4</FileVersion>
       ```
+- [ ] I have updated the release notes by creating a new preview release notes file and adding it to the **_./Documentation/ReleaseNotes/PreviewReleases_** folder
 - [ ] A **_preview_** label has been added to the PR

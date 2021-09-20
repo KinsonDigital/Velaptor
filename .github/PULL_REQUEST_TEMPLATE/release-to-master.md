@@ -40,4 +40,4 @@ This pull request performs a production release for version **_[add version here
         <Version>1.2.3</Version>
         <FileVersion>1.2.3</FileVersion>
         ```
-- [ ] Release notes updated to reflect all changes
+- [ ] I have updated the release notes by creating a new production release notes file and adding it to the **_./Documentation/ReleaseNotes/ProductionReleases_** folder
