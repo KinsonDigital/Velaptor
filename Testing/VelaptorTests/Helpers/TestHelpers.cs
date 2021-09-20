@@ -234,8 +234,8 @@ namespace VelaptorTests.Helpers
         /// </summary>
         /// <param name="image">The image data that contains the column.</param>
         /// <param name="column">The column of pixels to return.</param>
-        /// <returns>The list of row pixel colors.</returns>
-        /// <remarks>The row is 0 index based.</remarks>
+        /// <returns>The list of column pixel colors.</returns>
+        /// <remarks>The column is 0 index based.</remarks>
         public static IEnumerable<NETColor> GetColumn(ImageData image, int column)
         {
             if (column < 0 || column > image.Width - 1)
