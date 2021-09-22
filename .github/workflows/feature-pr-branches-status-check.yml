@@ -4,6 +4,7 @@ env:
   PROJECT_NAME: Velaptor
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [ synchronize ]
     branches: [
@@ -20,6 +21,8 @@ on:
       - '.vscode/**'
 
 jobs:
+  # TODO: Need to add use of custom GitHub action as a step to validation the issue number
+  # This action has not been created yet
   Validate_Feature_PR_Branches:
     name: Validate Feature PR Branches
     runs-on: windows-latest
@@ -42,8 +45,8 @@ jobs:
             Write-Host "GitHub Issue #: $issueNumSection";
 
             # Validate that each character of the issue number is a number
-            for ($i = 0; $i -lt $issueNumSection.Length; $i++) {
-                if ($validNumChars.Contains([string]$issueNumSection[$i]) -ne $true) {
+          foreach ($digit in $issueNumSection.ToCharArray()) {
+            if ($validNumChars.Contains($digit.ToString()) -eq $false) {
                     Write-Host "";
                     Write-Host "The issue number of a feature branch must only contain numeric characters.";
                     Write-Host "Feature branches should follow the syntax 'feature/<issue id>-*'";
@@ -52,6 +55,7 @@ jobs:
                     exit 1; # Fail
                 }
             }
+
             # If merging from a release branch, into develop branch
         } else {
             Write-Host "The source and/or target branch syntax is incorrect.";
