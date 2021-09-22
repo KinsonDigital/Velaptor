@@ -249,7 +249,7 @@ jobs:
       uses: ethomson/send-tweet-action@v1
       with:
         status: |
-          A new preview release '${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
+          ${{ env.PROJECT_NAME }} v'${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
           Come check it out to take it for a spin and help support the projects. 🤘
           Release: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/releases/tag/${{ steps.proj-file-version.outputs.version }}
           Nuget Package: https://www.nuget.org/packages/KinsonDigital.${{ env.PROJECT_NAME }}/${{ steps.proj-file-version.outputs.version }}
