@@ -306,6 +306,8 @@ jobs:
     - name: Determine Tweet Broadcast
       id: determine_tweet_broadcast
       run: |
+        echo "Branch: ${{ github.ref }}";
+
         if ("${{ secrets.TWITTER_BROADCAST_ENABLED }}" -eq "true" -and `
             "${{ github.ref }}".EndsWith("master")) {
           echo "::set-output name=broadcast-tweet::true";
