@@ -1,7 +1,9 @@
 name: ✔Validate Production Release Branches Status Check
 
+
 env:
   PROJECT_NAME: Velaptor
+
 
 on:
   pull_request:
@@ -19,6 +21,9 @@ on:
       - '.gitignore'
       - '*.md'
       - '.vscode/**'
+      - '*.sln'
+      - '*.csproj'
+
 
 jobs:
   Validate_Production_Release_Branches:

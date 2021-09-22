@@ -1,7 +1,9 @@
 name: ✔Validate Feature PR Branches Status Check
 
+
 env:
   PROJECT_NAME: Velaptor
+
 
 on:
   workflow_dispatch:
@@ -19,6 +21,9 @@ on:
       - '.gitignore'
       - '*.md'
       - '.vscode/**'
+      - '*.sln'
+      - '*.csproj'
+
 
 jobs:
   # TODO: Need to add use of custom GitHub action as a step to validation the issue number

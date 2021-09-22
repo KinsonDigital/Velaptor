@@ -1,7 +1,9 @@
 name: ✔Version Status Check
 
+
 env:
   PROJECT_NAME: Velaptor
+
 
 on:
   workflow_dispatch:
@@ -21,6 +23,9 @@ on:
       - '.gitignore'
       - '*.md'
       - '.vscode/**'
+      - '*.sln'
+      - '*.csproj'
+
 
 jobs:
   Prev_Version_Status_Check:
