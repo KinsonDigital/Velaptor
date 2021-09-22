@@ -1,7 +1,9 @@
 name: ✔Tag Does Not Exit Status Check
 
+
 env:
   PROJECT_NAME: Velaptor
+
 
 on:
   workflow_dispatch:
@@ -21,6 +23,9 @@ on:
       - '.gitignore'
       - '*.md'
       - '.vscode/**'
+      - '*.sln'
+      - '*.csproj'
+
 
 jobs:
   Tag_Does_Not_Exit_Status_Check:

@@ -47,7 +47,7 @@ jobs:
     - name: Validate Version
       uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
       with:
-        nuget-package-name: "KinsonDigital.Velaptor"
+        nuget-package-name: "KinsonDigital.${{ env.PROJECT_NAME }}"
         version: "${{ steps.proj-file-version.outputs.version }}"
         check-nuget: "true"
         fail-if-nuget-version-exists: "true"
@@ -109,6 +109,20 @@ jobs:
       with:
         dotnet-version: ${{ env.NET_SDK_VERSION }}
 
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Display Workflow Info
+      run: |
+        echo "Current Branch: ${{ github.ref }}"
+        echo "Project File Version: ${{ steps.proj-file-version.outputs.version }}"
+
     - name: Restore Dependencies
       run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
@@ -144,15 +158,6 @@ jobs:
         -o "${{ github.workspace }}" `
         -c ${{ env.BUILD_CONFIG }}
 
-    - name: Get Version From Project File
-      id: proj-file-version
-      uses: KinsonDigital/vget@v0.4.0
-      with:
-        repo-owner-and-name: '${{ github.repository }}'
-        branch: '${{ github.ref }}'
-        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-    
     - name: Publish Nuget Package
       run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
         --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
@@ -232,8 +237,10 @@ jobs:
     - name: Determine Tweet Broadcast
       id: determine_tweet_broadcast
       run: |
+        echo "Branch: ${{ github.ref }}";
+
         if ("${{ secrets.TWITTER_BROADCAST_ENABLED }}" -eq "true" -and `
-            "${{ github.ref }}".StartsWith("release/v")) {
+            "${{ github.ref }}".Contains("release/v")) {
           echo "::set-output name=broadcast-tweet::true";
         } else {
           echo "::set-output name=broadcast-tweet::false";
@@ -244,7 +251,7 @@ jobs:
       uses: ethomson/send-tweet-action@v1
       with:
         status: |
-          A new preview release '${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
+          ${{ env.PROJECT_NAME }} v'${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
           Come check it out to take it for a spin and help support the projects. 🤘
           Release: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/releases/tag/${{ steps.proj-file-version.outputs.version }}
           Nuget Package: https://www.nuget.org/packages/KinsonDigital.${{ env.PROJECT_NAME }}/${{ steps.proj-file-version.outputs.version }}

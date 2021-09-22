@@ -23,6 +23,8 @@ on:
       - '.gitignore'
       - '*.md'
       - '.vscode/**'
+      - '*.sln'
+      - '*.csproj'
 
 
 jobs:
@@ -59,7 +61,7 @@ jobs:
     - name: Validate Version
       uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
       with:
-        nuget-package-name: "KinsonDigital.Velaptor"
+        nuget-package-name: "KinsonDigital.${{ env.PROJECT_NAME }}"
         version: "${{ steps.proj-file-version.outputs.version }}"
         check-nuget: "true"
         fail-if-nuget-version-exists: "true"
@@ -118,7 +120,7 @@ jobs:
         [string]$version = "${{ steps.proj-file-version.outputs.version }}";
         [string]$filePath = "${{ github.workspace }}\Documentation\ReleaseNotes\ProductionReleases\Release-Notes-v$version.md";
         
-        if (-not([System.IO.File]::Exists($filePath))) {
+        if ("${{ github.ref }}" -eq "master" -and -not([System.IO.File]::Exists($filePath))) {
           Write-Host "A production release notes file '$filePath' does not exist.";
           Write-Host "You must add release notes for production releases.";
         
@@ -306,6 +308,8 @@ jobs:
     - name: Determine Tweet Broadcast
       id: determine_tweet_broadcast
       run: |
+        echo "Branch: ${{ github.ref }}";
+
         if ("${{ secrets.TWITTER_BROADCAST_ENABLED }}" -eq "true" -and `
             "${{ github.ref }}".EndsWith("master")) {
           echo "::set-output name=broadcast-tweet::true";
@@ -318,7 +322,7 @@ jobs:
       uses: ethomson/send-tweet-action@v1
       with:
         status: |
-          A new production release '${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
+          ${{ env.PROJECT_NAME }} v'${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
           Come check it out to take it for a spin and help support the projects. 🤘
           Release: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/releases/tag/${{ steps.proj-file-version.outputs.version }}
           Nuget Package: https://www.nuget.org/packages/KinsonDigital.${{ env.PROJECT_NAME }}/${{ steps.proj-file-version.outputs.version }}

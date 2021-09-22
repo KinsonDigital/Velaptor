@@ -60,7 +60,7 @@ body:
 
 - type: textarea
   attributes:
-    label: If you know OS bug occurred on, enter OS version here
+    label: If you now what OS version the bug occurred on, enter the OS version here
     description: Enter operating system version here
     placeholder: os version
   validations:
