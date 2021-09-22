@@ -118,7 +118,7 @@ jobs:
         [string]$version = "${{ steps.proj-file-version.outputs.version }}";
         [string]$filePath = "${{ github.workspace }}\Documentation\ReleaseNotes\ProductionReleases\Release-Notes-v$version.md";
         
-        if (-not([System.IO.File]::Exists($filePath))) {
+        if ("${{ github.ref }}" -eq "master" -and -not([System.IO.File]::Exists($filePath))) {
           Write-Host "A production release notes file '$filePath' does not exist.";
           Write-Host "You must add release notes for production releases.";
         
