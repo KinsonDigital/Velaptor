@@ -47,7 +47,7 @@ jobs:
     - name: Validate Version
       uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
       with:
-        nuget-package-name: "KinsonDigital.Velaptor"
+        nuget-package-name: "KinsonDigital.${{ env.PROJECT_NAME }}"
         version: "${{ steps.proj-file-version.outputs.version }}"
         check-nuget: "true"
         fail-if-nuget-version-exists: "true"
