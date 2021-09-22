@@ -8,12 +8,12 @@ namespace VelaptorTesting
     public class Program
     {
         private static IWindow? window;
-        private static MyWindow? gameWindow;
+        private static MainWindow? gameWindow;
 
         public static void Main()
         {
             window = WindowFactory.CreateWindow(1020, 800);
-            gameWindow = new MyWindow(window);
+            gameWindow = new MainWindow(window);
 
             // Run the game synchronously
             //gameWindow.Show();

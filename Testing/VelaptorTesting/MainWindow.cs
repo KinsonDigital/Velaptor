@@ -10,7 +10,7 @@ using System.Drawing;
 
 namespace VelaptorTesting
 {
-    public class MyWindow : Window
+    public class MainWindow : Window
     {
         private IAtlasData? mainAtlas;
         private ISpriteBatch? spriteBatch;
@@ -36,7 +36,7 @@ namespace VelaptorTesting
         private int elapsedFrameTime = 0;
         private IFont myFont;
 
-        public MyWindow(IWindow window)
+        public MainWindow(IWindow window)
             : base(window)
         {
             this.subPositionX = 400;
