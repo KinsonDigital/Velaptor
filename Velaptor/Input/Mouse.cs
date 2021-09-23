@@ -24,7 +24,7 @@ namespace Velaptor.Input
             }
 
             var result = default(MouseState);
-            result.SetPosition(IMouseInput<MouseButton, MouseState>.XPos, IMouseInput<MouseButton, MouseState>.XPos);
+            result.SetPosition(IMouseInput<MouseButton, MouseState>.XPos, IMouseInput<MouseButton, MouseState>.YPos);
             result.SetScrollWheelValue(IMouseInput<MouseButton, MouseState>.ScrollWheelValue);
 
             // Set all of the states for the buttons

@@ -84,6 +84,14 @@ namespace Velaptor
         /// <param name="toStart">The to starting range value.</param>
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
+        /// <remarks>
+        ///     Be careful when restricting the 'to' values to a value between 0 and 1.  This will always return a value
+        ///     of 0.  This is because the return type is a byte and any value between the values of 0 and 1 is
+        ///     a floating point value and floating point values cannot be represented with a byte data type.
+        ///
+        ///     This results in a value of 0 with a loss of information.  If you need to return a value that
+        ///     is between the values of 0 and 1, use the method overload <see cref="MapValue(int,float,float,float,float)"/>.
+        /// </remarks>
         public static byte MapValue(this byte value, byte fromStart, byte fromStop, byte toStart, byte toStop)
             => (byte)(toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart))));
 
