@@ -19,6 +19,12 @@
   
   <ItemGroup>
     <None Remove="stylecop.json" />
+    <None Update="Content\Graphics\next-scene.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Graphics\previous-scene.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
@@ -42,8 +48,6 @@
   <ItemGroup>
     <Folder Include="Content\Atlas\" />
     <Folder Include="Content\Fonts\" />
-    <Folder Include="Content\Graphics" />
-    <Folder Include="Content\Sounds" />
   </ItemGroup>
 
   <ItemGroup>

@@ -153,6 +153,14 @@ namespace Velaptor.Graphics
         /// <inheritdoc/>
         public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
 
+        public void RenderLine(Vector2 start, Vector2 stop)
+        {
+            this.gl.Enable(GLEnableCap.LineSmooth);
+            
+            
+            this.gl.Disable(GLEnableCap.LineSmooth);
+        }
+
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 

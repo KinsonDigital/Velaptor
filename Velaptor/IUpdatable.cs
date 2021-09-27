@@ -12,7 +12,7 @@ namespace Velaptor
         /// <summary>
         /// Updates the object.
         /// </summary>
-        /// <param name="engineTime">The update iteration time.</param>
-        void Update(FrameTime engineTime);
+        /// <param name="frameTime">The frame iteration time.</param>
+        void Update(FrameTime frameTime);
     }
 }

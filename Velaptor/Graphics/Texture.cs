@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Diagnostics;
+
 namespace Velaptor.Graphics
 {
     using System;
@@ -128,6 +130,9 @@ namespace Velaptor.Graphics
         /// <param name="imageData">The image data of the texture.</param>
         private void UploadDataToGPU(string name, ImageData imageData)
         {
+            var timer = new Stopwatch();
+
+            timer.Start();
             /*NOTE:
              * The incoming image data is in the ARGB byte layout.
              * The data layout required by OpenGL is RGBA.
@@ -185,6 +190,8 @@ namespace Velaptor.Graphics
                 format: GLPixelFormat.Rgba,
                 type: GLPixelType.UnsignedByte,
                 pixels: pixelData.ToArray());
+
+            var result = timer.Elapsed.TotalMilliseconds;
         }
     }
 }
