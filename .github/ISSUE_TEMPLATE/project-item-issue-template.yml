@@ -38,7 +38,7 @@ body:
     description: Complete the following items before asking for a PR review
     options:
     - label: Draft pull request created and linked to this issue
-    - label: Priority label added to issue (low priority, medium priority, or high priority)
+    - label: Priority label added to issue (**_low priority_**, **_medium priority_**, or **_high priority_**)
     - label: Issue linked to the proper project
     - label: Issue linked to proper milestone
     - label: Unit tests have been written and/or adjusted for code additions or changes

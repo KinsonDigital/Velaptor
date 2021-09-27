@@ -16,6 +16,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?style=plastic)](code_of_conduct.md)
 
 ![](https://img.shields.io/nuget/v/KinsonDigital.Velaptor?logo=nuget&style=plastic)
+![Twitter URL](https://img.shields.io/twitter/url?label=Follow%20@KDCoder&logo=twitter&style=plastic&url=https%3A%2F%2Ftwitter.com%2FKDCoder)
 
 </div>
 
@@ -54,7 +55,6 @@ We currently have the following maintainers:
 
 **Velaptor** encourages and uses [Early Pull Requests](https://medium.com/practical-blend/pull-request-first-f6bb667a9b6). Please don't wait until you're finished with your work before creating a PR.
 
-**Simple Overview:**
 1. Fork the repository
 2. Create a feature branch following the feature branch section in the documentation [here](./Documentation/Branching.md)
 3. Add an empty commit to the new feature branch to start your work off.
@@ -67,7 +67,7 @@ We currently have the following maintainers:
    * Refer to the *.editorconfig* files in the code base for rules
 8. Tag a maintainer when you're done and ask for a review!
 
-If you have any questions, don't be afraid to ask.
+If you have any questions, contact a project maintainer.
 
 <h2 style="font-weight:bold" align="center">Practices</h2>
 

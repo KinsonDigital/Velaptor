@@ -1,10 +1,12 @@
 name: 🚀QA/Prod Release
 
+
 env:
   PROJECT_NAME: Velaptor
   NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
   ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
-  
+
+
 on:
   workflow_dispatch:
   push:
@@ -21,6 +23,8 @@ on:
       - '.gitignore'
       - '*.md'
       - '.vscode/**'
+      - '*.sln'
+      - '*.csproj'
 
 
 jobs:
@@ -57,7 +61,7 @@ jobs:
     - name: Validate Version
       uses: KinsonDigital/VersionValidator@v1.0.0-preview.2
       with:
-        nuget-package-name: "KinsonDigital.Velaptor"
+        nuget-package-name: "KinsonDigital.${{ env.PROJECT_NAME }}"
         version: "${{ steps.proj-file-version.outputs.version }}"
         check-nuget: "true"
         fail-if-nuget-version-exists: "true"
@@ -96,10 +100,43 @@ jobs:
       build-config: ${{ steps.determine_build_config.outputs.build-config }}
 
 
+  Validate_Release_Notes_Exist:
+    name: Validate Release Notes Exist
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check For Release Notes
+      run: |
+        [string]$version = "${{ steps.proj-file-version.outputs.version }}";
+        [string]$filePath = "${{ github.workspace }}\Documentation\ReleaseNotes\ProductionReleases\Release-Notes-v$version.md";
+        
+        if ("${{ github.ref }}" -eq "master" -and -not([System.IO.File]::Exists($filePath))) {
+          Write-Host "A production release notes file '$filePath' does not exist.";
+          Write-Host "You must add release notes for production releases.";
+        
+          exit 1 # Fail
+        }
+
+
   Build_And_Test_Library:
     name: Build & Test (Library)
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch, Determine_Build_Config ]
+    needs: [
+      Validate_Version,
+      Validate_Branch,
+      Determine_Build_Config,
+      Validate_Release_Notes_Exist
+    ]
     steps:
     - uses: actions/checkout@v2
 
@@ -161,16 +198,19 @@ jobs:
     - name: Publish Nuget Package
       if: endsWith(github.ref, 'master')
       run: echo "Publish Nuget Package Step Invoked"
-      # TODO: Re-enable this one testing is complete
-      # run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
-      #   --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
-      #   --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
+        --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
+        --source https://api.nuget.org/v3/index.json
 
 
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch, Determine_Build_Config ]
+    needs: [
+      Validate_Version,
+      Validate_Branch,
+      Determine_Build_Config,
+      Validate_Release_Notes_Exist ]
     steps:
     - uses: actions/checkout@v2
 
@@ -221,7 +261,8 @@ jobs:
           -DestinationPath "${{ github.workspace }}/${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip" `
           -Force
 
-    - name: Release Testing Application
+    - name: Release Testing Application (QA)
+      if: github.ref == 'develop'
       uses: softprops/action-gh-release@v0.1.12
       with:
         tag_name: v${{ steps.proj-file-version.outputs.version }}
@@ -230,3 +271,63 @@ jobs:
           Execute the testing application in the **_${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip_** file to perform manual testing.
         files: ${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip
         prerelease: ${{ steps.determine_release_type.outputs.is-prerelease }}
+
+    - name: Release Testing Application (Production)
+      if: github.ref == 'master'
+      uses: softprops/action-gh-release@v0.1.12
+      with:
+        tag_name: v${{ steps.proj-file-version.outputs.version }}
+        body: |
+          ${{ env.PROJECT_NAME }} - ${{ steps.determine_release_type.outputs.release-type }} Release
+          Execute the testing application in the **_${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip_** file to perform manual testing.
+        files: |
+          ${{ env.PROJECT_NAME }}-TestingApp-v${{ steps.proj-file-version.outputs.version }}.zip
+          ${{ github.workspace }}\Documentation\ReleaseNotes\ProductionReleases\Release-Notes-v${{ steps.proj-file-version.outputs.version }}.md
+        prerelease: ${{ steps.determine_release_type.outputs.is-prerelease }}
+
+
+  Broadcast_To_Social_Media:
+    name: Broadcast To Social Media
+    runs-on: windows-latest
+    needs: [
+      Validate_Version,
+      Validate_Branch,
+      Build_And_Test_Library,
+      Build_And_Release_Testing_App
+    ]
+    steps:
+    - name: Get Version From Project File
+      id: proj-file-version
+      uses: KinsonDigital/vget@v0.4.0
+      with:
+        repo-owner-and-name: '${{ github.repository }}'
+        branch: '${{ github.ref }}'
+        relative-file-path: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Determine Tweet Broadcast
+      id: determine_tweet_broadcast
+      run: |
+        echo "Branch: ${{ github.ref }}";
+
+        if ("${{ secrets.TWITTER_BROADCAST_ENABLED }}" -eq "true" -and `
+            "${{ github.ref }}".EndsWith("master")) {
+          echo "::set-output name=broadcast-tweet::true";
+        } else {
+          echo "::set-output name=broadcast-tweet::false";
+        }
+
+    - name: Send Tweet About Release
+      if: steps.determine_tweet_broadcast.outputs.broadcast-tweet == 'true'
+      uses: ethomson/send-tweet-action@v1
+      with:
+        status: |
+          ${{ env.PROJECT_NAME }} v'${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
+          Come check it out to take it for a spin and help support the projects. 🤘
+          Release: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/releases/tag/${{ steps.proj-file-version.outputs.version }}
+          Nuget Package: https://www.nuget.org/packages/KinsonDigital.${{ env.PROJECT_NAME }}/${{ steps.proj-file-version.outputs.version }}
+          Project: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}
+        consumer-key: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
+        consumer-secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
+        access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+        access-token-secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}

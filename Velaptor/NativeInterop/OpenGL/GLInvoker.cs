@@ -87,6 +87,9 @@ namespace Velaptor.NativeInterop.OpenGL
         public void Enable(GLEnableCap cap) => this.gl.Enable((EnableCap)cap);
 
         /// <inheritdoc/>
+        public void Disable(GLEnableCap cap) => this.gl.Disable((EnableCap)cap);
+
+        /// <inheritdoc/>
         public void BlendFunc(GLBlendingFactor sfactor, GLBlendingFactor dfactor) => this.gl.BlendFunc((BlendingFactor)sfactor, (BlendingFactor)dfactor);
 
         /// <inheritdoc/>

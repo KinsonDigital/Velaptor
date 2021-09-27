@@ -17,7 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE.md = LICENSE.md
 		README.md = README.md
-		RELEASENOTES.md = RELEASENOTES.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VelaptorTesting", "Testing\VelaptorTesting\VelaptorTesting.csproj", "{63793161-2B97-4875-8633-DD6B51DACD77}"
@@ -27,6 +26,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{E248AD89-D6AB-4183-88F1-133875647706}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{CE2DE8AE-0037-4159-AE95-14D261BF9122}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\build-status-check.yml = .github\workflows\build-status-check.yml
+	.github\workflows\feature-pr-branches-status-check.yml = .github\workflows\feature-pr-branches-status-check.yml
+	.github\workflows\preview-release.yml = .github\workflows\preview-release.yml
+	.github\workflows\qa-prod-releases.yml = .github\workflows\qa-prod-releases.yml
+	.github\workflows\tag-does-not-exist-status-check.yml = .github\workflows\tag-does-not-exist-status-check.yml
+	.github\workflows\unit-testing-status-check.yml = .github\workflows\unit-testing-status-check.yml
+	.github\workflows\validate-preview-release-branches-status-check.yml = .github\workflows\validate-preview-release-branches-status-check.yml
+	.github\workflows\validate-prod-release-branches-status-check.yml = .github\workflows\validate-prod-release-branches-status-check.yml
+	.github\workflows\version-status-check.yml = .github\workflows\version-status-check.yml
+EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "PullRequestTemplates", "{6653D425-BD0A-42A4-A06C-715674139E0F}"
 ProjectSection(SolutionItems) = preProject

@@ -96,7 +96,7 @@ namespace Velaptor.Graphics
 
             this.batchManagerService.BatchReady += BatchManagerService_BatchReady;
 
-            // Recieve a push notification that OpenGL has intialized
+            // Receive a push notification that OpenGL has initialized
             GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
                 onNext: (isInitialized) =>
                 {
@@ -153,10 +153,18 @@ namespace Velaptor.Graphics
         /// <inheritdoc/>
         public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
 
+        public void RenderLine(Vector2 start, Vector2 stop)
+        {
+            this.gl.Enable(GLEnableCap.LineSmooth);
+            
+            
+            this.gl.Disable(GLEnableCap.LineSmooth);
+        }
+
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 
-        /// <inheritdoc/>///
+        /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y, RenderEffects effects) => Render(texture, x, y, Color.White, effects);
 
         /// <inheritdoc/>
@@ -372,6 +380,9 @@ namespace Velaptor.Graphics
         /// </summary>
         private void SetupPropertyCaches()
         {
+            // ReSharper disable ArgumentsStyleLiteral
+            // ReSharper disable ArgumentsStyleNamedExpression
+            // ReSharper disable ArgumentsStyleAnonymousFunction
             this.cachedIntProps.Add(
                 nameof(RenderSurfaceWidth),
                 new CachedValue<int>(
@@ -412,13 +423,17 @@ namespace Velaptor.Graphics
                 },
                 setterWhenNotCaching: (value) =>
                 {
-                    var red = value.R.MapValue(0, 255, 0, 1);
-                    var green = value.G.MapValue(0, 255, 0, 1);
-                    var blue = value.B.MapValue(0, 255, 0, 1);
-                    var alpha = value.A.MapValue(0, 255, 0, 1);
+                    var red = value.R.MapValue(0f, 255f, 0f, 1f);
+                    var green = value.G.MapValue(0f, 255f, 0f, 1f);
+                    var blue = value.B.MapValue(0f, 255f, 0f, 1f);
+                    var alpha = value.A.MapValue(0f, 255f, 0f, 1f);
 
                     this.gl.ClearColor(red, green, blue, alpha);
                 });
+
+            // ReSharper restore ArgumentsStyleLiteral
+            // ReSharper restore ArgumentsStyleNamedExpression
+            // ReSharper restore ArgumentsStyleAnonymousFunction
         }
 
         /// <summary>

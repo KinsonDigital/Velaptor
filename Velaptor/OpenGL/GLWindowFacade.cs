@@ -12,6 +12,7 @@ namespace Velaptor.OpenGL
     using Silk.NET.Maths;
     using Silk.NET.Windowing;
     using Velaptor.Input;
+    using Velaptor.Input.Exceptions;
     using Velaptor.Observables;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
     using VelaptorMouseButton = Input.MouseButton;
@@ -334,7 +335,7 @@ namespace Velaptor.OpenGL
 
             if (this.glInputContext.Keyboards.Count <= 0)
             {
-                throw new Exception("Input Exception: No connected keyboards available.");
+                throw new NoKeyboardException("Input Exception: No connected keyboards available.");
             }
 
             // TODO: unregister on dispose
@@ -343,7 +344,7 @@ namespace Velaptor.OpenGL
 
             if (this.glInputContext.Mice.Count <= 0)
             {
-                throw new Exception("Input Exception: No connected mice available.");
+                throw new NoMouseException("Input Exception: No connected mice available.");
             }
 
             this.glInputContext.Mice[0].MouseDown += GLMouseInput_MouseDown;

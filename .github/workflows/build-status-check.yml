@@ -1,8 +1,10 @@
 name: ✔Build Status Check
 
+
 env:
   PROJECT_NAME: Velaptor
   NET_SDK_VERSION: 5.0.x
+
 
 on:
   workflow_dispatch:
@@ -22,6 +24,9 @@ on:
       - '.gitignore'
       - '*.md'
       - '.vscode/**'
+      - '*.sln'
+      - '*.csproj'
+
 
 jobs:
   Build_Status_Check:

@@ -2,33 +2,40 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Input;
+
 namespace Velaptor.UI
 {
     using System;
     using System.Drawing;
     using System.Numerics;
-    using Velaptor.Content;
-    using Velaptor.Graphics;
+    using Content;
+    using Graphics;
 
     /// <summary>
-    /// A button that can be clicked and execute functionality.
+    /// A button that can be clicked to execute functionality.
     /// </summary>
-    public class Button : IControl
+    public class Button : ControlBase
     {
-        private readonly bool isMouseDown;
-        private Rectangle rect;
+        private readonly ILoader<ITexture> textureLoader;
+        private readonly string textureName;
+        private readonly Mouse mouse;
+        private ITexture? texture;
+        private Color tintColor = Color.White;
+        private MouseState currentMouseState;
+        private MouseState previousMouseState;
+        private Point currentMousePos;
+        private Point previousMousePos;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Button"/> class.
         /// </summary>
-        /// <param name="mouseOverTexture">The texture to be displayed when the mouse is over the button.</param>
-        /// <param name="mouseNotOverTexture">The texture to be displayed when the mouse is not in the down position or over the button.</param>
-        /// <param name="mouseDownTexture">The texture to be displayed when the mouse is in the down position.</param>
-        public Button(Texture mouseOverTexture, Texture mouseNotOverTexture, Texture mouseDownTexture)
+        /// <param name="textureName">The textureName to be displayed when the mouse is over the button.</param>
+        public Button(string textureName)
         {
-            MouseOverTexture = mouseOverTexture;
-            MouseNotOverTexture = mouseNotOverTexture;
-            MouseDownTexture = mouseDownTexture;
+            this.mouse = new Mouse();
+            this.textureName = textureName;
+            this.textureLoader = Factories.ContentLoaderFactory.CreateTextureLoader();
         }
 
         /// <summary>
@@ -37,153 +44,129 @@ namespace Velaptor.UI
         public event EventHandler<EventArgs>? Click;
 
         /// <summary>
-        /// Gets or sets the position of the <see cref="Button"/> on the screen.
+        /// Occurs when the left mouse button is in the down position over the button.
         /// </summary>
-        public Vector2 Position { get; set; }
+        public event EventHandler<EventArgs>? MouseDown;
+
+        /// <summary>
+        /// Occurs when the left mouse button is in the up position over the button
+        /// after the mouse has been in the down position.
+        /// </summary>
+        public event EventHandler<EventArgs>? MouseUp;
+
+        /// <summary>
+        /// Occurs when the mouse moves over the button.
+        /// </summary>
+        // TODO: This event should be managed in the ControlBase
+        public event EventHandler<MousePositionEventArgs>? MouseMove;
 
         /// <summary>
         /// Gets the width of the <see cref="Button"/>.
         /// </summary>
-        public int Width
-        {
-            get
-            {
-                if (MouseOverTexture == null || MouseNotOverTexture == null)
-                {
-                    return 0;
-                }
-
-                return MouseOverTexture.Width > MouseNotOverTexture.Width ?
-                    MouseOverTexture.Width :
-                    MouseNotOverTexture.Width;
-            }
-        }
+        public override int Width => this.texture?.Width ?? 0;
 
         /// <summary>
         /// Gets the height of the <see cref="Button"/>.
         /// </summary>
-        public int Height
-        {
-            get
-            {
-                if (MouseOverTexture == null || MouseNotOverTexture == null)
-                {
-                    return 0;
-                }
-
-                return MouseOverTexture.Height > MouseNotOverTexture.Height ?
-                    MouseOverTexture.Height :
-                    MouseNotOverTexture.Height;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the texture when the mouse is over the <see cref="Button"/>.
-        /// </summary>
-        public Texture MouseOverTexture { get; set; }
-
-        /// <summary>
-        /// Gets or sets the texture when the mouse is not over the <see cref="Button"/>.
-        /// </summary>
-        public Texture MouseNotOverTexture { get; set; }
-
-        /// <summary>
-        /// Gets or sets the texture when the left mouse button is
-        /// in the down position over the button.
-        /// </summary>
-        public Texture MouseDownTexture { get; set; }
+        public override int Height => this.texture?.Height ?? 0;
 
         /// <summary>
         /// Gets a value indicating whether gets a value indicating if the mouse is hovering over the button.
         /// </summary>
+        // TODO: Can be put into the ControlBase and made protected as well as the value set in ControlBase
         public bool IsMouseOver { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the text of the button.
-        /// </summary>
-        public RenderText? ButtonText { get; set; }
 
         /// <summary>
         /// Initializes the <see cref="Button"/>.
         /// </summary>
-        public void Initialize()
+        public override void Initialize()
         {
         }
 
         /// <summary>
         /// Loads the content for the <see cref="Button"/>.
         /// </summary>
-        /// <param name="contentLoader">The loader used to load the content.</param>
-        public void LoadContent(IContentLoader contentLoader)
+        public override void LoadContent()
         {
+            this.texture = this.textureLoader.Load(this.textureName);
+            base.LoadContent();
         }
 
         /// <summary>
         /// Updates the <see cref="Button"/>.
         /// </summary>
-        /// <param name="engineTime">The update iteration time.</param>
-        public void Update(FrameTime engineTime)
+        /// <param name="frameTime">The update iteration time.</param>
+        public override void Update(FrameTime frameTime)
         {
-            ProcessMouse();
+            if (IsLoaded is false || Enabled is false)
+            {
+                return;
+            }
 
-            this.rect.X = (int)(Position.X - (Width / 2f));
-            this.rect.Y = (int)(Position.Y - (Height / 2f));
-            this.rect.Width = Width;
-            this.rect.Height = Height;
+            this.currentMouseState = this.mouse.GetState();
+            this.currentMousePos = this.currentMouseState.GetPosition().ToPoint();
+            var controlRect = new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
+
+            IsMouseOver = controlRect.Contains(this.currentMouseState.GetX(), this.currentMouseState.GetY());
+
+            // If the mouse button is in the down position
+            if (this.currentMouseState.IsLeftButtonDown() && IsMouseOver)
+            {
+                this.tintColor = Color.FromArgb(255, 190, 190, 190);
+            }
+            else
+            {
+                this.tintColor = IsMouseOver ? Color.FromArgb(255, 230, 230, 230) : Color.White;
+            }
+
+            if (IsMouseOver)
+            {
+                // Invoked teh mouse move event if the mouse has been moved
+                if (this.currentMousePos != this.previousMousePos)
+                {
+                    var relativePos = new Point(Position.X - this.currentMousePos.X, Position.Y - this.currentMousePos.Y);
+                    this.MouseMove?.Invoke(this, new MousePositionEventArgs(relativePos));
+                }
+
+                if (this.currentMouseState.IsLeftButtonDown())
+                {
+                    this.MouseDown?.Invoke(this, EventArgs.Empty);
+                }
+            }
+
+            if (this.currentMouseState.IsLeftButtonUp() &&
+                this.previousMouseState.IsLeftButtonDown() &&
+                IsMouseOver)
+            {
+                this.MouseUp?.Invoke(this, EventArgs.Empty);
+                this.Click?.Invoke(this, EventArgs.Empty);
+            }
+
+            this.previousMouseState = this.currentMouseState;
+            this.previousMousePos = this.currentMousePos;
         }
 
         /// <summary>
         /// Renders the <see cref="Button"/> to the screen.
         /// </summary>
-        /// <param name="renderer">Renders the <see cref="Button"/>.</param>
-        public void Render(object renderer)
+        /// <param name="spriteBatch">Renders the <see cref="Button"/>.</param>
+        public override void Render(ISpriteBatch spriteBatch)
         {
-            // if (renderer is null)
-            //    throw new ArgumentNullException(nameof(renderer), "The renderer must not be null.");
+            if (IsLoaded is false || Visible is false)
+            {
+                return;
+            }
 
-            // if (_isMouseDown && MouseDownTexture != null)
-            // {
-            //    renderer.Render(MouseDownTexture, Position.X, Position.Y);
-            // }
-            // else
-            // {
-            //    if (IsMouseOver && MouseOverTexture != null)
-            //    {
-            //        renderer.Render(MouseOverTexture, Position.X, Position.Y);
-            //    }
-            //    else
-            //    {
-            //        if (MouseNotOverTexture != null)
-            //            renderer.Render(MouseNotOverTexture, Position.X, Position.Y, 0);
-            //    }
+            var posX = (int)Position.X + (int)(Width / 2f);
+            var posY = (int)Position.Y + (int)(Height / 2f);
 
-            // }
-
-            // var textPosition = new Vector2()
-            // {
-            //    X = Position.X - (ButtonText is null ? 0 : ButtonText.Width / 2f),
-            //    Y = Position.Y - (ButtonText is null ? 0 :  ButtonText.Height / 2f)
-            // };
-
-            // if(ButtonText != null)
-            //    renderer.Render(ButtonText, textPosition, Color.FromArgb(255, 0, 0, 0));
+            spriteBatch.Render(this.texture, posX, posY, this.tintColor);
         }
 
-        /// <summary>
-        /// Processes any mouse input interaction with the <see cref="Button"/>.
-        /// </summary>
-        private void ProcessMouse()
+        /// <inheritdoc/>
+        public void Dispose()
         {
-            // this.mouse.UpdateCurrentState();
-
-            // IsMouseOver = this.rect.Contains(this.mouse.X, this.mouse.Y);
-
-            // this.isMouseDown = IsMouseOver && this.mouse.IsButtonDown(MouseButton.LeftButton);
-
-            // if (this.isMouseDown)
-            //    Click?.Invoke(this, new EventArgs());
-
-            // this.mouse.UpdatePreviousState();
+            this.texture.Dispose();
         }
     }
 }

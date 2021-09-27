@@ -64,6 +64,43 @@ namespace Velaptor.Graphics
         /// <returns><see langword="true"/> if both are not equal.</returns>
         public static bool operator !=(ImageData left, ImageData right) => !(left == right);
 
+        /// <summary>
+        /// Draws the given <paramref name="image"/> onto this image,
+        /// starting at the given <paramref name="location"/>.
+        /// </summary>
+        /// <param name="image">The image to draw onto this one.</param>
+        /// <param name="location">
+        ///     The location of where to draw the image.
+        ///     References the top left corner of the given <paramref name="image"/>.
+        /// </param>
+        /// <remarks>
+        /// If a pixel of the given <paramref name="image"/> is out side of the bounds of this
+        /// image, it will be skipped.
+        /// </remarks>
+        /// <returns>This current image with the given <paramref name="image"/> painted onto it.</returns>
+        public ImageData DrawImage(ImageData image, Point location)
+        {
+            for (var x = 0; x < image.Width; x++)
+            {
+                if (x > this.Width)
+                {
+                    continue;
+                }
+
+                for (var y = 0; y < image.Height; y++)
+                {
+                    if (y > this.Height)
+                    {
+                        continue;
+                    }
+
+                    this.Pixels[location.X + x, location.Y + y] = image.Pixels[x, y];
+                }
+            }
+
+            return this;
+        }
+
         /// <inheritdoc/>
         public bool Equals(ImageData other)
         {

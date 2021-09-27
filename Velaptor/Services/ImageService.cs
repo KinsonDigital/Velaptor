@@ -65,16 +65,6 @@ namespace Velaptor.Services
         }
 
         /// <inheritdoc/>
-        public ImageData Draw(ImageData src, ImageData dest, NETPoint location)
-        {
-            var srcImage = src.ToSixLaborImage();
-            var destImage = dest.ToSixLaborImage();
-
-            destImage.Mutate(context => context.DrawImage(srcImage, new Point(location.X, location.Y), 1));
-
-            srcImage.Dispose();
-
-            return destImage.ToImageData();
-        }
+        public ImageData Draw(ImageData src, ImageData dest, NETPoint location) => dest.DrawImage(src, location);
     }
 }

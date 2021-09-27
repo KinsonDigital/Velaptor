@@ -10,9 +10,13 @@ namespace Velaptor.Content
     public interface IContentLoadable
     {
         /// <summary>
-        /// Load the content using the given <paramref name="contentLoader"/>.
+        /// Gets or sets a value indicating if the content for an object is loaded.
         /// </summary>
-        /// <param name="contentLoader">Used to load content.</param>
-        void LoadContent(IContentLoader contentLoader);
+        bool IsLoaded { get; }
+
+        /// <summary>
+        /// Load the content for an object.
+        /// </summary>
+        void LoadContent();
     }
 }
