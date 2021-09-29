@@ -105,7 +105,7 @@ namespace Velaptor
         /// <param name="toStop">The to ending range value.</param>
         /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
         public static float MapValue(this byte value, float fromStart, float fromStop, float toStart, float toStop)
-            => toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart)));
+            => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
 
         /// <summary>
         /// Rotates the <paramref name="vector"/> around the <paramref name="origin"/> at the given <paramref name="angle"/>.
