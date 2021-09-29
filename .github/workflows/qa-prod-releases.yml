@@ -197,7 +197,6 @@ jobs:
    
     - name: Publish Nuget Package
       if: endsWith(github.ref, 'master')
-      run: echo "Publish Nuget Package Step Invoked"
       run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
         --api-key ${{ secrets.NUGET_ORG_API_KEY }} `
         --source https://api.nuget.org/v3/index.json
