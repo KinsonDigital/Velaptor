@@ -1,11 +1,18 @@
-﻿using System;
-using System.Threading.Tasks;
-using Velaptor.Factories;
-using Velaptor.UI;
+﻿// <copyright file="Program.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace VelaptorTesting
 {
-    public class Program
+    using System;
+    using System.Threading.Tasks;
+    using Velaptor.Factories;
+    using Velaptor.UI;
+
+    /// <summary>
+    /// The main program entry point.
+    /// </summary>
+    public static class Program
     {
         private static IWindow? window;
         private static MainWindow? gameWindow;
@@ -26,7 +33,7 @@ namespace VelaptorTesting
         /// <summary>
         /// Runs the game asynchronously.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The asynchronous result of the running game.</returns>
         private static async Task RunGame()
         {
             if (gameWindow is null)

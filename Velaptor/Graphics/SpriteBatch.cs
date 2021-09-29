@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -224,7 +224,7 @@ namespace Velaptor.Graphics
 
                 if (font.HasKerning && leftGlyghIndex != 0 && glyphMetrics.CharIndex != 0)
                 {
-                    // TODO: Check the perf for curiousity reasons
+                    // TODO: Check the perf for curiosity reasons
                     FT_Vector delta = this.freeTypeInvoker.FT_Get_Kerning(
                         facePtr,
                         leftGlyghIndex,

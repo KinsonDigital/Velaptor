@@ -22,7 +22,7 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes OpenGL extentions methods.</param>
+        /// <param name="glExtensions">Invokes OpenGL extension methods.</param>
         /// <param name="resourceLoaderService">Loads embedded resources.</param>
         /// <param name="batchSize">The batch size that the shader will support.</param>
         /// <param name="vertexShaderPath">The path to the vertex shader code.</param>

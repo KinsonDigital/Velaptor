@@ -7,7 +7,6 @@ namespace VelaptorTests.Input
 {
 #pragma warning disable IDE0001 // Name can be simplified
     using System.Numerics;
-    using Velaptor.Exceptions;
     using Velaptor.Input;
     using Velaptor.Input.Exceptions;
     using Xunit;
