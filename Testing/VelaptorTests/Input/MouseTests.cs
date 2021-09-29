@@ -55,7 +55,7 @@ namespace VelaptorTests.Input
         [InlineData(MouseButton.LeftButton)]
         [InlineData(MouseButton.RightButton)]
         [InlineData(MouseButton.MiddleButton)]
-        public void SetState_WithRightButton_CorrectlySetsState(MouseButton button)
+        public void SetState_WithButton_CorrectlySetsState(MouseButton button)
         {
             // Arrange
             var mouse = new Mouse();

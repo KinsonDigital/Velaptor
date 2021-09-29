@@ -18,7 +18,7 @@ namespace Velaptor.Input
         /// <returns>The state of the mouse.</returns>
         public MouseState GetState()
         {
-            if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 0)
+            if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 3)
             {
                 InitializeButtonStates();
             }
@@ -84,9 +84,14 @@ namespace Velaptor.Input
         {
             var keyCodes = Enum.GetValues(typeof(MouseButton)).Cast<MouseButton>().ToArray();
 
-            for (var i = 0; i < keyCodes.Length; i++)
+            foreach (var key in keyCodes)
             {
-                IMouseInput<MouseButton, MouseState>.InputStates.Add(keyCodes[i], false);
+                if (IMouseInput<MouseButton, MouseState>.InputStates.ContainsKey(key))
+                {
+                    continue;
+                }
+
+                IMouseInput<MouseButton, MouseState>.InputStates.Add(key, false);
             }
         }
     }
