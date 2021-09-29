@@ -22,7 +22,7 @@ namespace Velaptor.UI
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="window">The window implementation that contains the window functionality.</param>
-        public Window(IWindow window)
+        protected Window(IWindow window)
         {
             if (window is null)
             {
