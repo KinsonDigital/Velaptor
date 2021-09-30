@@ -1,4 +1,4 @@
-## <span style='color:mediumseagreen;font-weight:bold'>Velaptor Preview Release Notes - v1.0.0-preview.2</span>
+## <span style='color:mediumseagreen;font-weight:bold'>Velaptor Preview Release Notes - v1.0.0-preview.3</span>
 
 ### **New** 🎉
 
