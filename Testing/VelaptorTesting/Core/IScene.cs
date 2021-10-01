@@ -19,7 +19,7 @@ namespace VelaptorTesting.Core
         string Name { get; }
 
         /// <summary>
-        /// The unique ID of the scene.
+        /// Gets the unique ID of the scene.
         /// </summary>
         Guid ID { get; }
 
