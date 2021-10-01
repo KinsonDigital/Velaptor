@@ -55,9 +55,7 @@ namespace Velaptor.UI
         /// </summary>
         public Color Color { get; set; } = Color.Black;
 
-        /// <summary>
-        /// Loads the content for the control.
-        /// </summary>
+        /// <inheritdoc cref="ControlBase"/>
         public override void LoadContent()
         {
             // TODO: Need to set the 'TimesNewRoman' font as an embedded resource
@@ -94,9 +92,7 @@ namespace Velaptor.UI
             base.Render(spriteBatch);
         }
 
-        /// <summary>
         /// <inheritdoc cref="IControl"/>
-        /// </summary>
         public override void Dispose() => Dispose(true);
 
         /// <summary>
