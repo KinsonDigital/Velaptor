@@ -37,7 +37,7 @@ namespace Velaptor.Input
         }
 
         /// <summary>
-        /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
+        /// Sets the given mouse <paramref name="input"/> to the given <paramref name="state"/>.
         /// </summary>
         /// <param name="input">The mouse button to set.</param>
         /// <param name="state">The state to set the button to.</param>

@@ -58,8 +58,6 @@ namespace Velaptor.UI
         /// <inheritdoc cref="ControlBase"/>
         public override void LoadContent()
         {
-            // TODO: Need to set the 'TimesNewRoman' font as an embedded resource
-            // and load it when no fonts are available.  This would be the default font
             this.font = this.contentLoader?.Load<IFont>("TimesNewRoman");
 
             LoadGlyphSizes();

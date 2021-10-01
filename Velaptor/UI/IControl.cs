@@ -37,7 +37,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets or sets the name of the control.
         /// </summary>
-        public string Name { get; set; }
+        string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the position of the <see cref="IControl"/> on the screen.
@@ -65,16 +65,6 @@ namespace Velaptor.UI
         int Bottom { get; set; }
 
         /// <summary>
-        /// Gets or sets the width of the control.
-        /// </summary>
-        int Width { get; set; }
-
-        /// <summary>
-        /// Gets or sets the height of the control.
-        /// </summary>
-        int Height { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the control is visible.
         /// </summary>
         bool Visible { get; set; }
@@ -85,7 +75,7 @@ namespace Velaptor.UI
         bool Enabled { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether gets a value indicating if the mouse is hovering over the button.
+        /// Gets a value indicating whether the mouse is hovering over the button.
         /// </summary>
         bool IsMouseOver { get; }
     }

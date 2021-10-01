@@ -16,10 +16,7 @@ namespace VelaptorTests.UI
 
     public class ControlBaseTests
     {
-        public ControlBaseTests()
-        {
-            ClearMouseState();
-        }
+        public ControlBaseTests() => ClearMouseState();
 
         /// <summary>
         /// Gets the mouse test data.
@@ -434,7 +431,7 @@ namespace VelaptorTests.UI
         /// <summary>
         /// Clears the state for the mouse for testing purposes.
         /// </summary>
-        private void ClearMouseState()
+        private static void ClearMouseState()
         {
             IMouseInput<MouseButton, MouseState>.InputStates.Clear();
             IMouseInput<MouseButton, MouseState>.XPos = 0;
