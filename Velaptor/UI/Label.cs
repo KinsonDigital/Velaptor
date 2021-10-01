@@ -12,7 +12,7 @@ namespace Velaptor.UI
     using Velaptor.Graphics;
 
     /// <summary>
-    /// A simple label.
+    /// A simple label that renders text on the screen.
     /// </summary>
     public sealed class Label : ControlBase
     {
@@ -46,12 +46,12 @@ namespace Velaptor.UI
         }
 
         /// <summary>
-        /// Gets or sets the font style of the label labelText.
+        /// Gets or sets the font style of the text.
         /// </summary>
         public FontStyle Style { get; set; }
 
         /// <summary>
-        /// Gets or sets the color of the labelText.
+        /// Gets or sets the color of the text.
         /// </summary>
         public Color Color { get; set; } = Color.Black;
 
