@@ -2,17 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Graphics
+namespace Velaptor.Content
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Velaptor.Content.Exceptions;
 
     /// <summary>
     /// Holds data relating to a texture atlas.
     /// </summary>
-    public class AtlasData : IAtlasData
+    public sealed class AtlasData : IAtlasData
     {
         private readonly AtlasSubTextureData[] subTextures;
 
@@ -25,13 +27,10 @@ namespace Velaptor.Graphics
         /// <param name="path">The path to the content.</param>
         public AtlasData(ITexture texture, AtlasSubTextureData[] atlasSubTextureData, string atlasName, string path)
         {
-            if (texture is null)
-            {
-                throw new ArgumentNullException(nameof(Texture), "The parameter must not be null.");
-            }
+            Texture = texture ?? throw new ArgumentNullException(nameof(texture), "The parameter must not be null.");
 
             this.subTextures = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
-            Texture = texture;
+
             Name = atlasName;
             Path = path;
         }
@@ -80,57 +79,62 @@ namespace Velaptor.Graphics
         public int Height => Texture.Height;
 
         /// <inheritdoc/>
-        public bool Unloaded { get; private set; }
+        public bool IsDisposed { get; private set; }
+
+        /// <inheritdoc/>
+        public bool IsPooled { get; set; }
 
         /// <inheritdoc/>
         public AtlasSubTextureData this[int index] => this.subTextures[index];
 
         /// <inheritdoc/>
-        public AtlasSubTextureData GetFrame(string subTextureID)
+        public AtlasSubTextureData GetFrame(string subTextureId)
         {
-            var foundFrmae = (from s in this.subTextures
-                              where s.Name == subTextureID
+            var foundFrame = (from s in this.subTextures
+                              where s.Name == subTextureId
                               select s).FirstOrDefault();
 
-            if (foundFrmae is null)
+            if (foundFrame is null)
             {
                 // TODO: Create a custom exception named TextureAtlasException and implement here
-                throw new Exception($"The frame '{subTextureID}' was not found in the atlas '{Name}'.");
+                throw new Exception($"The frame '{subTextureId}' was not found in the atlas '{Name}'.");
             }
 
-            return foundFrmae;
+            return foundFrame;
         }
 
         /// <inheritdoc/>
-        public AtlasSubTextureData[] GetFrames(string subTextureID)
+        public AtlasSubTextureData[] GetFrames(string subTextureId)
             => (from s in this.subTextures
-                where s.Name == subTextureID
+                where s.Name == subTextureId
                 select s).ToArray();
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
+        private void Dispose(bool disposing)
         {
-            if (Unloaded)
+            if (IsDisposed)
             {
                 return;
             }
 
-            if (disposing)
+            if (IsPooled)
             {
-                Texture.Dispose();
+                throw new PooledDisposalException();
             }
 
-            Unloaded = true;
+            if (disposing)
+            {
+                Texture.IsPooled = false;
+                Texture.Dispose();
+                IsDisposed = true;
+            }
         }
     }
 }

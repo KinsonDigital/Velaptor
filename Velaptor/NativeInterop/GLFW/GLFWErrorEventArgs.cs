@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.GLFW
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using Velaptor.OpenGL;
 
     /// <summary>
@@ -26,11 +27,15 @@ namespace Velaptor.NativeInterop.GLFW
         /// <summary>
         /// Gets the error code of the error.
         /// </summary>
-        public GLFWErrorCode ErrorCode { get; private set; }
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Need for library users.")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Need for library users")]
+        public GLFWErrorCode ErrorCode { get; }
 
         /// <summary>
         /// Gets the error message.
         /// </summary>
-        public string ErrorMessage { get; private set; }
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Need for library users.")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Need for library users")]
+        public string ErrorMessage { get; }
     }
 }

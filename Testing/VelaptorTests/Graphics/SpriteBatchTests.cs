@@ -2,10 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Graphics
 {
-#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -17,15 +15,13 @@ namespace VelaptorTests.Graphics
     using Velaptor.Content;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="SpriteBatch"/> class.
@@ -94,7 +90,7 @@ namespace VelaptorTests.Graphics
         public void Ctor_WhenInvokedWithNullGLInvoker_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var buffer = new SpriteBatch(
                     null,
@@ -111,7 +107,7 @@ namespace VelaptorTests.Graphics
         public void Ctor_WhenInvokedWithNullShader_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var buffer = new SpriteBatch(
                     this.mockGLInvoker.Object,
@@ -128,7 +124,7 @@ namespace VelaptorTests.Graphics
         public void Ctor_WhenInvokedWithNullGPUBuffer_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var buffer = new SpriteBatch(
                     this.mockGLInvoker.Object,
@@ -144,7 +140,7 @@ namespace VelaptorTests.Graphics
 
         #region Prop Tests
         [Fact]
-        public unsafe void Width_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
+        public void Width_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
             this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
@@ -160,7 +156,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public unsafe void Height_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
+        public void Height_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
             this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
@@ -176,7 +172,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void ClearColor_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrerctResult()
+        public void ClearColor_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
             var batch = CreateSpriteBatch();
@@ -336,7 +332,7 @@ namespace VelaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 batch.Render(mockTexture.Object, 10, 20);
             }, $"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
@@ -350,7 +346,7 @@ namespace VelaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 var srcRect = new Rectangle(1, 2, 3, 4);
                 var destRect = new Rectangle(5, 6, 7, 8);
@@ -367,7 +363,7 @@ namespace VelaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 batch.BeginBatch();
                 batch.Render(null, 10, 20);
@@ -381,7 +377,7 @@ namespace VelaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var srcRect = new Rectangle(0, 0, 10, 20);
                 batch.BeginBatch();
@@ -399,7 +395,7 @@ namespace VelaptorTests.Graphics
             batch.BeginBatch();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
                 var srcRect = new Rectangle(0, 0, 0, 20);
                 var destRect = new Rectangle(10, 20, 100, 200);
@@ -418,7 +414,7 @@ namespace VelaptorTests.Graphics
             batch.BeginBatch();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
                 var srcRect = new Rectangle(0, 0, 10, 0);
                 var destRect = new Rectangle(10, 20, 100, 200);
@@ -469,6 +465,37 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
+        public void RenderTexture_WithInValidRenderEffect_ThrowsException()
+        {
+            // Arrange
+            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
+            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
+                .Returns(() =>
+                {
+                    var batchItem = new SpriteBatchItem()
+                    {
+                        Effects = (RenderEffects)9845,
+                        SrcRect = new Rectangle(0, 0, 1234, 5678),
+                    };
+                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(
+                        new Dictionary<uint, SpriteBatchItem>()
+                        {
+                            { 0, batchItem },
+                        });
+                });
+
+            var mockTexture = CreateTextureMock(0, 10, 20);
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
+            {
+                batch.Render(mockTexture.Object, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RenderEffects>());
+            }, "The 'RenderEffects' value of '9845' is not valid.");
+        }
+
+        [Fact]
         public void RenderTexture_WhenTextureIsNotBound_BindsTexture()
         {
             // Arrange
@@ -500,7 +527,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void RenderTexture_WithUnknownRenderEffect_ThrowsException()
+        public void RenderTexture_WithUnknownRenderEffectWhenSettingSourceRectangleWidth_ThrowsException()
         {
             // Arrange
             this.mockBatchManagerService.SetupGet(p => p.BatchItems)
@@ -525,7 +552,7 @@ namespace VelaptorTests.Graphics
             batch.BeginBatch();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
+            AssertExtensions.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
             {
                 batch.Render(
                     mockTexture.Object,
@@ -780,7 +807,7 @@ namespace VelaptorTests.Graphics
         {
             var result = new Mock<ITexture>();
 
-            result.SetupGet(p => p.ID).Returns(textureId);
+            result.SetupGet(p => p.Id).Returns(textureId);
             result.SetupGet(p => p.Width).Returns(width);
             result.SetupGet(p => p.Height).Returns(height);
 

@@ -1,34 +1,34 @@
-﻿// <copyright file="UnknownContentExceptionTests.cs" company="KinsonDigital">
+﻿// <copyright file="LoadContentExceptionTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Exceptions
+namespace VelaptorTests.Content.Exceptions
 {
     using System;
     using Velaptor.Content.Exceptions;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="UnknownContentException"/> class.
+    /// Tests the <see cref="LoadContentException"/> class.
     /// </summary>
-    public class UnknownContentExceptionTests
+    public class LoadContentExceptionTests
     {
         #region Constructor Tests
         [Fact]
         public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
         {
             // Act
-            var exception = new UnknownContentException();
+            var exception = new LoadContentException();
 
             // Assert
-            Assert.Equal("Content unknown.", exception.Message);
+            Assert.Equal($"There was an issue loading the content.", exception.Message);
         }
 
         [Fact]
         public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMesage()
         {
             // Act
-            var exception = new UnknownContentException("test-message");
+            var exception = new LoadContentException("test-message");
 
             // Assert
             Assert.Equal("test-message", exception.Message);
@@ -41,7 +41,7 @@ namespace VelaptorTests.Exceptions
             var innerException = new Exception("inner-exception");
 
             // Act
-            var deviceException = new UnknownContentException("test-exception", innerException);
+            var deviceException = new LoadContentException("test-exception", innerException);
 
             // Assert
             Assert.Equal("inner-exception", deviceException.InnerException.Message);

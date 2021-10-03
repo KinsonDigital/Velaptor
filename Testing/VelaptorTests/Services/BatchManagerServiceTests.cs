@@ -2,21 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Services
 {
-#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Drawing;
     using System.Linq;
     using System.Numerics;
     using Moq;
+    using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.Services;
     using Xunit;
     using Assert = VelaptorTests.Helpers.AssertExtensions;
     using SysVector2 = System.Numerics.Vector2;
-#pragma warning restore IDE0001 // Name can be simplified
 
     public class BatchManagerServiceTests
     {
@@ -354,7 +352,7 @@ namespace VelaptorTests.Services
         {
             var result = new Mock<ITexture>();
 
-            result.SetupGet(p => p.ID).Returns(textureId);
+            result.SetupGet(p => p.Id).Returns(textureId);
             result.SetupGet(p => p.Width).Returns(width);
             result.SetupGet(p => p.Height).Returns(height);
 

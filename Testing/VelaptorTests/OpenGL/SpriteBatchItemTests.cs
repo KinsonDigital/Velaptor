@@ -21,7 +21,7 @@ namespace VelaptorTests.OpenGL
             var actual = SpriteBatchItem.Empty;
 
             // Assert
-            Assert.Equal(0u, actual.TextureID);
+            Assert.Equal(0u, actual.TextureId);
             Assert.Equal(Rectangle.Empty, actual.SrcRect);
             Assert.Equal(Rectangle.Empty, actual.DestRect);
             Assert.Equal(0f, actual.Size);

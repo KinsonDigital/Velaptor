@@ -13,13 +13,13 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// Gets all of the monitors in the system.
     /// </summary>
-    internal class GLFWMonitors : IDisposable
+    internal sealed class GLFWMonitors : IDisposable
     {
-        private static bool glfwInitialzed;
+        private static bool glfwInitialized;
         private readonly IGLFWInvoker glfwInvoker;
         private readonly IPlatform platform;
         private readonly List<SystemMonitor> monitors = new ();
-        private bool isDiposed;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitors"/> class.
@@ -31,10 +31,10 @@ namespace Velaptor.OpenGL
             this.glfwInvoker = glfwInvoker;
             this.platform = platform;
 
-            if (!glfwInitialzed)
+            if (!glfwInitialized)
             {
                 this.glfwInvoker.Init();
-                glfwInitialzed = true;
+                glfwInitialized = true;
             }
 
             Refresh();
@@ -85,7 +85,7 @@ namespace Velaptor.OpenGL
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             Dispose(true);
@@ -93,19 +93,19 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        private void Dispose(bool disposing)
         {
-            if (!this.isDiposed)
+            if (!this.isDisposed)
             {
                 if (disposing)
                 {
                     this.glfwInvoker.OnMonitorChanged -= GLFWInvoker_OnMonitorChanged;
                 }
 
-                this.isDiposed = true;
+                this.isDisposed = true;
             }
         }
 

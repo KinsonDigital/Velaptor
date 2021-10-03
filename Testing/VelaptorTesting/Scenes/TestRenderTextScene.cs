@@ -8,7 +8,6 @@ namespace VelaptorTesting.Scenes
     using System.Drawing;
     using System.Linq;
     using Velaptor.Content;
-    using Velaptor.Factories;
     using Velaptor.Graphics;
     using VelaptorTesting.Core;
 
@@ -18,7 +17,7 @@ namespace VelaptorTesting.Scenes
     public class TestRenderTextScene : SceneBase
     {
         private const string TextToRender = "If can you see this text, then text rendering is working correctly.";
-        private readonly ILoader<IFont>? fontLoader;
+        private readonly IContentLoader contentLoader;
         private Dictionary<char, int>? glyphWidths;
         private IFont? font;
         private int textWidth;
@@ -29,18 +28,38 @@ namespace VelaptorTesting.Scenes
         /// <param name="contentLoader">Loads content for the scene.</param>
         public TestRenderTextScene(IContentLoader contentLoader)
             : base(contentLoader)
-                => this.fontLoader = ContentLoaderFactory.CreateFontLoader();
+                => this.contentLoader = contentLoader;
 
         /// <summary>
         /// Loads the content for the scene.
         /// </summary>
-        public override void Load()
+        public override void LoadContent()
         {
-            this.font = this.fontLoader.Load("TimesNewRoman");
+            ThrowExceptionIfLoadingWhenDisposed();
+
+            if (IsLoaded)
+            {
+                return;
+            }
+
+            this.font = this.contentLoader.Load<IFont>("TimesNewRoman");
             this.glyphWidths = new Dictionary<char, int>(this.font.Metrics.Select(m => new KeyValuePair<char, int>(m.Glyph, m.GlyphWidth)));
             this.textWidth = TextToRender.Select(character => this.glyphWidths[character]).Sum();
 
-            base.Load();
+            base.LoadContent();
+        }
+
+        /// <inheritdoc cref="SceneBase"/>
+        public override void UnloadContent()
+        {
+            if (!IsLoaded || IsDisposed)
+            {
+                return;
+            }
+
+            DisposeOrUnloadContent();
+
+            base.UnloadContent();
         }
 
         /// <summary>
@@ -56,5 +75,26 @@ namespace VelaptorTesting.Scenes
 
             base.Render(spriteBatch);
         }
+
+        /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed || !IsLoaded)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                DisposeOrUnloadContent();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Disposes or unloads the scenes content.
+        /// </summary>
+        private void DisposeOrUnloadContent() => this.font = null;
     }
 }

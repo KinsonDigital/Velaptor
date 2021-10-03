@@ -86,7 +86,7 @@ namespace VelaptorTests.Content
         /// <summary>
         /// Creates a new instance of a <see cref="SoundLoader"/> for testing purposes.
         /// </summary>
-        /// <returns>The sound loader isntance used for testing.</returns>
+        /// <returns>The sound loader instance used for testing.</returns>
         private SoundLoader CreateSoundLoader() => new (this.mockSoundPathResolver.Object, this.soundFactory.Object);
     }
 }

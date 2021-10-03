@@ -2,11 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Velaptor.UI
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.Input;
 
@@ -21,96 +23,67 @@ namespace Velaptor.UI
         private Point currentMousePos;
         private Point previousMousePos;
 
-#pragma warning disable SA1623
         /// <summary>
         /// Initializes a new instance of the <see cref="ControlBase"/> class.
         /// </summary>
         protected ControlBase() => this.mouse = new Mouse();
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Click"/>
         public event EventHandler<EventArgs>? Click;
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.MouseDown"/>
         public event EventHandler<EventArgs>? MouseDown;
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.MouseUp"/>
         public event EventHandler<EventArgs>? MouseUp;
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.MouseMove"/>
         public event EventHandler<MousePositionEventArgs>? MouseMove;
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Name"/>
         public string Name { get; set; } = string.Empty;
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Position"/>
         public virtual Point Position { get; set; }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Left"/>
         public virtual int Left
         {
             get => Position.X;
             set => Position = new Point(value, Position.Y);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Right"/>
         public virtual int Right
         {
             get => Position.X + Width;
             set => Position = new Point(value - Width, Position.Y);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Top"/>
         public virtual int Top
         {
             get => Position.Y;
             set => Position = new Point(Position.X, value);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Bottom"/>
         public virtual int Bottom
         {
             get => Position.Y + Height;
             set => Position = new Point(Position.X, value - Height);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="ISizable.Width"/>
         public virtual int Width { get; set; }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="ISizable.Height"/>
         public virtual int Height { get; set; }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Visible"/>
         public virtual bool Visible { get; set; } = true;
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IControl.Enabled"/>
         public virtual bool Enabled { get; set; } = true;
 
         /// <summary>
@@ -118,29 +91,45 @@ namespace Velaptor.UI
         /// </summary>
         public bool IsMouseOver { get; private set; }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IContentLoadable.IsLoaded"/>
         public bool IsLoaded { get; private set; }
 
         /// <summary>
-        /// Gets or sets the color to tint the control surface.
+        /// Gets or sets the color to apply to the control when the
+        /// mouse button is in the down position over the control.
         /// </summary>
-        protected Color TintColor { get; set; } = Color.White;
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+        [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by library users.")]
+        public Color MouseDownColor { get; set; } = Color.FromArgb(255, 190, 190, 190);
 
         /// <summary>
-        /// <inheritdoc cref="IControl"/>
+        /// Gets or sets the color to apply to the control when the
+        /// mouse button is hovering over the control.
+        /// </summary>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+        [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by library users.")]
+        public Color MouseHoverColor { get; set; } = Color.FromArgb(255, 230, 230, 230);
+
+        /// <summary>
+        /// Gets the tint color to apply the control surface.
+        /// </summary>
+        /// <remarks>
+        ///     This is used to signify to the user that the mouse is hovering over the control or
+        ///     the mouse button is in the down position over the control.
+        /// </remarks>
+        protected Color TintColor { get; private set; } = Color.White;
+
+        /// <summary>
+        /// Gets a value indicating whether the control has been disposed.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public virtual void LoadContent()
-        {
-            if (IsLoaded)
-            {
-                return;
-            }
+        protected bool IsDisposed { get; private set; }
 
-            IsLoaded = true;
-        }
+        /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
+        public virtual void LoadContent() => IsLoaded = true;
+
+        /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
+        public virtual void UnloadContent() => IsLoaded = false;
 
         /// <inheritdoc cref="IControl"/>
         public virtual void Update(FrameTime frameTime)
@@ -159,11 +148,11 @@ namespace Velaptor.UI
             // If the mouse button is in the down position
             if (this.currentMouseState.IsLeftButtonDown() && IsMouseOver)
             {
-                TintColor = Color.FromArgb(255, 190, 190, 190);
+                TintColor = MouseDownColor;
             }
             else
             {
-                TintColor = IsMouseOver ? Color.FromArgb(255, 230, 230, 230) : Color.White;
+                TintColor = IsMouseOver ? MouseHoverColor : Color.White;
             }
 
             if (IsMouseOver)
@@ -193,17 +182,41 @@ namespace Velaptor.UI
             this.previousMousePos = this.currentMousePos;
         }
 
-        /// <inheritdoc cref="IControl"/>
+        /// <summary>
+        /// Renders the control to the screen.
+        /// </summary>
+        /// <param name="spriteBatch">Renders the control.</param>
         [ExcludeFromCodeCoverage]
         public virtual void Render(ISpriteBatch spriteBatch)
         {
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IControl"/>
-        /// </summary>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         [ExcludeFromCodeCoverage]
-        public virtual void Dispose() => GC.SuppressFinalize(this);
-#pragma warning restore SA1623
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        [ExcludeFromCodeCoverage]
+        protected virtual void Dispose(bool disposing) => IsDisposed = true;
+
+        /// <summary>
+        /// Throws an exception if the control is being loaded when it has already been disposed.
+        /// </summary>
+        /// <exception cref="Exception">Thrown when the control has been disposed.</exception>
+        protected void ThrowExceptionIfLoadingWhenDisposed()
+        {
+            if (IsDisposed)
+
+            {
+                throw new Exception("Cannot load a control that has been disposed.");
+            }
+        }
     }
 }

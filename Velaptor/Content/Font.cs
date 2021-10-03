@@ -2,17 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Graphics
+namespace Velaptor.Content
 {
     using System;
     using System.Collections.ObjectModel;
-    using Velaptor.Content;
+    using System.Diagnostics.CodeAnalysis;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
 
     /// <summary>
     /// Represents a font with a particular size that
     /// can be used to render text to the screen.
     /// </summary>
-    public class Font : IFont, IDisposable
+    public sealed class Font : IFont
     {
         private readonly char[] availableGlyphCharacters;
         private readonly GlyphMetrics[] metrics;
@@ -20,7 +22,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
         /// </summary>
-        /// <param name="texture">The font atlas texture that contains bitmap data for all of the available glpyhs.</param>
+        /// <param name="texture">The font atlas texture that contains bitmap data for all of the available glyphs.</param>
         /// <param name="fontAtlasData">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
         /// <param name="fontSettings">The various font settings.</param>
         /// <param name="availableGlyphChars">The list of available glyph characters for this font.</param>
@@ -60,10 +62,13 @@ namespace Velaptor.Graphics
         public FontStyle Style { get; private set; }
 
         /// <inheritdoc/>
-        public bool HasKerning { get; internal set; }
+        public bool HasKerning { get; internal init; }
 
         /// <inheritdoc/>
-        public bool Unloaded { get; private set; }
+        public bool IsDisposed { get; private set; }
+
+        /// <inheritdoc cref="IContent.IsPooled"/>
+        public bool IsPooled { get; set; }
 
         /// <inheritdoc/>
         public ReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.ToReadOnlyCollection();
@@ -71,30 +76,32 @@ namespace Velaptor.Graphics
         /// <inheritdoc/>
         public char[] GetAvailableGlyphCharacters() => this.availableGlyphCharacters;
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
+        private void Dispose(bool disposing)
         {
-            if (Unloaded)
+            if (IsDisposed)
             {
                 return;
             }
 
-            if (disposing)
+            if (IsPooled)
             {
-                FontTextureAtlas.Dispose();
+                throw new PooledDisposalException();
             }
 
-            Unloaded = true;
+            if (disposing)
+            {
+                FontTextureAtlas.IsPooled = false;
+                FontTextureAtlas.Dispose();
+                IsDisposed = true;
+            }
         }
     }
 }

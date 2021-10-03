@@ -75,7 +75,7 @@ namespace Velaptor.OpenGL
         /// <inheritdoc/>
         public void UseProgram() => this.gl.UseProgram(ProgramId);
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             Dispose(true);
@@ -83,7 +83,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> if managed resources are to be disposed.</param>
         protected virtual void Dispose(bool disposing)

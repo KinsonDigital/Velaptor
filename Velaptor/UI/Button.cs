@@ -17,7 +17,6 @@ namespace Velaptor.UI
         private readonly IContentLoader contentLoader;
         private readonly IControl label;
         private ITexture? texture;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Button"/> class.
@@ -38,6 +37,9 @@ namespace Velaptor.UI
             {
                 base.Position = value;
 
+                /* Calculate the position of the label to be centered
+                 * horizontally and vertically over the face of the button.
+                 */
                 var posX = (int)(Position.X + ((Width / 2f) - (this.label.Width / 2f)));
                 var posY = (int)(Position.Y + ((Height / 2f) - (this.label.Height / 2f)));
 
@@ -56,16 +58,35 @@ namespace Velaptor.UI
         public override int Height => this.texture?.Height ?? 0;
 
         /// <summary>
-        /// Loads the content for the <see cref="Button"/>.
+        /// <inheritdoc cref="ControlBase.UnloadContent"/>
         /// </summary>
+        /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
         {
-            // TODO: Check if already loaded and return if it has been
+            ThrowExceptionIfLoadingWhenDisposed();
+
+            if (IsLoaded)
+            {
+                return;
+            }
+
             // TODO: Add label with simple text.  This means adding a text property
             this.texture = this.contentLoader.Load<ITexture>("button-face");
             this.label.LoadContent();
 
             base.LoadContent();
+        }
+
+        public override void UnloadContent()
+        {
+            if (!IsLoaded || IsDisposed)
+            {
+                return;
+            }
+
+            this.texture?.Dispose();
+
+            base.UnloadContent();
         }
 
         /// <summary>
@@ -92,18 +113,10 @@ namespace Velaptor.UI
             base.Render(spriteBatch);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IDisposable" />
-        /// </summary>
-        public override void Dispose() => Dispose(true);
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable"/>
-        /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
-        private void Dispose(bool disposing)
+        /// <inheritdoc cref="ControlBase.Dispose(bool)"/>
+        protected override void Dispose(bool disposing)
         {
-            if (this.isDisposed)
+            if (IsDisposed || !IsLoaded)
             {
                 return;
             }
@@ -113,7 +126,7 @@ namespace Velaptor.UI
                 this.texture?.Dispose();
             }
 
-            this.isDisposed = true;
+            base.Dispose(disposing);
         }
     }
 }

@@ -2,10 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Graphics
+namespace Velaptor.Content
 {
-    using Velaptor.Content;
-
     /// <summary>
     /// The texture to render to a screen.
     /// </summary>
@@ -14,7 +12,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Gets he ID of the texture.
         /// </summary>
-        uint ID { get; }
+        uint Id { get; }
 
         /// <summary>
         /// Gets the width of the texture.

@@ -15,7 +15,6 @@ namespace Velaptor
     using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Input;
-    using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;

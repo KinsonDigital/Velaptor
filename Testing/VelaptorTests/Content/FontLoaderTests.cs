@@ -2,10 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Content
 {
-#pragma warning disable IDE0001 // Name can be simplified
     using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
@@ -14,12 +12,11 @@ namespace VelaptorTests.Content
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="FontLoader"/> class.
@@ -29,7 +26,6 @@ namespace VelaptorTests.Content
         private const string FontContentName = "test-font";
         private readonly string fontsDirPath;
         private readonly string fontDataFilePath;
-        private readonly string fontFilepath;
         private readonly GlyphMetrics[] glyphMetricData;
         private readonly Mock<IGLInvoker> mockGLInvoker;
         private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
@@ -51,7 +47,7 @@ namespace VelaptorTests.Content
         {
             this.fontsDirPath = @"C:\temp\Content\Fonts\";
             this.fontDataFilePath = $@"{this.fontsDirPath}{FontContentName}.json";
-            this.fontFilepath = $@"{this.fontsDirPath}{FontContentName}.ttf";
+            var fontFilepath = $@"{this.fontsDirPath}{FontContentName}.ttf";
 
             this.mockGLInvoker = new Mock<IGLInvoker>();
             this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
@@ -63,11 +59,8 @@ namespace VelaptorTests.Content
                 };
 
             this.mockFontAtlasService = new Mock<IFontAtlasService>();
-            this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(this.fontFilepath, It.IsAny<int>()))
-                .Returns(() =>
-                {
-                    return (default(ImageData), this.glyphMetricData);
-                });
+            this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(fontFilepath, It.IsAny<int>()))
+                .Returns(() => (default(ImageData), this.glyphMetricData));
 
             this.mockFontPathResolver = new Mock<IPathResolver>();
             this.mockFontPathResolver.Setup(m => m.ResolveDirPath()).Returns(this.fontsDirPath);
@@ -80,10 +73,8 @@ namespace VelaptorTests.Content
 
             this.mockFile = new Mock<IFile>();
             this.mockFile.Setup(m => m.Exists(this.fontDataFilePath)).Returns(true);
-            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(() =>
-            {
-                return JsonConvert.SerializeObject(this.fontSettings, this.jsonSettings);
-            });
+            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(()
+                => JsonConvert.SerializeObject(this.fontSettings, this.jsonSettings));
 
             this.mockImageService = new Mock<IImageService>();
         }
@@ -109,6 +100,20 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
+        public void Load_WhenInvoked_SetsFontAsPooled()
+        {
+            // Arrange
+            var loader = CreateLoader();
+
+            // Act
+            var actual = loader.Load(FontContentName);
+
+            // Assert
+            Assert.True(actual.IsPooled);
+            Assert.True(actual.FontTextureAtlas.IsPooled);
+        }
+
+        [Fact]
         public void Load_WithAlreadyLoadedAtlasData_ReturnsAlreadyLoadedAtlasData()
         {
             // Arrange
@@ -124,6 +129,25 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
+        public void Load_WhenLoadingSameDataThatIsDisposed_RemovesDataBeforeAdding()
+        {
+            // Arrange
+            var loader = CreateLoader();
+            var loadedFont = loader.Load(FontContentName);
+
+            // Set the font as not being pooled. This will allow us to dispose of
+            // the font to get the font into the disposed state for testing
+            loadedFont.IsPooled = false;
+            loadedFont.Dispose();
+
+            // Act
+            var actual = loader.Load(FontContentName);
+
+            // Assert
+            Assert.NotSame(loadedFont, actual);
+        }
+
+        [Fact]
         public void Load_WithMissingFontJSONDataFile_ThrowsException()
         {
             // Arrange
@@ -132,7 +156,7 @@ namespace VelaptorTests.Content
             var loader = CreateLoader();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 loader.Load(FontContentName);
             }, $"The JSON data file '{this.fontDataFilePath}' describing the font settings for font content '{FontContentName}' is missing.");
@@ -142,16 +166,14 @@ namespace VelaptorTests.Content
         public void Load_WithIssuesDeserializingJSONAtlasData_ThrowsException()
         {
             // Arrange
-            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(() =>
-            {
-                return "invalid-data";
-            });
+            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath))
+                .Returns(() => "invalid-data");
 
             var loader = CreateLoader();
-            var newtonsoftErrorMsg = "Unexpected character encountered while parsing value: i. Path '', line 0, position 0.";
+            const string newtonsoftErrorMsg = "Unexpected character encountered while parsing value: i. Path '', line 0, position 0.";
 
             // Act & Assert
-            Assert.ThrowsWithMessage<LoadContentException>(() =>
+            AssertExtensions.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(FontContentName);
             }, $"There was an issue deserializing the JSON atlas data file at '{this.fontDataFilePath}'.\n{newtonsoftErrorMsg}");
@@ -161,16 +183,14 @@ namespace VelaptorTests.Content
         public void Load_WithNullDeserializeResult_ThrowsException()
         {
             // Arrange
-            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(() =>
-            {
-                return string.Empty;
-            });
+            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath))
+                .Returns(() => string.Empty);
 
             var loader = CreateLoader();
-            var exceptionMessage = "Deserialized font settings are null.";
+            const string exceptionMessage = "Deserialized font settings are null.";
 
             // Act & Assert
-            Assert.ThrowsWithMessage<LoadContentException>(() =>
+            AssertExtensions.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(FontContentName);
             }, $"There was an issue deserializing the JSON atlas data file at '{this.fontDataFilePath}'.\n{exceptionMessage}");
@@ -187,7 +207,7 @@ namespace VelaptorTests.Content
             loader.Unload(FontContentName);
 
             // Assert
-            Assert.True(font.Unloaded);
+            Assert.True(font.IsDisposed);
         }
 
         [Fact]
@@ -202,7 +222,7 @@ namespace VelaptorTests.Content
             loader.Dispose();
 
             // Assert
-            Assert.True(font.Unloaded);
+            Assert.True(font.IsDisposed);
         }
         #endregion
 

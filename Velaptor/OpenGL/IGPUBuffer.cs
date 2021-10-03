@@ -26,11 +26,11 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Updates the given quad using the given information for a particular quad item in the GPU.
         /// </summary>
-        /// <param name="quadID">The ID of the quad to update.</param>
+        /// <param name="quadId">The ID of the quad to update.</param>
         /// <param name="srcRect">The area within the texture to update.</param>
         /// <param name="textureWidth">The width of the texture.</param>
         /// <param name="textureHeight">The height of the texture.</param>
         /// <param name="tintColor">The color to apply to the texture area being rendered.</param>
-        void UpdateQuad(uint quadID, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor);
+        void UpdateQuad(uint quadId, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor);
     }
 }

@@ -4,14 +4,14 @@
 
 namespace VelaptorTesting.Scenes
 {
+    using System;
     using System.Drawing;
     using System.Text;
     using Velaptor;
     using Velaptor.Content;
-    using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.UI;
-    using Core;
+    using VelaptorTesting.Core;
 
     /// <summary>
     /// Used to test out if the keyboard works correctly.
@@ -21,8 +21,8 @@ namespace VelaptorTesting.Scenes
         private const int TopMargin = 40;
         private const int LeftMargin = 5;
         private readonly Keyboard keyboard;
-        private readonly Label instructions;
-        private readonly Label downKeys;
+        private Label? instructions;
+        private Label? downKeys;
         private KeyboardState currentKeyboardState;
 
         /// <summary>
@@ -30,9 +30,21 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         /// <param name="contentLoader">Loads content for the scene.</param>
         public TestKeyboardScene(IContentLoader contentLoader)
-            : base(contentLoader)
+            : base(contentLoader) =>
+                this.keyboard = new Keyboard();
+
+        /// <summary>
+        /// <inheritdoc cref="SceneBase.LoadContent"/>.
+        /// </summary>
+        /// <exception cref="Exception">Thrown if the scene has been disposed.</exception>
+        public override void LoadContent()
         {
-            this.keyboard = new Keyboard();
+            ThrowExceptionIfLoadingWhenDisposed();
+
+            if (IsLoaded)
+            {
+                return;
+            }
 
             this.instructions = new Label(ContentLoader)
             {
@@ -47,18 +59,32 @@ namespace VelaptorTesting.Scenes
             };
 
             this.instructions.Text = "Hit a key on the keyboard to see if it is correct.";
-        }
 
-        public override void Load()
-        {
             this.instructions.LoadContent();
-            this.downKeys.LoadContent();
-
             this.instructions.Position = new Point(LeftMargin, TopMargin);
 
-            base.Load();
+            this.downKeys.LoadContent();
+
+            AddControl(this.instructions);
+            AddControl(this.downKeys);
+
+            base.LoadContent();
         }
 
+        /// <inheritdoc cref="SceneBase.UnloadContent"/>.
+        public override void UnloadContent()
+        {
+            if (!IsLoaded || IsDisposed)
+            {
+                return;
+            }
+
+            DisposeOrUnloadContent();
+
+            base.UnloadContent();
+        }
+
+        /// <inheritdoc cref="SceneBase.Update"/>.
         public override void Update(FrameTime frameTime)
         {
             this.currentKeyboardState = this.keyboard.GetState();
@@ -83,24 +109,37 @@ namespace VelaptorTesting.Scenes
             var posX = (int)((MainWindow.WindowWidth / 2f) - (this.downKeys.Width / 2f));
             var posY = (int)((MainWindow.WindowHeight / 2f) - (this.downKeys.Height / 2f));
 
-            this.downKeys.Position = new Point(posX, posY); // KEEP
-
-            this.instructions.Update(frameTime);
-            this.downKeys.Update(frameTime);
+            this.downKeys.Position = new Point(posX, posY);
 
             base.Update(frameTime);
         }
 
-        /// <summary>
-        /// Renders the scene.
-        /// </summary>
-        /// <param name="spriteBatch">Renders graphics to the screen.</param>
-        public override void Render(ISpriteBatch spriteBatch)
+        /// <inheritdoc cref="SceneBase.Dispose"/>
+        protected override void Dispose(bool disposing)
         {
-            this.instructions.Render(spriteBatch);
-            this.downKeys.Render(spriteBatch);
+            if (IsDisposed || !IsLoaded)
+            {
+                return;
+            }
 
-            base.Render(spriteBatch);
+            if (disposing)
+            {
+                DisposeOrUnloadContent();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Disposes or unloads the scenes content.
+        /// </summary>
+        private void DisposeOrUnloadContent()
+        {
+            RemoveControl(this.instructions);
+            RemoveControl(this.downKeys);
+
+            this.instructions = null;
+            this.downKeys = null;
         }
     }
 }

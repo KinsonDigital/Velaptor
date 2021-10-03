@@ -14,7 +14,7 @@ namespace Velaptor.NativeInterop.FreeType
     internal interface IFreeTypeExtensions
     {
         /// <summary>
-        /// Creates a new font face from a font file at the given <paramref name="fontFilepath"/>.
+        /// Creates a new font face from a font file at the given <paramref name="fontFilePath"/>.
         /// </summary>
         /// <param name="freeTypeLibPtr">The pointer to the free type library.</param>
         /// <param name="fontFilePath">The path to the font file to create the face from.</param>

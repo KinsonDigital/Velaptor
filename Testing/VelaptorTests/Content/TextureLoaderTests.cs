@@ -17,7 +17,7 @@ namespace VelaptorTests.Content
     public class TextureLoaderTests
     {
         private const string TextureFileName = "test-texture.png";
-        private const uint OpenGLTextureID = 1234;
+        private const uint OpenGLTextureId = 1234;
         private readonly string textureFilePath;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IImageService> mockImageService;
@@ -30,7 +30,7 @@ namespace VelaptorTests.Content
         {
             this.textureFilePath = $@"C:\temp\{TextureFileName}";
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockGL.Setup(m => m.GenTexture()).Returns(OpenGLTextureID); // Mock out the OpenGL texture ID
+            this.mockGL.Setup(m => m.GenTexture()).Returns(OpenGLTextureId); // Mock out the OpenGL texture ID
 
             this.mockImageService = new Mock<IImageService>();
             this.mockTexturePathResolver = new Mock<IPathResolver>();
@@ -52,6 +52,25 @@ namespace VelaptorTests.Content
             Assert.Equal(actual.Path, this.textureFilePath);
             this.mockGL.Verify(m => m.GenTexture(), Times.Once());
             this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public void Load_WhenLoadingSameDataThatIsDisposed_RemovesDataBeforeAdding()
+        {
+            // Arrange
+            var loader = CreateLoader();
+            var loadedTexture = loader.Load(TextureFileName);
+
+            // Set the font as not being pooled. This will allow us to dispose of
+            // the font to get the font into the disposed state for testing
+            loadedTexture.IsPooled = false;
+            loadedTexture.Dispose();
+
+            // Act
+            var actual = loader.Load(TextureFileName);
+
+            // Assert
+            Assert.NotSame(loadedTexture, actual);
         }
 
         [Fact]
@@ -81,7 +100,7 @@ namespace VelaptorTests.Content
             loader.Unload(TextureFileName);
 
             // Assert
-            this.mockGL.Verify(m => m.DeleteTexture(OpenGLTextureID), Times.Once());
+            this.mockGL.Verify(m => m.DeleteTexture(OpenGLTextureId), Times.Once());
         }
 
         [Fact]
@@ -96,7 +115,7 @@ namespace VelaptorTests.Content
             loader.Dispose();
 
             // Assert
-            this.mockGL.Verify(m => m.DeleteTexture(OpenGLTextureID), Times.Once());
+            this.mockGL.Verify(m => m.DeleteTexture(OpenGLTextureId), Times.Once());
         }
         #endregion
 

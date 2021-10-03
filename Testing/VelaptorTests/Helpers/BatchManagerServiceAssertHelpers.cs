@@ -9,6 +9,7 @@ namespace VelaptorTests.Helpers
     using System.Drawing;
     using System.Numerics;
     using Moq;
+    using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.Services;
 

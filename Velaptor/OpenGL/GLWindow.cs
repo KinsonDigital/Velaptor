@@ -320,12 +320,8 @@ namespace Velaptor.OpenGL
         /// <inheritdoc/>
         public void Close() => this.windowFacade.Close();
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
         /// Invokes the <see cref="Initialize"/> action property.
@@ -461,38 +457,40 @@ namespace Velaptor.OpenGL
         private void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
         private void Dispose(bool disposing)
         {
-            if (!this.isDiposed)
+            if (this.isDiposed)
             {
-                if (disposing)
-                {
-                    this.glObservable.Dispose();
-
-                    CachedStringProps.Clear();
-                    CachedIntProps.Clear();
-                    CachedBoolProps.Clear();
-
-                    // TODO: Unit test for this unsubscription
-                    this.gl.GLError -= GL_GLError;
-
-                    this.windowFacade.Load -= GameWindow_Load;
-                    this.windowFacade.Unload -= GameWindow_Unload;
-                    this.windowFacade.UpdateFrame -= GameWindow_UpdateFrame;
-                    this.windowFacade.RenderFrame -= GameWindow_RenderFrame;
-                    this.windowFacade.Resize -= GameWindow_Resize;
-                    this.windowFacade.Dispose();
-                    this.taskService?.Dispose();
-
-                    this.gl.Dispose();
-                    this.glfw.Dispose();
-                }
-
-                this.isDiposed = true;
+                return;
             }
+
+            if (disposing)
+            {
+                this.glObservable.Dispose();
+
+                CachedStringProps.Clear();
+                CachedIntProps.Clear();
+                CachedBoolProps.Clear();
+
+                // TODO: Unit test for this unsubscription
+                this.gl.GLError -= GL_GLError;
+
+                this.windowFacade.Load -= GameWindow_Load;
+                this.windowFacade.Unload -= GameWindow_Unload;
+                this.windowFacade.UpdateFrame -= GameWindow_UpdateFrame;
+                this.windowFacade.RenderFrame -= GameWindow_RenderFrame;
+                this.windowFacade.Resize -= GameWindow_Resize;
+                this.windowFacade.Dispose();
+                this.taskService?.Dispose();
+
+                this.gl.Dispose();
+                this.glfw.Dispose();
+            }
+
+            this.isDiposed = true;
         }
 
         /// <summary>

@@ -7,12 +7,11 @@ namespace Velaptor.Content
     using System;
     using System.IO;
     using Velaptor.Content.Exceptions;
-    using Velaptor.Graphics;
 
     /// <summary>
     /// Loads content.
     /// </summary>
-    public class ContentLoader : IContentLoader
+    public sealed class ContentLoader : IContentLoader
     {
         private readonly ILoader<ITexture> textureLoader;
         private readonly ILoader<ISound> soundLoader;
@@ -101,18 +100,14 @@ namespace Velaptor.Content
             throw new UnknownContentException($"The content of type '{typeof(T)}' is unknown.");
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (this.isDisposed)
             {

@@ -18,9 +18,10 @@ namespace Velaptor.Factories
         /// </summary>
         /// <param name="renderSurfaceWidth">The width of the render surface.</param>
         /// <param name="renderSurfaceHeight">The height of the render surface.</param>
-        /// <returns>A Velaaptor implemented sprite batch.</returns>
+        /// <returns>A Velaptor implemented sprite batch.</returns>
         public static ISpriteBatch CreateSpriteBatch(int renderSurfaceWidth, int renderSurfaceHeight)
         {
+            // TODO: Make this static class field
             var result = IoC.Container.GetInstance<ISpriteBatch>();
 
             result.RenderSurfaceWidth = renderSurfaceWidth;

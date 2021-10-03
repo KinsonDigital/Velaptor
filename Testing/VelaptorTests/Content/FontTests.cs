@@ -8,6 +8,7 @@ namespace VelaptorTests.Content
     using System.Drawing;
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using Xunit;
 
@@ -47,7 +48,7 @@ namespace VelaptorTests.Content
 
         #region Prop Tests
         [Fact]
-        public void Metrics_WhenGettingValueAtIndex_ReturnsCorrectReuslt()
+        public void Metrics_WhenGettingValueAtIndex_ReturnsCorrectResult()
         {
             // Arrange
             var glyphMetrics = new GlyphMetrics[]
@@ -90,6 +91,60 @@ namespace VelaptorTests.Content
             // Assert
             Assert.Equal(glyphMetrics[0], actual);
         }
+
+        [Fact]
+        public void IsPooled_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var settings = new FontSettings()
+            {
+                Size = 14,
+                Style = FontStyle.Regular,
+            };
+
+            var font = new Font(
+                this.mockFontTexture.Object,
+                It.IsAny<GlyphMetrics[]>(),
+                settings,
+                It.IsAny<char[]>(),
+                It.IsAny<string>(),
+                It.IsAny<string>());
+
+            // Act
+            font.IsPooled = true;
+            var actual = font.IsPooled;
+
+            // Assert
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void HasKerning_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var settings = new FontSettings()
+            {
+                Size = 14,
+                Style = FontStyle.Regular,
+            };
+
+            // Act
+            var font = new Font(
+                this.mockFontTexture.Object,
+                It.IsAny<GlyphMetrics[]>(),
+                settings,
+                It.IsAny<char[]>(),
+                It.IsAny<string>(),
+                It.IsAny<string>())
+            {
+                HasKerning = true,
+            };
+
+            var actual = font.HasKerning;
+
+            // Assert
+            Assert.True(actual);
+        }
         #endregion
 
         #region Method Tests
@@ -119,7 +174,38 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Dispose_WhenInvoked_DisposesOfTextureAndFont()
+        public void Dispose_WhenInvoked_DisposesFont()
+        {
+            // Arrange
+            var settings = new FontSettings()
+            {
+                Size = 14,
+                Style = FontStyle.Regular,
+            };
+
+            // Simulate that the texture has been pooled
+            this.mockFontTexture.SetupProperty(p => p.IsPooled);
+            this.mockFontTexture.Object.IsPooled = true;
+
+            var font = new Font(
+                this.mockFontTexture.Object,
+                Array.Empty<GlyphMetrics>(),
+                settings,
+                It.IsAny<char[]>(),
+                It.IsAny<string>(),
+                It.IsAny<string>());
+
+            // Act
+            font.Dispose();
+            font.Dispose();
+
+            // Assert
+            Assert.False(font.FontTextureAtlas.IsPooled);
+            this.mockFontTexture.Verify(m => m.Dispose(), Times.Once());
+        }
+
+        [Fact]
+        public void Dispose_WhilePooled_ThrowsException()
         {
             // Arrange
             var settings = new FontSettings()
@@ -135,13 +221,13 @@ namespace VelaptorTests.Content
                 It.IsAny<char[]>(),
                 It.IsAny<string>(),
                 It.IsAny<string>());
+            font.IsPooled = true;
 
-            // Act
-            font.Dispose();
-            font.Dispose();
-
-            // Assert
-            this.mockFontTexture.Verify(m => m.Dispose(), Times.Once());
+            // Act & Assert
+            Assert.Throws<PooledDisposalException>(() =>
+            {
+                font.Dispose();
+            });
         }
         #endregion
     }

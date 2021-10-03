@@ -2,12 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Linq;
-
 namespace VelaptorTesting
 {
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Linq;
     using Velaptor;
     using Velaptor.Factories;
     using Velaptor.UI;
@@ -69,16 +68,24 @@ namespace VelaptorTesting
             // TODO: Update the static window width and height when the size of the window changes
         }
 
+        /// <summary>
+        /// Gets the width fo the window.
+        /// </summary>
         public static int WindowWidth { get; private set; }
 
+        /// <summary>
+        /// Gets the height of the window.
+        /// </summary>
         public static int WindowHeight { get; private set; }
 
+        /// <inheritdoc cref="Window.OnLoad"/>
         public override void OnLoad()
         {
-            this.sceneManager.Load();
+            this.sceneManager.LoadContent();
             base.OnLoad();
         }
 
+        /// <inheritdoc cref="Window.OnUpdate"/>
         public override void OnUpdate(FrameTime frameTime)
         {
             this.sceneManager.Update(frameTime);
@@ -88,6 +95,7 @@ namespace VelaptorTesting
             base.OnUpdate(frameTime);
         }
 
+        /// <inheritdoc cref="Window.OnDraw"/>
         public override void OnDraw(FrameTime frameTime)
         {
             this.sceneManager.Render();
@@ -95,6 +103,14 @@ namespace VelaptorTesting
             base.OnDraw(frameTime);
         }
 
+        /// <inheritdoc cref="Window.OnUnload"/>
+        public override void OnUnload()
+        {
+            this.sceneManager.UnloadContent();
+            base.OnUnload();
+        }
+
+        /// <inheritdoc cref="Window.OnResize"/>
         public override void OnResize()
         {
             WindowWidth = Width;
@@ -112,7 +128,7 @@ namespace VelaptorTesting
         /// <remarks>
         ///     If the value was 'MyScene', it would return 'My Scene'.
         /// </remarks>
-        protected static string ProcessName(string value)
+        private static string ProcessName(string value)
         {
             var sections = SplitByUpperCase(value);
             var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");

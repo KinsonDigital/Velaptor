@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Graphics;
+
 namespace Velaptor.Services
 {
     using System;
@@ -10,7 +12,7 @@ namespace Velaptor.Services
     using System.Drawing;
     using System.Linq;
     using System.Numerics;
-    using Velaptor.Graphics;
+    using Content;
     using Velaptor.OpenGL;
 
     /// <summary>
@@ -20,8 +22,8 @@ namespace Velaptor.Services
     {
         private readonly Dictionary<uint, SpriteBatchItem> batchItems = new ();
         private bool firstRenderMethodInvoke = true;
-        private uint currentTextureID;
-        private uint previousTextureID;
+        private uint currentTextureId;
+        private uint previousTextureId;
         private uint currentBatchItem;
 
         /// <inheritdoc/>
@@ -66,9 +68,9 @@ namespace Velaptor.Services
                 }
             }
 
-            this.currentTextureID = texture.ID;
+            this.currentTextureId = texture.Id;
 
-            var hasSwitchedTexture = this.currentTextureID != this.previousTextureID
+            var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
                 && this.firstRenderMethodInvoke is false;
             var batchIsFull = this.batchItems.Values.ToArray().All(i => !i.IsEmpty);
 
@@ -77,11 +79,11 @@ namespace Velaptor.Services
             {
                 BatchReady?.Invoke(this, EventArgs.Empty);
                 this.currentBatchItem = 0u;
-                this.previousTextureID = 0u;
+                this.previousTextureId = 0u;
             }
 
             var batchItem = this.batchItems[this.currentBatchItem];
-            batchItem.TextureID = texture.ID;
+            batchItem.TextureId = texture.Id;
             batchItem.SrcRect = srcRect;
             batchItem.DestRect = destRect;
             batchItem.Size = size;
@@ -92,7 +94,7 @@ namespace Velaptor.Services
             this.batchItems[this.currentBatchItem] = batchItem;
 
             this.currentBatchItem += 1;
-            this.previousTextureID = this.currentTextureID;
+            this.previousTextureId = this.currentTextureId;
             this.firstRenderMethodInvoke = false;
         }
 
@@ -105,7 +107,7 @@ namespace Velaptor.Services
             }
 
             this.currentBatchItem = 0;
-            this.previousTextureID = 0;
+            this.previousTextureId = 0;
         }
 
         /// <inheritdoc/>

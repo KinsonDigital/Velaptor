@@ -10,14 +10,13 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using Newtonsoft.Json;
     using Velaptor.Content.Exceptions;
-    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
     /// <summary>
     /// Loads atlas data.
     /// </summary>
-    public class AtlasLoader : ILoader<IAtlasData>
+    public sealed class AtlasLoader : ILoader<IAtlasData>
     {
         private readonly ConcurrentDictionary<string, IAtlasData> atlases = new ();
         private readonly IGLInvoker gl;
@@ -66,9 +65,22 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public IAtlasData Load(string name)
         {
-            var atlasDataDirPath = this.atlasDataPathResolver.ResolveDirPath();
+            var atlasDataPathNoExtension = $"{this.atlasDataPathResolver.ResolveDirPath()}{name}";
 
-            return this.atlases.GetOrAdd($"{atlasDataDirPath}{name}", (path) =>
+            // If the requested texture atlas is already loaded into the pool
+            // and has been disposed, remove it.
+            foreach (var font in this.atlases)
+            {
+                if (font.Key != atlasDataPathNoExtension || !font.Value.IsDisposed)
+                {
+                    continue;
+                }
+
+                this.atlases.TryRemove(font);
+                break;
+            }
+
+            return this.atlases.GetOrAdd(atlasDataPathNoExtension, (path) =>
             {
                 var atlasDataFilePath = $"{path}.json";
                 var atlasImageFilePath = $"{path}.png";
@@ -91,37 +103,35 @@ namespace Velaptor.Content
                     throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{atlasDataFilePath}'.\n{ex.Message}");
                 }
 
-                ImageData data = this.imageService.Load(atlasImageFilePath);
+                var data = this.imageService.Load(atlasImageFilePath);
 
-                var atlasTexture = new Texture(this.gl, name, path, data);
+                var atlasTexture = new Texture(this.gl, name, path, data) { IsPooled = true };
 
-                return new AtlasData(atlasTexture, atlasSpriteData, name, path);
+                return new AtlasData(atlasTexture, atlasSpriteData, name, path) { IsPooled = true };
             });
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
         public void Unload(string name)
         {
             var filePathNoExtension = $"{this.atlasDataPathResolver.ResolveDirPath()}{name}";
 
             if (this.atlases.TryRemove(filePathNoExtension, out var atlas))
             {
+                atlas.IsPooled = false;
                 atlas.Dispose();
             }
         }
 
         /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => Dispose(true);
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (this.isDisposed)
             {
@@ -132,6 +142,7 @@ namespace Velaptor.Content
             {
                 foreach (var atlas in this.atlases.Values)
                 {
+                    atlas.IsPooled = false;
                     atlas.Dispose();
                 }
 

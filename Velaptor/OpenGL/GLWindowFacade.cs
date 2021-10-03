@@ -352,7 +352,7 @@ namespace Velaptor.OpenGL
             this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             Dispose(true);
@@ -360,7 +360,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)

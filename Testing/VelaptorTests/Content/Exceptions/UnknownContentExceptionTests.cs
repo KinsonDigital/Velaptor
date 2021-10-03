@@ -1,37 +1,34 @@
-﻿// <copyright file="InvalidRenderEffectsExceptionTests.cs" company="KinsonDigital">
+﻿// <copyright file="UnknownContentExceptionTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Exceptions
+namespace VelaptorTests.Content.Exceptions
 {
     using System;
-    using Velaptor.Content;
     using Velaptor.Content.Exceptions;
-    using Velaptor.Exceptions;
-    using Velaptor.Graphics;
     using Xunit;
 
     /// <summary>
     /// Tests the <see cref="UnknownContentException"/> class.
     /// </summary>
-    public class InvalidRenderEffectsExceptionTests
+    public class UnknownContentExceptionTests
     {
         #region Constructor Tests
         [Fact]
         public void Ctor_WithNoParam_CorrectlySetsExceptionMessage()
         {
             // Act
-            var exception = new InvalidRenderEffectsException();
+            var exception = new UnknownContentException();
 
             // Assert
-            Assert.Equal($"{nameof(RenderEffects)} value invalid.", exception.Message);
+            Assert.Equal("Content unknown.", exception.Message);
         }
 
         [Fact]
         public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMesage()
         {
             // Act
-            var exception = new InvalidRenderEffectsException("test-message");
+            var exception = new UnknownContentException("test-message");
 
             // Assert
             Assert.Equal("test-message", exception.Message);
@@ -44,7 +41,7 @@ namespace VelaptorTests.Exceptions
             var innerException = new Exception("inner-exception");
 
             // Act
-            var deviceException = new InvalidRenderEffectsException("test-exception", innerException);
+            var deviceException = new UnknownContentException("test-exception", innerException);
 
             // Assert
             Assert.Equal("inner-exception", deviceException.InnerException.Message);

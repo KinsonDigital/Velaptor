@@ -11,8 +11,10 @@ namespace Velaptor.Graphics
     using System.Linq;
     using System.Numerics;
     using FreeTypeSharp.Native;
+    using Velaptor.Content;
     using Velaptor.Exceptions;
-    using Velaptor.NativeInterop;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
@@ -20,10 +22,9 @@ namespace Velaptor.Graphics
     using Velaptor.Services;
 
     /// <inheritdoc/>
-    internal class SpriteBatch : ISpriteBatch
+    internal sealed class SpriteBatch : ISpriteBatch
     {
         private const char InvalidCharacter = '□';
-        private readonly Dictionary<uint, SpriteBatchItem> batchItems = new ();
         private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
@@ -41,7 +42,7 @@ namespace Velaptor.Graphics
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes OpenGL extentions methods.</param>
+        /// <param name="glExtensions">Invokes OpenGL extensions methods.</param>
         /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
         /// <param name="shader">The shader used for rendering.</param>
         /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
@@ -49,7 +50,7 @@ namespace Velaptor.Graphics
         /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
         /// <remarks>
         ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
-        ///     pushes the notification that OpenGL has been intialized.
+        ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
         [ExcludeFromCodeCoverage]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -67,38 +68,19 @@ namespace Velaptor.Graphics
             OpenGLInitObservable glObservable)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
-            if (gl is null)
-            {
-                throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
-            }
-
-            if (glExtensions is null)
-            {
-                throw new ArgumentNullException(nameof(glExtensions), $"The '{nameof(IGLInvokerExtensions)}' must not be null.");
-            }
-
-            if (shader is null)
-            {
-                throw new ArgumentNullException(nameof(shader), $"The '{nameof(IShaderProgram)}' must not be null.");
-            }
-
-            if (gpuBuffer is null)
-            {
-                throw new ArgumentNullException(nameof(gpuBuffer), $"The '{nameof(IGPUBuffer)}' must not be null.");
-            }
-
-            this.gl = gl;
-            this.glExtensions = glExtensions;
+            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
+            this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), $"The '{nameof(IGLInvokerExtensions)}' must not be null.");
             this.freeTypeInvoker = freeTypeInvoker;
-            this.shader = shader;
-            this.gpuBuffer = gpuBuffer;
+            this.shader = shader ?? throw new ArgumentNullException(nameof(shader), $"The '{nameof(IShaderProgram)}' must not be null.");
+            this.gpuBuffer = gpuBuffer ?? throw new ArgumentNullException(nameof(gpuBuffer), $"The '{nameof(IGPUBuffer)}' must not be null.");
+
             this.batchManagerService = batchManagerService;
 
             this.batchManagerService.BatchReady += BatchManagerService_BatchReady;
 
             // Receive a push notification that OpenGL has initialized
             GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
-                onNext: (isInitialized) =>
+                _ =>
                 {
                     this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
@@ -130,7 +112,7 @@ namespace Velaptor.Graphics
         /// <inheritdoc/>
         public Color ClearColor
         {
-            get => this.cachedClearColor is null ? Color.Empty : this.cachedClearColor.GetValue();
+            get => this.cachedClearColor.GetValue();
             set => this.cachedClearColor.SetValue(value);
         }
 
@@ -142,10 +124,10 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Gets the unsubscriber for the subcription
+        /// Gets the unsubscriber for the subscription
         /// to the <see cref="OpenGLInitObservable"/>.
         /// </summary>
-        internal IDisposable GLObservableUnsubscriber { get; private set; }
+        private IDisposable GLObservableUnsubscriber { get; }
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
@@ -156,7 +138,6 @@ namespace Velaptor.Graphics
         public void RenderLine(Vector2 start, Vector2 stop)
         {
             this.gl.Enable(GLEnableCap.LineSmooth);
-
 
             this.gl.Disable(GLEnableCap.LineSmooth);
         }
@@ -318,19 +299,14 @@ namespace Velaptor.Graphics
             this.hasBegun = false;
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting
-        /// unmanaged resources.
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> if managed resources should be disposed of.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (this.isDisposed)
             {
@@ -340,7 +316,6 @@ namespace Velaptor.Graphics
             if (disposing)
             {
                 this.batchManagerService.BatchReady -= BatchManagerService_BatchReady;
-                this.batchItems.Clear();
                 this.cachedIntProps.Clear();
                 this.shader.Dispose();
                 this.gpuBuffer.Dispose();
@@ -446,8 +421,8 @@ namespace Velaptor.Graphics
 
             for (var i = 0; i < this.batchManagerService.BatchItems.Values.Count; i++)
             {
-                var quadID = i;
-                var batchItem = this.batchManagerService.BatchItems[(uint)quadID];
+                var quadId = i;
+                var batchItem = this.batchManagerService.BatchItems[(uint)quadId];
 
                 if (batchItem.IsEmpty)
                 {
@@ -457,31 +432,49 @@ namespace Velaptor.Graphics
                 if (!textureIsBound)
                 {
                     // TODO: Verify that this is being invoked with proper values with unit tests
-                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureID);
+                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
                     textureIsBound = true;
                 }
 
-                var srcRectWidth = batchItem.SrcRect.Width;
-                var srcRectHeight = batchItem.SrcRect.Height;
-
-                // Set the source rectangle width and height based on the render effects
-                srcRectWidth = batchItem.Effects switch
+                var exceptedEffects = new[]
                 {
-                    RenderEffects.None => batchItem.SrcRect.Width,
-                    RenderEffects.FlipHorizontally => batchItem.SrcRect.Width * -1,
-                    RenderEffects.FlipVertically => batchItem.SrcRect.Width,
-                    RenderEffects.FlipBothDirections => batchItem.SrcRect.Width * -1,
-                    _ => throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid."),
+                    (int)RenderEffects.None,
+                    (int)RenderEffects.FlipHorizontally,
+                    (int)RenderEffects.FlipVertically,
+                    (int)RenderEffects.FlipBothDirections,
                 };
 
-                srcRectHeight = batchItem.Effects switch
+                if (exceptedEffects.Contains((int)batchItem.Effects) is false)
                 {
-                    RenderEffects.None => batchItem.SrcRect.Height,
-                    RenderEffects.FlipHorizontally => batchItem.SrcRect.Height,
-                    RenderEffects.FlipVertically => batchItem.SrcRect.Height * -1,
-                    RenderEffects.FlipBothDirections => batchItem.SrcRect.Height * -1,
-                    _ => throw new InvalidRenderEffectsException($"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid."),
-                };
+                    throw new InvalidRenderEffectsException(
+                        $"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid.");
+                }
+
+                int srcRectWidth;
+                int srcRectHeight;
+
+                switch (batchItem.Effects)
+                {
+                    case RenderEffects.None:
+                        srcRectWidth = batchItem.SrcRect.Width;
+                        srcRectHeight = batchItem.SrcRect.Height;
+                        break;
+                    case RenderEffects.FlipHorizontally:
+                        srcRectWidth = batchItem.SrcRect.Width * -1;
+                        srcRectHeight = batchItem.SrcRect.Height;
+                        break;
+                    case RenderEffects.FlipVertically:
+                        srcRectWidth = batchItem.SrcRect.Width;
+                        srcRectHeight = batchItem.SrcRect.Height * -1;
+                        break;
+                    case RenderEffects.FlipBothDirections:
+                        srcRectWidth = batchItem.SrcRect.Width * -1;
+                        srcRectHeight = batchItem.SrcRect.Height * -1;
+                        break;
+                    default:
+                        throw new InvalidRenderEffectsException(
+                            $"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid.");
+                }
 
                 var viewPortSize = this.glExtensions.GetViewPortSize();
                 var transMatrix = this.batchManagerService.BuildTransformationMatrix(
@@ -493,10 +486,10 @@ namespace Velaptor.Graphics
                     batchItem.Size,
                     batchItem.Angle);
 
-                this.gl.UniformMatrix4(this.transDataLocation + quadID, 1u, true, transMatrix);
+                this.gl.UniformMatrix4(this.transDataLocation + quadId, 1u, true, transMatrix);
 
                 this.gpuBuffer.UpdateQuad(
-                    (uint)quadID,
+                    (uint)quadId,
                     batchItem.SrcRect,
                     batchItem.DestRect.Width,
                     batchItem.DestRect.Height,

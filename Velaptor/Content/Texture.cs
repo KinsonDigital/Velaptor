@@ -1,21 +1,40 @@
-﻿// <copyright file="Texture.cs" company="KinsonDigital">
+// <copyright file="Texture.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Graphics
+namespace Velaptor.Content
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
 
     /// <summary>
     /// The texture to render to a screen.
     /// </summary>
-    public class Texture : ITexture
+    public sealed class Texture : ITexture
     {
         private readonly IGLInvoker gl;
+
+        /*NOTE:
+         * This flag is for the purpose of unit testing.  This flag gets set in one location and that is
+         * the finalizer.  This then gets checked to see if it is false in the Dispose() method.
+         *
+         * If the finalizer is false and the Texture is pooled, it will then allow the PooledDisposalException
+         * to be thrown.
+         *
+         * An issue arises when running enough unit tests together with this class being included in those tests
+         * When a lot of tests are ran, the finalizers is being invoked which then in turn invokes the Dispose()
+         * method. This in turn then throws the exception which is not expected in the unit tests which fails the
+         * unit test.
+         *
+         * This happens when the pooling status of an object is true, and the object was disposed of in the test,
+         * but the finalizer gets invoked before the GC.SuppressFinalize(this) is invoked.
+         */
+        private bool invokedFromFinalizer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
@@ -48,54 +67,52 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Finalizes an instance of the <see cref="Texture"/> class.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         ~Texture()
         {
-            Dispose(false);
+            this.invokedFromFinalizer = true;
+            Dispose();
         }
 
         /// <inheritdoc/>
-        public uint ID { get; protected set; }
+        public uint Id { get; private set; }
 
         /// <inheritdoc/>
         public string Name { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
-        public string Path { get; set; }
+        public string Path { get; }
 
         /// <inheritdoc/>
-        public int Width { get; protected set; }
+        public int Width { get; private set; }
 
         /// <inheritdoc/>
-        public int Height { get; protected set; }
+        public int Height { get; private set; }
 
         /// <inheritdoc/>
-        public bool Unloaded { get; private set; }
+        public bool IsDisposed { get; private set; }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting
-        /// unmanaged resources.
-        /// </summary>
+        /// <inheritdoc/>
+        public bool IsPooled { get; set; }
+
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting
-        /// unmanaged resources.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> if managed resources should be disposed of.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (Unloaded)
+            if (IsDisposed)
             {
                 return;
             }
 
-            this.gl.DeleteTexture(ID);
+            if (IsPooled && this.invokedFromFinalizer is false)
+            {
+                throw new PooledDisposalException();
+            }
 
-            Unloaded = true;
+            this.gl.DeleteTexture(Id);
+
+            IsDisposed = true;
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -105,9 +122,9 @@ namespace Velaptor.Graphics
         /// <param name="imageData">The image data of the texture.</param>
         private void Init(string name, ImageData imageData)
         {
-            ID = this.gl.GenTexture();
+            Id = this.gl.GenTexture();
 
-            this.gl.BindTexture(GLTextureTarget.Texture2D, ID);
+            this.gl.BindTexture(GLTextureTarget.Texture2D, Id);
 
             // TODO: Make the Texture.Width and Texture.Height uint data type
             Width = (int)imageData.Width;
@@ -150,7 +167,7 @@ namespace Velaptor.Graphics
                 rowBytes.Clear();
             }
 
-            this.gl.ObjectLabel(GLObjectIdentifier.Texture, ID, 1u, name);
+            this.gl.ObjectLabel(GLObjectIdentifier.Texture, Id, 1u, name);
 
             // Set the min and mag filters to linear
             this.gl.TexParameter(

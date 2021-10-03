@@ -2,12 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Graphics
+namespace VelaptorTests.Content
 {
     using System;
     using System.Collections.Generic;
     using System.Drawing;
     using Moq;
+    using Velaptor.Content;
+    using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
@@ -18,9 +20,11 @@ namespace VelaptorTests.Graphics
     /// </summary>
     public class TextureTests
     {
+        private const string TextureName = "test-texture";
+        private const string TexturePath = @"C:\temp\test-texture.png";
+        private const uint TextureId = 1234;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly ImageData imageData;
-        private readonly uint textureID = 1234;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureTests"/> class.
@@ -34,7 +38,6 @@ namespace VelaptorTests.Graphics
              * OpenGL expects the layout to be RGBA.  The texture class changes this
              * this layout to meet OpenGL's requirements.
              */
-
             for (var y = 0; y < this.imageData.Height; y++)
             {
                 for (var x = 0; x < this.imageData.Width; x++)
@@ -64,7 +67,7 @@ namespace VelaptorTests.Graphics
             }
 
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockGL.Setup(m => m.GenTexture()).Returns(this.textureID);
+            this.mockGL.Setup(m => m.GenTexture()).Returns(TextureId);
         }
 
         #region Constructor Tests
@@ -97,7 +100,7 @@ namespace VelaptorTests.Graphics
             var texture = new Texture(this.mockGL.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
 
             // Assert
-            this.mockGL.Verify(m => m.ObjectLabel(GLObjectIdentifier.Texture, this.textureID, 1u, "test-texture.png"), Times.Once());
+            this.mockGL.Verify(m => m.ObjectLabel(GLObjectIdentifier.Texture, TextureId, 1u, "test-texture.png"), Times.Once());
             this.mockGL.Verify(m => m.TexParameter(
                 GLTextureTarget.Texture2D,
                 GLTextureParameterName.TextureMinFilter,
@@ -133,20 +136,107 @@ namespace VelaptorTests.Graphics
         }
         #endregion
 
+        #region Prop Tests
+        [Fact]
+        public void Id_WhenCreatingTexture_ReturnsCorrectResult()
+        {
+            // Arrange
+            var texture = CreateTexture();
+
+            // Act
+            var actual = texture.Id;
+
+            // Assert
+            Assert.Equal(TextureId, actual);
+        }
+
+        [Fact]
+        public void Name_WhenCreatingTexture_ReturnsCorrectResult()
+        {
+            // Arrange
+            var texture = CreateTexture();
+
+            // Act
+            var actual = texture.Name;
+
+            // Assert
+            Assert.Equal(TextureName, actual);
+        }
+
+        [Fact]
+        public void Path_WhenCreatingTexture_ReturnsCorrectResult()
+        {
+            // Arrange
+            var texture = CreateTexture();
+
+            // Act
+            var actual = texture.Path;
+
+            // Assert
+            Assert.Equal(TexturePath, actual);
+        }
+
+        [Fact]
+        public void Width_WhenCreatingTexture_ReturnsCorrectResult()
+        {
+            // Arrange
+            var texture = CreateTexture();
+
+            // Act
+            var actual = texture.Width;
+
+            // Assert
+            Assert.Equal(2, actual);
+        }
+
+        [Fact]
+        public void Height_WhenCreatingTexture_ReturnsCorrectResult()
+        {
+            // Arrange
+            var texture = CreateTexture();
+
+            // Act
+            var actual = texture.Height;
+
+            // Assert
+            Assert.Equal(3, actual);
+        }
+        #endregion
+
         #region Method Tests
         [Fact]
         public void Dispose_WhenUnmanagedResourcesIsNotDisposed_DisposesOfUnmanagedResources()
         {
             // Arrange
-            var texture = new Texture(this.mockGL.Object, "test-texture", $@"C:\temp\test-texture.png", this.imageData);
+            var texture = CreateTexture();
 
             // Act
             texture.Dispose();
             texture.Dispose();
 
             // Assert
-            this.mockGL.Verify(m => m.DeleteTexture(this.textureID), Times.Once());
+            this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
+        }
+
+        [Fact]
+        public void Dispose_WhilePooled_ThrowsException()
+        {
+            // Arrange
+            var texture = CreateTexture();
+            texture.IsPooled = true;
+
+            // Act & Assert
+            Assert.Throws<PooledDisposalException>(() =>
+            {
+                texture.Dispose();
+            });
         }
         #endregion
+
+        /// <summary>
+        /// Creates a texture for the purpose of testing.
+        /// </summary>
+        /// <returns>The texture instance to test.</returns>
+        private Texture CreateTexture() => new (this.mockGL.Object, TextureName, TexturePath, this.imageData);
     }
 }

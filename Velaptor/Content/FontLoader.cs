@@ -11,15 +11,14 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using Newtonsoft.Json;
     using Velaptor.Content.Exceptions;
-    using Velaptor.Graphics;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
     /// <summary>
     /// Loads font content for rendering text.
     /// </summary>
-    public class FontLoader : ILoader<IFont>
+    public sealed class FontLoader : ILoader<IFont>
     {
         private readonly ConcurrentDictionary<string, IFont> fonts = new ();
         private readonly IGLInvoker gl;
@@ -28,14 +27,14 @@ namespace Velaptor.Content
         private readonly IPathResolver fontPathResolver;
         private readonly IFile file;
         private readonly IImageService imageService;
-        private readonly char[] glyphChars = new[]
+        private readonly char[] glyphChars =
         {
             'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
             'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
             '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
             '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
         };
-        private bool isDiposed;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
@@ -89,7 +88,20 @@ namespace Velaptor.Content
             var fontsDirPath = this.fontPathResolver.ResolveDirPath();
             var filePathNoExtension = $"{fontsDirPath}{name}";
 
-            return this.fonts.GetOrAdd(filePathNoExtension, (path) =>
+            // If the requested font is already loaded into the pool
+            // and has been disposed, remove it.
+            foreach (var font in this.fonts)
+            {
+                if (font.Key != filePathNoExtension || !font.Value.IsDisposed)
+                {
+                    continue;
+                }
+
+                this.fonts.TryRemove(font);
+                break;
+            }
+
+            return this.fonts.GetOrAdd(filePathNoExtension, path =>
             {
                 var fontDataFilePath = $"{path}.json";
                 var fontFilePath = $"{path}.ttf";
@@ -124,42 +136,39 @@ namespace Velaptor.Content
                 // to be flipped vertically before being sent to OpenGL.
                 fontAtlasImage = this.imageService.FlipVertically(fontAtlasImage);
 
-                var fontAtlasTexture = new Texture(this.gl, name, path, fontAtlasImage);
+                var fontAtlasTexture = new Texture(this.gl, name, path, fontAtlasImage) { IsPooled = true };
 
-                var font = new Font(fontAtlasTexture, atlasData, fontSettings, this.glyphChars, name, path)
+                return new Font(fontAtlasTexture, atlasData, fontSettings, this.glyphChars, name, path)
                 {
+                    IsPooled = true,
                     HasKerning = this.freeTypeInvoker.FT_Has_Kerning(),
                 };
-
-                return font;
             });
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
         public void Unload(string name)
         {
             var filePathNoExtension = $"{this.fontPathResolver.ResolveDirPath()}{name}";
 
             if (this.fonts.TryRemove(filePathNoExtension, out var font))
             {
+                font.IsPooled = false;
                 font.Dispose();
             }
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
-            if (this.isDiposed)
+            if (this.isDisposed)
             {
                 return;
             }
@@ -168,11 +177,12 @@ namespace Velaptor.Content
             {
                 foreach (var font in this.fonts.Values)
                 {
+                    font.IsPooled = false;
                     font.Dispose();
                 }
             }
 
-            this.isDiposed = true;
+            this.isDisposed = true;
         }
     }
 }

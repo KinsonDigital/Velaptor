@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Exceptions
+namespace VelaptorTests.Content.Exceptions
 {
     using System;
     using Velaptor.Content.Exceptions;

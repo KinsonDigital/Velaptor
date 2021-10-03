@@ -10,7 +10,7 @@ namespace Velaptor.Content
     public interface IContentLoadable
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the content for an object is loaded.
+        /// Gets a value indicating whether the content for an object is loaded.
         /// </summary>
         bool IsLoaded { get; }
 
@@ -18,5 +18,10 @@ namespace Velaptor.Content
         /// Load the content for an object.
         /// </summary>
         void LoadContent();
+
+        /// <summary>
+        /// Unloads the content for an object.
+        /// </summary>
+        void UnloadContent();
     }
 }

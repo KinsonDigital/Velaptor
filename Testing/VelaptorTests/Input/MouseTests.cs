@@ -152,7 +152,7 @@ namespace VelaptorTests.Input
             Assert.Equal(0, IMouseInput<MouseButton, MouseState>.ScrollWheelValue);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => ClearMouseState();
 
         /// <summary>

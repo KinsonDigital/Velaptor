@@ -21,7 +21,6 @@ namespace Velaptor.UI
         private readonly Dictionary<char, int> glyphWidths = new ();
         private IFont? font;
         private string? labelText = string.Empty;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Label"/> class.
@@ -55,9 +54,19 @@ namespace Velaptor.UI
         /// </summary>
         public Color Color { get; set; } = Color.Black;
 
-        /// <inheritdoc cref="ControlBase"/>
+        /// <summary>
+        /// <inheritdoc cref="ControlBase.UnloadContent"/>
+        /// </summary>
+        /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
         {
+            ThrowExceptionIfLoadingWhenDisposed();
+
+            if (IsLoaded)
+            {
+                return;
+            }
+
             this.font = this.contentLoader?.Load<IFont>("TimesNewRoman");
 
             LoadGlyphSizes();
@@ -68,7 +77,26 @@ namespace Velaptor.UI
             base.LoadContent();
         }
 
-        /// <inheritdoc cref="IControl"/>
+        /// <inheritdoc cref="ControlBase.UnloadContent"/>
+        public override void UnloadContent()
+        {
+            if (!IsLoaded || IsDisposed)
+            {
+                return;
+            }
+
+            this.font?.Dispose();
+            this.glyphWidths.Clear();
+            this.glyphHeights.Clear();
+
+            base.UnloadContent();
+        }
+
+        /// <summary>
+        /// Renders the label to the screen.
+        /// </summary>
+        /// <param name="spriteBatch">Renders the label.</param>
+        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="spriteBatch"/> is null.</exception>
         public override void Render(ISpriteBatch spriteBatch)
         {
             if (spriteBatch == null)
@@ -90,16 +118,10 @@ namespace Velaptor.UI
             base.Render(spriteBatch);
         }
 
-        /// <inheritdoc cref="IControl"/>
-        public override void Dispose() => Dispose(true);
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable"/>
-        /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
-        private void Dispose(bool disposing)
+        /// <inheritdoc cref="ControlBase.Dispose(bool)"/>
+        protected override void Dispose(bool disposing)
         {
-            if (this.isDisposed)
+            if (IsDisposed || !IsLoaded)
             {
                 return;
             }
@@ -109,7 +131,7 @@ namespace Velaptor.UI
                 this.font?.Dispose();
             }
 
-            this.isDisposed = true;
+            base.Dispose(true);
         }
 
         /// <summary>

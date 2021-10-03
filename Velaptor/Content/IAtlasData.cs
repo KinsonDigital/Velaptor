@@ -2,10 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Graphics
+namespace Velaptor.Content
 {
     using System.Collections.ObjectModel;
-    using Velaptor.Content;
 
     /// <summary>
     /// Holds data for a texture atlas.
@@ -40,17 +39,17 @@ namespace Velaptor.Graphics
         AtlasSubTextureData this[int index] { get; }
 
         /// <summary>
-        /// Gets the single frame in the atlas data that matches the given <paramref name="subTextureID"/>.
+        /// Gets the single frame in the atlas data that matches the given <paramref name="subTextureId"/>.
         /// </summary>
-        /// <param name="subTextureID">The name of the sub texture frame.</param>
+        /// <param name="subTextureId">The name of the sub texture frame.</param>
         /// <returns>The sub texture data of the frame.</returns>
-        AtlasSubTextureData GetFrame(string subTextureID);
+        AtlasSubTextureData GetFrame(string subTextureId);
 
         /// <summary>
         /// Gets the all of the frames that have the given sub texture id.
         /// </summary>
-        /// <param name="subTextureID">The sub texture ID of the frames to return.</param>
+        /// <param name="subTextureId">The sub texture ID of the frames to return.</param>
         /// <returns>The list of frame rectangles.</returns>
-        AtlasSubTextureData[] GetFrames(string subTextureID);
+        AtlasSubTextureData[] GetFrames(string subTextureId);
     }
 }

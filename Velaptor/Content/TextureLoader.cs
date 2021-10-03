@@ -7,14 +7,13 @@ namespace Velaptor.Content
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
     /// <summary>
     /// Loads textures.
     /// </summary>
-    public class TextureLoader : ILoader<ITexture>
+    public sealed class TextureLoader : ILoader<ITexture>
     {
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IGLInvoker gl;
@@ -57,37 +56,48 @@ namespace Velaptor.Content
         {
             var filePath = this.pathResolver.ResolveFilePath(name);
 
+            // If the requested texture is already loaded into the pool
+            // and has been disposed, remove it.
+            foreach (var texture in this.textures)
+            {
+                if (texture.Key != filePath || !texture.Value.IsDisposed)
+                {
+                    continue;
+                }
+
+                this.textures.TryRemove(texture);
+                break;
+            }
+
             return this.textures.GetOrAdd(filePath, (path) =>
             {
                 var imageData = this.imageService.Load(path);
 
-                return new Texture(this.gl, name, path, imageData);
+                return new Texture(this.gl, name, path, imageData) { IsPooled = true };
             });
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
         public void Unload(string name)
         {
             var filePath = this.pathResolver.ResolveFilePath(name);
 
             if (this.textures.TryRemove(filePath, out var texture))
             {
+                texture.IsPooled = false;
                 texture.Dispose();
             }
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (this.isDisposed)
             {
@@ -98,6 +108,7 @@ namespace Velaptor.Content
             {
                 foreach (var texture in this.textures.Values)
                 {
+                    texture.IsPooled = false;
                     texture.Dispose();
                 }
 

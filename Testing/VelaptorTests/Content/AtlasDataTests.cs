@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable IDE0002 // Name can be simplified
-namespace VelaptorTests.Graphics
+namespace VelaptorTests.Content
 {
     using System;
     using System.Drawing;
     using Moq;
-    using Velaptor.Graphics;
+    using Velaptor.Content;
+    using Velaptor.Content.Exceptions;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasData"/> class.
@@ -26,7 +26,7 @@ namespace VelaptorTests.Graphics
         /// </summary>
         public AtlasDataTests()
         {
-            this.spriteData = new AtlasSubTextureData[]
+            this.spriteData = new[]
             {
                 new AtlasSubTextureData() // First frame of Animating sub texture
                 {
@@ -58,16 +58,16 @@ namespace VelaptorTests.Graphics
         public void Ctor_WhenTextureIsNull_ThrowException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new AtlasData(null, null, It.IsAny<string>(), It.IsAny<string>());
-            }, "The parameter must not be null. (Parameter 'Texture')");
+            }, "The parameter must not be null. (Parameter 'texture')");
         }
         #endregion
 
         #region Prop Tests
         [Fact]
-        public void Ctor_WhenInvoked_ReturnsCorrectFrameNameList()
+        public void SubTextureNames_WhenGettingValue_ReturnsCorrectFrameNameList()
         {
             // Arrange
             /* NOTE: In the constructor of this test, the items are added by frame index order 0, 1 then -1.
@@ -100,6 +100,19 @@ namespace VelaptorTests.Graphics
 
             // Assert
             Assert.Equal("test-atlas", actual);
+        }
+
+        [Fact]
+        public void Path_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var data = CreateAtlasData();
+
+            // Act
+            var actual = data.Path;
+
+            // Assert
+            Assert.Equal(AtlasImagePath, actual);
         }
 
         [Fact]
@@ -158,7 +171,7 @@ namespace VelaptorTests.Graphics
         public void GetFrames_WhenInvokedWithExistingSubTextureID_ReturnsCorrectFrameRectangle()
         {
             // Arrange
-            var expected = new AtlasSubTextureData[]
+            var expected = new[]
             {
                 new AtlasSubTextureData() // First frame of Animating sub texture
                 {
@@ -187,20 +200,10 @@ namespace VelaptorTests.Graphics
         public void GetFrame_WhenSubTextureIDDoesNotExist_ThrowsException()
         {
             // Arrange
-            var expected = new AtlasSubTextureData[]
-            {
-                new AtlasSubTextureData() // First frame of Animating sub texture
-                {
-                    Name = "sub-texture",
-                    FrameIndex = 0,
-                    Bounds = new Rectangle(11, 22, 33, 44),
-                },
-            };
-
             var data = CreateAtlasData();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 data.GetFrame("missing-texture");
             }, "The frame 'missing-texture' was not found in the atlas 'test-atlas'.");
@@ -224,6 +227,20 @@ namespace VelaptorTests.Graphics
 
             // Assert
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Dispose_WhilePooled_ThrowsException()
+        {
+            // Arrange
+            var data = CreateAtlasData();
+            data.IsPooled = true;
+
+            // Act & Assert
+            Assert.Throws<PooledDisposalException>(() =>
+            {
+                data.Dispose();
+            });
         }
 
         [Fact]

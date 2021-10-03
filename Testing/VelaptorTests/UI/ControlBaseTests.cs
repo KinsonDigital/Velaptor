@@ -14,8 +14,14 @@ namespace VelaptorTests.UI
     using VelaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="ControlBase"/> class.
+    /// </summary>
     public class ControlBaseTests
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ControlBaseTests"/> class.
+        /// </summary>
         public ControlBaseTests() => ClearMouseState();
 
         /// <summary>
@@ -223,6 +229,60 @@ namespace VelaptorTests.UI
             // Assert
             Assert.False(actual);
         }
+
+        [Fact]
+        public void MouseDownColor_WhenGettingDefaultValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var control = new ControlBaseFake();
+
+            // Act
+            var actual = control.MouseDownColor;
+
+            // Assert
+            Assert.Equal(Color.FromArgb(255, 190, 190, 190), actual);
+        }
+
+        [Fact]
+        public void MouseHoverColor_WhenGettingDefaultValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var control = new ControlBaseFake();
+
+            // Act
+            var actual = control.MouseHoverColor;
+
+            // Assert
+            Assert.Equal(Color.FromArgb(255, 230, 230, 230), actual);
+        }
+
+        [Fact]
+        public void MouseDownColor_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var control = new ControlBaseFake();
+
+            // Act
+            control.MouseDownColor = Color.FromArgb(11, 22, 33, 44);
+            var actual = control.MouseDownColor;
+
+            // Assert
+            Assert.Equal(Color.FromArgb(11, 22, 33, 44), actual);
+        }
+
+        [Fact]
+        public void MouseHoverColor_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var control = new ControlBaseFake();
+
+            // Act
+            control.MouseHoverColor = Color.FromArgb(11, 22, 33, 44);
+            var actual = control.MouseHoverColor;
+
+            // Assert
+            Assert.Equal(Color.FromArgb(11, 22, 33, 44), actual);
+        }
         #endregion
 
         #region Method Tests
@@ -277,7 +337,7 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Update_WithMouseOverAndMouseMovedOverCtrl_InvokesMouseMoveEvent()
+        public void Update_WhenMouseMovesOverCtrl_InvokesMouseMoveEvent()
         {
             // Arrange
             var ctrlBase = new ControlBaseFake();
@@ -385,7 +445,7 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Update_IfContentNotLoaded_DoesNotUpdateCtrl()
+        public void Update_WhenContentIsNotLoaded_DoesNotUpdateCtrl()
         {
             // Arrange
             var ctrlBase = new ControlBaseFake();
@@ -425,6 +485,47 @@ namespace VelaptorTests.UI
                 e => ctrlBase.MouseDown += e,
                 e => ctrlBase.MouseDown -= e,
                 () => ctrlBase.Update(default(FrameTime)));
+        }
+
+        [Fact]
+        public void UnloadContent_WhenInvoked_SetsControlAsUnloaded()
+        {
+            // Arrange
+            var control = new ControlBaseFake();
+
+            // Act
+            control.UnloadContent();
+            var actual = control.IsLoaded;
+
+            // Assert
+            Assert.False(actual);
+        }
+
+        [Fact]
+        public void ThrowExceptionIfLoadingWhenDisposed_WhenInvokedWhileDisposed_ThrowsException()
+        {
+            // Arrange
+            var control = new ControlBaseFake();
+            control.Dispose();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
+            {
+                control.Invoke_Exception_In_Method_ThrowExceptionIfLoadingWhenDisposed();
+            }, "Cannot load a control that has been disposed.");
+        }
+
+        [Fact]
+        public void ThrowExceptionIfLoadingWhenDisposed_WhenInvokedWhileNotDisposed_ThrowsException()
+        {
+            // Arrange
+            var control = new ControlBaseFake();
+
+            // Act & Assert
+            AssertExtensions.DoesNotThrow<Exception>(() =>
+            {
+                control.Invoke_Exception_In_Method_ThrowExceptionIfLoadingWhenDisposed();
+            });
         }
         #endregion
 

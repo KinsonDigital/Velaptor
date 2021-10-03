@@ -36,7 +36,7 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// Loads the scene content.
         /// </summary>
-        void Load();
+        void LoadContent();
 
         /// <summary>
         /// Adds a control to the scene to be updated and rendered.
@@ -45,8 +45,14 @@ namespace VelaptorTesting.Core
         void AddControl(IControl control);
 
         /// <summary>
+        /// Removes the given <paramref name="control"/> from the scene.
+        /// </summary>
+        /// <param name="control">The control to remove.</param>
+        void RemoveControl(IControl control);
+
+        /// <summary>
         /// Unloads the scene's content.
         /// </summary>
-        void Unload();
+        void UnloadContent();
     }
 }

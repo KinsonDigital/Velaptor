@@ -2,13 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Graphics;
+
 namespace VelaptorTesting.Core
 {
     using System;
     using System.Collections.Generic;
     using Velaptor;
     using Velaptor.Content;
-    using Velaptor.Graphics;
     using Velaptor.UI;
 
     /// <summary>
@@ -40,35 +41,33 @@ namespace VelaptorTesting.Core
         /// <inheritdoc cref="IScene.IsActive"/>
         public bool IsActive { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating whether true if the scene has been disposed of.
+        /// </summary>
+        protected bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Gets the content loader to load scene content.
+        /// </summary>
         protected IContentLoader ContentLoader { get; }
 
-        /// <summary>
-        /// <inheritdoc cref="IScene"/>
-        /// </summary>
-        public virtual void Load()
-        {
-            if (IsLoaded)
-            {
-                return;
-            }
+        /// <inheritdoc cref="IScene.AddControl"/>
+        public void AddControl(IControl control) => this.controls.Add(control);
 
-            IsLoaded = true;
-        }
+        /// <inheritdoc cref="IScene.RemoveControl"/>
+        public void RemoveControl(IControl control) => this.controls.Remove(control);
 
-        public void AddControl(IControl control)
-        {
-            this.controls.Add(control);
-        }
+        /// <inheritdoc cref="IScene.LoadContent"/>
+        public virtual void LoadContent() => IsLoaded = true;
 
-        /// <summary>
-        /// <inheritdoc cref="IScene"/>
-        /// </summary>
-        public virtual void Unload()
+        /// <inheritdoc cref="IScene.UnloadContent"/>
+        public virtual void UnloadContent()
         {
+            this.controls.Clear();
             IsLoaded = false;
         }
 
-        /// <inheritdoc cref="IScene"/>
+        /// <inheritdoc cref="IUpdatable.Update"/>
         public virtual void Update(FrameTime frameTime)
         {
             if (IsLoaded is false || IsActive)
@@ -82,7 +81,7 @@ namespace VelaptorTesting.Core
             }
         }
 
-        /// <inheritdoc cref="IScene"/>
+        /// <inheritdoc cref="IDrawable.Render"/>
         public virtual void Render(ISpriteBatch spriteBatch)
         {
             if (spriteBatch == null)
@@ -101,17 +100,47 @@ namespace VelaptorTesting.Core
             }
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IDisposable"/>
-        /// </summary>
-        public virtual void Dispose()
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose()
         {
-            foreach (var control in this.controls)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (IsDisposed)
             {
-                control.Dispose();
+                return;
             }
 
-            this.controls.Clear();
+            if (disposing)
+            {
+                foreach (var control in this.controls)
+                {
+                    control.Dispose();
+                }
+
+                this.controls.Clear();
+            }
+
+            IsDisposed = true;
+        }
+
+        /// <summary>
+        /// Throws an exception if the control is being loaded when it has already been disposed.
+        /// </summary>
+        /// <exception cref="Exception">Thrown when the control has been disposed.</exception>
+        protected void ThrowExceptionIfLoadingWhenDisposed()
+        {
+            if (IsDisposed)
+            {
+                throw new Exception("Cannot load a scene that has been disposed.");
+            }
         }
     }
 }

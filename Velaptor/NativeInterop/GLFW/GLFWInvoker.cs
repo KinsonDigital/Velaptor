@@ -6,6 +6,7 @@ namespace Velaptor.NativeInterop.GLFW
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using Silk.NET.GLFW;
     using Velaptor.OpenGL;
@@ -13,7 +14,8 @@ namespace Velaptor.NativeInterop.GLFW
     /// <summary>
     /// Invokes GLFW calls.
     /// </summary>
-    internal class GLFWInvoker : IGLFWInvoker
+    [ExcludeFromCodeCoverage]
+    internal sealed class GLFWInvoker : IGLFWInvoker
     {
         private readonly Glfw glfw;
         private bool isDisposed;
@@ -36,10 +38,7 @@ namespace Velaptor.NativeInterop.GLFW
         /// <summary>
         /// Finalizes an instance of the <see cref="GLFWInvoker"/> class.
         /// </summary>
-        ~GLFWInvoker()
-        {
-            Dispose(false);
-        }
+        ~GLFWInvoker() => Dispose();
 
         /// <inheritdoc/>
         public event EventHandler<GLFWErrorEventArgs>? OnError;
@@ -99,24 +98,16 @@ namespace Velaptor.NativeInterop.GLFW
             return result;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)
             {
                 this.glfw.Dispose();
                 this.isDisposed = true;
             }
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -125,7 +116,7 @@ namespace Velaptor.NativeInterop.GLFW
         /// <param name="errorCode">The error code.</param>
         /// <param name="description">The error description.</param>
         private void ErrorCallback(ErrorCode errorCode, string description)
-            => OnError?.Invoke(this, new GLFWErrorEventArgs((GLFWErrorCode)errorCode, description));
+            => this.OnError?.Invoke(this, new GLFWErrorEventArgs((GLFWErrorCode)errorCode, description));
 
         /// <summary>
         /// Invoked when GLFW detects that something has changed with the monitors,
@@ -134,6 +125,6 @@ namespace Velaptor.NativeInterop.GLFW
         /// <param name="monitor">The monitor that has changed.</param>
         /// <param name="connectedState">The connected state of the monitor.</param>
         private unsafe void MonitorCallback(Monitor* monitor, ConnectedState connectedState)
-            => OnMonitorChanged?.Invoke(this, new GLFWMonitorChangedEventArgs(connectedState == ConnectedState.Connected));
+            => this.OnMonitorChanged?.Invoke(this, new GLFWMonitorChangedEventArgs(connectedState == ConnectedState.Connected));
     }
 }

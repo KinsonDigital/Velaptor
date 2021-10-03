@@ -4,15 +4,17 @@
 
 namespace Velaptor.Content
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using CASL;
+    using Velaptor.Content.Exceptions;
     using CASLSound = CASL.Sound;
 
     /// <summary>
     /// A single sound that can be played, paused etc.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class Sound : ISound
+    public sealed class Sound : ISound
     {
         private readonly CASLSound sound;
 
@@ -81,12 +83,13 @@ namespace Velaptor.Content
         public string Path => this.sound.Path;
 
         /// <inheritdoc/>
-        public bool Unloaded => this.sound.Unloaded;
+        public bool IsDisposed { get; private set; }
 
         /// <inheritdoc/>
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-        public void Dispose() => this.sound.Dispose();
-#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
+        public bool IsPooled { get; set; }
+
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
         /// Fast forwards the sound by the given amount of <paramref name="seconds"/>.
@@ -129,5 +132,29 @@ namespace Velaptor.Content
         /// </summary>
         /// <remarks>This will set the time position back to the beginning.</remarks>
         public void Stop() => this.sound.Stop();
+
+        /// <summary>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
+        private void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (IsPooled)
+            {
+                throw new PooledDisposalException();
+            }
+
+            if (disposing)
+            {
+                this.sound.Dispose();
+                IsDisposed = true;
+            }
+        }
     }
 }

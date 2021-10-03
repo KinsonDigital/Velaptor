@@ -14,13 +14,15 @@ namespace VelaptorTesting.Core
     using Velaptor.UI;
 
     // TODO: Setup this class to be IDisposable
-    public class SceneManager : IUpdatable, IDisposable
+    public sealed class SceneManager : IUpdatable, IDisposable
     {
-        private readonly ISpriteBatch spriteBatch;
         private readonly List<IScene> scenes = new ();
         private readonly Button nextButton;
         private readonly Button previousButton;
+        private ISpriteBatch spriteBatch;
         private int currentSceneIndex;
+        private bool isDisposed;
+        private bool isLoaded;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneManager"/> class.
@@ -38,12 +40,7 @@ namespace VelaptorTesting.Core
 
             var previousButtonLabel = new Label(contentLoader) { Text = "<--" };
             this.previousButton = new Button(contentLoader, previousButtonLabel);
-            this.previousButton.Click += (_, e) =>
-            {
-                this.previousButton.Position =
-                    new Point(this.previousButton.Position.X + 10, this.previousButton.Position.Y);
-                PreviousScene();
-            };
+            this.previousButton.Click += (_, e) => PreviousScene();
         }
 
         /// <summary>
@@ -88,11 +85,14 @@ namespace VelaptorTesting.Core
         /// <param name="scene">The scene to remove.</param>
         public void RemoveScene(IScene scene) => RemoveScene(scene.ID);
 
+        private int nextHitCount = 0;
+
         /// <summary>
         /// Moves to the next scene.
         /// </summary>
         public void NextScene()
         {
+            this.nextHitCount += 1;
             if (this.scenes.Count <= 0)
             {
                 return;
@@ -103,10 +103,10 @@ namespace VelaptorTesting.Core
                 ? 0 : this.currentSceneIndex + 1;
 
             this.scenes[previousScene].IsActive = false;
-            this.scenes[previousScene].Unload();
+            this.scenes[previousScene].UnloadContent();
 
             this.scenes[this.currentSceneIndex].IsActive = true;
-            this.scenes[this.currentSceneIndex].Load();
+            this.scenes[this.currentSceneIndex].LoadContent();
         }
 
         /// <summary>
@@ -124,18 +124,28 @@ namespace VelaptorTesting.Core
                 ? this.scenes.Count - 1 : this.currentSceneIndex - 1;
 
             this.scenes[previousScene].IsActive = false;
-            this.scenes[previousScene].Unload();
+            this.scenes[previousScene].UnloadContent();
 
             this.scenes[this.currentSceneIndex].IsActive = true;
-            this.scenes[this.currentSceneIndex].Load();
+            this.scenes[this.currentSceneIndex].LoadContent();
         }
 
         /// <summary>
         /// Loads the content for the manager and the current scene.
         /// </summary>
-        public void Load()
+        public void LoadContent()
         {
-            this.scenes[this.currentSceneIndex].Load();
+            if (this.isDisposed)
+            {
+                throw new Exception("Cannot load a scene manager that has been disposed.");
+            }
+
+            if (this.isLoaded)
+            {
+                return;
+            }
+
+            this.scenes[this.currentSceneIndex].LoadContent();
             this.nextButton.LoadContent();
             this.previousButton.LoadContent();
 
@@ -146,6 +156,21 @@ namespace VelaptorTesting.Core
             var buttonGroupLeft = MainWindow.WindowWidth - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin);
             this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
             this.nextButton.Position = new Point(this.previousButton.Position.X + this.previousButton.Width + buttonSpacing, buttonTops);
+
+            this.isLoaded = true;
+        }
+
+        /// <summary>
+        /// Unloads the scene manager content and scenes added.
+        /// </summary>
+        public void UnloadContent()
+        {
+            if (!this.isLoaded || this.isDisposed)
+            {
+                return;
+            }
+
+            DisposeOrUnloadContent();
         }
 
         /// <summary>
@@ -187,9 +212,17 @@ namespace VelaptorTesting.Core
             this.spriteBatch.EndBatch();
         }
 
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            DisposeOrUnloadContent();
+
+            this.isDisposed = true;
         }
 
         /// <summary>
@@ -198,5 +231,22 @@ namespace VelaptorTesting.Core
         /// <param name="id">The ID of the scene to check for.</param>
         /// <returns>True if the scene exists.</returns>
         private bool SceneExists(Guid id) => this.scenes.Any(s => s.ID == id);
+
+        /// <summary>
+        /// Disposes or unloads all of the scene content.
+        /// </summary>
+        private void DisposeOrUnloadContent()
+        {
+            foreach (var scene in this.scenes)
+            {
+                scene.UnloadContent();
+            }
+
+            this.scenes.Clear();
+
+            this.spriteBatch = null;
+            this.previousButton.Dispose();
+            this.nextButton.Dispose();
+        }
     }
 }

@@ -7,7 +7,6 @@ namespace VelaptorTests.Content
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
-    using Velaptor.Graphics;
     using VelaptorTests.Fakes;
     using Xunit;
     using Assert = Helpers.AssertExtensions;

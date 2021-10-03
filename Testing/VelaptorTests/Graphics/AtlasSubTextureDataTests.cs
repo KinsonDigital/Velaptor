@@ -5,7 +5,7 @@
 namespace VelaptorTests.Graphics
 {
     using System.Drawing;
-    using Velaptor.Graphics;
+    using Velaptor.Content;
     using Xunit;
 
     /// <summary>

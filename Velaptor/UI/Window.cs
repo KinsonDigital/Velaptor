@@ -171,8 +171,7 @@ namespace Velaptor.UI
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing,
-        /// releasing, or resetting unmanaged resources.
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         public void Dispose()
         {
@@ -181,8 +180,7 @@ namespace Velaptor.UI
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing,
-        /// releasing, or resetting unmanaged resources.
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)

@@ -16,7 +16,7 @@ namespace VelaptorTests
     using NETColor = System.Drawing.Color;
 
     /// <summary>
-    /// Tests the <see cref="ExtensionMethods"/> class.
+    /// Tests the <see cref="Velaptor.UI.ExtensionMethods"/> class.
     /// </summary>
     public class ExtensionMethodsTests
     {

@@ -2,16 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using System.Drawing;
-using VelaptorTests.Helpers;
-
 namespace VelaptorTests.UI
 {
+    using System;
+    using System.Drawing;
     using Moq;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.UI;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>

@@ -6,6 +6,7 @@ namespace Velaptor.Graphics
 {
     using System;
     using System.Drawing;
+    using Velaptor.Content;
 
     /// <summary>
     /// Renders a single or batch of textures.
@@ -35,8 +36,7 @@ namespace Velaptor.Graphics
         Color ClearColor { get; set; }
 
         /// <summary>
-        /// Starts the batch rendering process.  Must be called before calling
-        /// the <see cref="Render()"/> methods.
+        /// Starts the batch rendering process.  Must be called before invoking any render methods.
         /// </summary>
         void BeginBatch();
 

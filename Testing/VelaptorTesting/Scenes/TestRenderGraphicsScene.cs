@@ -32,12 +32,33 @@ namespace VelaptorTesting.Scenes
         /// <summary>
         /// Loads the scene.
         /// </summary>
-        public override void Load()
+        public override void LoadContent()
         {
+            ThrowExceptionIfLoadingWhenDisposed();
+
+            if (IsLoaded)
+            {
+                return;
+            }
+
             this.mainAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
             this.frames = this.mainAtlas.GetFrames("square");
 
-            base.Load();
+            base.LoadContent();
+        }
+
+        /// <inheritdoc cref="SceneBase"/>
+        public override void UnloadContent()
+        {
+            if (!IsLoaded || IsDisposed)
+            {
+                return;
+            }
+
+            this.mainAtlas = null;
+            this.frames = null;
+
+            base.UnloadContent();
         }
 
         /// <summary>
@@ -78,6 +99,17 @@ namespace VelaptorTesting.Scenes
                 Color.White,
                 RenderEffects.None);
             base.Render(spriteBatch);
+        }
+
+        /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed || !IsLoaded)
+            {
+                return;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

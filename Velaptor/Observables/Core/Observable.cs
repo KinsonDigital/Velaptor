@@ -37,7 +37,7 @@ namespace Velaptor.Observables.Core
             return new ObserverUnsubscriber<T>(this.observers, observer);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public virtual void Dispose()
         {
             Dispose(true);
@@ -45,7 +45,7 @@ namespace Velaptor.Observables.Core
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)

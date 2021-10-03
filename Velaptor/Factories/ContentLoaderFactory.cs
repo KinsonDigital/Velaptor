@@ -7,8 +7,7 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Content;
-    using Velaptor.Graphics;
-    using Velaptor.NativeInterop;
+    using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
@@ -29,19 +28,12 @@ namespace Velaptor.Factories
         /// Creates a single instance of a content loader.
         /// </summary>
         /// <returns>A framework content loader implementation.</returns>
-        public static IContentLoader CreateContentLoader()
-        {
-            if (contentLoader is null)
-            {
-                contentLoader = new ContentLoader(
-                    CreateTextureLoader(),
-                    CreateSoundLoader(),
-                    CreateTextureAtlasLoader(),
-                    CreateFontLoader());
-            }
-
-            return contentLoader;
-        }
+        public static IContentLoader CreateContentLoader() =>
+            contentLoader ??= new ContentLoader(
+                CreateTextureLoader(),
+                CreateSoundLoader(),
+                CreateTextureAtlasLoader(),
+                CreateFontLoader());
 
         /// <summary>
         /// Creates a loader that loads textures from disk.
@@ -49,17 +41,19 @@ namespace Velaptor.Factories
         /// <returns>A loader for loading textures.</returns>
         public static ILoader<ITexture> CreateTextureLoader()
         {
-            if (textureLoader is null)
+            if (textureLoader is not null)
             {
-                var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-                var imageService = IoC.Container.GetInstance<IImageService>();
-                var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
-
-                textureLoader = new TextureLoader(
-                    glInvoker,
-                    imageService,
-                    texturePathResolver);
+                return textureLoader;
             }
+
+            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var imageService = IoC.Container.GetInstance<IImageService>();
+            var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+
+            textureLoader = new TextureLoader(
+                glInvoker,
+                imageService,
+                texturePathResolver);
 
             return textureLoader;
         }
@@ -70,17 +64,19 @@ namespace Velaptor.Factories
         /// <returns>A loader for loading texture atlas data.</returns>
         public static ILoader<IAtlasData> CreateTextureAtlasLoader()
         {
-            if (atlasLoader is null)
+            if (atlasLoader is not null)
             {
-                var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-                var atlasDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
-
-                atlasLoader = new AtlasLoader(
-                    glInvoker,
-                    IoC.Container.GetInstance<IImageService>(),
-                    atlasDataPathResolver,
-                    IoC.Container.GetInstance<IFile>());
+                return atlasLoader;
             }
+
+            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var atlasDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
+
+            atlasLoader = new AtlasLoader(
+                glInvoker,
+                IoC.Container.GetInstance<IImageService>(),
+                atlasDataPathResolver,
+                IoC.Container.GetInstance<IFile>());
 
             return atlasLoader;
         }
@@ -91,13 +87,15 @@ namespace Velaptor.Factories
         /// <returns>A loader for loading sound data.</returns>
         public static ILoader<IVelaptorSound> CreateSoundLoader()
         {
-            if (soundLoader is null)
+            if (soundLoader is not null)
             {
-                var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
-                var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
-
-                soundLoader = new SoundLoader(soundPathResolver, soundFactory);
+                return soundLoader;
             }
+
+            var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
+            var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
+
+            soundLoader = new SoundLoader(soundPathResolver, soundFactory);
 
             return soundLoader;
         }
@@ -108,21 +106,23 @@ namespace Velaptor.Factories
         /// <returns>A loader for loading sound data.</returns>
         public static ILoader<IFont> CreateFontLoader()
         {
-            if (fontLoader is null)
+            if (fontLoader is not null)
             {
-                var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-                var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
-                var fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
-                var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
-
-                fontLoader = new FontLoader(
-                    glInvoker,
-                    freeTypeInvoker,
-                    fontAtlasService,
-                    fontPathResolver,
-                    IoC.Container.GetInstance<IFile>(),
-                    IoC.Container.GetInstance<IImageService>());
+                return fontLoader;
             }
+
+            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
+            var fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
+            var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
+
+            fontLoader = new FontLoader(
+                glInvoker,
+                freeTypeInvoker,
+                fontAtlasService,
+                fontPathResolver,
+                IoC.Container.GetInstance<IFile>(),
+                IoC.Container.GetInstance<IImageService>());
 
             return fontLoader;
         }

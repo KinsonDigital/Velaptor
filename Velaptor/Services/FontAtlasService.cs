@@ -9,9 +9,9 @@ namespace Velaptor.Services
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Content;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.FreeType;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
@@ -136,7 +136,7 @@ namespace Velaptor.Services
             this.glyphChars = currentList.ToArray();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             Dispose(true);
@@ -144,7 +144,7 @@ namespace Velaptor.Services
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)

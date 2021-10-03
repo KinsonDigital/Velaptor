@@ -17,9 +17,9 @@ namespace Velaptor.OpenGL
     {
         private readonly IGLInvoker gl;
         private QuadData quadData = CreateQuad();
-        private uint vertexArrayID;
-        private uint vertexBufferID;
-        private uint indexBufferID;
+        private uint vertexArrayId;
+        private uint vertexBufferId;
+        private uint indexBufferId;
         private uint totalQuads = 10u;
         private uint totalVertexBytes;
         private uint totalQuadSizeInBytes;
@@ -56,20 +56,20 @@ namespace Velaptor.OpenGL
             CreateVertexBuffer();
             CreateIndexBuffer();
 
-            this.vertexArrayID = this.gl.GenVertexArray();
+            this.vertexArrayId = this.gl.GenVertexArray();
 
             // Bind the buffers to setup the attrib pointers
             BindVertexArray();
             BindVertexBuffer();
             BindIndexBuffer();
 
-            SetupAttribPointers(this.vertexArrayID);
+            SetupAttribPointers(this.vertexArrayId);
             this.isDisposed = false;
             this.isInitialized = true;
         }
 
         /// <inheritdoc/>
-        public void UpdateQuad(uint quadID, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor)
+        public void UpdateQuad(uint quadId, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor)
         {
             var glColor = new Vector4()
             {
@@ -98,17 +98,17 @@ namespace Velaptor.OpenGL
             this.quadData.Vertex4.TintColor = glColor;
 
             // Update the quad ID
-            this.quadData.Vertex1.TransformIndex = quadID;
-            this.quadData.Vertex2.TransformIndex = quadID;
-            this.quadData.Vertex3.TransformIndex = quadID;
-            this.quadData.Vertex4.TransformIndex = quadID;
+            this.quadData.Vertex1.TransformIndex = quadId;
+            this.quadData.Vertex2.TransformIndex = quadId;
+            this.quadData.Vertex3.TransformIndex = quadId;
+            this.quadData.Vertex4.TransformIndex = quadId;
 
-            var offset = this.totalQuadSizeInBytes * quadID;
+            var offset = this.totalQuadSizeInBytes * quadId;
 
             this.gl.BufferSubData(GLBufferTarget.ArrayBuffer, (nint)offset, this.totalQuadSizeInBytes, ref this.quadData);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             Dispose(true);
@@ -117,15 +117,16 @@ namespace Velaptor.OpenGL
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)
             {
-                this.gl.DeleteVertexArray(this.vertexArrayID);
-                this.gl.DeleteBuffer(this.vertexBufferID);
-                this.gl.DeleteBuffer(this.indexBufferID);
+                this.gl.DeleteVertexArray(this.vertexArrayId);
+                this.gl.DeleteBuffer(this.vertexBufferId);
+                this.gl.DeleteBuffer(this.indexBufferId);
 
                 this.isDisposed = true;
                 this.isInitialized = false;
@@ -172,8 +173,8 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Sets up the attribute pointers in the vertex buffer to hold vertex buffer data for each pixel.
         /// </summary>
-        /// <param name="vertexArrayID">The ID of the vertex array.</param>
-        private void SetupAttribPointers(uint vertexArrayID)
+        /// <param name="vertexArrayId">The ID of the vertex array.</param>
+        private void SetupAttribPointers(uint vertexArrayId)
         {
             var fields = typeof(T).GetFields();
 
@@ -195,7 +196,7 @@ namespace Velaptor.OpenGL
                 // The type of OpenGL VertexAttribPointerType based on the field type
                 var attribType = VertexDataAnalyzer.GetVertexPointerType(fields[i].FieldType);
 
-                this.gl.EnableVertexArrayAttrib(vertexArrayID, i);
+                this.gl.EnableVertexArrayAttrib(vertexArrayId, i);
 
                 offset = i == 0 ? 0 : offset + (previousSize * VertexDataAnalyzer.GetPrimitiveByteSize(typeof(float)));
                 this.gl.VertexAttribPointer(i, (int)totalElements, attribType, false, stride, offset);
@@ -214,7 +215,7 @@ namespace Velaptor.OpenGL
             this.totalVertexBytes = VertexDataAnalyzer.GetTotalBytesForStruct(typeof(T));
             this.totalQuadSizeInBytes = this.totalVertexBytes * 4u;
 
-            this.vertexBufferID = this.gl.GenBuffer();
+            this.vertexBufferId = this.gl.GenBuffer();
 
             AllocateVertexBuffer();
         }
@@ -226,7 +227,7 @@ namespace Velaptor.OpenGL
         /// <param name="totalQuads">The total number of quads of data that can be held in the GPU's vertex buffer.</param>
         private void CreateIndexBuffer()
         {
-            this.indexBufferID = this.gl.GenBuffer();
+            this.indexBufferId = this.gl.GenBuffer();
 
             var indexData = new List<uint>();
 
@@ -264,7 +265,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Binds the vertex buffer.
         /// </summary>
-        private void BindVertexBuffer() => this.gl.BindBuffer(GLBufferTarget.ArrayBuffer, this.vertexBufferID);
+        private void BindVertexBuffer() => this.gl.BindBuffer(GLBufferTarget.ArrayBuffer, this.vertexBufferId);
 
         /// <summary>
         /// Uploads the given <paramref name="data"/> to the GPU.
@@ -292,11 +293,11 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Binds the index buffer.
         /// </summary>
-        private void BindIndexBuffer() => this.gl.BindBuffer(GLBufferTarget.ElementArrayBuffer, this.indexBufferID);
+        private void BindIndexBuffer() => this.gl.BindBuffer(GLBufferTarget.ElementArrayBuffer, this.indexBufferId);
 
         /// <summary>
         /// Binds the vertex array.
         /// </summary>
-        private void BindVertexArray() => this.gl.BindVertexArray(this.vertexArrayID);
+        private void BindVertexArray() => this.gl.BindVertexArray(this.vertexArrayId);
     }
 }

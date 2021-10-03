@@ -10,19 +10,17 @@ namespace VelaptorTests.Content
     using Newtonsoft.Json;
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
-    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
-    /// Tests the <see cref="AtlasDataLoader{T}"/> class.
+    /// Tests the <see cref="AtlasLoader"/> class.
     /// </summary>
     public class AtlasLoaderTests
     {
         private const string AtlasContentName = "test-atlas";
-        private readonly string atlasDirPath;
         private readonly string atlasDataFilePath;
         private readonly string atlasImageFilePath;
         private readonly Mock<IGLInvoker> mockGLInvoker;
@@ -41,20 +39,20 @@ namespace VelaptorTests.Content
         /// </summary>
         public AtlasLoaderTests()
         {
-            this.atlasDirPath = @"C:\temp\Content\Atlas\";
-            this.atlasDataFilePath = $@"{this.atlasDirPath}{AtlasContentName}.json";
-            this.atlasImageFilePath = $@"{this.atlasDirPath}{AtlasContentName}.png";
+            const string atlasDirPath = @"C:\temp\Content\Atlas\";
+            this.atlasDataFilePath = $@"{atlasDirPath}{AtlasContentName}.json";
+            this.atlasImageFilePath = $@"{atlasDirPath}{AtlasContentName}.png";
 
             this.mockGLInvoker = new Mock<IGLInvoker>();
             this.mockGLInvoker.Name = nameof(this.mockGLInvoker);
 
             this.mockAtlasPathResolver = new Mock<IPathResolver>();
-            this.mockAtlasPathResolver.Setup(m => m.ResolveDirPath()).Returns(this.atlasDirPath);
+            this.mockAtlasPathResolver.Setup(m => m.ResolveDirPath()).Returns(atlasDirPath);
 
             this.mockImageService = new Mock<IImageService>();
             this.mockImageService.Name = nameof(this.mockImageService);
 
-            this.atlasSpriteData = new AtlasSubTextureData[]
+            this.atlasSpriteData = new[]
             {
                 new AtlasSubTextureData()
                 {
@@ -69,10 +67,8 @@ namespace VelaptorTests.Content
             };
 
             this.mockFile = new Mock<IFile>();
-            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath)).Returns(() =>
-            {
-                return JsonConvert.SerializeObject(this.atlasSpriteData, this.jsonSettings);
-            });
+            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath))
+                .Returns(() => JsonConvert.SerializeObject(this.atlasSpriteData, this.jsonSettings));
         }
 
         #region Method Tests
@@ -91,6 +87,25 @@ namespace VelaptorTests.Content
             this.mockAtlasPathResolver.Verify(m => m.ResolveDirPath(), Times.Once());
             this.mockFile.Verify(m => m.ReadAllText(this.atlasDataFilePath), Times.Once());
             this.mockImageService.Verify(m => m.Load(this.atlasImageFilePath), Times.Once());
+        }
+
+        [Fact]
+        public void Load_WhenLoadingSameDataThatIsDisposed_RemovesDataBeforeAdding()
+        {
+            // Arrange
+            var loader = CreateLoader();
+            var loadedData = loader.Load(AtlasContentName);
+
+            // Set the font as not being pooled. This will allow us to dispose of
+            // the font to get the font into the disposed state for testing
+            loadedData.IsPooled = false;
+            loadedData.Dispose();
+
+            // Act
+            var actual = loader.Load(AtlasContentName);
+
+            // Assert
+            Assert.NotSame(loadedData, actual);
         }
 
         [Fact]
@@ -115,16 +130,14 @@ namespace VelaptorTests.Content
         public void Load_WithIssuesDeserializingJSONAtlasData_ThrowsException()
         {
             // Arrange
-            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath)).Returns(() =>
-            {
-                return "invalid-data";
-            });
+            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath))
+                .Returns(() => "invalid-data");
 
             var loader = CreateLoader();
-            var newtonsoftErrorMsg = "Unexpected character encountered while parsing value: i. Path '', line 0, position 0.";
+            const string newtonsoftErrorMsg = "Unexpected character encountered while parsing value: i. Path '', line 0, position 0.";
 
             // Act & Assert
-            Assert.ThrowsWithMessage<LoadContentException>(() =>
+            AssertExtensions.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(AtlasContentName);
             }, $"There was an issue deserializing the JSON atlas data file at '{this.atlasDataFilePath}'.\n{newtonsoftErrorMsg}");
@@ -134,16 +147,14 @@ namespace VelaptorTests.Content
         public void Load_WithNullDeserializeResult_ThrowsException()
         {
             // Arrange
-            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath)).Returns(() =>
-            {
-                return string.Empty;
-            });
+            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath))
+                .Returns(() => string.Empty);
 
             var loader = CreateLoader();
-            var exceptionMessage = "Deserialized atlas sub texture data is null.";
+            const string exceptionMessage = "Deserialized atlas sub texture data is null.";
 
             // Act & Assert
-            Assert.ThrowsWithMessage<LoadContentException>(() =>
+            AssertExtensions.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(AtlasContentName);
             }, $"There was an issue deserializing the JSON atlas data file at '{this.atlasDataFilePath}'.\n{exceptionMessage}");
@@ -160,7 +171,7 @@ namespace VelaptorTests.Content
             loader.Unload(AtlasContentName);
 
             // Assert
-            Assert.True(atlasData.Unloaded);
+            Assert.True(atlasData.IsDisposed);
         }
 
         [Fact]
@@ -175,14 +186,14 @@ namespace VelaptorTests.Content
             loader.Dispose();
 
             // Assert
-            Assert.True(atlasData.Unloaded);
+            Assert.True(atlasData.IsDisposed);
         }
         #endregion
 
         /// <summary>
-        /// Creates an instance of <see cref="AtlasLoader"/> for the purpoase of testing.
+        /// Creates an instance of <see cref="AtlasLoader"/> for the purpose of testing.
         /// </summary>
-        /// <returns>The instnace to test.</returns>
+        /// <returns>The instance to test.</returns>
         private AtlasLoader CreateLoader()
             => new (
                 this.mockGLInvoker.Object,

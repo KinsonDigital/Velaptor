@@ -4,18 +4,14 @@
 
 namespace VelaptorTesting.Scenes
 {
-    // ReSharper disable RedundantNameQualifier
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
     using Velaptor;
     using Velaptor.Content;
-    using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.UI;
     using VelaptorTesting.Core;
-
-    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Used to test that the mouse works correctly.
@@ -26,11 +22,11 @@ namespace VelaptorTesting.Scenes
         private const int TopMargin = 25;
         private const int LineSpacing = 20;
         private readonly Mouse mouse;
-        private readonly Label mousePosLabel;
-        private readonly Label mouseLeftButtonLabel;
-        private readonly Label mouseRightButtonLabel;
-        private readonly Label mouseMiddleButtonLabel;
-        private readonly Label mouseWheelValueLabel;
+        private Label? mousePosLabel;
+        private Label? mouseLeftButtonLabel;
+        private Label? mouseRightButtonLabel;
+        private Label? mouseMiddleButtonLabel;
+        private Label? mouseWheelValueLabel;
         private MouseState currentMouseState;
         private Dictionary<char, int>? glyphHeights;
 
@@ -39,21 +35,27 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         /// <param name="contentLoader">Loads content for the scene.</param>
         public TestMouseScene(IContentLoader contentLoader)
-            : base(contentLoader)
+            : base(contentLoader) =>
+                this.mouse = new Mouse();
+
+        /// <summary>
+        /// Loads the content for the scene.
+        /// </summary>
+        public override void LoadContent()
         {
-            this.mouse = new Mouse();
+            ThrowExceptionIfLoadingWhenDisposed();
+
+            if (IsLoaded)
+            {
+                return;
+            }
+
             this.mousePosLabel = new Label(ContentLoader) { Color = Color.White };
             this.mouseLeftButtonLabel = new Label(ContentLoader) { Color = Color.White };
             this.mouseRightButtonLabel = new Label(ContentLoader) { Color = Color.White };
             this.mouseMiddleButtonLabel = new Label(ContentLoader) { Color = Color.White };
             this.mouseWheelValueLabel = new Label(ContentLoader) { Color = Color.White };
-        }
 
-        /// <summary>
-        /// Loads the content for the scene.
-        /// </summary>
-        public override void Load()
-        {
             var font = ContentLoader.Load<IFont>("TimesNewRoman");
             this.glyphHeights = new Dictionary<char, int>(font.Metrics.Select(m => new KeyValuePair<char, int>(m.Glyph, m.GlyphHeight)));
 
@@ -69,7 +71,7 @@ namespace VelaptorTesting.Scenes
             AddControl(this.mouseMiddleButtonLabel);
             AddControl(this.mouseWheelValueLabel);
 
-            base.Load();
+            base.LoadContent();
         }
 
         /// <summary>
@@ -114,10 +116,47 @@ namespace VelaptorTesting.Scenes
         /// <summary>
         /// Unloads the content from the scene.
         /// </summary>
-        public override void Unload()
+        public override void UnloadContent()
         {
+            if (!IsLoaded || IsDisposed)
+            {
+                return;
+            }
+
+            DisposeOrUnloadContent();
+
+            base.UnloadContent();
+        }
+
+        /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
+        protected override void Dispose(bool disposing)
+        {
+            if (IsDisposed || !IsLoaded)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                DisposeOrUnloadContent();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Disposes or unloads the scenes content.
+        /// </summary>
+        private void DisposeOrUnloadContent()
+        {
+            RemoveControl(this.mousePosLabel);
+            RemoveControl(this.mouseLeftButtonLabel);
+            RemoveControl(this.mouseRightButtonLabel);
+            RemoveControl(this.mouseMiddleButtonLabel);
+            RemoveControl(this.mouseWheelValueLabel);
+
             this.glyphHeights.Clear();
-            base.Unload();
+            this.glyphHeights = null;
         }
 
         /// <summary>

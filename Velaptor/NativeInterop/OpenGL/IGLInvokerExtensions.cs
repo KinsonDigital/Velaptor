@@ -40,8 +40,8 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <summary>
         /// Returns a value indicating if the shader was compiled successfully.
         /// </summary>
-        /// <param name="shaderID">The ID of the shader to check.</param>
+        /// <param name="shaderId">The ID of the shader to check.</param>
         /// <returns><see langword="true"/> if the shader compiled successfully.</returns>
-        bool ShaderCompileSuccess(uint shaderID);
+        bool ShaderCompileSuccess(uint shaderId);
     }
 }
