@@ -15,7 +15,7 @@ namespace VelaptorTesting.Core
     using Velaptor.UI;
 
     /// <summary>
-    /// Manages scenes by loading and unloading content, updating, and render.
+    /// Manages scenes by loading and unloading content, updating, and rendering scenes.
     /// </summary>
     public sealed class SceneManager : IUpdatable, IDisposable
     {
@@ -162,7 +162,7 @@ namespace VelaptorTesting.Core
         }
 
         /// <summary>
-        /// Unloads the scene manager content and scenes added.
+        /// Unloads the scene manager content and added scenes.
         /// </summary>
         public void UnloadContent()
         {

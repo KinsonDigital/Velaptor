@@ -72,7 +72,7 @@ namespace VelaptorTesting
         }
 
         /// <summary>
-        /// Gets the width fo the window.
+        /// Gets the width of the window.
         /// </summary>
         public static int WindowWidth { get; private set; }
 

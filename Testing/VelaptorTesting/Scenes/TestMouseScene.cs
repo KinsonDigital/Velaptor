@@ -116,7 +116,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            DisposeOrUnloadContent();
+            UnloadSceneContent();
 
             base.UnloadContent();
         }
@@ -131,7 +131,7 @@ namespace VelaptorTesting.Scenes
 
             if (disposing)
             {
-                DisposeOrUnloadContent();
+                UnloadSceneContent();
             }
 
             base.Dispose(disposing);
@@ -140,7 +140,7 @@ namespace VelaptorTesting.Scenes
         /// <summary>
         /// Disposes or unloads the scenes content.
         /// </summary>
-        private void DisposeOrUnloadContent()
+        private void UnloadSceneContent()
         {
             RemoveControl(this.mousePosLabel);
             RemoveControl(this.mouseLeftButtonLabel);
