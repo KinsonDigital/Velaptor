@@ -17,7 +17,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="FrameTimeEventArgs"/> class.
         /// </summary>
-        /// <param name="frameTime">The amount of time that the frame took to run.</param>
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         public FrameTimeEventArgs(double frameTime) => FrameTime = frameTime;
 
         /// <summary>

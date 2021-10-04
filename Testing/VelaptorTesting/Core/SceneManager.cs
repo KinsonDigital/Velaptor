@@ -6,6 +6,7 @@ namespace VelaptorTesting.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
     using Velaptor;
@@ -13,7 +14,9 @@ namespace VelaptorTesting.Core
     using Velaptor.Graphics;
     using Velaptor.UI;
 
-    // TODO: Setup this class to be IDisposable
+    /// <summary>
+    /// Manages scenes by loading and unloading content, updating, and render.
+    /// </summary>
     public sealed class SceneManager : IUpdatable, IDisposable
     {
         private readonly List<IScene> scenes = new ();
@@ -27,20 +30,19 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneManager"/> class.
         /// </summary>
-        /// <param name="contentLoader">The loads all of the content for the scenes.</param>
-        /// <param name="spriteBatch">The renders all of the scenes.</param>
+        /// <param name="contentLoader">Loads all of the content for the scenes.</param>
+        /// <param name="spriteBatch">Renders all of the scenes.</param>
         public SceneManager(IContentLoader contentLoader, ISpriteBatch spriteBatch)
         {
             this.spriteBatch = spriteBatch;
 
-            // TODO: Improve this by creating a control factory
-            var nextButtonLabel = new Label(contentLoader) { Text = "-->" };
-            this.nextButton = new Button(contentLoader, nextButtonLabel);
-            this.nextButton.Click += (_, e) => NextScene();
+            this.nextButton = new Button(contentLoader);
+            this.nextButton.Text = "-->";
+            this.nextButton.Click += (_, _) => NextScene();
 
-            var previousButtonLabel = new Label(contentLoader) { Text = "<--" };
-            this.previousButton = new Button(contentLoader, previousButtonLabel);
-            this.previousButton.Click += (_, e) => PreviousScene();
+            this.previousButton = new Button(contentLoader);
+            this.previousButton.Text = "<--";
+            this.previousButton.Click += (_, _) => PreviousScene();
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace VelaptorTesting.Core
         /// </exception>
         public void AddScene(IScene scene)
         {
-            if (SceneExists(scene.ID))
+            if (SceneExists(scene.Id))
             {
                 throw new Exception($"The sceneBase '{scene.Name}' already exists.");
             }
@@ -66,9 +68,10 @@ namespace VelaptorTesting.Core
         }
 
         /// <summary>
-        /// Removes a scene that matches the given scene ID.
+        /// Removes the scene that matches the given <see cref="sceneId"/>.
         /// </summary>
         /// <param name="sceneId">The ID of the scene to remove.</param>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used for library users.")]
         public void RemoveScene(Guid sceneId)
         {
             if (SceneExists(sceneId) is false)
@@ -76,23 +79,21 @@ namespace VelaptorTesting.Core
                 return;
             }
 
-            this.scenes.Remove(this.scenes.FirstOrDefault(s => s.ID == sceneId));
+            this.scenes.Remove(this.scenes.FirstOrDefault(s => s.Id == sceneId));
         }
 
         /// <summary>
         /// Removes a scene that matches the given scene ID.
         /// </summary>
         /// <param name="scene">The scene to remove.</param>
-        public void RemoveScene(IScene scene) => RemoveScene(scene.ID);
-
-        private int nextHitCount = 0;
+        public void RemoveScene(IScene scene) => RemoveScene(scene.Id);
 
         /// <summary>
         /// Moves to the next scene.
         /// </summary>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used for library users.")]
         public void NextScene()
         {
-            this.nextHitCount += 1;
             if (this.scenes.Count <= 0)
             {
                 return;
@@ -176,7 +177,7 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// Updates the active scenes.
         /// </summary>
-        /// <param name="frameTime">The amount of time passed for the current frame.</param>
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         public void Update(FrameTime frameTime)
         {
             if (this.scenes.Count <= 0)
@@ -230,7 +231,7 @@ namespace VelaptorTesting.Core
         /// </summary>
         /// <param name="id">The ID of the scene to check for.</param>
         /// <returns>True if the scene exists.</returns>
-        private bool SceneExists(Guid id) => this.scenes.Any(s => s.ID == id);
+        private bool SceneExists(Guid id) => this.scenes.Any(s => s.Id == id);
 
         /// <summary>
         /// Disposes or unloads all of the scene content.

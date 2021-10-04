@@ -7,6 +7,7 @@ namespace Velaptor.Content
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO.Abstractions;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
@@ -19,6 +20,7 @@ namespace Velaptor.Content
         private readonly IGLInvoker gl;
         private readonly IImageService imageService;
         private readonly IPathResolver pathResolver;
+        private readonly IPath path;
         private bool isDisposed;
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace Velaptor.Content
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.imageService = imageService;
             this.pathResolver = texturePathResolver;
+            this.path = IoC.Container.GetInstance<IPath>();
         }
 
         /// <summary>
@@ -40,11 +43,13 @@ namespace Velaptor.Content
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="imageService">Loads an image file.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
-        internal TextureLoader(IGLInvoker gl, IImageService imageService, IPathResolver texturePathResolver)
+        /// <param name="path">Processes directory and fle paths.</param>
+        internal TextureLoader(IGLInvoker gl, IImageService imageService, IPathResolver texturePathResolver, IPath path)
         {
             this.gl = gl;
             this.imageService = imageService;
             this.pathResolver = texturePathResolver;
+            this.path = path;
         }
 
         /// <summary>
@@ -54,6 +59,10 @@ namespace Velaptor.Content
         /// <returns>The loaded texture.</returns>
         public ITexture Load(string name)
         {
+            name = this.path.HasExtension(name)
+                ? this.path.GetFileNameWithoutExtension(name)
+                : name;
+
             var filePath = this.pathResolver.ResolveFilePath(name);
 
             // If the requested texture is already loaded into the pool
@@ -69,11 +78,11 @@ namespace Velaptor.Content
                 break;
             }
 
-            return this.textures.GetOrAdd(filePath, (path) =>
+            return this.textures.GetOrAdd(filePath, (filePathToLoad) =>
             {
-                var imageData = this.imageService.Load(path);
+                var imageData = this.imageService.Load(filePathToLoad);
 
-                return new Texture(this.gl, name, path, imageData) { IsPooled = true };
+                return new Texture(this.gl, name, filePathToLoad, imageData) { IsPooled = true };
             });
         }
 

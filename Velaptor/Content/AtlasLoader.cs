@@ -23,6 +23,7 @@ namespace Velaptor.Content
         private readonly IImageService imageService;
         private readonly IPathResolver atlasDataPathResolver;
         private readonly IFile file;
+        private readonly IPath path;
         private bool isDisposed;
 
         /// <summary>
@@ -30,17 +31,16 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="imageService">Loads image data from disk.</param>
         /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
-        /// <param name="file">Used to load the texture atlas.</param>
         [ExcludeFromCodeCoverage]
         public AtlasLoader(
             IImageService imageService,
-            IPathResolver atlasDataPathResolver,
-            IFile file)
+            IPathResolver atlasDataPathResolver)
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.imageService = imageService;
             this.atlasDataPathResolver = atlasDataPathResolver;
-            this.file = file;
+            this.file = IoC.Container.GetInstance<IFile>();
+            this.path = IoC.Container.GetInstance<IPath>();
         }
 
         /// <summary>
@@ -50,21 +50,28 @@ namespace Velaptor.Content
         /// <param name="imageService">Loads image data from disk.</param>
         /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
         /// <param name="file">Used to load the texture atlas.</param>
+        /// <param name="path">Processes directory and file paths.</param>
         internal AtlasLoader(
             IGLInvoker gl,
             IImageService imageService,
             IPathResolver atlasDataPathResolver,
-            IFile file)
+            IFile file,
+            IPath path)
         {
             this.gl = gl;
             this.imageService = imageService;
             this.atlasDataPathResolver = atlasDataPathResolver;
             this.file = file;
+            this.path = path;
         }
 
         /// <inheritdoc/>
         public IAtlasData Load(string name)
         {
+            name = this.path.HasExtension(name)
+                ? this.path.GetFileNameWithoutExtension(name)
+                : name;
+
             var atlasDataPathNoExtension = $"{this.atlasDataPathResolver.ResolveDirPath()}{name}";
 
             // If the requested texture atlas is already loaded into the pool

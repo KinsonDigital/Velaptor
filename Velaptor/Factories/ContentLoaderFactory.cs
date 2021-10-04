@@ -39,6 +39,7 @@ namespace Velaptor.Factories
         /// Creates a loader that loads textures from disk.
         /// </summary>
         /// <returns>A loader for loading textures.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         public static ILoader<ITexture> CreateTextureLoader()
         {
             if (textureLoader is not null)
@@ -49,11 +50,13 @@ namespace Velaptor.Factories
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var imageService = IoC.Container.GetInstance<IImageService>();
             var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+            var path = IoC.Container.GetInstance<IPath>();
 
             textureLoader = new TextureLoader(
                 glInvoker,
                 imageService,
-                texturePathResolver);
+                texturePathResolver,
+                path);
 
             return textureLoader;
         }
@@ -62,6 +65,7 @@ namespace Velaptor.Factories
         /// Creates a loader for loading atlas data from disk.
         /// </summary>
         /// <returns>A loader for loading texture atlas data.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         public static ILoader<IAtlasData> CreateTextureAtlasLoader()
         {
             if (atlasLoader is not null)
@@ -76,7 +80,8 @@ namespace Velaptor.Factories
                 glInvoker,
                 IoC.Container.GetInstance<IImageService>(),
                 atlasDataPathResolver,
-                IoC.Container.GetInstance<IFile>());
+                IoC.Container.GetInstance<IFile>(),
+                IoC.Container.GetInstance<IPath>());
 
             return atlasLoader;
         }
@@ -85,6 +90,7 @@ namespace Velaptor.Factories
         /// Creates a loader that loads sounds from disk.
         /// </summary>
         /// <returns>A loader for loading sound data.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         public static ILoader<IVelaptorSound> CreateSoundLoader()
         {
             if (soundLoader is not null)
@@ -104,6 +110,7 @@ namespace Velaptor.Factories
         /// Creates a loader that loads fonts from disk for rendering test.
         /// </summary>
         /// <returns>A loader for loading sound data.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         public static ILoader<IFont> CreateFontLoader()
         {
             if (fontLoader is not null)
@@ -121,8 +128,9 @@ namespace Velaptor.Factories
                 freeTypeInvoker,
                 fontAtlasService,
                 fontPathResolver,
+                IoC.Container.GetInstance<IImageService>(),
                 IoC.Container.GetInstance<IFile>(),
-                IoC.Container.GetInstance<IImageService>());
+                IoC.Container.GetInstance<IPath>());
 
             return fontLoader;
         }

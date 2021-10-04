@@ -225,7 +225,7 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public async void ShowAsync_WhenInvoked_InvokesInternalWindow()
+        public async void ShowAsync_WhenInvoked_ShowsInternalWindow()
         {
             // Arrange
             this.mockWindow.Setup(m => m.ShowAsync())

@@ -82,7 +82,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Updates the text box.
         /// </summary>
-        /// <param name="frameTime">The update iteration time.</param>
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         public override void Update(FrameTime frameTime)
         {
             if (IsLoaded is false || Enabled is false)

@@ -39,6 +39,7 @@ namespace VelaptorTests.Content
             TypeNameHandling = TypeNameHandling.Objects,
         };
         private readonly FontSettings fontSettings;
+        private readonly Mock<IPath> mockPath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoaderTests"/> class.
@@ -76,18 +77,25 @@ namespace VelaptorTests.Content
             this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(()
                 => JsonConvert.SerializeObject(this.fontSettings, this.jsonSettings));
 
+            this.mockPath = new Mock<IPath>();
+
             this.mockImageService = new Mock<IImageService>();
         }
 
         #region Method Tests
-        [Fact]
-        public void Load_WhenInvoked_LoadsFont()
+        [Theory]
+        [InlineData(FontContentName, "")]
+        [InlineData(FontContentName, ".txt")]
+        public void Load_WhenInvoked_LoadsFont(string contentName, string extension)
         {
             // Arrange
+            this.mockPath.Setup(m => m.HasExtension($"{contentName}.txt")).Returns(true);
+            this.mockPath.Setup(m => m.HasExtension($"{contentName}")).Returns(false);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
             var loader = CreateLoader();
 
             // Act
-            var actual = loader.Load(FontContentName);
+            var actual = loader.Load($"{contentName}{extension}");
 
             // Assert
             this.mockFile.Verify(m => m.ReadAllText(this.fontDataFilePath), Times.Once());
@@ -129,7 +137,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Load_WhenLoadingSameDataThatIsDisposed_RemovesDataBeforeAdding()
+        public void Load_WhenLoadingSameContentThatIsDisposed_RemovesDataBeforeAdding()
         {
             // Arrange
             var loader = CreateLoader();
@@ -256,15 +264,16 @@ namespace VelaptorTests.Content
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="AtlasLoader"/> for the purpoase of testing.
+        /// Creates an instance of <see cref="AtlasLoader"/> for the purpose of testing.
         /// </summary>
-        /// <returns>The instnace to test.</returns>
+        /// <returns>The instance to test.</returns>
         private FontLoader CreateLoader() => new (
             this.mockGLInvoker.Object,
             this.mockFreeTypeInvoker.Object,
             this.mockFontAtlasService.Object,
             this.mockFontPathResolver.Object,
+            this.mockImageService.Object,
             this.mockFile.Object,
-            this.mockImageService.Object);
+            this.mockPath.Object);
     }
 }

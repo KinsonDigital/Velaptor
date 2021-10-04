@@ -21,15 +21,15 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// Gets the unique ID of the scene.
         /// </summary>
-        Guid ID { get; }
+        Guid Id { get; }
 
         /// <summary>
-        /// Gets a value indicating whether a value indicating if the scene has been loaded.
+        /// Gets a value indicating whether the scene has been loaded.
         /// </summary>
         bool IsLoaded { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the scene is the current active scene.
+        /// Gets or sets a value indicating whether the scene is active.
         /// </summary>
         bool IsActive { get; set; }
 

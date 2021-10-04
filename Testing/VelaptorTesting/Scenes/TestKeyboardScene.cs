@@ -33,10 +33,7 @@ namespace VelaptorTesting.Scenes
             : base(contentLoader) =>
                 this.keyboard = new Keyboard();
 
-        /// <summary>
-        /// <inheritdoc cref="SceneBase.LoadContent"/>.
-        /// </summary>
-        /// <exception cref="Exception">Thrown if the scene has been disposed.</exception>
+        /// <inheritdoc cref="IScene.LoadContent"/>.
         public override void LoadContent()
         {
             ThrowExceptionIfLoadingWhenDisposed();
@@ -71,7 +68,7 @@ namespace VelaptorTesting.Scenes
             base.LoadContent();
         }
 
-        /// <inheritdoc cref="SceneBase.UnloadContent"/>.
+        /// <inheritdoc cref="IScene.UnloadContent"/>.
         public override void UnloadContent()
         {
             if (!IsLoaded || IsDisposed)
@@ -84,7 +81,7 @@ namespace VelaptorTesting.Scenes
             base.UnloadContent();
         }
 
-        /// <inheritdoc cref="SceneBase.Update"/>.
+        /// <inheritdoc cref="IUpdatable.Update"/>.
         public override void Update(FrameTime frameTime)
         {
             this.currentKeyboardState = this.keyboard.GetState();
@@ -114,7 +111,7 @@ namespace VelaptorTesting.Scenes
             base.Update(frameTime);
         }
 
-        /// <inheritdoc cref="SceneBase.Dispose"/>
+        /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
         protected override void Dispose(bool disposing)
         {
             if (IsDisposed || !IsLoaded)

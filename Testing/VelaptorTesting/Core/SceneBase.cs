@@ -32,8 +32,8 @@ namespace VelaptorTesting.Core
         /// <inheritdoc cref="IScene.Name"/>
         public string Name { get; set; } = string.Empty;
 
-        /// <inheritdoc cref="IScene.ID"/>
-        public Guid ID { get; } = Guid.NewGuid();
+        /// <inheritdoc cref="IScene.Id"/>
+        public Guid Id { get; } = Guid.NewGuid();
 
         /// <inheritdoc cref="IScene.Name"/>
         public bool IsLoaded { get; private set; }

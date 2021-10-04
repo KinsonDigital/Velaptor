@@ -29,9 +29,7 @@ namespace VelaptorTesting.Scenes
         {
         }
 
-        /// <summary>
-        /// Loads the scene.
-        /// </summary>
+        /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
         {
             ThrowExceptionIfLoadingWhenDisposed();
@@ -47,7 +45,7 @@ namespace VelaptorTesting.Scenes
             base.LoadContent();
         }
 
-        /// <inheritdoc cref="SceneBase"/>
+        /// <inheritdoc cref="IScene.UnloadContent"/>
         public override void UnloadContent()
         {
             if (!IsLoaded || IsDisposed)
@@ -61,10 +59,7 @@ namespace VelaptorTesting.Scenes
             base.UnloadContent();
         }
 
-        /// <summary>
-        /// Updates the scene.
-        /// </summary>
-        /// <param name="frameTime">The amount of time passed for the current frame.</param>
+        /// <inheritdoc cref="IUpdatable.Update"/>
         public override void Update(FrameTime frameTime)
         {
             if (this.elapsedTime >= 32)
@@ -81,10 +76,7 @@ namespace VelaptorTesting.Scenes
             }
         }
 
-        /// <summary>
-        /// Renders graphics to the scene.
-        /// </summary>
-        /// <param name="spriteBatch">Renders graphics to the screen.</param>
+        /// <inheritdoc cref="IDrawable.Render"/>
         public override void Render(ISpriteBatch spriteBatch)
         {
             var sqrPosX = (MainWindow.WindowWidth / 2) - (this.frames[this.currentFrame].Bounds.Width / 2);

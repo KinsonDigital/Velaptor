@@ -51,7 +51,7 @@ namespace VelaptorTests.Content
         public void Metrics_WhenGettingValueAtIndex_ReturnsCorrectResult()
         {
             // Arrange
-            var glyphMetrics = new GlyphMetrics[]
+            var glyphMetrics = new[]
             {
                 new GlyphMetrics()
                 {

@@ -21,8 +21,8 @@ namespace Velaptor.NativeInterop.GLFW
         /// <summary>
         /// Gets a value indicating whether a monitor has been connected.
         /// </summary>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Need for library users.")]
-        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Need for library users")]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users")]
         public bool IsConnected { get; }
     }
 }

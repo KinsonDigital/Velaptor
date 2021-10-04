@@ -98,6 +98,8 @@ namespace Velaptor.Content
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
+            // TODO: Make sure once you improve this control, that the lower level IContent items
+            // are checked to see if they are not being pooled before disposing them
             if (IsDisposed)
             {
                 return;

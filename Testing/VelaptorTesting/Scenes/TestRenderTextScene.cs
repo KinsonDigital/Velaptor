@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor;
+
 namespace VelaptorTesting.Scenes
 {
     using System.Collections.Generic;
@@ -30,9 +32,7 @@ namespace VelaptorTesting.Scenes
             : base(contentLoader)
                 => this.contentLoader = contentLoader;
 
-        /// <summary>
-        /// Loads the content for the scene.
-        /// </summary>
+        /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
         {
             ThrowExceptionIfLoadingWhenDisposed();
@@ -49,7 +49,7 @@ namespace VelaptorTesting.Scenes
             base.LoadContent();
         }
 
-        /// <inheritdoc cref="SceneBase"/>
+        /// <inheritdoc cref="IScene.UnloadContent"/>
         public override void UnloadContent()
         {
             if (!IsLoaded || IsDisposed)
@@ -62,10 +62,7 @@ namespace VelaptorTesting.Scenes
             base.UnloadContent();
         }
 
-        /// <summary>
-        /// Renders the scene.
-        /// </summary>
-        /// <param name="spriteBatch">Renders sprites to the screen.</param>
+        /// <inheritdoc cref="IDrawable.Render"/>
         public override void Render(ISpriteBatch spriteBatch)
         {
             var xPos = (int)((MainWindow.WindowWidth / 2f) - (this.textWidth / 2f));

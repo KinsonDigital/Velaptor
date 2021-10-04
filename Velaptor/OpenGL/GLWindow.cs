@@ -40,7 +40,7 @@ namespace Velaptor.OpenGL
         private readonly OpenGLInitObservable glObservable;
         private bool isShuttingDown;
         private bool firstRenderInvoked;
-        private bool isDiposed;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
@@ -462,7 +462,7 @@ namespace Velaptor.OpenGL
         /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
         private void Dispose(bool disposing)
         {
-            if (this.isDiposed)
+            if (this.isDisposed)
             {
                 return;
             }
@@ -490,7 +490,7 @@ namespace Velaptor.OpenGL
                 this.glfw.Dispose();
             }
 
-            this.isDiposed = true;
+            this.isDisposed = true;
         }
 
         /// <summary>

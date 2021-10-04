@@ -34,6 +34,8 @@ namespace Velaptor.UI
         /// </summary>
         event EventHandler<MousePositionEventArgs>? MouseMove;
 
+        // ReSharper disable UnusedMemberInSuper.Global
+
         /// <summary>
         /// Gets or sets the name of the control.
         /// </summary>
@@ -78,5 +80,7 @@ namespace Velaptor.UI
         /// Gets a value indicating whether the mouse is hovering over the button.
         /// </summary>
         bool IsMouseOver { get; }
+
+        // ReSharper restore UnusedMemberInSuper.Global
     }
 }

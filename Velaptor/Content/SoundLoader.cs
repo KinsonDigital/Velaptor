@@ -7,6 +7,7 @@ namespace Velaptor.Content
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO.Abstractions;
     using Velaptor.Factories;
 
     /// <summary>
@@ -17,6 +18,7 @@ namespace Velaptor.Content
         private readonly ConcurrentDictionary<string, ISound> sounds = new ();
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundFactory soundFactory;
+        private readonly IPath path;
         private bool isDisposed;
 
         /// <summary>
@@ -24,10 +26,25 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="soundFactory">Creates sound instances.</param>
+        [ExcludeFromCodeCoverage]
         public SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory)
         {
             this.soundPathResolver = soundPathResolver;
             this.soundFactory = soundFactory;
+            this.path = IoC.Container.GetInstance<IPath>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SoundLoader"/> class.
+        /// </summary>
+        /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
+        /// <param name="soundFactory">Creates sound instances.</param>
+        /// <param name="path">Processes directory and fle paths.</param>
+        internal SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory, IPath path)
+        {
+            this.soundPathResolver = soundPathResolver;
+            this.soundFactory = soundFactory;
+            this.path = path;
         }
 
         /// <summary>
@@ -45,18 +62,22 @@ namespace Velaptor.Content
         /// </remarks>
         public ISound Load(string name)
         {
+            name = this.path.HasExtension(name)
+                ? this.path.GetFileNameWithoutExtension(name)
+                : name;
+
             var filePath = this.soundPathResolver.ResolveFilePath(name);
 
             // If the requested font is already loaded into the pool
             // and has been disposed, remove it.
-            foreach (var font in this.sounds)
+            foreach (var sound in this.sounds)
             {
-                if (font.Key != filePath || !font.Value.IsDisposed)
+                if (sound.Key != filePath || !sound.Value.IsDisposed)
                 {
                     continue;
                 }
 
-                this.sounds.TryRemove(font);
+                this.sounds.TryRemove(sound);
                 break;
             }
 

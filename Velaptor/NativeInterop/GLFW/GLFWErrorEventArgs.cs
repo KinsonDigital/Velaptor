@@ -27,15 +27,15 @@ namespace Velaptor.NativeInterop.GLFW
         /// <summary>
         /// Gets the error code of the error.
         /// </summary>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Need for library users.")]
-        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Need for library users")]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users")]
         public GLFWErrorCode ErrorCode { get; }
 
         /// <summary>
         /// Gets the error message.
         /// </summary>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Need for library users.")]
-        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Need for library users")]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users")]
         public string ErrorMessage { get; }
     }
 }

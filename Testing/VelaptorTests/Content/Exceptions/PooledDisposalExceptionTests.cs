@@ -17,7 +17,7 @@ namespace VelaptorTests.Content.Exceptions
         private static readonly string Message =
             @$"Cannot manually dispose of '{nameof(IContent)}' objects.
             \nTo override manual disposal of pooled objects, set the '{nameof(IContent.IsPooled)}' to a value of 'false'.
-            \n!!WARNING!! It is not recommended to do this due to the object probably being used somewhere else in the application.
+            \n!!WARNING!! It is not recommended to do this due to the object possibly being used somewhere else in the application.
             \nThe benefit of object pooling is to improve performance and reusability of objects.";
 
         #region Constructor Tests

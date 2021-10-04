@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Content
 {
+    using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
     using Velaptor.NativeInterop.OpenGL;
@@ -22,6 +23,7 @@ namespace VelaptorTests.Content
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
+        private readonly Mock<IPath> mockPath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
@@ -35,17 +37,25 @@ namespace VelaptorTests.Content
             this.mockImageService = new Mock<IImageService>();
             this.mockTexturePathResolver = new Mock<IPathResolver>();
             this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName)).Returns(this.textureFilePath);
+
+            this.mockPath = new Mock<IPath>();
+            this.mockPath.Setup(m => m.HasExtension(TextureFileName)).Returns(false);
         }
 
         #region Method Tests
-        [Fact]
-        public void Load_WhenInvoked_LoadsTexture()
+        [Theory]
+        [InlineData(TextureFileName, "")]
+        [InlineData(TextureFileName, ".txt")]
+        public void Load_WhenInvoked_LoadsTexture(string contentName, string extension)
         {
             // Arrange
+            this.mockPath.Setup(m => m.HasExtension($"{contentName}.txt")).Returns(true);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
+
             var loader = CreateLoader();
 
             // Act
-            var actual = loader.Load(TextureFileName);
+            var actual = loader.Load($"{contentName}{extension}");
 
             // Assert
             Assert.NotNull(actual);
@@ -55,7 +65,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Load_WhenLoadingSameDataThatIsDisposed_RemovesDataBeforeAdding()
+        public void Load_WhenLoadingSameContentThatIsDisposed_RemovesDataBeforeAdding()
         {
             // Arrange
             var loader = CreateLoader();
@@ -123,6 +133,10 @@ namespace VelaptorTests.Content
         /// Creates a new instance of <see cref="TextureLoader"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private TextureLoader CreateLoader() => new (this.mockGL.Object, this.mockImageService.Object, this.mockTexturePathResolver.Object);
+        private TextureLoader CreateLoader() => new
+            (this.mockGL.Object,
+             this.mockImageService.Object,
+             this.mockTexturePathResolver.Object,
+             this.mockPath.Object);
     }
 }

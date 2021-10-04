@@ -38,9 +38,7 @@ namespace VelaptorTesting.Scenes
             : base(contentLoader) =>
                 this.mouse = new Mouse();
 
-        /// <summary>
-        /// Loads the content for the scene.
-        /// </summary>
+        /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
         {
             ThrowExceptionIfLoadingWhenDisposed();
@@ -74,10 +72,7 @@ namespace VelaptorTesting.Scenes
             base.LoadContent();
         }
 
-        /// <summary>
-        /// Updates the scene.
-        /// </summary>
-        /// <param name="frameTime">The amount of time passed this current frame.</param>
+        /// <inheritdoc cref="IUpdatable.Update"/>
         public override void Update(FrameTime frameTime)
         {
             this.currentMouseState = this.mouse.GetState();
@@ -113,9 +108,7 @@ namespace VelaptorTesting.Scenes
             base.Update(frameTime);
         }
 
-        /// <summary>
-        /// Unloads the content from the scene.
-        /// </summary>
+        /// <inheritdoc cref="IScene.UnloadContent"/>
         public override void UnloadContent()
         {
             if (!IsLoaded || IsDisposed)

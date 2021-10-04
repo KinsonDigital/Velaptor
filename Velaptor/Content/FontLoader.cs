@@ -26,6 +26,7 @@ namespace Velaptor.Content
         private readonly IFontAtlasService fontAtlasService;
         private readonly IPathResolver fontPathResolver;
         private readonly IFile file;
+        private readonly IPath path;
         private readonly IImageService imageService;
         private readonly char[] glyphChars =
         {
@@ -40,7 +41,7 @@ namespace Velaptor.Content
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
         /// </summary>
         /// <param name="fontAtlasService">Loads font files and builds atlas textures from them.</param>
-        /// <param name="fontPathResolver">Reolves paths to JSON font data files.</param>
+        /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
         /// <param name="imageService">Manipulates image data.</param>
         [ExcludeFromCodeCoverage]
         public FontLoader(IFontAtlasService fontAtlasService, IPathResolver fontPathResolver, IImageService imageService)
@@ -50,6 +51,7 @@ namespace Velaptor.Content
             this.fontAtlasService = fontAtlasService;
             this.fontPathResolver = fontPathResolver;
             this.file = IoC.Container.GetInstance<IFile>();
+            this.path = IoC.Container.GetInstance<IPath>();
             this.imageService = imageService;
 
             this.fontAtlasService.SetAvailableCharacters(this.glyphChars);
@@ -61,22 +63,25 @@ namespace Velaptor.Content
         /// <param name="gl">Makes native calls to OpenGL.</param>
         /// <param name="freeTypeInvoker">Makes calls to the native free type library.</param>
         /// <param name="fontAtlasService">Loads font files and builds atlas textures from them.</param>
-        /// <param name="fontPathResolver">Reolves paths to JSON font data files.</param>
-        /// <param name="file">Peforms file related operations.</param>
+        /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
         /// <param name="imageService">Manipulates image data.</param>
+        /// <param name="file">Performs file related operations.</param>
+        /// <param name="path">Processes directory and fle paths.</param>
         internal FontLoader(
             IGLInvoker gl,
             IFreeTypeInvoker freeTypeInvoker,
             IFontAtlasService fontAtlasService,
             IPathResolver fontPathResolver,
+            IImageService imageService,
             IFile file,
-            IImageService imageService)
+            IPath path)
         {
             this.gl = gl;
             this.freeTypeInvoker = freeTypeInvoker;
             this.fontAtlasService = fontAtlasService;
             this.fontPathResolver = fontPathResolver;
             this.file = file;
+            this.path = path;
             this.imageService = imageService;
 
             this.fontAtlasService.SetAvailableCharacters(this.glyphChars);
@@ -85,6 +90,10 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public IFont Load(string name)
         {
+            name = this.path.HasExtension(name)
+                ? this.path.GetFileNameWithoutExtension(name)
+                : name;
+
             var fontsDirPath = this.fontPathResolver.ResolveDirPath();
             var filePathNoExtension = $"{fontsDirPath}{name}";
 

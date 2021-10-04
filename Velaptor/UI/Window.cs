@@ -139,7 +139,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Invoked when the window is updated.
         /// </summary>
-        /// <param name="frameTime">The amount of time since the last frame.</param>
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         [ExcludeFromCodeCoverage]
         public virtual void OnUpdate(FrameTime frameTime)
         {
@@ -148,7 +148,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Invoked when the window renders its content.
         /// </summary>
-        /// <param name="frameTime">The amount of time since the last frame.</param>
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         [ExcludeFromCodeCoverage]
         public virtual void OnDraw(FrameTime frameTime)
         {

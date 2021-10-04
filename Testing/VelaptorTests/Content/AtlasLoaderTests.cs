@@ -30,6 +30,7 @@ namespace VelaptorTests.Content
             TypeNameHandling = TypeNameHandling.Objects,
         };
         private readonly Mock<IFile> mockFile;
+        private readonly Mock<IPath> mockPath;
         private readonly Mock<IPathResolver> mockAtlasPathResolver;
         private readonly Mock<IImageService> mockImageService;
         private readonly AtlasSubTextureData[] atlasSpriteData;
@@ -69,17 +70,24 @@ namespace VelaptorTests.Content
             this.mockFile = new Mock<IFile>();
             this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath))
                 .Returns(() => JsonConvert.SerializeObject(this.atlasSpriteData, this.jsonSettings));
+
+            this.mockPath = new Mock<IPath>();
         }
 
         #region Method Tests
-        [Fact]
-        public void Load_WhenInvoked_LoadsTextureAtlasData()
+        [Theory]
+        [InlineData(AtlasContentName, "")]
+        [InlineData(AtlasContentName, ".data")]
+        public void Load_WhenInvoked_LoadsTextureAtlasData(string contentName, string extension)
         {
             // Arrange
+            this.mockPath.Setup(m => m.HasExtension($"{contentName}.data")).Returns(true);
+            this.mockPath.Setup(m => m.HasExtension($"{contentName}")).Returns(false);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
             var loader = CreateLoader();
 
             // Act
-            var actual = loader.Load(AtlasContentName);
+            var actual = loader.Load($"{contentName}{extension}");
 
             // Assert
             Assert.Equal(this.atlasSpriteData[0], actual[0]);
@@ -90,7 +98,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Load_WhenLoadingSameDataThatIsDisposed_RemovesDataBeforeAdding()
+        public void Load_WhenLoadingSameContentThatIsDisposed_RemovesDataBeforeAdding()
         {
             // Arrange
             var loader = CreateLoader();
@@ -199,6 +207,7 @@ namespace VelaptorTests.Content
                 this.mockGLInvoker.Object,
                 this.mockImageService.Object,
                 this.mockAtlasPathResolver.Object,
-                this.mockFile.Object);
+                this.mockFile.Object,
+                this.mockPath.Object);
     }
 }

@@ -2,11 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace Velaptor.UI
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Content;
     using Velaptor.Graphics;
@@ -87,12 +86,12 @@ namespace Velaptor.UI
         public virtual bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Gets a value indicating whether gets a value indicating if the mouse is hovering over the button.
+        /// Gets a value indicating whether the mouse is hovering over the button.
         /// </summary>
         public bool IsMouseOver { get; private set; }
 
         /// <inheritdoc cref="IContentLoadable.IsLoaded"/>
-        public bool IsLoaded { get; private set; }
+        public bool IsLoaded { get; protected set; }
 
         /// <summary>
         /// Gets or sets the color to apply to the control when the
@@ -111,7 +110,7 @@ namespace Velaptor.UI
         public Color MouseHoverColor { get; set; } = Color.FromArgb(255, 230, 230, 230);
 
         /// <summary>
-        /// Gets the tint color to apply the control surface.
+        /// Gets the tint color to apply the control surface when the mouse hovers over the control.
         /// </summary>
         /// <remarks>
         ///     This is used to signify to the user that the mouse is hovering over the control or
@@ -213,7 +212,6 @@ namespace Velaptor.UI
         protected void ThrowExceptionIfLoadingWhenDisposed()
         {
             if (IsDisposed)
-
             {
                 throw new Exception("Cannot load a control that has been disposed.");
             }

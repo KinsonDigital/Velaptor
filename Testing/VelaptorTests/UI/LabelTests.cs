@@ -21,6 +21,7 @@ namespace VelaptorTests.UI
     /// </summary>
     public class LabelTests
     {
+        private const string TextValue = "hello world";
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<IFont> mockFont;
 
@@ -30,7 +31,7 @@ namespace VelaptorTests.UI
         public LabelTests()
         {
             this.mockFont = new Mock<IFont>();
-            MockGlyphs("hello world");
+            MockGlyphs(TextValue);
 
             this.mockContentLoader = new Mock<IContentLoader>();
             this.mockContentLoader.Setup(m => m.Load<IFont>(It.IsAny<string>()))
@@ -58,8 +59,7 @@ namespace VelaptorTests.UI
             // Arrange
             var label = CreateLabel();
 
-            label.Text = "hello world";
-            // ReSharper restore StringLiteralTypo
+            label.Text = TextValue;
             label.LoadContent();
 
             // Act
@@ -75,9 +75,7 @@ namespace VelaptorTests.UI
             // Arrange
             var label = CreateLabel();
 
-            // ReSharper disable StringLiteralTypo
-            label.Text = "hello world";
-            // ReSharper restore StringLiteralTypo
+            label.Text = TextValue;
             label.LoadContent();
 
             // Act
@@ -88,14 +86,12 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void WidthAndHeight_WhenTextIsEmpty_CalculatesCorrectHeight()
+        public void WidthAndHeight_WhenTextIsEmpty_CalculatesCorrectResults()
         {
             // Arrange
             var label = CreateLabel();
 
-            // ReSharper disable StringLiteralTypo
             label.Text = string.Empty;
-            // ReSharper restore StringLiteralTypo
             label.LoadContent();
 
             // Act
@@ -188,12 +184,11 @@ namespace VelaptorTests.UI
             label.Render(mockSpriteBatch.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m =>
-                                    m.Render(It.IsAny<IFont>(),
-                                             It.IsAny<string>(),
-                                             It.IsAny<int>(),
-                                             It.IsAny<int>(),
-                                             It.IsAny<Color>()), Times.Never);
+            mockSpriteBatch.Verify(m => m.Render(It.IsAny<IFont>(),
+                                                               It.IsAny<string>(),
+                                                               It.IsAny<int>(),
+                                                               It.IsAny<int>(),
+                                                               It.IsAny<Color>()), Times.Never);
         }
 
         [Fact]
@@ -224,7 +219,7 @@ namespace VelaptorTests.UI
             var mockSpriteBatch = new Mock<ISpriteBatch>();
 
             var label = CreateLabel();
-            label.Text = "hello world";
+            label.Text = TextValue;
             label.Position = new Point(100, 200);
             label.Visible = true;
             label.Color = Color.FromArgb(11, 22, 33, 44);
@@ -236,14 +231,14 @@ namespace VelaptorTests.UI
             // Assert
             mockSpriteBatch.Verify(m =>
                 m.Render(this.mockFont.Object,
-                    "hello world",
+                    TextValue,
                     100,
                     300,
                     Color.FromArgb(11, 22, 33, 44)), Times.Once());
         }
 
         [Fact]
-        public void Dispose_WhenInvokedWithoutLoadingContent_NoExceptionThrown()
+        public void Dispose_WhenInvokedWithoutLoadingContent_DoesNotThrowException()
         {
             // Arrange
             var label = CreateLabel();

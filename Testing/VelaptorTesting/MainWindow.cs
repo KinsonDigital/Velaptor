@@ -13,6 +13,9 @@ namespace VelaptorTesting
     using VelaptorTesting.Core;
     using VelaptorTesting.Scenes;
 
+    /// <summary>
+    /// The main window to the testing application.
+    /// </summary>
     public class MainWindow : Window
     {
         private static readonly char[] UpperCaseChars =
@@ -42,22 +45,22 @@ namespace VelaptorTesting
 
             var testRenderTextScene = new TestRenderTextScene(contentLoader)
             {
-                Name = ProcessName(nameof(TestRenderTextScene)),
+                Name = SplitByUpperCase(nameof(TestRenderTextScene)),
             };
 
             var testMouseScene = new TestMouseScene(contentLoader)
             {
-                Name = ProcessName(nameof(TestMouseScene)),
+                Name = SplitByUpperCase(nameof(TestMouseScene)),
             };
 
             var testKeyboardScene = new TestKeyboardScene(contentLoader)
             {
-                Name = ProcessName(nameof(TestKeyboardScene)),
+                Name = SplitByUpperCase(nameof(TestKeyboardScene)),
             };
 
             var renderGraphicsScene = new TestRenderGraphicsScene(contentLoader)
             {
-                Name = ProcessName(nameof(TestRenderGraphicsScene)),
+                Name = SplitByUpperCase(nameof(TestRenderGraphicsScene)),
             };
 
             this.sceneManager.AddScene(testRenderTextScene);
@@ -120,33 +123,13 @@ namespace VelaptorTesting
         }
 
         /// <summary>
-        /// Processes a scene name by converting a camel cased name to
-        /// space separated words.
-        /// </summary>
-        /// <param name="value">The value to process.</param>
-        /// <returns>The processed name.</returns>
-        /// <remarks>
-        ///     If the value was 'MyScene', it would return 'My Scene'.
-        /// </remarks>
-        private static string ProcessName(string value)
-        {
-            var sections = SplitByUpperCase(value);
-            var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
-
-            return result.TrimEnd(' ');
-        }
-
-        /// <summary>
         /// Splits the given <param name="value"></param> based on uppercase characters.
         /// </summary>
         /// <param name="value">The value to split.</param>
         /// <returns>The value returned as a list of sections.</returns>
-        /// <remarks>
-        ///     Example: If the value was 'HelloWorld', the result would be ['Hello', 'World'].
-        /// </remarks>
-        private static IEnumerable<string> SplitByUpperCase(string value)
+        private static string SplitByUpperCase(string value)
         {
-            var result = new List<string>();
+            var sections = new List<string>();
 
             var currentSection = string.Empty;
 
@@ -156,7 +139,7 @@ namespace VelaptorTesting
 
                 if (UpperCaseChars.Contains(character) && i != 0)
                 {
-                    result.Add(currentSection);
+                    sections.Add(currentSection);
 
                     currentSection = string.Empty;
                     currentSection += character;
@@ -167,9 +150,11 @@ namespace VelaptorTesting
                 }
             }
 
-            result.Add(currentSection);
+            sections.Add(currentSection);
 
-            return result.ToArray();
+            var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
+
+            return result.TrimEnd(' ');
         }
     }
 }

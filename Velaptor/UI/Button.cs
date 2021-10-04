@@ -5,6 +5,7 @@
 namespace Velaptor.UI
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Content;
     using Velaptor.Graphics;
@@ -15,19 +16,16 @@ namespace Velaptor.UI
     public sealed class Button : ControlBase
     {
         private readonly IContentLoader contentLoader;
-        private readonly IControl label;
+        private Label? label;
         private ITexture? texture;
+        private string cachedText = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Button"/> class.
         /// </summary>
         /// <param name="contentLoader">Loads the button content for rendering.</param>
-        /// <param name="label">The label on the face of the button.</param>
-        public Button(IContentLoader contentLoader, IControl label)
-        {
-            this.contentLoader = contentLoader;
-            this.label = label;
-        }
+        public Button(IContentLoader contentLoader)
+            => this.contentLoader = contentLoader ?? throw new ArgumentNullException(nameof(contentLoader));
 
         /// <inheritdoc cref="IControl"/>
         public override Point Position
@@ -37,29 +35,38 @@ namespace Velaptor.UI
             {
                 base.Position = value;
 
-                /* Calculate the position of the label to be centered
-                 * horizontally and vertically over the face of the button.
-                 */
-                var posX = (int)(Position.X + ((Width / 2f) - (this.label.Width / 2f)));
-                var posY = (int)(Position.Y + ((Height / 2f) - (this.label.Height / 2f)));
-
-                this.label.Position = new Point(posX, posY);
+                CalculateLabelPosition();
             }
         }
 
-        /// <summary>
-        /// Gets the width of the <see cref="Button"/>.
-        /// </summary>
+        /// <inheritdoc cref="ISizable.Width"/>
         public override int Width => this.texture?.Width ?? 0;
 
-        /// <summary>
-        /// Gets the height of the <see cref="Button"/>.
-        /// </summary>
+        /// <inheritdoc cref="ISizable.Height"/>
         public override int Height => this.texture?.Height ?? 0;
 
         /// <summary>
-        /// <inheritdoc cref="ControlBase.UnloadContent"/>
+        /// Gets or sets the text of the button.
         /// </summary>
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+        public string Text
+        {
+            get => IsLoaded
+                        ? this.label?.Text ?? string.Empty
+                        : this.cachedText;
+            set
+            {
+                if (this.label is null || IsLoaded is false)
+                {
+                    this.cachedText = value;
+                    return;
+                }
+
+                this.label.Text = value;
+            }
+        }
+
+        /// <inheritdoc cref="ControlBase.UnloadContent"/>
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
         {
@@ -72,11 +79,16 @@ namespace Velaptor.UI
 
             // TODO: Add label with simple text.  This means adding a text property
             this.texture = this.contentLoader.Load<ITexture>("button-face");
+            this.label = new Label(this.contentLoader);
             this.label.LoadContent();
+            this.label.Text = this.cachedText;
+
+            CalculateLabelPosition();
 
             base.LoadContent();
         }
 
+        /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
         public override void UnloadContent()
         {
             if (!IsLoaded || IsDisposed)
@@ -84,15 +96,10 @@ namespace Velaptor.UI
                 return;
             }
 
-            this.texture?.Dispose();
-
             base.UnloadContent();
         }
 
-        /// <summary>
-        /// Renders the <see cref="Button"/> to the screen.
-        /// </summary>
-        /// <param name="spriteBatch">Renders the <see cref="Button"/>.</param>
+        /// <inheritdoc cref="IDrawable.Render"/>
         public override void Render(ISpriteBatch spriteBatch)
         {
             if (IsLoaded is false || Visible is false)
@@ -107,7 +114,7 @@ namespace Velaptor.UI
 
                 spriteBatch.Render(this.texture, posX, posY, TintColor);
 
-                this.label.Render(spriteBatch);
+                this.label?.Render(spriteBatch);
             }
 
             base.Render(spriteBatch);
@@ -121,12 +128,37 @@ namespace Velaptor.UI
                 return;
             }
 
-            if (disposing)
+            if (disposing && this.texture is not null)
             {
-                this.texture?.Dispose();
+                if (this.texture.IsPooled is false)
+                {
+                    this.texture.Dispose();
+                }
+
+                this.label?.Dispose();
+                IsLoaded = false;
             }
 
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Calculates the position of the label on the button.
+        /// </summary>
+        private void CalculateLabelPosition()
+        {
+            if (this.label is null)
+            {
+                return;
+            }
+
+            /* Calculate the position of the label to be centered
+             * horizontally and vertically over the face of the button.
+            */
+            var posX = (int)(Position.X + ((Width / 2f) - (this.label.Width / 2f)));
+            var posY = (int)(Position.Y + ((Height / 2f) - (this.label.Height / 2f)));
+
+            this.label.Position = new Point(posX, posY);
         }
     }
 }
