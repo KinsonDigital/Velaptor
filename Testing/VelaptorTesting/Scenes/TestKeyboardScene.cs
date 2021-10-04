@@ -128,7 +128,7 @@ namespace VelaptorTesting.Scenes
         }
 
         /// <summary>
-        /// Disposes or unloads the scenes content.
+        /// Unloads the scenes content.
         /// </summary>
         private void UnloadSceneContent()
         {

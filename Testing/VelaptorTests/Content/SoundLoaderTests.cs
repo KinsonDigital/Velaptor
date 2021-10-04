@@ -15,7 +15,7 @@ namespace VelaptorTests.Content
     /// </summary>
     public class SoundLoaderTests
     {
-        private const string SoundName = "mockSound";
+        private const string SoundName = "test-sound";
         private const string OggSoundDirPath = @"C:\temp\Content\Sounds\";
         private readonly string oggSoundFilepath;
         private readonly Mock<IPathResolver> mockSoundPathResolver;
@@ -68,11 +68,11 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var loader = CreateSoundLoader();
-            loader.Load("mockSound");
+            loader.Load(SoundName);
 
             // Act
-            loader.Unload("mockSound");
-            loader.Unload("mockSound");
+            loader.Unload(SoundName);
+            loader.Unload(SoundName);
 
             // Assert
             this.mockSound.Verify(m => m.Dispose(), Times.Once());
@@ -83,7 +83,7 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var loader = CreateSoundLoader();
-            loader.Load("mockSound");
+            loader.Load(SoundName);
 
             // Act
             loader.Dispose();
