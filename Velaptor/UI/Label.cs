@@ -54,9 +54,7 @@ namespace Velaptor.UI
         /// </summary>
         public Color Color { get; set; } = Color.Black;
 
-        /// <summary>
         /// <inheritdoc cref="ControlBase.UnloadContent"/>
-        /// </summary>
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
         {
@@ -92,10 +90,7 @@ namespace Velaptor.UI
             base.UnloadContent();
         }
 
-        /// <summary>
-        /// Renders the label to the screen.
-        /// </summary>
-        /// <param name="spriteBatch">Renders the label.</param>
+        /// <inheritdoc cref="IDrawable.Render"/>
         /// <exception cref="ArgumentNullException">Invoked if the <paramref name="spriteBatch"/> is null.</exception>
         public override void Render(ISpriteBatch spriteBatch)
         {
