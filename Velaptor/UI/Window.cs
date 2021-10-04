@@ -22,7 +22,7 @@ namespace Velaptor.UI
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="window">The window implementation that contains the window functionality.</param>
-        public Window(IWindow window)
+        protected Window(IWindow window)
         {
             if (window is null)
             {
@@ -139,7 +139,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Invoked when the window is updated.
         /// </summary>
-        /// <param name="frameTime">The amount of time since the last frame.</param>
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         [ExcludeFromCodeCoverage]
         public virtual void OnUpdate(FrameTime frameTime)
         {
@@ -148,7 +148,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Invoked when the window renders its content.
         /// </summary>
-        /// <param name="frameTime">The amount of time since the last frame.</param>
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         [ExcludeFromCodeCoverage]
         public virtual void OnDraw(FrameTime frameTime)
         {
@@ -171,8 +171,7 @@ namespace Velaptor.UI
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing,
-        /// releasing, or resetting unmanaged resources.
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         public void Dispose()
         {
@@ -181,8 +180,7 @@ namespace Velaptor.UI
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing,
-        /// releasing, or resetting unmanaged resources.
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)

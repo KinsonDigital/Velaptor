@@ -5,6 +5,7 @@
 namespace Velaptor.NativeInterop.GLFW
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Holds GLFW monitor changed event information.
@@ -20,6 +21,8 @@ namespace Velaptor.NativeInterop.GLFW
         /// <summary>
         /// Gets a value indicating whether a monitor has been connected.
         /// </summary>
-        public bool IsConnected { get; private set; }
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users")]
+        public bool IsConnected { get; }
     }
 }

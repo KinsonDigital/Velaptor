@@ -87,6 +87,9 @@ namespace Velaptor.NativeInterop.OpenGL
         public void Enable(GLEnableCap cap) => this.gl.Enable((EnableCap)cap);
 
         /// <inheritdoc/>
+        public void Disable(GLEnableCap cap) => this.gl.Disable((EnableCap)cap);
+
+        /// <inheritdoc/>
         public void BlendFunc(GLBlendingFactor sfactor, GLBlendingFactor dfactor) => this.gl.BlendFunc((BlendingFactor)sfactor, (BlendingFactor)dfactor);
 
         /// <inheritdoc/>
@@ -269,7 +272,7 @@ namespace Velaptor.NativeInterop.OpenGL
             }
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             Dispose(true);
@@ -277,9 +280,9 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing">True to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)

@@ -82,14 +82,14 @@ namespace Velaptor.Graphics
         {
             for (var x = 0; x < image.Width; x++)
             {
-                if (x > this.Width)
+                if (x + location.X > this.Width - 1)
                 {
                     continue;
                 }
 
                 for (var y = 0; y < image.Height; y++)
                 {
-                    if (y > this.Height)
+                    if (y + location.Y > this.Height - 1)
                     {
                         continue;
                     }

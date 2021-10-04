@@ -4,17 +4,16 @@
 
 namespace VelaptorTests.UI
 {
-#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Numerics;
+    using System.Threading.Tasks;
     using Moq;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.UI;
     using VelaptorTests.Fakes;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="Window"/> class.
@@ -175,16 +174,29 @@ namespace VelaptorTests.UI
         public void ContentLoader_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var mockContentLoader = new Mock<IContentLoader>();
             var window = CreateWindow();
 
             // Act
-            window.ContentLoader = mockContentLoader.Object;
+            window.ContentLoader = this.mockContentLoader.Object;
             _ = window.ContentLoader;
 
             // Assert
-            this.mockWindow.VerifySet(p => p.ContentLoader = mockContentLoader.Object, Times.Once());
+            this.mockWindow.VerifySet(p => p.ContentLoader = this.mockContentLoader.Object, Times.Once());
             this.mockWindow.VerifyGet(p => p.ContentLoader, Times.Once());
+        }
+
+        [Fact]
+        public void Initialized_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            this.mockWindow.SetupGet(p => p.Initialized).Returns(true);
+            var window = CreateWindow();
+
+            // Act
+            var actual = window.Initialized;
+
+            // Assert
+            Assert.True(actual);
         }
         #endregion
 
@@ -193,9 +205,9 @@ namespace VelaptorTests.UI
         public void Ctor_WhenUsingOverloadWithWindowAndLoaderWithNullWindow_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var window = new WindowFake(null);
+                var unused = new WindowFake(null);
             }, "Window must not be null. (Parameter 'window')");
         }
 
@@ -210,6 +222,21 @@ namespace VelaptorTests.UI
 
             // Assert
             this.mockWindow.Verify(m => m.Show(), Times.Once());
+        }
+
+        [Fact]
+        public async void ShowAsync_WhenInvoked_ShowsInternalWindow()
+        {
+            // Arrange
+            this.mockWindow.Setup(m => m.ShowAsync())
+                .Returns(Task.Run(() => { }));
+            var window = CreateWindow();
+
+            // Act
+            await window.ShowAsync();
+
+            // Assert
+            this.mockWindow.Verify(m => m.ShowAsync(), Times.Once);
         }
 
         [Fact]

@@ -1,44 +1,50 @@
 [
   {
     "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "0, 0, 75, 50",
+    "Bounds": "0, 0, 76, 76",
     "FrameIndex": 0,
-    "Name": "sub"
+    "Name": "square"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "76, 0, 75, 50",
+    "Bounds": "76, 0, 76, 76",
     "FrameIndex": 1,
-    "Name": "sub"
+    "Name": "square"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "152, 0, 75, 50",
+    "Bounds": "152, 0, 76, 76",
     "FrameIndex": 2,
-    "Name": "sub"
+    "Name": "square"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "228, 0, 75, 50",
+    "Bounds": "228, 0, 76, 76",
     "FrameIndex": 3,
-    "Name": "sub"
+    "Name": "square"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "304, 0, 75, 50",
+    "Bounds": "304, 0, 76, 76",
     "FrameIndex": 4,
-    "Name": "sub"
+    "Name": "square"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "380, 0, 75, 50",
+    "Bounds": "380, 0, 76, 76",
     "FrameIndex": 5,
-    "Name": "sub"
+    "Name": "square"
   },
   {
     "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
-    "Bounds": "0, 51, 27, 27",
-    "FrameIndex": -1,
-    "Name": "bubble"
+    "Bounds": "456, 0, 76, 76",
+    "FrameIndex": 6,
+    "Name": "square"
+  },
+  {
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
+    "Bounds": "532, 0, 76, 76",
+    "FrameIndex": 7,
+    "Name": "square"
   }
 ]

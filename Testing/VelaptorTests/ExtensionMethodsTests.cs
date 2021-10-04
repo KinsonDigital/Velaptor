@@ -16,7 +16,7 @@ namespace VelaptorTests
     using NETColor = System.Drawing.Color;
 
     /// <summary>
-    /// Tests the <see cref="ExtensionMethods"/> class.
+    /// Tests the <see cref="Velaptor.UI.ExtensionMethods"/> class.
     /// </summary>
     public class ExtensionMethodsTests
     {
@@ -104,30 +104,40 @@ namespace VelaptorTests
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void MapValue_WhenUsingFloatType_ReturnsCorrectResult()
+        [Theory]
+        [InlineData(126.5f, 0f, 255f, 0f, 1f, 0.49607843f)]
+        [InlineData(500f, 0f, 1000f, 200f, 400f, 300f)]
+        public void MapValue_WhenUsingFloatType_ReturnsCorrectResult(
+            float testValue,
+            float fromStart,
+            float fromStop,
+            float toStart,
+            float toStop,
+            float expected)
         {
-            // Arrange
-            var testValue = 5f;
-
             // Act
-            var actual = testValue.MapValue(0f, 10f, 0f, 21f);
+            var actual = testValue.MapValue(fromStart, fromStop, toStart, toStop);
 
             // Assert
-            Assert.Equal(10.5f, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void MapValue_WhenUsingByteValues_ReturnsCorrectResult()
+        [Theory]
+        [InlineData(5, 0, 10, 0, 100, 50)]
+        [InlineData(126, 0, 255, 0, 1, 0)]
+        public void MapValue_WhenUsingByteValues_ReturnsCorrectResult(
+            byte testValue,
+            byte fromStart,
+            byte fromStop,
+            byte toStart,
+            byte toStop,
+            byte expected)
         {
-            // Arrange
-            byte testValue = 5;
-
             // Act
-            var actual = testValue.MapValue(0, 10, 0, 20);
+            var actual = testValue.MapValue(fromStart, fromStop, toStart, toStop);
 
             // Assert
-            Assert.Equal(10, actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]

@@ -11,12 +11,12 @@ namespace Velaptor.OpenGL
     using Silk.NET.Input;
     using Silk.NET.Maths;
     using Silk.NET.Windowing;
-    using Velaptor.Input;
+    using Input;
     using Velaptor.Input.Exceptions;
-    using Velaptor.Observables;
+    using Observables;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
     using VelaptorMouseButton = Input.MouseButton;
-    using VelaptorWindowBorder = Velaptor.WindowBorder;
+    using VelaptorWindowBorder = WindowBorder;
 #pragma warning restore SA1135 // Using directives should be qualified
 
     /// <summary>
@@ -28,8 +28,8 @@ namespace Velaptor.OpenGL
         private readonly string nullWindowExceptionMsg;
         private readonly object objectLock = new ();
         private readonly OpenGLContextObservable glContextObservable;
-        private readonly IKeyboardInput<KeyCode, KeyboardState> keyboard;
-        private readonly IMouseInput<VelaptorMouseButton, MouseState> mouse;
+        private readonly IKeyboardInput<KeyCode, KeyboardState> keyboardInput;
+        private readonly IMouseInput<VelaptorMouseButton, MouseState> mouseInput;
         private IWindow? glWindow;
         private IInputContext? glInputContext;
         private bool isDisposed;
@@ -40,14 +40,14 @@ namespace Velaptor.OpenGL
         /// <param name="glObservable">
         ///     Receives push notifications when the OpenGL context has been created.
         /// </param>
-        /// <param name="keyboard">The system keyboard for handling keyboard events.</param>
-        /// <param name="mouse">The system mouse for handling mouse events.</param>
-        public GLWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboard, IMouseInput<VelaptorMouseButton, MouseState> mouse)
+        /// <param name="keyboardInput">The system keyboardInput for handling keyboardInput events.</param>
+        /// <param name="mouseInput">The system mouseInput for handling mouseInput events.</param>
+        public GLWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboardInput, IMouseInput<VelaptorMouseButton, MouseState> mouseInput)
         {
             this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
             this.glContextObservable = glObservable;
-            this.keyboard = keyboard;
-            this.mouse = mouse;
+            this.keyboardInput = keyboardInput;
+            this.mouseInput = mouseInput;
         }
 
         /// <inheritdoc/>
@@ -144,14 +144,12 @@ namespace Velaptor.OpenGL
                     throw new InvalidOperationException($"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.Init)}()' method first.");
                 }
 
-                if (this.glInputContext.Mice[0] is null)
+                if (this.glInputContext.Mice.Count <= 0)
                 {
                     return false;
                 }
-                else
-                {
-                    return this.glInputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal;
-                }
+
+                return this.glInputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal;
             }
             set
             {
@@ -352,7 +350,7 @@ namespace Velaptor.OpenGL
             this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             Dispose(true);
@@ -360,7 +358,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
@@ -384,70 +382,72 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked when the mouse moves in the window.
+        /// Invoked when the mouseInput moves in the window.
         /// </summary>
-        /// <param name="mouse">The system mouse.</param>
-        /// <param name="position">The position of the mouse.</param>
+        /// <param name="mouse">The system mouseInput.</param>
+        /// <param name="position">The position of the mouseInput.</param>
         private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
         {
-            this.mouse.SetXPos((int)position.X);
-            this.mouse.SetYPos((int)position.Y);
+            this.mouseInput.SetXPos((int)position.X);
+            this.mouseInput.SetYPos((int)position.Y);
         }
 
         /// <summary>
-        /// Invoked when any mouse buttons transitions from the up position to the down position.
+        /// Invoked when any mouseInput buttons transitions from the up position to the down position.
         /// </summary>
-        /// <param name="mouse">The system mouse.</param>
+        /// <param name="mouse">The system mouseInput.</param>
         /// <param name="button">The button that was pushed down.</param>
-        private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouse.SetState((VelaptorMouseButton)button, true);
+        private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, true);
 
         /// <summary>
-        /// Invoked when any mouse buttons transitions from the down position to the up position.
+        /// Invoked when any mouseInput buttons transitions from the down position to the up position.
         /// </summary>
-        /// <param name="mouse">The system mouse.</param>
+        /// <param name="mouse">The system mouseInput.</param>
         /// <param name="button">The button that was pushed down.</param>
-        private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button) => this.mouse.SetState((VelaptorMouseButton)button, false);
+        private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, false);
 
         /// <summary>
-        /// Invoked when any keyboard key transitions from the up position to the down position.
+        /// Invoked when any keyboardInput key transitions from the up position to the down position.
         /// </summary>
-        /// <param name="keyboard">The system keyboard.</param>
+        /// <param name="keyboard">The system keyboardInput.</param>
         /// <param name="key">The key that was pushed down.</param>
-        private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3) => this.keyboard.SetState((KeyCode)key, true);
+        /// <param name="arg3">Additional argument from OpenGL.</param>
+        private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, true);
 
         /// <summary>
-        /// Invoked when any keyboard key transitions from the down position to the up position.
+        /// Invoked when any keyboardInput key transitions from the down position to the up position.
         /// </summary>
-        /// <param name="keyboard">The system keyboard.</param>
+        /// <param name="keyboard">The system keyboardInput.</param>
         /// <param name="key">The key that was released.</param>
-        private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3) => this.keyboard.SetState((KeyCode)key, false);
+        /// <param name="arg3">Additional argument from OpenGL.</param>
+        private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, false);
 
         /// <summary>
         /// Invoked when the window is loaded and invokes the <see cref="Load"/> event.
         /// </summary>
-        private void GLWindow_Load() => Load?.Invoke(this, EventArgs.Empty);
+        private void GLWindow_Load() => this.Load?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
         /// Invoked when the window is in the process of closing and invokes the <see cref="Unload"/> event.
         /// </summary>
-        private void GLWindow_Closing() => Unload?.Invoke(this, EventArgs.Empty);
+        private void GLWindow_Closing() => this.Unload?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
         /// Invoked every time the size of the window changs and invokes the
         /// <see cref="IGameWindowFacade.Resize"/> event.
         /// </summary>
-        private void GLWindow_Resize(Vector2D<int> obj) => Resize?.Invoke(this, new WindowSizeEventArgs(obj.X, obj.Y));
+        private void GLWindow_Resize(Vector2D<int> obj) => this.Resize?.Invoke(this, new WindowSizeEventArgs(obj.X, obj.Y));
 
         /// <summary>
         /// Invoked once a frame and invokes the <see cref="RenderFrame"/> event.
         /// </summary>
-        /// <param name="frameTime">The current frame time in seconds.</param>
-        private void GLWindow_Render(double frameTime) => RenderFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
+        private void GLWindow_Render(double frameTime) => this.RenderFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
 
         /// <summary>
         /// Invoked once a frame and invokes the <see cref="UpdateFrame"/> event.
         /// </summary>
-        /// <param name="frameTime">The current frame time in seconds.</param>
-        private void GLWindow_Update(double frameTime) => UpdateFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
+        /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
+        private void GLWindow_Update(double frameTime) => this.UpdateFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
     }
 }

@@ -113,7 +113,7 @@ namespace VelaptorTests.Input
         }
         #endregion
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => IKeyboardInput<KeyCode, KeyboardState>.InputStates.Clear();
     }
 }

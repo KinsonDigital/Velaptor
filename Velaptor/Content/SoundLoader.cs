@@ -6,26 +6,45 @@ namespace Velaptor.Content
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO.Abstractions;
     using Velaptor.Factories;
 
     /// <summary>
     /// Loads sound content.
     /// </summary>
-    public class SoundLoader : ILoader<ISound>
+    public sealed class SoundLoader : ILoader<ISound>
     {
         private readonly ConcurrentDictionary<string, ISound> sounds = new ();
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundFactory soundFactory;
+        private readonly IPath path;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
+        /// <param name="soundFactory">Creates sound instances.</param>
+        [ExcludeFromCodeCoverage]
         public SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory)
         {
             this.soundPathResolver = soundPathResolver;
             this.soundFactory = soundFactory;
+            this.path = IoC.Container.GetInstance<IPath>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SoundLoader"/> class.
+        /// </summary>
+        /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
+        /// <param name="soundFactory">Creates sound instances.</param>
+        /// <param name="path">Processes directory and fle paths.</param>
+        internal SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory, IPath path)
+        {
+            this.soundPathResolver = soundPathResolver;
+            this.soundFactory = soundFactory;
+            this.path = path;
         }
 
         /// <summary>
@@ -43,37 +62,55 @@ namespace Velaptor.Content
         /// </remarks>
         public ISound Load(string name)
         {
+            name = this.path.HasExtension(name)
+                ? this.path.GetFileNameWithoutExtension(name)
+                : name;
+
             var filePath = this.soundPathResolver.ResolveFilePath(name);
+
+            // If the requested font is already loaded into the pool
+            // and has been disposed, remove it.
+            foreach (var sound in this.sounds)
+            {
+                if (sound.Key != filePath || !sound.Value.IsDisposed)
+                {
+                    continue;
+                }
+
+                this.sounds.TryRemove(sound);
+                break;
+            }
 
             return this.sounds.GetOrAdd(filePath, (key) =>
             {
-                return this.soundFactory.CreateSound(filePath);
+                var sound = this.soundFactory.CreateSound(key);
+                sound.IsPooled = true;
+
+                return sound;
             });
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
         public void Unload(string name)
         {
             var filePath = this.soundPathResolver.ResolveFilePath(name);
 
             if (this.sounds.TryRemove(filePath, out var sound))
             {
+                sound.IsPooled = false;
                 sound.Dispose();
             }
         }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose() => Dispose(true);
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (this.isDisposed)
             {
@@ -84,6 +121,7 @@ namespace Velaptor.Content
             {
                 foreach (var sound in this.sounds.Values)
                 {
+                    sound.IsPooled = false;
                     sound.Dispose();
                 }
             }

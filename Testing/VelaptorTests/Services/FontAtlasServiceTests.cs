@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Graphics;
+
 namespace VelaptorTests.Services
 {
 #pragma warning disable IDE0001 // Name can be simplified
@@ -16,9 +18,8 @@ namespace VelaptorTests.Services
     using Moq;
     using Velaptor;
     using Velaptor.Exceptions;
-    using Velaptor.Graphics;
+    using Velaptor.Content;
     using Velaptor.Hardware;
-    using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
@@ -288,7 +289,7 @@ namespace VelaptorTests.Services
         }
         #endregion
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             /*NOTE:

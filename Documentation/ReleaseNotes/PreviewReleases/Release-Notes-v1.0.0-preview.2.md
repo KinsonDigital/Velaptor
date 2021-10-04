@@ -1,4 +1,10 @@
-## <span style='color:mediumseagreen;font-weight:bold'>Velaptor Preview Release Notes - v1.0.0-preview.2</span>
+<h1 align="center" style='color:mediumseagreen;font-weight:bold'>Velaptor Preview Release Notes - v1.0.0-preview.2</h1>
+
+<h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
+
+As with all software, there is always a chance for issues and bugs to exist with all releases.  It is also common to sometimes miss changes in the release notes when the amount of changes are large.  This is even more common in preview releases.
+
+---
 
 ### **New** 🎉
 

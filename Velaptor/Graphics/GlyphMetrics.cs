@@ -24,13 +24,13 @@ namespace Velaptor.Graphics
 
         /// <summary>
         /// Gets or sets the vertical distance from the horizontal baseline to the highest 'character'
-        /// coorindate in a font face.
+        /// coordinate in a font face.
+        /// </summary>
         /// <remarks>
         ///     Unfortunately, font formats don't define the ascender in a
         ///     uniform way. For some formats, it represents the ascent of all capital latin characters
         ///     (without accents), for others it is the ascent of the highest accented character, and finally,
         ///     other formats define it as being equal to Y max value of the global bounding box.
-        /// </summary>
         /// </remarks>
         public int Ascender { get; set; }
 

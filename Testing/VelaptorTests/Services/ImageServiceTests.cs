@@ -2,23 +2,20 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable SA1202 // Elements should be ordered by access
 namespace VelaptorTests.Services
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
-    using Velaptor.Graphics;
-    using Velaptor.Services;
-    using VelaptorTests.Helpers;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
+    using Velaptor.Graphics;
+    using Velaptor.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
-#pragma warning disable IDE0001 // Name can be simplified
     using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
@@ -320,7 +317,7 @@ namespace VelaptorTests.Services
             return result;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             this.testCompareImage.Dispose();

@@ -61,4 +61,10 @@ namespace Velaptor.Content
         /// </summary>
         Italic,
     }
+
+    internal enum TextureCreationSource
+    {
+        User = 0,
+        TextureLoader
+    }
 }

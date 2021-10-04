@@ -1,4 +1,4 @@
-﻿// <copyright file="AssertExtensions.cs" company="KinsonDigital">
+// <copyright file="AssertExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace VelaptorTests.Helpers
     using System.Linq;
     using Xunit;
     using Xunit.Sdk;
-    
+
     /// <summary>
     /// Provides helper methods for the <see cref="XUnit"/>'s <see cref="Assert"/> class.
     /// </summary>

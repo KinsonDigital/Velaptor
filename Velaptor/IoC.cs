@@ -15,7 +15,6 @@ namespace Velaptor
     using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Input;
-    using Velaptor.NativeInterop;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
@@ -81,6 +80,7 @@ namespace Velaptor
         {
             IoCContainer.Register(() => FileSystem.File, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Directory, Lifestyle.Singleton);
+            IoCContainer.Register(() => FileSystem.Path, Lifestyle.Singleton);
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
 
             IoCContainer.Register<IGLInvokerExtensions, GLInvokerExtensions>(Lifestyle.Singleton);

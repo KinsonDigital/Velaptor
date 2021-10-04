@@ -8,6 +8,7 @@ namespace Velaptor.Services
     using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Numerics;
+    using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.OpenGL;
 

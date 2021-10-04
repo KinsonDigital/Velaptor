@@ -57,7 +57,7 @@ namespace Velaptor.Input
         /// <summary>
         /// Gets or sets a value indicating whether the left mouse button is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is down.</returns
+        /// <returns><see langword="true"/> if the button is down.</returns>
         public bool IsLeftButtonDown() => this.isLeftButtonDown;
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Velaptor.Input
         /// <summary>
         /// Gets or sets a value indicating whether the middle mouse button is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is down.</returns
+        /// <returns><see langword="true"/> if the button is down.</returns>
         public bool IsMiddleButtonDown() => this.isMiddleButtonDown;
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Velaptor.Input
         /// <summary>
         /// Gets or sets a value indicating whether the right mouse button is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is down.</returns
+        /// <returns><see langword="true"/> if the button is down.</returns>
         public bool IsRightButtonDown() => this.isRightButtonDown;
 
         /// <summary>

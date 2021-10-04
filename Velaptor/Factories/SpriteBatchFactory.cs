@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System;
+
 namespace Velaptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
@@ -13,20 +15,28 @@ namespace Velaptor.Factories
     [ExcludeFromCodeCoverage]
     public static class SpriteBatchFactory
     {
+        private static ISpriteBatch? spriteBatch;
+
         /// <summary>
         /// Initializes and instance of a <see cref="ISpriteBatch"/>.
         /// </summary>
         /// <param name="renderSurfaceWidth">The width of the render surface.</param>
         /// <param name="renderSurfaceHeight">The height of the render surface.</param>
-        /// <returns>A Velaaptor implemented sprite batch.</returns>
+        /// <returns>A Velaptor implemented sprite batch.</returns>
         public static ISpriteBatch CreateSpriteBatch(int renderSurfaceWidth, int renderSurfaceHeight)
         {
-            var result = IoC.Container.GetInstance<ISpriteBatch>();
+            // TODO: Make this static class field
+            spriteBatch = IoC.Container.GetInstance<ISpriteBatch>();
 
-            result.RenderSurfaceWidth = renderSurfaceWidth;
-            result.RenderSurfaceHeight = renderSurfaceHeight;
+            if (spriteBatch is null)
+            {
+                throw new NullReferenceException("There were issues creating the sprite batch.");
+            }
 
-            return result;
+            spriteBatch.RenderSurfaceWidth = renderSurfaceWidth;
+            spriteBatch.RenderSurfaceHeight = renderSurfaceHeight;
+
+            return spriteBatch;
         }
     }
 }

@@ -177,7 +177,7 @@ namespace Velaptor.NativeInterop.FreeType
 
         #endregion
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -186,7 +186,7 @@ namespace Velaptor.NativeInterop.FreeType
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of manged resources.</param>
         protected virtual void Dispose(bool disposing)

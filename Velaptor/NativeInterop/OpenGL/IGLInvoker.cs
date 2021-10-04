@@ -33,6 +33,12 @@ namespace Velaptor.NativeInterop.OpenGL
         void Enable(GLEnableCap cap);
 
         /// <summary>
+        /// Enable or disable server-side GL capabilities.
+        /// </summary>
+        /// <param name="cap">Specifies a symbolic constant indicating a GL capability.</param>
+        void Disable(GLEnableCap cap);
+
+        /// <summary>
         /// [requires: v1.0] Specify pixel arithmetic.
         /// </summary>
         /// <param name="sfactor">

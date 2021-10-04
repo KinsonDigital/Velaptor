@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Content
 {
+    using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
     using Velaptor.Factories;
@@ -14,41 +15,51 @@ namespace VelaptorTests.Content
     /// </summary>
     public class SoundLoaderTests
     {
+        private const string SoundName = "test-sound";
         private const string OggSoundDirPath = @"C:\temp\Content\Sounds\";
         private readonly string oggSoundFilepath;
         private readonly Mock<IPathResolver> mockSoundPathResolver;
-        private readonly Mock<ISound> sound;
+        private readonly Mock<ISound> mockSound;
         private readonly Mock<ISoundFactory> soundFactory;
+        private readonly Mock<IPath> mockPath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoaderTests"/> class.
         /// </summary>
         public SoundLoaderTests()
         {
-            this.oggSoundFilepath = $"{OggSoundDirPath}sound.ogg";
+            this.oggSoundFilepath = $"{OggSoundDirPath}{SoundName}.ogg";
 
             this.mockSoundPathResolver = new Mock<IPathResolver>();
-            this.mockSoundPathResolver.Setup(m => m.ResolveFilePath("sound")).Returns(this.oggSoundFilepath);
+            this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(SoundName)).Returns(this.oggSoundFilepath);
 
-            this.sound = new Mock<ISound>();
-            this.sound.SetupGet(p => p.Path).Returns(this.oggSoundFilepath);
+            this.mockSound = new Mock<ISound>();
+            this.mockSound.SetupGet(p => p.Path).Returns(this.oggSoundFilepath);
 
             this.soundFactory = new Mock<ISoundFactory>();
-            this.soundFactory.Setup(m => m.CreateSound(this.oggSoundFilepath)).Returns(this.sound.Object);
+            this.soundFactory.Setup(m => m.CreateSound(this.oggSoundFilepath)).Returns(this.mockSound.Object);
+
+            this.mockPath = new Mock<IPath>();
+            this.mockPath.Setup(m => m.HasExtension(SoundName)).Returns(false);
         }
 
         #region Method Tests
-        [Fact]
-        public void Load_WhenInvoked_SoundNotNull()
+        [Theory]
+        [InlineData(SoundName, "")]
+        [InlineData(SoundName, ".txt")]
+        public void Load_WhenInvoked_LoadsSound(string contentName, string extension)
         {
             // Arrange
+            this.mockPath.Setup(m => m.HasExtension($"{contentName}.txt")).Returns(true);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
+
             var loader = CreateSoundLoader();
 
             // Act
-            var actual = loader.Load("sound");
+            var actual = loader.Load($"{contentName}{extension}");
 
             // Assert
-            this.soundFactory.Verify(m => m.CreateSound($"{OggSoundDirPath}sound.ogg"), Times.Once());
+            this.soundFactory.Verify(m => m.CreateSound($"{OggSoundDirPath}{SoundName}.ogg"), Times.Once());
             Assert.Equal(actual.Path, this.oggSoundFilepath);
         }
 
@@ -57,14 +68,14 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var loader = CreateSoundLoader();
-            loader.Load("sound");
+            loader.Load(SoundName);
 
             // Act
-            loader.Unload("sound");
-            loader.Unload("sound");
+            loader.Unload(SoundName);
+            loader.Unload(SoundName);
 
             // Assert
-            this.sound.Verify(m => m.Dispose(), Times.Once());
+            this.mockSound.Verify(m => m.Dispose(), Times.Once());
         }
 
         [Fact]
@@ -72,21 +83,21 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var loader = CreateSoundLoader();
-            loader.Load("sound");
+            loader.Load(SoundName);
 
             // Act
             loader.Dispose();
             loader.Dispose();
 
             // Assert
-            this.sound.Verify(m => m.Dispose(), Times.Once());
+            this.mockSound.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 
         /// <summary>
         /// Creates a new instance of a <see cref="SoundLoader"/> for testing purposes.
         /// </summary>
-        /// <returns>The sound loader isntance used for testing.</returns>
-        private SoundLoader CreateSoundLoader() => new (this.mockSoundPathResolver.Object, this.soundFactory.Object);
+        /// <returns>The mockSound loader instance used for testing.</returns>
+        private SoundLoader CreateSoundLoader() => new (this.mockSoundPathResolver.Object, this.soundFactory.Object, this.mockPath.Object);
     }
 }

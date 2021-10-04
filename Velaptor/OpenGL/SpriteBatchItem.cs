@@ -47,7 +47,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// The ID of the texture.
         /// </summary>
-        public uint TextureID;
+        public uint TextureId;
 
         /// <summary>
         /// Gets an empty <see cref="SpriteBatchItem"/>.
@@ -58,7 +58,7 @@ namespace Velaptor.OpenGL
             get
             {
                 SpriteBatchItem result;
-                result.TextureID = 0;
+                result.TextureId = 0;
                 result.Size = 0f;
                 result.Angle = 0f;
                 result.SrcRect = Rectangle.Empty;
@@ -73,7 +73,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Gets a value indicating whether the current <see cref="SpriteBatchItem"/> is empty.
         /// </summary>
-        public bool IsEmpty => this.TextureID == 0 &&
+        public bool IsEmpty => this.TextureId == 0 &&
                     this.SrcRect.IsEmpty &&
                     this.DestRect.IsEmpty &&
                     this.Size == 0f &&

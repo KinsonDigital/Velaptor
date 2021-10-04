@@ -2,17 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Input
 {
-#pragma warning disable IDE0001 // Name can be simplified
     using System.Numerics;
-    using Velaptor.Exceptions;
     using Velaptor.Input;
     using Velaptor.Input.Exceptions;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="MouseState"/> struct.
@@ -206,7 +202,7 @@ namespace VelaptorTests.Input
             var state = default(MouseState);
 
             // Act & Assert
-            Assert.ThrowsWithMessage<InvalidInputException>(() =>
+            AssertExtensions.ThrowsWithMessage<InvalidInputException>(() =>
             {
                 state.SetButtonState((MouseButton)123, true);
             }, "Invalid Mouse Input");
@@ -228,6 +224,19 @@ namespace VelaptorTests.Input
 
             // Assert
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetButtonState_WithInvalidMouseButton_ReturnsFalse()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            // Act
+            var actual = state.GetButtonState((MouseButton)1234);
+
+            // Assert
+            Assert.False(actual);
         }
 
         [Fact]

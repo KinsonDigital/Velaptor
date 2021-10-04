@@ -18,13 +18,13 @@ namespace Velaptor.Input
         /// <returns>The state of the mouse.</returns>
         public MouseState GetState()
         {
-            if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 0)
+            if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 3)
             {
                 InitializeButtonStates();
             }
 
             var result = default(MouseState);
-            result.SetPosition(IMouseInput<MouseButton, MouseState>.XPos, IMouseInput<MouseButton, MouseState>.XPos);
+            result.SetPosition(IMouseInput<MouseButton, MouseState>.XPos, IMouseInput<MouseButton, MouseState>.YPos);
             result.SetScrollWheelValue(IMouseInput<MouseButton, MouseState>.ScrollWheelValue);
 
             // Set all of the states for the buttons
@@ -37,7 +37,7 @@ namespace Velaptor.Input
         }
 
         /// <summary>
-        /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
+        /// Sets the given mouse <paramref name="input"/> to the given <paramref name="state"/>.
         /// </summary>
         /// <param name="input">The mouse button to set.</param>
         /// <param name="state">The state to set the button to.</param>
@@ -84,9 +84,14 @@ namespace Velaptor.Input
         {
             var keyCodes = Enum.GetValues(typeof(MouseButton)).Cast<MouseButton>().ToArray();
 
-            for (var i = 0; i < keyCodes.Length; i++)
+            foreach (var key in keyCodes)
             {
-                IMouseInput<MouseButton, MouseState>.InputStates.Add(keyCodes[i], false);
+                if (IMouseInput<MouseButton, MouseState>.InputStates.ContainsKey(key))
+                {
+                    continue;
+                }
+
+                IMouseInput<MouseButton, MouseState>.InputStates.Add(key, false);
             }
         }
     }

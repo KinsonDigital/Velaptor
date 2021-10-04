@@ -17,10 +17,10 @@ namespace VelaptorTests
             // Arrange
             var externalSystemValue = 0;
             var cachedValue = new CachedValue<int>(
-                defaultValue: 1234,
-                getterWhenNotCaching: () => externalSystemValue,
-                setterWhenNotCaching: (value) => externalSystemValue = value,
-                isCaching: true);
+                1234,
+                () => externalSystemValue,
+                (value) => externalSystemValue = value,
+                true);
 
             // Act
             var actual = cachedValue.GetValue();
@@ -36,16 +36,16 @@ namespace VelaptorTests
             // Arrange
             var externalSystemValue = 0;
             var cachedValue = new CachedValue<int>(
-                defaultValue: 1234,
-                getterWhenNotCaching: () => externalSystemValue,
-                setterWhenNotCaching: (value) => externalSystemValue = value,
-                isCaching: false);
+                1234,
+                () => externalSystemValue,
+                (value) => externalSystemValue = value,
+                false);
 
             // Act
             var actual = cachedValue.GetValue();
 
             // Assert
-            Assert.Equal(1234, externalSystemValue);
+            Assert.Equal(1234, actual);
         }
         #endregion
 
@@ -56,10 +56,10 @@ namespace VelaptorTests
             // Arrange
             var externalSystemValue = 0;
             var cachedValue = new CachedValue<int>(
-                defaultValue: 1234,
-                getterWhenNotCaching: () => externalSystemValue,
-                setterWhenNotCaching: (value) => externalSystemValue = value,
-                isCaching: false);
+                1234,
+                () => externalSystemValue,
+                (value) => externalSystemValue = value,
+                false);
 
             // Act
             cachedValue.IsCaching = true;
@@ -75,10 +75,10 @@ namespace VelaptorTests
             // Arrange
             var externalSystemValue = 0;
             var cachedValue = new CachedValue<int>(
-                defaultValue: 1234,
-                getterWhenNotCaching: () => externalSystemValue,
-                setterWhenNotCaching: (value) => externalSystemValue = value,
-                isCaching: true);
+                1234,
+                () => externalSystemValue,
+                (value) => externalSystemValue = value,
+                true);
 
             // Act
             cachedValue.IsCaching = false;
@@ -95,9 +95,9 @@ namespace VelaptorTests
         {
             // Arrange
             var cachedValue = new CachedValue<int>(
-                defaultValue: 1234,
-                getterWhenNotCaching: () => It.IsAny<int>(),
-                setterWhenNotCaching: (value) => { });
+                1234,
+                () => It.IsAny<int>(),
+                (_) => { });
 
             // Act
             var actual = cachedValue.GetValue();
@@ -111,9 +111,9 @@ namespace VelaptorTests
         {
             // Arrange
             var cachedValue = new CachedValue<int>(
-                defaultValue: 5678,
-                getterWhenNotCaching: () => 1234,
-                setterWhenNotCaching: (value) => { })
+                5678,
+                () => 1234,
+                (_) => { })
             {
                 IsCaching = false,
             };
@@ -130,9 +130,9 @@ namespace VelaptorTests
         {
             // Arrange
             var cachedValue = new CachedValue<int>(
-                defaultValue: 5678,
-                getterWhenNotCaching: () => 0,
-                setterWhenNotCaching: (value) => { });
+                5678,
+                () => 0,
+                (_) => { });
 
             // Act
             cachedValue.SetValue(1234);
@@ -149,9 +149,9 @@ namespace VelaptorTests
             // Arrange
             var actual = 0;
             var cachedValue = new CachedValue<int>(
-                defaultValue: 5678,
-                getterWhenNotCaching: () => 0,
-                setterWhenNotCaching: (value) => actual = value)
+                5678,
+                () => 0,
+                (value) => actual = value)
             {
                 IsCaching = false,
             };

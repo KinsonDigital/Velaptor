@@ -145,6 +145,11 @@ namespace Velaptor.OpenGL
         /// OpenGL enum name GL_DEBUG_OUTPUT.
         /// </summary>
         DebugOutput = 37600,
+
+        /// <summary>
+        /// OpenGL enum name GL_LINE_SMOOTH.
+        /// </summary>
+        LineSmooth = 2848,
     }
 
     /// <summary>
@@ -161,9 +166,29 @@ namespace Velaptor.OpenGL
         SrcAlpha = 770,
 
         /// <summary>
+        /// OpenGL enum name GL_SRC_COLOR.
+        /// </summary>
+        SrcColor = 768,
+
+        /// <summary>
         /// OpenGL enum name GL_ONE_MINUS_SRC_ALPHA.
         /// </summary>
         OneMinusSrcAlpha = 771,
+
+        /// <summary>
+        /// OpenGL enum name GL_ONE_MINUS_DST_COLOR.
+        /// </summary>
+        OneMinusDestColor = 773,
+
+        /// <summary>
+        /// OpenGL enum name GL_CONSTANT_COLOR.
+        /// </summary>
+        ConstantColor = 32769,
+
+        /// <summary>
+        /// OpenGL enum name GL_ONE_MINUS_CONSTANT_COLOR.
+        /// </summary>
+        OneMinusConstantColor = 32770,
     }
 
     /// <summary>
