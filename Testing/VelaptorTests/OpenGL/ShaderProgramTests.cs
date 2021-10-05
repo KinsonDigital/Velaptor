@@ -8,7 +8,7 @@ namespace VelaptorTests.OpenGL
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
-    using Velaptor.Services;
+    using Velaptor.OpenGL.Services;
     using Xunit;
     using Assert = Helpers.AssertExtensions;
 

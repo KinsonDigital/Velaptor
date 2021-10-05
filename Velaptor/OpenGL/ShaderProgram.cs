@@ -7,7 +7,7 @@ namespace Velaptor.OpenGL
     using System;
     using System.Text;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Services;
+    using Velaptor.OpenGL.Services;
 
     /// <inheritdoc/>
     internal class ShaderProgram : IShaderProgram

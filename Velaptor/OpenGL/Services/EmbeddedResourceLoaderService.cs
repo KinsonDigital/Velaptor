@@ -2,13 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services
+namespace Velaptor.OpenGL.Services
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using Velaptor.Services;
 
     /// <summary>
     /// Loads embedded text file resources.
@@ -16,7 +17,7 @@ namespace Velaptor.Services
     [ExcludeFromCodeCoverage]
     internal class EmbeddedResourceLoaderService : IEmbeddedResourceLoaderService
     {
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IEmbeddedResourceLoaderService.LoadResource"/>
         public string LoadResource(string name)
         {
             var assembly = Assembly.GetExecutingAssembly();

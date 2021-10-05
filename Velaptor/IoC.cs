@@ -20,6 +20,7 @@ namespace Velaptor
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.Services;
     using Velaptor.Services;
 
     /// <summary>
