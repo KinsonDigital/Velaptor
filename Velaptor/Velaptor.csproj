@@ -48,10 +48,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="OpenGL\shader.frag">
+    <EmbeddedResource Include="OpenGL\Shaders\shader.frag">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="OpenGL\shader.vert">
+    <EmbeddedResource Include="OpenGL\Shaders\shader.vert">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
