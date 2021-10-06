@@ -106,6 +106,8 @@ namespace Velaptor
         {
             IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>(Lifestyle.Singleton);
+            IoCContainer.Register<ITemplateProcessorService, ShaderTemplateProcessorService>(Lifestyle.Singleton);
+            IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
 

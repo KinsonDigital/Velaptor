@@ -5,16 +5,18 @@
 namespace Velaptor.OpenGL
 {
     using System;
-    using System.Text;
+    using System.Collections.Generic;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Services;
 
     /// <inheritdoc/>
-    internal class ShaderProgram : IShaderProgram
+    internal sealed class ShaderProgram : IShaderProgram
     {
+        private const string TextureShaderName = "texture-shader";
+        private const string BatchSizeVarName = "BATCH_SIZE";
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
-        private readonly IEmbeddedResourceLoaderService resourceLoaderService;
+        private readonly IShaderLoaderService<uint> shaderLoaderService;
         private bool isDisposed;
         private bool isInitialized;
 
@@ -23,15 +25,15 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes OpenGL extension methods.</param>
-        /// <param name="resourceLoaderService">Loads embedded resources.</param>
-        /// <param name="batchSize">The batch size that the shader will support.</param>
-        /// <param name="vertexShaderPath">The path to the vertex shader code.</param>
-        /// <param name="fragmentShaderPath">The path to the fragment shader code.</param>
-        public ShaderProgram(IGLInvoker gl, IGLInvokerExtensions glExtensions, IEmbeddedResourceLoaderService resourceLoaderService)
+        /// <param name="shaderLoaderService">Loads the vertex and fragment shaders..</param>
+        public ShaderProgram(
+            IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
+            IShaderLoaderService<uint> shaderLoaderService)
         {
             this.gl = gl;
             this.glExtensions = glExtensions;
-            this.resourceLoaderService = resourceLoaderService;
+            this.shaderLoaderService = shaderLoaderService;
         }
 
         /// <inheritdoc/>
@@ -54,14 +56,20 @@ namespace Velaptor.OpenGL
                 return;
             }
 
-            var shaderSource = LoadShaderSourceCode("shader.vert");
-            VertexShaderId = CreateShader(GLShaderType.VertexShader, shaderSource);
+            IEnumerable<(string, uint)> templateVars = new[]
+            {
+                (BatchSizeVarName, BatchSize),
+            };
 
-            // We do the same for the fragment shader
-            shaderSource = LoadShaderSourceCode("shader.frag");
-            FragmentShaderId = CreateShader(GLShaderType.FragmentShader, shaderSource);
+            // Load the vertex shader source code and create a shader and upload to the GPU
+            var vertexShaderSrc = this.shaderLoaderService.LoadVertSource(TextureShaderName, templateVars);
+            VertexShaderId = CreateShader(GLShaderType.VertexShader, vertexShaderSrc);
 
-            // Merge both shaders into a shader program, which can then be used by Openthis.gl.
+            // Load the fragment shader source code and create a shader and upload to the GPU
+            var fragShaderSrc = this.shaderLoaderService.LoadFragSource(TextureShaderName);
+            FragmentShaderId = CreateShader(GLShaderType.FragmentShader, fragShaderSrc);
+
+            // Merge both shaders into a shader program, which can then be used by OpenGL
             ProgramId = CreateShaderProgram(VertexShaderId, FragmentShaderId);
 
             // When the shader program is linked, it no longer needs the individual shaders attacked to it.
@@ -77,16 +85,6 @@ namespace Velaptor.OpenGL
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> if managed resources are to be disposed.</param>
-        protected virtual void Dispose(bool disposing)
         {
             if (this.isDisposed)
             {
@@ -185,66 +183,6 @@ namespace Velaptor.OpenGL
 
                 throw new Exception($"Error occurred while compiling shader with ID '{shaderId}'\n{errorInfo}");
             }
-        }
-
-        /// <summary>
-        /// Loads the shader source code at the given <paramref name="shaderFileName"/>.
-        /// </summary>
-        /// <param name="shaderFileName">The file name of the shader source code file.</param>
-        /// <returns>The source code.</returns>
-        private string LoadShaderSourceCode(string shaderFileName)
-        {
-            // Load the source code from the shader files
-            var result = new StringBuilder();
-
-            var sourceCode = this.resourceLoaderService.LoadResource(shaderFileName);
-
-            var sourceCodeLines = sourceCode.Split(new char[] { '\r', '\n' });
-
-            foreach (var line in sourceCodeLines)
-            {
-                var processedLine = ProcessLine(line);
-
-                result.AppendLine(processedLine);
-            }
-
-            return result.ToString();
-        }
-
-        /// <summary>
-        /// Processes a line of source code to check for replacement tags.
-        /// This will modify the source code depending on the tag.
-        /// </summary>
-        /// <param name="line">The line of source code to process.</param>
-        /// <returns>The processed line of source code.</returns>
-        private string ProcessLine(string line)
-        {
-            var result = string.Empty;
-
-            // If the line of code has a replacement tag on it
-            if (line.Contains("//$REPLACE_INDEX", StringComparison.Ordinal))
-            {
-                var sections = line.Split(' ');
-
-                // Find the section with the array brackets
-                for (var i = 0; i < sections.Length; i++)
-                {
-                    if (sections[i].Contains('[', StringComparison.Ordinal) && sections[i].Contains(']', StringComparison.Ordinal))
-                    {
-                        result += $"{sections[i].Split('[')[0]}[{BatchSize}];//MODIFIED_DURING_COMPILE_TIME";
-                    }
-                    else
-                    {
-                        result += sections[i] + ' ';
-                    }
-                }
-            }
-            else
-            {
-                result = line;
-            }
-
-            return result;
         }
     }
 }
