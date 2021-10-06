@@ -22,7 +22,7 @@ namespace VelaptorTests.Content
         private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
 
         /// <summary>
-        /// Gets test data for the <see cref="RootDirectory_WhenSettingValue_ReturnsCorrectValue"/> test.
+        /// Gets test data for the <see cref="RootDirectory_WhenSettingValue_ReturnsCorrectResult"/> test.
         /// </summary>
         public static IEnumerable<object[]> ContentRootPaths =>
             new List<object[]>
