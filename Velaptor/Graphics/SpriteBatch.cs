@@ -13,7 +13,6 @@ namespace Velaptor.Graphics
     using FreeTypeSharp.Native;
     using Velaptor.Content;
     using Velaptor.Exceptions;
-    using Velaptor.Graphics;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;

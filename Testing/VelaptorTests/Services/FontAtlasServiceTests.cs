@@ -18,7 +18,6 @@ namespace VelaptorTests.Services
     using Moq;
     using Velaptor;
     using Velaptor.Exceptions;
-    using Velaptor.Content;
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.Services;

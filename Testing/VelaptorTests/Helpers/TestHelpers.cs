@@ -13,7 +13,6 @@ namespace VelaptorTests.Helpers
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
-    using Velaptor.Content;
     using Velaptor.Graphics;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;

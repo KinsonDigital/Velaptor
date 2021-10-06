@@ -5,7 +5,6 @@
 namespace VelaptorTests.Exceptions
 {
     using System;
-    using Velaptor.Content;
     using Velaptor.Content.Exceptions;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
