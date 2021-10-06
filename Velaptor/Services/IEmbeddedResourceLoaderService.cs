@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL.Services
+namespace Velaptor.Services
 {
     /// <summary>
     /// Loads embedded text file resources.

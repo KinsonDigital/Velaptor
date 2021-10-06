@@ -8,6 +8,7 @@ namespace Velaptor.OpenGL.Services
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Services;
 
     /// <summary>
     /// Loads the source code for the vertex and fragment shaders for rendering 2D textures.
