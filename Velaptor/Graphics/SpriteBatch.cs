@@ -435,20 +435,6 @@ namespace Velaptor.Graphics
                     textureIsBound = true;
                 }
 
-                var exceptedEffects = new[]
-                {
-                    (int)RenderEffects.None,
-                    (int)RenderEffects.FlipHorizontally,
-                    (int)RenderEffects.FlipVertically,
-                    (int)RenderEffects.FlipBothDirections,
-                };
-
-                if (exceptedEffects.Contains((int)batchItem.Effects) is false)
-                {
-                    throw new InvalidRenderEffectsException(
-                        $"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid.");
-                }
-
                 int srcRectWidth;
                 int srcRectHeight;
 
