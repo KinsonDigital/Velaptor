@@ -1,36 +1,39 @@
-﻿// <copyright file="IGPUBuffer.cs" company="KinsonDigital">
+﻿// <copyright file="IGPUBufferBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.OpenGL
 {
     using System;
-    using System.Drawing;
 
     /// <summary>
-    /// Represents GPU vertex buffer memory.
+    /// A buffer of data in the GPU.
     /// </summary>
-    /// <typeparam name="T">The type of data to send to the GPU.</typeparam>
-    internal interface IGPUBuffer : IDisposable
+    /// <typeparam name="TData">The type of data in the buffer.</typeparam>
+    internal interface IGPUBuffer<TData, TState> : IDisposable
+        where TData : struct
     {
-        /// <summary>
-        /// Gets or sets the number of quads that the buffer will deal with.
-        /// </summary>
-        uint TotalQuads { get; set; }
-
         /// <summary>
         /// Initializes the GPU buffer.
         /// </summary>
         void Init();
 
         /// <summary>
-        /// Updates the given quad using the given information for a particular quad item in the GPU.
+        /// Updates the GPU buffer using the given <paramref name="data"/>
+        /// at the given <paramref name="index"/> location.
         /// </summary>
-        /// <param name="quadId">The ID of the quad to update.</param>
-        /// <param name="srcRect">The area within the texture to update.</param>
-        /// <param name="textureWidth">The width of the texture.</param>
-        /// <param name="textureHeight">The height of the texture.</param>
-        /// <param name="tintColor">The color to apply to the texture area being rendered.</param>
-        void UpdateQuad(uint quadId, Rectangle srcRect, int textureWidth, int textureHeight, Color tintColor);
+        /// <param name="data">The data to update.</param>
+        /// <param name="index">The index location of the data to update.</param>
+        /// <remarks>
+        ///     Think of the <paramref name="index"/> as the offset/location of
+        ///     the data in GPU memory. For example, if you think of the memory
+        ///     being laid out like and array of data, this would be the location
+        ///     of the 'chunk' of <paramref name="data"/> in the array.
+        /// </remarks>
+        void UpdateData(TData data, uint index);
+
+        void SetState(TState state);
+
+        TState GetState();
     }
 }

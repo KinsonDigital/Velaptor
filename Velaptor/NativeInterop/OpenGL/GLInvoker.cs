@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Velaptor.NativeInterop.OpenGL
 {
     using System;
@@ -22,6 +24,7 @@ namespace Velaptor.NativeInterop.OpenGL
     {
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
+        private static Queue<string> glCallStack = new ();
         private bool isDisposed;
         private GL gl = null!;
 
@@ -33,7 +36,8 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     that the OpenGL context has been created.
         /// </param>
         public GLInvoker(OpenGLContextObservable glContextObservable)
-            => this.glContextUnsubscriber = glContextObservable.Subscribe(new Observer<object>(
+        {
+            this.glContextUnsubscriber = glContextObservable.Subscribe(new Observer<object>(
                 onNext: data =>
                 {
                     if (data is IWindow window)
@@ -42,8 +46,10 @@ namespace Velaptor.NativeInterop.OpenGL
                     }
                     else
                     {
-                        var exceptionMessage = $"The parameter '{nameof(data)}' of the '{nameof(Observer<object>.OnNext)}()' action delegate must be of type '{nameof(IWindow)}'.";
-                        exceptionMessage += $"\n\t{nameof(OpenGLContextObservable)} subscription location: {nameof(GLInvoker)}.Ctor()";
+                        var exceptionMessage =
+                            $"The parameter '{nameof(data)}' of the '{nameof(Observer<object>.OnNext)}()' action delegate must be of type '{nameof(IWindow)}'.";
+                        exceptionMessage +=
+                            $"\n\t{nameof(OpenGLContextObservable)} subscription location: {nameof(GLInvoker)}.Ctor()";
 
                         throw new Exception(exceptionMessage);
                     }
@@ -52,6 +58,7 @@ namespace Velaptor.NativeInterop.OpenGL
                 {
                     this.glContextUnsubscriber?.Dispose();
                 }));
+        }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="GLInvoker"/> class.
@@ -64,9 +71,12 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc/>
         public event EventHandler<GLErrorEventArgs>? GLError;
 
+        public static string[] GLCallStack => glCallStack.ToArray();
+
         /// <inheritdoc/>
         public void SetupErrorCallback()
         {
+            // TODO: Refactor to only set this up if in debug mode
             if (debugCallback == null)
             {
                 debugCallback = DebugCallback;
@@ -84,32 +94,65 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public void Enable(GLEnableCap cap) => this.gl.Enable((EnableCap)cap);
+        public void Enable(GLEnableCap cap)
+        {
+            AddToGLCallStack($"{nameof(Enable)} {cap.ToString()}");
+            this.gl.Enable((EnableCap)cap);
+        }
 
         /// <inheritdoc/>
-        public void Disable(GLEnableCap cap) => this.gl.Disable((EnableCap)cap);
+        public void Disable(GLEnableCap cap)
+        {
+            AddToGLCallStack(nameof(Disable));
+            this.gl.Disable((EnableCap)cap);
+        }
 
         /// <inheritdoc/>
-        public void BlendFunc(GLBlendingFactor sfactor, GLBlendingFactor dfactor) => this.gl.BlendFunc((BlendingFactor)sfactor, (BlendingFactor)dfactor);
+        public void BlendFunc(GLBlendingFactor sfactor, GLBlendingFactor dfactor)
+        {
+            AddToGLCallStack(nameof(BlendFunc));
+            this.gl.BlendFunc((BlendingFactor)sfactor, (BlendingFactor)dfactor);
+        }
 
         /// <inheritdoc/>
-        public void Clear(GLClearBufferMask mask) => this.gl.Clear((uint)mask);
+        public void Clear(GLClearBufferMask mask)
+        {
+            AddToGLCallStack(nameof(Clear));
+            this.gl.Clear((uint)mask);
+        }
 
         /// <inheritdoc/>
-        public void ClearColor(float red, float green, float blue, float alpha) => this.gl.ClearColor(red, green, blue, alpha);
+        public void ClearColor(float red, float green, float blue, float alpha)
+        {
+            AddToGLCallStack(nameof(ClearColor));
+            this.gl.ClearColor(red, green, blue, alpha);
+        }
 
         /// <inheritdoc/>
-        public void ActiveTexture(GLTextureUnit texture) => this.gl.ActiveTexture((TextureUnit)texture);
+        public void ActiveTexture(GLTextureUnit texture)
+        {
+            AddToGLCallStack(nameof(ActiveTexture));
+            this.gl.ActiveTexture((TextureUnit)texture);
+        }
 
         /// <inheritdoc/>
-        public int GetUniformLocation(uint program, string name) => this.gl.GetUniformLocation(program, name);
+        public int GetUniformLocation(uint program, string name)
+        {
+            AddToGLCallStack(nameof(Enable));
+            return this.gl.GetUniformLocation(program, name);
+        }
 
         /// <inheritdoc/>
-        public void BindTexture(GLTextureTarget target, uint texture) => this.gl.BindTexture((TextureTarget)target, texture);
+        public void BindTexture(GLTextureTarget target, uint texture)
+        {
+            AddToGLCallStack($"{(texture <= 0 ? "Un" : string.Empty)}{nameof(BindTexture)}");
+            this.gl.BindTexture((TextureTarget)target, texture);
+        }
 
         /// <inheritdoc/>
         public void DrawElements(GLPrimitiveType mode, uint count, GLDrawElementsType type, nint indices)
         {
+            AddToGLCallStack(nameof(DrawElements));
             unsafe
             {
                 this.gl.DrawElements((PrimitiveType)mode, count, (DrawElementsType)type, (void*)indices);
@@ -119,6 +162,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc/>
         public void UniformMatrix4(int location, uint count, bool transpose, Matrix4x4 matrix)
         {
+            AddToGLCallStack(nameof(UniformMatrix4));
             unsafe
             {
                 this.gl.UniformMatrix4(location, count, transpose, (float*)&matrix);
@@ -126,62 +170,155 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public void GetProgram(uint program, GLProgramParameterName pname, out int programParams) => this.gl.GetProgram(program, (ProgramPropertyARB)pname, out programParams);
+        public void GetProgram(uint program, GLProgramParameterName pname, out int programParams)
+        {
+            AddToGLCallStack(nameof(GetProgram));
+            this.gl.GetProgram(program, (ProgramPropertyARB)pname, out programParams);
+        }
 
         /// <inheritdoc/>
-        public void GetInteger(GLGetPName pname, int[] data) => this.gl.GetInteger((GetPName)pname, data);
+        public void GetInteger(GLGetPName pname, int[] data)
+        {
+            AddToGLCallStack(nameof(GetInteger));
+            this.gl.GetInteger((GetPName)pname, data);
+        }
 
         /// <inheritdoc/>
-        public void GetFloat(GLGetPName pname, float[] data) => this.gl.GetFloat((GetPName)pname, data);
+        public void GetFloat(GLGetPName pname, float[] data)
+        {
+            AddToGLCallStack(nameof(GetFloat));
+            this.gl.GetFloat((GetPName)pname, data);
+        }
 
         /// <inheritdoc/>
-        public void Viewport(int x, int y, uint width, uint height) => this.gl.Viewport(x, y, width, height);
+        public void Viewport(int x, int y, uint width, uint height)
+        {
+            AddToGLCallStack(nameof(Viewport));
+            this.gl.Viewport(x, y, width, height);
+        }
 
         /// <inheritdoc/>
-        public void UseProgram(uint program) => this.gl.UseProgram(program);
+        public void UseProgram(uint program)
+        {
+            AddToGLCallStack(nameof(UseProgram));
+            this.gl.UseProgram(program);
+        }
 
         /// <inheritdoc/>
-        public void DeleteProgram(uint program) => this.gl.DeleteProgram(program);
+        public void DeleteProgram(uint program)
+        {
+            AddToGLCallStack(nameof(DeleteProgram));
+            this.gl.DeleteProgram(program);
+        }
 
         /// <inheritdoc/>
-        public uint CreateProgram() => this.gl.CreateProgram();
+        public uint CreateProgram()
+        {
+            AddToGLCallStack(nameof(CreateProgram));
+            return this.gl.CreateProgram();
+        }
 
         /// <inheritdoc/>
-        public void AttachShader(uint program, uint shader) => this.gl.AttachShader(program, shader);
+        public void AttachShader(uint program, uint shader)
+        {
+            AddToGLCallStack(nameof(AttachShader));
+            this.gl.AttachShader(program, shader);
+        }
 
         /// <inheritdoc/>
-        public void LinkProgram(uint program) => this.gl.LinkProgram(program);
+        public void LinkProgram(uint program)
+        {
+            AddToGLCallStack(nameof(LinkProgram));
+            this.gl.LinkProgram(program);
+        }
 
         /// <inheritdoc/>
-        public string GetProgramInfoLog(uint program) => this.gl.GetProgramInfoLog(program);
+        public string GetProgramInfoLog(uint program)
+        {
+            AddToGLCallStack(nameof(GetProgramInfoLog));
+            return this.gl.GetProgramInfoLog(program);
+        }
 
         /// <inheritdoc/>
-        public uint CreateShader(GLShaderType type) => this.gl.CreateShader((ShaderType)type);
+        public uint CreateShader(GLShaderType type)
+        {
+            AddToGLCallStack(nameof(CreateShader));
+            return this.gl.CreateShader((ShaderType)type);
+        }
 
         /// <inheritdoc/>
-        public void ShaderSource(uint shader, string sourceCode) => this.gl.ShaderSource(shader, sourceCode);
+        public void ShaderSource(uint shader, string sourceCode)
+        {
+            AddToGLCallStack(nameof(ShaderSource));
+            this.gl.ShaderSource(shader, sourceCode);
+        }
 
         /// <inheritdoc/>
-        public void DetachShader(uint program, uint shader) => this.gl.DetachShader(program, shader);
+        public void DetachShader(uint program, uint shader)
+        {
+            AddToGLCallStack(nameof(DetachShader));
+            this.gl.DetachShader(program, shader);
+        }
 
         /// <inheritdoc/>
-        public void CompileShader(uint shader) => this.gl.CompileShader(shader);
+        public void CompileShader(uint shader)
+        {
+            AddToGLCallStack(nameof(CompileShader));
+            this.gl.CompileShader(shader);
+        }
 
         /// <inheritdoc/>
-        public void GetShader(uint shader, GLShaderParameter pname, out int shaderParams) => this.gl.GetShader(shader, (ShaderParameterName)pname, out shaderParams);
+        public void GetShader(uint shader, GLShaderParameter pname, out int shaderParams)
+        {
+            AddToGLCallStack(nameof(GetShader));
+            this.gl.GetShader(shader, (ShaderParameterName)pname, out shaderParams);
+        }
 
         /// <inheritdoc/>
-        public string GetShaderInfoLog(uint shader) => this.gl.GetShaderInfoLog(shader);
+        public string GetShaderInfoLog(uint shader)
+        {
+            AddToGLCallStack(nameof(GetShaderInfoLog));
+            return this.gl.GetShaderInfoLog(shader);
+        }
 
         /// <inheritdoc/>
-        public void DeleteShader(uint shader) => this.gl.DeleteShader(shader);
+        public void DeleteShader(uint shader)
+        {
+            AddToGLCallStack(nameof(DeleteShader));
+            this.gl.DeleteShader(shader);
+        }
 
         /// <inheritdoc/>
-        public uint GenVertexArray() => this.gl.GenVertexArray();
+        public uint GenVertexArray()
+        {
+            AddToGLCallStack(nameof(GenVertexArray));
+            return this.gl.GenVertexArray();
+        }
+
+        /// <inheritdoc/>
+        public void BufferData(GLBufferTarget target, float[] data, GLBufferUsageHint usage)
+        {
+            var dataSpan = new ReadOnlySpan<float>(data);
+            var size = (nuint)(sizeof(float) * data.Length);
+
+            AddToGLCallStack($"{nameof(BufferData)}(GLBufferTarget target, uint size, float[] data, GLBufferUsageHint usage)");
+            this.gl.BufferData((BufferTargetARB)target, size, dataSpan, (BufferUsageARB)usage);
+        }
+
+        /// <inheritdoc/>
+        public void BufferData(GLBufferTarget target, uint[] data, GLBufferUsageHint usage)
+        {
+            var dataSpan = new ReadOnlySpan<uint>(data);
+            var size = (nuint)(sizeof(uint) * data.Length);
+
+            AddToGLCallStack($"{nameof(BufferData)}(GLBufferTarget target, uint[] data, GLBufferUsageHint usage)");
+            this.gl.BufferData((BufferTargetARB)target, size, dataSpan, (BufferUsageARB)usage);
+        }
 
         /// <inheritdoc/>
         public void BufferData(GLBufferTarget target, uint size, nint data, GLBufferUsageHint usage)
         {
+            AddToGLCallStack($"{nameof(BufferData)}(GLBufferTarget target, uint size, nint data, GLBufferUsageHint usage)");
             unsafe
             {
                 this.gl.BufferData((BufferTargetARB)target, size, (void*)data, (BufferUsageARB)usage);
@@ -192,6 +329,7 @@ namespace Velaptor.NativeInterop.OpenGL
         public void BufferSubData<T>(GLBufferTarget target, nint offset, nuint size, ref T data)
             where T : unmanaged
         {
+            AddToGLCallStack($"{nameof(BufferSubData)}(GLBufferTarget target, nint offset, nuint size, ref T data)");
             unsafe
             {
                 fixed (T* dataPtr = &data)
@@ -202,20 +340,60 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public void DeleteVertexArray(uint arrays) => this.gl.DeleteVertexArray(arrays);
+        public void BufferSubData(GLBufferTarget target, nint offset, nuint size, float[] data)
+        {
+            AddToGLCallStack($"{nameof(BufferSubData)}(GLBufferTarget target, nint offset, nuint size, float[] data)");
+            unsafe
+            {
+                fixed (void* dataPtr = data)
+                {
+                    this.gl.BufferSubData((BufferTargetARB)target, offset, size, dataPtr);
+                }
+            }
+        }
 
         /// <inheritdoc/>
-        public void DeleteBuffer(uint buffers) => this.gl.DeleteBuffer(buffers);
+        public void DeleteVertexArray(uint arrays)
+        {
+            AddToGLCallStack("Delete VAO");
+            this.gl.DeleteVertexArray(arrays);
+        }
 
         /// <inheritdoc/>
-        public void BindBuffer(GLBufferTarget target, uint buffer) => this.gl.BindBuffer((BufferTargetARB)target, buffer);
+        public void DeleteBuffer(uint buffers)
+        {
+            AddToGLCallStack(nameof(DeleteBuffer));
+            this.gl.DeleteBuffer(buffers);
+        }
 
         /// <inheritdoc/>
-        public void EnableVertexArrayAttrib(uint vaobj, uint index) => this.gl.EnableVertexArrayAttrib(vaobj, index);
+        public void BindBuffer(GLBufferTarget target, uint buffer)
+        {
+            var firstSection = $"{(buffer <= 0u ? "Un" : string.Empty)}";
+            var secondSection = target == GLBufferTarget.ArrayBuffer ? "VBO" : "EBO";
+
+            AddToGLCallStack($"{firstSection}Bind {secondSection}");
+            this.gl.BindBuffer((BufferTargetARB)target, buffer);
+        }
+
+        /// <inheritdoc/>
+        public void EnableVertexArrayAttrib(uint vaobj, uint index)
+        {
+            AddToGLCallStack(nameof(EnableVertexArrayAttrib));
+            this.gl.EnableVertexArrayAttrib(vaobj, index);
+        }
+
+        /// <inheritdoc/>
+        public void EnableVertexAttribArray(uint index)
+        {
+            AddToGLCallStack(nameof(EnableVertexAttribArray));
+            this.gl.EnableVertexAttribArray(index);
+        }
 
         /// <inheritdoc/>
         public void VertexAttribPointer(uint index, int size, GLVertexAttribPointerType type, bool normalized, uint stride, uint offset)
         {
+            AddToGLCallStack(nameof(VertexAttribPointer));
             unsafe
             {
                 this.gl.VertexAttribPointer(index, size, (VertexAttribPointerType)type, normalized, stride, (void*)offset);
@@ -223,37 +401,119 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public uint GenBuffer() => this.gl.GenBuffer();
+        public uint GenBuffer()
+        {
+            AddToGLCallStack(nameof(GenBuffer));
+            return this.gl.GenBuffer();
+        }
 
         /// <inheritdoc/>
-        public void BindVertexArray(uint array) => this.gl.BindVertexArray(array);
+        public void BindVertexArray(uint array)
+        {
+            AddToGLCallStack($"{(array <= 0 ? "Unb" : "B")}ind VAO");
+            this.gl.BindVertexArray(array);
+        }
 
         /// <inheritdoc/>
-        public uint GenTexture() => this.gl.GenTexture();
+        public uint GenTexture()
+        {
+            AddToGLCallStack(nameof(GenTexture));
+            return this.gl.GenTexture();
+        }
 
         /// <inheritdoc/>
-        public void DeleteTexture(uint textures) => this.gl.DeleteTexture(textures);
+        public void DeleteTexture(uint textures)
+        {
+            AddToGLCallStack(nameof(DeleteTexture));
+            this.gl.DeleteTexture(textures);
+        }
+
+        public void BeginGroup(string name)
+        {
+            // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
+            AddToGLCallStack(nameof(BeginGroup));
+            this.gl.PushDebugGroup(DebugSource.DebugSourceApplication, 100, (uint)name.Length, name);
+        }
+
+        public void EndGroup()
+        {
+            // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
+            AddToGLCallStack(nameof(EndGroup));
+            this.gl.PopDebugGroup();
+        }
+
+        public void LabelVertexArray(uint vertexArrayId, string label, Action bindVertexArrayObj)
+        {
+            // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
+            label = string.IsNullOrEmpty(label)
+                ? "NOT SET"
+                : label;
+
+            var newLabel = $"{label} VAO";
+
+            bindVertexArrayObj();
+            AddToGLCallStack(nameof(LabelVertexArray));
+            this.gl.ObjectLabel(ObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
+        }
+
+        public void LabelBuffer(uint bufferId, string label, BufferType bufferType, Action bindBufferObj)
+        {
+            // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
+            label = string.IsNullOrEmpty(label)
+                ? "NOT SET"
+                : label;
+
+            string bufferTypeAcronym = bufferType switch
+            {
+                BufferType.VertexBufferObject => "VBO",
+                BufferType.IndexArrayObject => "EBO",
+                _ => throw new ArgumentOutOfRangeException(nameof(bufferType), bufferType, null)
+            };
+
+            var newLabel = $"{label} {bufferTypeAcronym}";
+
+            bindBufferObj();
+            AddToGLCallStack(nameof(LabelBuffer));
+            this.gl.ObjectLabel(ObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
+        }
 
         /// <inheritdoc/>
-        public void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label)
-            => this.gl.ObjectLabel((ObjectIdentifier)identifier, name, length, label);
+        public void LabelTexture(uint textureId, string label)
+        {
+            label = string.IsNullOrEmpty(label)
+                ? "NOT SET"
+                : label;
+
+            AddToGLCallStack(nameof(LabelTexture));
+            this.gl.ObjectLabel(ObjectIdentifier.Texture, textureId, (uint)label.Length, label);
+        }
 
         /// <inheritdoc/>
         public void TexParameter(GLTextureTarget target, GLTextureParameterName pname, GLTextureWrapMode param)
-            => this.gl.TexParameter((TextureTarget)target, (TextureParameterName)pname, (int)param);
+        {
+            AddToGLCallStack($"{nameof(TexParameter)}(GLTextureTarget target, GLTextureParameterName pname, GLTextureWrapMode param)");
+            this.gl.TexParameter((TextureTarget)target, (TextureParameterName)pname, (int)param);
+        }
 
         /// <inheritdoc/>
         public void TexParameter(GLTextureTarget target, GLTextureParameterName pname, GLTextureMinFilter param)
-            => this.gl.TexParameter((TextureTarget)target, (TextureParameterName)pname, (int)param);
+        {
+            AddToGLCallStack($"{nameof(TexParameter)}(GLTextureTarget target, GLTextureParameterName pname, GLTextureMinFilter param)");
+            this.gl.TexParameter((TextureTarget)target, (TextureParameterName)pname, (int)param);
+        }
 
         /// <inheritdoc/>
         public void TexParameter(GLTextureTarget target, GLTextureParameterName pname, GLTextureMagFilter param)
-            => this.gl.TexParameter((TextureTarget)target, (TextureParameterName)pname, (int)param);
+        {
+            AddToGLCallStack($"{nameof(TexParameter)}(GLTextureTarget target, GLTextureParameterName pname, GLTextureMagFilter param)");
+            this.gl.TexParameter((TextureTarget)target, (TextureParameterName)pname, (int)param);
+        }
 
         /// <inheritdoc/>
         public void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
             where T : unmanaged
         {
+            AddToGLCallStack(nameof(TexImage2D));
             unsafe
             {
                 fixed (void* unmanagedPixelPtr = pixels)
@@ -318,9 +578,19 @@ namespace Velaptor.NativeInterop.OpenGL
             errorMessage += $"\n\tLength: {length}";
             errorMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
 
-            if (severity != GLEnum.DebugSeverityNotification)
+            if (severity != GLEnum.DebugSeverityNotification && id != 131218)
             {
                 GLError?.Invoke(this, new GLErrorEventArgs(errorMessage));
+            }
+        }
+
+        private void AddToGLCallStack(string glFunctionName)
+        {
+            glCallStack.Enqueue(glFunctionName);
+
+            if (glCallStack.Count >= 200)
+            {
+                glCallStack.Dequeue();
             }
         }
     }

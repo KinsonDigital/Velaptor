@@ -319,7 +319,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public void Init(int width, int height)
+        public void Init(uint width, uint height)
         {
             if (this.glWindow is null)
             {
@@ -328,7 +328,7 @@ namespace Velaptor.OpenGL
 
             this.glContextObservable.OnGLContextCreated(this.glWindow);
 
-            this.glWindow.Size = new Vector2D<int>(width, height);
+            this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
             this.glInputContext = this.glWindow.CreateInput();
 
             if (this.glInputContext.Keyboards.Count <= 0)

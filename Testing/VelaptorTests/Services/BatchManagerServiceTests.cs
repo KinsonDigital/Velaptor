@@ -334,7 +334,7 @@ namespace VelaptorTests.Services
 
             // Act
             service.EmptyBatch();
-            var actual = service.BatchItems.All(i => i.Value.IsEmpty);
+            var actual = service.BatchItems.All(i => i.Value.IsEmpty());
 
             // Assert
             Assert.True(actual);

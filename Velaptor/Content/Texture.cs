@@ -1,4 +1,4 @@
-// <copyright file="Texture.cs" company="KinsonDigital">
+﻿// <copyright file="Texture.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -84,10 +84,10 @@ namespace Velaptor.Content
         public string Path { get; }
 
         /// <inheritdoc/>
-        public int Width { get; private set; }
+        public uint Width { get; private set; }
 
         /// <inheritdoc/>
-        public int Height { get; private set; }
+        public uint Height { get; private set; }
 
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
@@ -129,8 +129,8 @@ namespace Velaptor.Content
             this.gl.BindTexture(GLTextureTarget.Texture2D, Id);
 
             // TODO: Make the Texture.Width and Texture.Height uint data type
-            Width = (int)imageData.Width;
-            Height = (int)imageData.Height;
+            Width = imageData.Width;
+            Height = imageData.Height;
 
             Name = name;
 
@@ -169,7 +169,7 @@ namespace Velaptor.Content
                 rowBytes.Clear();
             }
 
-            this.gl.ObjectLabel(GLObjectIdentifier.Texture, Id, 1u, name);
+            this.gl.LabelTexture(Id, name);
 
             // Set the min and mag filters to linear
             this.gl.TexParameter(

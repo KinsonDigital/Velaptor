@@ -53,12 +53,12 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets the width of the <see cref="TextBox"/>.
         /// </summary>
-        public override int Width => this.backgroundTexture.Width;
+        public override uint Width => this.backgroundTexture.Width;
 
         /// <summary>
         /// Gets the height of the <see cref="TextBox"/>.
         /// </summary>
-        public override int Height => this.backgroundTexture.Height;
+        public override uint Height => this.backgroundTexture.Height;
 
         /// <summary>
         /// Gets or sets the font name of the <see cref="TextBox"/>.

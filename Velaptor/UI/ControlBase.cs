@@ -1,4 +1,4 @@
-// <copyright file="ControlBase.cs" company="KinsonDigital">
+﻿// <copyright file="ControlBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -55,8 +55,8 @@ namespace Velaptor.UI
         /// <inheritdoc cref="IControl.Right"/>
         public virtual int Right
         {
-            get => Position.X + Width;
-            set => Position = new Point(value - Width, Position.Y);
+            get => Position.X + (int)Width;
+            set => Position = new Point(value - (int)Width, Position.Y);
         }
 
         /// <inheritdoc cref="IControl.Top"/>
@@ -69,15 +69,15 @@ namespace Velaptor.UI
         /// <inheritdoc cref="IControl.Bottom"/>
         public virtual int Bottom
         {
-            get => Position.Y + Height;
-            set => Position = new Point(Position.X, value - Height);
+            get => Position.Y + (int)Height;
+            set => Position = new Point(Position.X, value - (int)Height);
         }
 
         /// <inheritdoc cref="ISizable.Width"/>
-        public virtual int Width { get; set; }
+        public virtual uint Width { get; set; }
 
         /// <inheritdoc cref="ISizable.Height"/>
-        public virtual int Height { get; set; }
+        public virtual uint Height { get; set; }
 
         /// <inheritdoc cref="IControl.Visible"/>
         public virtual bool Visible { get; set; } = true;
@@ -140,7 +140,7 @@ namespace Velaptor.UI
 
             this.currentMouseState = this.mouse.GetState();
             this.currentMousePos = this.currentMouseState.GetPosition().ToPoint();
-            var controlRect = new Rectangle(Position.X, Position.Y, Width, Height);
+            var controlRect = new Rectangle(Position.X, Position.Y, (int)Width, (int)Height);
 
             IsMouseOver = controlRect.Contains(this.currentMouseState.GetX(), this.currentMouseState.GetY());
 

@@ -13,7 +13,7 @@ namespace VelaptorTesting.Scenes
     /// <summary>
     /// Tests that graphics properly render to the screen.
     /// </summary>
-    public class TestRenderGraphicsScene : SceneBase
+    public class TestRenderAnimatedGraphicsScene : SceneBase
     {
         private IAtlasData? mainAtlas;
         private AtlasSubTextureData[]? frames;
@@ -21,10 +21,10 @@ namespace VelaptorTesting.Scenes
         private int currentFrame;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestRenderGraphicsScene"/> class.
+        /// Initializes a new instance of the <see cref="TestRenderAnimatedGraphicsScene"/> class.
         /// </summary>
         /// <param name="contentLoader">Loads content for the scene.</param>
-        public TestRenderGraphicsScene(IContentLoader contentLoader)
+        public TestRenderAnimatedGraphicsScene(IContentLoader contentLoader)
             : base(contentLoader)
         {
         }
@@ -40,7 +40,7 @@ namespace VelaptorTesting.Scenes
             }
 
             this.mainAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
-            this.frames = this.mainAtlas.GetFrames("square");
+            this.frames = this.mainAtlas.GetFrames("circle");
 
             base.LoadContent();
         }
@@ -79,13 +79,13 @@ namespace VelaptorTesting.Scenes
         /// <inheritdoc cref="IDrawable.Render"/>
         public override void Render(ISpriteBatch spriteBatch)
         {
-            var sqrPosX = (MainWindow.WindowWidth / 2) - (this.frames[this.currentFrame].Bounds.Width / 2);
-            var sqrPosY = (MainWindow.WindowHeight / 2) - (this.frames[this.currentFrame].Bounds.Height / 2);
+            var posX = ((int)MainWindow.WindowWidth / 2) - (this.frames[this.currentFrame].Bounds.Width / 2);
+            var posY = ((int)MainWindow.WindowHeight / 2) - (this.frames[this.currentFrame].Bounds.Height / 2);
 
             spriteBatch.Render(
                 this.mainAtlas.Texture,
                 this.frames[this.currentFrame].Bounds,
-                new Rectangle(sqrPosX, sqrPosY, this.mainAtlas.Width, this.mainAtlas.Height),
+                new Rectangle(posX, posY, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
                 1f,
                 0f,
                 Color.White,

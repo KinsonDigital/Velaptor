@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Drawing;
+
 namespace Velaptor.OpenGL
 {
     using System;
@@ -45,6 +47,7 @@ namespace Velaptor.OpenGL
             { typeof(Vector2), 2 },
             { typeof(Vector3), 3 },
             { typeof(Vector4), 4 },
+            { typeof(Color), 4 },
         };
 
         private static readonly Dictionary<Type, GLVertexAttribPointerType> PointerTypeMappings = new ()
@@ -53,6 +56,7 @@ namespace Velaptor.OpenGL
             { typeof(Vector2), GLVertexAttribPointerType.Float },
             { typeof(Vector3), GLVertexAttribPointerType.Float },
             { typeof(Vector4), GLVertexAttribPointerType.Float },
+            { typeof(Color), GLVertexAttribPointerType.Float },
         };
 
         /// <summary>

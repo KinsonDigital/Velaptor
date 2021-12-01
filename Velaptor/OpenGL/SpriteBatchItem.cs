@@ -10,8 +10,11 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.
     /// </summary>
+
     internal struct SpriteBatchItem
     {
+        // TODO: Convert the Rectangle data types to use RectangleF instead.  This is to prevent casting
+        // when creating new RectangleF struct instances
         /// <summary>
         /// The source rectangle inside of the texture to render.
         /// </summary>
@@ -53,32 +56,30 @@ namespace Velaptor.OpenGL
         /// Gets an empty <see cref="SpriteBatchItem"/>.
         /// </summary>
         /// <returns>An empty sprite batch item.</returns>
-        public static SpriteBatchItem Empty
-        {
-            get
-            {
-                SpriteBatchItem result;
-                result.TextureId = 0;
-                result.Size = 0f;
-                result.Angle = 0f;
-                result.SrcRect = Rectangle.Empty;
-                result.DestRect = Rectangle.Empty;
-                result.TintColor = Color.Empty;
-                result.Effects = RenderEffects.None;
-
-                return result;
-            }
-        }
+        public static SpriteBatchItem Create() => default;
 
         /// <summary>
         /// Gets a value indicating whether the current <see cref="SpriteBatchItem"/> is empty.
         /// </summary>
-        public bool IsEmpty => this.TextureId == 0 &&
-                    this.SrcRect.IsEmpty &&
-                    this.DestRect.IsEmpty &&
-                    this.Size == 0f &&
-                    this.Angle == 0f &&
-                    this.TintColor.IsEmpty &&
-                    (this.Effects == 0 || this.Effects == RenderEffects.None);
+        /// <returns>True if empty.</returns>
+        public bool IsEmpty() =>
+            this.TextureId == 0 &&
+            this.SrcRect.IsEmpty &&
+            this.DestRect.IsEmpty &&
+            this.Size == 0f &&
+            this.Angle == 0f &&
+            this.TintColor.IsEmpty &&
+            (this.Effects == 0 || this.Effects == RenderEffects.None);
+
+        public void Empty()
+        {
+            this.TextureId = 0u;
+            this.SrcRect = default;
+            this.DestRect = default;
+            this.Size = 0f;
+            this.Angle = 0f;
+            this.TintColor = default;
+            this.Effects = RenderEffects.None;
+        }
     }
 }

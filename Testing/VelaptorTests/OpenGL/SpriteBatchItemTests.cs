@@ -18,7 +18,7 @@ namespace VelaptorTests.OpenGL
         public void Empty_WhenGettingValue_ReturnsCorrectResult()
         {
             // Act
-            var actual = SpriteBatchItem.Empty;
+            var actual = default(SpriteBatchItem);
 
             // Assert
             Assert.Equal(0u, actual.TextureId);
@@ -36,7 +36,7 @@ namespace VelaptorTests.OpenGL
             var item = default(SpriteBatchItem);
 
             // Act
-            var actual = item.IsEmpty;
+            var actual = item.IsEmpty();
 
             // Assert
             Assert.True(actual);

@@ -10,6 +10,8 @@ namespace Velaptor.OpenGL
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.GLFW;
 
+    // TODO: Move this to the GLFW folder and namespace
+
     /// <summary>
     /// Gets all of the monitors in the system.
     /// </summary>

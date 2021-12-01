@@ -58,8 +58,8 @@ namespace Velaptor.OpenGL
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
         public GLWindow(
-            int width,
-            int height,
+            uint width,
+            uint height,
             IGLInvoker glInvoker,
             IGLFWInvoker glfwInvoker,
             ISystemMonitorService systemMonitorService,
@@ -128,7 +128,7 @@ namespace Velaptor.OpenGL
 
             ContentLoader = contentLoader;
 
-            SetupWidthHeightPropCaches(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
+            SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
             SetupOtherPropCaches();
         }
 
@@ -163,17 +163,17 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public int Width
+        public uint Width
         {
-            get => CachedIntProps[nameof(Width)].GetValue();
-            set => CachedIntProps[nameof(Width)].SetValue(value);
+            get => CachedUIntProps[nameof(Width)].GetValue();
+            set => CachedUIntProps[nameof(Width)].SetValue(value);
         }
 
         /// <inheritdoc/>
-        public int Height
+        public uint Height
         {
-            get => CachedIntProps[nameof(Height)].GetValue();
-            set => CachedIntProps[nameof(Height)].SetValue(value);
+            get => CachedUIntProps[nameof(Height)].GetValue();
+            set => CachedUIntProps[nameof(Height)].SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -222,7 +222,7 @@ namespace Velaptor.OpenGL
         public Action? Uninitialize { get; set; }
 
         /// <inheritdoc/>
-        public Action? WinResize { get; set; }
+        public Action<SizeU>? WinResize { get; set; }
 
         /// <inheritdoc/>
         public WindowBorder TypeOfBorder
@@ -261,17 +261,22 @@ namespace Velaptor.OpenGL
         public bool Initialized { get; private set; }
 
         /// <summary>
-        /// Gets the list of caches for <see langword=""="string"/> properties.
+        /// Gets the list of caches for <see langword="string"/> properties.
         /// </summary>
         public Dictionary<string, CachedValue<string>> CachedStringProps { get; } = new Dictionary<string, CachedValue<string>>();
 
         /// <summary>
-        /// Gets the list of caches for <see langword=""="int"/> properties.
+        /// Gets the list of caches for <see langword="int"/> properties.
         /// </summary>
         public Dictionary<string, CachedValue<int>> CachedIntProps { get; } = new Dictionary<string, CachedValue<int>>();
 
         /// <summary>
-        /// Gets the list of caches for <see langword=""="bool"/> properties.
+        /// Gets the list of caches for <see langword="uint"/> properties.
+        /// </summary>
+        public Dictionary<string, CachedValue<uint>> CachedUIntProps { get; } = new Dictionary<string, CachedValue<uint>>();
+
+        /// <summary>
+        /// Gets the list of caches for <see langword="bool"/> properties.
         /// </summary>
         public Dictionary<string, CachedValue<bool>> CachedBoolProps { get; } = new Dictionary<string, CachedValue<bool>>();
 
@@ -341,6 +346,7 @@ namespace Velaptor.OpenGL
             CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
             CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
             CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
             if (CachedPosition is not null)
             {
@@ -385,9 +391,12 @@ namespace Velaptor.OpenGL
         /// <param name="e">Resize event args.</param>
         private void GameWindow_Resize(object? sender, WindowSizeEventArgs e)
         {
+            var uWidth = (uint)e.Width;
+            var uHeight = (uint)e.Height;
+
             // Update the view port so it is the same size as the window
-            this.gl.Viewport(0, 0, (uint)e.Width, (uint)e.Height);
-            WinResize?.Invoke();
+            this.gl.Viewport(0, 0, uWidth, uHeight);
+            WinResize?.Invoke(new SizeU() { Width = uWidth, Height = uHeight });
         }
 
         /// <summary>
@@ -498,28 +507,28 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="width">The window width.</param>
         /// <param name="height">The window height.</param>
-        private void SetupWidthHeightPropCaches(int width, int height)
+        private void SetupWidthHeightPropCaches(uint width, uint height)
         {
-            CachedIntProps.Add(
+            CachedUIntProps.Add(
                 nameof(Width), // key
-                new CachedValue<int>( // value
+                new CachedValue<uint>( // value
                     defaultValue: width,
                     getterWhenNotCaching: () =>
                     {
-                        return (int)this.windowFacade.Size.X;
+                        return (uint)this.windowFacade.Size.X;
                     },
                     setterWhenNotCaching: (value) =>
                     {
                         this.windowFacade.Size = new (value, this.windowFacade.Size.Y);
                     }));
 
-            CachedIntProps.Add(
+            CachedUIntProps.Add(
                 nameof(Height), // key
-                new CachedValue<int>( // value
+                new CachedValue<uint>( // value
                     defaultValue: height,
                     getterWhenNotCaching: () =>
                     {
-                        return (int)this.windowFacade.Size.Y;
+                        return (uint)this.windowFacade.Size.Y;
                     },
                     setterWhenNotCaching: (value) =>
                     {

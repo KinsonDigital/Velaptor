@@ -9,6 +9,8 @@ namespace Velaptor.NativeInterop.OpenGL
     using System.Numerics;
     using Velaptor.OpenGL;
 
+    // TODO: Actually make this class into a static class
+    // with extension methods.
     /// <summary>
     /// Provides extensions/helper methods to improve OpenGL related functionality.
     /// </summary>

@@ -56,14 +56,14 @@ namespace Velaptor.UI
         }
 
         /// <inheritdoc/>
-        public int Width
+        public uint Width
         {
             get => this.window.Width;
             set => this.window.Width = value;
         }
 
         /// <inheritdoc/>
-        public int Height
+        public uint Height
         {
             get => this.window.Height;
             set => this.window.Height = value;
@@ -165,8 +165,9 @@ namespace Velaptor.UI
         /// <summary>
         /// Invoked when the window size changes.
         /// </summary>
+        /// <param name="size">The new size.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void OnResize()
+        public virtual void OnResize(SizeU size)
         {
         }
 

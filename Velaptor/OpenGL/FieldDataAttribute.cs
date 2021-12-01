@@ -6,6 +6,8 @@ namespace Velaptor.OpenGL
 {
     using System;
 
+    // TODO: Once this is not used anymore, remove it from the code base
+
     /// <summary>
     /// Describes the data layout of a field for setting up OpenGL attribute pointers.
     /// </summary>

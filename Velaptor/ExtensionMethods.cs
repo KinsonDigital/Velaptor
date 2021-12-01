@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.OpenGL;
+
 namespace Velaptor
 {
     using System;
@@ -418,6 +420,52 @@ namespace Velaptor
             }
 
             return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+        }
+
+        // TODO: Add code docs
+        internal static float[] ToVertexArray(this Vector2 vector) => new[] { vector.X, vector.Y };
+
+        internal static float[] ToVertexArray(this Vector3 vector) => new[] { vector.X, vector.Y, vector.Z };
+
+
+        internal static float[] ToVertexArray(this NETColor clr) => new float[] { clr.R, clr.G, clr.B, clr.A };
+
+        internal static float[] ToVertexArray(this TextureVertexData vertexData)
+        {
+            // NOTE: The order of the array elements are extremely important.
+            // They determine the layout of each stride of vertex data and the layout
+            // here has to match the layout told to OpenGL using the VertexAttribLocation() calls
+            var result = new List<float>();
+
+            result.AddRange(vertexData.VertexPos.ToVertexArray());
+            result.AddRange(vertexData.TextureCoord.ToVertexArray());
+            result.AddRange(vertexData.TintColor.ToVertexArray());
+
+            return result.ToArray();
+        }
+
+        internal static float[] ToVertexArray(this TextureQuadData data)
+        {
+            var result = new List<float>();
+
+            result.AddRange(data.Vertex1.ToVertexArray());
+            result.AddRange(data.Vertex2.ToVertexArray());
+            result.AddRange(data.Vertex3.ToVertexArray());
+            result.AddRange(data.Vertex4.ToVertexArray());
+
+            return result.ToArray();
+        }
+
+        internal static float[] ToVertexArray(this IEnumerable<TextureQuadData> quads)
+        {
+            var result = new List<float>();
+
+            foreach (var quad in quads)
+            {
+                result.AddRange(quad.ToVertexArray());
+            }
+
+            return result.ToArray();
         }
     }
 }

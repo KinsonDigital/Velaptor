@@ -25,7 +25,7 @@ namespace Velaptor.Factories
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <returns>A Velaptor framework window implementation.</returns>
-        public static IWindow CreateWindow(int width, int height)
+        public static IWindow CreateWindow(uint width, uint height)
             => new GLWindow(
                 width,
                 height,

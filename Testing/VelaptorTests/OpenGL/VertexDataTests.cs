@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Drawing;
+
 namespace VelaptorTests.OpenGL
 {
     using System.Numerics;
@@ -22,14 +24,14 @@ namespace VelaptorTests.OpenGL
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
-                TintColor = new Vector4(6, 7, 8, 9),
+                TintColor = Color.FromArgb(6, 7, 8, 9),
                 TransformIndex = 10,
             };
             var dataB = new VertexData()
             {
                 Vertex = new Vector3(11, 22, 33),
                 TextureCoord = new Vector2(44, 55),
-                TintColor = new Vector4(66, 77, 88, 99),
+                TintColor = Color.FromArgb(66, 77, 88, 99),
                 TransformIndex = 10,
             };
 
@@ -48,14 +50,14 @@ namespace VelaptorTests.OpenGL
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
-                TintColor = new Vector4(6, 7, 8, 9),
+                TintColor = Color.FromArgb(6, 7, 8, 9),
                 TransformIndex = 10,
             };
             var dataB = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
-                TintColor = new Vector4(6, 7, 8, 9),
+                TintColor = Color.FromArgb(6, 7, 8, 9),
                 TransformIndex = 10,
             };
 
@@ -70,14 +72,14 @@ namespace VelaptorTests.OpenGL
         #region Method Tests
         [Theory]
         [ClassData(typeof(VertexDataTestData))]
-        public void Equals_WhenInvoked_ReturnsCorrectResult(Vector3 vertex, Vector2 textureCoord, Vector4 tintClr, int transformIndex, bool expected)
+        public void Equals_WhenInvoked_ReturnsCorrectResult(Vector3 vertex, Vector2 textureCoord, Color tintClr, int transformIndex, bool expected)
         {
             // Arrange
             var dataA = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
-                TintColor = new Vector4(6, 7, 8, 9),
+                TintColor = Color.FromArgb(6, 7, 8, 9),
                 TransformIndex = 10,
             };
             var dataB = new VertexData()
@@ -103,7 +105,7 @@ namespace VelaptorTests.OpenGL
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
-                TintColor = new Vector4(6, 7, 8, 9),
+                TintColor = Color.FromArgb(6, 7, 8, 9),
                 TransformIndex = 10,
             };
             var dataB = new object();
@@ -123,14 +125,14 @@ namespace VelaptorTests.OpenGL
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
-                TintColor = new Vector4(6, 7, 8, 9),
+                TintColor = Color.FromArgb(6, 7, 8, 9),
                 TransformIndex = 10,
             };
             object dataB = new VertexData()
             {
                 Vertex = new Vector3(1, 2, 3),
                 TextureCoord = new Vector2(4, 5),
-                TintColor = new Vector4(6, 7, 8, 9),
+                TintColor = Color.FromArgb(6, 7, 8, 9),
                 TransformIndex = 10,
             };
 

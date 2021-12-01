@@ -9,6 +9,8 @@ namespace Velaptor.OpenGL
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Services;
 
+    // TODO: Setup debug groups for shader
+
     /// <inheritdoc/>
     internal sealed class ShaderProgram : IShaderProgram
     {

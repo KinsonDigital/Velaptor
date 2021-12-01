@@ -6,33 +6,31 @@ namespace Velaptor.OpenGL
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Holds data for a single quad in the GPU vertex buffer.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct QuadData : IEquatable<QuadData>
+    internal struct TextureQuadData : IEquatable<TextureQuadData>
     {
         /// <summary>
         /// The top left corner vertex of the quad.
         /// </summary>
-        public VertexData Vertex1;
+        public TextureVertexData Vertex1;
 
         /// <summary>
         /// The top right corner vertex of the quad.
         /// </summary>
-        public VertexData Vertex2;
+        public TextureVertexData Vertex2;
 
         /// <summary>
         /// The bottom right corner vertex of the quad.
         /// </summary>
-        public VertexData Vertex3;
+        public TextureVertexData Vertex3;
 
         /// <summary>
         /// The bottom left corner vertex of the quad.
         /// </summary>
-        public VertexData Vertex4;
+        public TextureVertexData Vertex4;
 
         /// <summary>
         /// Returns a value indicating if the left and right operands of an equals comparison
@@ -41,7 +39,7 @@ namespace Velaptor.OpenGL
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/> if the 2 operands are equal.</returns>
-        public static bool operator ==(QuadData left, QuadData right) => left.Equals(right);
+        public static bool operator ==(TextureQuadData left, TextureQuadData right) => left.Equals(right);
 
         /// <summary>
         /// Returns a value indicating if the left and right operands of a not equals comparison
@@ -50,12 +48,18 @@ namespace Velaptor.OpenGL
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/> if the 2 operands are equal.</returns>
-        public static bool operator !=(QuadData left, QuadData right) => !(left == right);
+        public static bool operator !=(TextureQuadData left, TextureQuadData right) => !(left == right);
+
+        /// <summary>
+        /// Returns the total number of bytes for this struct.
+        /// </summary>
+        /// <returns>The total number of bytes in size.</returns>
+        public static uint GetTotalBytes() => TextureVertexData.Stride() * 4u;
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            if (obj is not QuadData data)
+            if (obj is not TextureQuadData data)
             {
                 return false;
             }
@@ -64,11 +68,17 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public bool Equals(QuadData other)
+        public bool Equals(TextureQuadData other)
             => this.Vertex1 == other.Vertex1 &&
                this.Vertex2 == other.Vertex2 &&
                this.Vertex3 == other.Vertex3 &&
                this.Vertex4 == other.Vertex4;
+
+        /// <summary>
+        /// Returns a value indicating if the struct is empty.
+        /// </summary>
+        /// <returns>True if the struct is empty.</returns>
+        public bool IsEmpty() => this.Vertex1.IsEmpty() && this.Vertex2.IsEmpty() && this.Vertex3.IsEmpty() && this.Vertex4.IsEmpty();
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]

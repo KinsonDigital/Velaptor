@@ -24,12 +24,12 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets the width of the entire texture atlas texture.
         /// </summary>
-        int Width { get; }
+        uint Width { get; }
 
         /// <summary>
         /// Gets the height of the entire texture atlas texture.
         /// </summary>
-        int Height { get; }
+        uint Height { get; }
 
         /// <summary>
         /// The iterator for the atlas sub texture data.

@@ -48,21 +48,21 @@ namespace VelaptorTesting.Scenes
                 Color = Color.White,
             };
 
-            this.downKeys = new Label(ContentLoader)
-            {
-                Name = "DownKeys",
-                Color = Color.White,
-            };
-
             this.instructions.Text = "Hit a key on the keyboard to see if it is correct.";
 
             this.instructions.LoadContent();
             this.instructions.Position = new Point(LeftMargin, TopMargin);
 
-            this.downKeys.LoadContent();
+            //this.downKeys = new Label(ContentLoader)
+            //{
+            //    Name = "DownKeys",
+            //    Color = Color.White,
+            //};
+
+            //this.downKeys.LoadContent();
 
             AddControl(this.instructions);
-            AddControl(this.downKeys);
+            //AddControl(this.downKeys);
 
             base.LoadContent();
         }
@@ -85,27 +85,27 @@ namespace VelaptorTesting.Scenes
         {
             this.currentKeyboardState = this.keyboard.GetState();
 
-            if (this.currentKeyboardState.GetDownKeys().Length > 0)
-            {
-                var downKeyText = new StringBuilder();
+            //if (this.currentKeyboardState.GetDownKeys().Length > 0)
+            //{
+            //    var downKeyText = new StringBuilder();
 
-                foreach (var key in this.currentKeyboardState.GetDownKeys())
-                {
-                    downKeyText.Append(key);
-                    downKeyText.Append(", ");
-                }
+            //    foreach (var key in this.currentKeyboardState.GetDownKeys())
+            //    {
+            //        downKeyText.Append(key);
+            //        downKeyText.Append(", ");
+            //    }
 
-                this.downKeys.Text = downKeyText.ToString().TrimEnd(' ').TrimEnd(',');
-            }
-            else
-            {
-                this.downKeys.Text = "No Keys Pressed";
-            }
+            //    this.downKeys.Text = downKeyText.ToString().TrimEnd(' ').TrimEnd(',');
+            //}
+            //else
+            //{
+            //    this.downKeys.Text = "No Keys Pressed";
+            //}
 
-            var posX = (int)((MainWindow.WindowWidth / 2f) - (this.downKeys.Width / 2f));
-            var posY = (int)((MainWindow.WindowHeight / 2f) - (this.downKeys.Height / 2f));
+            //var posX = (int)((MainWindow.WindowWidth / 2f) - (this.downKeys.Width / 2f));
+            //var posY = (int)((MainWindow.WindowHeight / 2f) - (this.downKeys.Height / 2f));
 
-            this.downKeys.Position = new Point(posX, posY);
+            //this.downKeys.Position = new Point(posX, posY);
 
             base.Update(frameTime);
         }
@@ -132,10 +132,10 @@ namespace VelaptorTesting.Scenes
         private void UnloadSceneContent()
         {
             RemoveControl(this.instructions);
-            RemoveControl(this.downKeys);
+            //RemoveControl(this.downKeys);
 
             this.instructions = null;
-            this.downKeys = null;
+            //this.downKeys = null;
         }
     }
 }

@@ -14,21 +14,21 @@ namespace Velaptor.Graphics
     public interface ISpriteBatch : IDisposable
     {
         /// <summary>
-        /// Gets the size of the batch.
+        /// Gets the total number of sprites rendered for each batch.
         /// </summary>
-        uint BatchSize { get; }
+        public const uint BatchSize = 100;
 
         /// <summary>
         /// Gets or sets the render surface width.
         /// </summary>
         /// <remarks>This is the width of the viewport.</remarks>
-        int RenderSurfaceWidth { get; set; }
+        uint RenderSurfaceWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the render surface height.
         /// </summary>
         /// <remarks>This is the height of the viewport.</remarks>
-        int RenderSurfaceHeight { get; set; }
+        uint RenderSurfaceHeight { get; set; }
 
         /// <summary>
         /// Gets or sets the color that the back buffer will be cleared to.

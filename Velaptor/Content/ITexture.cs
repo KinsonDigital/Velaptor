@@ -17,11 +17,11 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets the width of the texture.
         /// </summary>
-        int Width { get; }
+        uint Width { get; }
 
         /// <summary>
         /// Gets the height of the texture.
         /// </summary>
-        int Height { get; }
+        uint Height { get; }
     }
 }

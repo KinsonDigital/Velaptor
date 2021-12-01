@@ -25,12 +25,12 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets or sets the width of the window.
         /// </summary>
-        int Width { get; set; }
+        uint Width { get; set; }
 
         /// <summary>
         /// Gets or sets the height of the window.
         /// </summary>
-        int Height { get; set; }
+        uint Height { get; set; }
 
         /// <summary>
         /// Gets or sets the value of how often the <see cref="Update"/>

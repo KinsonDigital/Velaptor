@@ -66,7 +66,7 @@ namespace VelaptorTesting.Scenes
         public override void Render(ISpriteBatch spriteBatch)
         {
             var xPos = (int)((MainWindow.WindowWidth / 2f) - (this.textWidth / 2f));
-            var yPos = MainWindow.WindowHeight / 2;
+            var yPos = (int)MainWindow.WindowHeight / 2;
 
             spriteBatch.Render(this.font, TextToRender, xPos, yPos, Color.White);
 

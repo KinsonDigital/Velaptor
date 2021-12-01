@@ -40,6 +40,11 @@ namespace VelaptorTesting
             WindowHeight = Height;
             var spriteBatch = SpriteBatchFactory.CreateSpriteBatch(Width, Height);
             spriteBatch.ClearColor = Color.FromArgb(255, 42, 42, 46);
+            window.WinResize = (size) =>
+            {
+                spriteBatch.RenderSurfaceWidth = size.Width;
+                spriteBatch.RenderSurfaceHeight = size.Height;
+            };
 
             this.sceneManager = new SceneManager(contentLoader, spriteBatch);
 
@@ -58,9 +63,9 @@ namespace VelaptorTesting
                 Name = SplitByUpperCase(nameof(TestKeyboardScene)),
             };
 
-            var renderGraphicsScene = new TestRenderGraphicsScene(contentLoader)
+            var renderGraphicsScene = new TestRenderAnimatedGraphicsScene(contentLoader)
             {
-                Name = SplitByUpperCase(nameof(TestRenderGraphicsScene)),
+                Name = SplitByUpperCase(nameof(TestRenderAnimatedGraphicsScene)),
             };
 
             this.sceneManager.AddScene(testRenderTextScene);
@@ -74,12 +79,12 @@ namespace VelaptorTesting
         /// <summary>
         /// Gets the width of the window.
         /// </summary>
-        public static int WindowWidth { get; private set; }
+        public static uint WindowWidth { get; private set; }
 
         /// <summary>
         /// Gets the height of the window.
         /// </summary>
-        public static int WindowHeight { get; private set; }
+        public static uint WindowHeight { get; private set; }
 
         /// <inheritdoc cref="Window.OnLoad"/>
         public override void OnLoad()
@@ -114,12 +119,12 @@ namespace VelaptorTesting
         }
 
         /// <inheritdoc cref="Window.OnResize"/>
-        public override void OnResize()
+        public override void OnResize(SizeU size)
         {
             WindowWidth = Width;
             WindowHeight = Height;
 
-            base.OnResize();
+            base.OnResize(size);
         }
 
         /// <summary>

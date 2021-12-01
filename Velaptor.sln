@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29905.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Velaptor", "Velaptor\Velaptor.csproj", "{E1625351-56F0-4058-A3F2-ACF009187CFC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{DA2AB7CF-A778-416B-BFBF-1E27CC23855C}"
 	ProjectSection(SolutionItems) = preProject
 		Testing\.editorconfig = Testing\.editorconfig
+		Velaptor\OpenGL\TextureGPUBuffer.cs = Velaptor\OpenGL\TextureGPUBuffer.cs
 		Testing\Velaptor.runsettings = Testing\Velaptor.runsettings
 	EndProjectSection
 EndProject
@@ -26,31 +27,31 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{E248AD89-D6AB-4183-88F1-133875647706}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{CE2DE8AE-0037-4159-AE95-14D261BF9122}"
-ProjectSection(SolutionItems) = preProject
-	.github\workflows\build-status-check.yml = .github\workflows\build-status-check.yml
-	.github\workflows\feature-pr-branches-status-check.yml = .github\workflows\feature-pr-branches-status-check.yml
-	.github\workflows\preview-release.yml = .github\workflows\preview-release.yml
-	.github\workflows\qa-prod-releases.yml = .github\workflows\qa-prod-releases.yml
-	.github\workflows\tag-does-not-exist-status-check.yml = .github\workflows\tag-does-not-exist-status-check.yml
-	.github\workflows\unit-testing-status-check.yml = .github\workflows\unit-testing-status-check.yml
-	.github\workflows\validate-preview-release-branches-status-check.yml = .github\workflows\validate-preview-release-branches-status-check.yml
-	.github\workflows\validate-prod-release-branches-status-check.yml = .github\workflows\validate-prod-release-branches-status-check.yml
-	.github\workflows\version-status-check.yml = .github\workflows\version-status-check.yml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-status-check.yml = .github\workflows\build-status-check.yml
+		.github\workflows\feature-pr-branches-status-check.yml = .github\workflows\feature-pr-branches-status-check.yml
+		.github\workflows\preview-release.yml = .github\workflows\preview-release.yml
+		.github\workflows\qa-prod-releases.yml = .github\workflows\qa-prod-releases.yml
+		.github\workflows\tag-does-not-exist-status-check.yml = .github\workflows\tag-does-not-exist-status-check.yml
+		.github\workflows\unit-testing-status-check.yml = .github\workflows\unit-testing-status-check.yml
+		.github\workflows\validate-preview-release-branches-status-check.yml = .github\workflows\validate-preview-release-branches-status-check.yml
+		.github\workflows\validate-prod-release-branches-status-check.yml = .github\workflows\validate-prod-release-branches-status-check.yml
+		.github\workflows\version-status-check.yml = .github\workflows\version-status-check.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "PullRequestTemplates", "{6653D425-BD0A-42A4-A06C-715674139E0F}"
-ProjectSection(SolutionItems) = preProject
-	.github\PULL_REQUEST_TEMPLATE\feature-to-develop.md = .github\PULL_REQUEST_TEMPLATE\feature-to-develop.md
-	.github\PULL_REQUEST_TEMPLATE\preview-release-to-release.md = .github\PULL_REQUEST_TEMPLATE\preview-release-to-release.md
-	.github\PULL_REQUEST_TEMPLATE\release-to-master.md = .github\PULL_REQUEST_TEMPLATE\release-to-master.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.github\PULL_REQUEST_TEMPLATE\feature-to-develop.md = .github\PULL_REQUEST_TEMPLATE\feature-to-develop.md
+		.github\PULL_REQUEST_TEMPLATE\preview-release-to-release.md = .github\PULL_REQUEST_TEMPLATE\preview-release-to-release.md
+		.github\PULL_REQUEST_TEMPLATE\release-to-master.md = .github\PULL_REQUEST_TEMPLATE\release-to-master.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IssueTemplates", "IssueTemplates", "{369B0299-64E9-4C42-937B-501E599C1210}"
-ProjectSection(SolutionItems) = preProject
-	.github\ISSUE_TEMPLATE\bug-issue-template.yml = .github\ISSUE_TEMPLATE\bug-issue-template.yml
-	.github\ISSUE_TEMPLATE\feature-request-issue-template.yml = .github\ISSUE_TEMPLATE\feature-request-issue-template.yml
-	.github\ISSUE_TEMPLATE\project-item-issue-template.yml = .github\ISSUE_TEMPLATE\project-item-issue-template.yml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.github\ISSUE_TEMPLATE\bug-issue-template.yml = .github\ISSUE_TEMPLATE\bug-issue-template.yml
+		.github\ISSUE_TEMPLATE\feature-request-issue-template.yml = .github\ISSUE_TEMPLATE\feature-request-issue-template.yml
+		.github\ISSUE_TEMPLATE\project-item-issue-template.yml = .github\ISSUE_TEMPLATE\project-item-issue-template.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

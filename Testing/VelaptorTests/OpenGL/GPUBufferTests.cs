@@ -154,7 +154,7 @@ namespace VelaptorTests.OpenGL
             buffer.UpdateQuad(0, srcRect, 50, 50, Color.White);
 
             // Assert
-            this.mockGL.Verify(m => m.BufferSubData(GLBufferTarget.ArrayBuffer, It.IsAny<nint>(), It.IsAny<nuint>(), ref It.Ref<QuadData>.IsAny));
+            this.mockGL.Verify(m => m.BufferSubData(GLBufferTarget.ArrayBuffer, It.IsAny<nint>(), It.IsAny<nuint>(), It.IsAny<float[]>()));
         }
 
         [Fact]

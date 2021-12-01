@@ -87,7 +87,7 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
-        void Init(int width, int height);
+        void Init(uint width, uint height);
 
         /// <summary>
         /// Shows the window.

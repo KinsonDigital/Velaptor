@@ -73,10 +73,10 @@ namespace Velaptor.Content
         public ITexture Texture { get; private set; }
 
         /// <inheritdoc/>
-        public int Width => Texture.Width;
+        public uint Width => Texture.Width;
 
         /// <inheritdoc/>
-        public int Height => Texture.Height;
+        public uint Height => Texture.Height;
 
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }

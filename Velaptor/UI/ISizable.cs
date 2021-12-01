@@ -8,11 +8,11 @@
         /// <summary>
         /// Gets the width of the <see cref="IControl"/>.
         /// </summary>
-        int Width { get; }
+        uint Width { get; }
 
         /// <summary>
         /// Gets the height of the <see cref="IControl"/>.
         /// </summary>
-        int Height { get; }
+        uint Height { get; }
     }
 }

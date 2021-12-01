@@ -65,6 +65,11 @@ namespace Velaptor.OpenGL
         /// OpenGL enum name GL_DYNAMIC_DRAW.
         /// </summary>
         DynamicDraw = 35048,
+
+        /// <summary>
+        /// OpenGL enum name GL_STATIC_DRAW.
+        /// </summary>
+        StaticDraw = 35044,
     }
 
     /// <summary>
@@ -588,6 +593,7 @@ namespace Velaptor.OpenGL
         DebugSeverityLow = 37192,
     }
 
+    // TODO: Move this into the GLFW folder in an Enums.cs file and to the same namespace
     /// <summary>
     /// Error codes, used in the GLFW error callback.
     /// </summary>
@@ -749,5 +755,25 @@ namespace Velaptor.OpenGL
         /// <see cref="GLTextureParameterName.TextureWrapT"/>, and on the exact mapping.
         /// </summary>
         Linear = 9729,
+    }
+
+    /// <summary>
+    /// Represents the type of GPU buffer.
+    /// </summary>
+    public enum BufferType
+    {
+        /// <summary>
+        ///  A vertex buffer object.
+        /// </summary>
+        VertexBufferObject,
+
+        /// <summary>
+        /// An index array object.
+        /// </summary>
+        /// <remarks>
+        ///     Also known as an EBO (Element Buffer Object) or
+        ///     IBO (Index Buffer Object).
+        /// </remarks>
+        IndexArrayObject,
     }
 }

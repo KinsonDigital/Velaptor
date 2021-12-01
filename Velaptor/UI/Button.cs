@@ -40,10 +40,10 @@ namespace Velaptor.UI
         }
 
         /// <inheritdoc cref="ISizable.Width"/>
-        public override int Width => this.texture?.Width ?? 0;
+        public override uint Width => this.texture?.Width ?? 0;
 
         /// <inheritdoc cref="ISizable.Height"/>
-        public override int Height => this.texture?.Height ?? 0;
+        public override uint Height => this.texture?.Height ?? 0;
 
         /// <summary>
         /// Gets or sets the text of the button.
@@ -109,8 +109,8 @@ namespace Velaptor.UI
 
             if (this.texture is not null)
             {
-                var posX = Position.X + (Width / 2);
-                var posY = Position.Y + (Height / 2);
+                var posX = Position.X + ((int)Width / 2);
+                var posY = Position.Y + ((int)Height / 2);
 
                 spriteBatch.Render(this.texture, posX, posY, TintColor);
 

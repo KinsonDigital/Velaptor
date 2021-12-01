@@ -1,4 +1,4 @@
-// <copyright file="Label.cs" company="KinsonDigital">
+﻿// <copyright file="Label.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -106,7 +106,7 @@ namespace Velaptor.UI
 
             if (this.font is not null)
             {
-                var posY = Position.Y + Height;
+                var posY = Position.Y + (int)Height;
                 spriteBatch.Render(this.font, Text, Position.X, posY, Color);
             }
 
@@ -172,19 +172,19 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="text">The text to measure the width from.</param>
         /// <returns>The width of the text.</returns>
-        private int CalculateWidth(string? text)
-            => string.IsNullOrEmpty(text) || this.glyphWidths.Count <= 0
-                ? 0
-                : text.Select(character => this.glyphWidths[character]).Sum();
+        private uint CalculateWidth(string? text)
+            => string.IsNullOrEmpty(text) || this.glyphWidths.Count <= 0u
+                ? 0u
+                : (uint)text.Select(character => this.glyphWidths[character]).Sum();
 
         /// <summary>
         /// Calculates the height of the given <paramref name="text"/>.
         /// </summary>
         /// <param name="text">The text to measure the height from.</param>
         /// <returns>The height of the text.</returns>
-        private int CalculateHeight(string? text)
-            => string.IsNullOrEmpty(text) || this.glyphHeights.Count <= 0
-                ? 0
-                : text.Select(character => this.glyphHeights[character]).Prepend(int.MinValue).Max();
+        private uint CalculateHeight(string? text)
+            => string.IsNullOrEmpty(text) || this.glyphHeights.Count <= 0u
+                ? 0u
+                : (uint)text.Select(character => this.glyphHeights[character]).Prepend(int.MinValue).Max();
     }
 }
