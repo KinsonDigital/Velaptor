@@ -35,7 +35,6 @@ namespace VelaptorTesting
         {
             var contentLoader = ContentLoaderFactory.CreateContentLoader();
 
-            Width = 1500;
             WindowWidth = Width;
             WindowHeight = Height;
             var spriteBatch = SpriteBatchFactory.CreateSpriteBatch(Width, Height);
@@ -53,25 +52,25 @@ namespace VelaptorTesting
                 Name = SplitByUpperCase(nameof(TestRenderTextScene)),
             };
 
-            var testMouseScene = new TestMouseScene(contentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestMouseScene)),
-            };
+            // var testMouseScene = new TestMouseScene(contentLoader)
+            // {
+            //     Name = SplitByUpperCase(nameof(TestMouseScene)),
+            // };
+            //
+            // var testKeyboardScene = new TestKeyboardScene(contentLoader)
+            // {
+            //     Name = SplitByUpperCase(nameof(TestKeyboardScene)),
+            // };
 
-            var testKeyboardScene = new TestKeyboardScene(contentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestKeyboardScene)),
-            };
-
-            var renderGraphicsScene = new TestRenderAnimatedGraphicsScene(contentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestRenderAnimatedGraphicsScene)),
-            };
+            // var renderGraphicsScene = new TestRenderAnimatedGraphicsScene(contentLoader)
+            // {
+            //     Name = SplitByUpperCase(nameof(TestRenderAnimatedGraphicsScene)),
+            // };
 
             this.sceneManager.AddScene(testRenderTextScene);
-            this.sceneManager.AddScene(testMouseScene);
-            this.sceneManager.AddScene(testKeyboardScene);
-            this.sceneManager.AddScene(renderGraphicsScene);
+            // this.sceneManager.AddScene(testMouseScene);
+            // this.sceneManager.AddScene(testKeyboardScene);
+            // this.sceneManager.AddScene(renderGraphicsScene);
 
             // TODO: Update the static window width and height when the size of the window changes
         }

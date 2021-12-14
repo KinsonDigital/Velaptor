@@ -2,6 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Drawing;
+using Velaptor.Graphics;
+
 namespace Velaptor.Content
 {
     using System.Linq;
@@ -80,6 +83,49 @@ namespace Velaptor.Content
             }
 
             return true;
+        }
+
+        public static float ApplySize(this uint value, float size)
+        {
+            return value + (value * size);
+        }
+
+        // TODO: Code docs
+        public static float ApplySize(this float value, float size) => value + (value * size);
+
+        public static SizeF ApplySize(this SizeF value, float size)
+        {
+            value.Width = value.Width.ApplySize(size);
+            value.Height = value.Height.ApplySize(size);
+
+            return value;
+        }
+
+        public static RectangleF ApplySize(this RectangleF value, float size)
+        {
+            value.X = value.X.ApplySize(size);
+            value.Y = value.Y.ApplySize(size);
+            value.Width = value.Width.ApplySize(size);
+            value.Height = value.Height.ApplySize(size);
+
+            return value;
+        }
+
+        public static GlyphMetrics ApplySize(this GlyphMetrics value, float size)
+        {
+            value.GlyphBounds = value.GlyphBounds.ApplySize(size);
+            value.Ascender = value.Ascender.ApplySize(size);
+            value.Descender = value.Descender.ApplySize(size);
+            value.HoriBearingX = value.HoriBearingX.ApplySize(size);
+            value.HoriBearingY = value.HoriBearingY.ApplySize(size);
+            value.GlyphWidth = value.GlyphWidth.ApplySize(size);
+            value.GlyphHeight = value.GlyphHeight.ApplySize(size);
+            value.XMin = value.XMin.ApplySize(size);
+            value.XMax = value.XMax.ApplySize(size);
+            value.YMin = value.YMin.ApplySize(size);
+            value.YMax = value.YMax.ApplySize(size);
+
+            return value;
         }
     }
 }

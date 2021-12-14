@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Drawing;
+
 namespace Velaptor.Services
 {
     using System;
@@ -113,9 +115,12 @@ namespace Velaptor.Services
             // Render each glyph image to the atlas
             foreach (var glyphImage in glyphImages)
             {
-                var drawLocation = new NETPoint(glyphMetrics[glyphImage.Key].AtlasBounds.X, glyphMetrics[glyphImage.Key].AtlasBounds.Y);
+                var drawLocation = new PointF(glyphMetrics[glyphImage.Key].GlyphBounds.X, glyphMetrics[glyphImage.Key].GlyphBounds.Y);
 
-                atlasImage = this.imageService.Draw(glyphImage.Value, atlasImage, drawLocation);
+                atlasImage = this.imageService.Draw(
+                    glyphImage.Value,
+                    atlasImage,
+                    new NETPoint((int)drawLocation.X, (int)drawLocation.Y));
             }
 
             return (atlasImage, glyphMetrics.Values.ToArray());
@@ -219,7 +224,7 @@ namespace Velaptor.Services
                                    where m.Value.Glyph == glyph.Key
                                    select m.Value).FirstOrDefault();
 
-                glyphMetric.AtlasBounds = new NETRectangle((int)xPos, (int)yPos, (int)glyph.Value.Width, (int)glyph.Value.Height);
+                glyphMetric.GlyphBounds = new NETRectangle((int)xPos, (int)yPos, (int)glyph.Value.Width, (int)glyph.Value.Height);
                 glyphMetrics[glyph.Key] = glyphMetric;
 
                 if (cellX >= columnCount - 1)

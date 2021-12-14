@@ -18,11 +18,11 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestRenderTextScene : SceneBase
     {
-        private const string TextToRender = "If can you see this text, then text rendering is working correctly.";
+        // private const string TextToRender = "If can you see this text, then text rendering is working correctly.";
+        private const string TextToRender = "Kinson\nDigital";
         private readonly IContentLoader contentLoader;
-        private Dictionary<char, int>? glyphWidths;
+        private Dictionary<char, float>? glyphWidths;
         private IFont? font;
-        private int textWidth;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestRenderTextScene"/> class.
@@ -43,8 +43,7 @@ namespace VelaptorTesting.Scenes
             }
 
             this.font = this.contentLoader.Load<IFont>("TimesNewRoman");
-            this.glyphWidths = new Dictionary<char, int>(this.font.Metrics.Select(m => new KeyValuePair<char, int>(m.Glyph, m.GlyphWidth)));
-            this.textWidth = TextToRender.Select(character => this.glyphWidths[character]).Sum();
+            this.glyphWidths = new Dictionary<char, float>(this.font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphWidth)));
 
             base.LoadContent();
         }
@@ -65,7 +64,7 @@ namespace VelaptorTesting.Scenes
         /// <inheritdoc cref="IDrawable.Render"/>
         public override void Render(ISpriteBatch spriteBatch)
         {
-            var xPos = (int)((MainWindow.WindowWidth / 2f) - (this.textWidth / 2f));
+            var xPos = (int)(MainWindow.WindowWidth / 2f);
             var yPos = (int)MainWindow.WindowHeight / 2;
 
             spriteBatch.Render(this.font, TextToRender, xPos, yPos, Color.White);

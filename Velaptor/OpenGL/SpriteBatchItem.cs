@@ -4,26 +4,24 @@
 
 namespace Velaptor.OpenGL
 {
+    using System;
     using System.Drawing;
     using Velaptor.Graphics;
 
     /// <summary>
-    /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.
+    /// A single item in a batch of items that could be rendered to the screen.
     /// </summary>
-
-    internal struct SpriteBatchItem
+    internal struct SpriteBatchItem : IEquatable<SpriteBatchItem>
     {
-        // TODO: Convert the Rectangle data types to use RectangleF instead.  This is to prevent casting
-        // when creating new RectangleF struct instances
         /// <summary>
         /// The source rectangle inside of the texture to render.
         /// </summary>
-        public Rectangle SrcRect;
+        public RectangleF SrcRect;
 
         /// <summary>
         /// The destination rectangular area of where to render the texture on the screen.
         /// </summary>
-        public Rectangle DestRect;
+        public RectangleF DestRect;
 
         /// <summary>
         /// The size of the texture to be rendered.
@@ -48,15 +46,30 @@ namespace Velaptor.OpenGL
         public RenderEffects Effects;
 
         /// <summary>
+        /// The size of the viewport.
+        /// </summary>
+        public SizeF ViewPortSize;
+
+        /// <summary>
         /// The ID of the texture.
         /// </summary>
         public uint TextureId;
 
         /// <summary>
-        /// Gets an empty <see cref="SpriteBatchItem"/>.
+        /// Returns a value indicating if the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
         /// </summary>
-        /// <returns>An empty sprite batch item.</returns>
-        public static SpriteBatchItem Create() => default;
+        /// <param name="left">The left operand compared with the right operand.</param>
+        /// <param name="right">The right operand compared with the left operand.</param>
+        /// <returns>True if both operands are equal.</returns>
+        public static bool operator ==(SpriteBatchItem left, SpriteBatchItem right) => left.Equals(right);
+
+        /// <summary>
+        /// Returns a value indicating if the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
+        /// </summary>
+        /// <param name="left">The left operand compared with the right operand.</param>
+        /// <param name="right">The right operand compared with the left operand.</param>
+        /// <returns>True if both operands are not equal.</returns>
+        public static bool operator !=(SpriteBatchItem left, SpriteBatchItem right) => !(left == right);
 
         /// <summary>
         /// Gets a value indicating whether the current <see cref="SpriteBatchItem"/> is empty.
@@ -69,8 +82,12 @@ namespace Velaptor.OpenGL
             this.Size == 0f &&
             this.Angle == 0f &&
             this.TintColor.IsEmpty &&
-            (this.Effects == 0 || this.Effects == RenderEffects.None);
+            this.Effects is 0 or RenderEffects.None &&
+            this.ViewPortSize.IsEmpty;
 
+        /// <summary>
+        /// Empties the struct by setting all members to default values.
+        /// </summary>
         public void Empty()
         {
             this.TextureId = 0u;
@@ -80,6 +97,33 @@ namespace Velaptor.OpenGL
             this.Angle = 0f;
             this.TintColor = default;
             this.Effects = RenderEffects.None;
+            this.ViewPortSize = default;
         }
+
+        /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
+        public bool Equals(SpriteBatchItem other)
+            => this.SrcRect.Equals(other.SrcRect) &&
+               this.DestRect.Equals(other.DestRect) &&
+               this.Size.Equals(other.Size) &&
+               this.Angle.Equals(other.Angle) &&
+               this.TintColor.Equals(other.TintColor) &&
+               this.Effects == other.Effects &&
+               this.ViewPortSize.Equals(other.ViewPortSize) &&
+               this.TextureId == other.TextureId;
+
+        /// <inheritdoc cref="object.Equals(object?)"/>
+        public override bool Equals(object? obj) => obj is SpriteBatchItem other && Equals(other);
+
+        /// <inheritdoc cref="object.GetHashCode"/>
+        public override int GetHashCode()
+            => HashCode.Combine(
+                this.SrcRect,
+                this.DestRect,
+                this.Size,
+                this.Angle,
+                this.TintColor,
+                (int)this.Effects,
+                this.ViewPortSize,
+                this.TextureId);
     }
 }

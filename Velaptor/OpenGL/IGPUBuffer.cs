@@ -1,4 +1,4 @@
-﻿// <copyright file="IGPUBufferBase.cs" company="KinsonDigital">
+﻿// <copyright file="IGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,7 +10,7 @@ namespace Velaptor.OpenGL
     /// A buffer of data in the GPU.
     /// </summary>
     /// <typeparam name="TData">The type of data in the buffer.</typeparam>
-    internal interface IGPUBuffer<TData, TState> : IDisposable
+    internal interface IGPUBuffer<TData> : IDisposable
         where TData : struct
     {
         /// <summary>
@@ -31,9 +31,5 @@ namespace Velaptor.OpenGL
         ///     of the 'chunk' of <paramref name="data"/> in the array.
         /// </remarks>
         void UpdateData(TData data, uint index);
-
-        void SetState(TState state);
-
-        TState GetState();
     }
 }

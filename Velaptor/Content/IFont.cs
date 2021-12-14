@@ -5,6 +5,7 @@
 namespace Velaptor.Content
 {
     using System.Collections.ObjectModel;
+    using System.Drawing;
     using Velaptor.Graphics;
 
     /// <summary>
@@ -32,6 +33,9 @@ namespace Velaptor.Content
         /// </summary>
         bool HasKerning { get; }
 
+        // TODO: Add code docs
+        float LineSpacing { get; }
+
         /// <summary>
         /// Gets the list of metrics for all of the glyphs supported by the font.
         /// </summary>
@@ -43,5 +47,8 @@ namespace Velaptor.Content
         /// </summary>
         /// <returns>The list of glyph characters that can be rendered.</returns>
         char[] GetAvailableGlyphCharacters();
+
+        // TODO: Add code docs
+        SizeF Measure(string text);
     }
 }

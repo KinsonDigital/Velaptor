@@ -1,17 +1,11 @@
-﻿/*Info:
-This is an example of alpha blending.
+﻿#version 450 core
 
-Src: https://stackoverflow.com/questions/746899/how-to-calculate-an-rgb-colour-by-specifying-an-alpha-blending-amount
-*/
-#version 450 core
-
-// TODO: Refactor in var prefix from 'v_' to 'pass_'
 in vec2 pass_textureCoord;
 in vec4 pass_tintColor;
 
 out vec4 o_OutputColor;
 
-uniform sampler2D texture0;//For regular texture rendering
+uniform sampler2D fontTexture;//For regular texture rendering
 
 /*
     Maps the given value from one range to another.
@@ -30,6 +24,10 @@ float mapValue(float value, float fromStart, float fromStop, float toStart, floa
 /*
     Converts the given color in pixel units to a color with
     NDC(Normalized Device Coordinate) units.
+
+    @param pixelColor The the color in pixel units with values from
+                      0-255 that are to be converted to NDC values from
+                      0-1.
 */
 vec4 toNDCColor(vec4 pixelColor)
 {
@@ -45,5 +43,5 @@ void main ()
 {
     vec4 ndcColor = toNDCColor(pass_tintColor);
 
-	o_OutputColor = texture(texture0, pass_textureCoord) * ndcColor;
+    o_OutputColor = texture(fontTexture, pass_textureCoord) * ndcColor;
 }

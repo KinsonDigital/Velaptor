@@ -37,19 +37,6 @@ namespace Velaptor.Services
         /// </remarks>
         ReadOnlyDictionary<uint, (bool shouldRender, T item)> AllBatchItems { get; }
 
-        /// <summary>
-        /// Gets the total number of batch items that are ready for rendering.
-        /// </summary>
-        uint TotalItemsToRender { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether the entire batch is ready for rendering.
-        /// </summary>
-        /// <returns>True if every batch item is ready.</returns>
-        bool BatchEmpty { get; }
-
-        ReadOnlyCollection<(uint batchIndex, T item)> RenderableItems { get;  }
-
         void Add(T rect);
 
         /// <summary>

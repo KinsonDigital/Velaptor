@@ -5,22 +5,19 @@
 namespace Velaptor.OpenGL
 {
     using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
+    using Observables;
+    using Observables.Core;
     using NETSizeF = System.Drawing.SizeF;
 
     /// <summary>
-    /// Base class for a GPU buffer.
+    /// Base functionality for managing buffer data in the GPU.
     /// </summary>
     /// <typeparam name="TData">The type of data in the GPU buffer.</typeparam>
-    internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData, NETSizeF>
+    public abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         where TData : struct
     {
-        private static readonly Dictionary<uint, bool> BoundVAOList = new ();
-        private static readonly Dictionary<uint, bool> BoundVBOList = new ();
-        private static readonly Dictionary<uint, bool> BoundEBOList = new ();
+        private readonly IDisposable glObservableUnsubscriber;
         private string bufferName = string.Empty;
         private uint vao; // Vertex Array Object
         private uint vbo; // Vertex Buffer Object
@@ -32,7 +29,13 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="GPUBufferBase{TData}"/> class.
         /// </summary>
         /// <param name="gl">The OpenGL function invoker.</param>
-        public GPUBufferBase(IGLInvoker gl) => GL = gl;
+        internal GPUBufferBase(IGLInvoker gl, OpenGLInitObservable glObservable)
+        {
+            GL = gl;
+            ProcessCustomAttributes();
+
+            this.glObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(_ => Init()));
+        }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
@@ -40,42 +43,31 @@ namespace Velaptor.OpenGL
         ~GPUBufferBase() => Dispose();
 
         /// <summary>
-        /// Gets the size of the viewport.
-        /// </summary>
-        protected NETSizeF ViewPortSize { get; private set; }
-
-        /// <summary>
         /// Gets the size of the sprite batch.
         /// </summary>
         protected uint BatchSize { get; private set; } = 100;
-
-        /// <summary>
-        /// Gets the invoker used to invoke OpenGL functions.
-        /// </summary>
-        protected IGLInvoker GL { get; }
 
         /// <summary>
         /// Gets a value indicating whether gets a value indicating if the buffer has been initialized.
         /// </summary>
         protected bool IsInitialized { get; private set; }
 
+        /// <summary>
+        /// Gets the invoker that makes OpenGL calls.
+        /// </summary>
+        private protected IGLInvoker GL { get; }
+
         /// <inheritdoc/>
         public void Init()
         {
-            // TODO: Setup an OpenGLInitObservable in the ctor in the GPUBufferBase class
-            ProcessCustomAttributes();
-
             // Generate the VAO and VBO with only 1 object each
             this.vao = GL.GenVertexArray();
-            BoundVAOList.Add(this.vao, false);
             GL.LabelVertexArray(this.vao, this.bufferName, BindVAO);
 
             this.vbo = GL.GenBuffer();
-            BoundVBOList.Add(this.vbo, false);
             GL.LabelBuffer(this.vbo, this.bufferName, BufferType.VertexBufferObject, BindVBO);
 
             this.ebo = GL.GenBuffer();
-            BoundEBOList.Add(this.ebo, false);
             GL.LabelBuffer(this.ebo, this.bufferName, BufferType.IndexArrayObject, BindEBO);
 
             GL.BeginGroup($"Setup {this.bufferName} Data");
@@ -84,7 +76,6 @@ namespace Velaptor.OpenGL
             IsInitialized = true;
 
             var vertBufferData = GenerateData();
-            var vertData = new ReadOnlySpan<float>(vertBufferData);
 
             GL.BufferData(GLBufferTarget.ArrayBuffer, vertBufferData, GLBufferUsageHint.DynamicDraw);
 
@@ -106,15 +97,16 @@ namespace Velaptor.OpenGL
             GL.EndGroup();
         }
 
+        /// <summary>
+        /// Updates GPU buffer with the given <paramref name="data"/> at the given <paramref name="batchIndex"/>.
+        /// </summary>
+        /// <param name="data">The data to send to the GPU.</param>
+        /// <param name="batchIndex">The index of the batch of data to update.</param>
         public void UpdateData(TData data, uint batchIndex)
         {
             PrepareForUse();
             UpdateVertexData(data, batchIndex);
         }
-
-        public void SetState(NETSizeF viewPortSize) => ViewPortSize = viewPortSize;
-
-        public NETSizeF GetState() => ViewPortSize;
 
         protected abstract void UpdateVertexData(TData data, uint batchIndex);
 
@@ -128,30 +120,17 @@ namespace Velaptor.OpenGL
 
         protected void BindVBO()
         {
-            if (BoundVBOList[this.vbo])
-            {
-                return;
-            }
-
             GL.BindBuffer(GLBufferTarget.ArrayBuffer, this.vbo);
-            BoundVBOList[this.vbo] = true;
         }
 
         protected void UnbindVBO()
         {
             GL.BindBuffer(GLBufferTarget.ArrayBuffer, 0); // Unbind the VBO
-            BoundVBOList[this.vbo] = false;
         }
 
         protected void BindEBO()
         {
-            if (BoundEBOList[this.ebo])
-            {
-                return;
-            }
-
             GL.BindBuffer(GLBufferTarget.ElementArrayBuffer, this.ebo);
-            BoundEBOList[this.ebo] = true;
         }
 
         /// <summary>
@@ -161,30 +140,23 @@ namespace Velaptor.OpenGL
         /// </summary>
         protected void UnbindEBO()
         {
-            if (BoundVAOList[this.vao])
-            {
-                throw new Exception("Cannot unbind the EBO before unbinding the VAO.");
-            }
+            // After implementing cached ID states in GLInvoker, set this back up to get it working again
+            // if (BoundVAOList[this.vao])
+            // {
+            //     throw new Exception("Cannot unbind the EBO before unbinding the VAO.");
+            // }
 
             GL.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
-            BoundEBOList[this.ebo] = false;
         }
 
         protected void BindVAO()
         {
-            if (BoundVAOList[this.vao])
-            {
-                return;
-            }
-
             GL.BindVertexArray(this.vao);
-            BoundVAOList[this.vao] = true;
         }
 
         protected void UnbindVAO()
         {
             GL.BindVertexArray(0); // Unbind the VAO
-            BoundVAOList[this.vao] = false;
         }
 
         public void Dispose()
@@ -194,14 +166,11 @@ namespace Velaptor.OpenGL
                 return;
             }
 
+            this.glObservableUnsubscriber.Dispose();
+
             GL.DeleteVertexArray(this.vao);
-            BoundVAOList.Remove(this.vao);
-
             GL.DeleteBuffer(this.vbo);
-            BoundVBOList.Remove(this.vbo);
-
             GL.DeleteBuffer(this.ebo);
-            BoundEBOList.Remove(this.ebo);
 
             this.isDisposed = true;
 
@@ -216,6 +185,10 @@ namespace Velaptor.OpenGL
             if (currentType == typeof(TextureGPUBuffer))
             {
                 attributes = Attribute.GetCustomAttributes(typeof(TextureGPUBuffer));
+            }
+            else if (currentType == typeof(FontGPUBuffer))
+            {
+                attributes = Attribute.GetCustomAttributes(typeof(FontGPUBuffer));
             }
             else
             {

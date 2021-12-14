@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Runtime.InteropServices;
+
 #pragma warning disable SA1124 // Do not use regions
 #pragma warning disable SA1514 // Element documentation header should be preceded by blank line
 namespace Velaptor.NativeInterop.FreeType
@@ -159,6 +161,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// <inheritdoc/>
         public IntPtr GetFace() => this.facePtr;
 
+        // TODO: Convert this to an extension method
         /// <inheritdoc/>
         public unsafe bool FT_Has_Kerning()
         {
@@ -175,6 +178,16 @@ namespace Velaptor.NativeInterop.FreeType
             return result;
         }
 
+        // TODO: Convert this to an extension method
+        public float GetFontScaledLineSpacing()
+        {
+            var face = Marshal.PtrToStructure<FT_FaceRec>(this.facePtr);
+
+            unsafe
+            {
+                return (face.size->metrics.height.ToInt64() >> 6) / 64f;
+            }
+        }
         #endregion
 
         /// <inheritdoc cref="IDisposable.Dispose"/>

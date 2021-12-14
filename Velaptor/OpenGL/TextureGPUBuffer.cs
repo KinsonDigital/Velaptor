@@ -8,9 +8,11 @@ namespace Velaptor.OpenGL
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
-    using Velaptor.Exceptions;
-    using Velaptor.Graphics;
+    using Exceptions;
+    using Graphics;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables;
+    using System.Drawing;
     using NETRect = System.Drawing.Rectangle;
 
     // TODO: Rename QuadData to TextureQuadData
@@ -29,8 +31,8 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="TextureGPUBuffer"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        public TextureGPUBuffer(IGLInvoker gl)
-            : base(gl)
+        public TextureGPUBuffer(IGLInvoker gl, OpenGLInitObservable glObservable)
+            : base(gl, glObservable)
         {
         }
 
@@ -42,10 +44,10 @@ namespace Velaptor.OpenGL
                 throw new Exception("Buffer not initialized");
             }
 
-            GL.BeginGroup($"Update Texture Quad {batchIndex} Data");
+            this.GL.BeginGroup($"Update Texture Quad {batchIndex} Data");
 
-            int srcRectWidth;
-            int srcRectHeight;
+            float srcRectWidth;
+            float srcRectHeight;
 
             switch (textureQuad.Effects)
             {
@@ -77,7 +79,7 @@ namespace Velaptor.OpenGL
             var alpha = (byte)textureQuad.TintColor.A.MapValue(0f, 255f, 0f, 1f);
 
             // Construct the quad rect to determine the vertex positions sent to the GPU
-            var quadRect = new NETRect(textureQuad.DestRect.X, textureQuad.DestRect.Y, textureQuad.SrcRect.Width, textureQuad.SrcRect.Height);
+            var quadRect = new RectangleF(textureQuad.DestRect.X, textureQuad.DestRect.Y, textureQuad.SrcRect.Width, textureQuad.SrcRect.Height);
 
             // Calculate the scale on the X and Y axis to calculate the size
             var resolvedSize = textureQuad.Size - 1f;
@@ -106,10 +108,10 @@ namespace Velaptor.OpenGL
 
             // Convert the texture quad vertex positions to NDC values
             var quadDataItem = default(TextureQuadData);
-            quadDataItem.Vertex1.VertexPos = topLeft.ToNDC(this.ViewPortSize.Width, this.ViewPortSize.Height);
-            quadDataItem.Vertex2.VertexPos = bottomLeft.ToNDC(this.ViewPortSize.Width, this.ViewPortSize.Height);
-            quadDataItem.Vertex3.VertexPos = topRight.ToNDC(this.ViewPortSize.Width, this.ViewPortSize.Height);
-            quadDataItem.Vertex4.VertexPos = bottomRight.ToNDC(this.ViewPortSize.Width, this.ViewPortSize.Height);
+            quadDataItem.Vertex1.VertexPos = topLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+            quadDataItem.Vertex2.VertexPos = bottomLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+            quadDataItem.Vertex3.VertexPos = topRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+            quadDataItem.Vertex4.VertexPos = bottomRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
 
             var textureWidth = textureQuad.DestRect.Width;
             var textureHeight = textureQuad.DestRect.Height;
@@ -143,11 +145,11 @@ namespace Velaptor.OpenGL
 
             BindVBO();
 
-            GL.BufferSubData(GLBufferTarget.ArrayBuffer, (nint)offset, totalBytes, data);
+            this.GL.BufferSubData(GLBufferTarget.ArrayBuffer, (nint)offset, totalBytes, data);
 
             UnbindVBO();
 
-            GL.EndGroup();
+            this.GL.EndGroup();
         }
 
         protected override void PrepareForUse()
@@ -171,7 +173,7 @@ namespace Velaptor.OpenGL
 
             var result = new List<TextureQuadData>();
 
-            for (var i = 0u; i < this.BatchSize; i++)
+            for (var i = 0u; i < BatchSize; i++)
             {
                 result.AddRange(new TextureQuadData[]
                 {
@@ -204,17 +206,17 @@ namespace Velaptor.OpenGL
             {
                 var vertexPosOffset = 0u;
                 const uint vertexPosSize = 2u * sizeof(float);
-                GL.VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, stride, vertexPosOffset);
-                GL.EnableVertexAttribArray(0);
+                this.GL.VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, stride, vertexPosOffset);
+                this.GL.EnableVertexAttribArray(0);
 
                 var textureCoordOffset = vertexPosOffset + vertexPosSize;
                 const uint textureCoordSize = 2u * sizeof(float);
-                GL.VertexAttribPointer(1, 2, GLVertexAttribPointerType.Float, false, stride, textureCoordOffset);
-                GL.EnableVertexAttribArray(1);
+                this.GL.VertexAttribPointer(1, 2, GLVertexAttribPointerType.Float, false, stride, textureCoordOffset);
+                this.GL.EnableVertexAttribArray(1);
 
                 var tintClrOffset = textureCoordOffset + textureCoordSize;
-                GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, tintClrOffset);
-                GL.EnableVertexAttribArray(2);
+                this.GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, tintClrOffset);
+                this.GL.EnableVertexAttribArray(2);
             }
         }
 
@@ -228,7 +230,7 @@ namespace Velaptor.OpenGL
 
             var result = new List<uint>();
 
-            for (var i = 0u; i < this.BatchSize; i++)
+            for (var i = 0u; i < BatchSize; i++)
             {
                 var maxIndex = result.Count <= 0 ? 0 : result.Max() + 1;
 

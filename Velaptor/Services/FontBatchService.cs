@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureBatchService.cs" company="KinsonDigital">
+﻿// <copyright file="FontBatchService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,13 +7,14 @@ namespace Velaptor.Services
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
-    using Velaptor.OpenGL;
+    using OpenGL;
 
-    // TODO: Code Docs
-    internal class TextureBatchService : IBatchManagerService<SpriteBatchItem>
+    // TODO: This file needs to be updated in Velaptor
+    // Process todo items
+
+    internal class FontBatchService : IBatchManagerService<SpriteBatchItem>
     {
-        private readonly SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)> batchItems = new ();
+        private readonly Dictionary<uint, (bool shouldRender, SpriteBatchItem rect)> batchItems = new();
         private uint currentBatchIndex;
         private uint batchSize;
         private bool firstTimeRender = true;
@@ -28,6 +29,9 @@ namespace Velaptor.Services
             set
             {
                 this.batchSize = value;
+
+                this.batchItems.Clear();
+
                 for (var i = 0u; i < this.batchSize; i++)
                 {
                     this.batchItems.Add(i, (false, default));
@@ -35,22 +39,7 @@ namespace Velaptor.Services
             }
         }
 
-        public ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)> AllBatchItems => new (this.batchItems);
-
-        // public ReadOnlyCollection<(uint batchIndex, SpriteBatchItem item)> RenderableItems
-        // {
-        //     get
-        //     {
-        //         var foundItems = this.batchItems.Where(i => i.Value.shouldRender)
-        //             .Select(i => (i.Key, i.Value.item)).ToArray();
-        //
-        //         return new ReadOnlyCollection<(uint, SpriteBatchItem)>(foundItems);
-        //     }
-        // }
-
-        public uint TotalItemsToRender => (uint)this.batchItems.Count(i => i.Value.shouldRender);
-
-        public bool BatchEmpty => this.batchItems.All(i => i.Value.item.IsEmpty());
+        public ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)> AllBatchItems => new(this.batchItems);
 
         public void Add(SpriteBatchItem rect)
         {
@@ -74,7 +63,7 @@ namespace Velaptor.Services
 
         public void EmptyBatch()
         {
-            for (var i = 0u; i < this.batchItems.Count; i--)
+            for (var i = 0u; i < this.batchItems.Count; i++)
             {
                 if (this.batchItems[i].shouldRender is false)
                 {

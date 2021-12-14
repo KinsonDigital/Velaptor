@@ -19,6 +19,7 @@ namespace Velaptor
     using SixLabors.ImageSharp.PixelFormats;
     using Velaptor.Graphics;
     using NETColor = System.Drawing.Color;
+    using NETRectF = System.Drawing.RectangleF;
 
     /// <summary>
     /// Provides extensions to various things to help make better code.
@@ -339,6 +340,38 @@ namespace Velaptor
         }
 
         /// <summary>
+        /// Registers the specified delegate that allows returning transient instances of
+        /// <typeparamref name="TService" />. The delegate is expected to always return a new instance on
+        /// each call.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the container's
+        /// <see cref="P:SimpleInjector.ContainerOptions.LifestyleSelectionBehavior">LifestyleSelectionBehavior</see> to select
+        /// the exact lifestyle for the specified type. By default this will be
+        /// <see cref="F:SimpleInjector.Lifestyle.Transient">Transient</see>.
+        /// </remarks>
+        /// <typeparam name="TService">The interface or base type that can be used to retrieve instances.</typeparam>
+        /// <param name="container">The container that the registration applies to.</param>
+        /// <param name="instanceCreator">The delegate that allows building or creating new instances.</param>
+        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <exception cref="T:System.InvalidOperationException">
+        /// Thrown when this container instance is locked and can not be altered, or when the
+        /// <typeparamref name="TService" /> has already been registered.</exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// Thrown when <paramref name="instanceCreator" /> is a null reference.</exception>
+        [ExcludeFromCodeCoverage]
+        internal static void Register<TService>(this Container container, Func<TService> instanceCreator, bool suppressDisposal = false)
+            where TService : class
+        {
+            container.Register(instanceCreator);
+
+            if (suppressDisposal)
+            {
+                SuppressDisposableTransientWarning<TService>(container);
+            }
+        }
+
+        /// <summary>
         ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
         ///     a <typeparamref name="TService"/> is requested (transient).
         /// </summary>
@@ -427,7 +460,6 @@ namespace Velaptor
 
         internal static float[] ToVertexArray(this Vector3 vector) => new[] { vector.X, vector.Y, vector.Z };
 
-
         internal static float[] ToVertexArray(this NETColor clr) => new float[] { clr.R, clr.G, clr.B, clr.A };
 
         internal static float[] ToVertexArray(this TextureVertexData vertexData)
@@ -466,6 +498,26 @@ namespace Velaptor
             }
 
             return result.ToArray();
+        }
+
+        public static Vector2 GetPosition(this NETRectF rect) => new (rect.X, rect.Y);
+
+        /// <summary>
+        /// Removes a set of characters from the end of this string.
+        /// </summary>
+        /// <param name="items">The string items to trim.</param>
+        /// <returns>
+        /// The string that remains for each item after all white-space characters are removed from the end of each string.
+        /// If no characters can be trimmed from an item, the method leaves the item unchanged.
+        /// </returns>
+        public static string[] TrimAllEnds(this string[] items)
+        {
+            for (var i = 0; i < items.Length; i++)
+            {
+                items[i] = items[i].TrimEnd();
+            }
+
+            return items;
         }
     }
 }

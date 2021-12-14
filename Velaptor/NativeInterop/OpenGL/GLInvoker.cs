@@ -22,6 +22,14 @@ namespace Velaptor.NativeInterop.OpenGL
     [ExcludeFromCodeCoverage]
     internal class GLInvoker : IGLInvoker
     {
+        // TODO: Add ability to cache the bound ID states.  This is to prevent GL bind calls to bind ID's that
+        // are currently already bound which can improve performance.  Make sure to add and remove the id to the lists
+        // when generating vertex arrays and buffers
+
+        // private static readonly Dictionary<uint, bool> BoundVAOList = new ();
+        // private static readonly Dictionary<uint, bool> BoundVBOList = new ();
+        // private static readonly Dictionary<uint, bool> BoundEBOList = new ();
+
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
         private static Queue<string> glCallStack = new ();
@@ -415,6 +423,13 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
+        public void Uniform1(int location, int value)
+        {
+            AddToGLCallStack($"{nameof(Uniform1)} - Location({location}) - Value({value})");
+            this.gl.Uniform1(location, value);
+        }
+
+        /// <inheritdoc/>
         public uint GenTexture()
         {
             AddToGLCallStack(nameof(GenTexture));
@@ -428,6 +443,7 @@ namespace Velaptor.NativeInterop.OpenGL
             this.gl.DeleteTexture(textures);
         }
 
+        // TODO: Move to method extensions
         public void BeginGroup(string name)
         {
             // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
@@ -435,6 +451,7 @@ namespace Velaptor.NativeInterop.OpenGL
             this.gl.PushDebugGroup(DebugSource.DebugSourceApplication, 100, (uint)name.Length, name);
         }
 
+        // TODO: Move to method extensions
         public void EndGroup()
         {
             // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
@@ -442,6 +459,20 @@ namespace Velaptor.NativeInterop.OpenGL
             this.gl.PopDebugGroup();
         }
 
+        // TODO: Move to method extensions
+        public void LabelShader(uint shaderId, string label)
+        {
+            AddToGLCallStack(nameof(LabelShader));
+            gl.ObjectLabel(ObjectIdentifier.Shader, shaderId, (uint) label.Length, label);
+        }
+
+        public void LabelShaderProgram(uint shaderId, string label)
+        {
+            AddToGLCallStack(nameof(LabelShaderProgram));
+            this.gl.ObjectLabel(ObjectIdentifier.Program, shaderId, (uint) label.Length, label);
+        }
+
+        // TODO: Move to method extensions
         public void LabelVertexArray(uint vertexArrayId, string label, Action bindVertexArrayObj)
         {
             // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
@@ -456,6 +487,7 @@ namespace Velaptor.NativeInterop.OpenGL
             this.gl.ObjectLabel(ObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
         }
 
+        // TODO: Move to method extensions
         public void LabelBuffer(uint bufferId, string label, BufferType bufferType, Action bindBufferObj)
         {
             // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
@@ -477,6 +509,7 @@ namespace Velaptor.NativeInterop.OpenGL
             this.gl.ObjectLabel(ObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
         }
 
+        // TODO: Move to method extensions
         /// <inheritdoc/>
         public void LabelTexture(uint textureId, string label)
         {

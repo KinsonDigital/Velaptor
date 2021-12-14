@@ -2,7 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
+using Velaptor.NativeInterop.FreeType;
+using Velaptor.NativeInterop.OpenGL;
+using Velaptor.Observables;
+using Velaptor.Services;
 
 namespace Velaptor.Factories
 {
@@ -25,13 +28,31 @@ namespace Velaptor.Factories
         /// <returns>A Velaptor implemented sprite batch.</returns>
         public static ISpriteBatch CreateSpriteBatch(uint renderSurfaceWidth, uint renderSurfaceHeight)
         {
-            // TODO: Make this static class field
-            spriteBatch = IoC.Container.GetInstance<ISpriteBatch>();
-
-            if (spriteBatch is null)
+            if (spriteBatch is not null)
             {
-                throw new NullReferenceException("There were issues creating the sprite batch.");
+                return spriteBatch;
             }
+
+            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
+            var textureShader = ShaderFactory.CreateTextureShader();
+            var fontShader = ShaderFactory.CreateFontShader();
+            var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
+            var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
+            var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
+
+            spriteBatch = new SpriteBatch(
+                glInvoker,
+                glInvokerExtensions,
+                freeTypeInvoker,
+                textureShader,
+                fontShader,
+                textureBuffer,
+                fontBuffer,
+                new TextureBatchService(),
+                new FontBatchService(),
+                glInitObservable);
 
             spriteBatch.RenderSurfaceWidth = renderSurfaceWidth;
             spriteBatch.RenderSurfaceHeight = renderSurfaceHeight;

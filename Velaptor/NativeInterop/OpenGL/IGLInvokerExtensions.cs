@@ -7,6 +7,9 @@ namespace Velaptor.NativeInterop.OpenGL
     using System.Drawing;
     using System.Numerics;
 
+    // TODO: Convert these into literal extension methods instead
+    // This will prevent having to instantiate the implementation and injecting
+
     /// <summary>
     /// Provides OpenGL extensions/helper methods to improve OpenGL related functionality.
     /// </summary>

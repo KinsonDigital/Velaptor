@@ -28,7 +28,7 @@ namespace VelaptorTesting.Scenes
         private Label? mouseMiddleButtonLabel;
         private Label? mouseWheelValueLabel;
         private MouseState currentMouseState;
-        private Dictionary<char, int>? glyphHeights;
+        private Dictionary<char, float>? glyphHeights;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestMouseScene"/> class.
@@ -55,7 +55,7 @@ namespace VelaptorTesting.Scenes
             this.mouseWheelValueLabel = new Label(ContentLoader) { Color = Color.White };
 
             var font = ContentLoader.Load<IFont>("TimesNewRoman");
-            this.glyphHeights = new Dictionary<char, int>(font.Metrics.Select(m => new KeyValuePair<char, int>(m.Glyph, m.GlyphHeight)));
+            this.glyphHeights = new Dictionary<char, float>(font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphHeight)));
 
             this.mousePosLabel.LoadContent();
             this.mouseLeftButtonLabel.LoadContent();
@@ -157,7 +157,7 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         /// <param name="text">The text to calculate the width from.</param>
         /// <returns>The width of all the text.</returns>
-        private int CalculateHeight(string text)
-            => text.Select(character => this.glyphHeights[character]).Prepend(int.MinValue).Max();
+        private float CalculateHeight(string text)
+            => text.Select(character => this.glyphHeights[character]).Prepend(float.MinValue).Max();
     }
 }

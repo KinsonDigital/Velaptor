@@ -140,8 +140,6 @@ namespace Velaptor.NativeInterop.FreeType
 
         #endregion
 
-        #region Helper Methods
-
         /// <summary>
         /// Returns the face pointer that was created using the <see cref="FT_New_Face(IntPtr, string, int)"/> call.
         /// </summary>
@@ -154,6 +152,6 @@ namespace Velaptor.NativeInterop.FreeType
         /// <returns><see langword="true"/> if the face uses kerning.</returns>
         unsafe bool FT_Has_Kerning();
 
-        #endregion
+        float GetFontScaledLineSpacing();
     }
 }

@@ -48,12 +48,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="OpenGL\Shaders\texture-shader.frag">
+    <EmbeddedResource Include="OpenGL\Shaders\texture.frag">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="OpenGL\Shaders\texture-shader.vert">
+    <EmbeddedResource Include="OpenGL\Shaders\texture.vert">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Remove="OpenGL\Shaders\font.frag" />
+    <EmbeddedResource Include="OpenGL\Shaders\font.frag" />
+    <None Remove="OpenGL\Shaders\font.vert" />
+    <EmbeddedResource Include="OpenGL\Shaders\font.vert" />
   </ItemGroup>
 
   <ItemGroup>

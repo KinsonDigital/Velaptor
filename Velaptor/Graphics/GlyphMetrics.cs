@@ -4,12 +4,14 @@
 
 namespace Velaptor.Graphics
 {
+    using System;
+    using System.Collections.Generic;
     using System.Drawing;
 
     /// <summary>
     /// Holds all of the various metrics of a glyph for rendering purposes.
     /// </summary>
-    public struct GlyphMetrics
+    public struct GlyphMetrics : IEqualityComparer<GlyphMetrics>
     {
         /// <summary>
         /// Gets or sets the glyph character.
@@ -20,7 +22,7 @@ namespace Velaptor.Graphics
         /// Gets or sets the rectangular bounds of where in a font texture
         /// atlas the given <see cref="Glyph"/> resides.
         /// </summary>
-        public Rectangle AtlasBounds { get; set; }
+        public RectangleF GlyphBounds { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical distance from the horizontal baseline to the highest 'character'
@@ -32,7 +34,7 @@ namespace Velaptor.Graphics
         ///     (without accents), for others it is the ascent of the highest accented character, and finally,
         ///     other formats define it as being equal to Y max value of the global bounding box.
         /// </remarks>
-        public int Ascender { get; set; }
+        public float Ascender { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical distance from the horizontal baseline to the lowest ‘character’ coordinate in a font face.
@@ -43,55 +45,55 @@ namespace Velaptor.Graphics
         ///     the ascent of the lowest accented character, and finally, other formats define it as being equal
         ///     to Y min value of the global bounding box. This field is negative for values below the baseline.
         /// </remarks>
-        public int Descender { get; set; }
+        public float Descender { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal distance from the current cursor position to
         /// the leftmost border of the glyph image's bounding box.
         /// </summary>
-        public int HoriBearingX { get; set; }
+        public float HoriBearingX { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical distance from the current cursor position
         /// (on the baseline) to the topmost border of the glyph image's bounding box.
         /// </summary>
-        public int HoriBearingY { get; set; }
+        public float HoriBearingY { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal distance to increment the pen position when the glyph
         /// is drawn as part of a string of text.
         /// </summary>
-        public int HorizontalAdvance { get; set; }
+        public float HorizontalAdvance { get; set; }
 
         /// <summary>
         /// Gets or sets the glyph's width.
         /// </summary>
-        public int GlyphWidth { get; set; }
+        public float GlyphWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the glyph's height.
         /// </summary>
-        public int GlyphHeight { get; set; }
+        public float GlyphHeight { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal minimum (left-most).
         /// </summary>
-        public int XMin { get; set; }
+        public float XMin { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal maximum (right-most).
         /// </summary>
-        public int XMax { get; set; }
+        public float XMax { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical minimum (bottom-most).
         /// </summary>
-        public int YMin { get; set; }
+        public float YMin { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical maximum (top-most).
         /// </summary>
-        public int YMax { get; set; }
+        public float YMax { get; set; }
 
         /// <summary>
         /// Gets or sets the glyph index.
@@ -102,6 +104,58 @@ namespace Velaptor.Graphics
         public uint CharIndex { get; set; }
 
         /// <inheritdoc/>
-        public override string ToString() => $"Name: {Glyph} | Bounds: {AtlasBounds}";
+        public override string ToString() => $"Name: {Glyph} | Bounds: {GlyphBounds}";
+
+        // TODO: Code docs
+        public override bool Equals(object obj)
+        {
+            if (obj is not GlyphMetrics metric)
+            {
+                return false;
+            }
+
+            return Equals(metric, this);
+        }
+
+        public bool Equals(GlyphMetrics x, GlyphMetrics y)
+        {
+            return x.Glyph == y.Glyph &&
+                   x.GlyphBounds == y.GlyphBounds &&//
+                   x.Ascender == y.Ascender &&//
+                   x.Descender == y.Descender &&//
+                   x.HoriBearingX == y.HoriBearingX &&
+                   x.HoriBearingY == y.HoriBearingY &&//
+                   x.HorizontalAdvance == y.HorizontalAdvance &&
+                   x.GlyphWidth == y.GlyphWidth &&//
+                   x.GlyphHeight == y.GlyphHeight &&//
+                   x.XMin == y.XMin &&//
+                   x.XMax == y.XMax &&//
+                   x.YMin == y.YMin &&//
+                   x.YMax == y.YMax &&//
+                   x.CharIndex == y.CharIndex;
+        }
+
+        public int GetHashCode(GlyphMetrics obj)
+        {
+            return HashCode.Combine(
+                Glyph,
+                GlyphBounds,
+                Ascender,
+                Descender,
+                HoriBearingX,
+                HoriBearingY,
+                HorizontalAdvance,
+                HashCode.Combine(GlyphWidth, GlyphHeight, XMin, XMax, YMin, YMax, CharIndex));
+        }
+
+        public static bool operator==(GlyphMetrics a, GlyphMetrics b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(GlyphMetrics a, GlyphMetrics b)
+        {
+            return !a.Equals(b);
+        }
     }
 }

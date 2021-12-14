@@ -25,8 +25,8 @@ namespace Velaptor.OpenGL.Services
             var resources = assembly.GetManifestResourceNames();
 
             var shaderSrcResource = (from r in resources
-                                     where r.EndsWith(name, StringComparison.Ordinal)
-                                     select r).SingleOrDefault();
+                                          where r.EndsWith(name.ToLower(), StringComparison.Ordinal)
+                                          select r).SingleOrDefault();
 
             if (resources is null || resources.Length <= 0 || string.IsNullOrEmpty(shaderSrcResource))
             {

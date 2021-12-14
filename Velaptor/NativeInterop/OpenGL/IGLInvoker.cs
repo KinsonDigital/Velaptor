@@ -467,6 +467,9 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="array">Specifies the name of the vertex array to bind.</param>
         void BindVertexArray(uint array);
 
+        // TODO: Add code docs
+        void Uniform1(int location, int value);
+
         /// <summary>
         /// [requires: v1.1] Generate texture names.
         /// </summary>
@@ -482,6 +485,10 @@ namespace Velaptor.NativeInterop.OpenGL
         void BeginGroup(string name);
 
         void EndGroup();
+
+        void LabelShader(uint shaderId, string label);
+
+        void LabelShaderProgram(uint shaderId, string label);
 
         void LabelVertexArray(uint vertexArrayId, string label, Action bindVertexArrayObj);
 

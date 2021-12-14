@@ -9,12 +9,10 @@ using System.Runtime.CompilerServices;
 namespace Velaptor
 {
     using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
     using System.IO.Abstractions;
     using SimpleInjector;
     using Velaptor.Content;
     using Velaptor.Factories;
-    using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
@@ -89,11 +87,11 @@ namespace Velaptor
 
             IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
 
-            IoCContainer.Register<IGPUBuffer<SpriteBatchItem, SizeF>, TextureGPUBuffer>(Lifestyle.Singleton);
+            IoCContainer.Register(GPUBufferFactory.CreateTextureGPUBuffer, true);
+            IoCContainer.Register(GPUBufferFactory.CreateFontGPUBuffer, true);
 
-            IoCContainer.Register<IShaderProgram, ShaderProgram>(Lifestyle.Singleton);
-
-            IoCContainer.Register<ISpriteBatch, SpriteBatch>(Lifestyle.Singleton);
+            IoCContainer.Register(ShaderFactory.CreateTextureShader, true);
+            IoCContainer.Register(ShaderFactory.CreateFontShader, true);
 
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
@@ -114,8 +112,6 @@ namespace Velaptor
 
             IoCContainer.Register<ITaskService, TaskService>();
             IoCContainer.SuppressDisposableTransientWarning<ITaskService>();
-
-            IoCContainer.Register<IBatchManagerService<SpriteBatchItem>, TextureBatchService>(Lifestyle.Singleton);
         }
 
         /// <summary>

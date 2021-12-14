@@ -5,7 +5,6 @@
 namespace VelaptorTesting.Scenes
 {
     using System.Drawing;
-    using System.Text;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Input;

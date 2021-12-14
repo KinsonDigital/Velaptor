@@ -17,8 +17,8 @@ namespace Velaptor.UI
     public sealed class Label : ControlBase
     {
         private readonly IContentLoader? contentLoader;
-        private readonly Dictionary<char, int> glyphHeights = new ();
-        private readonly Dictionary<char, int> glyphWidths = new ();
+        private readonly Dictionary<char, float> glyphHeights = new ();
+        private readonly Dictionary<char, float> glyphWidths = new ();
         private IFont? font;
         private string? labelText = string.Empty;
 
@@ -146,7 +146,7 @@ namespace Velaptor.UI
                 return;
             }
 
-            var widths = this.font.Metrics.Select(m => new KeyValuePair<char, int>(m.Glyph, m.GlyphWidth));
+            var widths = this.font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphWidth));
 
             foreach (var (glyph, width) in widths)
             {
@@ -156,7 +156,7 @@ namespace Velaptor.UI
                 }
             }
 
-            var heights = this.font.Metrics.Select(m => new KeyValuePair<char, int>(m.Glyph, m.GlyphHeight));
+            var heights = this.font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphHeight));
 
             foreach (var (glyph, height) in heights)
             {

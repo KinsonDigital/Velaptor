@@ -19,7 +19,7 @@ namespace VelaptorTesting
 
         public static void Main()
         {
-            window = WindowFactory.CreateWindow(1020, 800);
+            window = WindowFactory.CreateWindow(1000, 600);
             gameWindow = new MainWindow(window);
 
             // Run the game synchronously
