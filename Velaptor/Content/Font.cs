@@ -2,19 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using FreeTypeSharp.Native;
-using Velaptor.NativeInterop.FreeType;
-
 namespace Velaptor.Content
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
+    using System.Drawing;
+    using System.Linq;
+    using FreeTypeSharp.Native;
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
+    using Velaptor.NativeInterop.FreeType;
 
     /// <summary>
     /// Represents a font with a particular size that
@@ -92,14 +90,13 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public SizeF Measure(string text)
         {
-            var foundGlyphs = new List<GlyphMetrics>();
-
-            foreach (var character in text)
+            if (string.IsNullOrEmpty(text))
             {
-                var foundGlyph = this.metrics.FirstOrDefault(g => g.Glyph == character);
-
-                foundGlyphs.Add(foundGlyph);
+                return SizeF.Empty;
             }
+
+            var foundGlyphs = text.Select(character
+                => this.metrics.FirstOrDefault(g => g.Glyph == character)).ToList();
 
             // Total all of the widths of the characters in the text
             var width = 0f;
@@ -115,7 +112,7 @@ namespace Velaptor.Content
                 if (HasKerning && leftGlyphIndex != 0 && currentGlyph.CharIndex != 0)
                 {
                     // TODO: Check the perf for curiosity reasons
-                    FT_Vector delta = this.freeTypeInvoker.FT_Get_Kerning(
+                    var delta = this.freeTypeInvoker.FT_Get_Kerning(
                         facePtr,
                         leftGlyphIndex,
                         currentGlyph.CharIndex,
@@ -130,10 +127,8 @@ namespace Velaptor.Content
             }
 
             var maxHeight = foundGlyphs.Max(i => i.GlyphHeight);
-            var maxDecent = foundGlyphs.Max(i => i.GlyphHeight - i.HoriBearingY);
-            var height = maxHeight + maxDecent;
 
-            return new SizeF(width, height);
+            return new SizeF(width, maxHeight);
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>

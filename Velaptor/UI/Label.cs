@@ -17,10 +17,8 @@ namespace Velaptor.UI
     public sealed class Label : ControlBase
     {
         private readonly IContentLoader? contentLoader;
-        private readonly Dictionary<char, float> glyphHeights = new ();
-        private readonly Dictionary<char, float> glyphWidths = new ();
         private IFont? font;
-        private string? labelText = string.Empty;
+        private string labelText = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Label"/> class.
@@ -33,15 +31,37 @@ namespace Velaptor.UI
         /// </summary>
         public string Text
         {
-            get => this.labelText ?? string.Empty;
+            get => this.labelText;
             set
             {
                 this.labelText = value;
 
-                LoadGlyphSizes();
-                Width = CalculateWidth(this.labelText);
-                Height = CalculateHeight(this.labelText);
+                UpdateLabelSize();
             }
+        }
+
+        public override int Left
+        {
+            get => (int)(Position.X - (Width / 2f));
+            set => Position = new Point((int)(value + (Width / 2f)), Position.Y);
+        }
+
+        public override int Right
+        {
+            get => (int)(Position.X - (Width / 2f));
+            set => Position = new Point((int)(value - (Width / 2f)), Position.Y);
+        }
+
+        public override int Top
+        {
+            get => (int)(Position.Y - (Height / 2f));
+            set => Position = new Point(Position.X, (int)(value + (Height / 2f)));
+        }
+
+        public override int Bottom
+        {
+            get => (int)(Position.Y - (Height / 2f));
+            set => Position = new Point(Position.X, (int)(value - (Height / 2f)));
         }
 
         /// <summary>
@@ -67,10 +87,7 @@ namespace Velaptor.UI
 
             this.font = this.contentLoader?.Load<IFont>("TimesNewRoman");
 
-            LoadGlyphSizes();
-
-            Width = CalculateWidth(this.labelText);
-            Height = CalculateHeight(this.labelText);
+            UpdateLabelSize();
 
             base.LoadContent();
         }
@@ -84,8 +101,6 @@ namespace Velaptor.UI
             }
 
             this.font?.Dispose();
-            this.glyphWidths.Clear();
-            this.glyphHeights.Clear();
 
             base.UnloadContent();
         }
@@ -106,8 +121,7 @@ namespace Velaptor.UI
 
             if (this.font is not null)
             {
-                var posY = Position.Y + (int)Height;
-                spriteBatch.Render(this.font, Text, Position.X, posY, Color);
+                spriteBatch.Render(this.font, Text, Position.X, Position.Y, Color);
             }
 
             base.Render(spriteBatch);
@@ -134,57 +148,14 @@ namespace Velaptor.UI
         }
 
         /// <summary>
-        /// Loads the glyph sizes based on the current glyphs in the label text.
+        /// Updates the width and height of the label by measuring the size of the text.
         /// </summary>
-        private void LoadGlyphSizes()
+        private void UpdateLabelSize()
         {
-            this.glyphWidths.Clear();
-            this.glyphHeights.Clear();
+            var textSize = this.font?.Measure(this.labelText);
 
-            if (this.font is null)
-            {
-                return;
-            }
-
-            var widths = this.font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphWidth));
-
-            foreach (var (glyph, width) in widths)
-            {
-                if (this.glyphWidths.ContainsKey(glyph) is false)
-                {
-                    this.glyphWidths.Add(glyph, width);
-                }
-            }
-
-            var heights = this.font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphHeight));
-
-            foreach (var (glyph, height) in heights)
-            {
-                if (this.glyphHeights.ContainsKey(glyph) is false)
-                {
-                    this.glyphHeights.Add(glyph, height);
-                }
-            }
+            Width = (uint)(textSize?.Width ?? 0u);
+            Height = (uint)(textSize?.Height ?? 0u);
         }
-
-        /// <summary>
-        /// Calculates the width of the given <paramref name="text"/>.
-        /// </summary>
-        /// <param name="text">The text to measure the width from.</param>
-        /// <returns>The width of the text.</returns>
-        private uint CalculateWidth(string? text)
-            => string.IsNullOrEmpty(text) || this.glyphWidths.Count <= 0u
-                ? 0u
-                : (uint)text.Select(character => this.glyphWidths[character]).Sum();
-
-        /// <summary>
-        /// Calculates the height of the given <paramref name="text"/>.
-        /// </summary>
-        /// <param name="text">The text to measure the height from.</param>
-        /// <returns>The height of the text.</returns>
-        private uint CalculateHeight(string? text)
-            => string.IsNullOrEmpty(text) || this.glyphHeights.Count <= 0u
-                ? 0u
-                : (uint)text.Select(character => this.glyphHeights[character]).Prepend(int.MinValue).Max();
     }
 }

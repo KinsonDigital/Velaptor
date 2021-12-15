@@ -35,7 +35,10 @@ namespace Velaptor.UI
             {
                 base.Position = value;
 
-                CalculateLabelPosition();
+                if (this.label is not null)
+                {
+                    this.label.Position = Position;
+                }
             }
         }
 
@@ -83,7 +86,7 @@ namespace Velaptor.UI
             this.label.LoadContent();
             this.label.Text = this.cachedText;
 
-            CalculateLabelPosition();
+            this.label.Position = Position;
 
             base.LoadContent();
         }
@@ -109,10 +112,7 @@ namespace Velaptor.UI
 
             if (this.texture is not null)
             {
-                var posX = Position.X + ((int)Width / 2);
-                var posY = Position.Y + ((int)Height / 2);
-
-                spriteBatch.Render(this.texture, posX, posY, TintColor);
+                spriteBatch.Render(this.texture, Position.X, Position.Y, TintColor);
 
                 this.label?.Render(spriteBatch);
             }
@@ -140,25 +140,6 @@ namespace Velaptor.UI
             }
 
             base.Dispose(disposing);
-        }
-
-        /// <summary>
-        /// Calculates the position of the label on the button.
-        /// </summary>
-        private void CalculateLabelPosition()
-        {
-            if (this.label is null)
-            {
-                return;
-            }
-
-            /* Calculate the position of the label to be centered
-             * horizontally and vertically over the face of the button.
-            */
-            var posX = (int)(Position.X + ((Width / 2f) - (this.label.Width / 2f)));
-            var posY = (int)(Position.Y + ((Height / 2f) - (this.label.Height / 2f)));
-
-            this.label.Position = new Point(posX, posY);
         }
     }
 }

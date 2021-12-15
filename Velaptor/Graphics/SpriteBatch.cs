@@ -11,7 +11,6 @@ namespace Velaptor.Graphics
     using System.Linq;
     using System.Numerics;
     using FreeTypeSharp.Native;
-    using Silk.NET.Maths;
     using Velaptor.Content;
     using Velaptor.Exceptions;
     using Velaptor.NativeInterop.FreeType;
@@ -182,190 +181,6 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y) => Render(font, text, x, y, 1f, 0f, Color.White);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, Vector2 position)
-            => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y, float size, float angle)
-            => Render(font, text, x, y, size, angle, Color.White);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, Vector2 position, float size, float angle)
-            => Render(font, text, (int)position.X, (int)position.Y, size, angle, Color.White);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y, Color color)
-            => Render(font, text, x, y, 1f, 0f, color);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, Vector2 position, Color color)
-            => Render(font, text, (int)position.X, (int)position.Y, 0f, 0f, color);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y, float angle, Color color)
-            => Render(font, text, x, y, 1f, angle, color);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, Vector2 position, float angle, Color color)
-            => Render(font, text, (int)position.X, (int)position.Y, 1f, angle, color);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
-        {
-            size = size < 0f ? 0f : size;
-
-            if (!this.hasBegun)
-            {
-                throw new Exception($"The '{nameof(BeginBatch)}()' method must be invoked first before the '{nameof(Render)}()' method.");
-            }
-
-            var originalX = (float)x;
-            var originalY = (float)y;
-            var normalizedSize = size - 1f;
-            var leftGlyphIndex = 0u;
-            var facePtr = this.freeTypeInvoker.GetFace();
-
-            var characterY = (float)y;
-
-            var lines = text.Split('\n');
-
-            lines = lines.TrimAllEnds();
-
-            var isMultiLine = lines.Length > 1;
-            var lineSizes = lines.Select(l => font.Measure(l)).ToArray();
-            lineSizes = lineSizes.Select(l => l.ApplySize(normalizedSize)).ToArray();
-
-            var lineSpacing = font.LineSpacing.ApplySize(normalizedSize);
-
-            var textSize = new SizeF
-            {
-                Width = lineSizes.Max(l => l.Width),
-                Height = lineSizes.Sum(l => l.Height),
-            };
-
-            var textHalfWidth = textSize.Width / 2f;
-            var textHalfHeight = textSize.Height / 2f;
-
-            var atlasWidth = font.FontTextureAtlas.Width.ApplySize(normalizedSize);
-            var atlasHeight = font.FontTextureAtlas.Height.ApplySize(normalizedSize);
-
-            void ProcessText(Vector2 textPos, GlyphMetrics[] charMetrics)
-            {
-                for (var i = 0; i < charMetrics.Length; i++)
-                {
-                    var currentCharMetric = charMetrics[i].ApplySize(normalizedSize);
-
-                    if (font.HasKerning && leftGlyphIndex != 0 && currentCharMetric.CharIndex != 0)
-                    {
-                        // TODO: Check the perf for curiosity reasons
-                        var delta = this.freeTypeInvoker.FT_Get_Kerning(
-                            facePtr,
-                            leftGlyphIndex,
-                            currentCharMetric.CharIndex,
-                            (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
-
-                        var kerning = (float)(delta.x.ToInt32() >> 6);
-
-                        textPos.X += (int)kerning.ApplySize(normalizedSize);
-                    }
-
-                    // Create the source rect and take the size into account
-                    var srcRect = currentCharMetric.GlyphBounds;
-                    srcRect.Width = srcRect.Width <= 0 ? 1 : srcRect.Width;
-                    srcRect.Height = srcRect.Height <= 0 ? 1 : srcRect.Height;
-
-                    var glyphHalfWidth = currentCharMetric.GlyphWidth / 2f;
-                    var glyphHalfHeight = currentCharMetric.GlyphHeight / 2f;
-
-                    // Calculate the height offset
-                    var heightOffset = currentCharMetric.GlyphHeight - currentCharMetric.HoriBearingY;
-
-                    // Adjust for characters that have a negative horizontal bearing Y
-                    // For example, the '_' character
-                    if (currentCharMetric.HoriBearingY < 0)
-                    {
-                        heightOffset += currentCharMetric.HoriBearingY;
-                    }
-
-                    // Create the destination rect
-                    RectangleF destRect = default;
-                    destRect.X = textPos.X + glyphHalfWidth;
-                    destRect.Y = textPos.Y - glyphHalfHeight + heightOffset;
-                    destRect.Width = atlasWidth;
-                    destRect.Height = atlasHeight;
-
-                    var rotateOrigin = new Vector2(originalX, originalY);
-
-                    var newPosition = destRect.GetPosition().RotateAround(rotateOrigin, angle);
-
-                    destRect.X = newPosition.X;
-                    destRect.Y = newPosition.Y;
-
-                    // Only render characters that are not a space (32 char code)
-                    if (currentCharMetric.Glyph != ' ')
-                    {
-                        var itemToAdd = default(SpriteBatchItem);
-
-                        itemToAdd.SrcRect = srcRect;
-                        itemToAdd.DestRect = destRect;
-                        itemToAdd.Size = size;
-                        itemToAdd.Angle = angle;
-                        itemToAdd.TintColor = color;
-                        itemToAdd.Effects = RenderEffects.None;
-                        itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
-                        itemToAdd.TextureId = font.FontTextureAtlas.Id;
-
-                        this.fontBatchService.Add(itemToAdd);
-                    }
-
-                    // Horizontally advance to the next glyph
-                    // Get the difference between the old glyph width
-                    // and the glyph width with the size applied
-                    textPos.X += currentCharMetric.HorizontalAdvance.ApplySize(normalizedSize);
-
-                    leftGlyphIndex = currentCharMetric.CharIndex;
-                }
-            }
-
-            for (var i = 0; i < lines.Length; i++)
-            {
-                var line = lines[i];
-                var currentLineSize = lineSizes[i];
-
-                var charGlyphs = line.Select(character
-                    => (from m in font.Metrics
-                        where m.Glyph == character
-                        select m).FirstOrDefault()).ToList();
-
-                var maxDecent = Math.Abs(charGlyphs.Max(g => g.Descender).ApplySize(normalizedSize));
-
-                var firstCharBearingX = charGlyphs[0].HoriBearingX.ApplySize(normalizedSize);
-
-                var characterX = (originalX - textHalfWidth) + firstCharBearingX;
-
-                if (i == 0)
-                {
-                    var textTop = originalY + (currentLineSize.Height / 2f) + (maxDecent / 2f);
-
-                    characterY = isMultiLine
-                        ? textTop - textHalfHeight
-                        : originalY + textHalfHeight;
-                }
-                else
-                {
-                    characterY += lineSpacing;
-                }
-
-                var textPos = new Vector2(characterX, characterY);
-
-                ProcessText(textPos, charGlyphs.ToArray());
-            }
-        }
-
-        /// <inheritdoc/>
         /// <exception cref="InvalidRenderEffectsException">
         ///     Thrown if the given <paramref name="effects"/> is invalid.
         /// </exception>
@@ -408,9 +223,127 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y)
+            => Render(font, text, x, y, 1f, 0f, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, Vector2 position)
+            => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, float size, float angle)
+            => Render(font, text, x, y, size, angle, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, Vector2 position, float size, float angle)
+            => Render(font, text, (int)position.X, (int)position.Y, size, angle, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, Color color)
+            => Render(font, text, x, y, 1f, 0f, color);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, Vector2 position, Color color)
+            => Render(font, text, (int)position.X, (int)position.Y, 0f, 0f, color);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, float angle, Color color)
+            => Render(font, text, x, y, 1f, angle, color);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, Vector2 position, float angle, Color color)
+            => Render(font, text, (int)position.X, (int)position.Y, 1f, angle, color);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
+        {
+            size = size < 0f ? 0f : size;
+
+            if (!this.hasBegun)
+            {
+                throw new Exception($"The '{nameof(BeginBatch)}()' method must be invoked first before the '{nameof(Render)}()' method.");
+            }
+
+            var originalX = (float)x;
+            var originalY = (float)y;
+            var normalizedSize = size - 1f;
+            var characterY = (float)y;
+
+            var lines = text.Split('\n').TrimAllEnds();
+
+            var isMultiLine = lines.Length > 1;
+            var lineSizes = lines.Select(font.Measure).ToArray();
+            lineSizes = lineSizes.Select(l => l.ApplySize(normalizedSize)).ToArray();
+
+            var lineSpacing = font.LineSpacing.ApplySize(normalizedSize);
+
+            var textSize = new SizeF
+            {
+                Width = lineSizes.Max(l => l.Width),
+                Height = lineSizes.Sum(l => l.Height),
+            };
+
+            var textHalfWidth = textSize.Width / 2f;
+            var textHalfHeight = textSize.Height / 2f;
+
+            var atlasWidth = font.FontTextureAtlas.Width.ApplySize(normalizedSize);
+            var atlasHeight = font.FontTextureAtlas.Height.ApplySize(normalizedSize);
+            var validCharacters = font.GetAvailableGlyphCharacters();
+
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                var currentLineSize = lineSizes[i];
+
+                var charGlyphs = line.Select(character
+                    => (from m in font.Metrics
+                        where m.Glyph == (validCharacters.Contains(character)
+                            ? character
+                            : InvalidCharacter)
+                        select m).FirstOrDefault()).ToList();
+
+                if (i == 0)
+                {
+                    var maxDecent = Math.Abs(charGlyphs.Max(g => g.Descender).ApplySize(normalizedSize));
+                    var textTop = originalY + (currentLineSize.Height / 2f) + (maxDecent / 2f);
+
+                    characterY = isMultiLine
+                        ? textTop - textHalfHeight
+                        : originalY + textHalfHeight;
+                }
+                else
+                {
+                    characterY += lineSpacing;
+                }
+
+                var firstCharBearingX = charGlyphs[0].HoriBearingX.ApplySize(normalizedSize);
+                var characterX = originalX - textHalfWidth + firstCharBearingX;
+
+                var textLinePos = new Vector2(characterX, characterY);
+
+                var glyphString = BuildGlyphString(
+                    textLinePos,
+                    charGlyphs.ToArray(),
+                    font.HasKerning,
+                    font.FontTextureAtlas.Id,
+                    new Vector2(x, y),
+                    normalizedSize,
+                    angle,
+                    color,
+                    atlasWidth,
+                    atlasHeight);
+
+                foreach (var glyphBatchItem in glyphString)
+                {
+                    this.fontBatchService.Add(glyphBatchItem);
+                }
+            }
+        }
+
+        /// <inheritdoc/>
         public void EndBatch()
         {
-            // TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
+            TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
             FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
 
             this.hasBegun = false;
@@ -443,6 +376,17 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
+        /// Initializes the sprite batch.
+        /// </summary>
+        private void Init()
+        {
+            this.gl.Enable(GLEnableCap.Blend);
+            this.gl.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
+
+            this.isDisposed = false;
+        }
+
+        /// <summary>
         /// Invoked every time the batch is ready to be rendered.
         /// </summary>
         private void TextureBatchService_BatchFilled(object? sender, EventArgs e)
@@ -455,7 +399,7 @@ namespace Velaptor.Graphics
 
             for (var i = 0u; i < this.textureBatchService.AllBatchItems.Count; i++)
             {
-                (var shouldRender, var batchItem) = this.textureBatchService.AllBatchItems[i];
+                var (shouldRender, batchItem) = this.textureBatchService.AllBatchItems[i];
 
                 if (shouldRender is false || batchItem.IsEmpty())
                 {
@@ -496,7 +440,7 @@ namespace Velaptor.Graphics
 
             for (var i = 0u; i < this.fontBatchService.AllBatchItems.Count; i++)
             {
-                (var shouldRender, var batchItem) = this.fontBatchService.AllBatchItems[i];
+                var (shouldRender, batchItem) = this.fontBatchService.AllBatchItems[i];
 
                 if (shouldRender is false || batchItem.IsEmpty())
                 {
@@ -537,14 +481,110 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Initializes the sprite batch.
+        /// Constructs a string of glyphs to be rendered as a result of an array of <see cref="SpriteBatchItem"/>s.
         /// </summary>
-        private void Init()
+        /// <param name="textPos">The position to render the text.</param>
+        /// <param name="charMetrics">The glyph metrics of the characters in the text.</param>
+        /// <param name="hasKerning">True if the font has kerning to take into account.</param>
+        /// <param name="textureId">The ID of the font texture atlas.</param>
+        /// <param name="origin">The origin to rotate the text around.</param>
+        /// <param name="size">The size of the text.</param>
+        /// <param name="angle">The angle of the text.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <param name="atlasWidth">The width of the font texture atlas.</param>
+        /// <param name="atlasHeight">The height of the font texture atlas.</param>
+        /// <returns>The list of glyphs that make up the string as sprite batch items.</returns>
+        private IEnumerable<SpriteBatchItem> BuildGlyphString(
+            Vector2 textPos,
+            GlyphMetrics[] charMetrics,
+            bool hasKerning,
+            uint textureId,
+            Vector2 origin,
+            float size,
+            float angle,
+            Color color,
+            float atlasWidth,
+            float atlasHeight)
         {
-            this.gl.Enable(GLEnableCap.Blend);
-            this.gl.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
+            var result = new List<SpriteBatchItem>();
 
-            this.isDisposed = false;
+            var leftGlyphIndex = 0u;
+            var facePtr = this.freeTypeInvoker.GetFace();
+
+            for (var i = 0; i < charMetrics.Length; i++)
+            {
+                var currentCharMetric = charMetrics[i].ApplySize(size);
+
+                if (hasKerning && leftGlyphIndex != 0 && currentCharMetric.CharIndex != 0)
+                {
+                    // TODO: Check the perf for curiosity reasons
+                    var delta = this.freeTypeInvoker.FT_Get_Kerning(
+                        facePtr,
+                        leftGlyphIndex,
+                        currentCharMetric.CharIndex,
+                        (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
+
+                    var kerning = (float)(delta.x.ToInt32() >> 6);
+
+                    textPos.X += (int)kerning.ApplySize(size);
+                }
+
+                // Create the source rect and take the size into account
+                var srcRect = currentCharMetric.GlyphBounds;
+                srcRect.Width = srcRect.Width <= 0 ? 1 : srcRect.Width;
+                srcRect.Height = srcRect.Height <= 0 ? 1 : srcRect.Height;
+
+                var glyphHalfWidth = currentCharMetric.GlyphWidth / 2f;
+                var glyphHalfHeight = currentCharMetric.GlyphHeight / 2f;
+
+                // Calculate the height offset
+                var heightOffset = currentCharMetric.GlyphHeight - currentCharMetric.HoriBearingY;
+
+                // Adjust for characters that have a negative horizontal bearing Y
+                // For example, the '_' character
+                if (currentCharMetric.HoriBearingY < 0)
+                {
+                    heightOffset += currentCharMetric.HoriBearingY;
+                }
+
+                // Create the destination rect
+                RectangleF destRect = default;
+                destRect.X = textPos.X + glyphHalfWidth;
+                destRect.Y = textPos.Y - glyphHalfHeight + heightOffset;
+                destRect.Width = atlasWidth;
+                destRect.Height = atlasHeight;
+
+                var newPosition = destRect.GetPosition().RotateAround(origin, angle);
+
+                destRect.X = newPosition.X;
+                destRect.Y = newPosition.Y;
+
+                // Only render characters that are not a space (32 char code)
+                if (currentCharMetric.Glyph != ' ')
+                {
+                    var itemToAdd = default(SpriteBatchItem);
+
+                    itemToAdd.SrcRect = srcRect;
+                    itemToAdd.DestRect = destRect;
+                    itemToAdd.Size = size;
+                    itemToAdd.Angle = angle;
+                    itemToAdd.TintColor = color;
+                    itemToAdd.Effects = RenderEffects.None;
+                    itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
+                    itemToAdd.TextureId = textureId;
+
+                    result.Add(itemToAdd);
+                }
+
+                // Horizontally advance to the next glyph
+                // Get the difference between the old glyph width
+                // and the glyph width with the size applied
+                textPos.X += currentCharMetric.HorizontalAdvance.ApplySize(size);
+
+                leftGlyphIndex = currentCharMetric.CharIndex;
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>

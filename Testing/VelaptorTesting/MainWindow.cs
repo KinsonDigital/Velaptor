@@ -52,27 +52,25 @@ namespace VelaptorTesting
                 Name = SplitByUpperCase(nameof(TestRenderTextScene)),
             };
 
-            // var testMouseScene = new TestMouseScene(contentLoader)
-            // {
-            //     Name = SplitByUpperCase(nameof(TestMouseScene)),
-            // };
-            //
-            // var testKeyboardScene = new TestKeyboardScene(contentLoader)
-            // {
-            //     Name = SplitByUpperCase(nameof(TestKeyboardScene)),
-            // };
+            var testMouseScene = new TestMouseScene(contentLoader)
+            {
+                Name = SplitByUpperCase(nameof(TestMouseScene)),
+            };
 
-            // var renderGraphicsScene = new TestRenderAnimatedGraphicsScene(contentLoader)
-            // {
-            //     Name = SplitByUpperCase(nameof(TestRenderAnimatedGraphicsScene)),
-            // };
+            var testKeyboardScene = new TestKeyboardScene(contentLoader)
+            {
+                Name = SplitByUpperCase(nameof(TestKeyboardScene)),
+            };
+
+            var renderGraphicsScene = new TestRenderAnimatedGraphicsScene(contentLoader)
+            {
+                Name = SplitByUpperCase(nameof(TestRenderAnimatedGraphicsScene)),
+            };
 
             this.sceneManager.AddScene(testRenderTextScene);
-            // this.sceneManager.AddScene(testMouseScene);
-            // this.sceneManager.AddScene(testKeyboardScene);
-            // this.sceneManager.AddScene(renderGraphicsScene);
-
-            // TODO: Update the static window width and height when the size of the window changes
+            this.sceneManager.AddScene(testMouseScene);
+            this.sceneManager.AddScene(testKeyboardScene);
+            this.sceneManager.AddScene(renderGraphicsScene);
         }
 
         /// <summary>

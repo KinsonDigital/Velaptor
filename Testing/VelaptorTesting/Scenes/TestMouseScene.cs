@@ -22,11 +22,7 @@ namespace VelaptorTesting.Scenes
         private const int TopMargin = 25;
         private const int LineSpacing = 20;
         private readonly Mouse mouse;
-        private Label? mousePosLabel;
-        private Label? mouseLeftButtonLabel;
-        private Label? mouseRightButtonLabel;
-        private Label? mouseMiddleButtonLabel;
-        private Label? mouseWheelValueLabel;
+        private Label? mouseInfoLabel;
         private MouseState currentMouseState;
         private Dictionary<char, float>? glyphHeights;
 
@@ -48,26 +44,15 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.mousePosLabel = new Label(ContentLoader) { Color = Color.White };
-            this.mouseLeftButtonLabel = new Label(ContentLoader) { Color = Color.White };
-            this.mouseRightButtonLabel = new Label(ContentLoader) { Color = Color.White };
-            this.mouseMiddleButtonLabel = new Label(ContentLoader) { Color = Color.White };
-            this.mouseWheelValueLabel = new Label(ContentLoader) { Color = Color.White };
+            this.mouseInfoLabel = new Label(ContentLoader) { Color = Color.White };
 
             var font = ContentLoader.Load<IFont>("TimesNewRoman");
             this.glyphHeights = new Dictionary<char, float>(font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphHeight)));
 
-            this.mousePosLabel.LoadContent();
-            this.mouseLeftButtonLabel.LoadContent();
-            this.mouseRightButtonLabel.LoadContent();
-            this.mouseMiddleButtonLabel.LoadContent();
-            this.mouseWheelValueLabel.LoadContent();
+            this.mouseInfoLabel.LoadContent();
+            this.mouseInfoLabel.Position = new Point((int)MainWindow.WindowWidth / 2, (int)MainWindow.WindowHeight / 2);
 
-            AddControl(this.mousePosLabel);
-            AddControl(this.mouseLeftButtonLabel);
-            AddControl(this.mouseRightButtonLabel);
-            AddControl(this.mouseMiddleButtonLabel);
-            AddControl(this.mouseWheelValueLabel);
+            AddControl(this.mouseInfoLabel);
 
             base.LoadContent();
         }
@@ -77,33 +62,14 @@ namespace VelaptorTesting.Scenes
         {
             this.currentMouseState = this.mouse.GetState();
 
-            // Update the mouse position label
-            this.mousePosLabel.Text = $"Mouse Position: {this.currentMouseState.GetX()}, {this.currentMouseState.GetY()}";
-            this.mousePosLabel.Position = new Point(LeftMargin, TopMargin);
-
-            // Update the mouse left button label
-            this.mouseLeftButtonLabel.Text = $"Mouse Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
-            this.mouseLeftButtonLabel.Position =
-                new Point(LeftMargin,
-                    (int)(TopMargin + this.mousePosLabel.Position.Y + LineSpacing + (CalculateHeight(this.mouseLeftButtonLabel.Text) / 2f)));
-
-            // Update the mouse right button label
-            this.mouseRightButtonLabel.Text = $"Mouse Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
-            this.mouseRightButtonLabel.Position =
-                new Point(LeftMargin,
-                    (int)(TopMargin + this.mouseLeftButtonLabel.Position.Y + LineSpacing + (CalculateHeight(this.mouseRightButtonLabel.Text) / 2f)));
-
-            // Update the mouse middle button label
-            this.mouseMiddleButtonLabel.Text = $"Mouse Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
-            this.mouseMiddleButtonLabel.Position =
-                new Point(LeftMargin,
-                    (int)(TopMargin + this.mouseRightButtonLabel.Position.Y + LineSpacing + (CalculateHeight(this.mouseMiddleButtonLabel.Text) / 2f)));
-
+            var mouseInfo = $"Mouse Position: {this.currentMouseState.GetX()}, {this.currentMouseState.GetY()}";
+            mouseInfo += $"\nMouse Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
+            mouseInfo += $"\nMouse Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
+            mouseInfo += $"\nMouse Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
             // TODO: Fix the scroll wheel value.  It is not working
-            this.mouseWheelValueLabel.Text = $"Mouse Middle Button: {this.currentMouseState.GetScrollWheelValue()} - Currently Broken";
-            this.mouseWheelValueLabel.Position =
-                new Point(LeftMargin,
-                    (int)(TopMargin + this.mouseMiddleButtonLabel.Position.Y + LineSpacing + (CalculateHeight(this.mouseWheelValueLabel.Text) / 2f)));
+            mouseInfo += $"\nMouse Middle Button: {this.currentMouseState.GetScrollWheelValue()} - Currently Broken";
+
+            this.mouseInfoLabel.Text = mouseInfo;
 
             base.Update(frameTime);
         }
@@ -142,22 +108,10 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         private void UnloadSceneContent()
         {
-            RemoveControl(this.mousePosLabel);
-            RemoveControl(this.mouseLeftButtonLabel);
-            RemoveControl(this.mouseRightButtonLabel);
-            RemoveControl(this.mouseMiddleButtonLabel);
-            RemoveControl(this.mouseWheelValueLabel);
+            RemoveControl(this.mouseInfoLabel);
 
             this.glyphHeights.Clear();
             this.glyphHeights = null;
         }
-
-        /// <summary>
-        /// Calculates the width of the text based on the glyphs in the given <paramref name="text"/>.
-        /// </summary>
-        /// <param name="text">The text to calculate the width from.</param>
-        /// <returns>The width of all the text.</returns>
-        private float CalculateHeight(string text)
-            => text.Select(character => this.glyphHeights[character]).Prepend(float.MinValue).Max();
     }
 }

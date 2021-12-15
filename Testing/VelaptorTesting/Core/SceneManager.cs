@@ -207,8 +207,8 @@ namespace VelaptorTesting.Core
             this.scenes[this.currentSceneIndex].Render(this.spriteBatch);
 
             // Render the scene manager UI on top of all other textures
-            // this.nextButton.Render(this.spriteBatch);
-            // this.previousButton.Render(this.spriteBatch);
+            this.nextButton.Render(this.spriteBatch);
+            this.previousButton.Render(this.spriteBatch);
 
             this.spriteBatch.EndBatch();
         }

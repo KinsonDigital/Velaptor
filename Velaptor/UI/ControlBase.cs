@@ -48,36 +48,36 @@ namespace Velaptor.UI
         /// <inheritdoc cref="IControl.Left"/>
         public virtual int Left
         {
-            get => Position.X;
-            set => Position = new Point(value, Position.Y);
+            get => (int)(Position.X - (Width / 2f));
+            set => Position = new Point((int)(value + (Width / 2f)), Position.Y);
         }
 
         /// <inheritdoc cref="IControl.Right"/>
         public virtual int Right
         {
-            get => Position.X + (int)Width;
-            set => Position = new Point(value - (int)Width, Position.Y);
+            get => (int)(Position.X + (Width / 2f));
+            set => Position = new Point((int)(value - (Width / 2f)), Position.Y);
         }
 
         /// <inheritdoc cref="IControl.Top"/>
         public virtual int Top
         {
-            get => Position.Y;
-            set => Position = new Point(Position.X, value);
+            get => (int)(Position.Y - (Height / 2f));
+            set => Position = new Point(Position.X, (int)(value + (Height / 2f)));
         }
 
         /// <inheritdoc cref="IControl.Bottom"/>
         public virtual int Bottom
         {
-            get => Position.Y + (int)Height;
-            set => Position = new Point(Position.X, value - (int)Height);
+            get => (int)(Position.Y + (Height / 2f));
+            set => Position = new Point(Position.X, (int)(value - (Height / 2f)));
         }
 
         /// <inheritdoc cref="ISizable.Width"/>
-        public virtual uint Width { get; set; }
+        public virtual uint Width { get; protected set; }
 
         /// <inheritdoc cref="ISizable.Height"/>
-        public virtual uint Height { get; set; }
+        public virtual uint Height { get; protected set; }
 
         /// <inheritdoc cref="IControl.Visible"/>
         public virtual bool Visible { get; set; } = true;
@@ -140,7 +140,11 @@ namespace Velaptor.UI
 
             this.currentMouseState = this.mouse.GetState();
             this.currentMousePos = this.currentMouseState.GetPosition().ToPoint();
-            var controlRect = new Rectangle(Position.X, Position.Y, (int)Width, (int)Height);
+
+            var halfWidth = (int)Width / 2;
+            var halfHeight = (int)Height / 2;
+
+            var controlRect = new Rectangle(Position.X - halfWidth, Position.Y - halfHeight, (int)Width, (int)Height);
 
             IsMouseOver = controlRect.Contains(this.currentMouseState.GetX(), this.currentMouseState.GetY());
 

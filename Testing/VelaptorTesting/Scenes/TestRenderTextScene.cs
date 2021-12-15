@@ -21,7 +21,6 @@ namespace VelaptorTesting.Scenes
         // private const string TextToRender = "If can you see this text, then text rendering is working correctly.";
         private const string TextToRender = "Kinson\nDigital";
         private readonly IContentLoader contentLoader;
-        private Dictionary<char, float>? glyphWidths;
         private IFont? font;
 
         /// <summary>
@@ -43,7 +42,6 @@ namespace VelaptorTesting.Scenes
             }
 
             this.font = this.contentLoader.Load<IFont>("TimesNewRoman");
-            this.glyphWidths = new Dictionary<char, float>(this.font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphWidth)));
 
             base.LoadContent();
         }
@@ -67,7 +65,7 @@ namespace VelaptorTesting.Scenes
             var xPos = (int)(MainWindow.WindowWidth / 2f);
             var yPos = (int)MainWindow.WindowHeight / 2;
 
-            spriteBatch.Render(this.font, TextToRender, xPos, yPos, Color.White);
+            spriteBatch.Render(this.font, TextToRender, xPos, yPos, 1f, 0f);
 
             base.Render(spriteBatch);
         }
