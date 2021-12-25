@@ -162,7 +162,7 @@ namespace VelaptorTests.Helpers
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="times">The total number of times to expect the invocation to occur.</param>
-        public static void VerifyQuadIsUpdated(this Mock<IGPUBuffer> mock, Times times)
+        public static void VerifyQuadIsUpdated(this Mock<IGPUBuffer<SpriteBatchItem>> mock, Times times)
         {
             var totalExecutions = 0;
 
@@ -175,19 +175,17 @@ namespace VelaptorTests.Helpers
 
             try
             {
-                mock.Verify(m => m.UpdateQuad(It.Is<uint>(arg => isCorrectId(arg)),
-                              It.IsAny<Rectangle>(),
-                              It.IsAny<int>(),
-                              It.IsAny<int>(),
-                              It.IsAny<Color>()),
-                              times);
+                mock.Verify(m => m.UploadData(
+                        It.IsAny<SpriteBatchItem>(),
+                        It.IsAny<uint>()),
+                    times);
             }
             catch (Exception ex) when (ex is Exception || ex is MockException)
             {
                 times.Deconstruct(out var from, out var to);
                 var assertMsg = string.Empty;
 
-                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer.UpdateQuad)}'";
+                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer<SpriteBatchItem>.UploadData)}'";
 
                 assertMsg = BuildAssertionMessage(glFunctionName, from, to, totalExecutions);
 
@@ -206,7 +204,7 @@ namespace VelaptorTests.Helpers
         /// <param name="mock">The mock being verified.</param>
         /// <param name="quadId">The ID of the quad being updated.</param>
         /// <param name="times">The total number of times to expect the invocation to occur.</param>
-        public static void VerifyQuadIsUpdatedWithCorrectQuadID(this Mock<IGPUBuffer> mock, uint quadId, Times times)
+        public static void VerifyQuadIsUpdatedWithCorrectQuadID(this Mock<IGPUBuffer<SpriteBatchItem>> mock, uint quadId, Times times)
         {
             var totalExecutions = 0;
             var invalidId = 0u;
@@ -227,12 +225,10 @@ namespace VelaptorTests.Helpers
 
             try
             {
-                mock.Verify(m => m.UpdateQuad(It.Is<uint>(arg => isCorrectId(arg)),
-                              It.IsAny<Rectangle>(),
-                              It.IsAny<int>(),
-                              It.IsAny<int>(),
-                              It.IsAny<Color>()),
-                              times);
+                mock.Verify(m => m.UploadData(
+                        It.IsAny<SpriteBatchItem>(),
+                        It.IsAny<uint>()),
+                    times);
 
                 if (quadId != invalidId)
                 {
@@ -244,7 +240,7 @@ namespace VelaptorTests.Helpers
                 times.Deconstruct(out var from, out var to);
                 var assertMsg = string.Empty;
 
-                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer.UpdateQuad)}'";
+                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer<SpriteBatchItem>.UploadData)}'";
 
                 assertMsg = BuildAssertionMessage(glFunctionName, from, to, totalExecutions);
 
@@ -268,7 +264,7 @@ namespace VelaptorTests.Helpers
         /// <param name="mock">The mock being verified.</param>
         /// <param name="srcRect">The source rectangle.</param>
         /// <param name="times">The total number of times to expect the invocation to occur.</param>
-        public static void VerifyQuadIsUpdatedWithCorrectSrcRectangle(this Mock<IGPUBuffer> mock, Rectangle srcRect, Times times)
+        public static void VerifyQuadIsUpdatedWithCorrectSrcRectangle(this Mock<IGPUBuffer<SpriteBatchItem>> mock, Rectangle srcRect, Times times)
         {
             var totalExecutions = 0;
             Rectangle invalidRect = default;
@@ -290,12 +286,10 @@ namespace VelaptorTests.Helpers
 
             try
             {
-                mock.Verify(m => m.UpdateQuad(It.IsAny<uint>(),
-                                              It.Is<Rectangle>(arg => isCorrectRect(arg)),
-                                              It.IsAny<int>(),
-                                              It.IsAny<int>(),
-                                              It.IsAny<Color>()),
-                                              times);
+                mock.Verify(m => m.UploadData(
+                        It.IsAny<SpriteBatchItem>(),
+                        It.IsAny<uint>()),
+                    times);
 
                 if (srcRect != invalidRect)
                 {
@@ -307,7 +301,7 @@ namespace VelaptorTests.Helpers
                 times.Deconstruct(out var from, out var to);
                 var assertMsg = string.Empty;
 
-                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer.UpdateQuad)}'";
+                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer<SpriteBatchItem>.UploadData)}'";
 
                 assertMsg = BuildAssertionMessage(glFunctionName, from, to, totalExecutions);
 
@@ -331,7 +325,7 @@ namespace VelaptorTests.Helpers
         /// <param name="mock">The mock being verified.</param>
         /// <param name="textureWidth">The width of the texture.</param>
         /// <param name="times">The total number of times to expect the invocation to occur.</param>
-        public static void VerifyQuadIsUpdatedWithCorrectTextureWidth(this Mock<IGPUBuffer> mock, int textureWidth, Times times)
+        public static void VerifyQuadIsUpdatedWithCorrectTextureWidth(this Mock<IGPUBuffer<SpriteBatchItem>> mock, int textureWidth, Times times)
         {
             var totalExecutions = 0;
             var invalidWidth = 0;
@@ -353,12 +347,10 @@ namespace VelaptorTests.Helpers
 
             try
             {
-                mock.Verify(m => m.UpdateQuad(It.IsAny<uint>(),
-                                              It.IsAny<Rectangle>(),
-                                              It.Is<int>(arg => isCorrectWidth(arg)),
-                                              It.IsAny<int>(),
-                                              It.IsAny<Color>()),
-                                              times);
+                mock.Verify(m => m.UploadData(
+                        It.IsAny<SpriteBatchItem>(),
+                        It.IsAny<uint>()),
+                    times);
 
                 if (textureWidth != invalidWidth)
                 {
@@ -370,7 +362,7 @@ namespace VelaptorTests.Helpers
                 times.Deconstruct(out var from, out var to);
                 var assertMsg = string.Empty;
 
-                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer.UpdateQuad)}'";
+                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer<SpriteBatchItem>.UploadData)}'";
 
                 assertMsg = BuildAssertionMessage(glFunctionName, from, to, totalExecutions);
 
@@ -394,7 +386,7 @@ namespace VelaptorTests.Helpers
         /// <param name="mock">The mock being verified.</param>
         /// <param name="textureHeight">The width of the texture.</param>
         /// <param name="times">The total number of times to expect the invocation to occur.</param>
-        public static void VerifyQuadIsUpdatedWithCorrectTextureHeight(this Mock<IGPUBuffer> mock, int textureHeight, Times times)
+        public static void VerifyQuadIsUpdatedWithCorrectTextureHeight(this Mock<IGPUBuffer<SpriteBatchItem>> mock, int textureHeight, Times times)
         {
             var totalExecutions = 0;
             var invalidHeight = 0;
@@ -416,12 +408,10 @@ namespace VelaptorTests.Helpers
 
             try
             {
-                mock.Verify(m => m.UpdateQuad(It.IsAny<uint>(),
-                                              It.IsAny<Rectangle>(),
-                                              It.IsAny<int>(),
-                                              It.Is<int>(arg => isCorrectHeight(arg)),
-                                              It.IsAny<Color>()),
-                                              times);
+                mock.Verify(m => m.UploadData(
+                        It.IsAny<SpriteBatchItem>(),
+                        It.IsAny<uint>()),
+                    times);
 
                 if (textureHeight != invalidHeight)
                 {
@@ -433,7 +423,7 @@ namespace VelaptorTests.Helpers
                 times.Deconstruct(out var from, out var to);
                 var assertMsg = string.Empty;
 
-                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer.UpdateQuad)}'";
+                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer<SpriteBatchItem>.UploadData)}'";
 
                 assertMsg = BuildAssertionMessage(glFunctionName, from, to, totalExecutions);
 
@@ -457,7 +447,7 @@ namespace VelaptorTests.Helpers
         /// <param name="mock">The mock being verified.</param>
         /// <param name="color">The color of the quad.</param>
         /// <param name="times">The total number of times to expect the invocation to occur.</param>
-        public static void VerifyQuadIsUpdatedWithCorrectColor(this Mock<IGPUBuffer> mock, Color color, Times times)
+        public static void VerifyQuadIsUpdatedWithCorrectColor(this Mock<IGPUBuffer<SpriteBatchItem>> mock, Color color, Times times)
         {
             var totalExecutions = 0;
             Color invalidColor = default;
@@ -479,12 +469,10 @@ namespace VelaptorTests.Helpers
 
             try
             {
-                mock.Verify(m => m.UpdateQuad(It.IsAny<uint>(),
-                                              It.IsAny<Rectangle>(),
-                                              It.IsAny<int>(),
-                                              It.IsAny<int>(),
-                                              It.Is<Color>(arg => isCorrectColor(arg))),
-                                              times);
+                mock.Verify(m => m.UploadData(
+                        It.IsAny<SpriteBatchItem>(),
+                        It.IsAny<uint>()),
+                    times);
 
                 if (color != invalidColor)
                 {
@@ -496,7 +484,7 @@ namespace VelaptorTests.Helpers
                 times.Deconstruct(out var from, out var to);
                 var assertMsg = string.Empty;
 
-                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer.UpdateQuad)}'";
+                var glFunctionName = $"OpenGL function '{nameof(IGPUBuffer<SpriteBatchItem>.UploadData)}'";
 
                 assertMsg = BuildAssertionMessage(glFunctionName, from, to, totalExecutions);
 

@@ -4,30 +4,48 @@
 
 namespace Velaptor.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
+    using Velaptor.Content;
     using Velaptor.OpenGL;
 
-    // TODO: Code Docs
+    // ReSharper restore RedundantNameQualifier
+
+    /// <summary>
+    /// Manages the process of batching <see cref="ITexture"/>s when drawing sprites.
+    /// </summary>
     internal class TextureBatchService : IBatchManagerService<SpriteBatchItem>
     {
-        private readonly SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)> batchItems = new ();
+        private SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)> batchItems = new ();
         private uint currentBatchIndex;
         private uint batchSize;
         private bool firstTimeRender = true;
-        private uint currentTextureId = 0u;
-        private uint previousTextureId = 0u;
+        private uint currentTextureId;
+        private uint previousTextureId;
 
+        /// <summary>
+        /// Occurs when a batch is full.
+        /// </summary>
+        /// <remarks>
+        /// Scenarios When The Batch Is Ready:
+        /// <list type="number">
+        ///     <item>The batch is ready when draw calls switch to another texture.</item>
+        ///     <item>The batch is ready when the total amount of items to be rendered is equal to the <see cref="BatchSize"/>.</item>
+        /// </list>
+        /// </remarks>
         public event EventHandler<EventArgs>? BatchFilled;
 
+        /// <inheritdoc/>
         public uint BatchSize
         {
             get => this.batchSize;
             set
             {
                 this.batchSize = value;
+                this.batchItems.Clear();
+
                 for (var i = 0u; i < this.batchSize; i++)
                 {
                     this.batchItems.Add(i, (false, default));
@@ -35,23 +53,17 @@ namespace Velaptor.Services
             }
         }
 
-        public ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)> AllBatchItems => new (this.batchItems);
+        /// <inheritdoc/>
+        public ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)> BatchItems
+        {
+            get => new (this.batchItems);
+            set => this.batchItems = new SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)>(value);
+        }
 
-        // public ReadOnlyCollection<(uint batchIndex, SpriteBatchItem item)> RenderableItems
-        // {
-        //     get
-        //     {
-        //         var foundItems = this.batchItems.Where(i => i.Value.shouldRender)
-        //             .Select(i => (i.Key, i.Value.item)).ToArray();
-        //
-        //         return new ReadOnlyCollection<(uint, SpriteBatchItem)>(foundItems);
-        //     }
-        // }
-
-        public uint TotalItemsToRender => (uint)this.batchItems.Count(i => i.Value.shouldRender);
-
-        public bool BatchEmpty => this.batchItems.All(i => i.Value.item.IsEmpty());
-
+        /// <summary>
+        /// Adds the given <paramref name="rect"/> to the batch.
+        /// </summary>
+        /// <param name="rect">The item to be added.</param>
         public void Add(SpriteBatchItem rect)
         {
             this.currentTextureId = rect.TextureId;
@@ -72,9 +84,27 @@ namespace Velaptor.Services
             this.firstTimeRender = false;
         }
 
+        /// <summary>
+        /// Adds the given list of <paramref name="rects"/> to batch.
+        /// </summary>
+        /// <param name="rects">The items to be added.</param>
+        public void AddRange(IEnumerable<SpriteBatchItem> rects)
+        {
+            foreach (var rect in rects)
+            {
+                Add(rect);
+            }
+        }
+
+        /// <summary>
+        /// Empties the entire batch.
+        /// </summary>
+        /// <remarks>
+        /// An empty batch are items that are set NOT to render and have all values set to default.
+        /// </remarks>
         public void EmptyBatch()
         {
-            for (var i = 0u; i < this.batchItems.Count; i--)
+            for (var i = 0u; i < this.batchItems.Count; i++)
             {
                 if (this.batchItems[i].shouldRender is false)
                 {

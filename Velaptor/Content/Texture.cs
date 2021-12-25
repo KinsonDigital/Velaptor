@@ -128,7 +128,6 @@ namespace Velaptor.Content
 
             this.gl.BindTexture(GLTextureTarget.Texture2D, Id);
 
-            // TODO: Make the Texture.Width and Texture.Height uint data type
             Width = imageData.Width;
             Height = imageData.Height;
 

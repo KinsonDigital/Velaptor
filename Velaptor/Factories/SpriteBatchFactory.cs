@@ -2,15 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.NativeInterop.FreeType;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Observables;
-using Velaptor.Services;
-
 namespace Velaptor.Factories
 {
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
+    using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables;
+    using Velaptor.Services;
 
     /// <summary>
     /// Creates instances of the type <see cref="SpriteBatch"/>.
@@ -35,7 +33,6 @@ namespace Velaptor.Factories
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
             var textureShader = ShaderFactory.CreateTextureShader();
             var fontShader = ShaderFactory.CreateFontShader();
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
@@ -45,13 +42,12 @@ namespace Velaptor.Factories
             spriteBatch = new SpriteBatch(
                 glInvoker,
                 glInvokerExtensions,
-                freeTypeInvoker,
                 textureShader,
                 fontShader,
                 textureBuffer,
                 fontBuffer,
                 new TextureBatchService(),
-                new FontBatchService(),
+                new TextureBatchService(),
                 glInitObservable);
 
             spriteBatch.RenderSurfaceWidth = renderSurfaceWidth;
@@ -59,5 +55,10 @@ namespace Velaptor.Factories
 
             return spriteBatch;
         }
+
+        /// <summary>
+        /// Disposes of the sprite batch.
+        /// </summary>
+        public static void Dispose() => spriteBatch?.Dispose();
     }
 }

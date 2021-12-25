@@ -62,15 +62,21 @@ namespace VelaptorTesting
                 Name = SplitByUpperCase(nameof(TestKeyboardScene)),
             };
 
-            var renderGraphicsScene = new TestRenderAnimatedGraphicsScene(contentLoader)
+            var renderNonAnimatedGraphicsScene = new TestNonAnimatedGraphicsScene(contentLoader)
             {
-                Name = SplitByUpperCase(nameof(TestRenderAnimatedGraphicsScene)),
+                Name = SplitByUpperCase(nameof(TestNonAnimatedGraphicsScene)),
+            };
+
+            var renderAnimatedGraphicsScene = new TestAnimatedGraphicsScene(contentLoader)
+            {
+                Name = SplitByUpperCase(nameof(TestAnimatedGraphicsScene)),
             };
 
             this.sceneManager.AddScene(testRenderTextScene);
             this.sceneManager.AddScene(testMouseScene);
             this.sceneManager.AddScene(testKeyboardScene);
-            this.sceneManager.AddScene(renderGraphicsScene);
+            this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
+            this.sceneManager.AddScene(renderAnimatedGraphicsScene);
         }
 
         /// <summary>

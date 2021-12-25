@@ -4,9 +4,15 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using System.Globalization;
+    using System.Text;
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// A single item in a batch of items that could be rendered to the screen.
@@ -30,13 +36,13 @@ namespace Velaptor.OpenGL
         public float Size;
 
         /// <summary>
-        /// The angle in degress of the texture.
+        /// The angle in degrees of the texture.
         /// </summary>
         /// <remarks>Needs to be a value between 0 and 360.</remarks>
         public float Angle;
 
         /// <summary>
-        /// The color to apply to the entire textrue.
+        /// The color to apply to the entire texture.
         /// </summary>
         public Color TintColor;
 
@@ -101,20 +107,21 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
-        public bool Equals(SpriteBatchItem other)
-            => this.SrcRect.Equals(other.SrcRect) &&
-               this.DestRect.Equals(other.DestRect) &&
-               this.Size.Equals(other.Size) &&
-               this.Angle.Equals(other.Angle) &&
-               this.TintColor.Equals(other.TintColor) &&
-               this.Effects == other.Effects &&
-               this.ViewPortSize.Equals(other.ViewPortSize) &&
-               this.TextureId == other.TextureId;
+        public bool Equals(SpriteBatchItem other) =>
+            this.SrcRect.Equals(other.SrcRect) &&
+            this.DestRect.Equals(other.DestRect) &&
+            this.Size.Equals(other.Size) &&
+            this.Angle.Equals(other.Angle) &&
+            this.TintColor.Equals(other.TintColor) &&
+            this.Effects == other.Effects &&
+            this.ViewPortSize.Equals(other.ViewPortSize) &&
+            this.TextureId == other.TextureId;
 
         /// <inheritdoc cref="object.Equals(object?)"/>
         public override bool Equals(object? obj) => obj is SpriteBatchItem other && Equals(other);
 
         /// <inheritdoc cref="object.GetHashCode"/>
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode()
             => HashCode.Combine(
                 this.SrcRect,
@@ -125,5 +132,24 @@ namespace Velaptor.OpenGL
                 (int)this.Effects,
                 this.ViewPortSize,
                 this.TextureId);
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            var result = new StringBuilder();
+
+            result.AppendLine("Sprite Batch Item Values:");
+            result.AppendLine($"Src Rect: {this.SrcRect.ToString()}");
+            result.AppendLine($"Dest Rect: {this.DestRect.ToString()}");
+            result.AppendLine($"Size: {this.Size.ToString(CultureInfo.InvariantCulture)}");
+            result.AppendLine($"Angle: {this.Angle.ToString(CultureInfo.InvariantCulture)}");
+            result.AppendLine(
+                $"Tint Clr: {{A={this.TintColor.A},R={this.TintColor.R},G={this.TintColor.G},B={this.TintColor.B}}}");
+            result.AppendLine($"Effects: {this.Effects.ToString()}");
+            result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
+            result.Append($"Texture ID: {this.TextureId.ToString()}");
+
+            return result.ToString();
+        }
     }
 }

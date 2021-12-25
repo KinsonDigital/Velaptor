@@ -5,17 +5,19 @@
 namespace Velaptor
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Creates a new task for asynchronous operations to be performed.
     /// </summary>
-    internal class TaskService : ITaskService
+    [ExcludeFromCodeCoverage]
+    internal sealed class TaskService : ITaskService
     {
         private readonly CancellationTokenSource tokenSrc = new ();
         private Task? internalTask;
-        private bool isDiposed;
+        private bool isDisposed;
 
         /// <inheritdoc/>
         public CancellationTokenSource SetAction(Action action)
@@ -66,41 +68,39 @@ namespace Velaptor
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => Dispose(true);
 
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
-            if (!this.isDiposed)
+            if (this.isDisposed)
             {
-                if (disposing)
-                {
-                    if (this.internalTask is not null)
-                    {
-                        // If the task is still running, stop it first then dispose
-                        if (this.internalTask.Status == TaskStatus.Running)
-                        {
-                            Cancel();
-                        }
+                return;
+            }
 
-                        if (this.internalTask.Status == TaskStatus.RanToCompletion ||
-                            this.internalTask.Status == TaskStatus.Faulted ||
-                            this.internalTask.Status == TaskStatus.Canceled)
-                        {
-                            this.internalTask.Dispose();
-                        }
+            if (disposing)
+            {
+                if (this.internalTask is not null)
+                {
+                    // If the task is still running, stop it first then dispose
+                    if (this.internalTask.Status == TaskStatus.Running)
+                    {
+                        Cancel();
+                    }
+
+                    if (this.internalTask.Status == TaskStatus.RanToCompletion ||
+                        this.internalTask.Status == TaskStatus.Faulted ||
+                        this.internalTask.Status == TaskStatus.Canceled)
+                    {
+                        this.internalTask.Dispose();
                     }
                 }
-
-                this.isDiposed = true;
             }
+
+            this.isDisposed = true;
         }
     }
 }

@@ -46,5 +46,11 @@
     "Bounds": "532, 0, 76, 76",
     "FrameIndex": 7,
     "Name": "circle"
+  },
+  {
+    "$type": "Velaptor.Graphics.AtlasSpriteData, Velaptor",
+    "Bounds": "0, 76, 76, 76",
+    "FrameIndex": -1,
+    "Name": "octagon-flip"
   }
 ]

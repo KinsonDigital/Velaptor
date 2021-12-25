@@ -4,16 +4,15 @@
 
 namespace Velaptor.Graphics
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
     using System.Numerics;
-    using FreeTypeSharp.Native;
+    using Velaptor;
     using Velaptor.Content;
-    using Velaptor.Exceptions;
-    using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
@@ -22,21 +21,23 @@ namespace Velaptor.Graphics
     using NETRect = System.Drawing.Rectangle;
     using NETSizeF = System.Drawing.SizeF;
 
+    // ReSharper restore RedundantNameQualifier
+
     /// <inheritdoc/>
     internal sealed class SpriteBatch : ISpriteBatch
     {
-        private const char InvalidCharacter = '□';
         private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
-        private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
         private readonly IGPUBuffer<SpriteBatchItem> fontBuffer;
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
         private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
-        private CachedValue<Color> cachedClearColor;
+
+        // ReSharper disable once MemberInitializerValueIgnored
+        private CachedValue<Color> cachedClearColor = null!;
         private bool isDisposed;
         private bool hasBegun;
 
@@ -46,7 +47,6 @@ namespace Velaptor.Graphics
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes OpenGL extensions methods.</param>
-        /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
         /// <param name="textureShader">The shader used for rendering textures.</param>
         /// <param name="fontShader">The shader used for rendering text.</param>
         /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
@@ -59,27 +59,20 @@ namespace Velaptor.Graphics
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
         [ExcludeFromCodeCoverage]
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-// The reason for ignoring this warning for the `cachedClearColor` not being set in constructor while
-// it is set to not be null is due to the fact that we do not want warnings expressing an issue that
-// does not exist.  The SetupPropertyCaches() method takes care of making sure it is not null.
         public SpriteBatch(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IFreeTypeInvoker freeTypeInvoker,
             IShaderProgram textureShader,
             IShaderProgram fontShader,
             IGPUBuffer<SpriteBatchItem> textureBuffer,
             IGPUBuffer<SpriteBatchItem> fontBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
-            OpenGLInitObservable glObservable)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+            IObservable<bool> glObservable)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
+
             this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), $"The '{nameof(IGLInvokerExtensions)}' must not be null.");
-            this.freeTypeInvoker = freeTypeInvoker;
             this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), $"The '{nameof(textureShader)}' must not be null.");
             this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), $"The '{nameof(fontShader)}' must not be null.");
 
@@ -92,7 +85,7 @@ namespace Velaptor.Graphics
 
             this.fontBatchService = fontBatchService;
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
-            this.textureBatchService.BatchFilled += FontBatchService_BatchFilled;
+            this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
             // Receive a push notification that OpenGL has initialized
             GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
@@ -100,16 +93,18 @@ namespace Velaptor.Graphics
                 {
                     this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
-                    if (this.cachedClearColor is not null)
-                    {
-                        this.cachedClearColor.IsCaching = false;
-                    }
+                    this.cachedClearColor.IsCaching = false;
 
                     Init();
                 }));
 
             SetupPropertyCaches();
         }
+
+        /// <summary>
+        /// Finalizes an instance of the <see cref="SpriteBatch"/> class.
+        /// </summary>
+        ~SpriteBatch() => Dispose(false);
 
         /// <inheritdoc/>
         public uint RenderSurfaceWidth
@@ -156,16 +151,6 @@ namespace Velaptor.Graphics
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects)
         {
-            if (!this.hasBegun)
-            {
-                throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
-            }
-
-            if (texture is null)
-            {
-                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
-            }
-
             // Render the entire texture
             var srcRect = new NETRect()
             {
@@ -181,8 +166,15 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc/>
-        /// <exception cref="InvalidRenderEffectsException">
-        ///     Thrown if the given <paramref name="effects"/> is invalid.
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown if the <see cref="BeginBatch"/>() method is not called first before calling this method.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown if the <see cref="Rectangle.Width"/> or <see cref="Rectangle.Height"/> property
+        ///     values for the <paramref name="srcRect"/> argument are less than or equal to 0.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown if the <paramref name="texture"/> argument is null.
         /// </exception>
         public void Render(
             ITexture texture,
@@ -193,19 +185,19 @@ namespace Velaptor.Graphics
             Color color,
             RenderEffects effects)
         {
+            if (texture is null)
+            {
+                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
+            }
+
             if (!this.hasBegun)
             {
-                throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
+                throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
             if (srcRect.Width <= 0 || srcRect.Height <= 0)
             {
                 throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
-            }
-
-            if (texture is null)
-            {
-                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
             var itemToAdd = default(SpriteBatchItem);
@@ -255,77 +247,67 @@ namespace Velaptor.Graphics
             => Render(font, text, (int)position.X, (int)position.Y, 1f, angle, color);
 
         /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown if the <see cref="BeginBatch"/>() method is not called first before calling this method.
+        /// </exception>
         public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
         {
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
             size = size < 0f ? 0f : size;
 
             if (!this.hasBegun)
             {
-                throw new Exception($"The '{nameof(BeginBatch)}()' method must be invoked first before the '{nameof(Render)}()' method.");
+                throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
+            var normalizedSize = size - 1f;
             var originalX = (float)x;
             var originalY = (float)y;
-            var normalizedSize = size - 1f;
             var characterY = (float)y;
 
+            text = text.TrimEnd('\n');
             var lines = text.Split('\n').TrimAllEnds();
 
-            var isMultiLine = lines.Length > 1;
-            var lineSizes = lines.Select(font.Measure).ToArray();
-            lineSizes = lineSizes.Select(l => l.ApplySize(normalizedSize)).ToArray();
-
             var lineSpacing = font.LineSpacing.ApplySize(normalizedSize);
-
-            var textSize = new SizeF
-            {
-                Width = lineSizes.Max(l => l.Width),
-                Height = lineSizes.Sum(l => l.Height),
-            };
+            var textSize = font.Measure(text).ApplySize(normalizedSize);
 
             var textHalfWidth = textSize.Width / 2f;
-            var textHalfHeight = textSize.Height / 2f;
 
             var atlasWidth = font.FontTextureAtlas.Width.ApplySize(normalizedSize);
             var atlasHeight = font.FontTextureAtlas.Height.ApplySize(normalizedSize);
-            var validCharacters = font.GetAvailableGlyphCharacters();
 
-            for (var i = 0; i < lines.Length; i++)
+            var glyphLines = lines.Select(font.ToGlyphMetrics).ToList();
+
+            var firstLineFirstCharBearingX = glyphLines[0][0].HoriBearingX;
+
+            for (var i = 0; i < glyphLines.Count; i++)
             {
-                var line = lines[i];
-                var currentLineSize = lineSizes[i];
-
-                var charGlyphs = line.Select(character
-                    => (from m in font.Metrics
-                        where m.Glyph == (validCharacters.Contains(character)
-                            ? character
-                            : InvalidCharacter)
-                        select m).FirstOrDefault()).ToList();
-
                 if (i == 0)
                 {
-                    var maxDecent = Math.Abs(charGlyphs.Max(g => g.Descender).ApplySize(normalizedSize));
-                    var textTop = originalY + (currentLineSize.Height / 2f) + (maxDecent / 2f);
+                    var firstLineHeight = glyphLines.MaxHeight(i);
+                    var textTop = originalY + firstLineHeight;
+                    var lastLineVerticalOffset = glyphLines.MaxVerticalOffset(glyphLines.Count - 1);
+                    var textHalfHeight = textSize.Height / 2f;
 
-                    characterY = isMultiLine
-                        ? textTop - textHalfHeight
-                        : originalY + textHalfHeight;
+                    characterY = textTop - textHalfHeight - (lastLineVerticalOffset / 2f);
                 }
                 else
                 {
                     characterY += lineSpacing;
                 }
 
-                var firstCharBearingX = charGlyphs[0].HoriBearingX.ApplySize(normalizedSize);
-                var characterX = originalX - textHalfWidth + firstCharBearingX;
-
+                var characterX = originalX - textHalfWidth + firstLineFirstCharBearingX;
                 var textLinePos = new Vector2(characterX, characterY);
 
-                var glyphString = BuildGlyphString(
+                // Convert all of the glyphs to sprite batch items to be rendered
+                var batchItems = ToSpriteBatchItems(
                     textLinePos,
-                    charGlyphs.ToArray(),
-                    font.HasKerning,
-                    font.FontTextureAtlas.Id,
+                    glyphLines.ToArray()[i],
+                    font,
                     new Vector2(x, y),
                     normalizedSize,
                     angle,
@@ -333,10 +315,7 @@ namespace Velaptor.Graphics
                     atlasWidth,
                     atlasHeight);
 
-                foreach (var glyphBatchItem in glyphString)
-                {
-                    this.fontBatchService.Add(glyphBatchItem);
-                }
+                this.fontBatchService.AddRange(batchItems);
             }
         }
 
@@ -350,7 +329,11 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -366,9 +349,12 @@ namespace Velaptor.Graphics
             if (disposing)
             {
                 this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
+                this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
                 this.cachedUIntProps.Clear();
                 this.textureShader.Dispose();
                 this.textureBuffer.Dispose();
+                this.fontShader.Dispose();
+                this.fontBuffer.Dispose();
                 GLObservableUnsubscriber.Dispose();
             }
 
@@ -387,7 +373,7 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Invoked every time the batch is ready to be rendered.
+        /// Invoked every time the batch of textures are ready to be rendered.
         /// </summary>
         private void TextureBatchService_BatchFilled(object? sender, EventArgs e)
         {
@@ -397,9 +383,9 @@ namespace Velaptor.Graphics
 
             var totalItemsToRender = 0u;
 
-            for (var i = 0u; i < this.textureBatchService.AllBatchItems.Count; i++)
+            for (var i = 0u; i < this.textureBatchService.BatchItems.Count; i++)
             {
-                var (shouldRender, batchItem) = this.textureBatchService.AllBatchItems[i];
+                var (shouldRender, batchItem) = this.textureBatchService.BatchItems[i];
 
                 if (shouldRender is false || batchItem.IsEmpty())
                 {
@@ -413,7 +399,7 @@ namespace Velaptor.Graphics
                     textureIsBound = true;
                 }
 
-                this.textureBuffer.UpdateData(batchItem, i);
+                this.textureBuffer.UploadData(batchItem, i);
                 totalItemsToRender += 1;
             }
 
@@ -421,13 +407,20 @@ namespace Velaptor.Graphics
             // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
             if (totalItemsToRender > 0)
             {
-                this.gl.DrawElements(GLPrimitiveType.Triangles, 6u * totalItemsToRender, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                var totalElements = 6u * totalItemsToRender;
+
+                this.gl.BeginGroup($"Render {totalElements} Texture Elements");
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.gl.EndGroup();
             }
 
             // Empty the batch items
             this.textureBatchService.EmptyBatch();
         }
 
+        /// <summary>
+        /// Invoked every time the batch of fonts are ready to be rendered.
+        /// </summary>
         private void FontBatchService_BatchFilled(object? sender, EventArgs e)
         {
             var fontTextureIsBound = false;
@@ -438,9 +431,9 @@ namespace Velaptor.Graphics
 
             var totalItemsToRender = 0u;
 
-            for (var i = 0u; i < this.fontBatchService.AllBatchItems.Count; i++)
+            for (var i = 0u; i < this.fontBatchService.BatchItems.Count; i++)
             {
-                var (shouldRender, batchItem) = this.fontBatchService.AllBatchItems[i];
+                var (shouldRender, batchItem) = this.fontBatchService.BatchItems[i];
 
                 if (shouldRender is false || batchItem.IsEmpty())
                 {
@@ -456,7 +449,7 @@ namespace Velaptor.Graphics
                     fontTextureIsBound = true;
                 }
 
-                this.fontBuffer.UpdateData(batchItem, i);
+                this.fontBuffer.UploadData(batchItem, i);
 
                 totalItemsToRender += 1;
 
@@ -481,12 +474,12 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Constructs a string of glyphs to be rendered as a result of an array of <see cref="SpriteBatchItem"/>s.
+        /// Constructs a list of sprite batch items from the given
+        /// <paramref name="charMetrics"/> to be rendered.
         /// </summary>
         /// <param name="textPos">The position to render the text.</param>
         /// <param name="charMetrics">The glyph metrics of the characters in the text.</param>
-        /// <param name="hasKerning">True if the font has kerning to take into account.</param>
-        /// <param name="textureId">The ID of the font texture atlas.</param>
+        /// <param name="font">The font being used.</param>
         /// <param name="origin">The origin to rotate the text around.</param>
         /// <param name="size">The size of the text.</param>
         /// <param name="angle">The angle of the text.</param>
@@ -494,11 +487,10 @@ namespace Velaptor.Graphics
         /// <param name="atlasWidth">The width of the font texture atlas.</param>
         /// <param name="atlasHeight">The height of the font texture atlas.</param>
         /// <returns>The list of glyphs that make up the string as sprite batch items.</returns>
-        private IEnumerable<SpriteBatchItem> BuildGlyphString(
+        private IEnumerable<SpriteBatchItem> ToSpriteBatchItems(
             Vector2 textPos,
-            GlyphMetrics[] charMetrics,
-            bool hasKerning,
-            uint textureId,
+            IEnumerable<GlyphMetrics> charMetrics,
+            IFont font,
             Vector2 origin,
             float size,
             float angle,
@@ -509,33 +501,15 @@ namespace Velaptor.Graphics
             var result = new List<SpriteBatchItem>();
 
             var leftGlyphIndex = 0u;
-            var facePtr = this.freeTypeInvoker.GetFace();
 
-            for (var i = 0; i < charMetrics.Length; i++)
+            foreach (var currentCharMetric in charMetrics)
             {
-                var currentCharMetric = charMetrics[i].ApplySize(size);
+                textPos.X += font.GetKerning(leftGlyphIndex, currentCharMetric.CharIndex);
 
-                if (hasKerning && leftGlyphIndex != 0 && currentCharMetric.CharIndex != 0)
-                {
-                    // TODO: Check the perf for curiosity reasons
-                    var delta = this.freeTypeInvoker.FT_Get_Kerning(
-                        facePtr,
-                        leftGlyphIndex,
-                        currentCharMetric.CharIndex,
-                        (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
-
-                    var kerning = (float)(delta.x.ToInt32() >> 6);
-
-                    textPos.X += (int)kerning.ApplySize(size);
-                }
-
-                // Create the source rect and take the size into account
+                // Create the source rect
                 var srcRect = currentCharMetric.GlyphBounds;
                 srcRect.Width = srcRect.Width <= 0 ? 1 : srcRect.Width;
                 srcRect.Height = srcRect.Height <= 0 ? 1 : srcRect.Height;
-
-                var glyphHalfWidth = currentCharMetric.GlyphWidth / 2f;
-                var glyphHalfHeight = currentCharMetric.GlyphHeight / 2f;
 
                 // Calculate the height offset
                 var heightOffset = currentCharMetric.GlyphHeight - currentCharMetric.HoriBearingY;
@@ -549,8 +523,8 @@ namespace Velaptor.Graphics
 
                 // Create the destination rect
                 RectangleF destRect = default;
-                destRect.X = textPos.X + glyphHalfWidth;
-                destRect.Y = textPos.Y - glyphHalfHeight + heightOffset;
+                destRect.X = textPos.X;
+                destRect.Y = textPos.Y + heightOffset;
                 destRect.Width = atlasWidth;
                 destRect.Height = atlasHeight;
 
@@ -569,9 +543,9 @@ namespace Velaptor.Graphics
                     itemToAdd.Size = size;
                     itemToAdd.Angle = angle;
                     itemToAdd.TintColor = color;
-                    itemToAdd.Effects = RenderEffects.None;
                     itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
-                    itemToAdd.TextureId = textureId;
+                    itemToAdd.Effects = RenderEffects.None;
+                    itemToAdd.TextureId = font.FontTextureAtlas.Id;
 
                     result.Add(itemToAdd);
                 }
@@ -579,7 +553,7 @@ namespace Velaptor.Graphics
                 // Horizontally advance to the next glyph
                 // Get the difference between the old glyph width
                 // and the glyph width with the size applied
-                textPos.X += currentCharMetric.HorizontalAdvance.ApplySize(size);
+                textPos.X += currentCharMetric.HorizontalAdvance;
 
                 leftGlyphIndex = currentCharMetric.CharIndex;
             }

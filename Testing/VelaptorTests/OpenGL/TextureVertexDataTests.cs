@@ -1,38 +1,35 @@
-﻿// <copyright file="VertexDataTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureVertexDataTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Drawing;
-
 namespace VelaptorTests.OpenGL
 {
+    using System.Drawing;
     using System.Numerics;
     using Velaptor.OpenGL;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="VertexData"/> struct.
+    /// Tests the <see cref="TextureVertexData"/> struct.
     /// </summary>
-    public class VertexDataTests
+    public class TextureVertexDataTests
     {
         #region Overloaded Operator Tests
         [Fact]
         public void NotEqualsOperator_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            var dataA = new VertexData()
+            var dataA = new TextureVertexData()
             {
-                Vertex = new Vector3(1, 2, 3),
+                VertexPos = new Vector2(1, 2),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = Color.FromArgb(6, 7, 8, 9),
-                TransformIndex = 10,
             };
-            var dataB = new VertexData()
+            var dataB = new TextureVertexData()
             {
-                Vertex = new Vector3(11, 22, 33),
+                VertexPos = new Vector2(11, 22),
                 TextureCoord = new Vector2(44, 55),
                 TintColor = Color.FromArgb(66, 77, 88, 99),
-                TransformIndex = 10,
             };
 
             // Act
@@ -46,19 +43,17 @@ namespace VelaptorTests.OpenGL
         public void EqualsOperator_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            var dataA = new VertexData()
+            var dataA = new TextureVertexData()
             {
-                Vertex = new Vector3(1, 2, 3),
+                VertexPos = new Vector2(1, 2),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = Color.FromArgb(6, 7, 8, 9),
-                TransformIndex = 10,
             };
-            var dataB = new VertexData()
+            var dataB = new TextureVertexData()
             {
-                Vertex = new Vector3(1, 2, 3),
+                VertexPos = new Vector2(1, 2),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = Color.FromArgb(6, 7, 8, 9),
-                TransformIndex = 10,
             };
 
             // Act
@@ -70,24 +65,42 @@ namespace VelaptorTests.OpenGL
         #endregion
 
         #region Method Tests
+        [Fact]
+        public void TotalElements_WhenInvoked_ReturnsCorrectResult()
+        {
+            // Act
+            var actual = TextureVertexData.TotalElements();
+
+            // Assert
+            Assert.Equal(8u, actual);
+        }
+
+        [Fact]
+        public void Stride_WhenInvoked_ReturnsCorrectResult()
+        {
+            // Act
+            var actual = TextureVertexData.Stride();
+
+            // Assert
+            Assert.Equal(32u, actual);
+        }
+
         [Theory]
         [ClassData(typeof(VertexDataTestData))]
-        public void Equals_WhenInvoked_ReturnsCorrectResult(Vector3 vertex, Vector2 textureCoord, Color tintClr, int transformIndex, bool expected)
+        public void Equals_WhenInvoked_ReturnsCorrectResult(Vector2 vertex, Vector2 textureCoord, Color tintClr, bool expected)
         {
             // Arrange
-            var dataA = new VertexData()
+            var dataA = new TextureVertexData()
             {
-                Vertex = new Vector3(1, 2, 3),
+                VertexPos = new Vector2(1, 2),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = Color.FromArgb(6, 7, 8, 9),
-                TransformIndex = 10,
             };
-            var dataB = new VertexData()
+            var dataB = new TextureVertexData()
             {
-                Vertex = vertex,
+                VertexPos = vertex,
                 TextureCoord = textureCoord,
                 TintColor = tintClr,
-                TransformIndex = transformIndex,
             };
 
             // Act
@@ -101,12 +114,11 @@ namespace VelaptorTests.OpenGL
         public void Equals_WhenUsingOverloadWithObjectParamWithObjectOfDifferentType_ReturnsFalse()
         {
             // Arrange
-            var dataA = new VertexData()
+            var dataA = new TextureVertexData()
             {
-                Vertex = new Vector3(1, 2, 3),
+                VertexPos = new Vector2(1, 2),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = Color.FromArgb(6, 7, 8, 9),
-                TransformIndex = 10,
             };
             var dataB = new object();
 
@@ -121,19 +133,17 @@ namespace VelaptorTests.OpenGL
         public void Equals_WhenUsingOverloadWithObjectParamWithObjectOfSameType_ReturnsTrue()
         {
             // Arrange
-            var dataA = new VertexData()
+            var dataA = new TextureVertexData()
             {
-                Vertex = new Vector3(1, 2, 3),
+                VertexPos = new Vector2(1, 2),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = Color.FromArgb(6, 7, 8, 9),
-                TransformIndex = 10,
             };
-            object dataB = new VertexData()
+            object dataB = new TextureVertexData()
             {
-                Vertex = new Vector3(1, 2, 3),
+                VertexPos = new Vector2(1, 2),
                 TextureCoord = new Vector2(4, 5),
                 TintColor = Color.FromArgb(6, 7, 8, 9),
-                TransformIndex = 10,
             };
 
             // Act
@@ -141,6 +151,39 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             Assert.True(actual);
+        }
+
+        [Theory]
+        [InlineData(0, 0, 0, 0, 0, 0, 0, 0, true)]
+        [InlineData(1, 1, 0, 0, 0, 0, 0, 0, false)]
+        [InlineData(0, 0, 1, 1, 0, 0, 0, 0, false)]
+        [InlineData(0, 0, 0, 0, 1, 1, 1, 1, false)]
+        public void IsEmpty_WhenInvoked_ReturnsCorrectResult(
+            float vertexPosX,
+            float vertexPosY,
+            float textureCoordX,
+            float textureCoordY,
+            byte clrA,
+            byte clrR,
+            byte clrG,
+            byte clrB,
+            bool expected)
+        {
+            // Arrange
+            var data = new TextureVertexData()
+            {
+                VertexPos = new Vector2(vertexPosX, vertexPosY),
+                TextureCoord = new Vector2(textureCoordX, textureCoordY),
+                TintColor = clrA == 0 && clrR == 0 && clrG == 0 && clrB == 0
+                    ? Color.Empty
+                    : Color.FromArgb(clrA, clrR, clrG, clrB),
+            };
+
+            // Act
+            var actual = data.IsEmpty();
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
         #endregion
     }

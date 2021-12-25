@@ -35,8 +35,6 @@ namespace Velaptor.Factories
                 IoC.Container.GetInstance<IGameWindowFacade>(),
                 IoC.Container.GetInstance<IPlatform>(),
                 IoC.Container.GetInstance<ITaskService>(),
-                IoC.Container.GetInstance<IKeyboardInput<KeyCode, KeyboardState>>(),
-                IoC.Container.GetInstance<IMouseInput<MouseButton, MouseState>>(),
                 ContentLoaderFactory.CreateContentLoader(),
                 IoC.Container.GetInstance<OpenGLInitObservable>());
     }

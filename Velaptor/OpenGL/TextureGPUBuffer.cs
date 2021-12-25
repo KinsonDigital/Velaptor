@@ -4,19 +4,19 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
     using System.Numerics;
-    using Exceptions;
-    using Graphics;
+    using Velaptor.Exceptions;
+    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
-    using System.Drawing;
+    using Velaptor.OpenGL.Exceptions;
     using NETRect = System.Drawing.Rectangle;
 
-    // TODO: Rename QuadData to TextureQuadData
-    // TODO: Properly dispose of buffers on object dispose
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Updates texture data in the GPU buffer.
@@ -25,26 +25,27 @@ namespace Velaptor.OpenGL
     [SpriteBatchSize(ISpriteBatch.BatchSize)]
     internal class TextureGPUBuffer : GPUBufferBase<SpriteBatchItem>
     {
-        private TextureQuadData[] quadData = Array.Empty<TextureQuadData>();
+        private const string BufferNotInitMsg = "The texture buffer has not been initialized.";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureGPUBuffer"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        public TextureGPUBuffer(IGLInvoker gl, OpenGLInitObservable glObservable)
-            : base(gl, glObservable)
+        /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
+        public TextureGPUBuffer(IGLInvoker gl, IObservable<bool> glInitObservable)
+            : base(gl, glInitObservable)
         {
         }
 
-        protected override void UpdateVertexData(SpriteBatchItem textureQuad, uint batchIndex)
+        /// <inheritdoc/>
+        protected internal override void UploadVertexData(SpriteBatchItem textureQuad, uint batchIndex)
         {
             if (IsInitialized is false)
             {
-                // TODO: Create custom exception and implement here
-                throw new Exception("Buffer not initialized");
+                throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            this.GL.BeginGroup($"Update Texture Quad {batchIndex} Data");
+            GL.BeginGroup($"Update Texture Quad - BatchItem({batchIndex}) Data");
 
             float srcRectWidth;
             float srcRectHeight;
@@ -52,34 +53,28 @@ namespace Velaptor.OpenGL
             switch (textureQuad.Effects)
             {
                 case RenderEffects.None:
-                    srcRectWidth = textureQuad.SrcRect.Width;
-                    srcRectHeight = textureQuad.SrcRect.Height;
+                    srcRectWidth = textureQuad.SrcRect.Width * -1;
+                    srcRectHeight = textureQuad.SrcRect.Height * -1;
                     break;
                 case RenderEffects.FlipHorizontally:
-                    srcRectWidth = textureQuad.SrcRect.Width * -1;
-                    srcRectHeight = textureQuad.SrcRect.Height;
-                    break;
-                case RenderEffects.FlipVertically:
                     srcRectWidth = textureQuad.SrcRect.Width;
                     srcRectHeight = textureQuad.SrcRect.Height * -1;
                     break;
-                case RenderEffects.FlipBothDirections:
+                case RenderEffects.FlipVertically:
                     srcRectWidth = textureQuad.SrcRect.Width * -1;
-                    srcRectHeight = textureQuad.SrcRect.Height * -1;
+                    srcRectHeight = textureQuad.SrcRect.Height;
+                    break;
+                case RenderEffects.FlipBothDirections:
+                    srcRectWidth = textureQuad.SrcRect.Width;
+                    srcRectHeight = textureQuad.SrcRect.Height;
                     break;
                 default:
                     throw new InvalidRenderEffectsException(
                         $"The '{nameof(RenderEffects)}' value of '{(int)textureQuad.Effects}' is not valid.");
             }
 
-            // Convert the tint color to a normalized 4 component vector
-            var red = (byte)textureQuad.TintColor.R.MapValue(0f, 255f, 0f, 1f);
-            var green = (byte)textureQuad.TintColor.G.MapValue(0f, 255f, 0f, 1f);
-            var blue = (byte)textureQuad.TintColor.B.MapValue(0f, 255f, 0f, 1f);
-            var alpha = (byte)textureQuad.TintColor.A.MapValue(0f, 255f, 0f, 1f);
-
             // Construct the quad rect to determine the vertex positions sent to the GPU
-            var quadRect = new RectangleF(textureQuad.DestRect.X, textureQuad.DestRect.Y, textureQuad.SrcRect.Width, textureQuad.SrcRect.Height);
+            var quadRect = new RectangleF(textureQuad.DestRect.X, textureQuad.DestRect.Y, srcRectWidth, srcRectHeight);
 
             // Calculate the scale on the X and Y axis to calculate the size
             var resolvedSize = textureQuad.Size - 1f;
@@ -122,12 +117,7 @@ namespace Velaptor.OpenGL
             var textureTopRight = new Vector2(textureQuad.SrcRect.Right, textureQuad.SrcRect.Top);
             var textureBottomRight = new Vector2(textureQuad.SrcRect.Right, textureQuad.SrcRect.Bottom);
 
-            // Rotate the sub texture corners
-            var srcRectHalfWidth = textureQuad.SrcRect.Width / 2;
-            var srcRectHalfHeight = textureQuad.SrcRect.Height / 2;
-
             // Convert the texture coordinates to NDC values
-            var srcRectOrigin = new Vector2(textureQuad.SrcRect.Left - srcRectHalfWidth, textureQuad.SrcRect.Top + srcRectHalfHeight);
             quadDataItem.Vertex1.TextureCoord = textureTopLeft.ToNDCTextureCoords(textureWidth, textureHeight);
             quadDataItem.Vertex2.TextureCoord = textureBottomLeft.ToNDCTextureCoords(textureWidth, textureHeight);
             quadDataItem.Vertex3.TextureCoord = textureTopRight.ToNDCTextureCoords(textureWidth, textureHeight);
@@ -145,30 +135,30 @@ namespace Velaptor.OpenGL
 
             BindVBO();
 
-            this.GL.BufferSubData(GLBufferTarget.ArrayBuffer, (nint)offset, totalBytes, data);
+            GL.BufferSubData(GLBufferTarget.ArrayBuffer, (nint)offset, totalBytes, data);
 
             UnbindVBO();
 
-            this.GL.EndGroup();
+            GL.EndGroup();
         }
 
-        protected override void PrepareForUse()
+        /// <inheritdoc/>
+        protected internal override void PrepareForUpload()
         {
             if (IsInitialized is false)
             {
-                // TODO: Create custom exception and implement here
-                throw new Exception("Buffer not initialized");
+                throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
             BindVAO();
         }
 
-        protected override float[] GenerateData()
+        /// <inheritdoc/>
+        protected internal override float[] GenerateData()
         {
             if (IsInitialized is false)
             {
-                // TODO: Create custom exception and implement here
-                throw new Exception("Buffer not initialized");
+                throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
             var result = new List<TextureQuadData>();
@@ -187,45 +177,44 @@ namespace Velaptor.OpenGL
                 });
             }
 
-            this.quadData = result.ToArray();
-
             return result.ToVertexArray();
         }
 
-        protected override void SetupVAO()
+        /// <inheritdoc/>
+        protected internal override void SetupVAO()
         {
             if (IsInitialized is false)
             {
-                // TODO: Create custom exception and implement here
-                throw new Exception("Buffer not initialized");
+                throw new BufferNotInitializedException(BufferNotInitMsg);
             }
+
+            GL.BeginGroup("Setup Texture Buffer Vertex Attributes");
 
             var stride = TextureVertexData.Stride();
 
-            unsafe
-            {
-                var vertexPosOffset = 0u;
-                const uint vertexPosSize = 2u * sizeof(float);
-                this.GL.VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, stride, vertexPosOffset);
-                this.GL.EnableVertexAttribArray(0);
+            const uint vertexPosOffset = 0u;
+            const uint vertexPosSize = 2u * sizeof(float);
+            GL.VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, stride, vertexPosOffset);
+            GL.EnableVertexAttribArray(0);
 
-                var textureCoordOffset = vertexPosOffset + vertexPosSize;
-                const uint textureCoordSize = 2u * sizeof(float);
-                this.GL.VertexAttribPointer(1, 2, GLVertexAttribPointerType.Float, false, stride, textureCoordOffset);
-                this.GL.EnableVertexAttribArray(1);
+            const uint textureCoordOffset = vertexPosOffset + vertexPosSize;
+            const uint textureCoordSize = 2u * sizeof(float);
+            GL.VertexAttribPointer(1, 2, GLVertexAttribPointerType.Float, false, stride, textureCoordOffset);
+            GL.EnableVertexAttribArray(1);
 
-                var tintClrOffset = textureCoordOffset + textureCoordSize;
-                this.GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, tintClrOffset);
-                this.GL.EnableVertexAttribArray(2);
-            }
+            const uint tintClrOffset = textureCoordOffset + textureCoordSize;
+            GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, tintClrOffset);
+            GL.EnableVertexAttribArray(2);
+
+            GL.EndGroup();
         }
 
-        protected override uint[] GenerateIndices()
+        /// <inheritdoc/>
+        protected internal override uint[] GenerateIndices()
         {
             if (IsInitialized is false)
             {
-                // TODO: Create custom exception and implement here
-                throw new Exception("Buffer not initialized");
+                throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
             var result = new List<uint>();

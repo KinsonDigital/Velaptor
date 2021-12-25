@@ -1,4 +1,4 @@
-﻿// <copyright file="TestRenderAnimatedGraphicsScene.cs" company="KinsonDigital">
+﻿// <copyright file="TestAnimatedGraphicsScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,9 +11,9 @@ namespace VelaptorTesting.Scenes
     using VelaptorTesting.Core;
 
     /// <summary>
-    /// Tests that graphics properly render to the screen.
+    /// Tests that animated graphics properly render to the screen.
     /// </summary>
-    public class TestRenderAnimatedGraphicsScene : SceneBase
+    public class TestAnimatedGraphicsScene : SceneBase
     {
         private IAtlasData? mainAtlas;
         private AtlasSubTextureData[]? frames;
@@ -21,10 +21,10 @@ namespace VelaptorTesting.Scenes
         private int currentFrame;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestRenderAnimatedGraphicsScene"/> class.
+        /// Initializes a new instance of the <see cref="TestAnimatedGraphicsScene"/> class.
         /// </summary>
         /// <param name="contentLoader">Loads content for the scene.</param>
-        public TestRenderAnimatedGraphicsScene(IContentLoader contentLoader)
+        public TestAnimatedGraphicsScene(IContentLoader contentLoader)
             : base(contentLoader)
         {
         }

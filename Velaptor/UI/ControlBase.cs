@@ -74,10 +74,10 @@ namespace Velaptor.UI
         }
 
         /// <inheritdoc cref="ISizable.Width"/>
-        public virtual uint Width { get; protected set; }
+        public virtual uint Width { get; protected internal set; }
 
         /// <inheritdoc cref="ISizable.Height"/>
-        public virtual uint Height { get; protected set; }
+        public virtual uint Height { get; protected internal set; }
 
         /// <inheritdoc cref="IControl.Visible"/>
         public virtual bool Visible { get; set; } = true;

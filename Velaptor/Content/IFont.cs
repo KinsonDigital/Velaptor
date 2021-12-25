@@ -50,5 +50,9 @@ namespace Velaptor.Content
 
         // TODO: Add code docs
         SizeF Measure(string text);
+
+        GlyphMetrics[] ToGlyphMetrics(string text);
+
+        float GetKerning(uint leftGlyphIndex, uint rightGlyphIndex);
     }
 }

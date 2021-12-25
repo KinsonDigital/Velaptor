@@ -2,6 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable UnusedMember.Global
+
+using System.Collections.ObjectModel;
+
 #pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Helpers
 {
@@ -13,9 +17,10 @@ namespace VelaptorTests.Helpers
     using Xunit.Sdk;
 
     /// <summary>
-    /// Provides helper methods for the <see cref="XUnit"/>'s <see cref="Assert"/> class.
+    /// Provides helper methods for the <see cref="Xunit"/>'s <see cref="Assert"/> class.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class AssertExtensions : Assert
     {
         /// <summary>
@@ -94,39 +99,48 @@ namespace VelaptorTests.Helpers
         ///     Will fail assertion when the total number of <paramref name="expectedItems"/> does not match the total number of <paramref name="actualItems"/>.
         /// </remarks>
         public static void ItemsEqual<T>(IEnumerable<T> expectedItems, IEnumerable<T> actualItems)
-            where T : class
+            where T : IEquatable<T>
         {
-            if (expectedItems is null && !(actualItems is null))
+            if (expectedItems is null && actualItems is not null)
             {
-                Assert.True(false, $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
+                Assert.True(
+                false,
+                $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
             }
 
             if (expectedItems is not null && actualItems is null)
             {
-                Assert.True(false, $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
+                Assert.True(
+                false,
+                $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
             }
 
-            if (expectedItems.Count() != actualItems.Count())
+            var expected = expectedItems as T[] ?? expectedItems.ToArray();
+            var actual = actualItems as T[] ?? actualItems.ToArray();
+            if (expected.Length != actual.Length)
             {
-                Assert.True(false, $"The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
+                Assert.True(false,
+                    $"The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
             }
 
-            var expectedArrayItems = expectedItems.ToArray();
-            var actualArrayItems = actualItems.ToArray();
+            var expectedArrayItems = expected.ToArray();
+            var actualArrayItems = actual.ToArray();
 
             for (var i = 0; i < expectedArrayItems.Length; i++)
             {
-                if ((expectedArrayItems[i] is null) && !(actualArrayItems[i] is null))
+                if (expectedArrayItems[i] is null && actualArrayItems[i] is not null)
                 {
-                    Assert.True(false, $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                    Assert.True(false,
+                        $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
-                if (expectedArrayItems[i] is not null && (actualArrayItems[i] is null))
+                if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
                 {
-                    Assert.True(false, $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                    Assert.True(false,
+                        $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
 
-                if (expectedArrayItems[i] != actualArrayItems[i])
+                if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
                 {
                     Assert.True(false, $"The expected and actual item at index '{i}' are not equal.");
                 }
@@ -136,7 +150,7 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Asserts that all of the given <paramref name="items"/> are <see langword="true"/> which is dictacted
+        /// Asserts that all of the given <paramref name="items"/> are <see langword="true"/> which is dictated
         /// by the given <paramref name="arePredicate"/> predicate.
         /// </summary>
         /// <typeparam name="T">The type of item in the list of items.</typeparam>
@@ -171,30 +185,30 @@ namespace VelaptorTests.Helpers
         /// <param name="actual">The actual message to display if the condition is <see langword="false"/>.</param>
         public static void True(bool condition, string message, string expected = "", string actual = "")
         {
-            XunitException assertExcption;
+            XunitException assertException;
 
             if (!string.IsNullOrEmpty(expected) && string.IsNullOrEmpty(actual))
             {
-                assertExcption = new XunitException(
+                assertException = new XunitException(
                     $"Message: {message}\n" +
                     $"Expected: {expected}");
             }
             else if (string.IsNullOrEmpty(expected) && !string.IsNullOrEmpty(actual))
             {
-                assertExcption = new XunitException(
+                assertException = new XunitException(
                     $"Message: {message}\n" +
                     $"Actual: {actual}\n");
             }
             else if (!string.IsNullOrEmpty(expected) && !string.IsNullOrEmpty(actual))
             {
-                assertExcption = new XunitException(
+                assertException = new XunitException(
                     $"Message: {message}\n" +
                     $"Expected: {expected}\n" +
                     $"Actual:   {actual}");
             }
             else
             {
-                assertExcption = new AssertActualExpectedException(
+                assertException = new AssertActualExpectedException(
                     true,
                     condition,
                     message);
@@ -202,7 +216,7 @@ namespace VelaptorTests.Helpers
 
             if (condition is false)
             {
-                throw assertExcption;
+                throw assertException;
             }
         }
 
@@ -259,14 +273,29 @@ namespace VelaptorTests.Helpers
         /// <param name="expected">The expected <see langword="int"/> value.</param>
         /// <param name="actual">The actual <see langword="int"/> value.</param>
         /// <param name="message">The message to be shown about the failed assertion.</param>
-        public static void Equals(int expected, int actual, string message)
+        public static void EqualWithMessage(int expected, int actual, string message)
         {
             var assertException = new AssertActualExpectedException(expected, actual, message);
             try
             {
-                Assert.Equal(expected, actual);
+                Equal(expected, actual);
             }
             catch (Exception)
+            {
+                throw assertException;
+            }
+        }
+
+        public static void EqualWithMessage<T>(T expected, T actual, string message)
+            where T : IEquatable<T>
+        {
+            var assertException = new AssertActualExpectedException(expected.ToString(), actual.ToString(), message);
+
+            try
+            {
+                Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? string.Empty : message);
+            }
+            catch (Exception ex)
             {
                 throw assertException;
             }
@@ -277,7 +306,7 @@ namespace VelaptorTests.Helpers
         /// </summary>
         /// <typeparam name="T">The type of the event arguments to expect.</typeparam>
         /// <param name="attach">Code to attach the event handler.</param>
-        /// <param name="detach">Code to detatch the event handler.</param>
+        /// <param name="detach">Code to detach the event handler.</param>
         /// <param name="testCode">A delegate to the code to be tested.</param>
         public static void DoesNotRaise<T>(Action<EventHandler<T>> attach, Action<EventHandler<T>> detach, Action testCode)
             where T : EventArgs

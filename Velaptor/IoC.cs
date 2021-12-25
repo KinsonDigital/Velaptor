@@ -87,12 +87,6 @@ namespace Velaptor
 
             IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
 
-            IoCContainer.Register(GPUBufferFactory.CreateTextureGPUBuffer, true);
-            IoCContainer.Register(GPUBufferFactory.CreateFontGPUBuffer, true);
-
-            IoCContainer.Register(ShaderFactory.CreateTextureShader, true);
-            IoCContainer.Register(ShaderFactory.CreateFontShader, true);
-
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);

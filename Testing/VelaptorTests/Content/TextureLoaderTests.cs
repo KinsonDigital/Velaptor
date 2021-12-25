@@ -93,10 +93,12 @@ namespace VelaptorTests.Content
             var textureA = loader.Load(TextureFileName);
             var textureB = loader.Load(TextureFileName);
 
+            // TODO: Verify that this test works
+
             // Assert
             Assert.Equal(textureA.Name, textureB.Name);
             Assert.Equal(textureA.Path, textureB.Path);
-            this.mockGL.Verify(m => m.ObjectLabel(GLObjectIdentifier.Texture, It.IsAny<uint>(), 1u, TextureFileName), Times.Once());
+            Assert.Same(textureA, textureB);
         }
 
         [Fact]

@@ -4,12 +4,13 @@
 
 namespace Velaptor.UI
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
-    using System.Collections.Generic;
     using System.Drawing;
-    using System.Linq;
     using Velaptor.Content;
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// A simple label that renders text on the screen.
@@ -40,27 +41,31 @@ namespace Velaptor.UI
             }
         }
 
+        /// <inheritdoc cref="ControlBase.Left"/>
         public override int Left
         {
             get => (int)(Position.X - (Width / 2f));
             set => Position = new Point((int)(value + (Width / 2f)), Position.Y);
         }
 
+        /// <inheritdoc cref="ControlBase.Right"/>
         public override int Right
         {
-            get => (int)(Position.X - (Width / 2f));
+            get => (int)(Position.X + (Width / 2f));
             set => Position = new Point((int)(value - (Width / 2f)), Position.Y);
         }
 
+        /// <inheritdoc cref="ControlBase.Top"/>
         public override int Top
         {
             get => (int)(Position.Y - (Height / 2f));
             set => Position = new Point(Position.X, (int)(value + (Height / 2f)));
         }
 
+        /// <inheritdoc cref="ControlBase.Bottom"/>
         public override int Bottom
         {
-            get => (int)(Position.Y - (Height / 2f));
+            get => (int)(Position.Y + (Height / 2f));
             set => Position = new Point(Position.X, (int)(value - (Height / 2f)));
         }
 

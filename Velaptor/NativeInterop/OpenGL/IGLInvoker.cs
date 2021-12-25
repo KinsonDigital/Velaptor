@@ -8,6 +8,10 @@ namespace Velaptor.NativeInterop.OpenGL
     using System.Numerics;
     using Velaptor.OpenGL;
 
+    // TODO: Create an OpenGL extension methods for binding and unbinding various buffers
+    // Example: BindVBO() - This would call the raw GL function with the proper parameters to bind the buffer.
+    // Once these are created, the bind and unbind calls in the GPUBufferBase class can be removed and just used directly.
+
     /// <summary>
     /// Invokes OpenGL calls.
     /// </summary>
@@ -490,9 +494,9 @@ namespace Velaptor.NativeInterop.OpenGL
 
         void LabelShaderProgram(uint shaderId, string label);
 
-        void LabelVertexArray(uint vertexArrayId, string label, Action bindVertexArrayObj);
+        void LabelVertexArray(uint vertexArrayId, string label);
 
-        void LabelBuffer(uint bufferId, string label, BufferType bufferType, Action bindBufferObj);
+        void LabelBuffer(uint bufferId, string label, BufferType bufferType);
 
         void LabelTexture(uint textureId, string label);
 

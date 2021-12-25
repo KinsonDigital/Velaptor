@@ -2,13 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor;
-
 namespace VelaptorTesting.Scenes
 {
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Linq;
+    using Velaptor;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using VelaptorTesting.Core;
@@ -18,9 +14,7 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestRenderTextScene : SceneBase
     {
-        // private const string TextToRender = "If can you see this text, then text rendering is working correctly.";
-        private const string TextToRender = "Kinson\nDigital";
-        private readonly IContentLoader contentLoader;
+        private const string TextToRender = "If can you see this text, then text rendering is working correctly.";
         private IFont? font;
 
         /// <summary>
@@ -29,7 +23,8 @@ namespace VelaptorTesting.Scenes
         /// <param name="contentLoader">Loads content for the scene.</param>
         public TestRenderTextScene(IContentLoader contentLoader)
             : base(contentLoader)
-                => this.contentLoader = contentLoader;
+        {
+        }
 
         /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
@@ -41,7 +36,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.font = this.contentLoader.Load<IFont>("TimesNewRoman");
+            this.font = ContentLoader.Load<IFont>("TimesNewRoman");
 
             base.LoadContent();
         }

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Factories;
+
 namespace Velaptor.UI
 {
     using System;
@@ -40,6 +42,11 @@ namespace Velaptor.UI
             // just in case the IWindow implementation is not
             this.window.UpdateFrequency = 60;
         }
+
+        /// <summary>
+        /// Finalizes an instance of the <see cref="Window"/> class.
+        /// </summary>
+        ~Window() => Dispose(false);
 
         /// <inheritdoc/>
         public string Title
@@ -160,6 +167,9 @@ namespace Velaptor.UI
         [ExcludeFromCodeCoverage]
         public virtual void OnUnload()
         {
+            // TODO: Have every static factory dispose method called in here
+            SpriteBatchFactory.Dispose();
+            GPUBufferFactory.Dispose();
         }
 
         /// <summary>

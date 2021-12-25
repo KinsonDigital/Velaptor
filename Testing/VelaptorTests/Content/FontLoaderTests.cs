@@ -259,7 +259,7 @@ namespace VelaptorTests.Content
                 YMax = start + 10,
                 HorizontalAdvance = start + 11,
                 Glyph = (char)(start + 12),
-                AtlasBounds = new Rectangle(start + 13, start + 14, start + 15, start + 16),
+                GlyphBounds = new RectangleF(start + 13, start + 14, start + 15, start + 16),
             };
         }
 

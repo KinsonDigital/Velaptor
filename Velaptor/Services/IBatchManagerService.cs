@@ -1,19 +1,21 @@
-﻿// <copyright file="IBatchManagerService_NEW.cs" company="KinsonDigital">
+﻿// <copyright file="IBatchManagerService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
     /// <summary>
-    /// Manages the process of batching textures together when rendering them.
+    /// Manages the process of batching items.
     /// </summary>
+    /// <typeparam name="T">The type of items stored in the batch.</typeparam>
     internal interface IBatchManagerService<T>
     {
         /// <summary>
-        /// Occurs when a batch is ready to be rendered.
+        /// Occurs when a batch is full.
         /// </summary>
         /// <remarks>
         /// Scenarios When The Batch Is Ready:
@@ -30,14 +32,21 @@ namespace Velaptor.Services
         uint BatchSize { get; set; }
 
         /// <summary>
-        /// Gets the list of batch items.
+        /// Gets or sets the list of batch items.
         /// </summary>
-        /// <remarks>
-        ///     Represents a list of items that are ready or not ready to be rendered.
-        /// </remarks>
-        ReadOnlyDictionary<uint, (bool shouldRender, T item)> AllBatchItems { get; }
+        ReadOnlyDictionary<uint, (bool shouldRender, T item)> BatchItems { get; set; }
 
-        void Add(T rect);
+        /// <summary>
+        /// Adds the given <paramref name="item"/> to the batch.
+        /// </summary>
+        /// <param name="item">The item to be added.</param>
+        void Add(T item);
+
+        /// <summary>
+        /// Adds the given list of <paramref name="items"/> to batch.
+        /// </summary>
+        /// <param name="items">The items to be added.</param>
+        void AddRange(IEnumerable<T> items);
 
         /// <summary>
         /// Empties the entire batch.

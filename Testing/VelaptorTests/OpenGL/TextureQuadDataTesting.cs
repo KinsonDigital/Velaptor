@@ -1,4 +1,4 @@
-﻿// <copyright file="QuadDataTesting.cs" company="KinsonDigital">
+﻿// <copyright file="TextureQuadDataTesting.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,17 +9,17 @@ namespace VelaptorTests.OpenGL
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="QuadData"/> struct.
+    /// Tests the <see cref="TextureQuadData"/> struct.
     /// </summary>
-    public class QuadDataTesting
+    public class TextureQuadDataTesting
     {
         #region Overloaded Operator Tests
         [Fact]
         public void EqualsOperator_WithBothOperandsEqual_ReturnsTrue()
         {
             // Arrange
-            var quadA = default(QuadData);
-            var quadB = default(QuadData);
+            var quadA = default(TextureQuadData);
+            var quadB = default(TextureQuadData);
 
             // Act
             var actual = quadA == quadB;
@@ -32,12 +32,12 @@ namespace VelaptorTests.OpenGL
         public void EqualsOperator_WithBothOperandsNotEqual_ReturnsFalse()
         {
             // Arrange
-            var quadA = default(QuadData);
-            var quadB = new QuadData()
+            var quadA = default(TextureQuadData);
+            var quadB = new TextureQuadData()
             {
-                Vertex1 = new VertexData()
+                Vertex1 = new TextureVertexData()
                 {
-                    Vertex = new Vector3(11, 22, 33),
+                    VertexPos = new Vector2(11, 22),
                 },
             };
 
@@ -51,11 +51,21 @@ namespace VelaptorTests.OpenGL
 
         #region Method Tests
         [Fact]
+        public void GetTotalBytes_WhenInvoked_ReturnsCorrectResult()
+        {
+            // Act
+            var actual = TextureQuadData.GetTotalBytes();
+
+            // Assert
+            Assert.Equal(128u, actual);
+        }
+
+        [Fact]
         public void Equals_WithEqualParam_ReturnsTrue()
         {
             // Arrange
-            var quadA = default(QuadData);
-            var quadB = default(QuadData);
+            var quadA = default(TextureQuadData);
+            var quadB = default(TextureQuadData);
 
             // Act
             var actual = quadA.Equals(quadB);
@@ -68,7 +78,7 @@ namespace VelaptorTests.OpenGL
         public void Equals_WhenInvokedWithParamOfDifferentType_ReturnsFalse()
         {
             // Arrange
-            var quadA = default(QuadData);
+            var quadA = default(TextureQuadData);
             var quadB = new object();
 
             // Act
@@ -82,8 +92,8 @@ namespace VelaptorTests.OpenGL
         public void Equals_WhenInvokedWithEqualParamOfSameType_ReturnsTrue()
         {
             // Arrange
-            var quadA = default(QuadData);
-            object quadB = default(QuadData);
+            var quadA = default(TextureQuadData);
+            object quadB = default(TextureQuadData);
 
             // Act
             var actual = quadA.Equals(quadB);

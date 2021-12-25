@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Linq;
-
 namespace Velaptor.Content
 {
     using System;
@@ -22,7 +20,6 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class FontLoader : ILoader<IFont>
     {
-        private const int SpacingOffset = 4;
         private readonly ConcurrentDictionary<string, IFont> fonts = new ();
         private readonly IGLInvoker gl;
         private readonly IFreeTypeInvoker freeTypeInvoker;
@@ -150,19 +147,9 @@ namespace Velaptor.Content
 
                 var fontAtlasTexture = new Texture(this.gl, name, path, fontAtlasImage) { IsPooled = true };
 
-                var scaledLineSpacing = this.freeTypeInvoker.GetFontScaledLineSpacing();
-
-                var maxAscent = atlasData.Max(m => m.Ascender);
-                var maxDescent = atlasData.Max(m => m.Descender);
-                var ascentTotal = maxAscent - maxDescent;
-
-                var lineSpacing = (ascentTotal * scaledLineSpacing) + SpacingOffset;
-
                 return new Font(fontAtlasTexture, this.freeTypeInvoker, atlasData, fontSettings, this.glyphChars, name, path)
                 {
                     IsPooled = true,
-                    HasKerning = this.freeTypeInvoker.FT_Has_Kerning(),
-                    LineSpacing = lineSpacing,
                 };
             });
         }

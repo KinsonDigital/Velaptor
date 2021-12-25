@@ -1,16 +1,13 @@
-﻿// <copyright file="VertexData.cs" company="KinsonDigital">
+﻿// <copyright file="TextureVertexData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
-
-using System.Drawing;
 
 namespace Velaptor.OpenGL
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Drawing;
     using System.Numerics;
-
-    // TODO: Refactor struct name to TextureQuadVertexData
 
     /// <summary>
     /// Represents a single vertex of data for a quad.

@@ -22,6 +22,8 @@ namespace Velaptor.NativeInterop.OpenGL
     [ExcludeFromCodeCoverage]
     internal class GLInvoker : IGLInvoker
     {
+        // TODO: Add ability to cache the shader that is currently in use.
+
         // TODO: Add ability to cache the bound ID states.  This is to prevent GL bind calls to bind ID's that
         // are currently already bound which can improve performance.  Make sure to add and remove the id to the lists
         // when generating vertex arrays and buffers
@@ -473,7 +475,7 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         // TODO: Move to method extensions
-        public void LabelVertexArray(uint vertexArrayId, string label, Action bindVertexArrayObj)
+        public void LabelVertexArray(uint vertexArrayId, string label)
         {
             // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
             label = string.IsNullOrEmpty(label)
@@ -482,20 +484,19 @@ namespace Velaptor.NativeInterop.OpenGL
 
             var newLabel = $"{label} VAO";
 
-            bindVertexArrayObj();
             AddToGLCallStack(nameof(LabelVertexArray));
             this.gl.ObjectLabel(ObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
         }
 
         // TODO: Move to method extensions
-        public void LabelBuffer(uint bufferId, string label, BufferType bufferType, Action bindBufferObj)
+        public void LabelBuffer(uint bufferId, string label, BufferType bufferType)
         {
             // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
             label = string.IsNullOrEmpty(label)
                 ? "NOT SET"
                 : label;
 
-            string bufferTypeAcronym = bufferType switch
+            var bufferTypeAcronym = bufferType switch
             {
                 BufferType.VertexBufferObject => "VBO",
                 BufferType.IndexArrayObject => "EBO",
@@ -504,7 +505,6 @@ namespace Velaptor.NativeInterop.OpenGL
 
             var newLabel = $"{label} {bufferTypeAcronym}";
 
-            bindBufferObj();
             AddToGLCallStack(nameof(LabelBuffer));
             this.gl.ObjectLabel(ObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
         }
@@ -617,6 +617,7 @@ namespace Velaptor.NativeInterop.OpenGL
             }
         }
 
+        // TODO: Add Debug precompiler logic here to only run this method code if in debug
         private void AddToGLCallStack(string glFunctionName)
         {
             glCallStack.Enqueue(glFunctionName);

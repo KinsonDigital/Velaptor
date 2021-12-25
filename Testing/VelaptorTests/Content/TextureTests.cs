@@ -94,13 +94,11 @@ namespace VelaptorTests.Content
                 rowBytes.Clear();
             }
 
-            var expectedPixelBytes = new ReadOnlySpan<byte>(expectedPixelData.ToArray());
-
             // Act
-            var texture = new Texture(this.mockGL.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
+            var unused = new Texture(this.mockGL.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
 
             // Assert
-            this.mockGL.Verify(m => m.ObjectLabel(GLObjectIdentifier.Texture, TextureId, 1u, "test-texture.png"), Times.Once());
+            this.mockGL.Verify(m => m.LabelTexture(TextureId, "test-texture.png"), Times.Once());
             this.mockGL.Verify(m => m.TexParameter(
                 GLTextureTarget.Texture2D,
                 GLTextureParameterName.TextureMinFilter,
@@ -186,7 +184,7 @@ namespace VelaptorTests.Content
             var actual = texture.Width;
 
             // Assert
-            Assert.Equal(2, actual);
+            Assert.Equal(2u, actual);
         }
 
         [Fact]
@@ -199,7 +197,7 @@ namespace VelaptorTests.Content
             var actual = texture.Height;
 
             // Assert
-            Assert.Equal(3, actual);
+            Assert.Equal(3u, actual);
         }
         #endregion
 

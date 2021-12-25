@@ -9,7 +9,6 @@ namespace Velaptor.Content
     /// <summary>
     /// The different font settings that can be used when loading fonts.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class FontSettings
     {
         /// <summary>

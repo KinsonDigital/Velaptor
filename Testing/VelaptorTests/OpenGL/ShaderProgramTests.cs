@@ -2,14 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.OpenGL.Exceptions;
+
 namespace VelaptorTests.OpenGL
 {
     using System;
     using System.Collections.Generic;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
     using Xunit;
 
@@ -21,14 +25,14 @@ namespace VelaptorTests.OpenGL
         private const string BatchSizeVarName = "BATCH_SIZE";
         private const string VertShaderSrc = "vert-shader-src";
         private const string FragShaderSrc = "frag-shader-src";
-        private const string ShaderName = "texture-shader";
+        private const string ShaderName = "UNKNOWN";
         private const uint VertexShaderId = 1234u;
         private const uint FragShaderId = 5678u;
         private const uint ShaderProgramId = 1928u;
-        private const uint DefaultBatchSize = 10u;
+        private const uint DefaultBatchSize = 0u;
         private readonly Mock<IShaderLoaderService<uint>> mockLoader;
         private readonly Mock<IGLInvoker> mockGLInvoker;
-        private readonly Mock<IGLInvokerExtensions> mockGLInvokerExtensions;
+        private readonly OpenGLInitObservable glInitObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
@@ -49,7 +53,7 @@ namespace VelaptorTests.OpenGL
 
             // Sets up the fragment shader file mock.
             this.mockLoader.Setup(m
-                    => m.LoadFragSource(ShaderName, null))
+                    => m.LoadFragSource(ShaderName, vertTemplateVars))
                         .Returns(() => FragShaderSrc);
 
             this.mockGLInvoker = new Mock<IGLInvoker>();
@@ -62,71 +66,55 @@ namespace VelaptorTests.OpenGL
             this.mockGLInvoker.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus, out getProgramStatusCode));
             this.mockGLInvoker.Setup(m => m.CreateProgram()).Returns(ShaderProgramId);
 
-            this.mockGLInvokerExtensions = new Mock<IGLInvokerExtensions>();
-            this.mockGLInvokerExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLInvokerExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.glInitObservable = new OpenGLInitObservable();
         }
 
         #region Prop Tests
         [Fact]
-        public void BatchSize_WhenCreatingNewProgram_DefaultValueIsCorrect()
+        public void Name_WhenGettingDefaultValue_ReturnsCorrectResult()
         {
             // Arrange
-            var program = CreateProgram();
+            var shader = CreateShaderProgram();
 
             // Act
-            var actual = program.BatchSize;
+            var actual = shader.Name;
 
             // Assert
-            Assert.Equal(10u, actual);
-        }
-
-        [Fact]
-        public void BatchSize_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var program = CreateProgram();
-
-            // Act
-            program.BatchSize = 1234u;
-            var actual = program.BatchSize;
-
-            // Assert
-            Assert.Equal(1234u, actual);
+            Assert.Equal("UNKNOWN", actual);
         }
         #endregion
 
         #region Method Tests
         [Fact]
-        public void Init_WhenInvoked_LoadsShaderSourceCode()
+        public void ObservableInit_WhenInvoked_LoadsShaderSourceCode()
         {
             // Arrange
             IEnumerable<(string, uint)> vertTemplateVars = new[]
             {
-                (BatchSizeVarName, 10u),
+                (BatchSizeVarName, 0u),
             };
 
-            var program = CreateProgram();
+            var unused = CreateShaderProgram();
 
             // Act
-            program.Init();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Assert
             this.mockLoader.Verify(m
                 => m.LoadVertSource(ShaderName, vertTemplateVars), Times.Once);
             this.mockLoader.Verify(m
-                => m.LoadFragSource(ShaderName, null), Times.Once);
+                => m.LoadFragSource(ShaderName, vertTemplateVars), Times.Once);
         }
 
         [Fact]
-        public void Init_WhenInvokedSecondTime_DoesNotCreateShaderProgram()
+        public void ObservableInit_WhenInvokedSecondTime_DoesNotCreateShaderProgram()
         {
             // Arrange
-            var program = CreateProgram();
-            program.Init();
+            var program = CreateShaderProgram();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Act
-            program.Init();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Assert
             this.mockLoader.Verify(m
@@ -137,19 +125,18 @@ namespace VelaptorTests.OpenGL
             this.mockGLInvoker.Verify(m => m.CreateProgram(), Times.Once());
             this.mockGLInvoker.Verify(m => m.AttachShader(It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
             this.mockGLInvoker.Verify(m => m.LinkProgram(It.IsAny<uint>()), Times.Once());
-            this.mockGLInvokerExtensions.Verify(m => m.LinkProgramSuccess(It.IsAny<uint>()), Times.Once());
             this.mockGLInvoker.Verify(m => m.DetachShader(It.IsAny<uint>(), It.IsAny<uint>()), Times.Exactly(2));
             this.mockGLInvoker.Verify(m => m.DeleteShader(It.IsAny<uint>()), Times.Exactly(2));
         }
 
         [Fact]
-        public void Init_WhenInvoked_SuccessfullyCreatesVertexShader()
+        public void ObservableInit_WhenInvoked_SuccessfullyCreatesVertexShader()
         {
             // Arrange
-            var program = CreateProgram();
+            var program = CreateShaderProgram();
 
             // Act
-            program.Init();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Assert
             // Verify the creation of the vertex shader
@@ -164,13 +151,13 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Init_WhenInvoked_SuccessfullyCreatesProgram()
+        public void ObservableInit_WhenInvoked_SuccessfullyCreatesProgram()
         {
             // Arrange
-            var program = CreateProgram();
+            var program = CreateShaderProgram();
 
             // Act
-            program.Init();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Assert
             this.mockGLInvoker.Verify(m => m.CreateProgram(), Times.Once());
@@ -180,13 +167,13 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Init_WhenInvoked_DestroysVertexAndFragmentShader()
+        public void ObservableInit_WhenInvoked_DestroysVertexAndFragmentShader()
         {
             // Arrange
-            var program = CreateProgram();
+            var program = CreateShaderProgram();
 
             // Act
-            program.Init();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Assert
             this.mockGLInvoker.Verify(m => m.DetachShader(ShaderProgramId, VertexShaderId), Times.Once());
@@ -196,48 +183,77 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Init_WithShaderCompileIssue_ThrowsException()
+        public void ObservableInit_WithVertexShaderCompileIssue_ThrowsException()
         {
             // Arrange
             var statusCode = 0;
             this.mockGLInvoker.Setup(m => m.GetShader(VertexShaderId, GLShaderParameter.CompileStatus, out statusCode));
             this.mockGLInvoker.Setup(m => m.GetShaderInfoLog(VertexShaderId)).Returns("Vertex Shader Compile Error");
-            this.mockGLInvokerExtensions.Setup(m => m.ShaderCompileSuccess(VertexShaderId)).Returns(false);
-            var program = CreateProgram();
+
+            var unused = CreateShaderProgram();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                program.Init();
-            }, $"Error occurred while compiling shader with ID '{VertexShaderId}'\nVertex Shader Compile Error");
+                this.glInitObservable.OnOpenGLInitialized();
+            }, $"Error compiling vertex shader '{ShaderName}' with shader ID '{VertexShaderId}'.\nVertex Shader Compile Error");
         }
 
         [Fact]
-        public void Init_WithProgramLinkingIssue_ThrowsException()
+        public void ObservableInit_WithFragmentShaderCompileIssue_ThrowsException()
+        {
+            // Arrange
+            var statusCode = 0;
+            this.mockGLInvoker.Setup(m => m.GetShader(FragShaderId, GLShaderParameter.CompileStatus, out statusCode));
+            this.mockGLInvoker.Setup(m => m.GetShaderInfoLog(FragShaderId)).Returns("Fragment Shader Compile Error");
+
+            var unused = CreateShaderProgram();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
+            {
+                this.glInitObservable.OnOpenGLInitialized();
+            }, $"Error compiling fragment shader '{ShaderName}' with shader ID '{FragShaderId}'.\nFragment Shader Compile Error");
+        }
+
+        [Fact]
+        public void ObservableInit_WithProgramLinkingIssue_ThrowsException()
         {
             // Arrange
             var statusCode = 0;
             this.mockGLInvoker.Setup(m => m.GetProgram(ShaderProgramId, GLProgramParameterName.LinkStatus, out statusCode));
             this.mockGLInvoker.Setup(m => m.GetProgramInfoLog(ShaderProgramId)).Returns("Program Linking Error");
-            this.mockGLInvokerExtensions.Setup(m => m.LinkProgramSuccess(ShaderProgramId)).Returns(false);
-            var program = CreateProgram();
+            var program = CreateShaderProgram();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                program.Init();
-            }, $"Error occurred while linking program with ID '{ShaderProgramId}'\nProgram Linking Error");
+                this.glInitObservable.OnOpenGLInitialized();
+            }, $"Error linking shader with ID '{ShaderProgramId}'\nProgram Linking Error");
         }
 
         [Fact]
-        public void UseProgram_WhenInvoked_SetsProgramForUse()
+        public void Use_WhenNotInitialized_ThrowsException()
         {
             // Arrange
-            var program = CreateProgram();
-            program.Init();
+            var program = CreateShaderProgram();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ShaderNotInitializedException>(() =>
+            {
+                program.Use();
+            }, "The shader has not been initialized.");
+        }
+
+        [Fact]
+        public void Use_WhenInvoked_SetsProgramForUse()
+        {
+            // Arrange
+            var program = CreateShaderProgram();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Act
-            program.UseProgram();
+            program.Use();
 
             // Assert
             this.mockGLInvoker.Verify(m => m.UseProgram(ShaderProgramId), Times.Once());
@@ -247,8 +263,8 @@ namespace VelaptorTests.OpenGL
         public void Dispose_WithUnmanagedResourcesToDispose_DeletesProgram()
         {
             // Arrange
-            var program = CreateProgram();
-            program.Init();
+            var program = CreateShaderProgram();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Act
             program.Dispose();
@@ -260,9 +276,9 @@ namespace VelaptorTests.OpenGL
         #endregion
 
         /// <summary>
-        /// Creates an instance of <see cref="ShaderProgram"/> for the purpose of testing.
+        /// Creates an instance of <see cref="ShaderProgramFake"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test with.</returns>
-        private ShaderProgram CreateProgram() => new (this.mockGLInvoker.Object, this.mockGLInvokerExtensions.Object, this.mockLoader.Object);
+        private ShaderProgramFake CreateShaderProgram() => new (this.mockGLInvoker.Object, this.mockLoader.Object, this.glInitObservable);
     }
 }

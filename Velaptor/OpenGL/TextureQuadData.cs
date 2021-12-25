@@ -74,12 +74,6 @@ namespace Velaptor.OpenGL
                this.Vertex3 == other.Vertex3 &&
                this.Vertex4 == other.Vertex4;
 
-        /// <summary>
-        /// Returns a value indicating if the struct is empty.
-        /// </summary>
-        /// <returns>True if the struct is empty.</returns>
-        public bool IsEmpty() => this.Vertex1.IsEmpty() && this.Vertex2.IsEmpty() && this.Vertex3.IsEmpty() && this.Vertex4.IsEmpty();
-
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override int GetHashCode() => this.Vertex1.GetHashCode() + this.Vertex2.GetHashCode() + this.Vertex3.GetHashCode() + this.Vertex4.GetHashCode();

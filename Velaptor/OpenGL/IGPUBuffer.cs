@@ -14,11 +14,6 @@ namespace Velaptor.OpenGL
         where TData : struct
     {
         /// <summary>
-        /// Initializes the GPU buffer.
-        /// </summary>
-        void Init();
-
-        /// <summary>
         /// Updates the GPU buffer using the given <paramref name="data"/>
         /// at the given <paramref name="index"/> location.
         /// </summary>
@@ -30,6 +25,6 @@ namespace Velaptor.OpenGL
         ///     being laid out like and array of data, this would be the location
         ///     of the 'chunk' of <paramref name="data"/> in the array.
         /// </remarks>
-        void UpdateData(TData data, uint index);
+        void UploadData(TData data, uint index);
     }
 }

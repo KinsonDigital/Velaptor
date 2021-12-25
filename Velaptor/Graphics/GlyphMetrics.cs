@@ -5,13 +5,13 @@
 namespace Velaptor.Graphics
 {
     using System;
-    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
 
     /// <summary>
     /// Holds all of the various metrics of a glyph for rendering purposes.
     /// </summary>
-    public struct GlyphMetrics : IEqualityComparer<GlyphMetrics>
+    public struct GlyphMetrics : IEquatable<GlyphMetrics>
     {
         /// <summary>
         /// Gets or sets the glyph character.
@@ -103,59 +103,66 @@ namespace Velaptor.Graphics
         /// </remarks>
         public uint CharIndex { get; set; }
 
+        /// <summary>
+        /// Returns a value indicating if the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
+        /// </summary>
+        /// <param name="left">The left operand compared with the right operand.</param>
+        /// <param name="right">The right operand compared with the left operand.</param>
+        /// <returns>True if both operands are equal.</returns>
+        public static bool operator ==(GlyphMetrics left, GlyphMetrics right) => left.Equals(right);
+
+        /// <summary>
+        /// Returns a value indicating if the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
+        /// </summary>
+        /// <param name="left">The left operand compared with the right operand.</param>
+        /// <param name="right">The right operand compared with the left operand.</param>
+        /// <returns>True if both operands are not equal.</returns>
+        public static bool operator !=(GlyphMetrics left, GlyphMetrics right) => !left.Equals(right);
+
         /// <inheritdoc/>
         public override string ToString() => $"Name: {Glyph} | Bounds: {GlyphBounds}";
 
-        // TODO: Code docs
-        public override bool Equals(object obj)
-        {
-            if (obj is not GlyphMetrics metric)
-            {
-                return false;
-            }
+        /// <inheritdoc cref="object.Equals(object?)"/>
+        public override bool Equals(object? obj) => obj is GlyphMetrics metric && Equals(metric);
 
-            return Equals(metric, this);
-        }
+        /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
+        public bool Equals(GlyphMetrics other) =>
+            Glyph == other.Glyph &&
+            GlyphBounds.Equals(other.GlyphBounds) &&
+            Ascender.Equals(other.Ascender) &&
+            Descender.Equals(other.Descender) &&
+            HoriBearingX.Equals(other.HoriBearingX) &&
+            HoriBearingY.Equals(other.HoriBearingY) &&
+            HorizontalAdvance.Equals(other.HorizontalAdvance) &&
+            GlyphWidth.Equals(other.GlyphWidth) &&
+            GlyphHeight.Equals(other.GlyphHeight) &&
+            XMin.Equals(other.XMin) &&
+            XMax.Equals(other.XMax) &&
+            YMin.Equals(other.YMin) &&
+            YMax.Equals(other.YMax) &&
+            CharIndex == other.CharIndex;
 
-        public bool Equals(GlyphMetrics x, GlyphMetrics y)
+        /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
+        public override int GetHashCode()
         {
-            return x.Glyph == y.Glyph &&
-                   x.GlyphBounds == y.GlyphBounds &&//
-                   x.Ascender == y.Ascender &&//
-                   x.Descender == y.Descender &&//
-                   x.HoriBearingX == y.HoriBearingX &&
-                   x.HoriBearingY == y.HoriBearingY &&//
-                   x.HorizontalAdvance == y.HorizontalAdvance &&
-                   x.GlyphWidth == y.GlyphWidth &&//
-                   x.GlyphHeight == y.GlyphHeight &&//
-                   x.XMin == y.XMin &&//
-                   x.XMax == y.XMax &&//
-                   x.YMin == y.YMin &&//
-                   x.YMax == y.YMax &&//
-                   x.CharIndex == y.CharIndex;
-        }
+            var hashCode = default(HashCode);
+            hashCode.Add(Glyph);
+            hashCode.Add(GlyphBounds);
+            hashCode.Add(Ascender);
+            hashCode.Add(Descender);
+            hashCode.Add(HoriBearingX);
+            hashCode.Add(HoriBearingY);
+            hashCode.Add(HorizontalAdvance);
+            hashCode.Add(GlyphWidth);
+            hashCode.Add(GlyphHeight);
+            hashCode.Add(XMin);
+            hashCode.Add(XMax);
+            hashCode.Add(YMin);
+            hashCode.Add(YMax);
+            hashCode.Add(CharIndex);
 
-        public int GetHashCode(GlyphMetrics obj)
-        {
-            return HashCode.Combine(
-                Glyph,
-                GlyphBounds,
-                Ascender,
-                Descender,
-                HoriBearingX,
-                HoriBearingY,
-                HorizontalAdvance,
-                HashCode.Combine(GlyphWidth, GlyphHeight, XMin, XMax, YMin, YMax, CharIndex));
-        }
-
-        public static bool operator==(GlyphMetrics a, GlyphMetrics b)
-        {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(GlyphMetrics a, GlyphMetrics b)
-        {
-            return !a.Equals(b);
+            return hashCode.ToHashCode();
         }
     }
 }

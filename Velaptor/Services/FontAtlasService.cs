@@ -154,16 +154,18 @@ namespace Velaptor.Services
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (this.isDisposed)
             {
-                if (disposing)
-                {
-                    this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
-                    this.freeTypeInvoker.Dispose();
-                }
-
-                this.isDisposed = true;
+                return;
             }
+
+            if (disposing)
+            {
+                this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
+                this.freeTypeInvoker.Dispose();
+            }
+
+            this.isDisposed = true;
         }
 
         /// <summary>

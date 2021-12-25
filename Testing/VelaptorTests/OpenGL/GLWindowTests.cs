@@ -2,8 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable IDE0001 // Name can be simplified
-#pragma warning disable IDE0002 // Name can be simplified
+// #pragma warning disable IDE0001 // Name can be simplified
+// #pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.OpenGL
 {
     using System;
@@ -12,14 +12,13 @@ namespace VelaptorTests.OpenGL
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Hardware;
-    using Velaptor.Input;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
     using SysVector2 = System.Numerics.Vector2;
     using VelaptorKeyboardState = Velaptor.Input.KeyboardState;
     using VelaptorMouseButton = Velaptor.Input.MouseButton;
@@ -37,8 +36,6 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IPlatform> mockPlatform;
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITaskService> mockTaskService;
-        private readonly Mock<IKeyboardInput<KeyCode, VelaptorKeyboardState>> mockKeyboard;
-        private readonly Mock<IMouseInput<VelaptorMouseButton, VelaptorMouseState>> mockMouse;
         private readonly Mock<OpenGLInitObservable> mockGLObservable;
 
         /// <summary>
@@ -53,8 +50,6 @@ namespace VelaptorTests.OpenGL
             this.mockPlatform = new Mock<IPlatform>();
             this.mockContentLoader = new Mock<IContentLoader>();
             this.mockTaskService = new Mock<ITaskService>();
-            this.mockKeyboard = new Mock<IKeyboardInput<KeyCode, VelaptorKeyboardState>>();
-            this.mockMouse = new Mock<IMouseInput<VelaptorMouseButton, VelaptorMouseState>>();
             this.mockGLObservable = new Mock<OpenGLInitObservable>();
         }
 
@@ -63,19 +58,17 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WithNullGLInvoker_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new GLWindow(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
                     null,
                     this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
-                    this.mockKeyboard.Object,
-                    this.mockMouse.Object,
                     this.mockContentLoader.Object,
                     this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
@@ -85,19 +78,17 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WithNullSystemMonitorService_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new GLWindow(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
                     this.mockGLInvoker.Object,
                     this.mockGLFWInvoker.Object,
                     null,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
-                    this.mockKeyboard.Object,
-                    this.mockMouse.Object,
                     this.mockContentLoader.Object,
                     this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
@@ -107,19 +98,17 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WithNullWindowFacade_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new GLWindow(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
                     this.mockGLInvoker.Object,
                     this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     null,
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
-                    this.mockKeyboard.Object,
-                    this.mockMouse.Object,
                     this.mockContentLoader.Object,
                     this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'windowFacade')");
@@ -129,19 +118,17 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WithNullPlatform_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new GLWindow(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
                     this.mockGLInvoker.Object,
                     this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     null,
                     this.mockTaskService.Object,
-                    this.mockKeyboard.Object,
-                    this.mockMouse.Object,
                     this.mockContentLoader.Object,
                     this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
@@ -151,85 +138,37 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WithNullTaskService_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new GLWindow(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
                     this.mockGLInvoker.Object,
                     this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
                     null,
-                    this.mockKeyboard.Object,
-                    this.mockMouse.Object,
                     this.mockContentLoader.Object,
                     this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'taskService')");
         }
 
         [Fact]
-        public void Ctor_WithNullKeyboard_ThrowsException()
-        {
-            // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                _ = new GLWindow(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    this.mockGLInvoker.Object,
-                    this.mockGLFWInvoker.Object,
-                    this.mockMonitorService.Object,
-                    this.mockWindowFacade.Object,
-                    this.mockPlatform.Object,
-                    this.mockTaskService.Object,
-                    null,
-                    this.mockMouse.Object,
-                    this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
-            }, "The parameter must not be null. (Parameter 'keyboard')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullMouse_ThrowsException()
-        {
-            // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                _ = new GLWindow(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    this.mockGLInvoker.Object,
-                    this.mockGLFWInvoker.Object,
-                    this.mockMonitorService.Object,
-                    this.mockWindowFacade.Object,
-                    this.mockPlatform.Object,
-                    this.mockTaskService.Object,
-                    this.mockKeyboard.Object,
-                    null,
-                    this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
-            }, "The parameter must not be null. (Parameter 'mouse')");
-        }
-
-        [Fact]
         public void Ctor_WithNullContentLoader_ThrowsException()
         {
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new GLWindow(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
                     this.mockGLInvoker.Object,
                     this.mockGLFWInvoker.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
-                    this.mockKeyboard.Object,
-                    this.mockMouse.Object,
                     null,
                     this.mockGLObservable.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
@@ -247,7 +186,7 @@ namespace VelaptorTests.OpenGL
             var actual = window.Width;
 
             // Assert
-            Assert.Equal(100, actual);
+            Assert.Equal(100u, actual);
         }
 
         [Fact]
@@ -258,14 +197,14 @@ namespace VelaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            window.CachedIntProps[nameof(window.Width)].IsCaching = false;
+            window.CachedUIntProps[nameof(window.Width)].IsCaching = false;
 
             // Act
             window.Width = 111;
             var actual = window.Width;
 
             // Assert
-            Assert.Equal(111, actual);
+            Assert.Equal(111u, actual);
         }
 
         [Fact]
@@ -278,7 +217,7 @@ namespace VelaptorTests.OpenGL
             var actual = window.Height;
 
             // Assert
-            Assert.Equal(200, actual);
+            Assert.Equal(200u, actual);
         }
 
         [Fact]
@@ -289,14 +228,14 @@ namespace VelaptorTests.OpenGL
 
             var window = CreateWindow();
 
-            window.CachedIntProps[nameof(window.Height)].IsCaching = false;
+            window.CachedUIntProps[nameof(window.Height)].IsCaching = false;
 
             // Act
             window.Height = 111;
             var actual = window.Height;
 
             // Assert
-            Assert.Equal(111, actual);
+            Assert.Equal(111u, actual);
         }
 
         [Fact]
@@ -337,15 +276,12 @@ namespace VelaptorTests.OpenGL
             this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.OSX);
 
             this.mockMonitorService.SetupGet(p => p.MainMonitor)
-                .Returns(() =>
+                .Returns(() => new SystemMonitor(this.mockPlatform.Object)
                 {
-                    return new SystemMonitor(this.mockPlatform.Object)
-                    {
-                        HorizontalScale = 1f,
-                        VerticalScale = 1f,
-                        Width = 2000,
-                        Height = 1000,
-                    };
+                    HorizontalScale = 1f,
+                    VerticalScale = 1f,
+                    Width = 2000,
+                    Height = 1000,
                 });
 
             var window = CreateWindow(100, 200);
@@ -364,15 +300,12 @@ namespace VelaptorTests.OpenGL
             this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
 
             this.mockMonitorService.SetupGet(p => p.MainMonitor)
-                .Returns(() =>
+                .Returns(() => new SystemMonitor(this.mockPlatform.Object)
                 {
-                    return new SystemMonitor(this.mockPlatform.Object)
-                    {
-                        HorizontalScale = 1f,
-                        VerticalScale = 1f,
-                        Width = 2000,
-                        Height = 1000,
-                    };
+                    HorizontalScale = 1f,
+                    VerticalScale = 1f,
+                    Width = 2000,
+                    Height = 1000,
                 });
 
             var window = CreateWindow(100, 200);
@@ -496,6 +429,48 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
+        public void Initialize_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var window = CreateWindow();
+            var initAction = new Action(() => { });
+
+            // Act
+            window.Initialize = initAction;
+
+            // Assert
+            Assert.Equal(initAction, window.Initialize);
+        }
+
+        [Fact]
+        public void Uninitialize_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var window = CreateWindow();
+            var unInitAction = new Action(() => { });
+
+            // Act
+            window.Uninitialize = unInitAction;
+
+            // Assert
+            Assert.Equal(unInitAction, window.Uninitialize);
+        }
+
+        [Fact]
+        public void Initialized_WhenWindowIsInitialized_ReturnsTrue()
+        {
+            // Arrange
+            var window = CreateWindow();
+            window.Show();
+
+            // Act
+            this.mockWindowFacade.Raise(e => e.Load += null, EventArgs.Empty);
+
+            // Assert
+            Assert.True(window.Initialized);
+        }
+
+        [Fact]
         public void TypeOfBorder_WhenCachingValue_ReturnsCorrectResult()
         {
             // Arrange
@@ -565,7 +540,7 @@ namespace VelaptorTests.OpenGL
             this.mockWindowFacade.Raise(i => i.Load += null, EventArgs.Empty);
 
             // Act
-            Assert.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.mockGLInvoker.Raise(i => i.GLError += null, new GLErrorEventArgs("gl-error"));
             }, "gl-error");
@@ -656,7 +631,7 @@ namespace VelaptorTests.OpenGL
             this.mockWindowFacade.Raise(w => w.Load += null, EventArgs.Empty);
 
             // Assert
-            this.mockWindowFacade.Verify(m => m.Init(It.IsAny<int>(), It.IsAny<int>()), Times.Once());
+            this.mockWindowFacade.Verify(m => m.Init(It.IsAny<uint>(), It.IsAny<uint>()), Times.Once());
         }
 
         [Fact]
@@ -720,6 +695,88 @@ namespace VelaptorTests.OpenGL
             this.mockGLInvoker.Verify(m => m.Dispose(), Times.Once());
             this.mockGLFWInvoker.Verify(m => m.Dispose(), Times.Once());
         }
+
+        [Fact]
+        public void GLWindow_WhenWindowResizes_SetsGLViewportAndTriggersResizeEvent()
+        {
+            // Arrange
+            var window = CreateWindow();
+            var actualSize = default(SizeU);
+            window.WinResize = u => actualSize = u;
+            window.Show();
+
+            // Act
+            this.mockWindowFacade.Raise(w => w.Resize += null, null, new WindowSizeEventArgs(30, 40));
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.Viewport(0, 0, 30, 40));
+            Assert.Equal(30u, actualSize.Width);
+            Assert.Equal(40u, actualSize.Height);
+        }
+
+        [Fact]
+        public void GLWindow_WhenRenderingFrameWithAutoClearEnabled_ClearsGLBuffer()
+        {
+            // Arrange
+            var window = CreateWindow();
+            window.Show();
+
+            // Act
+            this.mockWindowFacade.Raise(e => e.RenderFrame += null, null, new FrameTimeEventArgs(16));
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once);
+        }
+
+        [Fact]
+        public void GLWindow_WhenRenderingFrameWithAutoClearDisabled_ClearsGLBuffer()
+        {
+            // Arrange
+            var window = CreateWindow();
+            window.AutoClearBuffer = false;
+            window.Show();
+
+            // Act
+            this.mockWindowFacade.Raise(e => e.RenderFrame += null, null, new FrameTimeEventArgs(16));
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.Clear(It.IsAny<GLClearBufferMask>()), Times.Never);
+        }
+
+        [Fact]
+        public void GLWindow_WhenRenderingFrame_InvokesDrawAndSwapsBuffer()
+        {
+            // Arrange
+            var drawInvoked = false;
+            var window = CreateWindow();
+            window.Draw = time =>
+            {
+                drawInvoked = true;
+                Assert.Equal(time.ElapsedTime, new TimeSpan(0, 0, 0, 16));
+            };
+            window.AutoClearBuffer = false;
+            window.Show();
+
+            // Act
+            this.mockWindowFacade.Raise(e => e.RenderFrame += null, null, new FrameTimeEventArgs(16));
+
+            // Assert
+            this.mockWindowFacade.Verify(m => m.SwapBuffers(), Times.Once);
+            Assert.True(drawInvoked);
+        }
+
+        [Fact]
+        public void Close_WhenInvoked_ClosesInternalWindowFacade()
+        {
+            // Arrange
+            var window = CreateWindow();
+
+            // Act
+            window.Close();
+
+            // Assert
+            this.mockWindowFacade.Verify(m => m.Close(), Times.Once);
+        }
         #endregion
 
         /// <summary>
@@ -728,7 +785,7 @@ namespace VelaptorTests.OpenGL
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <returns>The instance to test.</returns>
-        private GLWindow CreateWindow(int width = 10, int height = 20)
+        private GLWindow CreateWindow(uint width = 10, uint height = 20)
             => new (
                 width,
                 height,
@@ -738,8 +795,6 @@ namespace VelaptorTests.OpenGL
                 this.mockWindowFacade.Object,
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
-                this.mockKeyboard.Object,
-                this.mockMouse.Object,
                 this.mockContentLoader.Object,
                 this.mockGLObservable.Object);
     }

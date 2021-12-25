@@ -125,7 +125,7 @@ namespace VelaptorTests.Content
             var actual = data.Width;
 
             // Assert
-            Assert.Equal(100, actual);
+            Assert.Equal(100u, actual);
         }
 
         [Fact]
@@ -138,7 +138,7 @@ namespace VelaptorTests.Content
             var actual = data.Height;
 
             // Assert
-            Assert.Equal(200, actual);
+            Assert.Equal(200u, actual);
         }
         #endregion
 

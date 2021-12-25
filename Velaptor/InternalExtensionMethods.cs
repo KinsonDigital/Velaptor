@@ -1,11 +1,10 @@
-﻿// <copyright file="ExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="InternalExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.OpenGL;
-
 namespace Velaptor
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -18,139 +17,18 @@ namespace Velaptor
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using Velaptor.Graphics;
+    using Velaptor.OpenGL;
     using NETColor = System.Drawing.Color;
     using NETRectF = System.Drawing.RectangleF;
+    using NETSizeF = System.Drawing.SizeF;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides extensions to various things to help make better code.
     /// </summary>
-    public static class ExtensionMethods
+    public static class InternalExtensionMethods
     {
-        /// <summary>
-        /// Converts the given <paramref name="radians"/> value into degrees.
-        /// </summary>
-        /// <param name="radians">The value to convert.</param>
-        /// <returns>The radians converted into degrees.</returns>
-        public static float ToDegrees(this float radians) => radians * 180.0f / (float)Math.PI;
-
-        /// <summary>
-        /// Converts the given <paramref name="degrees"/> value into radians.
-        /// </summary>
-        /// <param name="degrees">The value to convert.</param>
-        /// <returns>The degrees converted into radians.</returns>
-        public static float ToRadians(this float degrees) => degrees * (float)Math.PI / 180f;
-
-        /// <summary>
-        /// Sets the value to positive if its negative.
-        /// </summary>
-        /// <param name="value">The value to force.</param>
-        /// <returns>The value as a positive number.</returns>
-        public static float ForcePositive(this float value) => value < 0 ? value * -1 : value;
-
-        /// <summary>
-        /// Sets the value to negative if its positive.
-        /// </summary>
-        /// <param name="value">The value to force.</param>
-        /// <returns>The value as a negative number.</returns>
-        public static float ForceNegative(this float value) => value > 0 ? value * -1 : value;
-
-        /// <summary>
-        /// Maps the given <paramref name="value"/> from one range to another.
-        /// </summary>
-        /// <param name="value">The value to map.</param>
-        /// <param name="fromStart">The from starting range value.</param>
-        /// <param name="fromStop">The from ending range value.</param>
-        /// <param name="toStart">The to starting range value.</param>
-        /// <param name="toStop">The to ending range value.</param>
-        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        public static float MapValue(this int value, float fromStart, float fromStop, float toStart, float toStop)
-            => MapValue((float)value, fromStart, fromStop, toStart, toStop);
-
-        /// <summary>
-        /// Maps the given <paramref name="value"/> from one range to another.
-        /// </summary>
-        /// <param name="value">The value to map.</param>
-        /// <param name="fromStart">The from starting range value.</param>
-        /// <param name="fromStop">The from ending range value.</param>
-        /// <param name="toStart">The to starting range value.</param>
-        /// <param name="toStop">The to ending range value.</param>
-        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        public static float MapValue(this float value, float fromStart, float fromStop, float toStart, float toStop)
-            => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
-
-        /// <summary>
-        /// Maps the given <paramref name="value"/> from one range to another.
-        /// </summary>
-        /// <param name="value">The value to map.</param>
-        /// <param name="fromStart">The from starting range value.</param>
-        /// <param name="fromStop">The from ending range value.</param>
-        /// <param name="toStart">The to starting range value.</param>
-        /// <param name="toStop">The to ending range value.</param>
-        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        /// <remarks>
-        ///     Be careful when restricting the 'to' values to a value between 0 and 1.  This will always return a value
-        ///     of 0.  This is because the return type is a byte and any value between the values of 0 and 1 is
-        ///     a floating point value and floating point values cannot be represented with a byte data type.
-        ///
-        ///     This results in a value of 0 with a loss of information.  If you need to return a value that
-        ///     is between the values of 0 and 1, use the method overload <see cref="MapValue(int,float,float,float,float)"/>.
-        /// </remarks>
-        public static byte MapValue(this byte value, byte fromStart, byte fromStop, byte toStart, byte toStop)
-            => (byte)(toStart + ((toStop - (float)toStart) * ((value - (float)fromStart) / (fromStop - (float)fromStart))));
-
-        /// <summary>
-        /// Maps the given <paramref name="value"/> from one range to another.
-        /// </summary>
-        /// <param name="value">The value to map.</param>
-        /// <param name="fromStart">The from starting range value.</param>
-        /// <param name="fromStop">The from ending range value.</param>
-        /// <param name="toStart">The to starting range value.</param>
-        /// <param name="toStop">The to ending range value.</param>
-        /// <returns>A value that has been mapped to a range between <paramref name="toStart"/> and <paramref name="toStop"/>.</returns>
-        public static float MapValue(this byte value, float fromStart, float fromStop, float toStart, float toStop)
-            => toStart + ((toStop - toStart) * ((value - fromStart) / (fromStop - fromStart)));
-
-        /// <summary>
-        /// Rotates the <paramref name="vector"/> around the <paramref name="origin"/> at the given <paramref name="angle"/>.
-        /// </summary>
-        /// <param name="vector">The vector to rotate.</param>
-        /// <param name="origin">The origin to rotate the <paramref name="vector"/> around.</param>
-        /// <param name="angle">The angle in degrees to rotate <paramref name="vector"/>.  Value must be positive.</param>
-        /// <param name="clockWise">Determines the direction the given <paramref name="vector"/> should rotate around the <paramref name="origin"/>.</param>
-        /// <returns>The <paramref name="vector"/> rotated around the <paramref name="origin"/>.</returns>
-        public static Vector2 RotateAround(this Vector2 vector, Vector2 origin, float angle, bool clockWise = true)
-        {
-            var angleRadians = clockWise ? angle.ToRadians() : angle.ToRadians() * -1;
-
-            var cos = (float)Math.Cos(angleRadians);
-            var sin = (float)Math.Sin(angleRadians);
-
-            var dx = vector.X - origin.X; // The delta x
-            var dy = vector.Y - origin.Y; // The delta y
-
-            var tempX = (dx * cos) - (dy * sin);
-            var tempY = (dx * sin) + (dy * cos);
-
-            var x = tempX + origin.X;
-            var y = tempY + origin.Y;
-
-            return new Vector2(x, y);
-        }
-
-        /// <summary>
-        ///     Converts the given <see cref="System.Drawing.Color"/> to a <see cref="Vector4"/>
-        ///     with each component holding the color component values.
-        /// </summary>
-        /// <param name="clr">The color to convert.</param>
-        /// <returns>
-        ///     A 4 component vector of color values.
-        ///     X = red.
-        ///     Y = green.
-        ///     Z = blue.
-        ///     W = alpha.
-        /// </returns>
-        public static Vector4 ToVector4(this NETColor clr) => new (clr.R, clr.G, clr.B, clr.A);
-
         /// <summary>
         /// Returns a value indicating whether the given file or directory path
         /// only contains a root drive path with no directories.
@@ -165,20 +43,10 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath)
+                ? Path.GetDirectoryName(fileOrDirPath) !
                 : fileOrDirPath;
 
-            if (onlyDirPath is null)
-            {
-                return false;
-            }
-
-            if (onlyDirPath.Count(c => c == ':') == 1 && onlyDirPath.Count(c => c == '\\') == 1)
-            {
-                return true;
-            }
-
-            return false;
+            return onlyDirPath.Count(c => c == ':') == 1 && onlyDirPath.Count(c => c == '\\') == 1;
         }
 
         /// <summary>
@@ -192,7 +60,7 @@ namespace Velaptor
         ///     will be stripped and the last directory will be returned.
         /// </para>
         /// <para>
-        ///     Example: The path 'C:\temp\dirA\myfile.txt' will return 'dirA'.
+        ///     Example: The path 'C:\temp\dirA\file.txt' will return 'dirA'.
         /// </para>
         /// <para>
         ///     If the <paramref name="fileOrDirPath"/> is a directory path, then the
@@ -243,6 +111,25 @@ namespace Velaptor
             => new (items.ToList());
 
         /// <summary>
+        /// Converts the given list of <paramref name="items"/> to a readonly dictionary where
+        /// the key is the <paramref name="items"/> array item index.
+        /// </summary>
+        /// <param name="items">The list of items to convert.</param>
+        /// <typeparam name="T">The type of values in the lists.</typeparam>
+        /// <returns>A readonly dictionary of the given <paramref name="items"/>.</returns>
+        internal static ReadOnlyDictionary<uint, T> ToReadOnlyDictionary<T>(this T[] items)
+        {
+            var result = new Dictionary<uint, T>();
+
+            for (var i = 0u; i < items.Length; i++)
+            {
+                result.Add(i, items[i]);
+            }
+
+            return new ReadOnlyDictionary<uint, T>(result);
+        }
+
+        /// <summary>
         /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
         /// inherit from <see cref="IDisposable"/>.
         /// </summary>
@@ -256,10 +143,10 @@ namespace Velaptor
         }
 
         /// <summary>
-        ///     Conditionally registers that a new instance of <typeparamref name="TImplementation"/> will be returned
-        ///     every time a <typeparamref name="TService"/> is requested (transient) and where the supplied predicate
-        ///     returns true. The predicate will only be evaluated a finite number of times;
-        ///     the predicate is unsuited for making decisions based on runtime conditions.
+        /// Conditionally registers that a new instance of <typeparamref name="TImplementation"/> will be returned
+        /// every time a <typeparamref name="TService"/> is requested (transient) and where the supplied predicate
+        /// returns true. The predicate will only be evaluated a finite number of times;
+        /// the predicate is unsuited for making decisions based on runtime conditions.
         /// </summary>
         /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
@@ -280,6 +167,7 @@ namespace Velaptor
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
         internal static void RegisterConditional<TService, TImplementation>(this Container container, Predicate<PredicateContext> predicate, bool suppressDisposal = false)
             where TService : class
             where TImplementation : class, TService
@@ -293,8 +181,8 @@ namespace Velaptor
         }
 
         /// <summary>
-        ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
-        ///     a <typeparamref name="TService"/> is requested (transient).
+        /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
+        /// a <typeparamref name="TService"/> is requested (transient).
         /// </summary>
         /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
@@ -307,6 +195,7 @@ namespace Velaptor
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
         internal static void Register<TService, TImplementation>(this Container container, bool suppressDisposal = false)
             where TService : class
             where TImplementation : class, TService
@@ -320,7 +209,7 @@ namespace Velaptor
         }
 
         /// <summary>
-        ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned.
+        /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned.
         /// </summary>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
@@ -455,14 +344,30 @@ namespace Velaptor
             return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
         }
 
-        // TODO: Add code docs
-        internal static float[] ToVertexArray(this Vector2 vector) => new[] { vector.X, vector.Y };
+        /// <summary>
+        /// Converts the given <paramref name="vector"/> components to an array of floats.
+        /// </summary>
+        /// <param name="vector">The vector to convert.</param>
+        /// <returns>An array of float values.</returns>
+        internal static IEnumerable<float> ToVertexArray(this Vector2 vector) => new[] { vector.X, vector.Y };
 
-        internal static float[] ToVertexArray(this Vector3 vector) => new[] { vector.X, vector.Y, vector.Z };
+        /// <summary>
+        /// Converts the given <paramref name="clr"/> components to an array of floats.
+        /// </summary>
+        /// <param name="clr">The color to convert.</param>
+        /// <returns>An array of float values.</returns>
+        /// <remarks>
+        ///     The order of the color components are changed to meet OpenGL requirements.
+        ///     Component order is Red, Green, Blue, Alpha.
+        /// </remarks>
+        internal static IEnumerable<float> ToVertexArray(this NETColor clr) => new float[] { clr.R, clr.G, clr.B, clr.A };
 
-        internal static float[] ToVertexArray(this NETColor clr) => new float[] { clr.R, clr.G, clr.B, clr.A };
-
-        internal static float[] ToVertexArray(this TextureVertexData vertexData)
+        /// <summary>
+        /// Converts the given <paramref name="vertexData"/> components to an array of floats.
+        /// </summary>
+        /// <param name="vertexData">The data to convert.</param>
+        /// <returns>An array of float values.</returns>
+        internal static IEnumerable<float> ToVertexArray(this TextureVertexData vertexData)
         {
             // NOTE: The order of the array elements are extremely important.
             // They determine the layout of each stride of vertex data and the layout
@@ -476,18 +381,29 @@ namespace Velaptor
             return result.ToArray();
         }
 
-        internal static float[] ToVertexArray(this TextureQuadData data)
+        /// <summary>
+        /// Converts the given <paramref name="quad"/> components to an array of floats.
+        /// </summary>
+        /// <param name="quad">The quad to convert.</param>
+        /// <returns>An array of float values.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
+        internal static IEnumerable<float> ToVertexArray(this TextureQuadData quad)
         {
             var result = new List<float>();
 
-            result.AddRange(data.Vertex1.ToVertexArray());
-            result.AddRange(data.Vertex2.ToVertexArray());
-            result.AddRange(data.Vertex3.ToVertexArray());
-            result.AddRange(data.Vertex4.ToVertexArray());
+            result.AddRange(quad.Vertex1.ToVertexArray());
+            result.AddRange(quad.Vertex2.ToVertexArray());
+            result.AddRange(quad.Vertex3.ToVertexArray());
+            result.AddRange(quad.Vertex4.ToVertexArray());
 
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Converts the given list of <paramref name="quads"/> components to an array of floats.
+        /// </summary>
+        /// <param name="quads">The quads to convert.</param>
+        /// <returns>An array of float values.</returns>
         internal static float[] ToVertexArray(this IEnumerable<TextureQuadData> quads)
         {
             var result = new List<float>();
@@ -500,21 +416,23 @@ namespace Velaptor
             return result.ToArray();
         }
 
-        public static Vector2 GetPosition(this NETRectF rect) => new (rect.X, rect.Y);
-
         /// <summary>
-        /// Removes a set of characters from the end of this string.
+        /// Removes the given <paramref name="trimChar"/> from the end of all of the given string <paramref name="items"/>.
         /// </summary>
         /// <param name="items">The string items to trim.</param>
+        /// <param name="trimChar">The character to trim.</param>
         /// <returns>
-        /// The string that remains for each item after all white-space characters are removed from the end of each string.
+        /// The string that remains for each item after all characters are removed from the end of each string.
         /// If no characters can be trimmed from an item, the method leaves the item unchanged.
         /// </returns>
-        public static string[] TrimAllEnds(this string[] items)
+        /// <remarks>
+        ///     If no <paramref name="trimChar"/> value is provided, then the spaces will be trimmed.
+        /// </remarks>
+        internal static string[] TrimAllEnds(this string[] items, char trimChar = ' ')
         {
             for (var i = 0; i < items.Length; i++)
             {
-                items[i] = items[i].TrimEnd();
+                items[i] = items[i].TrimEnd(trimChar);
             }
 
             return items;

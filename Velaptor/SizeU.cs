@@ -5,6 +5,7 @@
 namespace Velaptor
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Stores an ordered pair of integers, which specify a <see cref="Width"/> and <see cref="Height"/>.
@@ -44,6 +45,7 @@ namespace Velaptor
         public override bool Equals(object? obj) => obj is SizeU size && Equals(size);
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode() => HashCode.Combine(Width, Height);
     }
 }

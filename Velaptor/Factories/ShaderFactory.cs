@@ -1,16 +1,32 @@
-﻿using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Observables;
-using Velaptor.OpenGL;
-using Velaptor.OpenGL.Services;
+﻿// <copyright file="ShaderFactory.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Velaptor.Factories
 {
+    // ReSharper disable RedundantNameQualifier
+    using System.Diagnostics.CodeAnalysis;
+    using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables;
+    using Velaptor.OpenGL;
+    using Velaptor.OpenGL.Services;
+
+    // ReSharper restore RedundantNameQualifier
+
+    /// <summary>
+    /// Creates instance of type <see cref="IShaderProgram"/>.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static class ShaderFactory
     {
-        private static TextureShader? textureShader;
-        private static FontShader? fontShader;
+        private static IShaderProgram? textureShader;
+        private static IShaderProgram? fontShader;
 
-        public static TextureShader CreateTextureShader()
+        /// <summary>
+        /// Creates a shader for rendering textures.
+        /// </summary>
+        /// <returns>The shader program.</returns>
+        public static IShaderProgram CreateTextureShader()
         {
             if (textureShader is not null)
             {
@@ -25,7 +41,11 @@ namespace Velaptor.Factories
             return textureShader;
         }
 
-        public static FontShader CreateFontShader()
+        /// <summary>
+        /// Creates a shader for rendering text using a font.
+        /// </summary>
+        /// <returns>The shader program.</returns>
+        public static IShaderProgram CreateFontShader()
         {
             if (fontShader is not null)
             {
