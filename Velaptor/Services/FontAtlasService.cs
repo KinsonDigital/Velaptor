@@ -2,22 +2,23 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Drawing;
-
 namespace Velaptor.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using Velaptor.Content;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.FreeType;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates font atlas textures for rendering text.
@@ -127,11 +128,11 @@ namespace Velaptor.Services
         }
 
         /// <inheritdoc/>
-        public void SetAvailableCharacters(char[] glyphChars)
+        public void SetAvailableCharacters(char[] glyphs)
         {
             // Make sure to add the '□' character to represent missing characters
             // This will be rendered in place of characters that do not exist
-            var currentList = glyphChars.ToList();
+            var currentList = glyphs.ToList();
 
             if (currentList.Contains(InvalidCharacter) is false)
             {
@@ -177,9 +178,9 @@ namespace Velaptor.Services
         {
             FontAtlasMetrics result = default;
 
-            const int AntiEdgeCroppingMargin = 3;
-            var maxGlyphWidth = glyphImages.Max(g => g.Value.Width) + AntiEdgeCroppingMargin;
-            var maxGlyphHeight = glyphImages.Max(g => g.Value.Height) + AntiEdgeCroppingMargin;
+            const int antiEdgeCroppingMargin = 3;
+            var maxGlyphWidth = glyphImages.Max(g => g.Value.Width) + antiEdgeCroppingMargin;
+            var maxGlyphHeight = glyphImages.Max(g => g.Value.Height) + antiEdgeCroppingMargin;
 
             var possibleRowAndColumnCount = Math.Sqrt(glyphImages.Count);
 

@@ -31,9 +31,10 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="TextureGPUBuffer"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
-        public TextureGPUBuffer(IGLInvoker gl, IObservable<bool> glInitObservable)
-            : base(gl, glInitObservable)
+        public TextureGPUBuffer(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
+            : base(gl, glExtensions, glInitObservable)
         {
         }
 
@@ -45,7 +46,7 @@ namespace Velaptor.OpenGL
                 throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            GL.BeginGroup($"Update Texture Quad - BatchItem({batchIndex}) Data");
+            GLExtensions.BeginGroup($"Update Texture Quad - BatchItem({batchIndex}) Data");
 
             float srcRectWidth;
             float srcRectHeight;
@@ -139,7 +140,7 @@ namespace Velaptor.OpenGL
 
             UnbindVBO();
 
-            GL.EndGroup();
+            GLExtensions.EndGroup();
         }
 
         /// <inheritdoc/>
@@ -188,7 +189,7 @@ namespace Velaptor.OpenGL
                 throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            GL.BeginGroup("Setup Texture Buffer Vertex Attributes");
+            GLExtensions.BeginGroup("Setup Texture Buffer Vertex Attributes");
 
             var stride = TextureVertexData.Stride();
 
@@ -206,7 +207,7 @@ namespace Velaptor.OpenGL
             GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, tintClrOffset);
             GL.EnableVertexAttribArray(2);
 
-            GL.EndGroup();
+            GLExtensions.EndGroup();
         }
 
         /// <inheritdoc/>

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.NativeInterop.OpenGL;
+
 namespace Velaptor.OpenGL
 {
     /// <summary>
@@ -84,6 +86,26 @@ namespace Velaptor.OpenGL
         /// OpenGL enum name GL_TEXTURE.
         /// </summary>
         Texture = 5890,
+
+        /// <summary>
+        /// OpenGL enum name GL_SHADER.
+        /// </summary>
+        Shader = 33505,
+
+        /// <summary>
+        /// OpenGL enum name GL_PROGRAM.
+        /// </summary>
+        Program = 33506,
+
+        /// <summary>
+        /// OpenGL enum name GL_VERTEX_ARRAY.
+        /// </summary>
+        VertexArray = 32884,
+
+        /// <summary>
+        /// OpenGL enum name GL_BUFFER.
+        /// </summary>
+        Buffer = 33504,
     }
 
     /// <summary>

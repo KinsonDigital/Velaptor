@@ -4,8 +4,11 @@
 
 namespace Velaptor.Factories
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Content;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates sounds based on the sound file at a location.

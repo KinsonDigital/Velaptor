@@ -1,4 +1,4 @@
-﻿// <copyright file="QuadData.cs" company="KinsonDigital">
+﻿// <copyright file="TextureQuadData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

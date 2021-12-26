@@ -4,13 +4,14 @@
 
 namespace Velaptor.NativeInterop.OpenGL
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
     using Velaptor.OpenGL;
 
-    // TODO: Actually make this class into a static class
-    // with extension methods.
+    // TODO: Actually make this class into a static class with extension methods.
+
     /// <summary>
     /// Provides extensions/helper methods to improve OpenGL related functionality.
     /// </summary>
@@ -82,11 +83,72 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public bool ShaderCompileSuccess(uint shaderID)
+        public bool ShaderCompileSuccess(uint shaderId)
         {
-            this.glInvoker.GetShader(shaderID, GLShaderParameter.CompileStatus, out var shaderParams);
+            this.glInvoker.GetShader(shaderId, GLShaderParameter.CompileStatus, out var shaderParams);
 
             return shaderParams >= 1;
+        }
+
+                /// <inheritdoc/>
+        public void BeginGroup(string label)
+                    =>
+                        this.glInvoker.PushDebugGroup(
+                            GLDebugSource.DebugSourceApplication,
+                            100,
+                            (uint)label.Length,
+                            label);
+
+                /// <inheritdoc/>
+        public void EndGroup() => this.glInvoker.PopDebugGroup();
+
+                /// <inheritdoc/>
+        public void LabelShader(uint shaderId, string label)
+            => this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
+
+                /// <inheritdoc/>
+        public void LabelShaderProgram(uint shaderId, string label)
+            => this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
+
+                /// <inheritdoc/>
+        public void LabelVertexArray(uint vertexArrayId, string label)
+        {
+            label = string.IsNullOrEmpty(label)
+                ? "NOT SET"
+                : label;
+
+            var newLabel = $"{label} VAO";
+
+            this.glInvoker.ObjectLabel(GLObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
+        }
+
+        /// <inheritdoc/>
+        public void LabelBuffer(uint bufferId, string label, BufferType bufferType)
+        {
+            label = string.IsNullOrEmpty(label)
+                ? "NOT SET"
+                : label;
+
+            var bufferTypeAcronym = bufferType switch
+            {
+                BufferType.VertexBufferObject => "VBO",
+                BufferType.IndexArrayObject => "EBO",
+                _ => throw new ArgumentOutOfRangeException(nameof(bufferType), bufferType, null)
+            };
+
+            var newLabel = $"{label} {bufferTypeAcronym}";
+
+            this.glInvoker.ObjectLabel(GLObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
+        }
+
+        /// <inheritdoc/>
+        public void LabelTexture(uint textureId, string label)
+        {
+            label = string.IsNullOrEmpty(label)
+                ? "NOT SET"
+                : label;
+
+            this.glInvoker.ObjectLabel(GLObjectIdentifier.Texture, textureId, (uint)label.Length, label);
         }
     }
 }

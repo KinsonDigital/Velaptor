@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.Input
 {
-    using System.Numerics;
+    using System.Drawing;
     using Velaptor.Input;
     using Velaptor.Input.Exceptions;
     using VelaptorTests.Helpers;
@@ -20,7 +20,7 @@ namespace VelaptorTests.Input
         public void SetPosition_WhenInvoked_SetsPosition()
         {
             // Arrange
-            var expected = new Vector2(11, 22);
+            var expected = new Point(11, 22);
             var state = default(MouseState);
 
             // Act

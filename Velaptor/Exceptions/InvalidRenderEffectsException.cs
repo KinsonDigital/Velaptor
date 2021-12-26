@@ -4,8 +4,11 @@
 
 namespace Velaptor.Exceptions
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Thrown when an invalid <see cref="RenderEffects"/> value is used.

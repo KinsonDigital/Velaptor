@@ -9,7 +9,7 @@ namespace Velaptor.Observables.Core
     /// <summary>
     /// Provides a mechanism for receiving push-based notifications.
     /// </summary>
-    /// <typeparam name="T">The information realted to the notification.</typeparam>
+    /// <typeparam name="T">The information related to the notification.</typeparam>
     public class Observer<T> : IObserver<T>
     {
         private readonly Action<T>? onNext;

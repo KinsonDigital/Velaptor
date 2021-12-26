@@ -31,7 +31,7 @@ namespace Velaptor.Graphics
         public readonly uint Width;
 
         /// <summary>
-        /// Gets or sets the height of the iamge.
+        /// Gets or sets the height of the image.
         /// </summary>
         public readonly uint Height;
 

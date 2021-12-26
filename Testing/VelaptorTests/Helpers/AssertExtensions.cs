@@ -4,8 +4,6 @@
 
 // ReSharper disable UnusedMember.Global
 
-using System.Collections.ObjectModel;
-
 #pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Helpers
 {

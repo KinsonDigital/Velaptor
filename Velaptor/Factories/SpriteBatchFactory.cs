@@ -4,11 +4,14 @@
 
 namespace Velaptor.Factories
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.Services;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates instances of the type <see cref="SpriteBatch"/>.

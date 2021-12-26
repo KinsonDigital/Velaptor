@@ -34,17 +34,16 @@ namespace Velaptor.OpenGL.Services
                 throw new Exception($"The embedded shader source code resource '{name}' does not exist.");
             }
 
-            using (var stream = assembly.GetManifestResourceStream(shaderSrcResource))
-            {
-                if (stream is not null)
-                {
-                    using var reader = new StreamReader(stream);
+            using var stream = assembly.GetManifestResourceStream(shaderSrcResource);
 
-                    return reader.ReadToEnd();
-                }
+            if (stream is null)
+            {
+                return string.Empty;
             }
 
-            return string.Empty;
+            using var reader = new StreamReader(stream);
+
+            return reader.ReadToEnd();
         }
     }
 }

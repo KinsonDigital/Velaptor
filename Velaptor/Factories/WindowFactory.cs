@@ -4,14 +4,16 @@
 
 namespace Velaptor.Factories
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Input;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.Services;
     using Velaptor.UI;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates an instance of a Velaptor window.

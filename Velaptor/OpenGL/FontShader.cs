@@ -23,13 +23,15 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="FontShader"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
         public FontShader(
             IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
             IObservable<bool> glInitObservable)
-            : base(gl, shaderLoaderService, glInitObservable)
+            : base(gl, glExtensions, shaderLoaderService, glInitObservable)
         {
         }
 
@@ -40,11 +42,11 @@ namespace Velaptor.OpenGL
 
             if (this.fontTextureUniformLocation < 0)
             {
-                this.fontTextureUniformLocation = this.GL.GetUniformLocation(ShaderId, "fontTexture");
+                this.fontTextureUniformLocation = GL.GetUniformLocation(ShaderId, "fontTexture");
             }
 
-            this.GL.ActiveTexture(GLTextureUnit.Texture1);
-            this.GL.Uniform1(this.fontTextureUniformLocation, 1);
+            GL.ActiveTexture(GLTextureUnit.Texture1);
+            GL.Uniform1(this.fontTextureUniformLocation, 1);
         }
     }
 }

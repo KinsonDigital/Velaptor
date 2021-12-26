@@ -1,4 +1,8 @@
-﻿namespace Velaptor.UI
+﻿// <copyright file="ISizable.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Velaptor.UI
 {
     /// <summary>
     /// Represents the size of an object by its width and height.

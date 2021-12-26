@@ -16,7 +16,8 @@ namespace VelaptorTests.OpenGL
     /// </summary>
     public class FontShaderTests
     {
-        private readonly Mock<IGLInvoker> mockGlInvoker;
+        private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IShaderLoaderService<uint>> mockShaderLoaderService;
         private readonly OpenGLInitObservable glInitObservable;
 
@@ -25,7 +26,8 @@ namespace VelaptorTests.OpenGL
         /// </summary>
         public FontShaderTests()
         {
-            this.mockGlInvoker = new Mock<IGLInvoker>();
+            this.mockGL = new Mock<IGLInvoker>();
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
             this.mockShaderLoaderService = new Mock<IShaderLoaderService<uint>>();
             this.glInitObservable = new OpenGLInitObservable();
         }
@@ -37,15 +39,16 @@ namespace VelaptorTests.OpenGL
             // Arrange
             const uint shaderId = 78;
             const int uniformLocation = 1234;
-            this.mockGlInvoker.Setup(m => m.CreateProgram()).Returns(shaderId);
-            this.mockGlInvoker.Setup(m => m.GetUniformLocation(shaderId, "fontTexture"))
+            this.mockGL.Setup(m => m.CreateProgram()).Returns(shaderId);
+            this.mockGL.Setup(m => m.GetUniformLocation(shaderId, "fontTexture"))
                 .Returns(uniformLocation);
             var status = 1;
-            this.mockGlInvoker.Setup(m
+            this.mockGL.Setup(m
                 => m.GetProgram(shaderId, GLProgramParameterName.LinkStatus, out status));
 
             var shader = new FontShader(
-                this.mockGlInvoker.Object,
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
                 this.mockShaderLoaderService.Object,
                 this.glInitObservable);
 
@@ -55,8 +58,8 @@ namespace VelaptorTests.OpenGL
             shader.Use();
 
             // Assert
-            this.mockGlInvoker.Verify(m => m.ActiveTexture(GLTextureUnit.Texture1), Times.Once);
-            this.mockGlInvoker.Verify(m => m.Uniform1(uniformLocation, 1), Times.Once);
+            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture1), Times.Once);
+            this.mockGL.Verify(m => m.Uniform1(uniformLocation, 1), Times.Once);
         }
         #endregion
     }

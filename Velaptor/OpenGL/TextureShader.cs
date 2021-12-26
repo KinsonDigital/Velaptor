@@ -23,13 +23,15 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="TextureShader"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
         public TextureShader(
             IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
             IObservable<bool> glInitObservable)
-            : base(gl, shaderLoaderService, glInitObservable)
+            : base(gl, glExtensions, shaderLoaderService, glInitObservable)
         {
         }
 
@@ -40,11 +42,11 @@ namespace Velaptor.OpenGL
 
             if (this.mainTextureUniformLocation < 0)
             {
-                this.mainTextureUniformLocation = this.GL.GetUniformLocation(ShaderId, "mainTexture");
+                this.mainTextureUniformLocation = GL.GetUniformLocation(ShaderId, "mainTexture");
             }
 
-            this.GL.ActiveTexture(GLTextureUnit.Texture0);
-            this.GL.Uniform1(this.mainTextureUniformLocation, 0);
+            GL.ActiveTexture(GLTextureUnit.Texture0);
+            GL.Uniform1(this.mainTextureUniformLocation, 0);
         }
     }
 }

@@ -29,9 +29,10 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="FontGPUBuffer"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
-        public FontGPUBuffer(IGLInvoker gl, IObservable<bool> glInitObservable)
-            : base(gl, glInitObservable)
+        public FontGPUBuffer(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
+            : base(gl, glExtensions, glInitObservable)
         {
         }
 
@@ -109,7 +110,7 @@ namespace Velaptor.OpenGL
                 throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            GL.BeginGroup("Setup Font Buffer Vertex Attributes");
+            GLExtensions.BeginGroup("Setup Font Buffer Vertex Attributes");
 
             var stride = TextureVertexData.Stride();
 
@@ -127,7 +128,7 @@ namespace Velaptor.OpenGL
             GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, tintClrOffset);
             GL.EnableVertexAttribArray(2);
 
-            GL.EndGroup();
+            GLExtensions.EndGroup();
         }
 
         /// <inheritdoc/>
@@ -138,7 +139,7 @@ namespace Velaptor.OpenGL
                 throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            GL.BeginGroup($"Update Font Quad - BatchItem({batchIndex})");
+            GLExtensions.BeginGroup($"Update Font Quad - BatchItem({batchIndex})");
 
             // Construct the quad rect to determine the vertex positions sent to the GPU
             var quadRect = new RectangleF(textureQuad.DestRect.X, textureQuad.DestRect.Y, textureQuad.SrcRect.Width, textureQuad.SrcRect.Height);
@@ -203,7 +204,7 @@ namespace Velaptor.OpenGL
 
             UnbindVBO();
 
-            GL.EndGroup();
+            GLExtensions.EndGroup();
         }
     }
 }

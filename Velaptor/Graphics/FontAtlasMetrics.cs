@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Graphics
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

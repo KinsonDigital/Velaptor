@@ -4,9 +4,12 @@
 
 namespace Velaptor.UI
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Drawing;
     using Velaptor.Content;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// A user interface object that can be updated and rendered to the screen.

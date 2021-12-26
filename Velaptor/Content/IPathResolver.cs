@@ -36,12 +36,6 @@ namespace Velaptor.Content
         /// <returns>
         ///     The <see cref="RootDirectory"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///     Occurs when the given <paramref name="contentName"/> is null or emtpy.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     Occurs when the given <paramref name="contentName"/> ends with a directory separator.
-        /// </exception>
         string ResolveFilePath(string contentName);
 
         /// <summary>

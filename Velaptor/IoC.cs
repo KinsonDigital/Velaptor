@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Velaptor
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using SimpleInjector;
@@ -21,6 +22,8 @@ namespace Velaptor
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
     using Velaptor.Services;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides dependency injection for the application.

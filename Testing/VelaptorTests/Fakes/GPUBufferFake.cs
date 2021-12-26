@@ -13,9 +13,14 @@ namespace VelaptorTests.Fakes
     /// </summary>
     internal class GPUBufferFake : GPUBufferBase<SpriteBatchItem>
     {
-        /// <inheritdoc cref="GPUBufferBase{TData}" />
-        public GPUBufferFake(IGLInvoker gl, OpenGLInitObservable glInitObservable)
-            : base(gl, glInitObservable)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GPUBufferFake"/> class for the purpose of testing.
+        /// </summary>
+        /// <param name="gl">Mocked <see cref="IGLInvoker"/>.</param>
+        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/>.</param>
+        /// <param name="glInitObservable">Invokes initialization.</param>
+        public GPUBufferFake(IGLInvoker gl, IGLInvokerExtensions glExtensions, OpenGLInitObservable glInitObservable)
+            : base(gl, glExtensions, glInitObservable)
         {
         }
 

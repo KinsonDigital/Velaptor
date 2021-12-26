@@ -16,6 +16,9 @@ namespace Velaptor.OpenGL
         /// </summary>
         uint ShaderId { get; }
 
+        /// <summary>
+        /// Gets the name of the shader.
+        /// </summary>
         string Name { get; }
 
         /// <summary>

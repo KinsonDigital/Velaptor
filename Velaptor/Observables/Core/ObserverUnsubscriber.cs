@@ -15,7 +15,7 @@ namespace Velaptor.Observables.Core
     /// </typeparam>
     public class ObserverUnsubscriber<T> : IDisposable
     {
-        private readonly List<IObserver<T>> observers = new ();
+        private readonly List<IObserver<T>> observers;
         private bool isDisposed;
 
         /// <summary>
@@ -52,18 +52,20 @@ namespace Velaptor.Observables.Core
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (this.isDisposed)
             {
-                if (disposing)
-                {
-                    if (Observer != null && this.observers.Contains(Observer))
-                    {
-                        this.observers.Remove(Observer);
-                    }
-                }
-
-                this.isDisposed = true;
+                return;
             }
+
+            if (disposing)
+            {
+                if (this.observers.Contains(Observer))
+                {
+                    this.observers.Remove(Observer);
+                }
+            }
+
+            this.isDisposed = true;
         }
     }
 }

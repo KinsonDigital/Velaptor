@@ -33,10 +33,10 @@ namespace Velaptor.NativeInterop.GLFW
         /// free any resources allocated during or after initialization.
         /// </para>
         /// <para>
-        /// If this function fails, it calls <see cref="Terminate"/> before returning.
+        /// If this function fails, it calls Terminate before returning.
         /// </para>
         /// <para>
-        /// If it succeeds, you should call <see cref="Terminate"/> before the application exits.
+        /// If it succeeds, you should call Terminate before the application exits.
         /// </para>
         /// <para>
         /// Additional calls to this function after successful initialization
@@ -77,7 +77,7 @@ namespace Velaptor.NativeInterop.GLFW
         /// </summary>
         /// <param name="monitor">The monitor to query.</param>
         /// <returns>The monitor scale in the X and Y axis.</returns>
-        unsafe Vector2 GetMonitorContentScale(IntPtr monitor);
+        Vector2 GetMonitorContentScale(IntPtr monitor);
 
         /// <summary>
         /// <para>
@@ -103,8 +103,7 @@ namespace Velaptor.NativeInterop.GLFW
         ///     Possible errors include <see cref="ErrorCode.NotInitialized"/>.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GetPrimaryMonitor"/>
-        unsafe IntPtr[] GetMonitors();
+        IntPtr[] GetMonitors();
 
         /// <summary>
         /// <para>
@@ -130,7 +129,6 @@ namespace Velaptor.NativeInterop.GLFW
         ///     Possible errors include <see cref="ErrorCode.NotInitialized"/> and <see cref="ErrorCode.PlatformError"/>.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GetVideoModes"/>
-        unsafe GLFWVideoMode GetVideoMode(IntPtr monitor);
+        GLFWVideoMode GetVideoMode(IntPtr monitor);
     }
 }

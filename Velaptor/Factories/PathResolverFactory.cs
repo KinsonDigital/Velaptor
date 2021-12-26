@@ -4,9 +4,12 @@
 
 namespace Velaptor.Factories
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Content;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates path resolver instances.
@@ -23,56 +26,28 @@ namespace Velaptor.Factories
         /// Creates a path resolver that resolves paths to texture content.
         /// </summary>
         /// <returns>The resolver to texture content.</returns>
-        public static IPathResolver CreateTexturePathResolver()
-        {
-            if (texturePathResolver is null)
-            {
-                texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
-            }
-
-            return texturePathResolver;
-        }
+        public static IPathResolver CreateTexturePathResolver() =>
+            texturePathResolver ??= new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
 
         /// <summary>
         /// Creates a path resolver that resolves paths to atlas content.
         /// </summary>
         /// <returns>The resolver to atlas content.</returns>
-        public static IPathResolver CreateAtlasJSONDataPathResolver()
-        {
-            if (atlasJSONDataPathResolver is null)
-            {
-                atlasJSONDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
-            }
-
-            return atlasJSONDataPathResolver;
-        }
+        public static IPathResolver CreateAtlasJSONDataPathResolver() =>
+            atlasJSONDataPathResolver ??= new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
 
         /// <summary>
         /// Creates a path resolver that resolves paths to font content.
         /// </summary>
         /// <returns>The resolver to atlas content.</returns>
-        public static IPathResolver CreateFontPathResolver()
-        {
-            if (fontPathResolver is null)
-            {
-                fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
-            }
-
-            return fontPathResolver;
-        }
+        public static IPathResolver CreateFontPathResolver() =>
+            fontPathResolver ??= new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
 
         /// <summary>
         /// Creates a path resolver that resolves paths to sound content.
         /// </summary>
         /// <returns>The resolver to sound content.</returns>
-        public static IPathResolver CreateSoundPathResolver()
-        {
-            if (soundPathResolver is null)
-            {
-                soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
-            }
-
-            return soundPathResolver;
-        }
+        public static IPathResolver CreateSoundPathResolver() =>
+            soundPathResolver ??= new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
     }
 }

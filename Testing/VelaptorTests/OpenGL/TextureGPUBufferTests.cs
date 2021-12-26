@@ -2,14 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Drawing;
-using Velaptor.Graphics;
-
 namespace VelaptorTests.OpenGL
 {
     using System;
+    using System.Collections.Generic;
+    using System.Drawing;
     using Moq;
+    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
@@ -25,7 +24,8 @@ namespace VelaptorTests.OpenGL
         private const uint VertexArrayId = 111;
         private const uint VertexBufferId = 222;
         private const uint IndexBufferId = 333;
-        private readonly Mock<IGLInvoker> mockGLInvoker;
+        private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly OpenGLInitObservable glInitObservable;
         private bool vertexBufferCreated;
         private bool indexBufferCreated;
@@ -35,9 +35,9 @@ namespace VelaptorTests.OpenGL
         /// </summary>
         public TextureGPUBufferTests()
         {
-            this.mockGLInvoker = new Mock<IGLInvoker>();
-            this.mockGLInvoker.Setup(m => m.GenVertexArray()).Returns(VertexArrayId);
-            this.mockGLInvoker.Setup(m => m.GenBuffer()).Returns(() =>
+            this.mockGL = new Mock<IGLInvoker>();
+            this.mockGL.Setup(m => m.GenVertexArray()).Returns(VertexArrayId);
+            this.mockGL.Setup(m => m.GenBuffer()).Returns(() =>
             {
                 if (!this.vertexBufferCreated)
                 {
@@ -54,6 +54,7 @@ namespace VelaptorTests.OpenGL
                 return IndexBufferId;
             });
 
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
             this.glInitObservable = new OpenGLInitObservable();
         }
 
@@ -138,8 +139,8 @@ namespace VelaptorTests.OpenGL
             buffer.UploadVertexData(batchItem, 0u);
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.BeginGroup("Update Texture Quad - BatchItem(0) Data"), Times.Once);
-            this.mockGLInvoker.Verify(m => m.EndGroup(), Times.Exactly(5));
+            this.mockGLExtensions.Verify(m => m.BeginGroup("Update Texture Quad - BatchItem(0) Data"), Times.Once);
+            this.mockGLExtensions.Verify(m => m.EndGroup(), Times.Exactly(5));
         }
 
         [Theory]
@@ -165,7 +166,7 @@ namespace VelaptorTests.OpenGL
             buffer.UploadVertexData(batchItem, 0u);
 
             // Assert
-            this.mockGLInvoker.Verify(m
+            this.mockGL.Verify(m
                 => m.BufferSubData(GLBufferTarget.ArrayBuffer, 0, 128u, expected));
         }
 
@@ -193,7 +194,7 @@ namespace VelaptorTests.OpenGL
             buffer.PrepareForUpload();
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.BindVertexArray(VertexArrayId), Times.AtLeastOnce);
+            this.mockGL.Verify(m => m.BindVertexArray(VertexArrayId), Times.AtLeastOnce);
         }
 
         [Fact]
@@ -246,24 +247,24 @@ namespace VelaptorTests.OpenGL
             this.glInitObservable.OnOpenGLInitialized();
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.BeginGroup("Setup Texture Buffer Vertex Attributes"), Times.Once);
+            this.mockGLExtensions.Verify(m => m.BeginGroup("Setup Texture Buffer Vertex Attributes"), Times.Once);
 
             // Assert Vertex Position Attribute
-            this.mockGLInvoker.Verify(m
+            this.mockGL.Verify(m
                 => m.VertexAttribPointer(0, 2, GLVertexAttribPointerType.Float, false, 32, 0), Times.Once);
-            this.mockGLInvoker.Verify(m => m.EnableVertexAttribArray(0));
+            this.mockGL.Verify(m => m.EnableVertexAttribArray(0));
 
             // Assert Texture Coordinate Attribute
-            this.mockGLInvoker.Verify(m
+            this.mockGL.Verify(m
                 => m.VertexAttribPointer(1, 2, GLVertexAttribPointerType.Float, false, 32, 8), Times.Once);
-            this.mockGLInvoker.Verify(m => m.EnableVertexAttribArray(1));
+            this.mockGL.Verify(m => m.EnableVertexAttribArray(1));
 
             // Assert Tint Color Attribute
-            this.mockGLInvoker.Verify(m
+            this.mockGL.Verify(m
                 => m.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, 32, 16), Times.Once);
-            this.mockGLInvoker.Verify(m => m.EnableVertexAttribArray(2));
+            this.mockGL.Verify(m => m.EnableVertexAttribArray(2));
 
-            this.mockGLInvoker.Verify(m => m.EndGroup(), Times.Exactly(4));
+            this.mockGLExtensions.Verify(m => m.EndGroup(), Times.Exactly(4));
         }
 
         [Fact]
@@ -287,6 +288,6 @@ namespace VelaptorTests.OpenGL
         /// Creates a new instance of <see cref="TextureGPUBuffer"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private TextureGPUBuffer CreateBuffer() => new (this.mockGLInvoker.Object, this.glInitObservable);
+        private TextureGPUBuffer CreateBuffer() => new (this.mockGL.Object, this.mockGLExtensions.Object, this.glInitObservable);
     }
 }

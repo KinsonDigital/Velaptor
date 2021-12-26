@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.NativeInterop.GLFW
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Numerics;
     using Velaptor.Hardware;
-    using Velaptor.NativeInterop.GLFW;
 
-    // TODO: Move this to the GLFW folder and namespace
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Gets all of the monitors in the system.
@@ -28,7 +28,7 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="glfwInvoker">Used to make calls to GLFW.</param>
         /// <param name="platform">The current platform.</param>
-        public unsafe GLFWMonitors(IGLFWInvoker glfwInvoker, IPlatform platform)
+        public GLFWMonitors(IGLFWInvoker glfwInvoker, IPlatform platform)
         {
             this.glfwInvoker = glfwInvoker;
             this.platform = platform;
@@ -52,7 +52,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Refreshes the monitor information.
         /// </summary>
-        public unsafe void Refresh()
+        public void Refresh()
         {
             Vector2 GetMonitorScale(IntPtr monitorHandle)
             {
@@ -67,6 +67,8 @@ namespace Velaptor.OpenGL
             {
                 var monitorVideoMode = this.glfwInvoker.GetVideoMode(monitorHandle);
 
+                var monitorScale = GetMonitorScale(monitorHandle);
+
                 var newMonitor = new SystemMonitor(this.platform)
                 {
                     IsMain = this.monitors.Count <= 0,
@@ -76,23 +78,16 @@ namespace Velaptor.OpenGL
                     Height = monitorVideoMode.Height,
                     Width = monitorVideoMode.Width,
                     RefreshRate = monitorVideoMode.RefreshRate,
+                    HorizontalScale = monitorScale.X,
+                    VerticalScale = monitorScale.Y,
                 };
-
-                var monitorScale = GetMonitorScale(monitorHandle);
-
-                newMonitor.HorizontalScale = monitorScale.X;
-                newMonitor.VerticalScale = monitorScale.Y;
 
                 this.monitors.Add(newMonitor);
             }
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => Dispose(true);
 
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -100,15 +95,17 @@ namespace Velaptor.OpenGL
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         private void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (this.isDisposed)
             {
-                if (disposing)
-                {
-                    this.glfwInvoker.OnMonitorChanged -= GLFWInvoker_OnMonitorChanged;
-                }
-
-                this.isDisposed = true;
+                return;
             }
+
+            if (disposing)
+            {
+                this.glfwInvoker.OnMonitorChanged -= GLFWInvoker_OnMonitorChanged;
+            }
+
+            this.isDisposed = true;
         }
 
         /// <summary>

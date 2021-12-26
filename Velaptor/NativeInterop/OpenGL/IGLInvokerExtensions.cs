@@ -6,6 +6,7 @@ namespace Velaptor.NativeInterop.OpenGL
 {
     using System.Drawing;
     using System.Numerics;
+    using Velaptor.OpenGL;
 
     // TODO: Convert these into literal extension methods instead
     // This will prevent having to instantiate the implementation and injecting
@@ -47,5 +48,52 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="shaderId">The ID of the shader to check.</param>
         /// <returns><see langword="true"/> if the shader compiled successfully.</returns>
         bool ShaderCompileSuccess(uint shaderId);
+
+        /// <summary>
+        /// Creates a debug group into the command stream.
+        /// </summary>
+        /// <param name="label">The label for the debug group.</param>
+        void BeginGroup(string label);
+
+        /// <summary>
+        /// Ends the most recent debug group.
+        /// </summary>
+        void EndGroup();
+
+        /// <summary>
+        /// Labels a shader with the given <paramref name="shaderId"/> with the given <paramref name="label"/>.
+        /// </summary>
+        /// <param name="shaderId">The ID of the shader.</param>
+        /// <param name="label">The label to give the shader.</param>
+        void LabelShader(uint shaderId, string label);
+
+        /// <summary>
+        /// Labels a shader program with the given <paramref name="shaderId"/> with the given <paramref name="label"/>.
+        /// </summary>
+        /// <param name="shaderId">The ID of the shader program.</param>
+        /// <param name="label">The label to give the shader program.</param>
+        void LabelShaderProgram(uint shaderId, string label);
+
+        /// <summary>
+        /// Labels a vertex array object with the given <paramref name="vertexArrayId"/> with the given <paramref name="label"/>.
+        /// </summary>
+        /// <param name="vertexArrayId">The ID of the shader.</param>
+        /// <param name="label">The label to give the vertex array object.</param>
+        void LabelVertexArray(uint vertexArrayId, string label);
+
+        /// <summary>
+        /// Labels a buffer object with the given <paramref name="bufferId"/> with the given <paramref name="label"/>.
+        /// </summary>
+        /// <param name="bufferId">The ID of the buffer object.</param>
+        /// <param name="label">The label to give the buffer object.</param>
+        /// <param name="bufferType">The type of buffer.</param>
+        void LabelBuffer(uint bufferId, string label, BufferType bufferType);
+
+        /// <summary>
+        /// Labels a texture with the given <paramref name="textureId"/> with the given <paramref name="label"/>.
+        /// </summary>
+        /// <param name="textureId">The ID of the texture.</param>
+        /// <param name="label">The label to give the texture.</param>
+        void LabelTexture(uint textureId, string label);
     }
 }

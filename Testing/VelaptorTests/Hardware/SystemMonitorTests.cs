@@ -108,6 +108,11 @@ namespace VelaptorTests.Hardware
                 Height = 200,
             };
 
+            var myMonitor = new SystemMonitor(null)
+            {
+                Width = 123,
+            };
+
             // Act
             var actual = monitor.Center;
 

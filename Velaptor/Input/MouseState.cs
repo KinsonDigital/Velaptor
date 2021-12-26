@@ -4,17 +4,20 @@
 
 namespace Velaptor.Input
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Numerics;
+    using System.Drawing;
     using Velaptor.Input.Exceptions;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Represents the state of the mouse.
     /// </summary>
     public struct MouseState : IEquatable<MouseState>
     {
-        private Vector2 position;
+        private Point position;
         private int scrollWheelValue;
         private bool isLeftButtonDown;
         private bool isRightButtonDown;
@@ -40,19 +43,19 @@ namespace Velaptor.Input
         /// Gets or sets the position of the mouse.
         /// </summary>
         /// <returns>The position relative to the top left corner of the window.</returns>
-        public Vector2 GetPosition() => this.position;
+        public Point GetPosition() => this.position;
 
         /// <summary>
         /// Gets or sets the X position of the mouse.
         /// </summary>
         /// <returns>The X position relative to the top left corner of the window.</returns>
-        public int GetX() => (int)this.position.X;
+        public int GetX() => this.position.X;
 
         /// <summary>
         /// Gets or sets the Y position of the mouse.
         /// </summary>
         /// <returns>The Y position relative to the top left corner of the window.</returns>
-        public int GetY() => (int)this.position.Y;
+        public int GetY() => this.position.Y;
 
         /// <summary>
         /// Gets or sets a value indicating whether the left mouse button is in the down position.
@@ -146,7 +149,7 @@ namespace Velaptor.Input
         /// </summary>
         /// <param name="x">The X position of the mouse.</param>
         /// <param name="y">The Y position of the mouse.</param>
-        public void SetPosition(int x, int y) => this.position = new Vector2(x, y);
+        public void SetPosition(int x, int y) => this.position = new Point(x, y);
 
         /// <summary>
         /// Sets the value of the scroll wheel.

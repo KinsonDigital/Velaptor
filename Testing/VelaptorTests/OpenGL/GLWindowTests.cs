@@ -29,8 +29,8 @@ namespace VelaptorTests.OpenGL
     /// </summary>
     public class GLWindowTests
     {
-        private readonly Mock<IGLInvoker> mockGLInvoker;
-        private readonly Mock<IGLFWInvoker> mockGLFWInvoker;
+        private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLFWInvoker> mockGLFW;
         private readonly Mock<ISystemMonitorService> mockMonitorService;
         private readonly Mock<IGameWindowFacade> mockWindowFacade;
         private readonly Mock<IPlatform> mockPlatform;
@@ -43,8 +43,8 @@ namespace VelaptorTests.OpenGL
         /// </summary>
         public GLWindowTests()
         {
-            this.mockGLInvoker = new Mock<IGLInvoker>();
-            this.mockGLFWInvoker = new Mock<IGLFWInvoker>();
+            this.mockGL = new Mock<IGLInvoker>();
+            this.mockGLFW = new Mock<IGLFWInvoker>();
             this.mockMonitorService = new Mock<ISystemMonitorService>();
             this.mockWindowFacade = new Mock<IGameWindowFacade>();
             this.mockPlatform = new Mock<IPlatform>();
@@ -64,7 +64,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     null,
-                    this.mockGLFWInvoker.Object,
+                    this.mockGLFW.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -83,8 +83,8 @@ namespace VelaptorTests.OpenGL
                 _ = new GLWindow(
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
-                    this.mockGLInvoker.Object,
-                    this.mockGLFWInvoker.Object,
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
                     null,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -103,8 +103,8 @@ namespace VelaptorTests.OpenGL
                 _ = new GLWindow(
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
-                    this.mockGLInvoker.Object,
-                    this.mockGLFWInvoker.Object,
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
                     this.mockMonitorService.Object,
                     null,
                     this.mockPlatform.Object,
@@ -123,8 +123,8 @@ namespace VelaptorTests.OpenGL
                 _ = new GLWindow(
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
-                    this.mockGLInvoker.Object,
-                    this.mockGLFWInvoker.Object,
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     null,
@@ -143,8 +143,8 @@ namespace VelaptorTests.OpenGL
                 _ = new GLWindow(
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
-                    this.mockGLInvoker.Object,
-                    this.mockGLFWInvoker.Object,
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -163,8 +163,8 @@ namespace VelaptorTests.OpenGL
                 _ = new GLWindow(
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
-                    this.mockGLInvoker.Object,
-                    this.mockGLFWInvoker.Object,
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
                     this.mockMonitorService.Object,
                     this.mockWindowFacade.Object,
                     this.mockPlatform.Object,
@@ -542,11 +542,11 @@ namespace VelaptorTests.OpenGL
             // Act
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                this.mockGLInvoker.Raise(i => i.GLError += null, new GLErrorEventArgs("gl-error"));
+                this.mockGL.Raise(i => i.GLError += null, new GLErrorEventArgs("gl-error"));
             }, "gl-error");
 
             // Assert
-            this.mockGLInvoker.VerifyAdd(i => i.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>(), Times.Once());
+            this.mockGL.VerifyAdd(i => i.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>(), Times.Once());
         }
 
         [Fact]
@@ -692,8 +692,8 @@ namespace VelaptorTests.OpenGL
             this.mockWindowFacade.VerifyRemove(s => s.Resize -= It.IsAny<EventHandler<WindowSizeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Resize)}' event did not occur.");
             this.mockWindowFacade.Verify(m => m.Dispose(), Times.Once());
             this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
-            this.mockGLInvoker.Verify(m => m.Dispose(), Times.Once());
-            this.mockGLFWInvoker.Verify(m => m.Dispose(), Times.Once());
+            this.mockGL.Verify(m => m.Dispose(), Times.Once());
+            this.mockGLFW.Verify(m => m.Dispose(), Times.Once());
         }
 
         [Fact]
@@ -709,7 +709,7 @@ namespace VelaptorTests.OpenGL
             this.mockWindowFacade.Raise(w => w.Resize += null, null, new WindowSizeEventArgs(30, 40));
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.Viewport(0, 0, 30, 40));
+            this.mockGL.Verify(m => m.Viewport(0, 0, 30, 40));
             Assert.Equal(30u, actualSize.Width);
             Assert.Equal(40u, actualSize.Height);
         }
@@ -725,7 +725,7 @@ namespace VelaptorTests.OpenGL
             this.mockWindowFacade.Raise(e => e.RenderFrame += null, null, new FrameTimeEventArgs(16));
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once);
+            this.mockGL.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once);
         }
 
         [Fact]
@@ -740,7 +740,7 @@ namespace VelaptorTests.OpenGL
             this.mockWindowFacade.Raise(e => e.RenderFrame += null, null, new FrameTimeEventArgs(16));
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.Clear(It.IsAny<GLClearBufferMask>()), Times.Never);
+            this.mockGL.Verify(m => m.Clear(It.IsAny<GLClearBufferMask>()), Times.Never);
         }
 
         [Fact]
@@ -789,8 +789,8 @@ namespace VelaptorTests.OpenGL
             => new (
                 width,
                 height,
-                this.mockGLInvoker.Object,
-                this.mockGLFWInvoker.Object,
+                this.mockGL.Object,
+                this.mockGLFW.Object,
                 this.mockMonitorService.Object,
                 this.mockWindowFacade.Object,
                 this.mockPlatform.Object,

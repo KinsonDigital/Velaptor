@@ -39,7 +39,7 @@ namespace Velaptor.Input
         /// <param name="input">The key to set.</param>
         /// <param name="state">The state of the given key.</param>
         /// <remarks>
-        ///     When <paramref name="state"/> is the value of <see langword=""="true"/>,
+        ///     When <paramref name="state"/> is the value of <see langword="true"/>,
         ///     this means the keyboard key is being pressed down.
         /// </remarks>
         public void SetState(KeyCode input, bool state)
@@ -55,9 +55,9 @@ namespace Velaptor.Input
 
             var keys = IKeyboardInput<KeyCode, KeyboardState>.InputStates.Keys.ToArray();
 
-            for (var i = 0; i < keys.Length; i++)
+            foreach (var k in keys)
             {
-                IKeyboardInput<KeyCode, KeyboardState>.InputStates[keys[i]] = false;
+                IKeyboardInput<KeyCode, KeyboardState>.InputStates[k] = false;
             }
         }
 
@@ -66,11 +66,11 @@ namespace Velaptor.Input
         /// </summary>
         private static void InitializeKeyStates()
         {
-            var keyCodes = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
+            var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
-            for (var i = 0; i < keyCodes.Length; i++)
+            foreach (var k in keys)
             {
-                IKeyboardInput<KeyCode, KeyboardState>.InputStates.Add(keyCodes[i], false);
+                IKeyboardInput<KeyCode, KeyboardState>.InputStates.Add(k, false);
             }
         }
     }

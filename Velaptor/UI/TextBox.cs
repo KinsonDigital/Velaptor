@@ -74,10 +74,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Loads the content of the <see cref="TextBox"/>.
         /// </summary>
-        public override void LoadContent()
-        {
-            this.text.LoadContent();
-        }
+        public override void LoadContent() => this.text.LoadContent();
 
         /// <summary>
         /// Updates the text box.
@@ -103,6 +100,7 @@ namespace Velaptor.UI
             }
         }
 
+        /// <inheritdoc/>
         public override void Render(ISpriteBatch spriteBatch)
         {
             if (IsLoaded is false || Visible is false)
@@ -114,9 +112,9 @@ namespace Velaptor.UI
         }
 
         /// <summary>
-        /// Processess any keyboard input inside of the <see cref="TextBox"/>.
+        /// Processes any keyboard input inside of the <see cref="TextBox"/>.
         /// </summary>
-        private void ProcessKeys()
+        private static void ProcessKeys()
         {
             // TODO: Need to get this working with new Keyboard implementation using the KeyboardState struct
             // this.keyboard.UpdateCurrentState();
@@ -214,14 +212,11 @@ namespace Velaptor.UI
         /// <summary>
         /// Removes the characters using the backspace key.
         /// </summary>
-        private void RemoveCharacterUsingBackspace()
+        private static void RemoveCharacterUsingBackspace()
         {
             // Text = Text.Remove(Text.IndexOf(this.visibleText.Text, StringComparison.Ordinal) + this.characterPosition - 1, 1);
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        public void Dispose() => throw new NotImplementedException();
     }
 }

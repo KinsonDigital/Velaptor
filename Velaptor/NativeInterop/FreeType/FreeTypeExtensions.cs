@@ -4,6 +4,7 @@
 
 namespace Velaptor.NativeInterop.FreeType
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
@@ -11,6 +12,8 @@ namespace Velaptor.NativeInterop.FreeType
     using FreeTypeSharp.Native;
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides extensions to free type library operations to help simplify working with free type.
@@ -159,6 +162,38 @@ namespace Velaptor.NativeInterop.FreeType
                 sizeInPointsPtr,
                 horiResolution,
                 vertResolution);
+        }
+
+        /// <inheritdoc/>
+        public bool HasKerning(IntPtr facePtr)
+        {
+            bool result;
+
+            if (facePtr == IntPtr.Zero)
+            {
+                // TODO: This should invoke the error callback instead
+                throw new Exception("The font face has not been created yet.");
+            }
+
+            unsafe
+            {
+                var faceRec = (FT_FaceRec*)facePtr;
+
+                result = (((int)faceRec->face_flags) & FT.FT_FACE_FLAG_KERNING) != 0;
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public float GetFontScaledLineSpacing(IntPtr facePtr)
+        {
+            var face = Marshal.PtrToStructure<FT_FaceRec>(facePtr);
+
+            unsafe
+            {
+                return (face.size->metrics.height.ToInt64() >> 6) / 64f;
+            }
         }
     }
 }

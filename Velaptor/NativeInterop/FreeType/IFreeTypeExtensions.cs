@@ -4,9 +4,12 @@
 
 namespace Velaptor.NativeInterop.FreeType
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides extensions to free type library operations to help simplify working with free type.
@@ -41,7 +44,7 @@ namespace Velaptor.NativeInterop.FreeType
         Dictionary<char, GlyphMetrics> CreateGlyphMetrics(IntPtr facePtr, Dictionary<char, uint> glyphIndices);
 
         /// <summary>
-        /// Gets all of the font indices fron the font file for each glyph.
+        /// Gets all of the font indices from the font file for each glyph.
         /// </summary>
         /// <param name="facePtr">The pointer to the font face.</param>
         /// <param name="glyphChars">The list of glyphs to get the indices for.</param>
@@ -56,5 +59,19 @@ namespace Velaptor.NativeInterop.FreeType
         /// <param name="horiResolution">The horizontal resolution.</param>
         /// <param name="vertResolution">The vertical resolution.</param>
         void SetCharacterSize(IntPtr facePtr, int sizeInPoints, uint horiResolution, uint vertResolution);
+
+        /// <summary>
+        /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
+        /// </summary>
+        /// <param name="facePtr">The pointer to the font face.</param>
+        /// <returns><see langword="true"/> if the face uses kerning.</returns>
+        bool HasKerning(IntPtr facePtr);
+
+        /// <summary>
+        /// Returns the line spacing as a scaled value.
+        /// </summary>
+        /// <param name="facePtr">The pointer to the font face.</param>
+        /// <returns>The line spacing as a scaled value.</returns>
+        float GetFontScaledLineSpacing(IntPtr facePtr);
     }
 }

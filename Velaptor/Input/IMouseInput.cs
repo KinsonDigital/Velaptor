@@ -14,20 +14,20 @@ namespace Velaptor.Input
     public interface IMouseInput<TInputs, TInputState> : IGameInput<TInputs, TInputState>
         where TInputs : struct, Enum
     {
-        /// <summary>
-        /// The X coordinate of the mouse.
-        /// </summary>
-        internal static int XPos;
-
-        /// <summary>
-        /// The Y coordinate of the mouse.
-        /// </summary>
-        internal static int YPos;
-
-        /// <summary>
-        /// The value of the scroll wheel of the mouse.
-        /// </summary>
-        internal static int ScrollWheelValue;
+        // /// <summary>
+        // /// The X coordinate of the mouse.
+        // /// </summary>
+        // internal static int XPos;
+        //
+        // /// <summary>
+        // /// The Y coordinate of the mouse.
+        // /// </summary>
+        // internal static int YPos;
+        //
+        // /// <summary>
+        // /// The value of the scroll wheel of the mouse.
+        // /// </summary>
+        // internal static int ScrollWheelValue;
 
         /// <summary>
         /// Sets the X coordinate sate of the mouse.

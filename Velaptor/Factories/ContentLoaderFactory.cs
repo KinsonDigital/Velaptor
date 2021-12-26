@@ -4,6 +4,7 @@
 
 namespace Velaptor.Factories
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Content;
@@ -11,6 +12,8 @@ namespace Velaptor.Factories
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates instances of a content loader.
@@ -48,12 +51,14 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var imageService = IoC.Container.GetInstance<IImageService>();
             var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
             var path = IoC.Container.GetInstance<IPath>();
 
             textureLoader = new TextureLoader(
                 glInvoker,
+                glInvokerExtensions,
                 imageService,
                 texturePathResolver,
                 path);
@@ -74,10 +79,12 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var atlasDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
 
             atlasLoader = new AtlasLoader(
                 glInvoker,
+                glInvokerExtensions,
                 IoC.Container.GetInstance<IImageService>(),
                 atlasDataPathResolver,
                 IoC.Container.GetInstance<IFile>(),
@@ -119,13 +126,17 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
+            var freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
             var fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
 
             fontLoader = new FontLoader(
                 glInvoker,
+                glInvokerExtensions,
                 freeTypeInvoker,
+                freeTypeExtensions,
                 fontAtlasService,
                 fontPathResolver,
                 IoC.Container.GetInstance<IImageService>(),

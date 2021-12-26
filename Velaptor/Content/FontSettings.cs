@@ -4,8 +4,6 @@
 
 namespace Velaptor.Content
 {
-    using System.Diagnostics.CodeAnalysis;
-
     /// <summary>
     /// The different font settings that can be used when loading fonts.
     /// </summary>

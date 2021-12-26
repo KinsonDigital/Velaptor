@@ -34,9 +34,11 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
             var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
-            textureShader = new TextureShader(glInvoker, shaderLoaderService, glInitObservable);
+
+            textureShader = new TextureShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitObservable);
 
             return textureShader;
         }
@@ -53,9 +55,11 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
             var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
-            fontShader = new FontShader(glInvoker, shaderLoaderService, glInitObservable);
+
+            fontShader = new FontShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitObservable);
 
             return fontShader;
         }

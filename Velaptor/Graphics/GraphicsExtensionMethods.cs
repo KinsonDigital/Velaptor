@@ -6,7 +6,6 @@ namespace Velaptor.Graphics
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Velaptor;
 
     /// <summary>
     /// Provides various helper extension methods.

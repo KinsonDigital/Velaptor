@@ -4,10 +4,13 @@
 
 namespace Velaptor.Graphics
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Drawing;
     using System.Numerics;
     using Velaptor.Content;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Renders a single or batch of textures.

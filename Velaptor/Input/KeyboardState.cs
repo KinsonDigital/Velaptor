@@ -406,9 +406,9 @@ namespace Velaptor.Input
 
             var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
-            for (var i = 0; i < keys.Length; i++)
+            foreach (var k in keys)
             {
-                this.keyStates.Add(keys[i], false);
+                this.keyStates.Add(k, false);
             }
         }
     }

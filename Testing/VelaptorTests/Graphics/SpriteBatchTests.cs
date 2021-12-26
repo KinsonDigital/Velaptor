@@ -32,8 +32,8 @@ namespace VelaptorTests.Graphics
         private const uint FontShaderId = 2222;
         private const char InvalidCharacter = '□';
         private readonly string batchTestDataDirPath = @$"{RootRelativeTestDataDirPath}BatchItemTestData\";
-        private readonly Mock<IGLInvoker> mockGLInvoker;
-        private readonly Mock<IGLInvokerExtensions> mockGLInvokerExtensions;
+        private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IShaderProgram> mockTextureShader;
         private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockTextureBuffer;
         private readonly Mock<IBatchManagerService<SpriteBatchItem>> mockTextureBatchService;
@@ -57,12 +57,12 @@ namespace VelaptorTests.Graphics
         /// </summary>
         public SpriteBatchTests()
         {
-            this.mockGLInvoker = new Mock<IGLInvoker>();
+            this.mockGL = new Mock<IGLInvoker>();
 
-            this.mockGLInvokerExtensions = new Mock<IGLInvokerExtensions>();
-            this.mockGLInvokerExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLInvokerExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
 
             this.mockTextureShader = new Mock<IShaderProgram>();
             this.mockTextureShader.SetupGet(p => p.ShaderId).Returns(TextureShaderId);
@@ -114,7 +114,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     null,
-                    this.mockGLInvokerExtensions.Object,
+                    this.mockGLExtensions.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -132,8 +132,8 @@ namespace VelaptorTests.Graphics
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var unused = new SpriteBatch(
-                    this.mockGLInvoker.Object,
-                    this.mockGLInvokerExtensions.Object,
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
                     null,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -151,8 +151,8 @@ namespace VelaptorTests.Graphics
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var unused = new SpriteBatch(
-                    this.mockGLInvoker.Object,
-                    this.mockGLInvokerExtensions.Object,
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
                     this.mockTextureShader.Object,
                     null,
                     this.mockTextureBuffer.Object,
@@ -170,8 +170,8 @@ namespace VelaptorTests.Graphics
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var unused = new SpriteBatch(
-                    this.mockGLInvoker.Object,
-                    this.mockGLInvokerExtensions.Object,
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     null,
@@ -189,8 +189,8 @@ namespace VelaptorTests.Graphics
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var unused = new SpriteBatch(
-                    this.mockGLInvoker.Object,
-                    this.mockGLInvokerExtensions.Object,
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -207,7 +207,7 @@ namespace VelaptorTests.Graphics
         public void Width_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
+            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
             var batch = CreateSpriteBatch();
             this.glInitObservable.OnOpenGLInitialized();
 
@@ -216,15 +216,15 @@ namespace VelaptorTests.Graphics
             _ = batch.RenderSurfaceWidth;
 
             // Assert
-            this.mockGLInvokerExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
-            this.mockGLInvokerExtensions.Verify(m => m.SetViewPortSize(new Size(100, 22)), Times.Once());
+            this.mockGLExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGLExtensions.Verify(m => m.SetViewPortSize(new Size(100, 22)), Times.Once());
         }
 
         [Fact]
         public void Height_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
+            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
             var batch = CreateSpriteBatch();
             this.glInitObservable.OnOpenGLInitialized();
 
@@ -233,8 +233,8 @@ namespace VelaptorTests.Graphics
             _ = batch.RenderSurfaceHeight;
 
             // Assert
-            this.mockGLInvokerExtensions.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
-            this.mockGLInvokerExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGLExtensions.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
+            this.mockGLExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
         }
 
         [Fact]
@@ -247,7 +247,7 @@ namespace VelaptorTests.Graphics
             const float expectedAlpha = 0.172549024f;
             var expected = Color.FromArgb(44, 11, 22, 33);
             var expectedClrValues = new float[4];
-            this.mockGLInvoker.Setup(m => m.GetFloat(GLGetPName.ColorClearValue, expectedClrValues))
+            this.mockGL.Setup(m => m.GetFloat(GLGetPName.ColorClearValue, expectedClrValues))
                 .Callback<GLGetPName, float[]>((_, data) =>
                 {
                     data[0] = expectedRed;
@@ -263,7 +263,7 @@ namespace VelaptorTests.Graphics
             var actual = batch.ClearColor;
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.GetFloat(GLGetPName.ColorClearValue, It.IsAny<float[]>()), Times.Once);
+            this.mockGL.Verify(m => m.GetFloat(GLGetPName.ColorClearValue, It.IsAny<float[]>()), Times.Once);
             Assert.Equal(expected, actual);
         }
 
@@ -278,7 +278,7 @@ namespace VelaptorTests.Graphics
             batch.ClearColor = Color.FromArgb(11, 22, 33, 44);
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.ClearColor(
+            this.mockGL.Verify(m => m.ClearColor(
                 It.IsAny<float>(),
                 It.IsAny<float>(),
                 It.IsAny<float>(),
@@ -296,7 +296,7 @@ namespace VelaptorTests.Graphics
             batch.Clear();
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once());
+            this.mockGL.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once());
         }
 
         [Fact]
@@ -532,10 +532,10 @@ namespace VelaptorTests.Graphics
                 It.IsAny<RenderEffects>());
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
-            this.mockGLInvoker.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
-            this.mockGLInvoker.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
-            this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
+            this.mockGLExtensions.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
+            this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
+            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
+            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, batchIndex), Times.Once);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, batchIndex), Times.Never);
             this.mockTextureBatchService.Verify(m => m.EmptyBatch(), Times.Once);
@@ -1042,13 +1042,13 @@ namespace VelaptorTests.Graphics
                 22);
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.DrawElements(GLPrimitiveType.Triangles,
+            this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles,
                     6u * (uint)textBeingRendered.Length,
                     GLDrawElementsType.UnsignedInt,
                     IntPtr.Zero),
                 Times.Once());
-            this.mockGLInvoker.Verify(m => m.ActiveTexture(GLTextureUnit.Texture1), Times.Once);
-            this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
+            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture1), Times.Once);
+            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
             this.mockFontBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(),
                     It.IsAny<uint>()),
                 Times.Exactly(textBeingRendered.Length));
@@ -1087,9 +1087,9 @@ namespace VelaptorTests.Graphics
             batch.EndBatch();
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Never());
-            this.mockGLInvoker.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Never);
-            this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Never);
+            this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Never());
+            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Never);
+            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Never);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, It.IsAny<uint>()), Times.Never);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, It.IsAny<uint>()), Times.Never);
         }
@@ -1192,8 +1192,8 @@ namespace VelaptorTests.Graphics
         private SpriteBatch CreateSpriteBatch(IObservable<bool>? openGLInitObservable = null)
         {
             var result = new SpriteBatch(
-                this.mockGLInvoker.Object,
-                this.mockGLInvokerExtensions.Object,
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
                 this.mockTextureShader.Object,
                 this.mockFontShader.Object,
                 this.mockTextureBuffer.Object,

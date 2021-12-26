@@ -14,8 +14,15 @@ namespace VelaptorTests.Fakes
     /// </summary>
     internal class ShaderProgramFake : ShaderProgram
     {
-        public ShaderProgramFake(IGLInvoker gl, IShaderLoaderService<uint> shaderLoaderService, IObservable<bool> glInitObservable)
-            : base(gl, shaderLoaderService, glInitObservable)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderProgramFake"/> class for the purpose of testing.
+        /// </summary>
+        /// <param name="gl">Mocked <see cref="IGLInvoker"/>.</param>
+        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/>.</param>
+        /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService{TValue}"/>.</param>
+        /// <param name="glInitObservable">Mocked <see cref="IObservable{T}"/>.</param>
+        public ShaderProgramFake(IGLInvoker gl, IGLInvokerExtensions glExtensions, IShaderLoaderService<uint> shaderLoaderService, IObservable<bool> glInitObservable)
+            : base(gl, glExtensions, shaderLoaderService, glInitObservable)
         {
         }
     }

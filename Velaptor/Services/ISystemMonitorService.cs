@@ -4,8 +4,11 @@
 
 namespace Velaptor.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Collections.ObjectModel;
     using Velaptor.Hardware;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Gets information about the monitors in the system.

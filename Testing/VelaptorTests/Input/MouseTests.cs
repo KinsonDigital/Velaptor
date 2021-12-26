@@ -75,9 +75,10 @@ namespace VelaptorTests.Input
 
             // Act
             mouse.SetXPos(11);
+            var actual = mouse.GetState().GetX();
 
             // Assert
-            Assert.Equal(11, IMouseInput<MouseButton, MouseState>.XPos);
+            Assert.Equal(11, actual);
         }
 
         [Fact]
@@ -88,9 +89,10 @@ namespace VelaptorTests.Input
 
             // Act
             mouse.SetYPos(22);
+            var actual = mouse.GetState().GetY();
 
             // Assert
-            Assert.Equal(22, IMouseInput<MouseButton, MouseState>.YPos);
+            Assert.Equal(22, actual);
         }
 
         [Fact]
@@ -101,9 +103,10 @@ namespace VelaptorTests.Input
 
             // Act
             mouse.SetScrollWheelValue(33);
+            var actual = mouse.GetState().GetScrollWheelValue();
 
             // Assert
-            Assert.Equal(33, IMouseInput<MouseButton, MouseState>.ScrollWheelValue);
+            Assert.Equal(33, actual);
         }
 
         [Fact]
@@ -119,7 +122,8 @@ namespace VelaptorTests.Input
             Assert.Equal(Enum.GetValues(typeof(MouseButton)).Length, IMouseInput<MouseButton, MouseState>.InputStates.Count);
             Assert.All(IMouseInput<MouseButton, MouseState>.InputStates, (state) =>
             {
-                Assert.False(state.Value);
+                var (_, value) = state;
+                Assert.False(value);
             });
         }
 
@@ -131,25 +135,26 @@ namespace VelaptorTests.Input
 
             var keyCodes = Enum.GetValues(typeof(MouseButton)).Cast<MouseButton>().ToArray();
 
-            for (var i = 0; i < keyCodes.Length; i++)
+            foreach (var key in keyCodes)
             {
-                IMouseInput<MouseButton, MouseState>.InputStates.Add(keyCodes[i], true);
+                IMouseInput<MouseButton, MouseState>.InputStates.Add(key, true);
             }
 
-            IMouseInput<MouseButton, MouseState>.XPos = 111;
-            IMouseInput<MouseButton, MouseState>.YPos = 222;
-            IMouseInput<MouseButton, MouseState>.ScrollWheelValue = 333;
+            mouse.SetXPos(111);
+            mouse.SetYPos(222);
+            mouse.SetScrollWheelValue(333);
 
             // Act
             mouse.Reset();
+            var actual = mouse.GetState();
 
             // Assert
             Assert.False(IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton]);
             Assert.False(IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.RightButton]);
             Assert.False(IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.MiddleButton]);
-            Assert.Equal(0, IMouseInput<MouseButton, MouseState>.XPos);
-            Assert.Equal(0, IMouseInput<MouseButton, MouseState>.YPos);
-            Assert.Equal(0, IMouseInput<MouseButton, MouseState>.ScrollWheelValue);
+            Assert.Equal(0, actual.GetX());
+            Assert.Equal(0, actual.GetY());
+            Assert.Equal(0, actual.GetScrollWheelValue());
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -158,12 +163,11 @@ namespace VelaptorTests.Input
         /// <summary>
         /// Clears the state for the mouse for testing purposes.
         /// </summary>
-        private void ClearMouseState()
+        private static void ClearMouseState()
         {
+            new Mouse().SetXPos(0);
+            new Mouse().SetYPos(0);
             IMouseInput<MouseButton, MouseState>.InputStates.Clear();
-            IMouseInput<MouseButton, MouseState>.XPos = 0;
-            IMouseInput<MouseButton, MouseState>.YPos = 0;
-            IMouseInput<MouseButton, MouseState>.ScrollWheelValue = 0;
         }
     }
 }

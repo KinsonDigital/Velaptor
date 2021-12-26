@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace Velaptor.NativeInterop.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using System.Runtime.InteropServices;
@@ -15,6 +15,8 @@ namespace Velaptor.NativeInterop.OpenGL
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
     using Velaptor.OpenGL;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Invokes OpenGL calls.
@@ -32,10 +34,12 @@ namespace Velaptor.NativeInterop.OpenGL
         // private static readonly Dictionary<uint, bool> BoundVBOList = new ();
         // private static readonly Dictionary<uint, bool> BoundEBOList = new ();
 
+        private static readonly Queue<string> OpenGLCallStack = new ();
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
-        private static Queue<string> glCallStack = new ();
         private bool isDisposed;
+
+        // ReSharper disable once MemberInitializerValueIgnored
         private GL gl = null!;
 
         /// <summary>
@@ -46,8 +50,7 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     that the OpenGL context has been created.
         /// </param>
         public GLInvoker(OpenGLContextObservable glContextObservable)
-        {
-            this.glContextUnsubscriber = glContextObservable.Subscribe(new Observer<object>(
+            => this.glContextUnsubscriber = glContextObservable.Subscribe(new Observer<object>(
                 onNext: data =>
                 {
                     if (data is IWindow window)
@@ -68,39 +71,65 @@ namespace Velaptor.NativeInterop.OpenGL
                 {
                     this.glContextUnsubscriber?.Dispose();
                 }));
-        }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="GLInvoker"/> class.
         /// </summary>
-        ~GLInvoker()
-        {
-            Dispose(false);
-        }
+        ~GLInvoker() => Dispose(false);
 
         /// <inheritdoc/>
         public event EventHandler<GLErrorEventArgs>? GLError;
 
-        public static string[] GLCallStack => glCallStack.ToArray();
+        // ReSharper disable once UnusedMember.Global
+#pragma warning disable SA1600
+        /// <summary>
+        /// Gets the list of OpenGL function calls.
+        /// </summary>
+        public static string[] GLCallStack => OpenGLCallStack.ToArray();
+#pragma warning restore SA1600
 
         /// <inheritdoc/>
         public void SetupErrorCallback()
         {
+            // TODO: Get this into the GLExtensions type
             // TODO: Refactor to only set this up if in debug mode
-            if (debugCallback == null)
+            if (debugCallback != null)
             {
-                debugCallback = DebugCallback;
+                return;
+            }
 
-                /*NOTE:
+            debugCallback = DebugCallback;
+
+            /*NOTE:
                  * This is here to help prevent an issue with an obscure System.ExecutionException from occurring.
-                 * The garbage collector performs a collect on the delegate passed into GL.DebugMesageCallback()
+                 * The garbage collector performs a collect on the delegate passed into GL.DebugMessageCallback()
                  * without the native system knowing about it which causes this exception. The GC.KeepAlive()
                  * method tells the garbage collector to not collect the delegate to prevent this from happening.
                  */
-                GC.KeepAlive(debugCallback);
+            GC.KeepAlive(debugCallback);
 
-                this.gl.DebugMessageCallback(debugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
-            }
+            this.gl.DebugMessageCallback(debugCallback, Marshal.StringToHGlobalAnsi(string.Empty));
+        }
+
+        /// <inheritdoc/>
+        public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message)
+        {
+            AddToGLCallStack(nameof(PushDebugGroup));
+            this.gl.PushDebugGroup((DebugSource)source, id, length, message);
+        }
+
+        /// <inheritdoc/>
+        public void PopDebugGroup()
+        {
+            AddToGLCallStack(nameof(PopDebugGroup));
+            this.gl.PopDebugGroup();
+        }
+
+        /// <inheritdoc/>
+        public void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label)
+        {
+            AddToGLCallStack(nameof(ObjectLabel));
+            this.gl.ObjectLabel((ObjectIdentifier)identifier, name, length, label);
         }
 
         /// <inheritdoc/>
@@ -336,20 +365,6 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public void BufferSubData<T>(GLBufferTarget target, nint offset, nuint size, ref T data)
-            where T : unmanaged
-        {
-            AddToGLCallStack($"{nameof(BufferSubData)}(GLBufferTarget target, nint offset, nuint size, ref T data)");
-            unsafe
-            {
-                fixed (T* dataPtr = &data)
-                {
-                    this.gl.BufferSubData((BufferTargetARB)target, offset, size, dataPtr);
-                }
-            }
-        }
-
-        /// <inheritdoc/>
         public void BufferSubData(GLBufferTarget target, nint offset, nuint size, float[] data)
         {
             AddToGLCallStack($"{nameof(BufferSubData)}(GLBufferTarget target, nint offset, nuint size, float[] data)");
@@ -384,13 +399,6 @@ namespace Velaptor.NativeInterop.OpenGL
 
             AddToGLCallStack($"{firstSection}Bind {secondSection}");
             this.gl.BindBuffer((BufferTargetARB)target, buffer);
-        }
-
-        /// <inheritdoc/>
-        public void EnableVertexArrayAttrib(uint vaobj, uint index)
-        {
-            AddToGLCallStack(nameof(EnableVertexArrayAttrib));
-            this.gl.EnableVertexArrayAttrib(vaobj, index);
         }
 
         /// <inheritdoc/>
@@ -443,82 +451,6 @@ namespace Velaptor.NativeInterop.OpenGL
         {
             AddToGLCallStack(nameof(DeleteTexture));
             this.gl.DeleteTexture(textures);
-        }
-
-        // TODO: Move to method extensions
-        public void BeginGroup(string name)
-        {
-            // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
-            AddToGLCallStack(nameof(BeginGroup));
-            this.gl.PushDebugGroup(DebugSource.DebugSourceApplication, 100, (uint)name.Length, name);
-        }
-
-        // TODO: Move to method extensions
-        public void EndGroup()
-        {
-            // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
-            AddToGLCallStack(nameof(EndGroup));
-            this.gl.PopDebugGroup();
-        }
-
-        // TODO: Move to method extensions
-        public void LabelShader(uint shaderId, string label)
-        {
-            AddToGLCallStack(nameof(LabelShader));
-            gl.ObjectLabel(ObjectIdentifier.Shader, shaderId, (uint) label.Length, label);
-        }
-
-        public void LabelShaderProgram(uint shaderId, string label)
-        {
-            AddToGLCallStack(nameof(LabelShaderProgram));
-            this.gl.ObjectLabel(ObjectIdentifier.Program, shaderId, (uint) label.Length, label);
-        }
-
-        // TODO: Move to method extensions
-        public void LabelVertexArray(uint vertexArrayId, string label)
-        {
-            // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
-            label = string.IsNullOrEmpty(label)
-                ? "NOT SET"
-                : label;
-
-            var newLabel = $"{label} VAO";
-
-            AddToGLCallStack(nameof(LabelVertexArray));
-            this.gl.ObjectLabel(ObjectIdentifier.VertexArray, vertexArrayId, (uint)newLabel.Length, newLabel);
-        }
-
-        // TODO: Move to method extensions
-        public void LabelBuffer(uint bufferId, string label, BufferType bufferType)
-        {
-            // TODO: Move this to the GLInvokerExtensions class once it is turned into an extension method class
-            label = string.IsNullOrEmpty(label)
-                ? "NOT SET"
-                : label;
-
-            var bufferTypeAcronym = bufferType switch
-            {
-                BufferType.VertexBufferObject => "VBO",
-                BufferType.IndexArrayObject => "EBO",
-                _ => throw new ArgumentOutOfRangeException(nameof(bufferType), bufferType, null)
-            };
-
-            var newLabel = $"{label} {bufferTypeAcronym}";
-
-            AddToGLCallStack(nameof(LabelBuffer));
-            this.gl.ObjectLabel(ObjectIdentifier.Buffer, bufferId, (uint)newLabel.Length, newLabel);
-        }
-
-        // TODO: Move to method extensions
-        /// <inheritdoc/>
-        public void LabelTexture(uint textureId, string label)
-        {
-            label = string.IsNullOrEmpty(label)
-                ? "NOT SET"
-                : label;
-
-            AddToGLCallStack(nameof(LabelTexture));
-            this.gl.ObjectLabel(ObjectIdentifier.Texture, textureId, (uint)label.Length, label);
         }
 
         /// <inheritdoc/>
@@ -576,18 +508,20 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (this.isDisposed)
             {
-                if (disposing)
-                {
-                    this.glContextUnsubscriber.Dispose();
-                }
-
-                debugCallback = null;
-                this.isDisposed = true;
+                return;
             }
+
+            if (disposing)
+            {
+                this.glContextUnsubscriber.Dispose();
+            }
+
+            debugCallback = null;
+            this.isDisposed = true;
         }
 
         /// <summary>
@@ -613,18 +547,18 @@ namespace Velaptor.NativeInterop.OpenGL
 
             if (severity != GLEnum.DebugSeverityNotification && id != 131218)
             {
-                GLError?.Invoke(this, new GLErrorEventArgs(errorMessage));
+                this.GLError?.Invoke(this, new GLErrorEventArgs(errorMessage));
             }
         }
 
         // TODO: Add Debug precompiler logic here to only run this method code if in debug
         private void AddToGLCallStack(string glFunctionName)
         {
-            glCallStack.Enqueue(glFunctionName);
+            OpenGLCallStack.Enqueue(glFunctionName);
 
-            if (glCallStack.Count >= 200)
+            if (OpenGLCallStack.Count >= 200)
             {
-                glCallStack.Dequeue();
+                OpenGLCallStack.Dequeue();
             }
         }
     }

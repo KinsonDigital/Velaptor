@@ -4,7 +4,11 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Collections.ObjectModel;
+    using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Holds data for a texture atlas.
@@ -14,6 +18,8 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets the list of frame names.
         /// </summary>
+        // ReSharper disable once UnusedMemberInSuper.Global
+        // ReSharper disable once ReturnTypeCanBeEnumerable.Global
         ReadOnlyCollection<string> SubTextureNames { get; }
 
         /// <summary>

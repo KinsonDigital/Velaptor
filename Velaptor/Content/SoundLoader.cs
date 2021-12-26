@@ -4,11 +4,14 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Factories;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Loads sound content.

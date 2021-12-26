@@ -2,15 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Factories;
-
 namespace Velaptor.UI
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using System.Threading.Tasks;
     using Velaptor.Content;
+    using Velaptor.Factories;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// A system window that graphics can be rendered to.
@@ -26,12 +28,7 @@ namespace Velaptor.UI
         /// <param name="window">The window implementation that contains the window functionality.</param>
         protected Window(IWindow window)
         {
-            if (window is null)
-            {
-                throw new ArgumentNullException(nameof(window), "Window must not be null.");
-            }
-
-            this.window = window;
+            this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
             this.window.Initialize = OnLoad;
             this.window.Uninitialize = OnUnload;
             this.window.Update = OnUpdate;

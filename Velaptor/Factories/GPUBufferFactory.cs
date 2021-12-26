@@ -36,8 +36,9 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
-            textureBuffer = new TextureGPUBuffer(glInvoker, glInitObservable);
+            textureBuffer = new TextureGPUBuffer(glInvoker, glInvokerExtensions, glInitObservable);
 
             return textureBuffer;
         }
@@ -57,8 +58,10 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
-            fontBuffer = new FontGPUBuffer(glInvoker, glInitObservable);
+
+            fontBuffer = new FontGPUBuffer(glInvoker, glInvokerExtensions, glInitObservable);
 
             return fontBuffer;
         }

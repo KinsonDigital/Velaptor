@@ -317,8 +317,10 @@ namespace VelaptorTests.UI
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
 
-            IMouseInput<MouseButton, MouseState>.XPos = xPos;
-            IMouseInput<MouseButton, MouseState>.YPos = yPos;
+            var mouse = new Mouse();
+
+            mouse.SetXPos(xPos);
+            mouse.SetYPos(yPos);
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = mouseDown;
 
             ctrlBase.LoadContent();
@@ -343,8 +345,10 @@ namespace VelaptorTests.UI
             ctrlBase.Height = 100;
 
             // Set previous mouse position
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
 
             ctrlBase.LoadContent();
 
@@ -352,8 +356,8 @@ namespace VelaptorTests.UI
             ctrlBase.Update(default);
 
             // Set current mouse position
-            IMouseInput<MouseButton, MouseState>.XPos = 80;
-            IMouseInput<MouseButton, MouseState>.YPos = 80;
+            mouse.SetXPos(80);
+            mouse.SetYPos(80);
 
             // Assert
             Assert.Raises<MousePositionEventArgs>(
@@ -374,8 +378,10 @@ namespace VelaptorTests.UI
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
 
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
+
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             ctrlBase.LoadContent();
@@ -417,8 +423,9 @@ namespace VelaptorTests.UI
             ctrlBase.Click += CtrlClicked;
             ctrlBase.MouseUp += MouseUp;
 
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
 
             ctrlBase.LoadContent();
 
@@ -450,8 +457,10 @@ namespace VelaptorTests.UI
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
 
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
+
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             // Act & Assert
@@ -471,8 +480,10 @@ namespace VelaptorTests.UI
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
 
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
+
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             ctrlBase.LoadContent();
@@ -532,9 +543,10 @@ namespace VelaptorTests.UI
         private static void ClearMouseState()
         {
             IMouseInput<MouseButton, MouseState>.InputStates.Clear();
-            IMouseInput<MouseButton, MouseState>.XPos = 0;
-            IMouseInput<MouseButton, MouseState>.YPos = 0;
-            IMouseInput<MouseButton, MouseState>.ScrollWheelValue = 0;
+            var mouse = new Mouse();
+            mouse.SetXPos(0);
+            mouse.SetYPos(0);
+            mouse.SetScrollWheelValue(0);
         }
     }
 }

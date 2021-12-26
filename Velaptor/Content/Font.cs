@@ -27,6 +27,7 @@ namespace Velaptor.Content
         private readonly char[] availableGlyphCharacters;
         private readonly GlyphMetrics[] metrics;
         private readonly IFreeTypeInvoker freeTypeInvoker;
+        private readonly IFreeTypeExtensions freeTypeExtensions;
         private readonly IntPtr facePtr;
         private readonly GlyphMetrics invalidGlyph;
 
@@ -35,6 +36,7 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="texture">The font atlas texture that contains bitmap data for all of the available glyphs.</param>
         /// <param name="freeTypeInvoker">Invokes native FreeType function calls.</param>
+        /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="glyphMetrics">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
         /// <param name="fontSettings">The various font settings.</param>
         /// <param name="availableGlyphChars">The list of available glyph characters for this font.</param>
@@ -43,6 +45,7 @@ namespace Velaptor.Content
         internal Font(
             ITexture texture,
             IFreeTypeInvoker freeTypeInvoker,
+            IFreeTypeExtensions freeTypeExtensions,
             GlyphMetrics[] glyphMetrics,
             FontSettings fontSettings,
             char[] availableGlyphChars,
@@ -51,17 +54,18 @@ namespace Velaptor.Content
         {
             FontTextureAtlas = texture;
             this.freeTypeInvoker = freeTypeInvoker;
+            this.freeTypeExtensions = freeTypeExtensions;
             this.metrics = glyphMetrics;
             this.invalidGlyph = glyphMetrics.FirstOrDefault(m => m.Glyph == InvalidCharacter);
 
-            this.facePtr = freeTypeInvoker.GetFace();
+            this.facePtr = freeTypeInvoker.FT_Get_Face();
             Size = fontSettings.Size;
             Style = fontSettings.Style;
             this.availableGlyphCharacters = availableGlyphChars;
             Name = name;
             Path = path;
-            LineSpacing = this.freeTypeInvoker.GetFontScaledLineSpacing() * 64f;
-            HasKerning = this.freeTypeInvoker.FT_Has_Kerning();
+            LineSpacing = this.freeTypeExtensions.GetFontScaledLineSpacing(this.facePtr) * 64f;
+            HasKerning = this.freeTypeExtensions.HasKerning(this.facePtr);
         }
 
         /// <inheritdoc/>

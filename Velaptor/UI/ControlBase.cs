@@ -4,12 +4,15 @@
 
 namespace Velaptor.UI
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.Input;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Represents a basic control with behavior that is shared among all controls.
@@ -139,7 +142,7 @@ namespace Velaptor.UI
             }
 
             this.currentMouseState = this.mouse.GetState();
-            this.currentMousePos = this.currentMouseState.GetPosition().ToPoint();
+            this.currentMousePos = this.currentMouseState.GetPosition();
 
             var halfWidth = (int)Width / 2;
             var halfHeight = (int)Height / 2;

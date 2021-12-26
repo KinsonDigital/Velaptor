@@ -4,7 +4,10 @@
 
 namespace Velaptor.Observables
 {
+    // ReSharper disable RedundantNameQualifier
     using Velaptor.Observables.Core;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates an observable to send push notifications of OpenGL events.

@@ -2,10 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Runtime.InteropServices;
-
-#pragma warning disable SA1124 // Do not use regions
-#pragma warning disable SA1514 // Element documentation header should be preceded by blank line
 namespace Velaptor.NativeInterop.FreeType
 {
     using System;
@@ -15,7 +11,6 @@ namespace Velaptor.NativeInterop.FreeType
     /// <summary>
     /// Invokes calls to the FreeType library for loading and managing fonts.
     /// </summary>
-    /// <link
     /// <remarks>
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
     /// </remarks>
@@ -29,29 +24,26 @@ namespace Velaptor.NativeInterop.FreeType
         /// <summary>
         /// Finalizes an instance of the <see cref="FreeTypeInvoker"/> class.
         /// </summary>
-        ~FreeTypeInvoker()
-        {
-            Dispose(false);
-        }
+        ~FreeTypeInvoker() => Dispose();
 
         /// <inheritdoc/>
         public event EventHandler<FreeTypeErrorEventArgs>? OnError;
 
-        #region Original Interop Calls
+        // ReSharper disable IdentifierTypo
+        // ReSharper disable InconsistentNaming
+
         /// <inheritdoc/>
         public FT_Vector FT_Get_Kerning(IntPtr face, uint left_glyph, uint right_glyph, uint kern_mode)
-#pragma warning restore SA1514 // Element documentation header should be preceded by blank line
-#pragma warning restore SA1124 // Do not use regions
         {
             var error = FT.FT_Get_Kerning(face, left_glyph, right_glyph, kern_mode, out FT_Vector akerning);
 
-            if (error != FT_Error.FT_Err_Ok)
+            if (error == FT_Error.FT_Err_Ok)
             {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-                return default;
+                return akerning;
             }
 
-            return akerning;
+            this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+            return default;
         }
 
         /// <inheritdoc/>
@@ -75,7 +67,7 @@ namespace Velaptor.NativeInterop.FreeType
 
             if (error != FT_Error.FT_Err_Ok)
             {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
                 return IntPtr.Zero;
             }
 
@@ -89,7 +81,7 @@ namespace Velaptor.NativeInterop.FreeType
         {
             if (this.libraryPtr != library)
             {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
                 return IntPtr.Zero;
             }
 
@@ -97,7 +89,7 @@ namespace Velaptor.NativeInterop.FreeType
 
             if (error != FT_Error.FT_Err_Ok)
             {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
                 return IntPtr.Zero;
             }
 
@@ -113,7 +105,7 @@ namespace Velaptor.NativeInterop.FreeType
 
             if (error != FT_Error.FT_Err_Ok)
             {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
             }
         }
 
@@ -124,7 +116,7 @@ namespace Velaptor.NativeInterop.FreeType
 
             if (error != FT_Error.FT_Err_Ok)
             {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
             }
 
             this.facePtr = IntPtr.Zero;
@@ -138,7 +130,7 @@ namespace Velaptor.NativeInterop.FreeType
         {
             if (this.libraryPtr != library)
             {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
                 return;
             }
 
@@ -146,84 +138,32 @@ namespace Velaptor.NativeInterop.FreeType
 
             if (error != FT_Error.FT_Err_Ok)
             {
-                OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
+                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
                 return;
             }
 
             this.libraryPtr = IntPtr.Zero;
         }
-        #endregion
-
-#pragma warning disable SA1124 // Do not use regions
-
-        #region Helper Methods
 
         /// <inheritdoc/>
-        public IntPtr GetFace() => this.facePtr;
+        public IntPtr FT_Get_Face() => this.facePtr;
 
-        // TODO: Convert this to an extension method
-        /// <inheritdoc/>
-        public unsafe bool FT_Has_Kerning()
-        {
-            if (this.facePtr == IntPtr.Zero)
-            {
-                // TODO: This should invoke the error callback instead
-                throw new Exception("The font face has not been created yet.");
-            }
-
-            var faceRec = (FT_FaceRec*)this.facePtr;
-
-            var result = (((int)faceRec->face_flags) & FT.FT_FACE_FLAG_KERNING) != 0;
-
-            return result;
-        }
-
-        // TODO: Convert this to an extension method
-        public float GetFontScaledLineSpacing()
-        {
-            var face = Marshal.PtrToStructure<FT_FaceRec>(this.facePtr);
-
-            unsafe
-            {
-                return (face.size->metrics.height.ToInt64() >> 6) / 64f;
-            }
-        }
-        #endregion
+        // ReSharper restore IdentifierTypo
+        // ReSharper restore InconsistentNaming
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            FT.FT_Done_Face(this.facePtr);
+            FT.FT_Done_FreeType(this.libraryPtr);
+
+            this.isDisposed = true;
             GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of manged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            // TODO: Need to figure out how to call FT_Done_Glyph() in a safe way
-            // This implimentation below is causing issuess
-            /*
-            unsafe
-            {
-                var unsafePtr = (FT_FaceRec*)this.facePtr;
-
-                var glyphPtr = (IntPtr)unsafePtr->glyph;
-
-                this.freeTypeInvoker.FT_Done_Glyph(glyphPtr);
-            }
-             */
-
-            if (!this.isDisposed)
-            {
-                FT.FT_Done_Face(this.facePtr);
-                FT.FT_Done_FreeType(this.libraryPtr);
-
-                this.isDisposed = true;
-            }
         }
 
         /// <summary>

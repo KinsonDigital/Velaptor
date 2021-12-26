@@ -4,6 +4,7 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
@@ -11,18 +12,14 @@ namespace Velaptor.OpenGL
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.OpenGL.Services;
 
+    // ReSharper restore RedundantNameQualifier
+
     // TODO: Setup debug groups for shader
 
     /// <inheritdoc/>
     [SpriteBatchSize(ISpriteBatch.BatchSize)]
     public abstract class ShaderProgram : IShaderProgram
     {
-#pragma warning disable SA1401
-        /// <summary>
-        /// Invokes OpenGL functions.
-        /// </summary>
-        private protected readonly IGLInvoker GL;
-#pragma warning restore SA1401
         private readonly IShaderLoaderService<uint> shaderLoaderService;
         private readonly IDisposable glObservableUnsubscriber;
         private bool isDisposed;
@@ -33,14 +30,18 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
         /// <param name="glInitObservable">Initializes the shader once it receives a notification.</param>
         internal ShaderProgram(
             IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
             IObservable<bool> glInitObservable)
         {
-            this.GL = gl;
+            GL = gl;
+            GLExtensions = glExtensions;
+
             this.shaderLoaderService = shaderLoaderService;
             ProcessCustomAttributes();
 
@@ -52,6 +53,16 @@ namespace Velaptor.OpenGL
 
         /// <inheritdoc/>
         public string Name { get; private set; } = string.Empty;
+
+        /// <summary>
+        /// Gets invokes OpenGL functions.
+        /// </summary>
+        private protected IGLInvoker GL { get; }
+
+        /// <summary>
+        /// Gets the invoker that contains helper methods for simplified OpenGL function calls.
+        /// </summary>
+        private protected IGLInvokerExtensions GLExtensions { get; }
 
         /// <summary>
         /// <inheritdoc cref="IShaderProgram.Use"/>
@@ -66,7 +77,7 @@ namespace Velaptor.OpenGL
                 throw new ShaderNotInitializedException("The shader has not been initialized.");
             }
 
-            this.GL.UseProgram(ShaderId);
+            GL.UseProgram(ShaderId);
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -92,7 +103,7 @@ namespace Velaptor.OpenGL
                 this.glObservableUnsubscriber.Dispose();
             }
 
-            this.GL.DeleteProgram(ShaderId);
+            GL.DeleteProgram(ShaderId);
 
             this.isDisposed = true;
         }
@@ -104,45 +115,45 @@ namespace Velaptor.OpenGL
                 return;
             }
 
-            this.GL.BeginGroup($"Load {Name} Vertex Shader");
+            GLExtensions.BeginGroup($"Load {Name} Vertex Shader");
 
             var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
-            var vertShaderId = this.GL.CreateShader(GLShaderType.VertexShader);
+            var vertShaderId = GL.CreateShader(GLShaderType.VertexShader);
 
-            this.GL.LabelShader(vertShaderId, $"{Name} Vertex Shader");
+            GLExtensions.LabelShader(vertShaderId, $"{Name} Vertex Shader");
 
-            this.GL.ShaderSource(vertShaderId, vertShaderSrc);
-            this.GL.CompileShader(vertShaderId);
+            GL.ShaderSource(vertShaderId, vertShaderSrc);
+            GL.CompileShader(vertShaderId);
 
             // Checking the shader for compilation errors.
-            var infoLog = this.GL.GetShaderInfoLog(vertShaderId);
+            var infoLog = GL.GetShaderInfoLog(vertShaderId);
             if (!string.IsNullOrWhiteSpace(infoLog))
             {
                 // TODO: Create custom compile shader exception
                 throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.\n{infoLog}");
             }
 
-            this.GL.EndGroup();
+            GLExtensions.EndGroup();
 
-            this.GL.BeginGroup($"Load {Name} Fragment Shader");
+            GLExtensions.BeginGroup($"Load {Name} Fragment Shader");
 
             var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
-            var fragShaderId = this.GL.CreateShader(GLShaderType.FragmentShader);
+            var fragShaderId = GL.CreateShader(GLShaderType.FragmentShader);
 
-            this.GL.LabelShader(fragShaderId, $"{Name} Fragment Shader");
+            GLExtensions.LabelShader(fragShaderId, $"{Name} Fragment Shader");
 
-            this.GL.ShaderSource(fragShaderId, fragShaderSrc);
-            this.GL.CompileShader(fragShaderId);
+            GL.ShaderSource(fragShaderId, fragShaderSrc);
+            GL.CompileShader(fragShaderId);
 
             // Checking the shader for compilation errors.
-            infoLog = this.GL.GetShaderInfoLog(fragShaderId);
+            infoLog = GL.GetShaderInfoLog(fragShaderId);
             if (!string.IsNullOrWhiteSpace(infoLog))
             {
                 // TODO: Create custom compile shader exception
                 throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.\n{infoLog}");
             }
 
-            this.GL.EndGroup();
+            GLExtensions.EndGroup();
 
             CreateProgram(Name, vertShaderId, fragShaderId);
             CleanShadersIfReady(Name, vertShaderId, fragShaderId);
@@ -152,43 +163,43 @@ namespace Velaptor.OpenGL
 
         private void CreateProgram(string shaderName, uint vertShaderId, uint fragShaderId)
         {
-            this.GL.BeginGroup($"Create {shaderName} Shader Program");
+            GLExtensions.BeginGroup($"Create {shaderName} Shader Program");
 
             // Combining the shaders under one shader program.
-            ShaderId = this.GL.CreateProgram();
+            ShaderId = GL.CreateProgram();
 
-            this.GL.LabelShaderProgram(ShaderId, $"{shaderName} Shader Program");
+            GLExtensions.LabelShaderProgram(ShaderId, $"{shaderName} Shader Program");
 
-            this.GL.AttachShader(ShaderId, vertShaderId);
-            this.GL.AttachShader(ShaderId, fragShaderId);
+            GL.AttachShader(ShaderId, vertShaderId);
+            GL.AttachShader(ShaderId, fragShaderId);
 
             // Link and check for for errors.
-            this.GL.LinkProgram(ShaderId);
-            this.GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus, out var status);
+            GL.LinkProgram(ShaderId);
+            GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus, out var status);
             if (status == 0)
             {
-                throw new Exception($"Error linking shader with ID '{ShaderId}'\n{this.GL.GetProgramInfoLog(ShaderId)}");
+                throw new Exception($"Error linking shader with ID '{ShaderId}'\n{GL.GetProgramInfoLog(ShaderId)}");
             }
 
-            this.GL.EndGroup();
+            GLExtensions.EndGroup();
         }
 
         private void CleanShadersIfReady(string name, uint vertShaderId, uint fragShaderId)
         {
-            this.GL.BeginGroup($"Clean Up {name} Vertex Shader");
+            GLExtensions.BeginGroup($"Clean Up {name} Vertex Shader");
 
-            this.GL.DetachShader(ShaderId, vertShaderId);
-            this.GL.DeleteShader(vertShaderId);
+            GL.DetachShader(ShaderId, vertShaderId);
+            GL.DeleteShader(vertShaderId);
 
-            this.GL.EndGroup();
+            GLExtensions.EndGroup();
 
-            this.GL.BeginGroup($"Clean Up {name} Fragment Shader");
+            GLExtensions.BeginGroup($"Clean Up {name} Fragment Shader");
 
             // Delete the no longer useful individual shaders
-            this.GL.DetachShader(ShaderId, fragShaderId);
-            this.GL.DeleteShader(fragShaderId);
+            GL.DetachShader(ShaderId, fragShaderId);
+            GL.DeleteShader(fragShaderId);
 
-            this.GL.EndGroup();
+            GLExtensions.EndGroup();
         }
 
         private void ProcessCustomAttributes()

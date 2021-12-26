@@ -409,9 +409,9 @@ namespace Velaptor.Graphics
             {
                 var totalElements = 6u * totalItemsToRender;
 
-                this.gl.BeginGroup($"Render {totalElements} Texture Elements");
+                this.glExtensions.BeginGroup($"Render {totalElements} Texture Elements");
                 this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                this.gl.EndGroup();
+                this.glExtensions.EndGroup();
             }
 
             // Empty the batch items
@@ -425,7 +425,7 @@ namespace Velaptor.Graphics
         {
             var fontTextureIsBound = false;
 
-            this.gl.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
+            this.glExtensions.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
 
             this.fontShader.Use();
 
@@ -440,7 +440,7 @@ namespace Velaptor.Graphics
                     continue;
                 }
 
-                this.gl.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+                this.glExtensions.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
 
                 if (!fontTextureIsBound)
                 {
@@ -453,7 +453,7 @@ namespace Velaptor.Graphics
 
                 totalItemsToRender += 1;
 
-                this.gl.EndGroup();
+                this.glExtensions.EndGroup();
             }
 
             // Only render the amount of elements for the amount of batch items to render.
@@ -462,15 +462,15 @@ namespace Velaptor.Graphics
             {
                 var totalElements = 6u * totalItemsToRender;
 
-                this.gl.BeginGroup($"Render {totalElements} Font Elements");
+                this.glExtensions.BeginGroup($"Render {totalElements} Font Elements");
                 this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                this.gl.EndGroup();
+                this.glExtensions.EndGroup();
             }
 
             // Empty the batch items
             this.fontBatchService.EmptyBatch();
 
-            this.gl.EndGroup();
+            this.glExtensions.EndGroup();
         }
 
         /// <summary>

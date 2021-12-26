@@ -4,8 +4,11 @@
 
 namespace Velaptor.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Drawing;
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Saves, loads and manages image files.
@@ -50,7 +53,7 @@ namespace Velaptor.Services
         /// <param name="src">The source image to draw onto the destination.</param>
         /// <param name="dest">The destination image/canvas to draw the source image onto.</param>
         /// <param name="location">The top left location of where to draw the <paramref name="src"/> image.</param>
-        /// <returns>The destination image with the soruce drawn onto its surface.</returns>
+        /// <returns>The destination image with the source drawn onto its surface.</returns>
         ImageData Draw(ImageData src, ImageData dest, Point location);
     }
 }
