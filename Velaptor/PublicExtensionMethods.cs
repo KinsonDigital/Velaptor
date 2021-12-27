@@ -4,9 +4,13 @@
 
 namespace Velaptor
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Drawing;
     using System.Numerics;
+    using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides extension helper methods for common game related operations.
@@ -172,7 +176,7 @@ namespace Velaptor
         /// <param name="size">The size to apply.</param>
         /// <returns>The result after the size has been applied.</returns>
         /// <remarks>
-        ///     The size will be applied to:
+        ///     The size will be applied to the following:
         ///     <list type="bullet">
         ///         <item><see cref="SizeF.Width"/></item>
         ///         <item><see cref="SizeF.Height"/></item>
@@ -193,7 +197,7 @@ namespace Velaptor
         /// <param name="size">The size to apply.</param>
         /// <returns>The result after the size has been applied.</returns>
         /// <remarks>
-        ///     The size will be applied to:
+        ///     The size will be applied to the following:
         ///     <list type="bullet">
         ///         <item><see cref="RectangleF.X"/></item>
         ///         <item><see cref="RectangleF.Y"/></item>
@@ -207,6 +211,53 @@ namespace Velaptor
             value.Y = value.Y.ApplySize(size);
             value.Width = value.Width.ApplySize(size);
             value.Height = value.Height.ApplySize(size);
+
+            return value;
+        }
+
+        /// <summary>
+        /// Returns the given <paramref name="value"/> with the given <paramref name="size"/> applied.
+        /// </summary>
+        /// <param name="value">The <see cref="GlyphMetrics"/> to apply the size to.</param>
+        /// <param name="size">The size to apply.</param>
+        /// <returns>The result after the size has been applied.</returns>
+        /// <remarks>
+        ///     The size will be applied to the following:
+        ///     <list type="bullet">
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.GlyphBounds"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.Ascender"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.Descender"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.HorizontalAdvance"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.HoriBearingX"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.HoriBearingY"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.GlyphWidth"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.GlyphHeight"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.XMin"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.XMax"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.YMin"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.YMax"/></item>
+        ///     </list>
+        ///
+        ///     The size will NOT be applied to the following:
+        ///     <list type="bullet">
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.Glyph"/></item>
+        ///         <item><see cref="GlyphMetrics"/>.<see cref="GlyphMetrics.CharIndex"/></item>
+        ///     </list>
+        /// </remarks>
+        public static GlyphMetrics ApplySize(this GlyphMetrics value, float size)
+        {
+            value.GlyphBounds = value.GlyphBounds.ApplySize(size);
+            value.Ascender = value.Ascender.ApplySize(size);
+            value.Descender = value.Descender.ApplySize(size);
+            value.HorizontalAdvance = value.HorizontalAdvance.ApplySize(size);
+            value.HoriBearingX = value.HoriBearingX.ApplySize(size);
+            value.HoriBearingY = value.HoriBearingY.ApplySize(size);
+            value.GlyphWidth = value.GlyphWidth.ApplySize(size);
+            value.GlyphHeight = value.GlyphHeight.ApplySize(size);
+            value.XMin = value.XMin.ApplySize(size);
+            value.XMax = value.XMax.ApplySize(size);
+            value.YMin = value.YMin.ApplySize(size);
+            value.YMax = value.YMax.ApplySize(size);
 
             return value;
         }

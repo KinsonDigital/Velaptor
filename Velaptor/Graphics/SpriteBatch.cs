@@ -280,7 +280,14 @@ namespace Velaptor.Graphics
             var atlasWidth = font.FontTextureAtlas.Width.ApplySize(normalizedSize);
             var atlasHeight = font.FontTextureAtlas.Height.ApplySize(normalizedSize);
 
-            var glyphLines = lines.Select(font.ToGlyphMetrics).ToList();
+            var glyphLines = lines.Select(l =>
+            {
+                                        /* ⚙️ Perf Optimization️ ⚙️ */
+                // Not need to apply a size to waist compute time if the size is 0 which is no size change.
+                return normalizedSize == 0f
+                    ? font.ToGlyphMetrics(l)
+                    : font.ToGlyphMetrics(l).Select(g => g.ApplySize(normalizedSize)).ToArray();
+            }).ToList();
 
             var firstLineFirstCharBearingX = glyphLines[0][0].HoriBearingX;
 
