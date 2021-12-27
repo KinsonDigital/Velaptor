@@ -18,7 +18,7 @@ namespace Velaptor.Graphics
         /// <param name="value">The list of glyph metric items.</param>
         /// <param name="index">The index of the list of glyph metric lists to get the offset from.</param>
         /// <returns>The maximum height.</returns>
-        public static float MaxHeight(this List<GlyphMetrics[]> value, int index)
+        internal static float MaxHeight(this List<GlyphMetrics[]> value, int index)
             => value[index].Max(i => i.GlyphHeight);
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Velaptor.Graphics
         /// <param name="value">The list of glyph metric items.</param>
         /// <param name="index">The index of the list of glyph metric lists to get the offset from.</param>
         /// <returns>The maximum vertical offset.</returns>
-        public static float MaxVerticalOffset(this List<GlyphMetrics[]> value, int index)
+        internal static float MaxVerticalOffset(this List<GlyphMetrics[]> value, int index)
             => value.ToArray()[index]
                 .Max(i => i.GlyphHeight - i.HoriBearingY > 0
                     ? i.GlyphHeight - i.HoriBearingY

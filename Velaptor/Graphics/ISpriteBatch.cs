@@ -6,6 +6,7 @@ namespace Velaptor.Graphics
 {
     // ReSharper disable RedundantNameQualifier
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
     using Velaptor.Content;
@@ -15,6 +16,7 @@ namespace Velaptor.Graphics
     /// <summary>
     /// Renders a single or batch of textures.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public facing API required for library users.")]
     public interface ISpriteBatch : IDisposable
     {
         /// <summary>

@@ -27,7 +27,7 @@ namespace Velaptor
     /// <summary>
     /// Provides extensions to various things to help make better code.
     /// </summary>
-    public static class InternalExtensionMethods
+    internal static class InternalExtensionMethods
     {
         /// <summary>
         /// Returns a value indicating whether the given file or directory path
@@ -35,7 +35,7 @@ namespace Velaptor
         /// </summary>
         /// <param name="fileOrDirPath">The path to check.</param>
         /// <returns><see langword="true"/> if there are no directories and is just a root drive.</returns>
-        internal static bool IsDirectoryRootDrive(this string fileOrDirPath)
+        public static bool IsDirectoryRootDrive(this string fileOrDirPath)
         {
             if (string.IsNullOrEmpty(fileOrDirPath))
             {
@@ -70,7 +70,7 @@ namespace Velaptor
         ///     Example: The path 'C:\temp\dirA\dirB' will return the result 'dirB'.
         /// </para>
         /// </remarks>
-        internal static string GetLastDirName(this string fileOrDirPath)
+        public static string GetLastDirName(this string fileOrDirPath)
         {
             if (string.IsNullOrEmpty(fileOrDirPath))
             {
@@ -107,7 +107,7 @@ namespace Velaptor
         /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
         /// <param name="items">The items to convert.</param>
         /// <returns>The items as a read only collection.</returns>
-        internal static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
+        public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
             => new (items.ToList());
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Velaptor
         /// <param name="items">The list of items to convert.</param>
         /// <typeparam name="T">The type of values in the lists.</typeparam>
         /// <returns>A readonly dictionary of the given <paramref name="items"/>.</returns>
-        internal static ReadOnlyDictionary<uint, T> ToReadOnlyDictionary<T>(this T[] items)
+        public static ReadOnlyDictionary<uint, T> ToReadOnlyDictionary<T>(this T[] items)
         {
             var result = new Dictionary<uint, T>();
 
@@ -136,7 +136,7 @@ namespace Velaptor
         /// <typeparam name="T">The type to suppress against.</typeparam>
         /// <param name="container">The container that the suppression applies to.</param>
         [ExcludeFromCodeCoverage]
-        internal static void SuppressDisposableTransientWarning<T>(this Container container)
+        public static void SuppressDisposableTransientWarning<T>(this Container container)
         {
             var registration = container.GetRegistration(typeof(T))?.Registration;
             registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
@@ -168,7 +168,7 @@ namespace Velaptor
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
         [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-        internal static void RegisterConditional<TService, TImplementation>(this Container container, Predicate<PredicateContext> predicate, bool suppressDisposal = false)
+        public static void RegisterConditional<TService, TImplementation>(this Container container, Predicate<PredicateContext> predicate, bool suppressDisposal = false)
             where TService : class
             where TImplementation : class, TService
         {
@@ -196,7 +196,7 @@ namespace Velaptor
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
         [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
-        internal static void Register<TService, TImplementation>(this Container container, bool suppressDisposal = false)
+        public static void Register<TService, TImplementation>(this Container container, bool suppressDisposal = false)
             where TService : class
             where TImplementation : class, TService
         {
@@ -217,7 +217,7 @@ namespace Velaptor
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
         [ExcludeFromCodeCoverage]
-        internal static void Register<TImplementation>(this Container container, bool suppressDisposal = false)
+        public static void Register<TImplementation>(this Container container, bool suppressDisposal = false)
             where TImplementation : class
         {
             container.Register<TImplementation>();
@@ -249,7 +249,8 @@ namespace Velaptor
         /// <exception cref="T:System.ArgumentNullException">
         /// Thrown when <paramref name="instanceCreator" /> is a null reference.</exception>
         [ExcludeFromCodeCoverage]
-        internal static void Register<TService>(this Container container, Func<TService> instanceCreator, bool suppressDisposal = false)
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
+        public static void Register<TService>(this Container container, Func<TService> instanceCreator, bool suppressDisposal = false)
             where TService : class
         {
             container.Register(instanceCreator);
@@ -276,7 +277,7 @@ namespace Velaptor
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
         [ExcludeFromCodeCoverage]
-        internal static void Register<TService, TImplementation>(this Container container, Lifestyle lifestyle, bool suppressDisposal = false)
+        public static void Register<TService, TImplementation>(this Container container, Lifestyle lifestyle, bool suppressDisposal = false)
             where TService : class
             where TImplementation : class, TService
         {
@@ -294,7 +295,7 @@ namespace Velaptor
         /// </summary>
         /// <param name="image">The image data to convert.</param>
         /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        internal static Image<Rgba32> ToSixLaborImage(in this ImageData image)
+        public static Image<Rgba32> ToSixLaborImage(in this ImageData image)
         {
             var result = new Image<Rgba32>((int)image.Width, (int)image.Height);
 
@@ -323,7 +324,7 @@ namespace Velaptor
         /// </summary>
         /// <param name="image">The image to convert.</param>
         /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-        internal static ImageData ToImageData(this Image<Rgba32> image)
+        public static ImageData ToImageData(this Image<Rgba32> image)
         {
             var pixelData = new NETColor[image.Width, image.Height];
 
@@ -349,7 +350,7 @@ namespace Velaptor
         /// </summary>
         /// <param name="vector">The vector to convert.</param>
         /// <returns>An array of float values.</returns>
-        internal static IEnumerable<float> ToVertexArray(this Vector2 vector) => new[] { vector.X, vector.Y };
+        public static IEnumerable<float> ToVertexArray(this Vector2 vector) => new[] { vector.X, vector.Y };
 
         /// <summary>
         /// Converts the given <paramref name="clr"/> components to an array of floats.
@@ -360,14 +361,14 @@ namespace Velaptor
         ///     The order of the color components are changed to meet OpenGL requirements.
         ///     Component order is Red, Green, Blue, Alpha.
         /// </remarks>
-        internal static IEnumerable<float> ToVertexArray(this NETColor clr) => new float[] { clr.R, clr.G, clr.B, clr.A };
+        public static IEnumerable<float> ToVertexArray(this NETColor clr) => new float[] { clr.R, clr.G, clr.B, clr.A };
 
         /// <summary>
         /// Converts the given <paramref name="vertexData"/> components to an array of floats.
         /// </summary>
         /// <param name="vertexData">The data to convert.</param>
         /// <returns>An array of float values.</returns>
-        internal static IEnumerable<float> ToVertexArray(this TextureVertexData vertexData)
+        public static IEnumerable<float> ToVertexArray(this TextureVertexData vertexData)
         {
             // NOTE: The order of the array elements are extremely important.
             // They determine the layout of each stride of vertex data and the layout
@@ -387,7 +388,7 @@ namespace Velaptor
         /// <param name="quad">The quad to convert.</param>
         /// <returns>An array of float values.</returns>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        internal static IEnumerable<float> ToVertexArray(this TextureQuadData quad)
+        public static IEnumerable<float> ToVertexArray(this TextureQuadData quad)
         {
             var result = new List<float>();
 
@@ -404,7 +405,7 @@ namespace Velaptor
         /// </summary>
         /// <param name="quads">The quads to convert.</param>
         /// <returns>An array of float values.</returns>
-        internal static float[] ToVertexArray(this IEnumerable<TextureQuadData> quads)
+        public static float[] ToVertexArray(this IEnumerable<TextureQuadData> quads)
         {
             var result = new List<float>();
 
@@ -428,7 +429,7 @@ namespace Velaptor
         /// <remarks>
         ///     If no <paramref name="trimChar"/> value is provided, then the spaces will be trimmed.
         /// </remarks>
-        internal static string[] TrimAllEnds(this string[] items, char trimChar = ' ')
+        public static string[] TrimAllEnds(this string[] items, char trimChar = ' ')
         {
             for (var i = 0; i < items.Length; i++)
             {
