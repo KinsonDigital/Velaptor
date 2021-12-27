@@ -19,8 +19,8 @@ namespace VelaptorTesting.Scenes
     {
         private const float AngularVelocity = 10f;
         private const float SizeChangeAmount = 0.5f;
-        private const string SingleLineText = "Rotate me or change my size.";
-        private const string MultiLineText = "Rotate me or\nchange my size.";
+        private const string SingleLineText = "Change me using the buttons below.";
+        private const string MultiLineText = "Change me using\nthe buttons below.";
         private IFont? font;
         private Button? btnRotateCW;
         private Button? btnRotateCCW;
