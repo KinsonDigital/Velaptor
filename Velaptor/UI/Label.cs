@@ -79,6 +79,11 @@ namespace Velaptor.UI
         /// </summary>
         public Color Color { get; set; } = Color.Black;
 
+        /// <summary>
+        /// Gets or sets the size of the text of the label.
+        /// </summary>
+        public float Size { get; set; } = 1f;
+
         /// <inheritdoc cref="ControlBase.UnloadContent"/>
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
@@ -126,7 +131,7 @@ namespace Velaptor.UI
 
             if (this.font is not null)
             {
-                spriteBatch.Render(this.font, Text, Position.X, Position.Y, Color);
+                spriteBatch.Render(this.font, Text, Position.X, Position.Y, Size, 0f, Color);
             }
 
             base.Render(spriteBatch);

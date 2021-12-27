@@ -2,19 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
-
 namespace VelaptorTests.UI
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Drawing;
+    using System.Linq;
     using Moq;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.UI;
-    using Helpers;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -150,6 +149,20 @@ namespace VelaptorTests.UI
 
             // Assert
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Size_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var button = CreateButton();
+            button.LoadContent();
+
+            // Act
+            var actual = button.Size;
+
+            // Assert
+            Assert.Equal(1f, actual);
         }
         #endregion
 

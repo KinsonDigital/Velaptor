@@ -217,6 +217,20 @@ namespace VelaptorTests.UI
             // Assert
             Assert.Equal(Color.FromArgb(11, 22, 33, 44), actual);
         }
+
+        [Fact]
+        public void Size_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+
+            // Act
+            label.Size = 123f;
+            var actual = label.Size;
+
+            // Assert
+            Assert.Equal(123f, actual);
+        }
         #endregion
 
         #region Method Tests
@@ -339,6 +353,7 @@ namespace VelaptorTests.UI
             label.Text = TextValue;
             label.Position = new Point(100, 200);
             label.Visible = true;
+            label.Size = 123f;
             label.Color = Color.FromArgb(11, 22, 33, 44);
             label.LoadContent();
 
@@ -351,6 +366,8 @@ namespace VelaptorTests.UI
                     TextValue,
                     100,
                     200,
+                    123f,
+                    0f,
                     Color.FromArgb(11, 22, 33, 44)), Times.Once());
         }
 

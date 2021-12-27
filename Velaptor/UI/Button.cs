@@ -48,6 +48,8 @@ namespace Velaptor.UI
         /// <inheritdoc cref="ISizable.Height"/>
         public override uint Height => this.texture?.Height ?? 0;
 
+        public string FaceTextureName { get; set; } = "button-face-small";
+
         /// <summary>
         /// Gets or sets the text of the button.
         /// </summary>
@@ -69,6 +71,21 @@ namespace Velaptor.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the size of the text on the face of the button.
+        /// </summary>
+        public float Size
+        {
+            get => this.label?.Size ?? 0f;
+            set
+            {
+                if (this.label != null)
+                {
+                    this.label.Size = value;
+                }
+            }
+        }
+
         /// <inheritdoc cref="ControlBase.UnloadContent"/>
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
@@ -80,8 +97,10 @@ namespace Velaptor.UI
                 return;
             }
 
-            // TODO: Add label with simple text.  This means adding a text property
-            this.texture = this.contentLoader.Load<ITexture>("button-face");
+            // TODO: Once the label can be injected into the constructor, setup caching for the
+            // size property so that way it can be set before the LoadContent() method is called
+
+            this.texture = this.contentLoader.Load<ITexture>(FaceTextureName);
             this.label = new Label(this.contentLoader);
             this.label.LoadContent();
             this.label.Text = this.cachedText;
