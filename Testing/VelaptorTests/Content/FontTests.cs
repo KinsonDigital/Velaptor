@@ -17,6 +17,9 @@ namespace VelaptorTests.Content
     using Velaptor.NativeInterop.FreeType;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="Font"/> class.
+    /// </summary>
     public class FontTests : IDisposable
     {
         private const char InvalidCharacter = '□';

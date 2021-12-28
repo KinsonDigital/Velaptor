@@ -7,7 +7,7 @@ namespace Velaptor.OpenGL
     using System;
 
     /// <summary>
-    /// A buffer of data in the GPU.
+    /// Manages buffer data in the GPU.
     /// </summary>
     /// <typeparam name="TData">The type of data in the buffer.</typeparam>
     internal interface IGPUBuffer<TData> : IDisposable

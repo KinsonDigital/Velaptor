@@ -24,16 +24,6 @@ namespace Velaptor.NativeInterop.OpenGL
     [ExcludeFromCodeCoverage]
     internal class GLInvoker : IGLInvoker
     {
-        // TODO: Add ability to cache the shader that is currently in use.
-
-        // TODO: Add ability to cache the bound ID states.  This is to prevent GL bind calls to bind ID's that
-        // are currently already bound which can improve performance.  Make sure to add and remove the id to the lists
-        // when generating vertex arrays and buffers
-
-        // private static readonly Dictionary<uint, bool> BoundVAOList = new ();
-        // private static readonly Dictionary<uint, bool> BoundVBOList = new ();
-        // private static readonly Dictionary<uint, bool> BoundEBOList = new ();
-
         private static readonly Queue<string> OpenGLCallStack = new ();
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
@@ -91,8 +81,6 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc/>
         public void SetupErrorCallback()
         {
-            // TODO: Get this into the GLExtensions type
-            // TODO: Refactor to only set this up if in debug mode
             if (debugCallback != null)
             {
                 return;

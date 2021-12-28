@@ -55,9 +55,9 @@ namespace Velaptor.Input
 
             var keys = IKeyboardInput<KeyCode, KeyboardState>.InputStates.Keys.ToArray();
 
-            foreach (var k in keys)
+            foreach (var key in keys)
             {
-                IKeyboardInput<KeyCode, KeyboardState>.InputStates[k] = false;
+                IKeyboardInput<KeyCode, KeyboardState>.InputStates[key] = false;
             }
         }
 
@@ -68,9 +68,9 @@ namespace Velaptor.Input
         {
             var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
-            foreach (var k in keys)
+            foreach (var key in keys)
             {
-                IKeyboardInput<KeyCode, KeyboardState>.InputStates.Add(k, false);
+                IKeyboardInput<KeyCode, KeyboardState>.InputStates.Add(key, false);
             }
         }
     }

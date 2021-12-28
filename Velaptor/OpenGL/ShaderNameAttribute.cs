@@ -15,7 +15,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderNameAttribute"/> class.
         /// </summary>
-        /// <param name="name">The name of a shader.</param>
+        /// <param name="name">The name to give a shader.</param>
         public ShaderNameAttribute(string name) => Name = name;
 
         /// <summary>

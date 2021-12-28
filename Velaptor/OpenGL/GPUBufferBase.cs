@@ -103,12 +103,6 @@ namespace Velaptor.OpenGL
             GC.SuppressFinalize(this);
         }
 
-        // TODO: Change the generic TData data param to an IN parameter for perf boost
-        /* Make sure that the TData coming in though is readonly or perf will be worse.
-         This means you might have to constrain TData to an in generic type to enforce this as well
-            https://www.youtube.com/watch?v=VCGXubxKL9I
-         */
-
         /// <summary>
         /// Updates the vertex data in the GPU.
         /// </summary>
@@ -170,14 +164,7 @@ namespace Velaptor.OpenGL
         /// you are telling OpenGL that you don't want your VAO to use the EBO.
         /// </remarks>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        protected void UnbindEBO() =>
-            // After implementing cached ID states in GLInvoker, set this back up to get it working again
-            // This might need to be setup in GLInvoker
-            // if (BoundVAOList[this.vao])
-            // {
-            //     throw new Exception("Cannot unbind the EBO before unbinding the VAO.");
-            // }
-            GL.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
+        protected void UnbindEBO() => GL.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
 
         /// <summary>
         /// Binds the element array buffer object for updating vertex buffer data in OpenGL.

@@ -2,21 +2,23 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-
 namespace VelaptorTests.Services
 {
     // ReSharper disable UseObjectOrCollectionInitializer
+    using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Drawing;
+    using System.Linq;
     using Velaptor.Graphics;
     using Velaptor.OpenGL;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="TextureBatchService"/> class.
+    /// </summary>
     public class TextureBatchServiceTests
     {
         #region Prop Tests

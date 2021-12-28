@@ -85,7 +85,6 @@ namespace VelaptorTests.OpenGL
         #endregion
 
         #region Method Tests
-
         [Fact]
         public void OpenGLInit_WhenInvoked_CreatesVertexArrayObject()
         {

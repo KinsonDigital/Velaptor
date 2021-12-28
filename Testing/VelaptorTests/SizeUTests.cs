@@ -1,8 +1,15 @@
-﻿using Velaptor;
-using Xunit;
+﻿// <copyright file="SizeUTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace VelaptorTests
 {
+    using Velaptor;
+    using Xunit;
+
+    /// <summary>
+    /// Tests the <see cref="SizeU"/> struct.
+    /// </summary>
     public class SizeUTests
     {
         #region Prop Tests

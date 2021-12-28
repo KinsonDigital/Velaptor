@@ -10,6 +10,9 @@ namespace VelaptorTests
     using Velaptor.Graphics;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="PublicExtensionMethods"/> class.
+    /// </summary>
     public class PublicExtensionMethodsTests
     {
         #region Method Tests

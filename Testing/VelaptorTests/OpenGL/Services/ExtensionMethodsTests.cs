@@ -9,7 +9,6 @@ namespace VelaptorTests.OpenGL.Services
 
     public class ExtensionMethodsTests
     {
-
         [Theory]
         [InlineData("${{TEST_VAR}}", "}}", ' ', "${{TEST_VAR}}")]
         [InlineData("${{TEST_VAR }}", "}}", ' ', "${{TEST_VAR}}")]
