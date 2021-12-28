@@ -50,9 +50,9 @@ body:
     placeholder: |
       No Issue Dependencies
       Example:
-        #10 Create new class
-        #20 Add unit tests to service
-        #30 Cleanup code in UI
+        - #10 Create new class
+        - #20 Add unit tests to service
+        - #30 Cleanup code in UI
     description: |
       A list of issues that are dependencies of this issue and need to be finishes first
       Use the '#\<number\>' syntax to link to an issue
