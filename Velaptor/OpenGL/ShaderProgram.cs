@@ -15,8 +15,6 @@ namespace Velaptor.OpenGL
 
     // ReSharper restore RedundantNameQualifier
 
-    // TODO: Setup debug groups for shader
-
     /// <inheritdoc/>
     [SpriteBatchSize(ISpriteBatch.BatchSize)]
     public abstract class ShaderProgram : IShaderProgram
