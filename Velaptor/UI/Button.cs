@@ -48,6 +48,10 @@ namespace Velaptor.UI
         /// <inheritdoc cref="ISizable.Height"/>
         public override uint Height => this.texture?.Height ?? 0;
 
+        /// <summary>
+        /// Gets or sets the name of the texture to be displayed on the face of the button.
+        /// </summary>
+        /// <summary>This is the name of the texture that is rendered.</summary>
         public string FaceTextureName { get; set; } = "button-face-small";
 
         /// <summary>

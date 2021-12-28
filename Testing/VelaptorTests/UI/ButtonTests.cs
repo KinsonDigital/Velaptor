@@ -22,6 +22,7 @@ namespace VelaptorTests.UI
     public class ButtonTests
     {
         private const string ButtonTextValue = "test-value";
+        private const string TextureName = "button-face-small";
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITexture> mockTexture;
         private readonly Mock<IFont> mockFont;
@@ -60,7 +61,7 @@ namespace VelaptorTests.UI
             MockGlyphs(ButtonTextValue);
 
             this.mockContentLoader = new Mock<IContentLoader>();
-            this.mockContentLoader.Setup(m => m.Load<ITexture>("button-face"))
+            this.mockContentLoader.Setup(m => m.Load<ITexture>(TextureName))
                 .Returns(this.mockTexture.Object);
             this.mockContentLoader.Setup(m => m.Load<IFont>("TimesNewRoman"))
                 .Returns(this.mockFont.Object);
@@ -178,7 +179,7 @@ namespace VelaptorTests.UI
             button.LoadContent();
 
             // Assert
-            this.mockContentLoader.Verify(m => m.Load<ITexture>("button-face"), Times.Once);
+            this.mockContentLoader.Verify(m => m.Load<ITexture>(TextureName), Times.Once);
             this.mockContentLoader.Verify(m => m.Load<IFont>("TimesNewRoman"), Times.Once);
         }
 
@@ -256,7 +257,7 @@ namespace VelaptorTests.UI
             // Arrange
             var mockSpriteBatch = new Mock<ISpriteBatch>();
 
-            this.mockContentLoader.Setup(m => m.Load<ITexture>("button-face"))
+            this.mockContentLoader.Setup(m => m.Load<ITexture>(TextureName))
                 .Returns(() =>
                 {
                     ITexture? nullTexture = null;
