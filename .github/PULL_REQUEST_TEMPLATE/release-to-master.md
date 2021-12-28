@@ -19,7 +19,7 @@ This pull request performs a production release for version **_[add version here
 - [ ] PR title matches the example below but with proper version
   * **Example:** 🚀Release To Production - v1.2.3
 - [ ] The **_[add version here]_** text in the PR description replaced with the version.
-- [ ] Issue[s] exists and is linked to this PR.
+- [ ] Issues exist and are linked to this PR.
 - [ ] This PR is only for bringing changes from a **_release branch_** into the **_master_** branch
     - 💡 A **_release_** branch is the branch used for production releases and has a syntax of **_release/v\*.\*.\*_**
       - **Example:** release/v1.2.3

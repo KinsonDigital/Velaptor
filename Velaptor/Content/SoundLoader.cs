@@ -59,7 +59,7 @@ namespace Velaptor.Content
         ///     The content <see cref="name"/> can have or not have the extension of the content file to load.
         ///     Using the file extension has no effect and the content item is matched using the name without the extension.
         ///     The only sounds supported are .ogg and .mp3 files.
-        ///     Also, duplicate names are not aloud in the same content source and this is matched against the name without the extension.
+        ///     Also, duplicate names are not allowed in the same content source and this is matched against the name without the extension.
         ///
         ///     Example: sound.ogg and sound.mp3 will result in an exception.
         /// </remarks>

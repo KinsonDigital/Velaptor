@@ -38,12 +38,12 @@
 - [ ] Bug Fix(es)
   - [ ] A **_bug_** label has been added to the PR
 - [ ] Contains breaking change(s)
-  - 💡 This would force library users to change there code.  This would involve a public facing API change, behavior that would force a change to the users code base, or even an update in behavior that could force a change to the library users code base.  Sometimes this it is unclear if the change is a breaking change.  If it is unclear, reach out so we can discuss and investigate if it is indeed a breaking change.
+  - 💡 This would force library users to change their code.  This would involve a public facing API change, behavior that would force a change to the users code base, or even an update in behavior that could force a change to the library users code base.  Sometimes this it is unclear if the change is a breaking change.  If it is unclear, reach out so we can discuss and investigate if it is indeed a breaking change.
 - [ ] Additional feature and/or behavior added.
   - [ ] An **_enhancement_** label has been added to the PR
 - [ ] I have changes related to workflows (CI/CD)
-  - 💡 These kind of changes are only done by the project owner and maintainers that are aloud to make changes to workflows
-  - [ ] An **_workflow_** label has been added to the PR
+  - 💡 These kind of changes are only done by the project owner and maintainers that are allowed to make changes to workflows
+  - [ ] A **_workflow_** label has been added to the PR
 
 **Documentation:**
 - [ ] My change requires a change to the documentation.
@@ -61,7 +61,7 @@
 <!-- Go over all the following points, and put an `x` in all the boxes that apply. -->
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] I have read the **CONTRIBUTING** document.
-- [ ] An issue exists and is linked to this PR.
+- [ ] Issues exist and are linked to this PR.
 - [ ] This PR is only for bringing changes from ***feature*** branches into the ***develop*** branch
 - [ ] My code follows the coding style of this project.
   - 💡 This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and lets discuss it.

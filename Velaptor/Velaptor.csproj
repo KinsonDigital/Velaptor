@@ -14,7 +14,7 @@
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
       Visual Studio does not allow the preview syntax for this tag
-      Example: v1.2.3.preview.1 is not aloud
+      Example: v1.2.3.preview.1 is not allowed
     -->
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <Nullable>enable</Nullable>
