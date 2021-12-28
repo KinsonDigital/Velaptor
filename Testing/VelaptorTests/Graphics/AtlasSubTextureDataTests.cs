@@ -2,16 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace VelaptorTests.Graphics
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using Velaptor.Graphics;
     using Xunit;
 
     /// <summary>
     /// Tests the <see cref="AtlasSubTextureData"/> class.
     /// </summary>
+    [SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer", Justification = "Intention is to be more explicit.")]
     public class AtlasSubTextureDataTests
     {
         #region Prop Tests

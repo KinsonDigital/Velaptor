@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL
 {
     // ReSharper disable RedundantNameQualifier
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables.Core;
@@ -62,6 +63,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Gets the invoker that contains helper methods for simplified OpenGL function calls.
         /// </summary>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Intended to be available in classes inheriting this class.")]
         private protected IGLInvokerExtensions GLExtensions { get; }
 
         /// <summary>

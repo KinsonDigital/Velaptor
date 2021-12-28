@@ -38,8 +38,8 @@ namespace Velaptor.OpenGL
         /// <returns>The value in NDC units.</returns>
         /// <remarks>
         /// <para>
-        /// Texture coordinates is the local space within the bounds of a texture with the origin
-        /// relative to the top right corner.
+        /// Texture coordinates are the coordinates that make up the local space (bounds) of a
+        /// texture with the origin relative to the top right corner.
         /// </para>
         ///
         /// <para>
@@ -57,8 +57,8 @@ namespace Velaptor.OpenGL
         /// <returns>The value in NDC units.</returns>
         /// <remarks>
         /// <para>
-        /// Texture coordinates is the local space within the bounds of a texture with the origin
-        /// relative to the top right corner.
+        /// Texture coordinates are the coordinates that make up the local space (bounds) of a
+        /// texture with the origin relative to the top right corner.
         /// </para>
         ///
         /// <para>
@@ -77,8 +77,8 @@ namespace Velaptor.OpenGL
         /// <returns>The value in NDC units.</returns>
         /// <remarks>
         /// <para>
-        /// Texture coordinates is the local space within the bounds of a texture with the origin
-        /// relative to the top right corner.
+        /// Texture coordinates are the coordinates that make up the local space (bounds) of a
+        /// texture with the origin relative to the top right corner.
         /// </para>
         ///
         /// <para>
@@ -122,6 +122,7 @@ namespace Velaptor.OpenGL
         /// <param name="color">The value to convert.</param>
         /// <returns>The components of the value as a <see cref="float"/>[] array.</returns>
         /// <remarks>
+        /// The order of color components R,G,B,A is an OpenGL specific requirement.
         /// Value To Array Order:
         /// <list type="number">
         ///     <item><see cref="Color"/>.<see cref="Color.R"/></item>

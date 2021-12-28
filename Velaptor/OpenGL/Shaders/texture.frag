@@ -1,11 +1,5 @@
-﻿/*Info:
-This is an example of alpha blending.
+﻿#version 450 core
 
-Src: https://stackoverflow.com/questions/746899/how-to-calculate-an-rgb-colour-by-specifying-an-alpha-blending-amount
-*/
-#version 450 core
-
-// TODO: Refactor in var prefix from 'v_' to 'pass_'
 in vec2 pass_textureCoord;
 in vec4 pass_tintColor;
 

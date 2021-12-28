@@ -157,9 +157,6 @@ namespace VelaptorTests.Graphics
             };
         }
 
-        #region Prop Tests
-        #endregion
-
         #region Method Tests
         [Fact]
         public void ToString_WhenInvoked_ReturnsCorrectResult()

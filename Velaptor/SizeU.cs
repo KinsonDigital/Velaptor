@@ -8,7 +8,7 @@ namespace Velaptor
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
-    /// Stores an ordered pair of integers, which specify a <see cref="Width"/> and <see cref="Height"/>.
+    /// Stores an ordered pair of unsigned integers, which specify a <see cref="Width"/> and <see cref="Height"/>.
     /// </summary>
     public struct SizeU : IEquatable<SizeU>
     {

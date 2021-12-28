@@ -54,19 +54,40 @@ namespace VelaptorTests.Fakes
         /// <remarks>Used for unit testing.</remarks>
         public bool UpdateVertexDataInvoked { get; private set; }
 
+        /// <summary>
+        /// Set the <see cref="SetupVAOInvoked"/> to true to simulated that the VAO has been setup.
+        /// </summary>
         protected internal override void SetupVAO() => SetupVAOInvoked = true;
 
+        /// <summary>
+        /// Set the <see cref="UpdateVertexDataInvoked"/> to true to simulated that the vertex data has been updated.
+        /// </summary>
+        /// <param name="data">The fake data to use for the test.</param>
+        /// <param name="batchIndex">The fake batch index to use for the text.</param>
         protected internal override void UploadVertexData(SpriteBatchItem data, uint batchIndex)
             => UpdateVertexDataInvoked = true;
 
+        /// <summary>
+        /// Sets the <see cref="PrepareForUseInvoked"/> to true to simulate that the method has been invoked.
+        /// </summary>
         protected internal override void PrepareForUpload() => PrepareForUseInvoked = true;
 
+        /// <summary>
+        /// Sets the <see cref="GenerateDataInvoked"/> to true to simulate that the method has
+        /// been invoked and return fake data.
+        /// </summary>
+        /// <returns>The data to use for testing.</returns>
         protected internal override float[] GenerateData()
         {
             GenerateDataInvoked = true;
             return new[] { 1f, 2f, 3f, 4f };
         }
 
+        /// <summary>
+        /// Sets the <see cref="GenerateIndicesInvoked"/> to true to simulate that the method has
+        /// been invoked and return fake data.
+        /// </summary>
+        /// <returns>The data to use for testing.</returns>
         protected internal override uint[] GenerateIndices()
         {
             GenerateIndicesInvoked = true;
