@@ -60,13 +60,12 @@ jobs:
     # TODO: Replace this with the new upcoming branch validation github action
     - name: Validate Branch Name
       run: |
-        echo "I am disabled"
-        # # If the branch is not a release branch, fail the workflow
-        # if ("${{ github.ref }}".Contains("release/v") -eq $false)
-        # {
-        #   echo "Preview releases can only be performed with 'release/v*.*.*' branches."
-        #   exit 1 # Fail
-        # }
+        # If the branch is not a release branch, fail the workflow
+        if ("${{ github.ref }}".Contains("release/v") -eq $false)
+        {
+          echo "Preview releases can only be performed with 'release/v*.*.*' branches."
+          exit 1 # Fail
+        }
 
 
   Validate_Release_Notes_Exist:
