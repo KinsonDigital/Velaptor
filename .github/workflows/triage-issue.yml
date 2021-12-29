@@ -14,4 +14,6 @@ jobs:
         uses: andymckay/labeler@1.0.3
         with:
           add-labels: "triage"
+          ignore-if-assigned: true
+          ignore-if-labeled: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
