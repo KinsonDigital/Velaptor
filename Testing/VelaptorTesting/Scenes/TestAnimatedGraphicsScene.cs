@@ -62,7 +62,7 @@ namespace VelaptorTesting.Scenes
         /// <inheritdoc cref="IUpdatable.Update"/>
         public override void Update(FrameTime frameTime)
         {
-            if (this.elapsedTime >= 32)
+            if (this.elapsedTime >= 124)
             {
                 this.elapsedTime = 0;
 
