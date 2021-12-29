@@ -29,8 +29,13 @@ body:
     id: version
     attributes:
       label: Version Of Velaptor Being Tested
-      description: "Enter the version of **Velaptor** that is being tested.  This is the version it 'will' become upon release."
-      placeholder: "Version Format: v<major.minor.patch>[-preview-<preview-num>]\nExamples:\n\tv1.0.0\n\tv1.2.3-preview.4"
+      description: |
+        Enter the version of **Velaptor** that is being tested.  This is the version it 'will' become upon release.
+        Version Format: v<major.minor.patch>[-preview-<preview-num>]
+        Examples:
+          v1.0.0
+          v1.2.3-preview.4
+      placeholder: "Enter Version Here"
     validations:
       required: true
 
