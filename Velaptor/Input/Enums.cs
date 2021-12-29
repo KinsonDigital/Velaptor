@@ -15,7 +15,7 @@ namespace Velaptor.Input
         Unknown = -1,
 
         /// <summary>
-        /// The spacebar key.
+        /// The space bar key.
         /// </summary>
         Space = 32,
 

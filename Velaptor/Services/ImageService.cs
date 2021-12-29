@@ -4,12 +4,15 @@
 
 namespace Velaptor.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
     using Velaptor.Graphics;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Saves, loads and manages image files.

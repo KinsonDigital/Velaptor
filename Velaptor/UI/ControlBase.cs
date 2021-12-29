@@ -1,15 +1,18 @@
-// <copyright file="ControlBase.cs" company="KinsonDigital">
+﻿// <copyright file="ControlBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.UI
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.Input;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Represents a basic control with behavior that is shared among all controls.
@@ -48,36 +51,36 @@ namespace Velaptor.UI
         /// <inheritdoc cref="IControl.Left"/>
         public virtual int Left
         {
-            get => Position.X;
-            set => Position = new Point(value, Position.Y);
+            get => (int)(Position.X - (Width / 2f));
+            set => Position = new Point((int)(value + (Width / 2f)), Position.Y);
         }
 
         /// <inheritdoc cref="IControl.Right"/>
         public virtual int Right
         {
-            get => Position.X + Width;
-            set => Position = new Point(value - Width, Position.Y);
+            get => (int)(Position.X + (Width / 2f));
+            set => Position = new Point((int)(value - (Width / 2f)), Position.Y);
         }
 
         /// <inheritdoc cref="IControl.Top"/>
         public virtual int Top
         {
-            get => Position.Y;
-            set => Position = new Point(Position.X, value);
+            get => (int)(Position.Y - (Height / 2f));
+            set => Position = new Point(Position.X, (int)(value + (Height / 2f)));
         }
 
         /// <inheritdoc cref="IControl.Bottom"/>
         public virtual int Bottom
         {
-            get => Position.Y + Height;
-            set => Position = new Point(Position.X, value - Height);
+            get => (int)(Position.Y + (Height / 2f));
+            set => Position = new Point(Position.X, (int)(value - (Height / 2f)));
         }
 
         /// <inheritdoc cref="ISizable.Width"/>
-        public virtual int Width { get; set; }
+        public virtual uint Width { get; protected internal set; }
 
         /// <inheritdoc cref="ISizable.Height"/>
-        public virtual int Height { get; set; }
+        public virtual uint Height { get; protected internal set; }
 
         /// <inheritdoc cref="IControl.Visible"/>
         public virtual bool Visible { get; set; } = true;
@@ -139,8 +142,12 @@ namespace Velaptor.UI
             }
 
             this.currentMouseState = this.mouse.GetState();
-            this.currentMousePos = this.currentMouseState.GetPosition().ToPoint();
-            var controlRect = new Rectangle(Position.X, Position.Y, Width, Height);
+            this.currentMousePos = this.currentMouseState.GetPosition();
+
+            var halfWidth = (int)Width / 2;
+            var halfHeight = (int)Height / 2;
+
+            var controlRect = new Rectangle(Position.X - halfWidth, Position.Y - halfHeight, (int)Width, (int)Height);
 
             IsMouseOver = controlRect.Contains(this.currentMouseState.GetX(), this.currentMouseState.GetY());
 

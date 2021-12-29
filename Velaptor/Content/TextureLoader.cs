@@ -4,12 +4,15 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Loads textures.
@@ -18,6 +21,7 @@ namespace Velaptor.Content
     {
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IGLInvoker gl;
+        private readonly IGLInvokerExtensions glExtensions;
         private readonly IImageService imageService;
         private readonly IPathResolver pathResolver;
         private readonly IPath path;
@@ -32,6 +36,7 @@ namespace Velaptor.Content
         public TextureLoader(IImageService imageService, IPathResolver texturePathResolver)
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
+            this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             this.imageService = imageService;
             this.pathResolver = texturePathResolver;
             this.path = IoC.Container.GetInstance<IPath>();
@@ -41,12 +46,14 @@ namespace Velaptor.Content
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="imageService">Loads an image file.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         /// <param name="path">Processes directory and fle paths.</param>
-        internal TextureLoader(IGLInvoker gl, IImageService imageService, IPathResolver texturePathResolver, IPath path)
+        internal TextureLoader(IGLInvoker gl, IGLInvokerExtensions glExtensions, IImageService imageService, IPathResolver texturePathResolver, IPath path)
         {
             this.gl = gl;
+            this.glExtensions = glExtensions;
             this.imageService = imageService;
             this.pathResolver = texturePathResolver;
             this.path = path;
@@ -82,7 +89,7 @@ namespace Velaptor.Content
             {
                 var imageData = this.imageService.Load(filePathToLoad);
 
-                return new Texture(this.gl, name, filePathToLoad, imageData) { IsPooled = true };
+                return new Texture(this.gl, this.glExtensions, name, filePathToLoad, imageData) { IsPooled = true };
             });
         }
 

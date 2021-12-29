@@ -20,6 +20,6 @@ namespace Velaptor.NativeInterop.FreeType
         /// <summary>
         /// Gets the error message that occured.
         /// </summary>
-        public string ErrorMessage { get; private set; } = "A FreeType error has occured";
+        public string ErrorMessage { get; }
     }
 }

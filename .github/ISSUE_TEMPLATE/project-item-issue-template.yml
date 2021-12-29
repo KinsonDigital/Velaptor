@@ -50,9 +50,9 @@ body:
     placeholder: |
       No Issue Dependencies
       Example:
-        #10 Create new class
-        #20 Add unit tests to service
-        #30 Cleanup code in UI
+        - #10 Create new class
+        - #20 Add unit tests to service
+        - #30 Cleanup code in UI
     description: |
       A list of issues that are dependencies of this issue and need to be finishes first
       Use the '#\<number\>' syntax to link to an issue
@@ -72,4 +72,13 @@ body:
       A list of issues that are related to this issue but that is not a dependency
       Use the '#\<number\>' syntax to link to an issue
   validations:
-    required: false    
+    required: false
+
+- type: checkboxes
+  id: terms
+  attributes:
+    label: Code of Conduct
+    description: By submitting this issue, you agree to follow our [Code of Conduct](../../code_of_conduct.md)
+    options:
+      - label: I agree to follow this project's Code of Conduct
+        required: true

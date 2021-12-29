@@ -9,6 +9,7 @@ namespace VelaptorTests.Content
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
     using VelaptorTests.Helpers;
     using Xunit;
 
@@ -125,7 +126,7 @@ namespace VelaptorTests.Content
             var actual = data.Width;
 
             // Assert
-            Assert.Equal(100, actual);
+            Assert.Equal(100u, actual);
         }
 
         [Fact]
@@ -138,7 +139,7 @@ namespace VelaptorTests.Content
             var actual = data.Height;
 
             // Assert
-            Assert.Equal(200, actual);
+            Assert.Equal(200u, actual);
         }
         #endregion
 
@@ -164,14 +165,16 @@ namespace VelaptorTests.Content
             var actual = data[2];
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.Name, actual.Name);
+            Assert.Equal(expected.FrameIndex, actual.FrameIndex);
+            Assert.Equal(expected.Bounds, actual.Bounds);
         }
 
         [Fact]
         public void GetFrames_WhenInvokedWithExistingSubTextureID_ReturnsCorrectFrameRectangle()
         {
             // Arrange
-            var expected = new[]
+            var expectedItems = new[]
             {
                 new AtlasSubTextureData() // First frame of Animating sub texture
                 {
@@ -193,7 +196,14 @@ namespace VelaptorTests.Content
             var actual = data.GetFrames("sub-texture");
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(expectedItems.Length, actual.Length);
+
+            for (var i = 0; i < actual.Length; i++)
+            {
+                Assert.Equal(expectedItems[i].Name, actual[i].Name);
+                Assert.Equal(expectedItems[i].FrameIndex, actual[i].FrameIndex);
+                Assert.Equal(expectedItems[i].Bounds, actual[i].Bounds);
+            }
         }
 
         [Fact]
@@ -226,7 +236,9 @@ namespace VelaptorTests.Content
             var actual = data.GetFrame("sub-texture");
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.Name, actual.Name);
+            Assert.Equal(expected.FrameIndex, actual.FrameIndex);
+            Assert.Equal(expected.Bounds, actual.Bounds);
         }
 
         [Fact]

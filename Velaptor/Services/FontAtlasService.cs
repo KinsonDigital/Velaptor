@@ -4,18 +4,21 @@
 
 namespace Velaptor.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
-    using Velaptor.Content;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.FreeType;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates font atlas textures for rendering text.
@@ -113,20 +116,23 @@ namespace Velaptor.Services
             // Render each glyph image to the atlas
             foreach (var glyphImage in glyphImages)
             {
-                var drawLocation = new NETPoint(glyphMetrics[glyphImage.Key].AtlasBounds.X, glyphMetrics[glyphImage.Key].AtlasBounds.Y);
+                var drawLocation = new PointF(glyphMetrics[glyphImage.Key].GlyphBounds.X, glyphMetrics[glyphImage.Key].GlyphBounds.Y);
 
-                atlasImage = this.imageService.Draw(glyphImage.Value, atlasImage, drawLocation);
+                atlasImage = this.imageService.Draw(
+                    glyphImage.Value,
+                    atlasImage,
+                    new NETPoint((int)drawLocation.X, (int)drawLocation.Y));
             }
 
             return (atlasImage, glyphMetrics.Values.ToArray());
         }
 
         /// <inheritdoc/>
-        public void SetAvailableCharacters(char[] glyphChars)
+        public void SetAvailableCharacters(char[] glyphs)
         {
             // Make sure to add the '□' character to represent missing characters
             // This will be rendered in place of characters that do not exist
-            var currentList = glyphChars.ToList();
+            var currentList = glyphs.ToList();
 
             if (currentList.Contains(InvalidCharacter) is false)
             {
@@ -149,16 +155,18 @@ namespace Velaptor.Services
         /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (this.isDisposed)
             {
-                if (disposing)
-                {
-                    this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
-                    this.freeTypeInvoker.Dispose();
-                }
-
-                this.isDisposed = true;
+                return;
             }
+
+            if (disposing)
+            {
+                this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
+                this.freeTypeInvoker.Dispose();
+            }
+
+            this.isDisposed = true;
         }
 
         /// <summary>
@@ -170,9 +178,9 @@ namespace Velaptor.Services
         {
             FontAtlasMetrics result = default;
 
-            const int AntiEdgeCroppingMargin = 3;
-            var maxGlyphWidth = glyphImages.Max(g => g.Value.Width) + AntiEdgeCroppingMargin;
-            var maxGlyphHeight = glyphImages.Max(g => g.Value.Height) + AntiEdgeCroppingMargin;
+            const int antiEdgeCroppingMargin = 3;
+            var maxGlyphWidth = glyphImages.Max(g => g.Value.Width) + antiEdgeCroppingMargin;
+            var maxGlyphHeight = glyphImages.Max(g => g.Value.Height) + antiEdgeCroppingMargin;
 
             var possibleRowAndColumnCount = Math.Sqrt(glyphImages.Count);
 
@@ -219,7 +227,7 @@ namespace Velaptor.Services
                                    where m.Value.Glyph == glyph.Key
                                    select m.Value).FirstOrDefault();
 
-                glyphMetric.AtlasBounds = new NETRectangle((int)xPos, (int)yPos, (int)glyph.Value.Width, (int)glyph.Value.Height);
+                glyphMetric.GlyphBounds = new NETRectangle((int)xPos, (int)yPos, (int)glyph.Value.Width, (int)glyph.Value.Height);
                 glyphMetrics[glyph.Key] = glyphMetric;
 
                 if (cellX >= columnCount - 1)

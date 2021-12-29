@@ -4,12 +4,16 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Holds data relating to a texture atlas.
@@ -73,10 +77,10 @@ namespace Velaptor.Content
         public ITexture Texture { get; private set; }
 
         /// <inheritdoc/>
-        public int Width => Texture.Width;
+        public uint Width => Texture.Width;
 
         /// <inheritdoc/>
-        public int Height => Texture.Height;
+        public uint Height => Texture.Height;
 
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }

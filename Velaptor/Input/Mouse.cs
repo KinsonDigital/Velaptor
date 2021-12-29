@@ -12,6 +12,10 @@ namespace Velaptor.Input
     /// </summary>
     public class Mouse : IMouseInput<MouseButton, MouseState>
     {
+        private static int xPos;
+        private static int yPos;
+        private static int scrollWheelValue;
+
         /// <summary>
         /// Gets the current state of the mouse.
         /// </summary>
@@ -24,8 +28,8 @@ namespace Velaptor.Input
             }
 
             var result = default(MouseState);
-            result.SetPosition(IMouseInput<MouseButton, MouseState>.XPos, IMouseInput<MouseButton, MouseState>.YPos);
-            result.SetScrollWheelValue(IMouseInput<MouseButton, MouseState>.ScrollWheelValue);
+            result.SetPosition(xPos, yPos);
+            result.SetScrollWheelValue(scrollWheelValue);
 
             // Set all of the states for the buttons
             foreach (var state in IMouseInput<MouseButton, MouseState>.InputStates)
@@ -42,20 +46,20 @@ namespace Velaptor.Input
         /// <param name="input">The mouse button to set.</param>
         /// <param name="state">The state to set the button to.</param>
         /// <remarks>
-        ///     When <paramref name="state"/> is the value of <see langword=""="true"/>,
+        ///     When <paramref name="state"/> is the value of <see langword="true"/>,
         ///     this means the mouse button is being pressed down.
         /// </remarks>
         public void SetState(MouseButton input, bool state)
             => IMouseInput<MouseButton, MouseState>.InputStates[input] = state;
 
         /// <inheritdoc/>
-        public void SetXPos(int x) => IMouseInput<MouseButton, MouseState>.XPos = x;
+        public void SetXPos(int x) => xPos = x;
 
         /// <inheritdoc/>
-        public void SetYPos(int y) => IMouseInput<MouseButton, MouseState>.YPos = y;
+        public void SetYPos(int y) => yPos = y;
 
         /// <inheritdoc/>
-        public void SetScrollWheelValue(int value) => IMouseInput<MouseButton, MouseState>.ScrollWheelValue = value;
+        public void SetScrollWheelValue(int value) => scrollWheelValue = value;
 
         /// <inheritdoc/>
         public void Reset()
@@ -72,9 +76,9 @@ namespace Velaptor.Input
                 IMouseInput<MouseButton, MouseState>.InputStates[key] = false;
             }
 
-            IMouseInput<MouseButton, MouseState>.XPos = 0;
-            IMouseInput<MouseButton, MouseState>.YPos = 0;
-            IMouseInput<MouseButton, MouseState>.ScrollWheelValue = 0;
+            xPos = 0;
+            yPos = 0;
+            scrollWheelValue = 0;
         }
 
         /// <summary>

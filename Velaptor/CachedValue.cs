@@ -15,7 +15,7 @@ namespace Velaptor
         private readonly Func<T> getterWhenNotCaching;
         private readonly Action<T> setterWhenNotCaching;
         private T cachedValue;
-        private bool isCaching = true;
+        private bool isCaching;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CachedValue{T}"/> class.
@@ -63,7 +63,9 @@ namespace Velaptor
             get => this.isCaching;
             set
             {
-                /*DESCRIPTION:
+                switch (this.isCaching)
+                {
+                    /*DESCRIPTION:
                  * When turning caching off:
                  *      When caching is turned off, the user could have set the value at any time before turning
                  *      caching off.  During this time, the value is being stored internally in the object.
@@ -84,13 +86,12 @@ namespace Velaptor
                  *      Because of this, the internal system when turning the caching on needs to be updated
                  *      to match the value of the external system so they are in sync.
                  */
-                if (this.isCaching is false && value is true)
-                {
-                    this.cachedValue = this.getterWhenNotCaching();
-                }
-                else if (this.isCaching is true && value is false)
-                {
-                    this.setterWhenNotCaching(this.cachedValue);
+                    case false when value:
+                        this.cachedValue = this.getterWhenNotCaching();
+                        break;
+                    case true when value is false:
+                        this.setterWhenNotCaching(this.cachedValue);
+                        break;
                 }
 
                 this.isCaching = value;

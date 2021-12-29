@@ -21,6 +21,7 @@ namespace VelaptorTests.Content
         private const uint OpenGLTextureId = 1234;
         private readonly string textureFilePath;
         private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IPath> mockPath;
@@ -33,6 +34,8 @@ namespace VelaptorTests.Content
             this.textureFilePath = $@"C:\temp\{TextureFileName}";
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGL.Setup(m => m.GenTexture()).Returns(OpenGLTextureId); // Mock out the OpenGL texture ID
+
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
 
             this.mockImageService = new Mock<IImageService>();
             this.mockTexturePathResolver = new Mock<IPathResolver>();
@@ -93,10 +96,12 @@ namespace VelaptorTests.Content
             var textureA = loader.Load(TextureFileName);
             var textureB = loader.Load(TextureFileName);
 
+            // TODO: Verify that this test works
+
             // Assert
             Assert.Equal(textureA.Name, textureB.Name);
             Assert.Equal(textureA.Path, textureB.Path);
-            this.mockGL.Verify(m => m.ObjectLabel(GLObjectIdentifier.Texture, It.IsAny<uint>(), 1u, TextureFileName), Times.Once());
+            Assert.Same(textureA, textureB);
         }
 
         [Fact]
@@ -133,8 +138,9 @@ namespace VelaptorTests.Content
         /// Creates a new instance of <see cref="TextureLoader"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private TextureLoader CreateLoader() => new
-            (this.mockGL.Object,
+        private TextureLoader CreateLoader()
+            => new (this.mockGL.Object,
+             this.mockGLExtensions.Object,
              this.mockImageService.Object,
              this.mockTexturePathResolver.Object,
              this.mockPath.Object);

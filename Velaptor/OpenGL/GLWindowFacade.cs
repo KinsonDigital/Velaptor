@@ -4,29 +4,30 @@
 
 namespace Velaptor.OpenGL
 {
-#pragma warning disable SA1135 // Using directives should be qualified
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using Silk.NET.Input;
     using Silk.NET.Maths;
     using Silk.NET.Windowing;
-    using Input;
+    using Velaptor.Input;
     using Velaptor.Input.Exceptions;
-    using Observables;
+    using Velaptor.Observables;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
-    using VelaptorMouseButton = Input.MouseButton;
-    using VelaptorWindowBorder = WindowBorder;
-#pragma warning restore SA1135 // Using directives should be qualified
+    using VelaptorMouseButton = Velaptor.Input.MouseButton;
+    using VelaptorWindowBorder = Velaptor.WindowBorder;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// The internal SILK OpenGL window.
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "Cannot be abstract due to dependency injection.")]
     internal class GLWindowFacade : IGameWindowFacade
     {
         private readonly string nullWindowExceptionMsg;
-        private readonly object objectLock = new ();
         private readonly OpenGLContextObservable glContextObservable;
         private readonly IKeyboardInput<KeyCode, KeyboardState> keyboardInput;
         private readonly IMouseInput<VelaptorMouseButton, MouseState> mouseInput;
@@ -319,7 +320,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public void Init(int width, int height)
+        public void Init(uint width, uint height)
         {
             if (this.glWindow is null)
             {
@@ -328,7 +329,7 @@ namespace Velaptor.OpenGL
 
             this.glContextObservable.OnGLContextCreated(this.glWindow);
 
-            this.glWindow.Size = new Vector2D<int>(width, height);
+            this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
             this.glInputContext = this.glWindow.CreateInput();
 
             if (this.glInputContext.Keyboards.Count <= 0)
@@ -433,7 +434,7 @@ namespace Velaptor.OpenGL
         private void GLWindow_Closing() => this.Unload?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
-        /// Invoked every time the size of the window changs and invokes the
+        /// Invoked every time the size of the window changes and invokes the
         /// <see cref="IGameWindowFacade.Resize"/> event.
         /// </summary>
         private void GLWindow_Resize(Vector2D<int> obj) => this.Resize?.Invoke(this, new WindowSizeEventArgs(obj.X, obj.Y));

@@ -6,15 +6,15 @@
     <LangVersion>9.0</LangVersion>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.3</Version>
+    <Version>1.0.0-preview.4</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.3</FileVersion>
+    <FileVersion>1.0.0-preview.4</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
       Visual Studio does not allow the preview syntax for this tag
-      Example: v1.2.3.preview.1 is not aloud
+      Example: v1.2.3.preview.1 is not allowed
     -->
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <Nullable>enable</Nullable>
@@ -48,12 +48,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="OpenGL\shader.frag">
+    <EmbeddedResource Include="OpenGL\Shaders\texture.frag">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="OpenGL\shader.vert">
+    <EmbeddedResource Include="OpenGL\Shaders\texture.vert">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Remove="OpenGL\Shaders\font.frag" />
+    <EmbeddedResource Include="OpenGL\Shaders\font.frag" />
+    <None Remove="OpenGL\Shaders\font.vert" />
+    <EmbeddedResource Include="OpenGL\Shaders\font.vert" />
   </ItemGroup>
 
   <ItemGroup>

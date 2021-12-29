@@ -10,6 +10,7 @@ namespace VelaptorTests.Content
     using Newtonsoft.Json;
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
@@ -23,7 +24,8 @@ namespace VelaptorTests.Content
         private const string AtlasContentName = "test-atlas";
         private readonly string atlasDataFilePath;
         private readonly string atlasImageFilePath;
-        private readonly Mock<IGLInvoker> mockGLInvoker;
+        private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly JsonSerializerSettings jsonSettings = new ()
         {
             Formatting = Formatting.Indented,
@@ -44,8 +46,10 @@ namespace VelaptorTests.Content
             this.atlasDataFilePath = $@"{atlasDirPath}{AtlasContentName}.json";
             this.atlasImageFilePath = $@"{atlasDirPath}{AtlasContentName}.png";
 
-            this.mockGLInvoker = new Mock<IGLInvoker>();
-            this.mockGLInvoker.Name = nameof(this.mockGLInvoker);
+            this.mockGL = new Mock<IGLInvoker>();
+            this.mockGL.Name = nameof(this.mockGL);
+
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
 
             this.mockAtlasPathResolver = new Mock<IPathResolver>();
             this.mockAtlasPathResolver.Setup(m => m.ResolveDirPath()).Returns(atlasDirPath);
@@ -90,8 +94,14 @@ namespace VelaptorTests.Content
             var actual = loader.Load($"{contentName}{extension}");
 
             // Assert
-            Assert.Equal(this.atlasSpriteData[0], actual[0]);
-            Assert.Equal(this.atlasSpriteData[1], actual[1]);
+            Assert.Equal(this.atlasSpriteData[0].Name, actual[0].Name);
+            Assert.Equal(this.atlasSpriteData[0].FrameIndex, actual[0].FrameIndex);
+            Assert.Equal(this.atlasSpriteData[0].Bounds, actual[0].Bounds);
+
+            Assert.Equal(this.atlasSpriteData[1].Name, actual[1].Name);
+            Assert.Equal(this.atlasSpriteData[1].FrameIndex, actual[1].FrameIndex);
+            Assert.Equal(this.atlasSpriteData[1].Bounds, actual[1].Bounds);
+
             this.mockAtlasPathResolver.Verify(m => m.ResolveDirPath(), Times.Once());
             this.mockFile.Verify(m => m.ReadAllText(this.atlasDataFilePath), Times.Once());
             this.mockImageService.Verify(m => m.Load(this.atlasImageFilePath), Times.Once());
@@ -127,9 +137,14 @@ namespace VelaptorTests.Content
             var actual = loader.Load(AtlasContentName);
 
             // Assert
-            Assert.Equal(this.atlasSpriteData[0], actual[0]);
-            Assert.Equal(this.atlasSpriteData[1], actual[1]);
-            Assert.Equal(AtlasContentName, actual.Name);
+            Assert.Equal(this.atlasSpriteData[0].Name, actual[0].Name);
+            Assert.Equal(this.atlasSpriteData[0].FrameIndex, actual[0].FrameIndex);
+            Assert.Equal(this.atlasSpriteData[0].Bounds, actual[0].Bounds);
+
+            Assert.Equal(this.atlasSpriteData[1].Name, actual[1].Name);
+            Assert.Equal(this.atlasSpriteData[1].FrameIndex, actual[1].FrameIndex);
+            Assert.Equal(this.atlasSpriteData[1].Bounds, actual[1].Bounds);
+
             this.mockFile.Verify(m => m.ReadAllText(this.atlasDataFilePath), Times.Once());
             this.mockImageService.Verify(m => m.Load(this.atlasImageFilePath), Times.Once());
         }
@@ -204,7 +219,8 @@ namespace VelaptorTests.Content
         /// <returns>The instance to test.</returns>
         private AtlasLoader CreateLoader()
             => new (
-                this.mockGLInvoker.Object,
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
                 this.mockImageService.Object,
                 this.mockAtlasPathResolver.Object,
                 this.mockFile.Object,

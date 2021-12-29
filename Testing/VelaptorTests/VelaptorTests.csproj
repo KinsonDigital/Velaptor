@@ -20,6 +20,39 @@
     <Compile Remove="TestResults\**" />
     <EmbeddedResource Remove="TestResults\**" />
     <None Remove="TestResults\**" />
+    <None Update="SampleTestData\glyph-test-data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\HelloWorldTextTestData\batch-test-data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoked_AddsCorrectBatchItems.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking3ParamsWithPositionOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking4ParamsWithXAndYOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking6ParamsWithXAndYOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking6ParamsWithColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithPositionOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
   <ItemGroup>

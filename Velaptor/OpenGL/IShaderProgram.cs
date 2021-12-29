@@ -14,31 +14,16 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Gets the shader program ID on the GPU.
         /// </summary>
-        uint ProgramId { get; }
+        uint ShaderId { get; }
 
         /// <summary>
-        /// Gets the ID of the fragment shader on the GPU.
+        /// Gets the name of the shader.
         /// </summary>
-        uint FragmentShaderId { get; }
-
-        /// <summary>
-        /// Gets the ID of the vertex shader.
-        /// </summary>
-        uint VertexShaderId { get; }
-
-        /// <summary>
-        /// Gets or sets the size of the batch.
-        /// </summary>
-        uint BatchSize { get; set; }
-
-        /// <summary>
-        /// Initializes the shader program.
-        /// </summary>
-        void Init();
+        string Name { get; }
 
         /// <summary>
         /// Sets the active shader program to use on the GPU.
         /// </summary>
-        void UseProgram();
+        void Use();
     }
 }

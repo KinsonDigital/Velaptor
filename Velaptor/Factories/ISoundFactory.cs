@@ -4,7 +4,10 @@
 
 namespace Velaptor.Factories
 {
+    // ReSharper disable RedundantNameQualifier
     using Velaptor.Content;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates sounds based on the sound file at a location.
@@ -12,7 +15,7 @@ namespace Velaptor.Factories
     public interface ISoundFactory
     {
         /// <summary>
-        /// Creats a new sound from a sound file at the given <paramref name="filePath"/>.
+        /// Creates a new sound from a sound file at the given <paramref name="filePath"/>.
         /// </summary>
         /// <param name="filePath">The path to the sound file.</param>
         /// <returns>The sound.</returns>

@@ -1,39 +1,43 @@
-﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Graphics
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Linq;
     using System.Numerics;
-    using FreeTypeSharp.Native;
+    using Velaptor;
     using Velaptor.Content;
-    using Velaptor.Exceptions;
-    using Velaptor.Graphics;
-    using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
     using Velaptor.OpenGL;
     using Velaptor.Services;
+    using NETRect = System.Drawing.Rectangle;
+    using NETSizeF = System.Drawing.SizeF;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc/>
     internal sealed class SpriteBatch : ISpriteBatch
     {
-        private const char InvalidCharacter = '□';
-        private readonly Dictionary<string, CachedValue<int>> cachedIntProps = new ();
+        private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
-        private readonly IFreeTypeInvoker freeTypeInvoker;
-        private readonly IShaderProgram shader;
-        private readonly IGPUBuffer gpuBuffer;
-        private readonly IBatchManagerService batchManagerService;
-        private CachedValue<Color> cachedClearColor;
-        private int transDataLocation;
+        private readonly IShaderProgram textureShader;
+        private readonly IShaderProgram fontShader;
+        private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
+        private readonly IGPUBuffer<SpriteBatchItem> fontBuffer;
+        private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
+        private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
+
+        // ReSharper disable once MemberInitializerValueIgnored
+        private CachedValue<Color> cachedClearColor = null!;
         private bool isDisposed;
         private bool hasBegun;
 
@@ -43,51 +47,53 @@ namespace Velaptor.Graphics
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes OpenGL extensions methods.</param>
-        /// <param name="freeTypeInvoker">Loads and manages fonts.</param>
-        /// <param name="shader">The shader used for rendering.</param>
-        /// <param name="gpuBuffer">The GPU buffer that holds the data for a batch of sprites.</param>
-        /// <param name="batchManagerService">Manages the batch of textures to render.</param>
+        /// <param name="textureShader">The shader used for rendering textures.</param>
+        /// <param name="fontShader">The shader used for rendering text.</param>
+        /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
+        /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
+        /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
+        /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
         /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
         /// <remarks>
         ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
         [ExcludeFromCodeCoverage]
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-// The reason for ignoring this warning for the `cachedClearColor` not being set in constructor while
-// it is set to not be null is due to the fact that we do not want warnings expressing an issue that
-// does not exist.  The SetupPropertyCaches() method takes care of making sure it is not null.
         public SpriteBatch(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IFreeTypeInvoker freeTypeInvoker,
-            IShaderProgram shader,
-            IGPUBuffer gpuBuffer,
-            IBatchManagerService batchManagerService,
-            OpenGLInitObservable glObservable)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+            IShaderProgram textureShader,
+            IShaderProgram fontShader,
+            IGPUBuffer<SpriteBatchItem> textureBuffer,
+            IGPUBuffer<SpriteBatchItem> fontBuffer,
+            IBatchManagerService<SpriteBatchItem> textureBatchService,
+            IBatchManagerService<SpriteBatchItem> fontBatchService,
+            IObservable<bool> glObservable)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
+
             this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), $"The '{nameof(IGLInvokerExtensions)}' must not be null.");
-            this.freeTypeInvoker = freeTypeInvoker;
-            this.shader = shader ?? throw new ArgumentNullException(nameof(shader), $"The '{nameof(IShaderProgram)}' must not be null.");
-            this.gpuBuffer = gpuBuffer ?? throw new ArgumentNullException(nameof(gpuBuffer), $"The '{nameof(IGPUBuffer)}' must not be null.");
+            this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), $"The '{nameof(textureShader)}' must not be null.");
+            this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), $"The '{nameof(fontShader)}' must not be null.");
 
-            this.batchManagerService = batchManagerService;
+            this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), $"The '{nameof(textureBuffer)}' must not be null.");
+            this.fontBuffer = fontBuffer ?? throw new ArgumentNullException(nameof(fontBuffer), $"The '{nameof(fontBuffer)}' must not be null.");
 
-            this.batchManagerService.BatchReady += BatchManagerService_BatchReady;
+            this.textureBatchService = textureBatchService;
+            this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;
+            this.textureBatchService.BatchFilled += TextureBatchService_BatchFilled;
+
+            this.fontBatchService = fontBatchService;
+            this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
+            this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
             // Receive a push notification that OpenGL has initialized
             GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
                 _ =>
                 {
-                    this.cachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+                    this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
-                    if (this.cachedClearColor is not null)
-                    {
-                        this.cachedClearColor.IsCaching = false;
-                    }
+                    this.cachedClearColor.IsCaching = false;
 
                     Init();
                 }));
@@ -95,18 +101,23 @@ namespace Velaptor.Graphics
             SetupPropertyCaches();
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="SpriteBatch"/> class.
+        /// </summary>
+        ~SpriteBatch() => Dispose(false);
+
         /// <inheritdoc/>
-        public int RenderSurfaceWidth
+        public uint RenderSurfaceWidth
         {
-            get => this.cachedIntProps[nameof(RenderSurfaceWidth)].GetValue();
-            set => this.cachedIntProps[nameof(RenderSurfaceWidth)].SetValue(value);
+            get => this.cachedUIntProps[nameof(RenderSurfaceWidth)].GetValue();
+            set => this.cachedUIntProps[nameof(RenderSurfaceWidth)].SetValue(value);
         }
 
         /// <inheritdoc/>
-        public int RenderSurfaceHeight
+        public uint RenderSurfaceHeight
         {
-            get => this.cachedIntProps[nameof(RenderSurfaceHeight)].GetValue();
-            set => this.cachedIntProps[nameof(RenderSurfaceHeight)].SetValue(value);
+            get => this.cachedUIntProps[nameof(RenderSurfaceHeight)].GetValue();
+            set => this.cachedUIntProps[nameof(RenderSurfaceHeight)].SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -114,13 +125,6 @@ namespace Velaptor.Graphics
         {
             get => this.cachedClearColor.GetValue();
             set => this.cachedClearColor.SetValue(value);
-        }
-
-        /// <inheritdoc/>
-        public uint BatchSize
-        {
-            get => this.batchManagerService.BatchSize;
-            set => this.batchManagerService.BatchSize = value;
         }
 
         /// <summary>
@@ -135,13 +139,6 @@ namespace Velaptor.Graphics
         /// <inheritdoc/>
         public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
 
-        public void RenderLine(Vector2 start, Vector2 stop)
-        {
-            this.gl.Enable(GLEnableCap.LineSmooth);
-
-            this.gl.Disable(GLEnableCap.LineSmooth);
-        }
-
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 
@@ -149,121 +146,53 @@ namespace Velaptor.Graphics
         public void Render(ITexture texture, int x, int y, RenderEffects effects) => Render(texture, x, y, Color.White, effects);
 
         /// <inheritdoc/>
-        public void Render(ITexture texture, int x, int y, Color tintColor) => Render(texture, x, y, tintColor, RenderEffects.None);
+        public void Render(ITexture texture, int x, int y, Color color) => Render(texture, x, y, color, RenderEffects.None);
 
         /// <inheritdoc/>
-        public void Render(ITexture texture, int x, int y, Color tintColor, RenderEffects effects)
+        public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects)
         {
-            if (!this.hasBegun)
+            // Render the entire texture
+            var srcRect = new NETRect()
             {
-                throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
-            }
+                X = 0,
+                Y = 0,
+                Width = (int)texture.Width,
+                Height = (int)texture.Height,
+            };
 
+            var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
+
+            Render(texture, srcRect, destRect, 1, 0, color, effects);
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown if the <see cref="BeginBatch"/>() method is not called first before calling this method.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     Thrown if the <see cref="Rectangle.Width"/> or <see cref="Rectangle.Height"/> property
+        ///     values for the <paramref name="srcRect"/> argument are less than or equal to 0.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown if the <paramref name="texture"/> argument is null.
+        /// </exception>
+        public void Render(
+            ITexture texture,
+            NETRect srcRect,
+            NETRect destRect,
+            float size,
+            float angle,
+            Color color,
+            RenderEffects effects)
+        {
             if (texture is null)
             {
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
-            // Render the entire texture
-            var srcRect = new Rectangle()
-            {
-                X = 0,
-                Y = 0,
-                Width = texture.Width,
-                Height = texture.Height,
-            };
-
-            var destRect = new Rectangle(x, y, texture.Width, texture.Height);
-
-            Render(texture, srcRect, destRect, 1, 0, tintColor, effects);
-        }
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y) => Render(font, text, x, y, Color.White);
-
-        /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y, Color tintColor)
-        {
-            var leftGlyghIndex = 0u;
-
-            var facePtr = this.freeTypeInvoker.GetFace();
-
-            var availableCharacters = font.GetAvailableGlyphCharacters();
-
-            foreach (var character in text)
-            {
-                var charToRender = character;
-
-                if (availableCharacters.Contains(character) is false)
-                {
-                    charToRender = InvalidCharacter;
-                }
-
-                var glyphMetrics = (from f in font.Metrics
-                                    where f.Glyph == charToRender
-                                    select f).FirstOrDefault();
-
-                if (font.HasKerning && leftGlyghIndex != 0 && glyphMetrics.CharIndex != 0)
-                {
-                    // TODO: Check the perf for curiosity reasons
-                    FT_Vector delta = this.freeTypeInvoker.FT_Get_Kerning(
-                        facePtr,
-                        leftGlyghIndex,
-                        glyphMetrics.CharIndex,
-                        (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
-
-                    x += delta.x.ToInt32() >> 6;
-                }
-
-                Rectangle srcRect = default;
-                srcRect.X = glyphMetrics.AtlasBounds.X;
-                srcRect.Y = glyphMetrics.AtlasBounds.Y;
-                srcRect.Width = glyphMetrics.AtlasBounds.Width;
-                srcRect.Height = glyphMetrics.AtlasBounds.Height;
-
-                var verticalOffset = glyphMetrics.AtlasBounds.Height - glyphMetrics.HoriBearingY;
-
-                Rectangle destRect = default;
-                destRect.X = x + (glyphMetrics.AtlasBounds.Width / 2);
-                destRect.Y = y - (glyphMetrics.AtlasBounds.Height / 2) + verticalOffset;
-                destRect.Width = font.FontTextureAtlas.Width;
-                destRect.Height = font.FontTextureAtlas.Height;
-
-                // Only render characters that are not a space (32 char code)
-                if (character != ' ')
-                {
-                    Render(
-                        font.FontTextureAtlas,
-                        srcRect: srcRect,
-                        destRect: destRect,
-                        size: 1,
-                        angle: 0,
-                        tintColor: tintColor,
-                        effects: RenderEffects.None);
-                }
-
-                // Horizontally advance the current glyph
-                x += glyphMetrics.HorizontalAdvance;
-                leftGlyghIndex = glyphMetrics.CharIndex;
-            }
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="InvalidRenderEffectsException">
-        ///     Thrown if the given <paramref name="effects"/> is invalid.
-        /// </exception>
-        public void Render(
-            ITexture texture,
-            Rectangle srcRect,
-            Rectangle destRect,
-            float size,
-            float angle,
-            Color tintColor,
-            RenderEffects effects)
-        {
             if (!this.hasBegun)
             {
-                throw new Exception($"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
+                throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
             if (srcRect.Width <= 0 || srcRect.Height <= 0)
@@ -271,36 +200,147 @@ namespace Velaptor.Graphics
                 throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
             }
 
-            if (texture is null)
+            var itemToAdd = default(SpriteBatchItem);
+
+            itemToAdd.SrcRect = srcRect;
+            itemToAdd.DestRect = destRect;
+            itemToAdd.Size = size;
+            itemToAdd.Angle = angle;
+            itemToAdd.TintColor = color;
+            itemToAdd.Effects = effects;
+            itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
+            itemToAdd.TextureId = texture.Id;
+
+            this.textureBatchService.Add(itemToAdd);
+        }
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y)
+            => Render(font, text, x, y, 1f, 0f, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, Vector2 position)
+            => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, float size, float angle)
+            => Render(font, text, x, y, size, angle, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, Vector2 position, float size, float angle)
+            => Render(font, text, (int)position.X, (int)position.Y, size, angle, Color.White);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, Color color)
+            => Render(font, text, x, y, 1f, 0f, color);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, Vector2 position, Color color)
+            => Render(font, text, (int)position.X, (int)position.Y, 0f, 0f, color);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, int x, int y, float angle, Color color)
+            => Render(font, text, x, y, 1f, angle, color);
+
+        /// <inheritdoc/>
+        public void Render(IFont font, string text, Vector2 position, float angle, Color color)
+            => Render(font, text, (int)position.X, (int)position.Y, 1f, angle, color);
+
+        /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown if the <see cref="BeginBatch"/>() method is not called first before calling this method.
+        /// </exception>
+        public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
+        {
+            if (string.IsNullOrEmpty(text))
             {
-                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
+                return;
             }
 
-            this.batchManagerService.UpdateBatch(
-                texture,
-                srcRect,
-                destRect,
-                size,
-                angle,
-                tintColor,
-                effects);
+            size = size < 0f ? 0f : size;
+
+            if (!this.hasBegun)
+            {
+                throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+            }
+
+            var normalizedSize = size - 1f;
+            var originalX = (float)x;
+            var originalY = (float)y;
+            var characterY = (float)y;
+
+            text = text.TrimEnd('\n');
+            var lines = text.Split('\n').TrimAllEnds();
+
+            var lineSpacing = font.LineSpacing.ApplySize(normalizedSize);
+            var textSize = font.Measure(text).ApplySize(normalizedSize);
+
+            var textHalfWidth = textSize.Width / 2f;
+
+            var atlasWidth = font.FontTextureAtlas.Width.ApplySize(normalizedSize);
+            var atlasHeight = font.FontTextureAtlas.Height.ApplySize(normalizedSize);
+
+            var glyphLines = lines.Select(l =>
+            {
+                                        /* ⚙️ Perf Optimization️ ⚙️ */
+                // Not need to apply a size to waist compute time if the size is 0 which is no size change.
+                return normalizedSize == 0f
+                    ? font.ToGlyphMetrics(l)
+                    : font.ToGlyphMetrics(l).Select(g => g.ApplySize(normalizedSize)).ToArray();
+            }).ToList();
+
+            var firstLineFirstCharBearingX = glyphLines[0][0].HoriBearingX;
+
+            for (var i = 0; i < glyphLines.Count; i++)
+            {
+                if (i == 0)
+                {
+                    var firstLineHeight = glyphLines.MaxHeight(i);
+                    var textTop = originalY + firstLineHeight;
+                    var lastLineVerticalOffset = glyphLines.MaxVerticalOffset(glyphLines.Count - 1);
+                    var textHalfHeight = textSize.Height / 2f;
+
+                    characterY = textTop - textHalfHeight - (lastLineVerticalOffset / 2f);
+                }
+                else
+                {
+                    characterY += lineSpacing;
+                }
+
+                var characterX = originalX - textHalfWidth + firstLineFirstCharBearingX;
+                var textLinePos = new Vector2(characterX, characterY);
+
+                // Convert all of the glyphs to sprite batch items to be rendered
+                var batchItems = ToSpriteBatchItems(
+                    textLinePos,
+                    glyphLines.ToArray()[i],
+                    font,
+                    new Vector2(x, y),
+                    normalizedSize,
+                    angle,
+                    color,
+                    atlasWidth,
+                    atlasHeight);
+
+                this.fontBatchService.AddRange(batchItems);
+            }
         }
 
         /// <inheritdoc/>
         public void EndBatch()
         {
-            if (this.batchManagerService.EntireBatchEmpty)
-            {
-                return;
-            }
-
-            RenderBatch();
+            TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
+            FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
 
             this.hasBegun = false;
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -315,10 +355,13 @@ namespace Velaptor.Graphics
 
             if (disposing)
             {
-                this.batchManagerService.BatchReady -= BatchManagerService_BatchReady;
-                this.cachedIntProps.Clear();
-                this.shader.Dispose();
-                this.gpuBuffer.Dispose();
+                this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
+                this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
+                this.cachedUIntProps.Clear();
+                this.textureShader.Dispose();
+                this.textureBuffer.Dispose();
+                this.fontShader.Dispose();
+                this.fontBuffer.Dispose();
                 GLObservableUnsubscriber.Dispose();
             }
 
@@ -326,28 +369,203 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Invoked every time the batch is ready to be rendered.
-        /// </summary>
-        private void BatchManagerService_BatchReady(object? sender, EventArgs e) => RenderBatch();
-
-        /// <summary>
         /// Initializes the sprite batch.
         /// </summary>
         private void Init()
         {
-            this.shader.Init();
-            this.gpuBuffer.TotalQuads = BatchSize;
-            this.gpuBuffer.Init();
-
             this.gl.Enable(GLEnableCap.Blend);
             this.gl.BlendFunc(GLBlendingFactor.SrcAlpha, GLBlendingFactor.OneMinusSrcAlpha);
 
-            this.gl.ActiveTexture(GLTextureUnit.Texture0);
-
-            this.shader.UseProgram();
-
-            this.transDataLocation = this.gl.GetUniformLocation(this.shader.ProgramId, "uTransform");
             this.isDisposed = false;
+        }
+
+        /// <summary>
+        /// Invoked every time the batch of textures are ready to be rendered.
+        /// </summary>
+        private void TextureBatchService_BatchFilled(object? sender, EventArgs e)
+        {
+            var textureIsBound = false;
+
+            this.textureShader.Use();
+
+            var totalItemsToRender = 0u;
+
+            for (var i = 0u; i < this.textureBatchService.BatchItems.Count; i++)
+            {
+                var (shouldRender, batchItem) = this.textureBatchService.BatchItems[i];
+
+                if (shouldRender is false || batchItem.IsEmpty())
+                {
+                    continue;
+                }
+
+                if (!textureIsBound)
+                {
+                    this.gl.ActiveTexture(GLTextureUnit.Texture0);
+                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
+                    textureIsBound = true;
+                }
+
+                this.textureBuffer.UploadData(batchItem, i);
+                totalItemsToRender += 1;
+            }
+
+            // Only render the amount of elements for the amount of batch items to render.
+            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
+            if (totalItemsToRender > 0)
+            {
+                var totalElements = 6u * totalItemsToRender;
+
+                this.glExtensions.BeginGroup($"Render {totalElements} Texture Elements");
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.glExtensions.EndGroup();
+            }
+
+            // Empty the batch items
+            this.textureBatchService.EmptyBatch();
+        }
+
+        /// <summary>
+        /// Invoked every time the batch of fonts are ready to be rendered.
+        /// </summary>
+        private void FontBatchService_BatchFilled(object? sender, EventArgs e)
+        {
+            var fontTextureIsBound = false;
+
+            this.glExtensions.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
+
+            this.fontShader.Use();
+
+            var totalItemsToRender = 0u;
+
+            for (var i = 0u; i < this.fontBatchService.BatchItems.Count; i++)
+            {
+                var (shouldRender, batchItem) = this.fontBatchService.BatchItems[i];
+
+                if (shouldRender is false || batchItem.IsEmpty())
+                {
+                    continue;
+                }
+
+                this.glExtensions.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+
+                if (!fontTextureIsBound)
+                {
+                    this.gl.ActiveTexture(GLTextureUnit.Texture1);
+                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
+                    fontTextureIsBound = true;
+                }
+
+                this.fontBuffer.UploadData(batchItem, i);
+
+                totalItemsToRender += 1;
+
+                this.glExtensions.EndGroup();
+            }
+
+            // Only render the amount of elements for the amount of batch items to render.
+            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
+            if (totalItemsToRender > 0)
+            {
+                var totalElements = 6u * totalItemsToRender;
+
+                this.glExtensions.BeginGroup($"Render {totalElements} Font Elements");
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.glExtensions.EndGroup();
+            }
+
+            // Empty the batch items
+            this.fontBatchService.EmptyBatch();
+
+            this.glExtensions.EndGroup();
+        }
+
+        /// <summary>
+        /// Constructs a list of sprite batch items from the given
+        /// <paramref name="charMetrics"/> to be rendered.
+        /// </summary>
+        /// <param name="textPos">The position to render the text.</param>
+        /// <param name="charMetrics">The glyph metrics of the characters in the text.</param>
+        /// <param name="font">The font being used.</param>
+        /// <param name="origin">The origin to rotate the text around.</param>
+        /// <param name="size">The size of the text.</param>
+        /// <param name="angle">The angle of the text.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <param name="atlasWidth">The width of the font texture atlas.</param>
+        /// <param name="atlasHeight">The height of the font texture atlas.</param>
+        /// <returns>The list of glyphs that make up the string as sprite batch items.</returns>
+        private IEnumerable<SpriteBatchItem> ToSpriteBatchItems(
+            Vector2 textPos,
+            IEnumerable<GlyphMetrics> charMetrics,
+            IFont font,
+            Vector2 origin,
+            float size,
+            float angle,
+            Color color,
+            float atlasWidth,
+            float atlasHeight)
+        {
+            var result = new List<SpriteBatchItem>();
+
+            var leftGlyphIndex = 0u;
+
+            foreach (var currentCharMetric in charMetrics)
+            {
+                textPos.X += font.GetKerning(leftGlyphIndex, currentCharMetric.CharIndex);
+
+                // Create the source rect
+                var srcRect = currentCharMetric.GlyphBounds;
+                srcRect.Width = srcRect.Width <= 0 ? 1 : srcRect.Width;
+                srcRect.Height = srcRect.Height <= 0 ? 1 : srcRect.Height;
+
+                // Calculate the height offset
+                var heightOffset = currentCharMetric.GlyphHeight - currentCharMetric.HoriBearingY;
+
+                // Adjust for characters that have a negative horizontal bearing Y
+                // For example, the '_' character
+                if (currentCharMetric.HoriBearingY < 0)
+                {
+                    heightOffset += currentCharMetric.HoriBearingY;
+                }
+
+                // Create the destination rect
+                RectangleF destRect = default;
+                destRect.X = textPos.X;
+                destRect.Y = textPos.Y + heightOffset;
+                destRect.Width = atlasWidth;
+                destRect.Height = atlasHeight;
+
+                var newPosition = destRect.GetPosition().RotateAround(origin, angle);
+
+                destRect.X = newPosition.X;
+                destRect.Y = newPosition.Y;
+
+                // Only render characters that are not a space (32 char code)
+                if (currentCharMetric.Glyph != ' ')
+                {
+                    var itemToAdd = default(SpriteBatchItem);
+
+                    itemToAdd.SrcRect = srcRect;
+                    itemToAdd.DestRect = destRect;
+                    itemToAdd.Size = size;
+                    itemToAdd.Angle = angle;
+                    itemToAdd.TintColor = color;
+                    itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
+                    itemToAdd.Effects = RenderEffects.None;
+                    itemToAdd.TextureId = font.FontTextureAtlas.Id;
+
+                    result.Add(itemToAdd);
+                }
+
+                // Horizontally advance to the next glyph
+                // Get the difference between the old glyph width
+                // and the glyph width with the size applied
+                textPos.X += currentCharMetric.HorizontalAdvance;
+
+                leftGlyphIndex = currentCharMetric.CharIndex;
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -355,36 +573,33 @@ namespace Velaptor.Graphics
         /// </summary>
         private void SetupPropertyCaches()
         {
-            // ReSharper disable ArgumentsStyleLiteral
-            // ReSharper disable ArgumentsStyleNamedExpression
-            // ReSharper disable ArgumentsStyleAnonymousFunction
-            this.cachedIntProps.Add(
+            this.cachedUIntProps.Add(
                 nameof(RenderSurfaceWidth),
-                new CachedValue<int>(
-                    defaultValue: 0,
-                    getterWhenNotCaching: () => this.glExtensions.GetViewPortSize().Width,
-                    setterWhenNotCaching: (value) =>
+                new CachedValue<uint>(
+                    0,
+                    () => (uint)this.glExtensions.GetViewPortSize().Width,
+                    (value) =>
                     {
                         var viewPortSize = this.glExtensions.GetViewPortSize();
 
-                        this.glExtensions.SetViewPortSize(new Size(value, viewPortSize.Height));
+                        this.glExtensions.SetViewPortSize(new Size((int)value, viewPortSize.Height));
                     }));
 
-            this.cachedIntProps.Add(
+            this.cachedUIntProps.Add(
                 nameof(RenderSurfaceHeight),
-                new CachedValue<int>(
-                    defaultValue: 0,
-                    getterWhenNotCaching: () => this.glExtensions.GetViewPortSize().Height,
-                    setterWhenNotCaching: (value) =>
+                new CachedValue<uint>(
+                    0,
+                    () => (uint)this.glExtensions.GetViewPortSize().Height,
+                    (value) =>
                     {
                         var viewPortSize = this.glExtensions.GetViewPortSize();
 
-                        this.glExtensions.SetViewPortSize(new Size(viewPortSize.Width, value));
+                        this.glExtensions.SetViewPortSize(new Size(viewPortSize.Width, (int)value));
                     }));
 
             this.cachedClearColor = new CachedValue<Color>(
-                defaultValue: Color.CornflowerBlue,
-                getterWhenNotCaching: () =>
+                Color.CornflowerBlue,
+                () =>
                 {
                     var colorValues = new float[4];
                     this.gl.GetFloat(GLGetPName.ColorClearValue, colorValues);
@@ -396,7 +611,7 @@ namespace Velaptor.Graphics
 
                     return Color.FromArgb((byte)alpha, (byte)red, (byte)green, (byte)blue);
                 },
-                setterWhenNotCaching: (value) =>
+                (value) =>
                 {
                     var red = value.R.MapValue(0f, 255f, 0f, 1f);
                     var green = value.G.MapValue(0f, 255f, 0f, 1f);
@@ -405,106 +620,6 @@ namespace Velaptor.Graphics
 
                     this.gl.ClearColor(red, green, blue, alpha);
                 });
-
-            // ReSharper restore ArgumentsStyleLiteral
-            // ReSharper restore ArgumentsStyleNamedExpression
-            // ReSharper restore ArgumentsStyleAnonymousFunction
-        }
-
-        /// <summary>
-        /// Renders the current batch of textures.
-        /// </summary>
-        private void RenderBatch()
-        {
-            var batchAmountToRender = this.batchManagerService.TotalItemsToRender;
-            var textureIsBound = false;
-
-            for (var i = 0; i < this.batchManagerService.BatchItems.Values.Count; i++)
-            {
-                var quadId = i;
-                var batchItem = this.batchManagerService.BatchItems[(uint)quadId];
-
-                if (batchItem.IsEmpty)
-                {
-                    continue;
-                }
-
-                if (!textureIsBound)
-                {
-                    // TODO: Verify that this is being invoked with proper values with unit tests
-                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
-                    textureIsBound = true;
-                }
-
-                var exceptedEffects = new[]
-                {
-                    (int)RenderEffects.None,
-                    (int)RenderEffects.FlipHorizontally,
-                    (int)RenderEffects.FlipVertically,
-                    (int)RenderEffects.FlipBothDirections,
-                };
-
-                if (exceptedEffects.Contains((int)batchItem.Effects) is false)
-                {
-                    throw new InvalidRenderEffectsException(
-                        $"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid.");
-                }
-
-                int srcRectWidth;
-                int srcRectHeight;
-
-                switch (batchItem.Effects)
-                {
-                    case RenderEffects.None:
-                        srcRectWidth = batchItem.SrcRect.Width;
-                        srcRectHeight = batchItem.SrcRect.Height;
-                        break;
-                    case RenderEffects.FlipHorizontally:
-                        srcRectWidth = batchItem.SrcRect.Width * -1;
-                        srcRectHeight = batchItem.SrcRect.Height;
-                        break;
-                    case RenderEffects.FlipVertically:
-                        srcRectWidth = batchItem.SrcRect.Width;
-                        srcRectHeight = batchItem.SrcRect.Height * -1;
-                        break;
-                    case RenderEffects.FlipBothDirections:
-                        srcRectWidth = batchItem.SrcRect.Width * -1;
-                        srcRectHeight = batchItem.SrcRect.Height * -1;
-                        break;
-                    default:
-                        throw new InvalidRenderEffectsException(
-                            $"The '{nameof(RenderEffects)}' value of '{(int)batchItem.Effects}' is not valid.");
-                }
-
-                var viewPortSize = this.glExtensions.GetViewPortSize();
-                var transMatrix = this.batchManagerService.BuildTransformationMatrix(
-                    new Vector2(viewPortSize.Width, viewPortSize.Height),
-                    batchItem.DestRect.X,
-                    batchItem.DestRect.Y,
-                    srcRectWidth,
-                    srcRectHeight,
-                    batchItem.Size,
-                    batchItem.Angle);
-
-                this.gl.UniformMatrix4(this.transDataLocation + quadId, 1u, true, transMatrix);
-
-                this.gpuBuffer.UpdateQuad(
-                    (uint)quadId,
-                    batchItem.SrcRect,
-                    batchItem.DestRect.Width,
-                    batchItem.DestRect.Height,
-                    batchItem.TintColor);
-            }
-
-            // Only render the amount of elements for the amount of batch items to render.
-            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
-            if (batchAmountToRender > 0)
-            {
-                this.gl.DrawElements(GLPrimitiveType.Triangles, 6 * batchAmountToRender, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-            }
-
-            // Empty the batch items
-            this.batchManagerService.EmptyBatch();
         }
     }
 }

@@ -1,4 +1,4 @@
-// <copyright file="SceneManager.cs" company="KinsonDigital">
+﻿// <copyright file="SceneManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -153,10 +153,10 @@ namespace VelaptorTesting.Core
             const int buttonSpacing = 15;
             const int rightMargin = 15;
 
-            var buttonTops = MainWindow.WindowHeight - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20);
-            var buttonGroupLeft = MainWindow.WindowWidth - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin);
+            var buttonTops = (int)(MainWindow.WindowHeight - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
+            var buttonGroupLeft = (int)(MainWindow.WindowWidth - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
             this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
-            this.nextButton.Position = new Point(this.previousButton.Position.X + this.previousButton.Width + buttonSpacing, buttonTops);
+            this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
 
             this.isLoaded = true;
         }

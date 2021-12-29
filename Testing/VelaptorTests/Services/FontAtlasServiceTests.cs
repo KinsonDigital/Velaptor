@@ -18,7 +18,6 @@ namespace VelaptorTests.Services
     using Moq;
     using Velaptor;
     using Velaptor.Exceptions;
-    using Velaptor.Content;
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.Services;
@@ -82,6 +81,8 @@ namespace VelaptorTests.Services
             SetupTestGlyphData();
 
             this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
+            this.mockFreeTypeInvoker.Setup(m => m.FT_New_Face(this.freeTypeLibPtr, FontFilePath, 0))
+                .Returns(this.facePtr);
             this.mockFreeTypeInvoker.Setup(m => m.FT_Init_FreeType()).Returns(this.freeTypeLibPtr);
 
             this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
@@ -245,10 +246,7 @@ namespace VelaptorTests.Services
         {
             // Arrange
             this.mockImageService.Setup(m => m.Draw(It.IsAny<ImageData>(), It.IsAny<ImageData>(), It.IsAny<Point>()))
-                .Returns<ImageData, ImageData, Point>((src, dest, location) =>
-                {
-                    return TestHelpers.Draw(src, dest, location);
-                });
+                .Returns<ImageData, ImageData, Point>(TestHelpers.Draw);
 
             // This is to account for the extra '□' that is used to
             // render something to the screen when a character/glyph
@@ -257,14 +255,14 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act
-            var (actualImage, actualData) = service.CreateFontAtlas(FontFilePath, 12);
+            var (actualImage, _) = service.CreateFontAtlas(FontFilePath, 12);
 
             // Save the the results
             TestHelpers.SaveImageForTest(actualImage);
 
             // Assert
             this.mockFreeTypeExtensions.Verify(
-                m => m.CreateGlyphImage(this.facePtr, It.IsAny<char>(), It.IsAny<uint>()), Times.Exactly(8));
+                m => m.CreateGlyphImage(It.IsAny<IntPtr>(), It.IsAny<char>(), It.IsAny<uint>()), Times.Exactly(8));
         }
 
         [Fact]

@@ -5,30 +5,16 @@
 namespace Velaptor.Input
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Gets the state of system mouse.
     /// </summary>
     /// <typeparam name="TInputs">The inputs available.</typeparam>
     /// <typeparam name="TInputState">The state of the input.</typeparam>
-    public interface IMouseInput<TInputs, TInputState> : IGameInput<TInputs, TInputState>
+    public interface IMouseInput<in TInputs, out TInputState> : IGameInput<TInputs, TInputState>
         where TInputs : struct, Enum
     {
-        /// <summary>
-        /// The X coordinate of the mouse.
-        /// </summary>
-        internal static int XPos;
-
-        /// <summary>
-        /// The Y coordinate of the mouse.
-        /// </summary>
-        internal static int YPos;
-
-        /// <summary>
-        /// The value of the scroll wheel of the mouse.
-        /// </summary>
-        internal static int ScrollWheelValue;
-
         /// <summary>
         /// Sets the X coordinate sate of the mouse.
         /// </summary>
@@ -45,6 +31,7 @@ namespace Velaptor.Input
         /// Sets the value of the scroll wheel.
         /// </summary>
         /// <param name="value">The value to set the scroll wheel to.</param>
+        [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Ignored until used by implementing issue #71")]
         void SetScrollWheelValue(int value);
     }
 }

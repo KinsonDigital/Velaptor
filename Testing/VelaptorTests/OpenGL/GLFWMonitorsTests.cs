@@ -12,7 +12,6 @@ namespace VelaptorTests.OpenGL
     using Velaptor;
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.GLFW;
-    using Velaptor.OpenGL;
     using Xunit;
 
     /// <summary>
@@ -22,17 +21,19 @@ namespace VelaptorTests.OpenGL
     {
         private readonly Mock<IGLFWInvoker> mockGLFWInvoker;
         private readonly Mock<IPlatform> mockPlatform;
+        // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
         private readonly Monitor monitorA;
         private readonly Monitor monitorB;
         private readonly IntPtr monitorHandleA;
         private readonly IntPtr monitorHandleB;
-        private GLFWVideoMode videoModeA;
-        private GLFWVideoMode videoModeB;
+        private readonly GLFWVideoMode videoModeA;
+        private readonly GLFWVideoMode videoModeB;
+        // ReSharper restore PrivateFieldCanBeConvertedToLocalVariable
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitorsTests"/> class.
         /// </summary>
-        public unsafe GLFWMonitorsTests()
+        public GLFWMonitorsTests()
         {
             this.mockPlatform = new Mock<IPlatform>();
             this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
@@ -91,7 +92,7 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WhenInvoked_InitializesGLFW()
         {
             // Act
-            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
+            var unused = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
 
             // Assert
             this.mockGLFWInvoker.Verify(m => m.Init(), Times.Once());
@@ -101,7 +102,7 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WhenInvoked_SetsMonitorCallback()
         {
             // Act
-            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
+            var unused = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
 
             // Assert
             this.mockGLFWInvoker.VerifyAdd(m => m.OnMonitorChanged += It.IsAny<EventHandler<GLFWMonitorChangedEventArgs>>(), Times.Once());

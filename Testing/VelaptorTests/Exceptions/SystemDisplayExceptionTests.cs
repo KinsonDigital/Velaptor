@@ -25,7 +25,7 @@ namespace VelaptorTests.Exceptions
         }
 
         [Fact]
-        public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMesage()
+        public void Ctor_WhenInvokedWithSingleMessageParam_CorrectlySetsMessage()
         {
             // Act
             var exception = new SystemMonitorException("test-message");

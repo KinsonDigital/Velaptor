@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable SA1124 // Do not use regions
 namespace Velaptor.NativeInterop.FreeType
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using FreeTypeSharp.Native;
 
     // TODO: Refactor invoke calls to follow this => https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
@@ -16,6 +16,7 @@ namespace Velaptor.NativeInterop.FreeType
     /// <remarks>
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
     /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Maintains code style.")]
     internal interface IFreeTypeInvoker : IDisposable
     {
         /// <summary>
@@ -23,8 +24,8 @@ namespace Velaptor.NativeInterop.FreeType
         /// </summary>
         event EventHandler<FreeTypeErrorEventArgs> OnError;
 
-        #region Original Interop Calls
-
+        // ReSharper disable IdentifierTypo
+        // ReSharper disable InconsistentNaming
         /// <summary>
         /// Initialize a new FreeType library object. The set of modules that are registered by this function is determined at build time.
         /// </summary>
@@ -32,11 +33,11 @@ namespace Velaptor.NativeInterop.FreeType
         IntPtr FT_Init_FreeType();
 
         /// <summary>
-        /// Return the glyph index of a given character code. This function uses the currently selected charmap to do the mapping.
+        /// Return the glyph index of a given character code. This function uses the currently selected character map to do the mapping.
         /// </summary>
         /// <param name="face">A handle to the source face object.</param>
         /// <param name="charcode">The character code.</param>
-        /// <returns>The glyoph index. 0 means 'undefined character code'.</returns>
+        /// <returns>The glyph index. 0 means 'undefined character code'.</returns>
         uint FT_Get_Char_Index(IntPtr face, uint charcode);
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// Load a glyph into the glyph slot of a face object, accessed by its character code.
         /// </summary>
         /// <param name="face">A handle to a target face object where the glyph is loaded.</param>
-        /// <param name="char_code">The glyph's character code, according to the current charmap used in the face.</param>
+        /// <param name="char_code">The glyph's character code, according to the current character map used in the face.</param>
         /// <param name="load_flags">
         ///     A flag indicating what to load for this glyph. The FT_LOAD_XXX constants can be used to control
         ///     the glyph loading process (e.g., whether the outline should be scaled, whether to load bitmaps
@@ -84,7 +85,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// <summary>
         /// Call <see cref="FT.FT_Open_Face"/> to open a font by its pathname.
         /// </summary>
-        /// <param name="library">A handle to the libary resource.</param>
+        /// <param name="library">A handle to the library resource.</param>
         /// <param name="pathname">A path to the font file.</param>
         /// <param name="face_index">See <see cref="FT.FT_Open_Face"/> for a detailed description of this parameter.</param>
         /// <returns>
@@ -98,7 +99,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// <param name="slot">A handle to the glyph slot containing the image to convert.</param>
         /// <param name="render_mode">
         ///     The render mode used to render the glyph image into a bitmap. See FT_Render_Mode
-        ///     for a list ofpossible values.
+        ///     for a list of possible values.
         ///
         /// <para>
         ///     If FT_RENDER_MODE_NORMAL is used, a previous call of FT_Load_Glyph with flag FT_LOAD_COLOR
@@ -138,22 +139,13 @@ namespace Velaptor.NativeInterop.FreeType
         /// <param name="library">A handle to the target library object.</param>
         void FT_Done_FreeType(IntPtr library);
 
-        #endregion
-
-        #region Helper Methods
-
         /// <summary>
         /// Returns the face pointer that was created using the <see cref="FT_New_Face(IntPtr, string, int)"/> call.
         /// </summary>
         /// <returns>The pointer to the font face.</returns>
-        IntPtr GetFace();
+        IntPtr FT_Get_Face();
 
-        /// <summary>
-        /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
-        /// </summary>
-        /// <returns><see langword="true"/> if the face uses kerning.</returns>
-        unsafe bool FT_Has_Kerning();
-
-        #endregion
+        // ReSharper restore IdentifierTypo
+        // ReSharper restore InconsistentNaming
     }
 }

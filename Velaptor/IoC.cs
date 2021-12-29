@@ -8,19 +8,22 @@ using System.Runtime.CompilerServices;
 
 namespace Velaptor
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using SimpleInjector;
     using Velaptor.Content;
     using Velaptor.Factories;
-    using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.Services;
     using Velaptor.Services;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides dependency injection for the application.
@@ -87,12 +90,6 @@ namespace Velaptor
 
             IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
 
-            IoCContainer.Register<IGPUBuffer, GPUBuffer<VertexData>>(Lifestyle.Singleton);
-
-            IoCContainer.Register<IShaderProgram, ShaderProgram>(Lifestyle.Singleton);
-
-            IoCContainer.Register<ISpriteBatch, SpriteBatch>(Lifestyle.Singleton);
-
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
@@ -105,13 +102,13 @@ namespace Velaptor
         {
             IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>(Lifestyle.Singleton);
+            IoCContainer.Register<ITemplateProcessorService, ShaderTemplateProcessorService>(Lifestyle.Singleton);
+            IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
 
             IoCContainer.Register<ITaskService, TaskService>();
             IoCContainer.SuppressDisposableTransientWarning<ITaskService>();
-
-            IoCContainer.Register<IBatchManagerService, BatchManagerService>(Lifestyle.Singleton);
         }
 
         /// <summary>

@@ -24,6 +24,7 @@ namespace VelaptorTests.Content
         private const string TexturePath = @"C:\temp\test-texture.png";
         private const uint TextureId = 1234;
         private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly ImageData imageData;
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace VelaptorTests.Content
             /*NOTE:
              * Create the bytes in the ARGB byte layout.
              * OpenGL expects the layout to be RGBA.  The texture class changes this
-             * this layout to meet OpenGL's requirements.
+             * this layout to meet OpenGL requirements.
              */
             for (var y = 0; y < this.imageData.Height; y++)
             {
@@ -68,6 +69,8 @@ namespace VelaptorTests.Content
 
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGL.Setup(m => m.GenTexture()).Returns(TextureId);
+
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
         }
 
         #region Constructor Tests
@@ -94,13 +97,11 @@ namespace VelaptorTests.Content
                 rowBytes.Clear();
             }
 
-            var expectedPixelBytes = new ReadOnlySpan<byte>(expectedPixelData.ToArray());
-
             // Act
-            var texture = new Texture(this.mockGL.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
+            var unused = new Texture(this.mockGL.Object, this.mockGLExtensions.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
 
             // Assert
-            this.mockGL.Verify(m => m.ObjectLabel(GLObjectIdentifier.Texture, TextureId, 1u, "test-texture.png"), Times.Once());
+            this.mockGLExtensions.Verify(m => m.LabelTexture(TextureId, "test-texture.png"), Times.Once());
             this.mockGL.Verify(m => m.TexParameter(
                 GLTextureTarget.Texture2D,
                 GLTextureParameterName.TextureMinFilter,
@@ -186,7 +187,7 @@ namespace VelaptorTests.Content
             var actual = texture.Width;
 
             // Assert
-            Assert.Equal(2, actual);
+            Assert.Equal(2u, actual);
         }
 
         [Fact]
@@ -199,7 +200,7 @@ namespace VelaptorTests.Content
             var actual = texture.Height;
 
             // Assert
-            Assert.Equal(3, actual);
+            Assert.Equal(3u, actual);
         }
         #endregion
 
@@ -237,6 +238,6 @@ namespace VelaptorTests.Content
         /// Creates a texture for the purpose of testing.
         /// </summary>
         /// <returns>The texture instance to test.</returns>
-        private Texture CreateTexture() => new (this.mockGL.Object, TextureName, TexturePath, this.imageData);
+        private Texture CreateTexture() => new (this.mockGL.Object, this.mockGLExtensions.Object, TextureName, TexturePath, this.imageData);
     }
 }

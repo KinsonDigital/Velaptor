@@ -4,9 +4,12 @@
 
 namespace Velaptor.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.IO;
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates font atlas textures for rendering text.
@@ -35,7 +38,7 @@ namespace Velaptor.Services
         /// <summary>
         /// Sets the list of available characters that will be rendered into the font texture atlas.
         /// </summary>
-        /// <param name="glyphChars">The list of characters to make available.</param>
-        void SetAvailableCharacters(char[] glyphChars);
+        /// <param name="glyphs">The list of characters to make available.</param>
+        void SetAvailableCharacters(char[] glyphs);
     }
 }

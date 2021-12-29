@@ -4,12 +4,14 @@
 
 namespace Velaptor.Graphics
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
 
     /// <summary>
     /// Holds all of the various metrics of a glyph for rendering purposes.
     /// </summary>
-    public struct GlyphMetrics
+    public struct GlyphMetrics : IEquatable<GlyphMetrics>
     {
         /// <summary>
         /// Gets or sets the glyph character.
@@ -20,7 +22,7 @@ namespace Velaptor.Graphics
         /// Gets or sets the rectangular bounds of where in a font texture
         /// atlas the given <see cref="Glyph"/> resides.
         /// </summary>
-        public Rectangle AtlasBounds { get; set; }
+        public RectangleF GlyphBounds { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical distance from the horizontal baseline to the highest 'character'
@@ -32,7 +34,7 @@ namespace Velaptor.Graphics
         ///     (without accents), for others it is the ascent of the highest accented character, and finally,
         ///     other formats define it as being equal to Y max value of the global bounding box.
         /// </remarks>
-        public int Ascender { get; set; }
+        public float Ascender { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical distance from the horizontal baseline to the lowest ‘character’ coordinate in a font face.
@@ -43,55 +45,55 @@ namespace Velaptor.Graphics
         ///     the ascent of the lowest accented character, and finally, other formats define it as being equal
         ///     to Y min value of the global bounding box. This field is negative for values below the baseline.
         /// </remarks>
-        public int Descender { get; set; }
+        public float Descender { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal distance from the current cursor position to
         /// the leftmost border of the glyph image's bounding box.
         /// </summary>
-        public int HoriBearingX { get; set; }
+        public float HoriBearingX { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical distance from the current cursor position
         /// (on the baseline) to the topmost border of the glyph image's bounding box.
         /// </summary>
-        public int HoriBearingY { get; set; }
+        public float HoriBearingY { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal distance to increment the pen position when the glyph
         /// is drawn as part of a string of text.
         /// </summary>
-        public int HorizontalAdvance { get; set; }
+        public float HorizontalAdvance { get; set; }
 
         /// <summary>
         /// Gets or sets the glyph's width.
         /// </summary>
-        public int GlyphWidth { get; set; }
+        public float GlyphWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the glyph's height.
         /// </summary>
-        public int GlyphHeight { get; set; }
+        public float GlyphHeight { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal minimum (left-most).
         /// </summary>
-        public int XMin { get; set; }
+        public float XMin { get; set; }
 
         /// <summary>
         /// Gets or sets the horizontal maximum (right-most).
         /// </summary>
-        public int XMax { get; set; }
+        public float XMax { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical minimum (bottom-most).
         /// </summary>
-        public int YMin { get; set; }
+        public float YMin { get; set; }
 
         /// <summary>
         /// Gets or sets the vertical maximum (top-most).
         /// </summary>
-        public int YMax { get; set; }
+        public float YMax { get; set; }
 
         /// <summary>
         /// Gets or sets the glyph index.
@@ -101,7 +103,66 @@ namespace Velaptor.Graphics
         /// </remarks>
         public uint CharIndex { get; set; }
 
+        /// <summary>
+        /// Returns a value indicating if the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
+        /// </summary>
+        /// <param name="left">The left operand compared with the right operand.</param>
+        /// <param name="right">The right operand compared with the left operand.</param>
+        /// <returns>True if both operands are equal.</returns>
+        public static bool operator ==(GlyphMetrics left, GlyphMetrics right) => left.Equals(right);
+
+        /// <summary>
+        /// Returns a value indicating if the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
+        /// </summary>
+        /// <param name="left">The left operand compared with the right operand.</param>
+        /// <param name="right">The right operand compared with the left operand.</param>
+        /// <returns>True if both operands are not equal.</returns>
+        public static bool operator !=(GlyphMetrics left, GlyphMetrics right) => !left.Equals(right);
+
         /// <inheritdoc/>
-        public override string ToString() => $"Name: {Glyph} | Bounds: {AtlasBounds}";
+        public override string ToString() => $"Name: {Glyph} | Bounds: {GlyphBounds}";
+
+        /// <inheritdoc cref="object.Equals(object?)"/>
+        public override bool Equals(object? obj) => obj is GlyphMetrics metric && Equals(metric);
+
+        /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
+        public bool Equals(GlyphMetrics other) =>
+            Glyph == other.Glyph &&
+            GlyphBounds.Equals(other.GlyphBounds) &&
+            Ascender.Equals(other.Ascender) &&
+            Descender.Equals(other.Descender) &&
+            HoriBearingX.Equals(other.HoriBearingX) &&
+            HoriBearingY.Equals(other.HoriBearingY) &&
+            HorizontalAdvance.Equals(other.HorizontalAdvance) &&
+            GlyphWidth.Equals(other.GlyphWidth) &&
+            GlyphHeight.Equals(other.GlyphHeight) &&
+            XMin.Equals(other.XMin) &&
+            XMax.Equals(other.XMax) &&
+            YMin.Equals(other.YMin) &&
+            YMax.Equals(other.YMax) &&
+            CharIndex == other.CharIndex;
+
+        /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
+        public override int GetHashCode()
+        {
+            var hashCode = default(HashCode);
+            hashCode.Add(Glyph);
+            hashCode.Add(GlyphBounds);
+            hashCode.Add(Ascender);
+            hashCode.Add(Descender);
+            hashCode.Add(HoriBearingX);
+            hashCode.Add(HoriBearingY);
+            hashCode.Add(HorizontalAdvance);
+            hashCode.Add(GlyphWidth);
+            hashCode.Add(GlyphHeight);
+            hashCode.Add(XMin);
+            hashCode.Add(XMax);
+            hashCode.Add(YMin);
+            hashCode.Add(YMax);
+            hashCode.Add(CharIndex);
+
+            return hashCode.ToHashCode();
+        }
     }
 }

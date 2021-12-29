@@ -8,6 +8,10 @@ namespace Velaptor.NativeInterop.OpenGL
     using System.Numerics;
     using Velaptor.OpenGL;
 
+    // TODO: Create an OpenGL extension methods for binding and unbinding various buffers
+    // Example: BindVBO() - This would call the raw GL function with the proper parameters to bind the buffer.
+    // Once these are created, the bind and unbind calls in the GPUBufferBase class can be removed and just used directly.
+
     /// <summary>
     /// Invokes OpenGL calls.
     /// </summary>
@@ -25,6 +29,29 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     This cannot be invoked until the OpenGL context has been created.
         /// </remarks>
         void SetupErrorCallback();
+
+        /// <summary>
+        /// Push a named debug group into the command stream.
+        /// </summary>
+        /// <param name="source">The source of the debug message.</param>
+        /// <param name="id">The identifier of the message.</param>
+        /// <param name="length">The length of the message to be sent to the debug output stream.</param>
+        /// <param name="message">The string containing the message to be sent to the debug output stream.</param>
+        public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message);
+
+        /// <summary>
+        /// Pop the active debug group.
+        /// </summary>
+        public void PopDebugGroup();
+
+        /// <summary>
+        /// Label a named object identified within a namespace.
+        /// </summary>
+        /// <param name="identifier">The namespace from which the name of the object is allocated.</param>
+        /// <param name="name">The name of the object to label.</param>
+        /// <param name="length">The length of the label to be used for the object.</param>
+        /// <param name="label">The label to assign to the object.</param>
+        public void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label);
 
         /// <summary>
         /// [requires: v1.0] Enable or disable server-side GL capabilities.
@@ -282,6 +309,26 @@ namespace Velaptor.NativeInterop.OpenGL
         uint GenVertexArray();
 
         /// <summary>
+        /// Creates and initializes a buffer object's data store.
+        /// </summary>
+        /// <param name="target">
+        ///     Specifies the target buffer object. The symbolic constant must be ArrayBuffer,
+        ///     AtomicCounterBuffer, CopyReadBuffer, CopyWriteBuffer, DrawIndirectBuffer, DispatchIndirectBuffer,
+        ///     ElementArrayBuffer, PixelPackBuffer, PixelUnpackBuffer, QueryBuffer, ShaderStorageBuffer,
+        ///     TextureBuffer, TransformFeedbackBuffer, or UniformBuffer.
+        /// </param>
+        /// <param name="data">
+        ///     The data that will be copied into the data
+        ///     store for initialization, or Null if no data is to be copied.
+        /// </param>
+        /// <param name="usage">
+        ///     Specifies the expected usage pattern of the data store. The symbolic constant
+        ///     must be StreamDraw, StreamRead, StreamCopy, StaticDraw, StaticRead, StaticCopy,
+        ///     DynamicDraw, DynamicRead, or DynamicCopy.
+        /// </param>
+        void BufferData(GLBufferTarget target, float[] data, GLBufferUsageHint usage);
+
+        /// <summary>
         /// [requires: v1.5] Creates and initializes a buffer object's data store.
         /// </summary>
         /// <param name="target">
@@ -302,6 +349,26 @@ namespace Velaptor.NativeInterop.OpenGL
         /// </param>
         void BufferData(GLBufferTarget target, uint size, nint data, GLBufferUsageHint usage);
 
+        /// <summary>
+        /// Creates and initializes a buffer object's data store.
+        /// </summary>
+        /// <param name="target">
+        ///     Specifies the target buffer object. The symbolic constant must be ArrayBuffer,
+        ///     AtomicCounterBuffer, CopyReadBuffer, CopyWriteBuffer, DrawIndirectBuffer, DispatchIndirectBuffer,
+        ///     ElementArrayBuffer, PixelPackBuffer, PixelUnpackBuffer, QueryBuffer, ShaderStorageBuffer,
+        ///     TextureBuffer, TransformFeedbackBuffer, or UniformBuffer.
+        /// </param>
+        /// <param name="data">
+        ///     The data that will be copied into the data
+        ///     store for initialization, or Null if no data is to be copied.
+        /// </param>
+        /// <param name="usage">
+        ///     Specifies the expected usage pattern of the data store. The symbolic constant
+        ///     must be StreamDraw, StreamRead, StreamCopy, StaticDraw, StaticRead, StaticCopy,
+        ///     DynamicDraw, DynamicRead, or DynamicCopy.
+        /// </param>
+        void BufferData(GLBufferTarget target, uint[] data, GLBufferUsageHint usage);
+
         /*
         * TODO: Need to eventually convert the BufferSubData<T> method `data` param from a `ref`
         * param to an `in` param.  Currently this cannot be done due to an issue found in NET 5 runtime.
@@ -319,7 +386,6 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <summary>
         /// [requires: v1.5] Updates a subset of a buffer object's data store.
         /// </summary>
-        /// <typeparam name="T">The type of data in the buffer.</typeparam>
         /// <param name="target">
         ///     Specifies the target buffer object. The symbolic constant must be ArrayBuffer,
         ///     AtomicCounterBuffer, CopyReadBuffer, CopyWriteBuffer, DrawIndirectBuffer, DispatchIndirectBuffer,
@@ -328,9 +394,8 @@ namespace Velaptor.NativeInterop.OpenGL
         /// </param>
         /// <param name="offset">Specifies the offset into the buffer object's data store where data replacement will begin, measured in bytes.</param>
         /// <param name="size">Specifies the size in bytes of the data store region being replaced.</param>
-        /// <param name="data">[length: size] Specifies a pointer to the new data that will be copied into the data store.</param>
-        unsafe void BufferSubData<T>(GLBufferTarget target, nint offset, nuint size, ref T data)
-            where T : unmanaged;
+        /// <param name="data">The new data that will be copied into the data store.</param>
+        void BufferSubData(GLBufferTarget target, nint offset, nuint size, float[] data);
 
         /// <summary>
         /// [requires: v3.0 or ARB_vertex_array_object|VERSION_3_0] Delete vertex array objects.
@@ -358,11 +423,10 @@ namespace Velaptor.NativeInterop.OpenGL
         void BindBuffer(GLBufferTarget target, uint buffer);
 
         /// <summary>
-        /// [requires: v4.5 or ARB_direct_state_access|VERSION_4_5].
+        /// Enable or disable a generic vertex attribute array.
         /// </summary>
-        /// <param name="vaobj">The ID of the vertex array object.</param>
-        /// <param name="index">The index/location of the attribute.</param>
-        void EnableVertexArrayAttrib(uint vaobj, uint index);
+        /// <param name="index">Specifies the index of the generic vertex attribute to be enabled or disabled.</param>
+        void EnableVertexAttribArray(uint index);
 
         /// <summary>
         /// [requires: v2.0] Define an array of generic vertex attribute data.
@@ -408,6 +472,18 @@ namespace Velaptor.NativeInterop.OpenGL
         void BindVertexArray(uint array);
 
         /// <summary>
+        /// Modifies the value of a uniform variable or a uniform variable array. The location of the uniform
+        /// variable to be modified is specified by location, which should be a value returned by GetUniformLocation.
+        /// Operates on the program object that was made part of current state by calling <see cref="UseProgram"/>.
+        /// </summary>
+        /// <param name="location">Specifies the location of the uniform variable to be modified.</param>
+        /// <param name="value">
+        /// For the vector and matrix commands, specifies a pointer to an array of count values that
+        /// will be used to update the specified uniform variable.
+        /// </param>
+        void Uniform1(int location, int value);
+
+        /// <summary>
         /// [requires: v1.1] Generate texture names.
         /// </summary>
         /// <returns>The ID of the texture.</returns>
@@ -418,15 +494,6 @@ namespace Velaptor.NativeInterop.OpenGL
         /// </summary>
         /// <param name="textures">[length: n] Specifies an array of textures to be deleted.</param>
         void DeleteTexture(uint textures);
-
-        /// <summary>
-        /// [requires: v4.3 or KHR_debug|VERSION_4_3] Label a named object identified within a namespace.
-        /// </summary>
-        /// <param name="identifier">The namespace from which the name of the object is allocated.</param>
-        /// <param name="name">The name of the object to label.</param>
-        /// <param name="length">The length of the label to be used for the object.</param>
-        /// <param name="label">[length: COMPSIZE(label,length)] The address of a string containing the label to assign to the object.</param>
-        void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label);
 
         /// <summary>
         /// [requires: v1.0] Set texture parameters.
@@ -526,7 +593,7 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     UnsignedInt8888Rev, UnsignedInt1010102, and UnsignedInt2101010Rev.
         /// </param>
         /// <param name="pixels">[length: COMPSIZE(format,type,width,height)] Specifies a pointer to the image data in memory.</param>
-        unsafe void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
+        void TexImage2D<T>(GLTextureTarget target, int level, GLInternalFormat internalformat, uint width, uint height, int border, GLPixelFormat format, GLPixelType type, byte[] pixels)
             where T : unmanaged;
     }
 }

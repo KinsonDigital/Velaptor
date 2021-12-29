@@ -34,6 +34,6 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets or sets the <see cref="Action"/> delegate that is invoked every time the window is resized.
         /// </summary>
-        Action? WinResize { get; set; }
+        Action<SizeU>? WinResize { get; set; }
     }
 }

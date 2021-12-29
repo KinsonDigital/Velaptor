@@ -1,9 +1,10 @@
-// <copyright file="Texture.cs" company="KinsonDigital">
+﻿// <copyright file="Texture.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
@@ -12,12 +13,15 @@ namespace Velaptor.Content
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
 
+    // ReSharper restore RedundantNameQualifier
+
     /// <summary>
     /// The texture to render to a screen.
     /// </summary>
     public sealed class Texture : ITexture
     {
         private readonly IGLInvoker gl;
+        private readonly IGLInvokerExtensions glExtensions;
 
         /*NOTE:
          * This flag is for the purpose of unit testing.  This flag gets set in one location and that is
@@ -46,6 +50,7 @@ namespace Velaptor.Content
         public Texture(string name, string path, ImageData imageData)
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
+            this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             Path = path;
             Init(name, imageData);
         }
@@ -54,12 +59,14 @@ namespace Velaptor.Content
         /// Initializes a new instance of the <see cref="Texture"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
+        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="name">The name of the texture.</param>
         /// <param name="path">The path to the image file.</param>
         /// <param name="imageData">The image data of the texture.</param>
-        internal Texture(IGLInvoker gl, string name, string path, ImageData imageData)
+        internal Texture(IGLInvoker gl, IGLInvokerExtensions glExtensions, string name, string path, ImageData imageData)
         {
             this.gl = gl;
+            this.glExtensions = glExtensions;
             Path = path;
             Init(name, imageData);
         }
@@ -84,10 +91,10 @@ namespace Velaptor.Content
         public string Path { get; }
 
         /// <inheritdoc/>
-        public int Width { get; private set; }
+        public uint Width { get; private set; }
 
         /// <inheritdoc/>
-        public int Height { get; private set; }
+        public uint Height { get; private set; }
 
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
@@ -128,9 +135,8 @@ namespace Velaptor.Content
 
             this.gl.BindTexture(GLTextureTarget.Texture2D, Id);
 
-            // TODO: Make the Texture.Width and Texture.Height uint data type
-            Width = (int)imageData.Width;
-            Height = (int)imageData.Height;
+            Width = imageData.Width;
+            Height = imageData.Height;
 
             Name = name;
 
@@ -169,7 +175,7 @@ namespace Velaptor.Content
                 rowBytes.Clear();
             }
 
-            this.gl.ObjectLabel(GLObjectIdentifier.Texture, Id, 1u, name);
+            this.glExtensions.LabelTexture(Id, name);
 
             // Set the min and mag filters to linear
             this.gl.TexParameter(

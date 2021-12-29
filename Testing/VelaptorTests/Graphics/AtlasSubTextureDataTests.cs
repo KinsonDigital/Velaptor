@@ -4,13 +4,15 @@
 
 namespace VelaptorTests.Graphics
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
-    using Velaptor.Content;
+    using Velaptor.Graphics;
     using Xunit;
 
     /// <summary>
     /// Tests the <see cref="AtlasSubTextureData"/> class.
     /// </summary>
+    [SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer", Justification = "Intention is to be more explicit.")]
     public class AtlasSubTextureDataTests
     {
         #region Prop Tests
@@ -45,20 +47,6 @@ namespace VelaptorTests.Graphics
         #endregion
 
         #region Method Tests
-        [Fact]
-        public void Equals_WhenComparingEqualObjects_ReturnsTrue()
-        {
-            // Arrange
-            var dataA = new AtlasSubTextureData();
-            var dataB = new AtlasSubTextureData();
-
-            // Act
-            var actual = dataA.Equals(dataB);
-
-            // Assert
-            Assert.True(actual);
-        }
-
         [Fact]
         public void Equals_WhenComparingDifferentObjectTypes_ReturnsFalse()
         {

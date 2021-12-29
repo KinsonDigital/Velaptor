@@ -35,15 +35,24 @@ namespace Velaptor.UI
             {
                 base.Position = value;
 
-                CalculateLabelPosition();
+                if (this.label is not null)
+                {
+                    this.label.Position = Position;
+                }
             }
         }
 
         /// <inheritdoc cref="ISizable.Width"/>
-        public override int Width => this.texture?.Width ?? 0;
+        public override uint Width => this.texture?.Width ?? 0;
 
         /// <inheritdoc cref="ISizable.Height"/>
-        public override int Height => this.texture?.Height ?? 0;
+        public override uint Height => this.texture?.Height ?? 0;
+
+        /// <summary>
+        /// Gets or sets the name of the texture to be displayed on the face of the button.
+        /// </summary>
+        /// <summary>This is the name of the texture that is rendered.</summary>
+        public string FaceTextureName { get; set; } = "button-face-small";
 
         /// <summary>
         /// Gets or sets the text of the button.
@@ -66,6 +75,21 @@ namespace Velaptor.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the size of the text on the face of the button.
+        /// </summary>
+        public float Size
+        {
+            get => this.label?.Size ?? 0f;
+            set
+            {
+                if (this.label != null)
+                {
+                    this.label.Size = value;
+                }
+            }
+        }
+
         /// <inheritdoc cref="ControlBase.UnloadContent"/>
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
@@ -77,13 +101,15 @@ namespace Velaptor.UI
                 return;
             }
 
-            // TODO: Add label with simple text.  This means adding a text property
-            this.texture = this.contentLoader.Load<ITexture>("button-face");
+            // TODO: Once the label can be injected into the constructor, setup caching for the
+            // size property so that way it can be set before the LoadContent() method is called
+
+            this.texture = this.contentLoader.Load<ITexture>(FaceTextureName);
             this.label = new Label(this.contentLoader);
             this.label.LoadContent();
             this.label.Text = this.cachedText;
 
-            CalculateLabelPosition();
+            this.label.Position = Position;
 
             base.LoadContent();
         }
@@ -109,10 +135,7 @@ namespace Velaptor.UI
 
             if (this.texture is not null)
             {
-                var posX = Position.X + (Width / 2);
-                var posY = Position.Y + (Height / 2);
-
-                spriteBatch.Render(this.texture, posX, posY, TintColor);
+                spriteBatch.Render(this.texture, Position.X, Position.Y, TintColor);
 
                 this.label?.Render(spriteBatch);
             }
@@ -140,25 +163,6 @@ namespace Velaptor.UI
             }
 
             base.Dispose(disposing);
-        }
-
-        /// <summary>
-        /// Calculates the position of the label on the button.
-        /// </summary>
-        private void CalculateLabelPosition()
-        {
-            if (this.label is null)
-            {
-                return;
-            }
-
-            /* Calculate the position of the label to be centered
-             * horizontally and vertically over the face of the button.
-            */
-            var posX = (int)(Position.X + ((Width / 2f) - (this.label.Width / 2f)));
-            var posY = (int)(Position.Y + ((Height / 2f) - (this.label.Height / 2f)));
-
-            this.label.Position = new Point(posX, posY);
         }
     }
 }

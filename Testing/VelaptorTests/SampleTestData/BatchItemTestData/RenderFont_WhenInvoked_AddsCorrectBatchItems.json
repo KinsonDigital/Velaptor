@@ -1,0 +1,506 @@
+[
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 607.5,
+              "Y": 129.0
+          },
+          "Size": "34.5, 45",
+          "X": 607.5,
+          "Y": 129.0,
+          "Width": 34.5,
+          "Height": 45.0,
+          "Left": 607.5,
+          "Top": 129.0,
+          "Right": 642.0,
+          "Bottom": 174.0,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 372.42285,
+              "Y": 327.57715
+          },
+          "Size": "300, 150",
+          "X": 372.42285,
+          "Y": 327.57715,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 372.42285,
+          "Top": 327.57715,
+          "Right": 672.42285,
+          "Bottom": 477.57715,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 202.5,
+              "Y": 64.5
+          },
+          "Size": "30, 30",
+          "X": 202.5,
+          "Y": 64.5,
+          "Width": 30.0,
+          "Height": 30.0,
+          "Left": 202.5,
+          "Top": 64.5,
+          "Right": 232.5,
+          "Bottom": 94.5,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 397.8787,
+              "Y": 353.03302
+          },
+          "Size": "300, 150",
+          "X": 397.8787,
+          "Y": 353.03302,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 397.8787,
+          "Top": 353.03302,
+          "Right": 697.87866,
+          "Bottom": 503.03302,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 135.0,
+              "Y": 64.5
+          },
+          "Size": "33, 30",
+          "X": 135.0,
+          "Y": 64.5,
+          "Width": 33.0,
+          "Height": 30.0,
+          "Left": 135.0,
+          "Top": 64.5,
+          "Right": 168.0,
+          "Bottom": 94.5,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 421.2132,
+              "Y": 376.36752
+          },
+          "Size": "300, 150",
+          "X": 421.2132,
+          "Y": 376.36752,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 421.2132,
+          "Top": 376.36752,
+          "Right": 721.2132,
+          "Bottom": 526.36755,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 540.0,
+              "Y": 64.5
+          },
+          "Size": "19.5, 39",
+          "X": 540.0,
+          "Y": 64.5,
+          "Width": 19.5,
+          "Height": 39.0,
+          "Left": 540.0,
+          "Top": 64.5,
+          "Right": 559.5,
+          "Bottom": 103.5,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 444.54773,
+              "Y": 399.70206
+          },
+          "Size": "300, 150",
+          "X": 444.54773,
+          "Y": 399.70206,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 444.54773,
+          "Top": 399.70206,
+          "Right": 744.5477,
+          "Bottom": 549.702,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 675.0,
+              "Y": 387.0
+          },
+          "Size": "36, 3",
+          "X": 675.0,
+          "Y": 387.0,
+          "Width": 36.0,
+          "Height": 3.0,
+          "Left": 675.0,
+          "Top": 387.0,
+          "Right": 711.0,
+          "Bottom": 390.0,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 455.15433,
+              "Y": 414.5513
+          },
+          "Size": "300, 150",
+          "X": 455.15433,
+          "Y": 414.5513,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 455.15433,
+          "Top": 414.5513,
+          "Right": 755.1543,
+          "Bottom": 564.5513,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 67.5,
+              "Y": 258.0
+          },
+          "Size": "37.5, 45",
+          "X": 67.5,
+          "Y": 258.0,
+          "Width": 37.5,
+          "Height": 45.0,
+          "Left": 67.5,
+          "Top": 258.0,
+          "Right": 105.0,
+          "Bottom": 303.0,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 480.61017,
+              "Y": 435.7645
+          },
+          "Size": "300, 150",
+          "X": 480.61017,
+          "Y": 435.7645,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 480.61017,
+          "Top": 435.7645,
+          "Right": 780.61017,
+          "Bottom": 585.7645,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 270.0,
+              "Y": 0.0
+          },
+          "Size": "27, 30",
+          "X": 270.0,
+          "Y": 0.0,
+          "Width": 27.0,
+          "Height": 30.0,
+          "Left": 270.0,
+          "Top": 0.0,
+          "Right": 297.0,
+          "Bottom": 30.0,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 509.248,
+              "Y": 464.40234
+          },
+          "Size": "300, 150",
+          "X": 509.248,
+          "Y": 464.40234,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 509.248,
+          "Top": 464.40234,
+          "Right": 809.248,
+          "Bottom": 614.40234,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 472.5,
+              "Y": 64.5
+          },
+          "Size": "21, 30",
+          "X": 472.5,
+          "Y": 64.5,
+          "Width": 21.0,
+          "Height": 30.0,
+          "Left": 472.5,
+          "Top": 64.5,
+          "Right": 493.5,
+          "Bottom": 94.5,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 530.4612,
+              "Y": 485.61554
+          },
+          "Size": "300, 150",
+          "X": 530.4612,
+          "Y": 485.61554,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 530.4612,
+          "Top": 485.61554,
+          "Right": 830.4612,
+          "Bottom": 635.61554,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 540.0,
+              "Y": 64.5
+          },
+          "Size": "19.5, 39",
+          "X": 540.0,
+          "Y": 64.5,
+          "Width": 19.5,
+          "Height": 39.0,
+          "Left": 540.0,
+          "Top": 64.5,
+          "Right": 559.5,
+          "Bottom": 103.5,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 548.49243,
+              "Y": 503.64673
+          },
+          "Size": "300, 150",
+          "X": 548.49243,
+          "Y": 503.64673,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 548.49243,
+          "Top": 503.64673,
+          "Right": 848.49243,
+          "Bottom": 653.6467,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 540.0,
+              "Y": 0.0
+          },
+          "Size": "16.5, 46.5",
+          "X": 540.0,
+          "Y": 0.0,
+          "Width": 16.5,
+          "Height": 46.5,
+          "Left": 540.0,
+          "Top": 0.0,
+          "Right": 556.5,
+          "Bottom": 46.5,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 561.22034,
+              "Y": 516.37463
+          },
+          "Size": "300, 150",
+          "X": 561.22034,
+          "Y": 516.37463,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 561.22034,
+          "Top": 516.37463,
+          "Right": 861.22034,
+          "Bottom": 666.37463,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 135.0,
+              "Y": 64.5
+          },
+          "Size": "33, 30",
+          "X": 135.0,
+          "Y": 64.5,
+          "Width": 33.0,
+          "Height": 30.0,
+          "Left": 135.0,
+          "Top": 64.5,
+          "Right": 168.0,
+          "Bottom": 94.5,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 573.94824,
+              "Y": 529.1026
+          },
+          "Size": "300, 150",
+          "X": 573.94824,
+          "Y": 529.1026,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 573.94824,
+          "Top": 529.1026,
+          "Right": 873.94824,
+          "Bottom": 679.1026,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  },
+  {
+      "SrcRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 405.0,
+              "Y": 0.0
+          },
+          "Size": "31.5, 43.5",
+          "X": 405.0,
+          "Y": 0.0,
+          "Width": 31.5,
+          "Height": 43.5,
+          "Left": 405.0,
+          "Top": 0.0,
+          "Right": 436.5,
+          "Bottom": 43.5,
+          "IsEmpty": false
+      },
+      "DestRect": {
+          "Location": {
+              "IsEmpty": false,
+              "X": 587.7368,
+              "Y": 561.98303
+          },
+          "Size": "300, 150",
+          "X": 587.7368,
+          "Y": 561.98303,
+          "Width": 300.0,
+          "Height": 150.0,
+          "Left": 587.7368,
+          "Top": 561.98303,
+          "Right": 887.7368,
+          "Bottom": 711.98303,
+          "IsEmpty": false
+      },
+      "Size": 0.5,
+      "Angle": 45.0,
+      "TintColor": "11, 22, 33, 44",
+      "Effects": 1,
+      "ViewPortSize": "0, 0",
+      "TextureId": 0
+  }
+]

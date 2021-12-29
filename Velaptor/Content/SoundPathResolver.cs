@@ -34,13 +34,13 @@ namespace Velaptor.Content
         /// <remarks>
         ///     The 2 types of sound formats supported are '.ogg' and '.mp3'.
         /// <para>
-        ///     Precedence is taken with '.ogg' fles over '.mp3'.  What this means is that if
+        ///     Precedence is taken with '.ogg' files over '.mp3'.  What this means is that if
         ///     there are 2 files <br/> with the same name but with different extensions in the
         ///     same <see cref="ContentPathResolver.ContentDirectoryName"/>, <br/> the '.ogg'
         ///     file will be loaded, not the '.mp3' file.
         /// </para>
         /// <para>
-        ///     If no '.ogg' file exsits but a '.mp3' file does not, then the '.mp3' file will be loaded.
+        ///     If no '.ogg' file exists but a '.mp3' file does not, then the '.mp3' file will be loaded.
         /// </para>
         /// </remarks>
         public override string ResolveFilePath(string contentName)
@@ -63,15 +63,15 @@ namespace Velaptor.Content
                             var currentExtension = Path.GetExtension(f);
 
                             return string.Compare(fileNameNoExt, contentName, StringComparison.OrdinalIgnoreCase) == 0
-                                && allowedExtensions.Any(e => string.Compare(e, currentExtension, StringComparison.OrdinalIgnoreCase) == 0);
+                                && allowedExtensions.Any(e
+                                    => string.Compare(e, currentExtension, StringComparison.OrdinalIgnoreCase) == 0);
                         }).ToArray();
 
-            var oggFiles = files.Where(f =>
-            {
-                return string.Compare(Path.GetExtension(f), ".ogg", StringComparison.OrdinalIgnoreCase) == 0;
-            }).ToArray();
+            var oggFiles = files.Where(f
+                    => string.Compare(Path.GetExtension(f), ".ogg", StringComparison.OrdinalIgnoreCase) == 0)
+                .ToArray();
 
-            // If therre are any ogg files, choose this first
+            // If there are any ogg files, choose this first
             if (oggFiles.Length > 0)
             {
                 return oggFiles[0];
@@ -79,7 +79,7 @@ namespace Velaptor.Content
 
             var mp3Files = files.Where(f => Path.GetExtension(f) == ".mp3").ToArray();
 
-            // If therre are any ogg files, choose this first
+            // If there are any ogg files, choose this first
             if (mp3Files.Length > 0)
             {
                 return mp3Files[0];

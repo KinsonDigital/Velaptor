@@ -4,23 +4,30 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
+    using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using System.Globalization;
+    using System.Text;
     using Velaptor.Graphics;
 
+    // ReSharper restore RedundantNameQualifier
+
     /// <summary>
-    /// A single batch item in a batch of items to be rendered to the screen with a single OpenGL call.
+    /// A single item in a batch of items that could be rendered to the screen.
     /// </summary>
-    internal struct SpriteBatchItem
+    internal struct SpriteBatchItem : IEquatable<SpriteBatchItem>
     {
         /// <summary>
         /// The source rectangle inside of the texture to render.
         /// </summary>
-        public Rectangle SrcRect;
+        public RectangleF SrcRect;
 
         /// <summary>
         /// The destination rectangular area of where to render the texture on the screen.
         /// </summary>
-        public Rectangle DestRect;
+        public RectangleF DestRect;
 
         /// <summary>
         /// The size of the texture to be rendered.
@@ -29,13 +36,13 @@ namespace Velaptor.OpenGL
         public float Size;
 
         /// <summary>
-        /// The angle in degress of the texture.
+        /// The angle in degrees of the texture.
         /// </summary>
         /// <remarks>Needs to be a value between 0 and 360.</remarks>
         public float Angle;
 
         /// <summary>
-        /// The color to apply to the entire textrue.
+        /// The color to apply to the entire texture.
         /// </summary>
         public Color TintColor;
 
@@ -45,40 +52,104 @@ namespace Velaptor.OpenGL
         public RenderEffects Effects;
 
         /// <summary>
+        /// The size of the viewport.
+        /// </summary>
+        public SizeF ViewPortSize;
+
+        /// <summary>
         /// The ID of the texture.
         /// </summary>
         public uint TextureId;
 
         /// <summary>
-        /// Gets an empty <see cref="SpriteBatchItem"/>.
+        /// Returns a value indicating if the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
         /// </summary>
-        /// <returns>An empty sprite batch item.</returns>
-        public static SpriteBatchItem Empty
-        {
-            get
-            {
-                SpriteBatchItem result;
-                result.TextureId = 0;
-                result.Size = 0f;
-                result.Angle = 0f;
-                result.SrcRect = Rectangle.Empty;
-                result.DestRect = Rectangle.Empty;
-                result.TintColor = Color.Empty;
-                result.Effects = RenderEffects.None;
+        /// <param name="left">The left operand compared with the right operand.</param>
+        /// <param name="right">The right operand compared with the left operand.</param>
+        /// <returns>True if both operands are equal.</returns>
+        public static bool operator ==(SpriteBatchItem left, SpriteBatchItem right) => left.Equals(right);
 
-                return result;
-            }
-        }
+        /// <summary>
+        /// Returns a value indicating if the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
+        /// </summary>
+        /// <param name="left">The left operand compared with the right operand.</param>
+        /// <param name="right">The right operand compared with the left operand.</param>
+        /// <returns>True if both operands are not equal.</returns>
+        public static bool operator !=(SpriteBatchItem left, SpriteBatchItem right) => !(left == right);
 
         /// <summary>
         /// Gets a value indicating whether the current <see cref="SpriteBatchItem"/> is empty.
         /// </summary>
-        public bool IsEmpty => this.TextureId == 0 &&
-                    this.SrcRect.IsEmpty &&
-                    this.DestRect.IsEmpty &&
-                    this.Size == 0f &&
-                    this.Angle == 0f &&
-                    this.TintColor.IsEmpty &&
-                    (this.Effects == 0 || this.Effects == RenderEffects.None);
+        /// <returns>True if empty.</returns>
+        public bool IsEmpty() =>
+            this.TextureId == 0 &&
+            this.SrcRect.IsEmpty &&
+            this.DestRect.IsEmpty &&
+            this.Size == 0f &&
+            this.Angle == 0f &&
+            this.TintColor.IsEmpty &&
+            this.Effects is 0 or RenderEffects.None &&
+            this.ViewPortSize.IsEmpty;
+
+        /// <summary>
+        /// Empties the struct by setting all members to default values.
+        /// </summary>
+        public void Empty()
+        {
+            this.TextureId = 0u;
+            this.SrcRect = default;
+            this.DestRect = default;
+            this.Size = 0f;
+            this.Angle = 0f;
+            this.TintColor = default;
+            this.Effects = RenderEffects.None;
+            this.ViewPortSize = default;
+        }
+
+        /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
+        public bool Equals(SpriteBatchItem other) =>
+            this.SrcRect.Equals(other.SrcRect) &&
+            this.DestRect.Equals(other.DestRect) &&
+            this.Size.Equals(other.Size) &&
+            this.Angle.Equals(other.Angle) &&
+            this.TintColor.Equals(other.TintColor) &&
+            this.Effects == other.Effects &&
+            this.ViewPortSize.Equals(other.ViewPortSize) &&
+            this.TextureId == other.TextureId;
+
+        /// <inheritdoc cref="object.Equals(object?)"/>
+        public override bool Equals(object? obj) => obj is SpriteBatchItem other && Equals(other);
+
+        /// <inheritdoc cref="object.GetHashCode"/>
+        [ExcludeFromCodeCoverage]
+        public override int GetHashCode()
+            => HashCode.Combine(
+                this.SrcRect,
+                this.DestRect,
+                this.Size,
+                this.Angle,
+                this.TintColor,
+                (int)this.Effects,
+                this.ViewPortSize,
+                this.TextureId);
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            var result = new StringBuilder();
+
+            result.AppendLine("Sprite Batch Item Values:");
+            result.AppendLine($"Src Rect: {this.SrcRect.ToString()}");
+            result.AppendLine($"Dest Rect: {this.DestRect.ToString()}");
+            result.AppendLine($"Size: {this.Size.ToString(CultureInfo.InvariantCulture)}");
+            result.AppendLine($"Angle: {this.Angle.ToString(CultureInfo.InvariantCulture)}");
+            result.AppendLine(
+                $"Tint Clr: {{A={this.TintColor.A},R={this.TintColor.R},G={this.TintColor.G},B={this.TintColor.B}}}");
+            result.AppendLine($"Effects: {this.Effects.ToString()}");
+            result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
+            result.Append($"Texture ID: {this.TextureId.ToString()}");
+
+            return result.ToString();
+        }
     }
 }

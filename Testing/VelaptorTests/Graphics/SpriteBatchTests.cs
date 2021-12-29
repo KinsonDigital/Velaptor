@@ -8,14 +8,12 @@ namespace VelaptorTests.Graphics
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Drawing;
-    using System.IO.Abstractions;
+    using System.Linq;
     using System.Numerics;
-    using FreeTypeSharp.Native;
     using Moq;
+    using Velaptor;
     using Velaptor.Content;
-    using Velaptor.Exceptions;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.OpenGL;
@@ -28,62 +26,84 @@ namespace VelaptorTests.Graphics
     /// </summary>
     public class SpriteBatchTests
     {
-        private const uint ProgramId = 1111;
-        private const int UniformTransformLocation = 2222;
-        private readonly Mock<IGLInvoker> mockGLInvoker;
-        private readonly Mock<IGLInvokerExtensions> mockGLInvokerExtensions;
-        private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
-        private readonly Mock<IShaderProgram> mockShader;
-        private readonly Mock<IGPUBuffer> mockBuffer;
-        private readonly Mock<IFile> mockFile;
-        private readonly Mock<IDisposable> mockGLUnsubscriber;
-        private readonly Mock<OpenGLInitObservable> mockGLObservable;
-        private readonly Mock<IBatchManagerService> mockBatchManagerService;
-        private IObserver<bool>? spriteBatchGLObserver;
+        private const string RootRelativeTestDataDirPath = @"SampleTestData\";
+        private const string GlyphTestDataFileName = "glyph-test-data.json";
+        private const uint TextureShaderId = 1111;
+        private const uint FontShaderId = 2222;
+        private const char InvalidCharacter = '□';
+        private readonly string batchTestDataDirPath = @$"{RootRelativeTestDataDirPath}BatchItemTestData\";
+        private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IShaderProgram> mockTextureShader;
+        private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockTextureBuffer;
+        private readonly Mock<IBatchManagerService<SpriteBatchItem>> mockTextureBatchService;
+        private readonly Mock<IShaderProgram> mockFontShader;
+        private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockFontBuffer;
+        private readonly Mock<IBatchManagerService<SpriteBatchItem>> mockFontBatchService;
+        private readonly Mock<IFont> mockFont;
+        private readonly OpenGLInitObservable glInitObservable;
+        private readonly char[] glyphChars =
+        {
+            'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
+            '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
+        };
+
+        private List<GlyphMetrics> allGlyphMetrics = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatchTests"/> class.
         /// </summary>
         public SpriteBatchTests()
         {
-            this.mockGLInvoker = new Mock<IGLInvoker>();
-            this.mockGLInvoker.Setup(m => m.GetUniformLocation(ProgramId, "uTransform")).Returns(UniformTransformLocation);
+            this.mockGL = new Mock<IGLInvoker>();
 
-            this.mockGLInvokerExtensions = new Mock<IGLInvokerExtensions>();
-            this.mockGLInvokerExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLInvokerExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
 
-            this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
+            this.mockTextureShader = new Mock<IShaderProgram>();
+            this.mockTextureShader.SetupGet(p => p.ShaderId).Returns(TextureShaderId);
 
-            this.mockShader = new Mock<IShaderProgram>();
-            this.mockShader.SetupGet(p => p.ProgramId).Returns(ProgramId);
+            this.mockFontShader = new Mock<IShaderProgram>();
+            this.mockFontShader.SetupGet(p => p.ShaderId).Returns(FontShaderId);
 
-            this.mockBuffer = new Mock<IGPUBuffer>();
+            this.mockTextureBuffer = new Mock<IGPUBuffer<SpriteBatchItem>>();
+            this.mockFontBuffer = new Mock<IGPUBuffer<SpriteBatchItem>>();
 
-            this.mockFile = new Mock<IFile>();
+            this.mockTextureBatchService = new Mock<IBatchManagerService<SpriteBatchItem>>();
+            this.mockTextureBatchService.SetupProperty(p => p.BatchSize);
 
-            this.mockGLUnsubscriber = new Mock<IDisposable>();
-            this.mockGLObservable = new Mock<OpenGLInitObservable>();
-            this.mockGLObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
-                .Returns(this.mockGLUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
-                {
-                    this.spriteBatchGLObserver = observer;
-                });
+            this.mockFontBatchService = new Mock<IBatchManagerService<SpriteBatchItem>>();
+            this.mockFontBatchService.SetupProperty(p => p.BatchSize);
+            this.mockFontBatchService.SetupProperty(p => p.BatchItems);
+            this.mockFontBatchService.Object.BatchItems =
+                new ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)>(new Dictionary<uint, (bool shouldRender, SpriteBatchItem item)>());
 
-            this.mockBatchManagerService = new Mock<IBatchManagerService>();
-            this.mockBatchManagerService.SetupProperty(p => p.BatchSize);
+            this.glInitObservable = new OpenGLInitObservable();
+
+            var mockFontTextureAtlas = new Mock<ITexture>();
+            mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
+            mockFontTextureAtlas.SetupGet(p => p.Height).Returns(100);
+
+            this.mockFont = new Mock<IFont>();
+            this.mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTextureAtlas.Object);
         }
 
         #region Constructor Tests
         [Fact]
-        public void Ctor_WhenInvoked_SubscribesToBatchReadyEvent()
+        public void Ctor_WhenInvoked_SubscribesToBatchingServicesFilledEvent()
         {
             // Act
-            var batch = CreateSpriteBatch();
+            var unused = CreateSpriteBatch();
 
             // Assert
-            this.mockBatchManagerService.VerifyAdd(s => s.BatchReady += It.IsAny<EventHandler<EventArgs>>(), Times.Once());
+            this.mockTextureBatchService
+                .VerifyAdd(e => e.BatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+            this.mockFontBatchService
+                .VerifyAdd(e => e.BatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
         }
 
         [Fact]
@@ -92,49 +112,93 @@ namespace VelaptorTests.Graphics
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var buffer = new SpriteBatch(
+                var unused = new SpriteBatch(
                     null,
-                    this.mockGLInvokerExtensions.Object,
-                    this.mockFreeTypeInvoker.Object,
-                    this.mockShader.Object,
-                    this.mockBuffer.Object,
-                    this.mockBatchManagerService.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.glInitObservable);
             }, $"The '{nameof(IGLInvoker)}' must not be null. (Parameter 'gl')");
         }
 
         [Fact]
-        public void Ctor_WhenInvokedWithNullShader_ThrowsException()
+        public void Ctor_WhenInvokedWithNullTextureShader_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var buffer = new SpriteBatch(
-                    this.mockGLInvoker.Object,
-                    this.mockGLInvokerExtensions.Object,
-                    this.mockFreeTypeInvoker.Object,
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
                     null,
-                    this.mockBuffer.Object,
-                    this.mockBatchManagerService.Object,
-                    this.mockGLObservable.Object);
-            }, $"The '{nameof(IShaderProgram)}' must not be null. (Parameter 'shader')");
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.glInitObservable);
+            }, $"The 'textureShader' must not be null. (Parameter 'textureShader')");
         }
 
         [Fact]
-        public void Ctor_WhenInvokedWithNullGPUBuffer_ThrowsException()
+        public void Ctor_WhenInvokedWithNullFontShader_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var buffer = new SpriteBatch(
-                    this.mockGLInvoker.Object,
-                    this.mockGLInvokerExtensions.Object,
-                    this.mockFreeTypeInvoker.Object,
-                    this.mockShader.Object,
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
                     null,
-                    this.mockBatchManagerService.Object,
-                    this.mockGLObservable.Object);
-            }, $"The '{nameof(IGPUBuffer)}' must not be null. (Parameter 'gpuBuffer')");
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.glInitObservable);
+            }, $"The 'fontShader' must not be null. (Parameter 'fontShader')");
+        }
+
+        [Fact]
+        public void Ctor_WhenInvokedWithNullTextureGPUBuffer_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    null,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.glInitObservable);
+            }, $"The 'textureBuffer' must not be null. (Parameter 'textureBuffer')");
+        }
+
+        [Fact]
+        public void Ctor_WhenInvokedWithNullFontGPUBuffer_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    null,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.glInitObservable);
+            }, $"The 'fontBuffer' must not be null. (Parameter 'fontBuffer')");
         }
         #endregion
 
@@ -143,32 +207,64 @@ namespace VelaptorTests.Graphics
         public void Width_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
+            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
             var batch = CreateSpriteBatch();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Act
             batch.RenderSurfaceWidth = 100;
             _ = batch.RenderSurfaceWidth;
 
             // Assert
-            this.mockGLInvokerExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
-            this.mockGLInvokerExtensions.Verify(m => m.SetViewPortSize(new Size(100, 22)), Times.Once());
+            this.mockGLExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGLExtensions.Verify(m => m.SetViewPortSize(new Size(100, 22)), Times.Once());
         }
 
         [Fact]
         public void Height_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLInvokerExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
+            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
             var batch = CreateSpriteBatch();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Act
             batch.RenderSurfaceHeight = 100;
             _ = batch.RenderSurfaceHeight;
 
             // Assert
-            this.mockGLInvokerExtensions.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
-            this.mockGLInvokerExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGLExtensions.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
+            this.mockGLExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+        }
+
+        [Fact]
+        public void ClearColor_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            const float expectedRed = 0.0431372561f;
+            const float expectedGreen = 0.0862745121f;
+            const float expectedBlue = 0.129411772f;
+            const float expectedAlpha = 0.172549024f;
+            var expected = Color.FromArgb(44, 11, 22, 33);
+            var expectedClrValues = new float[4];
+            this.mockGL.Setup(m => m.GetFloat(GLGetPName.ColorClearValue, expectedClrValues))
+                .Callback<GLGetPName, float[]>((_, data) =>
+                {
+                    data[0] = expectedRed;
+                    data[1] = expectedGreen;
+                    data[2] = expectedBlue;
+                    data[3] = expectedAlpha;
+                });
+
+            var batch = CreateSpriteBatch();
+            this.glInitObservable.OnOpenGLInitialized();
+
+            // Act
+            var actual = batch.ClearColor;
+
+            // Assert
+            this.mockGL.Verify(m => m.GetFloat(GLGetPName.ColorClearValue, It.IsAny<float[]>()), Times.Once);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -176,32 +272,18 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             var batch = CreateSpriteBatch();
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Act
             batch.ClearColor = Color.FromArgb(11, 22, 33, 44);
-            var actual = batch.ClearColor;
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.GetFloat(GLGetPName.ColorClearValue, It.IsAny<float[]>()), Times.Once());
-            this.mockGLInvoker.Verify(m => m.ClearColor(
+            this.mockGL.Verify(m => m.ClearColor(
                 It.IsAny<float>(),
                 It.IsAny<float>(),
                 It.IsAny<float>(),
                 It.IsAny<float>()),
             Times.Exactly(2));
-        }
-
-        [Fact]
-        public void BatchSize_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var batch = CreateSpriteBatch();
-
-            // Act
-            batch.BatchSize = 3;
-
-            // Assert
-            Assert.Equal(3u, batch.BatchSize);
         }
         #endregion
 
@@ -214,68 +296,784 @@ namespace VelaptorTests.Graphics
             batch.Clear();
 
             // Assert
-            this.mockGLInvoker.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once());
+            this.mockGL.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once());
         }
 
         [Fact]
-        public void RenderTexture_WithEmptyBatchItem_DoesNotRenderBatchItem()
+        public void RenderTexture_WhenNotCallingBeginFirst_ThrowsException()
         {
             // Arrange
-            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() =>
-                {
-                    var result = new Dictionary<uint, SpriteBatchItem>
-                    {
-                        { 0, default },
-                    };
-
-                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(result);
-                });
             var batch = CreateSpriteBatch();
 
-            // Act
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
+            {
+                batch.Render(
+                    new Mock<ITexture>().Object,
+                    It.IsAny<Rectangle>(),
+                    It.IsAny<Rectangle>(),
+                    It.IsAny<float>(),
+                    It.IsAny<float>(),
+                    It.IsAny<Color>(),
+                    It.IsAny<RenderEffects>());
+            }, "The 'BeginBatch()' method must be invoked first before any 'Render()' methods.");
+        }
+
+        [Theory]
+        [InlineData(0, 20)]
+        [InlineData(10, 0)]
+        public void RenderTexture_WithSourceRectWithNoWidthOrHeight_ThrowsException(int width, int height)
+        {
+            // Arrange
+            var batch = CreateSpriteBatch();
             batch.BeginBatch();
-            batch.Render(
-                new Mock<ITexture>().Object,
-                new Rectangle(0, 0, 1, 2),
-                It.IsAny<Rectangle>(),
-                It.IsAny<float>(),
-                It.IsAny<float>(),
-                It.IsAny<Color>(),
-                It.IsAny<RenderEffects>());
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+            {
+                batch.Render(
+                    new Mock<ITexture>().Object,
+                    new Rectangle(1, 2, width, height),
+                    It.IsAny<Rectangle>(),
+                    It.IsAny<float>(),
+                    It.IsAny<float>(),
+                    It.IsAny<Color>(),
+                    It.IsAny<RenderEffects>());
+            }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
+        }
+
+        [Fact]
+        public void RenderTexture_WithNullTexture_ThrowsException()
+        {
+            // Arrange
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                batch.Render(
+                    null,
+                    It.IsAny<Rectangle>(),
+                    It.IsAny<Rectangle>(),
+                    It.IsAny<float>(),
+                    It.IsAny<float>(),
+                    It.IsAny<Color>(),
+                    It.IsAny<RenderEffects>());
+            }, "The texture must not be null. (Parameter 'texture')");
+        }
+
+        [Fact]
+        public void RenderTexture_WhenInvoking3ParamOverload_AddsCorrectItemToBatch()
+        {
+            // Arrange
+            const int textureId = 1234;
+            const int expectedX = 10;
+            const int expectedY = 20;
+            const int expectedWidth = 111;
+            const int expectedHeight = 222;
+            var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, RenderEffects.None, Color.White, textureId);
+
+            var mockTexture = new Mock<ITexture>();
+            mockTexture.SetupGet(p => p.Id).Returns(textureId);
+            mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
+            mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
+
+            SpriteBatchItem actualBatchItem = default;
+
+            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+                .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
+            var batch = CreateSpriteBatch();
+            this.glInitObservable.OnOpenGLInitialized();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(mockTexture.Object, 10, 20);
 
             // Assert
-            this.mockBatchManagerService.VerifyAnyBuildTransformationMatrix(Times.Never());
-            this.mockGLInvoker.Setup(m => m.UniformMatrix4(It.IsAny<int>(), It.IsAny<uint>(), It.IsAny<bool>(), It.IsAny<Matrix4x4>()));
-            this.mockBuffer.Verify(m => m.UpdateQuad(
-                It.IsAny<uint>(),
-                It.IsAny<Rectangle>(),
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<Color>()), Times.Never());
+            this.mockTextureBatchService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
+        }
+
+        [Fact]
+        public void RenderTexture_WhenInvoking4ParamOverloadWithEffects_AddsCorrectItemToBatch()
+        {
+            // Arrange
+            const int textureId = 1234;
+            const int expectedX = 10;
+            const int expectedY = 20;
+            const int expectedWidth = 111;
+            const int expectedHeight = 222;
+            const RenderEffects expectedRenderEffects = RenderEffects.FlipHorizontally;
+            var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, Color.White, textureId);
+
+            var mockTexture = new Mock<ITexture>();
+            mockTexture.SetupGet(p => p.Id).Returns(textureId);
+            mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
+            mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
+
+            SpriteBatchItem actualBatchItem = default;
+
+            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+                .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
+            var batch = CreateSpriteBatch();
+            this.glInitObservable.OnOpenGLInitialized();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(mockTexture.Object, 10, 20, expectedRenderEffects);
+
+            // Assert
+            this.mockTextureBatchService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
+        }
+
+        [Fact]
+        public void RenderTexture_WhenInvoking4ParamOverloadWithColor_AddsCorrectItemToBatch()
+        {
+            // Arrange
+            const int textureId = 1234;
+            const int expectedX = 10;
+            const int expectedY = 20;
+            const int expectedWidth = 111;
+            const int expectedHeight = 222;
+            var expectedClr = Color.FromArgb(11, 22, 33, 44);
+            var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, RenderEffects.None, expectedClr, textureId);
+
+            var mockTexture = new Mock<ITexture>();
+            mockTexture.SetupGet(p => p.Id).Returns(textureId);
+            mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
+            mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
+
+            SpriteBatchItem actualBatchItem = default;
+
+            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+                .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
+            var batch = CreateSpriteBatch();
+            this.glInitObservable.OnOpenGLInitialized();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(mockTexture.Object, 10, 20, expectedClr);
+
+            // Assert
+            this.mockTextureBatchService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
+        }
+
+        [Fact]
+        public void RenderTexture_WhenInvoking5ParamOverload_AddsCorrectItemToBatch()
+        {
+            // Arrange
+            const int textureId = 1234;
+            const int expectedX = 10;
+            const int expectedY = 20;
+            const int expectedWidth = 111;
+            const int expectedHeight = 222;
+            var expectedClr = Color.FromArgb(11, 22, 33, 44);
+            const RenderEffects expectedRenderEffects = RenderEffects.FlipVertically;
+            var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, expectedClr, textureId);
+
+            var mockTexture = new Mock<ITexture>();
+            mockTexture.SetupGet(p => p.Id).Returns(textureId);
+            mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
+            mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
+
+            SpriteBatchItem actualBatchItem = default;
+
+            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+                .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
+            var batch = CreateSpriteBatch();
+            this.glInitObservable.OnOpenGLInitialized();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects);
+
+            // Assert
+            this.mockTextureBatchService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
         [Fact]
         public void RenderTexture_WhenInvoked_RendersTexture()
         {
             // Arrange
-            this.mockBatchManagerService.SetupGet(p => p.TotalItemsToRender).Returns(2);
-            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() =>
-                {
-                    var result = new Dictionary<uint, SpriteBatchItem>
-                    {
-                        { 0, default },
-                    };
+            const uint textureId = 1;
+            const uint batchIndex = 0;
 
-                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(result);
-                });
+            var shouldRenderItem = default(SpriteBatchItem);
+            shouldRenderItem.Angle = 45;
+            shouldRenderItem.TextureId = textureId;
+
+            var shouldNotRenderItem = default(SpriteBatchItem);
+            var items = new[] { (true, shouldRenderItem), (false, shouldNotRenderItem) };
+
+            // TODO: Fix this
             var batch = CreateSpriteBatch();
+            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+                .Callback<SpriteBatchItem>(_ =>
+                {
+                    MockTextureBatchItems(items);
+                    this.mockTextureBatchService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
+                });
+            this.glInitObservable.OnOpenGLInitialized();
 
             // Act
             batch.BeginBatch();
+
+            batch.Render(
+                MockTexture(textureId),
+                new Rectangle(0, 0, 1, 2),
+                It.IsAny<Rectangle>(),
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<Color>(),
+                It.IsAny<RenderEffects>());
+
+            // Assert
+            this.mockGLExtensions.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
+            this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
+            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
+            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
+            this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, batchIndex), Times.Once);
+            this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, batchIndex), Times.Never);
+            this.mockTextureBatchService.Verify(m => m.EmptyBatch(), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void RenderFont_WithNullOrEmptyText_DoesNotRenderText(string renderText)
+        {
+            // Arrange
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                It.IsAny<IFont>(),
+                renderText,
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<Color>());
+
+            // Assert
+            this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
+            this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Never);
+        }
+
+        [Fact]
+        public void RenderFont_WhenNotCallingBeginFirst_ThrowsException()
+        {
+            // Arrange
+            const string renderText = "hello world";
+            MockFontMetrics();
+            MockToGlyphMetrics(renderText);
+            var batch = CreateSpriteBatch();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
+            {
+                batch.Render(
+                    this.mockFont.Object,
+                    renderText,
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<float>(),
+                    It.IsAny<float>(),
+                    It.IsAny<Color>());
+            }, "The 'BeginBatch()' method must be invoked first before any 'Render()' methods.");
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoked_MeasuresText()
+        {
+            // Arrange
+            const string renderText = "hello world";
+            MockFontMetrics();
+            MockToGlyphMetrics(renderText);
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<Color>());
+
+            // Assert
+            this.mockFont.Verify(m => m.Measure(renderText), Times.Once);
+        }
+
+        [Fact]
+        public void RenderFont_WhenRenderingMultilineText_ConvertsEachLineToGlyphMetrics()
+        {
+            // Arrange
+            const string renderText = "hello\nworld";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<Color>());
+
+            // Assert
+            this.mockFont.Verify(m => m.ToGlyphMetrics("hello"), Times.Once);
+            this.mockFont.Verify(m => m.ToGlyphMetrics("world"), Times.Once);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoked_AddsCorrectBatchItems()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoked_AddsCorrectBatchItems)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+            var actualSpriteBatchResultData = Array.Empty<SpriteBatchItem>();
+
+            const string renderText = "Font_Testing";
+            MockFontMetrics();
+            MockToGlyphMetrics(renderText);
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData = rects.ToArray();
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                400,
+                300,
+                1.5f,
+                45,
+                Color.FromArgb(11, 22, 33, 44));
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Once);
+            Assert.Equal(12, actualSpriteBatchResultData.Length);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoking4ParamsWithXAndYOverload_RendersFont()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking4ParamsWithXAndYOverload_RendersFont)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+
+            var actualSpriteBatchResultData = new List<SpriteBatchItem>();
+
+            const string line1 = "hello";
+            const string line2 = "world";
+            var renderText = $"{line1}\n{line2}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData.AddRange(rects.ToArray());
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                11,
+                22);
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Exactly(2));
+            Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoking3ParamsWithPositionOverload_RendersFont()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking3ParamsWithPositionOverload_RendersFont)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+
+            var actualSpriteBatchResultData = new List<SpriteBatchItem>();
+
+            const string line1 = "hello";
+            const string line2 = "world";
+            var renderText = $"{line1}\n{line2}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData.AddRange(rects.ToArray());
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                new Vector2(33, 44));
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Exactly(2));
+            Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoking6ParamsWithXAndYOverload_RendersFont()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking6ParamsWithXAndYOverload_RendersFont)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+
+            var actualSpriteBatchResultData = new List<SpriteBatchItem>();
+
+            const string line1 = "hello";
+            const string line2 = "world";
+            var renderText = $"{line1}\n{line2}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData.AddRange(rects.ToArray());
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                321,
+                202,
+                2.25f,
+                230f);
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Exactly(2));
+            Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoking5ParamsWithPositionOverload_RendersFont()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithPositionOverload_RendersFont)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+
+            var actualSpriteBatchResultData = new List<SpriteBatchItem>();
+
+            const string line1 = "hello";
+            const string line2 = "world";
+            var renderText = $"{line1}\n{line2}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData.AddRange(rects.ToArray());
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                new Vector2(66, 77),
+                1.25f,
+                8f);
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Exactly(2));
+            Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoking5ParamsWithColorOverload_RendersFont()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithColorOverload_RendersFont)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+
+            var actualSpriteBatchResultData = new List<SpriteBatchItem>();
+
+            const string line1 = "hello";
+            const string line2 = "world";
+            var renderText = $"{line1}\n{line2}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData.AddRange(rects.ToArray());
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                456,
+                635,
+                Color.DarkOrange);
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Exactly(2));
+            Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+
+            var actualSpriteBatchResultData = new List<SpriteBatchItem>();
+
+            const string line1 = "hello";
+            const string line2 = "world";
+            var renderText = $"{line1}\n{line2}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData.AddRange(rects.ToArray());
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                new Vector2(758, 137),
+                Color.MediumPurple);
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Exactly(2));
+            Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoking6ParamsWithColorOverload_RendersFont()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking6ParamsWithColorOverload_RendersFont)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+
+            var actualSpriteBatchResultData = new List<SpriteBatchItem>();
+
+            const string line1 = "hello";
+            const string line2 = "world";
+            var renderText = $"{line1}\n{line2}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData.AddRange(rects.ToArray());
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                147,
+                185,
+                16f,
+                Color.IndianRed);
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Exactly(2));
+            Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont()
+        {
+            // Arrange
+            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont)}.json";
+            var expectedSpriteBatchResultData =
+                TestDataLoader.LoadTestData<SpriteBatchItem>(this.batchTestDataDirPath, expectedTestDataFileName);
+
+            var actualSpriteBatchResultData = new List<SpriteBatchItem>();
+
+            const string line1 = "hello";
+            const string line2 = "world";
+            var renderText = $"{line1}\n{line2}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics("hello");
+            MockToGlyphMetrics("world");
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(rects =>
+                {
+                    actualSpriteBatchResultData.AddRange(rects.ToArray());
+                });
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                new Vector2(1255, 79),
+                88f,
+                Color.CornflowerBlue);
+
+            // Assert
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Exactly(2));
+            Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
+            AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
+        }
+
+        [Fact]
+        public void RenderFont_WhenInvoked_RendersFont()
+        {
+            // Arrange
+            const uint textureId = 2;
+            const string textBeingRendered = "font";
+            const string textNotBeingRendered = "testing";
+            var renderText = $"{textBeingRendered} {textNotBeingRendered}";
+
+            MockFontMetrics();
+            MockToGlyphMetrics(renderText);
+
+            var mockFontTextureAtlas = new Mock<ITexture>();
+            mockFontTextureAtlas.SetupGet(p => p.Id).Returns(textureId);
+
+            this.mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTextureAtlas.Object);
+
+            var batch = CreateSpriteBatch();
+
+            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()))
+                .Callback<IEnumerable<SpriteBatchItem>>(items =>
+                {
+                    var itemsToMock = items.Select(item => (shouldRender: false, item)).ToArray();
+
+                    // Set only the text characters of the "font" section to be rendered
+                    for (var i = 0; i < textBeingRendered.Length; i++)
+                    {
+                        itemsToMock[i].shouldRender = true;
+                    }
+
+                    MockFontBatchItems(itemsToMock);
+                    this.mockFontBatchService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
+                });
+
+            this.glInitObservable.OnOpenGLInitialized();
+
+            // Act
+            batch.BeginBatch();
+
+            batch.Render(
+                this.mockFont.Object,
+                renderText,
+                11,
+                22);
+
+            // Assert
+            this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles,
+                    6u * (uint)textBeingRendered.Length,
+                    GLDrawElementsType.UnsignedInt,
+                    IntPtr.Zero),
+                Times.Once());
+            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture1), Times.Once);
+            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
+            this.mockFontBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(),
+                    It.IsAny<uint>()),
+                Times.Exactly(textBeingRendered.Length));
+            this.mockFontBatchService.Verify(m => m.EmptyBatch(), Times.Once);
+        }
+
+        [Fact]
+        public void EndBatch_WithEntireBatchEmpty_DoesNotRenderBatch()
+        {
+            // Arrange
+            var shouldRenderItem = default(SpriteBatchItem);
+            var shouldNotRenderItem = default(SpriteBatchItem);
+            var items = new[] { (false, shouldRenderItem), (false, shouldNotRenderItem) };
+
+            var batch = CreateSpriteBatch();
+            // TODO: Take care of this mock of the Add method by converting it to a mock of the AddRange method
+            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+                .Callback<SpriteBatchItem>(_ =>
+                {
+                    MockTextureBatchItems(items);
+                });
+
+            this.glInitObservable.OnOpenGLInitialized();
+            batch.BeginBatch();
+
             batch.Render(
                 new Mock<ITexture>().Object,
                 new Rectangle(0, 0, 1, 2),
@@ -285,559 +1083,138 @@ namespace VelaptorTests.Graphics
                 It.IsAny<Color>(),
                 It.IsAny<RenderEffects>());
 
-            // Assert
-            this.mockGLInvoker.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 12, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
-        }
-
-        [Fact]
-        public void RenderTexture_WhenInvoking4ParamOverload_UsesCorrectRenderEffect()
-        {
-            // Arrange
-            const int expectedWidth = 1234;
-            const int expectedHeight = 5678;
-
-            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() =>
-                {
-                    var batchItem = new SpriteBatchItem()
-                    {
-                        Effects = RenderEffects.None,
-                        SrcRect = new Rectangle(0, 0, expectedWidth, expectedHeight),
-                    };
-                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(
-                        new Dictionary<uint, SpriteBatchItem>()
-                        {
-                            { 0, batchItem },
-                        });
-                });
-
-            var mockTexture = CreateTextureMock(0, 10, 20);
-            var batch = CreateSpriteBatch();
-            batch.BeginBatch();
-
-            // Act
-            batch.Render(mockTexture.Object, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Color>());
-
-            // Assert
-            this.mockBatchManagerService.VerifyBuildTransformationMatrixSrcRectWidth(expectedWidth, Times.Once());
-            this.mockBatchManagerService.VerifyBuildTransformationMatrixSrcRectHeight(expectedHeight, Times.Once());
-        }
-
-        [Fact]
-        public void RenderTexture_WithoutCallingBeginFirst_ThrowsException()
-        {
-            // Arrange
-            var mockTexture = CreateTextureMock(0, 10, 20);
-            var batch = CreateSpriteBatch();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<Exception>(() =>
-            {
-                batch.Render(mockTexture.Object, 10, 20);
-            }, $"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
-        }
-
-        [Fact]
-        public void RenderTexture_WhenInvoking6ParamOverlloadWithoutCallingBeginFirst_ThrowsException()
-        {
-            // Arrange
-            var texture = CreateTextureMock(0, 11, 22);
-            var batch = CreateSpriteBatch();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<Exception>(() =>
-            {
-                var srcRect = new Rectangle(1, 2, 3, 4);
-                var destRect = new Rectangle(5, 6, 7, 8);
-                var tintClr = Color.FromArgb(11, 22, 33, 44);
-
-                batch.Render(texture.Object, srcRect, destRect, 0.5f, 90, tintClr, RenderEffects.None);
-            }, $"The '{nameof(SpriteBatch.BeginBatch)}()' method must be invoked first before the '{nameof(SpriteBatch.Render)}()' method.");
-        }
-
-        [Fact]
-        public void RenderTexture_WhenInvoking5ParamOverloadAndNullTexture_ThrowsException()
-        {
-            // Arrange
-            var batch = CreateSpriteBatch();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                batch.BeginBatch();
-                batch.Render(null, 10, 20);
-            }, "The texture must not be null. (Parameter 'texture')");
-        }
-
-        [Fact]
-        public void RenderTexture_WhenInvoking6ParamOverloadAndNullTexture_ThrowsException()
-        {
-            // Arrange
-            var batch = CreateSpriteBatch();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var srcRect = new Rectangle(0, 0, 10, 20);
-                batch.BeginBatch();
-                batch.Render(null, srcRect, It.IsAny<Rectangle>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<Color>(), RenderEffects.None);
-            }, "The texture must not be null. (Parameter 'texture')");
-        }
-
-        [Fact]
-        public void RenderTexture_WithNoSourceRectWidth_ThrowsException()
-        {
-            // Arrange
-            var mockTexture = CreateTextureMock(0, 10, 20);
-            var batch = CreateSpriteBatch();
-
-            batch.BeginBatch();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
-            {
-                var srcRect = new Rectangle(0, 0, 0, 20);
-                var destRect = new Rectangle(10, 20, 100, 200);
-
-                batch.Render(mockTexture.Object, srcRect, destRect, 1, 1, Color.White, RenderEffects.None);
-            }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
-        }
-
-        [Fact]
-        public void RenderTexture_WithNoSourceRectHeight_ThrowsException()
-        {
-            // Arrange
-            var mockTexture = CreateTextureMock(0, 11, 22);
-            var batch = CreateSpriteBatch();
-
-            batch.BeginBatch();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
-            {
-                var srcRect = new Rectangle(0, 0, 10, 0);
-                var destRect = new Rectangle(10, 20, 100, 200);
-
-                batch.Render(mockTexture.Object, srcRect, destRect, 1, 1, Color.White, RenderEffects.None);
-            }, "The source rectangle must have a width and height greater than zero. (Parameter 'srcRect')");
-        }
-
-        [Theory]
-        [InlineData(RenderEffects.None, 1234, 5678, 1234, 5678)]
-        [InlineData(RenderEffects.FlipHorizontally, 1234, 5678, -1234, 5678)]
-        [InlineData(RenderEffects.FlipVertically, 1234, 5678, 1234, -5678)]
-        [InlineData(RenderEffects.FlipBothDirections, 1234, 5678, -1234, -5678)]
-        public void RenderTexture_WithNoRenderEffect_RendersTextureWithCorrectEffects(
-            RenderEffects effects,
-            int srcRectWidth,
-            int srcRectHeight,
-            int expectedWidth,
-            int expectedHeight)
-        {
-            // Arrange
-            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() =>
-                {
-                    var batchItem = new SpriteBatchItem()
-                    {
-                        Effects = effects,
-                        SrcRect = new Rectangle(0, 0, srcRectWidth, srcRectHeight),
-                    };
-                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(
-                        new Dictionary<uint, SpriteBatchItem>()
-                        {
-                            { 0, batchItem },
-                        });
-                });
-
-            var mockTexture = CreateTextureMock(0, 10, 20);
-            var batch = CreateSpriteBatch();
-            batch.BeginBatch();
-
-            // Act
-            batch.Render(mockTexture.Object, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RenderEffects>());
-
-            // Assert
-            this.mockBatchManagerService.VerifyBuildTransformationMatrixSrcRectWidth(expectedWidth, Times.Once());
-            this.mockBatchManagerService.VerifyBuildTransformationMatrixSrcRectHeight(expectedHeight, Times.Once());
-        }
-
-        [Fact]
-        public void RenderTexture_WithInValidRenderEffect_ThrowsException()
-        {
-            // Arrange
-            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() =>
-                {
-                    var batchItem = new SpriteBatchItem()
-                    {
-                        Effects = (RenderEffects)9845,
-                        SrcRect = new Rectangle(0, 0, 1234, 5678),
-                    };
-                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(
-                        new Dictionary<uint, SpriteBatchItem>()
-                        {
-                            { 0, batchItem },
-                        });
-                });
-
-            var mockTexture = CreateTextureMock(0, 10, 20);
-            var batch = CreateSpriteBatch();
-            batch.BeginBatch();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
-            {
-                batch.Render(mockTexture.Object, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RenderEffects>());
-            }, "The 'RenderEffects' value of '9845' is not valid.");
-        }
-
-        [Fact]
-        public void RenderTexture_WhenTextureIsNotBound_BindsTexture()
-        {
-            // Arrange
-            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() =>
-                {
-                    var batchItem = new SpriteBatchItem()
-                    {
-                        Effects = RenderEffects.None,
-                        SrcRect = new Rectangle(0, 0, 10, 20),
-                    };
-                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(
-                        new Dictionary<uint, SpriteBatchItem>()
-                        {
-                            { 0, batchItem },
-                        });
-                });
-
-            var mockTexture = CreateTextureMock(0, 10, 20);
-            var batch = CreateSpriteBatch();
-            batch.BeginBatch();
-
-            // Act
-            batch.Render(mockTexture.Object, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<RenderEffects>());
-
-            // Assert
-            this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, 0), Times.Once());
-        }
-
-        [Fact]
-        public void RenderTexture_WithUnknownRenderEffectWhenSettingSourceRectangleWidth_ThrowsException()
-        {
-            // Arrange
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() =>
-                {
-                    var batchItem = new SpriteBatchItem()
-                    {
-                        Effects = (RenderEffects)1234,
-                    };
-                    return new ReadOnlyDictionary<uint, SpriteBatchItem>(
-                        new Dictionary<uint, SpriteBatchItem>()
-                        {
-                            { 0, batchItem },
-                        });
-                });
-            this.mockBatchManagerService.SetupRaiseEventWithUpdateBatch();
-
-            var mockTexture = CreateTextureMock(0, 11, 22);
-
-            var batch = CreateSpriteBatch();
-
-            batch.BeginBatch();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
-            {
-                batch.Render(
-                    mockTexture.Object,
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<RenderEffects>());
-            }, $"The '{nameof(RenderEffects)}' value of '1234' is not valid.");
-        }
-
-        [Fact]
-        public void RenderFont_WhenUsingDefaultTintColor_ColorWhiteIsUsed()
-        {
-            // Arrange
-            const int atlasWidth = 100;
-            const int atlasHeight = 200;
-            var batch = CreateSpriteBatch();
-            var mockTexture = CreateTextureMock(1, atlasWidth, atlasHeight);
-            var metrics = new GlyphMetrics[]
-            {
-                new GlyphMetrics()
-                {
-                    Glyph = 'a',
-                    AtlasBounds = new Rectangle(0, 0, atlasWidth, atlasHeight),
-                    HoriBearingY = 6,
-                },
-            };
-            var fontSettings = new FontSettings()
-            {
-                Size = 12,
-                Style = FontStyle.Regular,
-            };
-            var mockFont = new Mock<IFont>();
-            mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockTexture.Object);
-            mockFont.SetupGet(p => p.Metrics).Returns(new ReadOnlyCollection<GlyphMetrics>(metrics));
-            mockFont.Setup(m => m.GetAvailableGlyphCharacters())
-                .Returns(() => new[] { 'a' });
-
-            // Act
-            batch.BeginBatch();
-            batch.Render(mockFont.Object, "a", 10, 20);
-
-            // Assert
-            this.mockBatchManagerService.VerifyColorForUpdateBatch(Color.White, Times.Once());
-        }
-
-        [Fact]
-        public void RenderFont_WhenRenderingValidCharacter_UpdatesBatchWithCorrectData()
-        {
-            // Arrange
-            const int atlasWidth = 100;
-            const int atlasHeight = 200;
-
-            var batch = CreateSpriteBatch();
-            var mockTexture = CreateTextureMock(1, atlasWidth, atlasHeight);
-            var metrics = new GlyphMetrics[]
-            {
-                new GlyphMetrics()
-                {
-                    Glyph = 'a',
-                    AtlasBounds = new Rectangle(0, 0, atlasWidth, atlasHeight),
-                    HoriBearingY = 6,
-                },
-            };
-            var fontSettings = new FontSettings()
-            {
-                Size = 12,
-                Style = FontStyle.Regular,
-            };
-            var mockFont = new Mock<IFont>();
-            mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockTexture.Object);
-            mockFont.SetupGet(p => p.Metrics).Returns(new ReadOnlyCollection<GlyphMetrics>(metrics));
-            mockFont.Setup(m => m.GetAvailableGlyphCharacters())
-                .Returns(() => new[] { 'a' });
-
-            // Act
-            batch.BeginBatch();
-            batch.Render(mockFont.Object, "a", 10, 20, Color.Blue);
-
-            // Assert
-            this.mockBatchManagerService.VerifySrcRectForUpdateBatch(new Rectangle(0, 0, atlasWidth, atlasHeight), Times.Once());
-            this.mockBatchManagerService.VerifyDestRectForUpdateBatch(new Rectangle(60, 114, atlasWidth, atlasHeight), Times.Once());
-            this.mockBatchManagerService.VerifySizeForUpdateBatch(1f, Times.Once());
-            this.mockBatchManagerService.VerifyAngleForUpdateBatch(0f, Times.Once());
-            this.mockBatchManagerService.VerifyColorForUpdateBatch(Color.Blue, Times.Once());
-            this.mockBatchManagerService.VerifyRenderEffectForUpdateBatch(RenderEffects.None, Times.Once());
-        }
-
-        [Fact]
-        public void RenderFont_WhenCharacterDoesNotExist_UpdatesBatchWithInvalidCharacter()
-        {
-            // Arrange
-            const int atlasWidth = 100;
-            const int atlasHeight = 200;
-            var batch = CreateSpriteBatch();
-            var mockTexture = CreateTextureMock(1, atlasWidth, atlasHeight);
-            var metrics = new GlyphMetrics[]
-            {
-                new GlyphMetrics()
-                {
-                    Glyph = 'a',
-                    AtlasBounds = new Rectangle(0, 0, atlasWidth, atlasHeight),
-                    HoriBearingY = 6,
-                },
-                new GlyphMetrics()
-                {
-                    Glyph = '□',
-                    AtlasBounds = new Rectangle(0, 0, atlasWidth, atlasHeight),
-                    HoriBearingY = 2,
-                },
-            };
-            var fontSettings = new FontSettings()
-            {
-                Size = 12,
-                Style = FontStyle.Regular,
-            };
-            var mockFont = new Mock<IFont>();
-            mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockTexture.Object);
-            mockFont.SetupGet(p => p.Metrics).Returns(new ReadOnlyCollection<GlyphMetrics>(metrics));
-            mockFont.Setup(m => m.GetAvailableGlyphCharacters())
-                .Returns(() => new[] { 'a' });
-
-            // Act
-            batch.BeginBatch();
-            batch.Render(mockFont.Object, "b", 10, 20, Color.Blue);
-
-            // Assert
-            this.mockBatchManagerService.VerifySrcRectForUpdateBatch(new Rectangle(0, 0, atlasWidth, atlasHeight), Times.Once());
-            this.mockBatchManagerService.VerifyDestRectForUpdateBatch(new Rectangle(60, 118, atlasWidth, atlasHeight), Times.Once());
-        }
-
-        [Fact]
-        public void RenderFont_WhenFontHasKerning_UpdatesBatchWithCorrectData()
-        {
-            // Arrange
-            const int atlasWidth = 100;
-            const int atlasHeight = 200;
-            var batch = CreateSpriteBatch();
-            var mockTexture = CreateTextureMock(1, atlasWidth, atlasHeight);
-            var metrics = new GlyphMetrics[]
-            {
-                new GlyphMetrics()
-                {
-                    Glyph = 'a',
-                    CharIndex = 1,
-                    AtlasBounds = new Rectangle(0, 0, atlasWidth, atlasHeight),
-                    HoriBearingY = 6,
-                },
-                new GlyphMetrics()
-                {
-                    Glyph = 'b',
-                    CharIndex = 2,
-                    AtlasBounds = new Rectangle(0, 0, atlasWidth, atlasHeight),
-                    HoriBearingY = 2,
-                },
-            };
-            var fontSettings = new FontSettings()
-            {
-                Size = 12,
-                Style = FontStyle.Regular,
-            };
-
-            var facePtr = new IntPtr(1234);
-            var glyphIndex2KerningVector = new FT_Vector()
-            {
-                // This value represents the value 12 bit shifted to the left 6 places
-                // This wil be bit shifted to the right 6 places to get the value of 12
-                x = new IntPtr(768),
-                y = IntPtr.Zero,
-            };
-            this.mockFreeTypeInvoker.Setup(m => m.FT_Get_Kerning(
-                facePtr, // face
-                1, // left glyph index
-                2, // right glyph index
-                (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT)) // kerning mode
-                    .Returns(() => glyphIndex2KerningVector);
-            this.mockFreeTypeInvoker.Setup(m => m.GetFace()).Returns(facePtr);
-            var mockFont = new Mock<IFont>();
-            mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockTexture.Object);
-            mockFont.SetupGet(p => p.Metrics).Returns(new ReadOnlyCollection<GlyphMetrics>(metrics));
-            mockFont.SetupGet(p => p.HasKerning).Returns(true);
-            mockFont.Setup(m => m.GetAvailableGlyphCharacters())
-                .Returns(() => new[] { 'a', 'b' });
-
-            // Act
-            batch.BeginBatch();
-            batch.Render(mockFont.Object, "ab", 10, 20, Color.Blue);
-
-            // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Get_Kerning(facePtr, 1, 2, (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT), Times.Once());
-            this.mockBatchManagerService.VerifyDestRectForUpdateBatch(new Rectangle(72, 118, atlasWidth, atlasHeight), Times.Once());
-        }
-
-        [Fact]
-        public void EndBatch_WithEntireBatchEmpty_DoesNotRenderBatch()
-        {
-            // Arrange
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() => new ReadOnlyDictionary<uint, SpriteBatchItem>(new Dictionary<uint, SpriteBatchItem>()));
-            this.mockBatchManagerService.SetupGet(p => p.EntireBatchEmpty).Returns(true);
-            var batch = CreateSpriteBatch();
-
             // Act
             batch.EndBatch();
 
             // Assert
-            this.mockBatchManagerService.Verify(m => m.EmptyBatch(), Times.Never());
-        }
-
-        [Fact]
-        public void EndBatch_WithNoEmptyBatch_RenderBatch()
-        {
-            // Arrange
-            this.mockBatchManagerService.SetupGet(p => p.BatchItems)
-                .Returns(() => new ReadOnlyDictionary<uint, SpriteBatchItem>(new Dictionary<uint, SpriteBatchItem>()));
-            this.mockBatchManagerService.SetupGet(p => p.EntireBatchEmpty).Returns(false);
-            var batch = CreateSpriteBatch();
-
-            // Act
-            batch.EndBatch();
-
-            // Assert
-            this.mockBatchManagerService.Verify(m => m.EmptyBatch(), Times.Once());
+            this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Never());
+            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Never);
+            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, It.IsAny<uint>()), Times.Never);
         }
 
         [Fact]
         public void Dispose_WhenInvoked_DisposesOfMangedResources()
         {
             // Arrange
-            var batch = CreateSpriteBatch();
-            var mockTexture = CreateTextureMock(1, 10, 20);
+            var mockGlObservableUnsubscriber = new Mock<IDisposable>();
+            var mockGlInitObservable = new Mock<IObservable<bool>>();
+            mockGlInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(mockGlObservableUnsubscriber.Object);
+            var batch = CreateSpriteBatch(mockGlInitObservable.Object);
 
             // Act
             batch.Dispose();
             batch.Dispose();
 
             // Assert
-            this.mockBatchManagerService.VerifyRemove(m => m.BatchReady -= It.IsAny<EventHandler<EventArgs>>(), Times.Once());
-            this.mockShader.Verify(m => m.Dispose(), Times.Once());
-            this.mockBuffer.Verify(m => m.Dispose(), Times.Once());
-            this.mockGLUnsubscriber.Verify(m => m.Dispose(), Times.Once());
+            this.mockTextureBatchService
+                .VerifyRemove(e => e.BatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once());
+            this.mockFontBatchService
+                .VerifyRemove(e => e.BatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once());
+            this.mockTextureShader.Verify(m => m.Dispose(), Times.Once());
+            this.mockTextureBuffer.Verify(m => m.Dispose(), Times.Once());
+            this.mockFontShader.Verify(m => m.Dispose(), Times.Once());
+            this.mockFontBuffer.Verify(m => m.Dispose(), Times.Once());
+            mockGlObservableUnsubscriber.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 
         /// <summary>
-        /// Creates a texture mock for the purpose of testing.
+        /// Creates an <see cref="ITexture"/> instance for the purpose of testing the <see cref="SpriteBatch"/> class.
         /// </summary>
-        /// <param name="textureId">The ID of the texture.</param>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
-        /// <returns>The texture mock to use for testing.</returns>
-        private static Mock<ITexture> CreateTextureMock(uint textureId, int width, int height)
+        /// <param name="textureId">The texture ID to use for the test.</param>
+        /// <returns>The instance to use for testing.</returns>
+        private static ITexture MockTexture(uint textureId)
         {
-            var result = new Mock<ITexture>();
+            var mockResult = new Mock<ITexture>();
+            mockResult.SetupGet(p => p.Id).Returns(textureId);
 
-            result.SetupGet(p => p.Id).Returns(textureId);
-            result.SetupGet(p => p.Width).Returns(width);
-            result.SetupGet(p => p.Height).Returns(height);
+            return mockResult.Object;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="SpriteBatchItem"/> using the given parameters for the purpose of testing.
+        /// </summary>
+        /// <param name="x">The X location of the item.</param>
+        /// <param name="y">The Y location of the item.</param>
+        /// <param name="width">The width of the item.</param>
+        /// <param name="height">The height of the item.</param>
+        /// <param name="effects">The type of render effects to perform for the item.</param>
+        /// <param name="clr">The color of the item.</param>
+        /// <param name="textureId">The ID of the texture.</param>
+        /// <returns>The instance to use for testing.</returns>
+        private static SpriteBatchItem CreateBatchItem(int x, int y, int width, int height, RenderEffects effects, Color clr, int textureId)
+        {
+            var result = default(SpriteBatchItem);
+            result.SrcRect = new RectangleF(0f, 0f, width, height);
+            result.DestRect = new RectangleF(x, y, width, height);
+            result.Size = 1f;
+            result.Angle = 0f;
+            result.TintColor = clr;
+            result.Effects = effects;
+            result.ViewPortSize = new SizeF(800f, 600f);
+            result.TextureId = (uint)textureId;
 
             return result;
+        }
+
+        private void MockFontMetrics()
+        {
+            this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics>(RootRelativeTestDataDirPath, GlyphTestDataFileName).ToList();
+            this.mockFont.SetupGet(p => p.Metrics).Returns(() => this.allGlyphMetrics.ToArray().ToReadOnlyCollection());
+        }
+
+        private void MockToGlyphMetrics(string text)
+        {
+            this.mockFont.Setup(m => m.ToGlyphMetrics(text)).Returns(() =>
+            {
+                var textGlyphs = this.allGlyphMetrics.Where(m => text.Contains(m.Glyph)).ToList();
+
+                return text.Select(character
+                    => (from m in textGlyphs
+                        where m.Glyph == (this.glyphChars.Contains(character)
+                            ? character
+                            : InvalidCharacter)
+                        select m).FirstOrDefault()).ToArray();
+            });
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="SpriteBatch"/> for the purpose of testing.
         /// </summary>
+        /// <param name="openGLInitObservable">The observable to use for OpenGL initialization.</param>
         /// <returns>The instance to test with.</returns>
-        private SpriteBatch CreateSpriteBatch()
+        /// <summary>
+        ///     If <paramref name="openGLInitObservable"/> is null, then this.<see cref="glInitObservable"/> will be used.
+        /// </summary>
+        private SpriteBatch CreateSpriteBatch(IObservable<bool>? openGLInitObservable = null)
         {
             var result = new SpriteBatch(
-                this.mockGLInvoker.Object,
-                this.mockGLInvokerExtensions.Object,
-                this.mockFreeTypeInvoker.Object,
-                this.mockShader.Object,
-                this.mockBuffer.Object,
-                this.mockBatchManagerService.Object,
-                this.mockGLObservable.Object);
-
-            SimulateGLInitPushNotification();
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
+                this.mockTextureShader.Object,
+                this.mockFontShader.Object,
+                this.mockTextureBuffer.Object,
+                this.mockFontBuffer.Object,
+                this.mockTextureBatchService.Object,
+                this.mockFontBatchService.Object,
+                openGLInitObservable ?? this.glInitObservable);
 
             return result;
         }
 
-        /// <summary>
-        /// Simulates an OpenGL intialized push notification for the <see cref="OpenGLInitObservable"/>
-        /// subscription that is setup inside of <see cref="SpriteBatch"/>.
-        /// </summary>
-        private void SimulateGLInitPushNotification() => this.spriteBatchGLObserver.OnNext(It.IsAny<bool>());
+        private void MockTextureBatchItems((bool shouldRender, SpriteBatchItem item)[] items)
+        {
+            this.mockTextureBatchService.SetupProperty(p => p.BatchItems);
+            this.mockTextureBatchService.Object.BatchItems = items.ToReadOnlyDictionary();
+        }
+
+        private void MockFontBatchItems((bool shouldRender, SpriteBatchItem item)[] items)
+        {
+            this.mockFontBatchService.SetupProperty(p => p.BatchItems);
+            this.mockFontBatchService.Object.BatchItems = items.ToReadOnlyDictionary();
+        }
     }
 }

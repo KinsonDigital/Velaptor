@@ -10,7 +10,6 @@ namespace Velaptor
     /// <summary>
     /// Holds timing information for a loop iteration.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public struct FrameTime : IEquatable<FrameTime>
     {
         /// <summary>
@@ -23,26 +22,31 @@ namespace Velaptor
         /// </summary>
         public TimeSpan ElapsedTime { get; set; }
 
+        /// <summary>
+        /// Returns true if the left operator is equal to the right operator.
+        /// </summary>
+        /// <param name="left">The left operator.</param>
+        /// <param name="right">The right operator.</param>
+        /// <returns>True if both operators are equal.</returns>
         public static bool operator ==(FrameTime left, FrameTime right) => left.Equals(right);
 
+        /// <summary>
+        /// Returns true if the left operator is not equal to the right operator.
+        /// </summary>
+        /// <param name="left">The left operator.</param>
+        /// <param name="right">The right operator.</param>
+        /// <returns>True if both operators are not equal.</returns>
         public static bool operator !=(FrameTime left, FrameTime right) => !(left == right);
 
         /// <inheritdoc/>
-        public override bool Equals(object? obj)
-        {
-            if (obj == null || obj is not FrameTime frameTime)
-            {
-                return false;
-            }
-
-            return Equals(frameTime);
-        }
+        public override bool Equals(object? obj) => obj is FrameTime frameTime && Equals(frameTime);
 
         /// <inheritdoc/>
         public bool Equals(FrameTime other)
             => other.TotalTime == TotalTime && other.ElapsedTime == ElapsedTime;
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode() => ElapsedTime.GetHashCode();
     }
 }

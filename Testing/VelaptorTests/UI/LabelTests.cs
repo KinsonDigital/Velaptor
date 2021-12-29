@@ -54,9 +54,80 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
+        public void Left_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+            label.Position = new Point(400, 300);
+            label.Width = 100;
+
+            // Act
+            label.Left = 50;
+            var actual = label.Left;
+
+            // Assert
+            Assert.Equal(50, actual);
+            Assert.Equal(100, label.Position.X);
+        }
+
+        [Fact]
+        public void Right_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+            label.Position = new Point(400, 300);
+            label.Width = 100;
+
+            // Act
+            label.Right = 300;
+            var actual = label.Right;
+
+            // Assert
+            Assert.Equal(300, actual);
+            Assert.Equal(250, label.Position.X);
+        }
+
+        [Fact]
+        public void Top_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+            label.Position = new Point(400, 300);
+            label.Height = 100;
+
+            // Act
+            label.Top = 300;
+            var actual = label.Top;
+
+            // Assert
+            Assert.Equal(300, actual);
+            Assert.Equal(350, label.Position.Y);
+        }
+
+        [Fact]
+        public void Bottom_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+            label.Position = new Point(400, 300);
+            label.Height = 100;
+
+            // Act
+            label.Bottom = 300;
+            var actual = label.Bottom;
+
+            // Assert
+            Assert.Equal(300, actual);
+            Assert.Equal(250, label.Position.Y);
+        }
+
+        [Fact]
         public void Width_WhenSettingTextProp_CalculatesCorrectWidth()
         {
             // Arrange
+            this.mockFont.Setup(m => m.Measure(TextValue))
+                .Returns(new SizeF(10f, 0f));
+
             var label = CreateLabel();
 
             label.Text = TextValue;
@@ -66,13 +137,16 @@ namespace VelaptorTests.UI
             var actual = label.Width;
 
             // Assert
-            Assert.Equal(44, actual);
+            Assert.Equal(10u, actual);
         }
 
         [Fact]
         public void Height_WhenSettingTextProp_CalculatesCorrectHeight()
         {
             // Arrange
+            this.mockFont.Setup(m => m.Measure(TextValue))
+                .Returns(new SizeF(0f, 20f));
+
             var label = CreateLabel();
 
             label.Text = TextValue;
@@ -82,7 +156,7 @@ namespace VelaptorTests.UI
             var actual = label.Height;
 
             // Assert
-            Assert.Equal(100, actual);
+            Assert.Equal(20u, actual);
         }
 
         [Fact]
@@ -99,8 +173,8 @@ namespace VelaptorTests.UI
             var actualHeight = label.Height;
 
             // Assert
-            Assert.Equal(0, actualWidth);
-            Assert.Equal(0, actualHeight);
+            Assert.Equal(0u, actualWidth);
+            Assert.Equal(0u, actualHeight);
         }
 
         [Fact]
@@ -143,6 +217,20 @@ namespace VelaptorTests.UI
             // Assert
             Assert.Equal(Color.FromArgb(11, 22, 33, 44), actual);
         }
+
+        [Fact]
+        public void Size_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+
+            // Act
+            label.Size = 123f;
+            var actual = label.Size;
+
+            // Assert
+            Assert.Equal(123f, actual);
+        }
         #endregion
 
         #region Method Tests
@@ -154,9 +242,52 @@ namespace VelaptorTests.UI
 
             // Act
             label.LoadContent();
+            label.LoadContent();
 
             // Assert
-            this.mockContentLoader.Verify(m => m.Load<IFont>("TimesNewRoman"));
+            this.mockContentLoader.Verify(m => m.Load<IFont>("TimesNewRoman"), Times.Once);
+        }
+
+        [Fact]
+        public void UnloadContent_WhenLoadedAndNotDisposed_UnloadsContent()
+        {
+            // Arrange
+            var label = CreateLabel();
+            label.LoadContent();
+
+            // Act
+            label.UnloadContent();
+
+            // Assert
+            this.mockFont.Verify(m => m.Dispose(), Times.Once);
+        }
+
+        [Fact]
+        public void UnloadContent_WhenNotLoaded_DoesNotUnloadContent()
+        {
+            // Arrange
+            var label = CreateLabel();
+
+            // Act
+            label.UnloadContent();
+
+            // Assert
+            this.mockFont.Verify(m => m.Dispose(), Times.Never);
+        }
+
+        [Fact]
+        public void UnloadContent_WhenLoadedAndDisposed_DoesNotUnloadContent()
+        {
+            // Arrange
+            var label = CreateLabel();
+            label.LoadContent();
+            label.Dispose();
+
+            // Act
+            label.UnloadContent();
+
+            // Assert
+            this.mockFont.Verify(m => m.Dispose(), Times.Once);
         }
 
         [Fact]
@@ -222,6 +353,7 @@ namespace VelaptorTests.UI
             label.Text = TextValue;
             label.Position = new Point(100, 200);
             label.Visible = true;
+            label.Size = 123f;
             label.Color = Color.FromArgb(11, 22, 33, 44);
             label.LoadContent();
 
@@ -233,7 +365,9 @@ namespace VelaptorTests.UI
                 m.Render(this.mockFont.Object,
                     TextValue,
                     100,
-                    300,
+                    200,
+                    123f,
+                    0f,
                     Color.FromArgb(11, 22, 33, 44)), Times.Once());
         }
 
@@ -284,7 +418,7 @@ namespace VelaptorTests.UI
 
                         if (alreadyAdded is false)
                         {
-                            result.Add(new () { Glyph = text[charIndex], GlyphWidth = charIndex, GlyphHeight = charIndex * 10 });
+                            result.Add(new GlyphMetrics { Glyph = text[charIndex], GlyphWidth = charIndex, GlyphHeight = charIndex * 10 });
                         }
                     }
 
@@ -296,6 +430,6 @@ namespace VelaptorTests.UI
         /// Creates a new label for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private Label CreateLabel() => new Label(this.mockContentLoader.Object);
+        private Label CreateLabel() => new (this.mockContentLoader.Object);
     }
 }

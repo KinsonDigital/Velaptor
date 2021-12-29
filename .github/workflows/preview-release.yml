@@ -53,21 +53,24 @@ jobs:
         fail-if-nuget-version-exists: "true"
 
 
-  Validate_Branch:
-    name: Validate Branch
+  Validate_Branch_Name:
+    name: Validate Branch Name
     runs-on: windows-latest
     steps:
     # TODO: Replace this with the new upcoming branch validation github action
     - name: Validate Branch Name
       run: |
-        echo "I am disabled"
-        # # If the branch is not a release branch, fail the workflow
-        # if ("${{ github.ref }}".Contains("release/v") -eq $false)
-        # {
-        #   echo "Preview releases can only be performed with 'release/v*.*.*' branches."
-        #   exit 1 # Fail
-        # }
-
+        # If the branch is not a release branch, fail the workflow
+        if ("${{ github.ref }}".Contains("release/v") -eq $false)
+        {
+          echo "Preview releases can only be performed with 'release/v*.*.*' branches."
+          echo "Example Preview Release Branch Name: release/v1.2.3"
+          exit 1 # Fail
+        }
+        else
+        {
+          echo "Branch '${{ github.ref }}' is a valid release branch."
+        }
 
   Validate_Release_Notes_Exist:
     name: Validate Release Notes Exist
@@ -100,7 +103,7 @@ jobs:
   Build_And_Test_Library:
     name: Build & Test (Library)
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch, Validate_Release_Notes_Exist ]
+    needs: [ Validate_Version, Validate_Branch_Name, Validate_Release_Notes_Exist ]
     steps:
     - uses: actions/checkout@v2
 
@@ -167,7 +170,7 @@ jobs:
   Build_And_Release_Testing_App:
     name: Build & Release (Testing App)
     runs-on: windows-latest
-    needs: [ Validate_Version, Validate_Branch, Validate_Release_Notes_Exist ]
+    needs: [ Validate_Version, Validate_Branch_Name, Validate_Release_Notes_Exist ]
     steps:
     - uses: actions/checkout@v2
 
@@ -219,7 +222,7 @@ jobs:
     runs-on: windows-latest
     needs: [
       Validate_Version,
-      Validate_Branch,
+      Validate_Branch_Name,
       Build_And_Test_Library,
       Build_And_Release_Testing_App,
       Validate_Release_Notes_Exist

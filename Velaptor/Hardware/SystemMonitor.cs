@@ -23,55 +23,55 @@ namespace Velaptor.Hardware
         public SystemMonitor(IPlatform platform) => this.platform = platform;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the monitor is the main monitor in the system.
+        /// Gets a value indicating whether the monitor is the main monitor in the system.
         /// </summary>
-        public bool IsMain { get; set; }
+        public bool IsMain { get; init; }
 
         /// <summary>
-        /// Gets or sets the width in screen coordinates in the current video mode.
+        /// Gets the width in screen coordinates in the current video mode.
         /// </summary>
-        public int Width { get; set; }
+        public int Width { get; init; }
 
         /// <summary>
-        /// Gets or sets the height in screen coordinates in the current video mode.
+        /// Gets the height in screen coordinates in the current video mode.
         /// </summary>
-        public int Height { get; set; }
+        public int Height { get; init; }
 
         /// <summary>
-        /// Gets or sets the bit depth of the red color channel in the current video mode.
+        /// Gets the bit depth of the red color channel in the current video mode.
         /// </summary>
-        public int RedBitDepth { get; set; }
+        public int RedBitDepth { get; init; }
 
         /// <summary>
-        /// Gets or sets the bit depth of the green color channel in the current video mode.
+        /// Gets the bit depth of the green color channel in the current video mode.
         /// </summary>
-        public int GreenBitDepth { get; set; }
+        public int GreenBitDepth { get; init; }
 
         /// <summary>
-        /// Gets or sets the bit depth of the blue color channel in the current video mode.
+        /// Gets the bit depth of the blue color channel in the current video mode.
         /// </summary>
-        public int BlueBitDepth { get; set; }
+        public int BlueBitDepth { get; init; }
 
         /// <summary>
-        /// Gets or sets The refresh rate in Hz in the current video mode.
+        /// Gets the refresh rate in Hz in the current video mode.
         /// </summary>
-        public int RefreshRate { get; set; }
+        public int RefreshRate { get; init; }
 
         /// <summary>
-        /// Gets or sets the scale of the monitor on the horizontal axis.
+        /// Gets the scale of the monitor on the horizontal axis.
         /// </summary>
         /// <remarks>
         ///     If the monitor was set to a scale of 150%, this value of 1.5 should be used.
         /// </remarks>
-        public float HorizontalScale { get; set; }
+        public float HorizontalScale { get; init; }
 
         /// <summary>
-        /// Gets or sets the scale of the monitor on the vertical axis.
+        /// Gets the scale of the monitor on the vertical axis.
         /// </summary>
         /// <remarks>
         ///     If the monitor was set to a scale of 150%, this value of 1.5 should be used.
         /// </remarks>
-        public float VerticalScale { get; set; }
+        public float VerticalScale { get; init; }
 
         /// <summary>
         /// Gets the center location of the monitor.
@@ -94,7 +94,7 @@ namespace Velaptor.Hardware
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/> if both operands are equal.</returns>
-        public static bool operator ==(SystemMonitor left, SystemMonitor right) => !(left is null) && left.Equals(right);
+        public static bool operator ==(SystemMonitor? left, SystemMonitor right) => left is not null && left.Equals(right);
 
         /// <summary>
         /// Returns a value indicating if the left operand is not equal to the right operand.
@@ -119,8 +119,8 @@ namespace Velaptor.Hardware
                 Width == other.Width &&
                 Height == other.Height &&
                 RefreshRate == other.RefreshRate &&
-                HorizontalScale == other.HorizontalScale &&
-                VerticalScale == other.VerticalScale;
+                Math.Abs(HorizontalScale - other.HorizontalScale) == 0f &&
+                Math.Abs(VerticalScale - other.VerticalScale) == 0f;
         }
 
         /// <inheritdoc/>

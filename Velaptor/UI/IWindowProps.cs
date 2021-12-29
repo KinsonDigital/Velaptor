@@ -4,8 +4,12 @@
 
 namespace Velaptor.UI
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Numerics;
     using Velaptor.Content;
+    using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides properties to hold the state of a window.
@@ -25,16 +29,15 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets or sets the width of the window.
         /// </summary>
-        int Width { get; set; }
+        uint Width { get; set; }
 
         /// <summary>
         /// Gets or sets the height of the window.
         /// </summary>
-        int Height { get; set; }
+        uint Height { get; set; }
 
         /// <summary>
-        /// Gets or sets the value of how often the <see cref="Update"/>
-        /// and <see cref="Draw"/> actions are invoked in the value of hertz.
+        /// Gets or sets the value of how often the update and render calls are invoked in the value of hertz.
         /// </summary>
         int UpdateFrequency { get; set; }
 

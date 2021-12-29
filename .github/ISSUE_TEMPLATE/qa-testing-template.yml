@@ -1,0 +1,87 @@
+name: 🧪QA Testing
+description: Test some functionality
+title: "🧪QA Testing Velaptor"
+labels: ["🧪qa testing"]
+body:
+  - type: markdown
+    attributes:
+      value: "## Description:"
+
+  - type: markdown
+    attributes:
+      value: |
+        Thoroughly test Velaptor by using the **Velaptor Testing Application**
+
+  - type: markdown
+    attributes:
+      value: "---"
+
+  - type: checkboxes
+    attributes:
+      label: "To Do List:"
+      options:
+      - label: I have linked all issues that are getting tested for this release
+        required: true
+      - label: QA testing label added to issue (🧪qa testing)
+        required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version Of Velaptor Being Tested
+      description: |
+        Enter the version of **Velaptor** that is being tested.  This is the version it 'will' become upon release.
+        Version Format: v<major.minor.patch>[-preview-<preview-num>]
+        Examples:
+          v1.0.0
+          v1.2.3-preview.4
+      placeholder: "Enter Version Here"
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra-info
+    attributes:
+      label: Relevant Information
+      description: Please enter any testing related information here
+
+  - type: textarea
+    id: test-list
+    attributes:
+      label: Issues To Test
+      placeholder: |
+        List out issues that will be tested
+        Example:
+          - [ ] #10 Issue 1
+          - [ ] #20 Issue 2
+          - [ ] #30 Issue 3
+      description: |
+        A list of all of the issues that this QA testing card will be testing.
+        To create an issue item checkbox use this 👉🏼 - [ ] #10
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: QA Testing Dependencies
+      placeholder: |
+        No QA Testing Dependencies
+        Example:
+          - #10 QA Testing Velaptor
+          - #20 QA Testing Velaptor
+          - #30 QA Testing Velaptor
+      description: |
+        A list of QA testing issues that are must be completed before this QA testing issue can be started.
+        To create a dependency, use this 👉🏼 - #10
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](../../code_of_conduct.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

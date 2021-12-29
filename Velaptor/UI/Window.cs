@@ -4,11 +4,15 @@
 
 namespace Velaptor.UI
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using System.Threading.Tasks;
     using Velaptor.Content;
+    using Velaptor.Factories;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// A system window that graphics can be rendered to.
@@ -24,12 +28,7 @@ namespace Velaptor.UI
         /// <param name="window">The window implementation that contains the window functionality.</param>
         protected Window(IWindow window)
         {
-            if (window is null)
-            {
-                throw new ArgumentNullException(nameof(window), "Window must not be null.");
-            }
-
-            this.window = window;
+            this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
             this.window.Initialize = OnLoad;
             this.window.Uninitialize = OnUnload;
             this.window.Update = OnUpdate;
@@ -40,6 +39,11 @@ namespace Velaptor.UI
             // just in case the IWindow implementation is not
             this.window.UpdateFrequency = 60;
         }
+
+        /// <summary>
+        /// Finalizes an instance of the <see cref="Window"/> class.
+        /// </summary>
+        ~Window() => Dispose(false);
 
         /// <inheritdoc/>
         public string Title
@@ -56,14 +60,14 @@ namespace Velaptor.UI
         }
 
         /// <inheritdoc/>
-        public int Width
+        public uint Width
         {
             get => this.window.Width;
             set => this.window.Width = value;
         }
 
         /// <inheritdoc/>
-        public int Height
+        public uint Height
         {
             get => this.window.Height;
             set => this.window.Height = value;
@@ -160,13 +164,17 @@ namespace Velaptor.UI
         [ExcludeFromCodeCoverage]
         public virtual void OnUnload()
         {
+            // TODO: Have every static factory dispose method called in here
+            SpriteBatchFactory.Dispose();
+            GPUBufferFactory.Dispose();
         }
 
         /// <summary>
         /// Invoked when the window size changes.
         /// </summary>
+        /// <param name="size">The new size.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void OnResize()
+        public virtual void OnResize(SizeU size)
         {
         }
 

@@ -7,7 +7,6 @@ namespace VelaptorTests.UI
     using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using Velaptor;
     using Velaptor.Input;
     using Velaptor.UI;
     using VelaptorTests.Fakes;
@@ -55,11 +54,11 @@ namespace VelaptorTests.UI
         public void Name_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var ctrlbase = new ControlBaseFake();
-            ctrlbase.Name = "test-name";
+            var ctrlBase = new ControlBaseFake();
+            ctrlBase.Name = "test-name";
 
             // Arrange
-            var actual = ctrlbase.Name;
+            var actual = ctrlBase.Name;
 
             // Assert
             Assert.Equal("test-name", actual);
@@ -103,7 +102,7 @@ namespace VelaptorTests.UI
             // Arrange
             const int expected = 30;
             var ctrlBase = new ControlBaseFake();
-            ctrlBase.Width = 20;
+            ctrlBase.Width = 20u;
 
             // Act
             ctrlBase.Right = 30;
@@ -112,7 +111,7 @@ namespace VelaptorTests.UI
 
             // Assert
             Assert.Equal(expected, actualRight);
-            Assert.Equal(10, actualPosX);
+            Assert.Equal(20, actualPosX);
         }
 
         [Fact]
@@ -145,7 +144,7 @@ namespace VelaptorTests.UI
 
             // Assert
             Assert.Equal(expected, actualBottom);
-            Assert.Equal(10, positionY);
+            Assert.Equal(20, positionY);
         }
 
         [Fact]
@@ -159,7 +158,7 @@ namespace VelaptorTests.UI
             var actual = ctrlBase.Width;
 
             // Assert
-            Assert.Equal(11, actual);
+            Assert.Equal(11u, actual);
         }
 
         [Fact]
@@ -173,7 +172,7 @@ namespace VelaptorTests.UI
             var actual = ctrlBase.Height;
 
             // Assert
-            Assert.Equal(11, actual);
+            Assert.Equal(11u, actual);
         }
 
         [Fact]
@@ -313,21 +312,21 @@ namespace VelaptorTests.UI
             byte blue)
         {
             // Arrange
-            var expected = Color.FromArgb(alpha, red, green, blue);
-
             var ctrlBase = new ControlBaseFake();
             ctrlBase.Position = new Point(50, 50);
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
 
-            IMouseInput<MouseButton, MouseState>.XPos = xPos;
-            IMouseInput<MouseButton, MouseState>.YPos = yPos;
+            var mouse = new Mouse();
+
+            mouse.SetXPos(xPos);
+            mouse.SetYPos(yPos);
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = mouseDown;
 
             ctrlBase.LoadContent();
 
             // Act
-            ctrlBase.Update(default(FrameTime));
+            ctrlBase.Update(default);
 
             // Assert
             Assert.Equal(alpha, ctrlBase.TintColorValue.A);
@@ -346,17 +345,19 @@ namespace VelaptorTests.UI
             ctrlBase.Height = 100;
 
             // Set previous mouse position
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
 
             ctrlBase.LoadContent();
 
             // Act
-            ctrlBase.Update(default(FrameTime));
+            ctrlBase.Update(default);
 
             // Set current mouse position
-            IMouseInput<MouseButton, MouseState>.XPos = 80;
-            IMouseInput<MouseButton, MouseState>.YPos = 80;
+            mouse.SetXPos(80);
+            mouse.SetYPos(80);
 
             // Assert
             Assert.Raises<MousePositionEventArgs>(
@@ -364,7 +365,7 @@ namespace VelaptorTests.UI
                 (e) => ctrlBase.MouseMove -= e,
                 () =>
                 {
-                    ctrlBase.Update(default(FrameTime));
+                    ctrlBase.Update(default);
                 });
         }
 
@@ -377,14 +378,16 @@ namespace VelaptorTests.UI
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
 
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
+
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             ctrlBase.LoadContent();
 
             // Act
-            ctrlBase.Update(default(FrameTime));
+            ctrlBase.Update(default);
 
             // Assert
             Assert.Raises<EventArgs>(
@@ -392,7 +395,7 @@ namespace VelaptorTests.UI
                 (e) => ctrlBase.MouseDown -= e,
                 () =>
                 {
-                    ctrlBase.Update(default(FrameTime));
+                    ctrlBase.Update(default);
                 });
         }
 
@@ -420,8 +423,9 @@ namespace VelaptorTests.UI
             ctrlBase.Click += CtrlClicked;
             ctrlBase.MouseUp += MouseUp;
 
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
 
             ctrlBase.LoadContent();
 
@@ -429,7 +433,7 @@ namespace VelaptorTests.UI
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             // Act
-            ctrlBase.Update(default(FrameTime));
+            ctrlBase.Update(default);
 
             // Set left mouse button as up which is a full click
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = false;
@@ -440,7 +444,7 @@ namespace VelaptorTests.UI
                 (e) => ctrlBase.MouseUp -= e,
                 () =>
                 {
-                    ctrlBase.Update(default(FrameTime));
+                    ctrlBase.Update(default);
                 });
         }
 
@@ -453,15 +457,17 @@ namespace VelaptorTests.UI
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
 
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
+
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             // Act & Assert
             AssertExtensions.DoesNotRaise<EventArgs>(
                 e => ctrlBase.MouseDown += e,
                 e => ctrlBase.MouseDown -= e,
-                () => ctrlBase.Update(default(FrameTime)));
+                () => ctrlBase.Update(default));
         }
 
         [Fact]
@@ -474,8 +480,10 @@ namespace VelaptorTests.UI
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
 
-            IMouseInput<MouseButton, MouseState>.XPos = 75;
-            IMouseInput<MouseButton, MouseState>.YPos = 75;
+            var mouse = new Mouse();
+            mouse.SetXPos(75);
+            mouse.SetYPos(75);
+
             IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             ctrlBase.LoadContent();
@@ -484,7 +492,7 @@ namespace VelaptorTests.UI
             AssertExtensions.DoesNotRaise<EventArgs>(
                 e => ctrlBase.MouseDown += e,
                 e => ctrlBase.MouseDown -= e,
-                () => ctrlBase.Update(default(FrameTime)));
+                () => ctrlBase.Update(default));
         }
 
         [Fact]
@@ -535,9 +543,10 @@ namespace VelaptorTests.UI
         private static void ClearMouseState()
         {
             IMouseInput<MouseButton, MouseState>.InputStates.Clear();
-            IMouseInput<MouseButton, MouseState>.XPos = 0;
-            IMouseInput<MouseButton, MouseState>.YPos = 0;
-            IMouseInput<MouseButton, MouseState>.ScrollWheelValue = 0;
+            var mouse = new Mouse();
+            mouse.SetXPos(0);
+            mouse.SetYPos(0);
+            mouse.SetScrollWheelValue(0);
         }
     }
 }

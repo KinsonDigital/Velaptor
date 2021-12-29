@@ -4,11 +4,14 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using CASL;
     using Velaptor.Content.Exceptions;
     using CASLSound = CASL.Sound;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// A single sound that can be played, paused etc.
@@ -116,7 +119,7 @@ namespace Velaptor.Content
         public void Reset() => this.sound.Reset();
 
         /// <summary>
-        /// Rewinds the sound by the given amound of <paramref name="seconds"/>.
+        /// Rewinds the sound by the given amount of <paramref name="seconds"/>.
         /// </summary>
         /// <param name="seconds">The amount of seconds to rewind the song.</param>
         public void Rewind(float seconds) => this.sound.Rewind(seconds);

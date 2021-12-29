@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Text;
+
 namespace VelaptorTesting.Scenes
 {
-    using System;
     using System.Drawing;
-    using System.Text;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Input;
@@ -49,16 +49,19 @@ namespace VelaptorTesting.Scenes
                 Color = Color.White,
             };
 
+            this.instructions.Text = "Hit a key on the keyboard to see if it is correct.";
+
+            this.instructions.LoadContent();
+
+            this.instructions.Position = new Point(
+                (int)(this.instructions.Width / 2) + LeftMargin,
+                (int)(this.instructions.Height / 2) + TopMargin);
+
             this.downKeys = new Label(ContentLoader)
             {
                 Name = "DownKeys",
                 Color = Color.White,
             };
-
-            this.instructions.Text = "Hit a key on the keyboard to see if it is correct.";
-
-            this.instructions.LoadContent();
-            this.instructions.Position = new Point(LeftMargin, TopMargin);
 
             this.downKeys.LoadContent();
 
@@ -103,8 +106,8 @@ namespace VelaptorTesting.Scenes
                 this.downKeys.Text = "No Keys Pressed";
             }
 
-            var posX = (int)((MainWindow.WindowWidth / 2f) - (this.downKeys.Width / 2f));
-            var posY = (int)((MainWindow.WindowHeight / 2f) - (this.downKeys.Height / 2f));
+            var posX = (int)MainWindow.WindowWidth / 2;
+            var posY = (int)MainWindow.WindowHeight / 2;
 
             this.downKeys.Position = new Point(posX, posY);
 

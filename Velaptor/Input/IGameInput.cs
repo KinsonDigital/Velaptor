@@ -12,7 +12,7 @@ namespace Velaptor.Input
     /// </summary>
     /// <typeparam name="TInputs">The inputs available.</typeparam>
     /// <typeparam name="TInputState">The state of the input.</typeparam>
-    public interface IGameInput<TInputs, TInputState>
+    public interface IGameInput<in TInputs, out TInputState>
         where TInputs : struct, Enum
     {
         /// <summary>
@@ -38,7 +38,7 @@ namespace Velaptor.Input
         /// <param name="input">The input to set.</param>
         /// <param name="state">The state to set the input to.</param>
         /// <remarks>
-        ///     When the <paramref name="state"/> is the value of <see langword=""="true"/>,
+        ///     When the <paramref name="state"/> is the value of <see langword="true"/>,
         ///     this means that the input is in the down state.
         /// </remarks>
         void SetState(TInputs input, bool state);

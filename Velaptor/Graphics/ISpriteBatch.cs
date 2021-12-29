@@ -4,31 +4,37 @@
 
 namespace Velaptor.Graphics
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using System.Numerics;
     using Velaptor.Content;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Renders a single or batch of textures.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public facing API required for library users.")]
     public interface ISpriteBatch : IDisposable
     {
         /// <summary>
-        /// Gets the size of the batch.
+        /// Gets the total number of sprites rendered for each batch.
         /// </summary>
-        uint BatchSize { get; }
+        public const uint BatchSize = 1000;
 
         /// <summary>
         /// Gets or sets the render surface width.
         /// </summary>
         /// <remarks>This is the width of the viewport.</remarks>
-        int RenderSurfaceWidth { get; set; }
+        uint RenderSurfaceWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the render surface height.
         /// </summary>
         /// <remarks>This is the height of the viewport.</remarks>
-        int RenderSurfaceHeight { get; set; }
+        uint RenderSurfaceHeight { get; set; }
 
         /// <summary>
         /// Gets or sets the color that the back buffer will be cleared to.
@@ -81,9 +87,9 @@ namespace Velaptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X location of the texture.</param>
         /// <param name="y">The y location of the texture.</param>
-        /// <param name="tintColor">The color to apply to the texture.</param>
+        /// <param name="color">The color to apply to the texture.</param>
         /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
-        void Render(ITexture texture, int x, int y, Color tintColor);
+        void Render(ITexture texture, int x, int y, Color color);
 
         /// <summary>
         /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> location.
@@ -91,54 +97,192 @@ namespace Velaptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X location of the texture.</param>
         /// <param name="y">The y location of the texture.</param>
-        /// <param name="tintColor">The color to apply to the texture.</param>
+        /// <param name="color">The color to apply to the texture.</param>
         /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
         /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
-        void Render(ITexture texture, int x, int y, Color tintColor, RenderEffects effects);
+        void Render(ITexture texture, int x, int y, Color color, RenderEffects effects);
 
         /// <summary>
-        /// Renders the given <see cref="Texture"/> using the given parametters.
+        /// Renders the given <see cref="Texture"/> using the given parameters.
         /// </summary>
         /// <param name="texture">The texture to render.</param>
         /// <param name="srcRect">The rectangle of the sub texture within the texture to render.</param>
         /// <param name="destRect">The destination rectangle of rendering.</param>
         /// <param name="size">The size to render the texture at. 1 is for 100%/normal size.</param>
         /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
-        /// <param name="tintColor">The color to apply to the rendering.</param>
+        /// <param name="color">The color to apply to the rendering.</param>
         /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
         /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
-        void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color tintColor, RenderEffects effects);
+        /// <remarks>
+        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </remarks>
+        void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color color, RenderEffects effects);
 
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
-        /// at the position described by the given <paramref name="x"/> and <paramref name="y"/>
-        /// coordinates.
+        /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
         /// <param name="x">The X coordinate location to render the text.</param>
         /// <param name="y">The Y coordinate location to render the text.</param>
         /// <remarks>
-        ///     The X and Y coordinates represent the bottom left corner of the entire string of text that is being rendered.
-        /// <para>
-        ///     The color of the text will be white.
-        /// </para>
+        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
         /// </remarks>
         void Render(IFont font, string text, int x, int y);
 
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
-        /// with the given <paramref name="tintColor"/> at the position described by
-        /// the given <paramref name="x"/> and <paramref name="y"/> coordinates.
+        /// using the given <paramref name="position"/>.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="position">The position to render the text.</param>
+        /// <remarks>
+        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </remarks>
+        void Render(IFont font, string text, Vector2 position);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
         /// <param name="x">The X coordinate location to render the text.</param>
         /// <param name="y">The Y coordinate location to render the text.</param>
-        /// <param name="tintColor">The color of the text.</param>
+        /// <param name="size">The size of the text.</param>
+        /// <param name="angle">The angle of the text in degrees.</param>
         /// <remarks>
-        ///     The X and Y coordinates represent the bottom left corner of the entire string of text that is being rendered.
+        /// <para>
+        ///     position: The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </para>
+        ///
+        /// <para>
+        ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        /// </para>
         /// </remarks>
-        void Render(IFont font, string text, int x, int y, Color tintColor);
+        void Render(IFont font, string text, int x, int y, float size, float angle);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// using the given <paramref name="position"/>, <paramref name="size"/>, and <paramref name="angle"/>.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="position">The position to render the text.</param>
+        /// <param name="size">The size of the text.</param>
+        /// <param name="angle">The angle of the text in degrees.</param>
+        /// <remarks>
+        /// <para>
+        ///     position: The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </para>
+        ///
+        /// <para>
+        ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        /// </para>
+        /// </remarks>
+        void Render(IFont font, string text, Vector2 position, float size, float angle);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates
+        /// and the font <paramref name="color"/>.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="x">The X coordinate location to render the text.</param>
+        /// <param name="y">The Y coordinate location to render the text.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <remarks>
+        /// <para>
+        ///     position: The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </para>
+        ///
+        /// <para>
+        ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        /// </para>
+        /// </remarks>
+        void Render(IFont font, string text, int x, int y, Color color);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// using the given <paramref name="position"/> and <paramref name="color"/>.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="position">The position to render the text.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <remarks>
+        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </remarks>
+        void Render(IFont font, string text, Vector2 position, Color color);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// using the given <paramref name="position"/>, <paramref name="angle"/>, and font <paramref name="color"/>.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="position">The position to render the text.</param>
+        /// <param name="angle">The angle of the text in degrees.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <remarks>
+        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </remarks>
+        void Render(IFont font, string text, Vector2 position, float angle, Color color);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates,
+        /// <paramref name="angle"/>, and the font <paramref name="color"/>.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="x">The X coordinate location to render the text.</param>
+        /// <param name="y">The Y coordinate location to render the text.</param>
+        /// <param name="angle">The angle of the text in degrees.</param>
+        /// <param name="color">The color to apply to the rendering.</param>
+        /// <remarks>
+        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </remarks>
+        void Render(IFont font, string text, int x, int y, float angle, Color color);
+
+        /// <summary>
+        /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
+        /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates,
+        /// <paramref name="angle"/>, <paramref name="size"/>, and the font <paramref name="color"/>.
+        /// </summary>
+        /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
+        /// <param name="text">The text to render.</param>
+        /// <param name="x">The X coordinate location to render the text.</param>
+        /// <param name="y">The Y coordinate location to render the text.</param>
+        /// <param name="size">The size of the text.</param>
+        /// <param name="angle">The angle of the text in degrees.</param>
+        /// <param name="color">The color to apply to the rendering.</param>
+        /// <remarks>
+        /// <para>
+        ///     position: The position is based on the center of the text.  The center of the text is determined based on the
+        ///     furthest most left, right, top, and bottom edges of the text.
+        /// </para>
+        ///
+        /// <para>
+        ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        /// </para>
+        /// </remarks>
+        void Render(IFont font, string text, int x, int y, float size, float angle, Color color);
     }
 }

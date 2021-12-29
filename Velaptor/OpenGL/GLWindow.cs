@@ -5,6 +5,7 @@
 namespace Velaptor.OpenGL
 {
 #pragma warning disable IDE0001 // Name can be simplified
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -12,15 +13,14 @@ namespace Velaptor.OpenGL
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using Velaptor.Content;
-    using Velaptor.Input;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.Services;
     using Velaptor.UI;
+    using VelaptorMouseButton = Velaptor.Input.MouseButton; // TODO: Need to normalize these 2 enums and figure out which one to use if any at all
 
-    // TODO: Need to normalize these 2 enums and figure out which one to use if any at all
-    using VelaptorMouseButton = Velaptor.Input.MouseButton;
+    // ReSharper restore RedundantNameQualifier
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
@@ -35,8 +35,6 @@ namespace Velaptor.OpenGL
         private readonly IGameWindowFacade windowFacade;
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
-        private readonly IKeyboardInput<KeyCode, KeyboardState> keyboard;
-        private readonly IMouseInput<VelaptorMouseButton, MouseState> mouse;
         private readonly OpenGLInitObservable glObservable;
         private bool isShuttingDown;
         private bool firstRenderInvoked;
@@ -53,82 +51,31 @@ namespace Velaptor.OpenGL
         /// <param name="windowFacade">The internal OpenGL window facade.</param>
         /// <param name="platform">Information about the platform that is running the application.</param>
         /// <param name="taskService">Runs asynchronous tasks.</param>
-        /// <param name="keyboard">Provides keyboard input.</param>
-        /// <param name="mouse">Provides mouse input.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
         public GLWindow(
-            int width,
-            int height,
+            uint width,
+            uint height,
             IGLInvoker glInvoker,
             IGLFWInvoker glfwInvoker,
             ISystemMonitorService systemMonitorService,
             IGameWindowFacade windowFacade,
             IPlatform platform,
             ITaskService taskService,
-            IKeyboardInput<KeyCode, KeyboardState> keyboard,
-            IMouseInput<VelaptorMouseButton, MouseState> mouse,
             IContentLoader contentLoader,
             OpenGLInitObservable glObservable)
         {
-            if (glInvoker is null)
-            {
-                throw new ArgumentNullException(nameof(glInvoker), NullParamExceptionMessage);
-            }
-
-            if (glfwInvoker is null)
-            {
-                throw new ArgumentNullException(nameof(glfwInvoker), NullParamExceptionMessage);
-            }
-
-            if (systemMonitorService is null)
-            {
-                throw new ArgumentNullException(nameof(systemMonitorService), NullParamExceptionMessage);
-            }
-
-            if (windowFacade is null)
-            {
-                throw new ArgumentNullException(nameof(windowFacade), NullParamExceptionMessage);
-            }
-
-            if (platform is null)
-            {
-                throw new ArgumentNullException(nameof(platform), NullParamExceptionMessage);
-            }
-
-            if (taskService is null)
-            {
-                throw new ArgumentNullException(nameof(taskService), NullParamExceptionMessage);
-            }
-
-            if (keyboard is null)
-            {
-                throw new ArgumentNullException(nameof(keyboard), NullParamExceptionMessage);
-            }
-
-            if (mouse is null)
-            {
-                throw new ArgumentNullException(nameof(mouse), NullParamExceptionMessage);
-            }
-
-            if (contentLoader is null)
-            {
-                throw new ArgumentNullException(nameof(contentLoader), NullParamExceptionMessage);
-            }
-
-            this.gl = glInvoker;
-            this.glfw = glfwInvoker;
-            this.systemMonitorService = systemMonitorService;
-            this.windowFacade = windowFacade;
-            this.platform = platform;
-            this.taskService = taskService;
-            this.keyboard = keyboard;
-            this.mouse = mouse;
+            this.gl = glInvoker ?? throw new ArgumentNullException(nameof(glInvoker), NullParamExceptionMessage);
+            this.glfw = glfwInvoker ?? throw new ArgumentNullException(nameof(glfwInvoker), NullParamExceptionMessage);
+            this.systemMonitorService = systemMonitorService ?? throw new ArgumentNullException(nameof(systemMonitorService), NullParamExceptionMessage);
+            this.windowFacade = windowFacade ?? throw new ArgumentNullException(nameof(windowFacade), NullParamExceptionMessage);
+            this.platform = platform ?? throw new ArgumentNullException(nameof(platform), NullParamExceptionMessage);
+            this.taskService = taskService ?? throw new ArgumentNullException(nameof(taskService), NullParamExceptionMessage);
             this.glObservable = glObservable;
 
-            ContentLoader = contentLoader;
+            ContentLoader = contentLoader ?? throw new ArgumentNullException(nameof(contentLoader), NullParamExceptionMessage);
 
-            SetupWidthHeightPropCaches(width <= 0 ? 1 : width, height <= 0 ? 1 : height);
+            SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
             SetupOtherPropCaches();
         }
 
@@ -142,38 +89,22 @@ namespace Velaptor.OpenGL
         /// <inheritdoc/>
         public Vector2 Position
         {
-            get
-            {
-                if (CachedPosition is null)
-                {
-                    throw new Exception($"There was an issue getting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(Position)}' property value.");
-                }
-
-                return CachedPosition.GetValue();
-            }
-            set
-            {
-                if (CachedPosition is null)
-                {
-                    throw new Exception($"There was an issue getting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(Position)}' property value.");
-                }
-
-                CachedPosition.SetValue(value);
-            }
+            get => CachedPosition.GetValue();
+            set => CachedPosition.SetValue(value);
         }
 
         /// <inheritdoc/>
-        public int Width
+        public uint Width
         {
-            get => CachedIntProps[nameof(Width)].GetValue();
-            set => CachedIntProps[nameof(Width)].SetValue(value);
+            get => CachedUIntProps[nameof(Width)].GetValue();
+            set => CachedUIntProps[nameof(Width)].SetValue(value);
         }
 
         /// <inheritdoc/>
-        public int Height
+        public uint Height
         {
-            get => CachedIntProps[nameof(Height)].GetValue();
-            set => CachedIntProps[nameof(Height)].SetValue(value);
+            get => CachedUIntProps[nameof(Height)].GetValue();
+            set => CachedUIntProps[nameof(Height)].SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -189,24 +120,8 @@ namespace Velaptor.OpenGL
         /// <inheritdoc/>
         public StateOfWindow WindowState
         {
-            get
-            {
-                if (CachedWindowState is null)
-                {
-                    throw new Exception($"There was an issue getting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(WindowState)}' property value.");
-                }
-
-                return CachedWindowState.GetValue();
-            }
-            set
-            {
-                if (CachedWindowState is null)
-                {
-                    throw new Exception($"There was an issue setting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(WindowState)}' property value.");
-                }
-
-                CachedWindowState.SetValue(value);
-            }
+            get => CachedWindowState.GetValue();
+            set => CachedWindowState.SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -222,29 +137,13 @@ namespace Velaptor.OpenGL
         public Action? Uninitialize { get; set; }
 
         /// <inheritdoc/>
-        public Action? WinResize { get; set; }
+        public Action<SizeU>? WinResize { get; set; }
 
         /// <inheritdoc/>
         public WindowBorder TypeOfBorder
         {
-            get
-            {
-                if (CachedTypeOfBorder is null)
-                {
-                    throw new Exception($"There was an issue getting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(TypeOfBorder)}' property value.");
-                }
-
-                return CachedTypeOfBorder.GetValue();
-            }
-            set
-            {
-                if (CachedTypeOfBorder is null)
-                {
-                    throw new Exception($"There was an issue setting the '{nameof(Silk.NET.Windowing.IWindow)}.{nameof(TypeOfBorder)}' property value.");
-                }
-
-                CachedTypeOfBorder.SetValue(value);
-            }
+            get => CachedTypeOfBorder.GetValue();
+            set => CachedTypeOfBorder.SetValue(value);
         }
 
         /// <inheritdoc/>
@@ -261,41 +160,46 @@ namespace Velaptor.OpenGL
         public bool Initialized { get; private set; }
 
         /// <summary>
-        /// Gets the list of caches for <see langword=""="string"/> properties.
+        /// Gets the list of caches for <see langword="string"/> properties.
         /// </summary>
-        public Dictionary<string, CachedValue<string>> CachedStringProps { get; } = new Dictionary<string, CachedValue<string>>();
+        public Dictionary<string, CachedValue<string>> CachedStringProps { get; } = new ();
 
         /// <summary>
-        /// Gets the list of caches for <see langword=""="int"/> properties.
+        /// Gets the list of caches for <see langword="int"/> properties.
         /// </summary>
-        public Dictionary<string, CachedValue<int>> CachedIntProps { get; } = new Dictionary<string, CachedValue<int>>();
+        public Dictionary<string, CachedValue<int>> CachedIntProps { get; } = new ();
 
         /// <summary>
-        /// Gets the list of caches for <see langword=""="bool"/> properties.
+        /// Gets the list of caches for <see langword="uint"/> properties.
         /// </summary>
-        public Dictionary<string, CachedValue<bool>> CachedBoolProps { get; } = new Dictionary<string, CachedValue<bool>>();
+        public Dictionary<string, CachedValue<uint>> CachedUIntProps { get; } = new ();
+
+        /// <summary>
+        /// Gets the list of caches for <see langword="bool"/> properties.
+        /// </summary>
+        public Dictionary<string, CachedValue<bool>> CachedBoolProps { get; } = new ();
 
         /// <summary>
         /// Gets the cache for the <see cref="WindowState"/> property.
         /// </summary>
-        public CachedValue<StateOfWindow>? CachedWindowState { get; private set; }
+        public CachedValue<StateOfWindow> CachedWindowState { get; private set; } = null!;
 
         /// <summary>
         /// Gets the cache for the <see cref="TypeOfBorder"/> property.
         /// </summary>
-        public CachedValue<WindowBorder>? CachedTypeOfBorder { get; private set; }
+        public CachedValue<WindowBorder> CachedTypeOfBorder { get; private set; } = null!;
 
         /// <summary>
         /// Gets the cache for the <see cref="Position"/> property.
         /// </summary>
-        public CachedValue<Vector2>? CachedPosition { get; private set; }
+        public CachedValue<Vector2> CachedPosition { get; private set; } = null!;
 
         /// <inheritdoc/>
         public void Show()
         {
-            this.windowFacade?.PreInit();
+            this.windowFacade.PreInit();
             RegisterEvents();
-            this.windowFacade?.Show();
+            this.windowFacade.Show();
         }
 
         /// <inheritdoc/>
@@ -304,9 +208,9 @@ namespace Velaptor.OpenGL
             this.taskService.SetAction(
                 () =>
                 {
-                    this.windowFacade?.PreInit();
+                    this.windowFacade.PreInit();
                     RegisterEvents();
-                    this.windowFacade?.Show();
+                    this.windowFacade.Show();
                 });
 
             this.taskService.Start();
@@ -322,6 +226,11 @@ namespace Velaptor.OpenGL
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);
+
+        /// <summary>
+        /// Invoked when an OpenGL error occurs.
+        /// </summary>
+        private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
 
         /// <summary>
         /// Invokes the <see cref="Initialize"/> action property.
@@ -341,21 +250,11 @@ namespace Velaptor.OpenGL
             CachedStringProps.Values.ToList().ForEach(i => i.IsCaching = false);
             CachedBoolProps.Values.ToList().ForEach(i => i.IsCaching = false);
             CachedIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
+            CachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
 
-            if (CachedPosition is not null)
-            {
-                CachedPosition.IsCaching = false;
-            }
-
-            if (CachedWindowState is not null)
-            {
-                CachedWindowState.IsCaching = false;
-            }
-
-            if (CachedTypeOfBorder is not null)
-            {
-                CachedTypeOfBorder.IsCaching = false;
-            }
+            CachedPosition.IsCaching = false;
+            CachedWindowState.IsCaching = false;
+            CachedTypeOfBorder.IsCaching = false;
 
             /* Send a push notification to all subscribers that OpenGL is initialized.
              * The context of initialized here is that the OpenGL context is set
@@ -382,12 +281,14 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Invokes the <see cref="WinResize"/> action property..
         /// </summary>
-        /// <param name="e">Resize event args.</param>
         private void GameWindow_Resize(object? sender, WindowSizeEventArgs e)
         {
+            var uWidth = (uint)e.Width;
+            var uHeight = (uint)e.Height;
+
             // Update the view port so it is the same size as the window
-            this.gl.Viewport(0, 0, (uint)e.Width, (uint)e.Height);
-            WinResize?.Invoke();
+            this.gl.Viewport(0, 0, uWidth, uHeight);
+            WinResize?.Invoke(new SizeU() { Width = uWidth, Height = uHeight });
         }
 
         /// <summary>
@@ -452,11 +353,6 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked when an OpenGL error occurs.
-        /// </summary>
-        private void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
-
-        /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
@@ -484,7 +380,7 @@ namespace Velaptor.OpenGL
                 this.windowFacade.RenderFrame -= GameWindow_RenderFrame;
                 this.windowFacade.Resize -= GameWindow_Resize;
                 this.windowFacade.Dispose();
-                this.taskService?.Dispose();
+                this.taskService.Dispose();
 
                 this.gl.Dispose();
                 this.glfw.Dispose();
@@ -498,32 +394,26 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="width">The window width.</param>
         /// <param name="height">The window height.</param>
-        private void SetupWidthHeightPropCaches(int width, int height)
+        private void SetupWidthHeightPropCaches(uint width, uint height)
         {
-            CachedIntProps.Add(
+            CachedUIntProps.Add(
                 nameof(Width), // key
-                new CachedValue<int>( // value
+                new CachedValue<uint>( // value
                     defaultValue: width,
-                    getterWhenNotCaching: () =>
-                    {
-                        return (int)this.windowFacade.Size.X;
-                    },
+                    getterWhenNotCaching: () => (uint)this.windowFacade.Size.X,
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.Size = new (value, this.windowFacade.Size.Y);
+                        this.windowFacade.Size = new Vector2(value, this.windowFacade.Size.Y);
                     }));
 
-            CachedIntProps.Add(
+            CachedUIntProps.Add(
                 nameof(Height), // key
-                new CachedValue<int>( // value
+                new CachedValue<uint>( // value
                     defaultValue: height,
-                    getterWhenNotCaching: () =>
-                    {
-                        return (int)this.windowFacade.Size.Y;
-                    },
+                    getterWhenNotCaching: () => (uint)this.windowFacade.Size.Y,
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.Size = new (this.windowFacade.Size.X, value);
+                        this.windowFacade.Size = new Vector2(this.windowFacade.Size.X, value);
                     }));
         }
 
@@ -536,22 +426,19 @@ namespace Velaptor.OpenGL
                 nameof(Title), // key
                 new CachedValue<string>( // value
                     defaultValue: "Velaptor Application",
-                    getterWhenNotCaching: () =>
-                    {
-                        return this.windowFacade.Title;
-                    },
+                    getterWhenNotCaching: () => this.windowFacade.Title,
                     setterWhenNotCaching: (value) =>
                     {
                         this.windowFacade.Title = value;
                     }));
 
-            Vector2 defaultPosition = Vector2.Zero;
+            var defaultPosition = Vector2.Zero;
 
             var mainMonitor = this.systemMonitorService.MainMonitor;
 
             float ToMonitorScale(float value)
             {
-                return value * (mainMonitor is null ? 0 : mainMonitor.HorizontalDPI) /
+                return value * (mainMonitor?.HorizontalDPI ?? 0) /
                     (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
             }
 
@@ -565,10 +452,7 @@ namespace Velaptor.OpenGL
 
             CachedPosition = new CachedValue<Vector2>(
                 defaultValue: defaultPosition,
-                getterWhenNotCaching: () =>
-                {
-                    return new Vector2(this.windowFacade.Location.X, this.windowFacade.Location.Y);
-                },
+                getterWhenNotCaching: () => new Vector2(this.windowFacade.Location.X, this.windowFacade.Location.Y),
                 setterWhenNotCaching: (value) =>
                 {
                     this.windowFacade.Location = value;
@@ -578,10 +462,7 @@ namespace Velaptor.OpenGL
                 nameof(UpdateFrequency), // key
                 new CachedValue<int>( // value
                     defaultValue: 60,
-                    getterWhenNotCaching: () =>
-                    {
-                        return (int)this.windowFacade.UpdateFrequency;
-                    },
+                    getterWhenNotCaching: () => (int)this.windowFacade.UpdateFrequency,
                     setterWhenNotCaching: (value) =>
                     {
                         this.windowFacade.UpdateFrequency = value;
@@ -591,10 +472,7 @@ namespace Velaptor.OpenGL
                 nameof(MouseCursorVisible), // key
                 new CachedValue<bool>( // value
                     defaultValue: true,
-                    getterWhenNotCaching: () =>
-                    {
-                        return this.windowFacade.CursorVisible;
-                    },
+                    getterWhenNotCaching: () => this.windowFacade.CursorVisible,
                     setterWhenNotCaching: (value) =>
                     {
                         this.windowFacade.CursorVisible = value;
@@ -602,21 +480,15 @@ namespace Velaptor.OpenGL
 
             CachedWindowState = new CachedValue<StateOfWindow>(
                 defaultValue: StateOfWindow.Normal,
-                getterWhenNotCaching: () =>
-                {
-                    return this.windowFacade.WindowState;
-                },
+                getterWhenNotCaching: () => this.windowFacade.WindowState,
                 setterWhenNotCaching: (value) =>
                 {
                     this.windowFacade.WindowState = value;
                 });
 
             CachedTypeOfBorder = new CachedValue<WindowBorder>(
-                defaultValue: Velaptor.WindowBorder.Resizable,
-                getterWhenNotCaching: () =>
-                {
-                    return this.windowFacade.WindowBorder;
-                },
+                defaultValue: WindowBorder.Resizable,
+                getterWhenNotCaching: () => this.windowFacade.WindowBorder,
                 setterWhenNotCaching: (value) =>
                 {
                     this.windowFacade.WindowBorder = value;

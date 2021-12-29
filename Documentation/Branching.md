@@ -71,7 +71,7 @@ Represents an arbitrary amount of features and/or bug fixes to be released as a 
 
 <h3 align="center" style="color: #E4A06C;font-weight:bold">Preview Branches</h3>
 
-Holds minimal changes for the purpose of making the upcoming release more stable.  Things such as refactoring, bug fixes, and changes related to serving the main purpose of the upcoming release.  Changes such as introducing additional major features outside of features in the upcoming release are not aloud.
+Holds minimal changes for the purpose of making the upcoming release more stable.  Things such as refactoring, bug fixes, and changes related to serving the main purpose of the upcoming release.  Changes such as introducing additional major features outside of features in the upcoming release are not allowed.
 - **Branch Syntax:** preview/v\<major\>.\<minor\>.\<patch\>-preview.\<prev number\>
   - Example: preview/v1.2.3-preview.4
 - **Branches That Can Merge Into Preview Branches:** none

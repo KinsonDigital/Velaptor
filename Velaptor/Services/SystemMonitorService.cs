@@ -4,12 +4,15 @@
 
 namespace Velaptor.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Velaptor.Hardware;
-    using Velaptor.OpenGL;
+    using Velaptor.NativeInterop.GLFW;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Gets information about the monitors in the system.
@@ -39,18 +42,7 @@ namespace Velaptor.Services
         }
 
         /// <inheritdoc/>
-        public SystemMonitor? MainMonitor
-        {
-            get
-            {
-                if (this.monitors is null)
-                {
-                    return null;
-                }
-
-                return this.monitors.SystemMonitors.Where(m => m.IsMain).FirstOrDefault();
-            }
-        }
+        public SystemMonitor? MainMonitor => this.monitors?.SystemMonitors.FirstOrDefault(m => m.IsMain);
 
         /// <inheritdoc/>
         public void Refresh() => this.monitors?.Refresh();

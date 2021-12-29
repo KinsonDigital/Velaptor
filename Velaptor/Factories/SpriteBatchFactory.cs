@@ -2,12 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Factories
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
+    using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables;
+    using Velaptor.Services;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates instances of the type <see cref="SpriteBatch"/>.
@@ -23,20 +27,41 @@ namespace Velaptor.Factories
         /// <param name="renderSurfaceWidth">The width of the render surface.</param>
         /// <param name="renderSurfaceHeight">The height of the render surface.</param>
         /// <returns>A Velaptor implemented sprite batch.</returns>
-        public static ISpriteBatch CreateSpriteBatch(int renderSurfaceWidth, int renderSurfaceHeight)
+        public static ISpriteBatch CreateSpriteBatch(uint renderSurfaceWidth, uint renderSurfaceHeight)
         {
-            // TODO: Make this static class field
-            spriteBatch = IoC.Container.GetInstance<ISpriteBatch>();
-
-            if (spriteBatch is null)
+            if (spriteBatch is not null)
             {
-                throw new NullReferenceException("There were issues creating the sprite batch.");
+                return spriteBatch;
             }
+
+            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            var textureShader = ShaderFactory.CreateTextureShader();
+            var fontShader = ShaderFactory.CreateFontShader();
+            var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
+            var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
+            var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
+
+            spriteBatch = new SpriteBatch(
+                glInvoker,
+                glInvokerExtensions,
+                textureShader,
+                fontShader,
+                textureBuffer,
+                fontBuffer,
+                new TextureBatchService(),
+                new TextureBatchService(),
+                glInitObservable);
 
             spriteBatch.RenderSurfaceWidth = renderSurfaceWidth;
             spriteBatch.RenderSurfaceHeight = renderSurfaceHeight;
 
             return spriteBatch;
         }
+
+        /// <summary>
+        /// Disposes of the sprite batch.
+        /// </summary>
+        public static void Dispose() => spriteBatch?.Dispose();
     }
 }

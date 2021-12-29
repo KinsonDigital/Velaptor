@@ -27,8 +27,10 @@ namespace VelaptorTests.Content
         private readonly string fontsDirPath;
         private readonly string fontDataFilePath;
         private readonly GlyphMetrics[] glyphMetricData;
-        private readonly Mock<IGLInvoker> mockGLInvoker;
+        private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
+        private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPathResolver> mockFontPathResolver;
@@ -50,10 +52,12 @@ namespace VelaptorTests.Content
             this.fontDataFilePath = $@"{this.fontsDirPath}{FontContentName}.json";
             var fontFilepath = $@"{this.fontsDirPath}{FontContentName}.ttf";
 
-            this.mockGLInvoker = new Mock<IGLInvoker>();
+            this.mockGL = new Mock<IGLInvoker>();
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
             this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
+            this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
 
-            this.glyphMetricData = new GlyphMetrics[]
+            this.glyphMetricData = new[]
                 {
                     GenerateMetricData(0),
                     GenerateMetricData(10),
@@ -61,7 +65,7 @@ namespace VelaptorTests.Content
 
             this.mockFontAtlasService = new Mock<IFontAtlasService>();
             this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(fontFilepath, It.IsAny<int>()))
-                .Returns(() => (default(ImageData), this.glyphMetricData));
+                .Returns(() => (default, this.glyphMetricData));
 
             this.mockFontPathResolver = new Mock<IPathResolver>();
             this.mockFontPathResolver.Setup(m => m.ResolveDirPath()).Returns(this.fontsDirPath);
@@ -259,7 +263,7 @@ namespace VelaptorTests.Content
                 YMax = start + 10,
                 HorizontalAdvance = start + 11,
                 Glyph = (char)(start + 12),
-                AtlasBounds = new Rectangle(start + 13, start + 14, start + 15, start + 16),
+                GlyphBounds = new RectangleF(start + 13, start + 14, start + 15, start + 16),
             };
         }
 
@@ -268,8 +272,10 @@ namespace VelaptorTests.Content
         /// </summary>
         /// <returns>The instance to test.</returns>
         private FontLoader CreateLoader() => new (
-            this.mockGLInvoker.Object,
+            this.mockGL.Object,
+            this.mockGLExtensions.Object,
             this.mockFreeTypeInvoker.Object,
+            this.mockFreeTypeExtensions.Object,
             this.mockFontAtlasService.Object,
             this.mockFontPathResolver.Object,
             this.mockImageService.Object,

@@ -4,6 +4,7 @@
 
 namespace Velaptor.Content
 {
+// ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
@@ -15,6 +16,8 @@ namespace Velaptor.Content
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
+    // ReS harper restore RedundantNameQualifier
+
     /// <summary>
     /// Loads font content for rendering text.
     /// </summary>
@@ -22,7 +25,9 @@ namespace Velaptor.Content
     {
         private readonly ConcurrentDictionary<string, IFont> fonts = new ();
         private readonly IGLInvoker gl;
+        private readonly IGLInvokerExtensions glExtensions;
         private readonly IFreeTypeInvoker freeTypeInvoker;
+        private readonly IFreeTypeExtensions freeTypeExtensions;
         private readonly IFontAtlasService fontAtlasService;
         private readonly IPathResolver fontPathResolver;
         private readonly IFile file;
@@ -47,7 +52,9 @@ namespace Velaptor.Content
         public FontLoader(IFontAtlasService fontAtlasService, IPathResolver fontPathResolver, IImageService imageService)
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
+            this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             this.freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
+            this.freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
             this.fontAtlasService = fontAtlasService;
             this.fontPathResolver = fontPathResolver;
             this.file = IoC.Container.GetInstance<IFile>();
@@ -61,7 +68,9 @@ namespace Velaptor.Content
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
         /// </summary>
         /// <param name="gl">Makes native calls to OpenGL.</param>
+        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="freeTypeInvoker">Makes calls to the native free type library.</param>
+        /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="fontAtlasService">Loads font files and builds atlas textures from them.</param>
         /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
         /// <param name="imageService">Manipulates image data.</param>
@@ -69,7 +78,9 @@ namespace Velaptor.Content
         /// <param name="path">Processes directory and fle paths.</param>
         internal FontLoader(
             IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
             IFreeTypeInvoker freeTypeInvoker,
+            IFreeTypeExtensions freeTypeExtensions,
             IFontAtlasService fontAtlasService,
             IPathResolver fontPathResolver,
             IImageService imageService,
@@ -77,7 +88,9 @@ namespace Velaptor.Content
             IPath path)
         {
             this.gl = gl;
+            this.glExtensions = glExtensions;
             this.freeTypeInvoker = freeTypeInvoker;
+            this.freeTypeExtensions = freeTypeExtensions;
             this.fontAtlasService = fontAtlasService;
             this.fontPathResolver = fontPathResolver;
             this.file = file;
@@ -110,10 +123,10 @@ namespace Velaptor.Content
                 break;
             }
 
-            return this.fonts.GetOrAdd(filePathNoExtension, path =>
+            return this.fonts.GetOrAdd(filePathNoExtension, filePath =>
             {
-                var fontDataFilePath = $"{path}.json";
-                var fontFilePath = $"{path}.ttf";
+                var fontDataFilePath = $"{filePath}.json";
+                var fontFilePath = $"{filePath}.ttf";
 
                 if (this.file.Exists(fontDataFilePath) is false)
                 {
@@ -140,17 +153,16 @@ namespace Velaptor.Content
 
                 var (fontAtlasImage, atlasData) = this.fontAtlasService.CreateFontAtlas(fontFilePath, fontSettings.Size);
 
-                // OpenGL origin Y is at the bottom instead of the top.  This menas
+                // OpenGL origin Y is at the bottom instead of the top.  This means
                 // that the current image data which is vertically oriented correctly, needs
                 // to be flipped vertically before being sent to OpenGL.
                 fontAtlasImage = this.imageService.FlipVertically(fontAtlasImage);
 
-                var fontAtlasTexture = new Texture(this.gl, name, path, fontAtlasImage) { IsPooled = true };
+                var fontAtlasTexture = new Texture(this.gl, this.glExtensions, name, filePath, fontAtlasImage) { IsPooled = true };
 
-                return new Font(fontAtlasTexture, atlasData, fontSettings, this.glyphChars, name, path)
+                return new Font(fontAtlasTexture, this.freeTypeInvoker, this.freeTypeExtensions, atlasData, fontSettings, this.glyphChars, name, filePath)
                 {
                     IsPooled = true,
-                    HasKerning = this.freeTypeInvoker.FT_Has_Kerning(),
                 };
             });
         }

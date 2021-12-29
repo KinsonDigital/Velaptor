@@ -2,19 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
-
 namespace VelaptorTests.UI
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Drawing;
+    using System.Linq;
     using Moq;
     using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.UI;
-    using Helpers;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -23,6 +22,7 @@ namespace VelaptorTests.UI
     public class ButtonTests
     {
         private const string ButtonTextValue = "test-value";
+        private const string TextureName = "button-face-small";
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITexture> mockTexture;
         private readonly Mock<IFont> mockFont;
@@ -44,7 +44,7 @@ namespace VelaptorTests.UI
                     Glyph = 'c', GlyphWidth = 4, GlyphHeight = 5,
                     HoriBearingX = 6, HoriBearingY = 7, XMin = 8,
                     XMax = 9, YMin = 11, YMax = 22,
-                    HorizontalAdvance = 33, AtlasBounds = new Rectangle(44, 55, 66, 77),
+                    HorizontalAdvance = 33, GlyphBounds = new Rectangle(44, 55, 66, 77),
                 },
                 new GlyphMetrics()
                 {
@@ -52,7 +52,7 @@ namespace VelaptorTests.UI
                     Glyph = 'c', GlyphWidth = 44, GlyphHeight = 55,
                     HoriBearingX = 66, HoriBearingY = 77, XMin = 88,
                     XMax = 99, YMin = 111, YMax = 222,
-                    HorizontalAdvance = 333, AtlasBounds = new Rectangle(444, 555, 666, 777),
+                    HorizontalAdvance = 333, GlyphBounds = new Rectangle(444, 555, 666, 777),
                 },
             };
 
@@ -61,13 +61,28 @@ namespace VelaptorTests.UI
             MockGlyphs(ButtonTextValue);
 
             this.mockContentLoader = new Mock<IContentLoader>();
-            this.mockContentLoader.Setup(m => m.Load<ITexture>("button-face"))
+            this.mockContentLoader.Setup(m => m.Load<ITexture>(TextureName))
                 .Returns(this.mockTexture.Object);
             this.mockContentLoader.Setup(m => m.Load<IFont>("TimesNewRoman"))
                 .Returns(this.mockFont.Object);
         }
 
         #region Prop Tests
+        [Fact]
+        public void Position_WhenSettingValue_ReturnsCorrectValue()
+        {
+            // Arrange
+            var expected = new Point(11, 22);
+            var button = CreateButton();
+
+            // Act
+            button.Position = new Point(11, 22);
+            var actual = button.Position;
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
         [Fact]
         public void Text_WhenSettingValueBeforeLoadingContent_ReturnsCorrectResult()
         {
@@ -98,9 +113,9 @@ namespace VelaptorTests.UI
         }
 
         [Theory]
-        [InlineData(false, 0)]
-        [InlineData(true, 200)]
-        public void Width_WhenGettingValueBeforeLoadingContent_ReturnsCorrectResult(bool loadContent, int expected)
+        [InlineData(false, 0u)]
+        [InlineData(true, 200u)]
+        public void Width_WhenGettingValueBeforeLoadingContent_ReturnsCorrectResult(bool loadContent, uint expected)
         {
             // Arrange
             var button = CreateButton();
@@ -118,9 +133,9 @@ namespace VelaptorTests.UI
         }
 
         [Theory]
-        [InlineData(false, 0)]
-        [InlineData(true, 100)]
-        public void Height_WhenGettingValueBeforeLoadingContent_ReturnsCorrectResult(bool loadContent, int expected)
+        [InlineData(false, 0u)]
+        [InlineData(true, 100u)]
+        public void Height_WhenGettingValueBeforeLoadingContent_ReturnsCorrectResult(bool loadContent, uint expected)
         {
             // Arrange
             var button = CreateButton();
@@ -136,6 +151,20 @@ namespace VelaptorTests.UI
             // Assert
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Size_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var button = CreateButton();
+            button.LoadContent();
+
+            // Act
+            var actual = button.Size;
+
+            // Assert
+            Assert.Equal(1f, actual);
+        }
         #endregion
 
         #region Method Tests
@@ -150,7 +179,7 @@ namespace VelaptorTests.UI
             button.LoadContent();
 
             // Assert
-            this.mockContentLoader.Verify(m => m.Load<ITexture>("button-face"), Times.Once);
+            this.mockContentLoader.Verify(m => m.Load<ITexture>(TextureName), Times.Once);
             this.mockContentLoader.Verify(m => m.Load<IFont>("TimesNewRoman"), Times.Once);
         }
 
@@ -228,7 +257,7 @@ namespace VelaptorTests.UI
             // Arrange
             var mockSpriteBatch = new Mock<ISpriteBatch>();
 
-            this.mockContentLoader.Setup(m => m.Load<ITexture>("button-face"))
+            this.mockContentLoader.Setup(m => m.Load<ITexture>(TextureName))
                 .Returns(() =>
                 {
                     ITexture? nullTexture = null;
@@ -268,8 +297,8 @@ namespace VelaptorTests.UI
             // Assert
             mockSpriteBatch.Verify(m =>
                 m.Render(this.mockTexture.Object,
-                    110,
-                    70,
+                    10,
+                    20,
                     Color.White), Times.Once);
         }
 
