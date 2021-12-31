@@ -209,6 +209,31 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
+        public void Load_WhenFontStyleDoesNotMatchRequestedStyle_ThrowsException()
+        {
+            // Arrange
+            // Style of 2 = Bold
+            const string fontSettingsJSON = @"
+                {
+                    'Size': 22,
+                    'Style': 2
+                }";
+            this.mockPath.Setup(m => m.HasExtension(It.IsAny<string>())).Returns(false);
+            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath))
+                .Returns(fontSettingsJSON);
+            this.mockFreeTypeExtensions.Setup(m => m.GetFontStyle(this.fontDataFilePath))
+                .Returns(FontStyle.Regular);
+
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<LoadFontException>(() =>
+            {
+                loader.Load(FontContentName);
+            }, $"The font 'test-font' with the style 'Bold' does not exist.");
+        }
+
+        [Fact]
         public void Unload_WhenInvoked_UnloadsFonts()
         {
             // Arrange

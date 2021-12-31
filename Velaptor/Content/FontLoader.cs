@@ -151,6 +151,13 @@ namespace Velaptor.Content
                     throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{fontDataFilePath}'.\n{ex.Message}");
                 }
 
+                var fontStyle = this.freeTypeExtensions.GetFontStyle(fontFilePath);
+
+                if (fontStyle != fontSettings.Style)
+                {
+                    throw new LoadFontException($@"The font '{name}' with the style '{fontSettings.Style}' does not exist.");
+                }
+
                 var (fontAtlasImage, atlasData) = this.fontAtlasService.CreateFontAtlas(fontFilePath, fontSettings.Size);
 
                 // OpenGL origin Y is at the bottom instead of the top.  This means
