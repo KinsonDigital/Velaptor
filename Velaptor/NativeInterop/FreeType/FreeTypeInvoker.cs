@@ -63,6 +63,11 @@ namespace Velaptor.NativeInterop.FreeType
         /// <inheritdoc/>
         public IntPtr FT_Init_FreeType()
         {
+            if (this.libraryPtr != IntPtr.Zero)
+            {
+                return this.libraryPtr;
+            }
+
             var error = FT.FT_Init_FreeType(out IntPtr result);
 
             if (error != FT_Error.FT_Err_Ok)

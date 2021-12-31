@@ -1,4 +1,4 @@
-﻿// <copyright file="Enums.cs" company="KinsonDigital">
+// <copyright file="Enums.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -41,27 +41,7 @@ namespace Velaptor.Content
         SubTexture,
     }
 
-    /// <summary>
-    /// The kind of font styles.
-    /// </summary>
-    public enum FontStyle
-    {
-        /// <summary>
-        /// Regular font style.
-        /// </summary>
-        Regular,
-
-        /// <summary>
-        /// Bold font style.
-        /// </summary>
-        Bold,
-
-        /// <summary>
-        /// Italic font style.
-        /// </summary>
-        Italic,
-    }
-
+    // TODO: Remove this
     internal enum TextureCreationSource
     {
         User = 0,

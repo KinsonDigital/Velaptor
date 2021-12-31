@@ -7,6 +7,7 @@ namespace Velaptor.NativeInterop.FreeType
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
+    using Velaptor.Content;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier
@@ -66,6 +67,13 @@ namespace Velaptor.NativeInterop.FreeType
         /// <param name="facePtr">The pointer to the font face.</param>
         /// <returns><see langword="true"/> if the face uses kerning.</returns>
         bool HasKerning(IntPtr facePtr);
+
+        /// <summary>
+        /// Gets the style of the font at the given <see cref="fontFilePath"/>.
+        /// </summary>
+        /// <param name="fontFilePath">The path to the font file.</param>
+        /// <returns>The style of the font.</returns>
+        FontStyle GetFontStyle(string fontFilePath);
 
         /// <summary>
         /// Returns the line spacing as a scaled value.

@@ -8,8 +8,10 @@ namespace Velaptor.NativeInterop.FreeType
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.Runtime.InteropServices;
     using FreeTypeSharp.Native;
+    using Velaptor.Content;
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
 
@@ -179,7 +181,39 @@ namespace Velaptor.NativeInterop.FreeType
             {
                 var faceRec = (FT_FaceRec*)facePtr;
 
-                result = (((int)faceRec->face_flags) & FT.FT_FACE_FLAG_KERNING) != 0;
+                result = ((int)faceRec->face_flags & FT.FT_FACE_FLAG_KERNING) != 0;
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public FontStyle GetFontStyle(string fontFilePath)
+        {
+            FontStyle result;
+
+            if (File.Exists(fontFilePath) is false)
+            {
+                throw new FileNotFoundException("The font file does not exist", fontFilePath);
+            }
+
+            unsafe
+            {
+                var freeTypeLibPtr = this.freeTypeInvoker.FT_Init_FreeType();
+                var fontFace = CreateFontFace(freeTypeLibPtr, fontFilePath);
+                var faceRec = (FT_FaceRec*)fontFace;
+
+                /* Style Values
+                    0 = regular
+                    1 = italic
+                    2 = bold
+                    3 = bold & italic
+                 */
+                result = Environment.Is64BitProcess
+                    ? (FontStyle)faceRec->style_flags.ToInt64()
+                    : (FontStyle)faceRec->style_flags.ToInt32();
+
+                this.freeTypeInvoker.FT_Done_Face(fontFace);
             }
 
             return result;
