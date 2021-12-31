@@ -164,7 +164,7 @@ namespace Velaptor.Graphics
         ///
         /// <para>
         ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, int x, int y, float size, float angle);
@@ -186,7 +186,7 @@ namespace Velaptor.Graphics
         ///
         /// <para>
         ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, Vector2 position, float size, float angle);
@@ -209,7 +209,7 @@ namespace Velaptor.Graphics
         ///
         /// <para>
         ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, int x, int y, Color color);
@@ -280,7 +280,7 @@ namespace Velaptor.Graphics
         ///
         /// <para>
         ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, int x, int y, float size, float angle, Color color);

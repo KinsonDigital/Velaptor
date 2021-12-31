@@ -70,8 +70,8 @@ namespace Velaptor.Content
         /// <param name="value">The speed that the sound should play at.</param>
         /// <remarks>
         ///     The valid range of <paramref name="value"/> is between 0.25 and 2.0
-        ///     with a <paramref name="value"/> less then 0.25 defaulting to 0.25 and
-        ///     with a <paramref name="value"/> greater then 2.0 defaulting to 2.0.
+        ///     with a <paramref name="value"/> less than 0.25 defaulting to 0.25 and
+        ///     with a <paramref name="value"/> greater than 2.0 defaulting to 2.0.
         /// </remarks>
         public float PlaySpeed
         {
