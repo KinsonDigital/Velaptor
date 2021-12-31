@@ -4,7 +4,7 @@
 -->
 
 <!-- Provide a short general summary of your changes in the Title above -->
-## Preview Release PR Description
+## Preview Release PR Description~~~~
 This pull request performs a preview release for version **_[add version here]_**
 
 ## How Has This Been Tested?
@@ -21,12 +21,16 @@ This pull request performs a preview release for version **_[add version here]_*
   - 💡 This would force library users to change their code.  This would involve a public facing API change, behavior that would force a change to the users code base, or even an update in behavior that could force a change to the library users code base.  Sometimes this it is unclear if the change is a breaking change.  If it is unclear, reach out so we can discuss and investigate if it is indeed a breaking change.
 - Additional feature and/or behavior added.
   - [ ] Yes
-    - [ ] An **_enhancement_** label has been added to the PR
+    - An **_enhancement_** label has been added to the PR
+      - [ ] Yes
+      - [ ] No
   - [ ] No
 - I have changes related to workflows (CI/CD)
   - 💡 These kinds of changes are only done by the project owner and maintainers that are allowed to make changes to workflows
   - [ ] Yes
-    - [ ] A **_workflow_** label has been added to the PR
+    - A **_workflow_** label has been added to the PR
+      - [ ] Yes
+      - [ ] No
   - [ ] No
 
 **Documentation:**
