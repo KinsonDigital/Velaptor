@@ -42,7 +42,7 @@ namespace Velaptor.Factories
         /// </summary>
         /// <returns>The resolver to atlas content.</returns>
         public static IPathResolver CreateFontPathResolver() =>
-            fontPathResolver ??= new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
+            fontPathResolver ??= new ContentFontPathResolver(IoC.Container.GetInstance<IDirectory>());
 
         /// <summary>
         /// Creates a path resolver that resolves paths to sound content.

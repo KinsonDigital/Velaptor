@@ -1,4 +1,4 @@
-﻿// <copyright file="FontPathResolverTests.cs" company="KinsonDigital">
+﻿// <copyright file="ContentFontPathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,28 +9,29 @@ namespace VelaptorTests.Content.Fonts
     using System.Reflection;
     using Moq;
     using Velaptor.Content.Fonts;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
-    /// Tests the <see cref="FontPathResolver"/> class.
+    /// Tests the <see cref="ContentFontPathResolver"/> class.
     /// </summary>
-    public class FontPathResolverTests
+    public class ContentFontPathResolverTests
     {
         private const string ContentName = "test-content";
         private readonly string contentFilePath;
         private readonly string baseDir;
-        private readonly string baseContentDir;
         private readonly string atlasContentDir;
+        private readonly Mock<IDirectory> mockDirectory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FontPathResolverTests"/> class.
+        /// Initializes a new instance of the <see cref="ContentFontPathResolverTests"/> class.
         /// </summary>
-        public FontPathResolverTests()
+        public ContentFontPathResolverTests()
         {
+            this.mockDirectory = new Mock<IDirectory>();
             this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-            this.baseContentDir = $@"{this.baseDir}Content\";
-            this.atlasContentDir = $@"{this.baseContentDir}Fonts\";
+            var baseContentDir = $@"{this.baseDir}Content\";
+            this.atlasContentDir = $@"{baseContentDir}Fonts\";
             this.contentFilePath = $"{this.atlasContentDir}{ContentName}.ttf";
         }
 
@@ -39,10 +40,9 @@ namespace VelaptorTests.Content.Fonts
         public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
         {
             // Arrange
-            var mockDirectory = new Mock<IDirectory>();
+            var resolver = CreateResolver();
 
             // Act
-            var resolver = new FontPathResolver(mockDirectory.Object);
             var actual = resolver.ContentDirectoryName;
 
             // Assert
@@ -55,8 +55,7 @@ namespace VelaptorTests.Content.Fonts
         public void ResolveFilePath_WhenContentItemDoesNotExist_ThrowsException()
         {
             // Arrange
-            var mockDirectory = new Mock<IDirectory>();
-            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.ttf"))
+            this.mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.ttf"))
                 .Returns(() =>
                 {
                     return new[]
@@ -66,10 +65,10 @@ namespace VelaptorTests.Content.Fonts
                     };
                 });
 
-            var resolver = new FontPathResolver(mockDirectory.Object);
+            var resolver = CreateResolver();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The font file '{this.contentFilePath}' does not exist.");
@@ -82,8 +81,7 @@ namespace VelaptorTests.Content.Fonts
         public void ResolveFilePath_WhenInvoked_ResolvesFilepath(string contentName)
         {
             // Arrange
-            var mockDirectory = new Mock<IDirectory>();
-            mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.ttf"))
+            this.mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.ttf"))
                 .Returns(() =>
                 {
                     return new[]
@@ -93,7 +91,7 @@ namespace VelaptorTests.Content.Fonts
                     };
                 });
 
-            var resolver = new FontPathResolver(mockDirectory.Object);
+            var resolver = CreateResolver();
 
             // Act
             var actual = resolver.ResolveFilePath(contentName);
@@ -102,5 +100,11 @@ namespace VelaptorTests.Content.Fonts
             Assert.Equal(this.contentFilePath, actual);
         }
         #endregion
+
+        /// <summary>
+        /// Creates a new instance of <see cref="ContentFontPathResolver"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test.</returns>
+        private ContentFontPathResolver CreateResolver() => new (this.mockDirectory.Object);
     }
 }

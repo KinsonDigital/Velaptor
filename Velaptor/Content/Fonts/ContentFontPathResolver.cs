@@ -1,4 +1,4 @@
-﻿// <copyright file="FontPathResolver.cs" company="KinsonDigital">
+﻿// <copyright file="ContentFontPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,16 +12,16 @@ namespace Velaptor.Content.Fonts
     /// <summary>
     /// Resolves paths to font content.
     /// </summary>
-    public class FontPathResolver : ContentPathResolver
+    public class ContentFontPathResolver : ContentPathResolver
     {
         private const string FileExtension = ".ttf";
         private readonly IDirectory directory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FontPathResolver"/> class.
+        /// Initializes a new instance of the <see cref="ContentFontPathResolver"/> class.
         /// </summary>
         /// <param name="directory">Processes directories.</param>
-        public FontPathResolver(IDirectory directory)
+        public ContentFontPathResolver(IDirectory directory)
         {
             this.directory = directory;
             ContentDirectoryName = "Fonts";

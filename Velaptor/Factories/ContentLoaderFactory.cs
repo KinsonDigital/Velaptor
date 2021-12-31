@@ -130,7 +130,7 @@ namespace Velaptor.Factories
             var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
             var freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
-            var fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
+            var fontPathResolver = new ContentFontPathResolver(IoC.Container.GetInstance<IDirectory>());
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
 
             fontLoader = new FontLoader(
