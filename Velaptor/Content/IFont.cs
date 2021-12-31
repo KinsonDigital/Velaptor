@@ -7,6 +7,7 @@ namespace Velaptor.Content
     using System.Collections.ObjectModel;
     using System.Drawing;
     using Velaptor.Graphics;
+    using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 
     /// <summary>
     /// The font to use when rendering text to the screen.
@@ -26,7 +27,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets the style of the font.
         /// </summary>
-        FontStyle Style { get; }
+        VelFontStyle Style { get; }
 
         /// <summary>
         /// Gets a value indicating whether the font has kerning for text rendering layout.

@@ -8,6 +8,7 @@ namespace Velaptor.UI
     using System;
     using System.Drawing;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier

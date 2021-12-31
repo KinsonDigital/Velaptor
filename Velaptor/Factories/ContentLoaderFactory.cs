@@ -8,6 +8,7 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;

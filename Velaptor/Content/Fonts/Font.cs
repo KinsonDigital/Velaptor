@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Content.Fonts
 {
     // ReSharper disable RedundantNameQualifier
     using System;
@@ -14,6 +14,7 @@ namespace Velaptor.Content
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.FreeType;
+    using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -81,7 +82,7 @@ namespace Velaptor.Content
         public int Size { get; private set; }
 
         /// <inheritdoc/>
-        public FontStyle Style { get; private set; }
+        public VelFontStyle Style { get; private set; }
 
         /// <inheritdoc/>
         public bool HasKerning { get; private set; }

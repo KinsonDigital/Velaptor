@@ -15,6 +15,7 @@ namespace VelaptorTests.UI
     using Velaptor.UI;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 
     /// <summary>
     /// Tests the <see cref="Label"/> class.
@@ -184,11 +185,11 @@ namespace VelaptorTests.UI
             var label = CreateLabel();
 
             // Act
-            label.Style = FontStyle.Bold;
+            label.Style = VelFontStyle.Bold;
             var actual = label.Style;
 
             // Assert
-            Assert.Equal(FontStyle.Bold, actual);
+            Assert.Equal(VelFontStyle.Bold, actual);
         }
 
         [Fact]

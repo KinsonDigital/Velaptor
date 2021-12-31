@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Content.Fonts
 {
     /// <summary>
     /// The different font settings that can be used when loading fonts.

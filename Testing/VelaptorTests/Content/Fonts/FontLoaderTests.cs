@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Content
+namespace VelaptorTests.Content.Fonts
 {
     using System.Drawing;
     using System.IO;
@@ -11,6 +11,7 @@ namespace VelaptorTests.Content
     using Newtonsoft.Json;
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;

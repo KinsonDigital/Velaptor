@@ -7,7 +7,7 @@ namespace Velaptor.NativeInterop.FreeType
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
-    using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier

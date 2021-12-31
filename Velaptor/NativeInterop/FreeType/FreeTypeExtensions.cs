@@ -11,8 +11,8 @@ namespace Velaptor.NativeInterop.FreeType
     using System.IO;
     using System.Runtime.InteropServices;
     using FreeTypeSharp.Native;
-    using Velaptor.Content;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier

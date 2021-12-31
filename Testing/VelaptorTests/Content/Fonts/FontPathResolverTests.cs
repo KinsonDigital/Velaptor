@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Content
+namespace VelaptorTests.Content.Fonts
 {
     using System.IO;
     using System.IO.Abstractions;
     using System.Reflection;
     using Moq;
-    using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Xunit;
     using Assert = Helpers.AssertExtensions;
 
