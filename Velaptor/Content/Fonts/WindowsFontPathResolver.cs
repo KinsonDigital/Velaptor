@@ -24,7 +24,7 @@ namespace Velaptor.Content.Fonts
         public WindowsFontPathResolver(IDirectory directory) => this.directory = directory;
 
         /// <inheritdoc/>
-        public string RootDirectory => @"C:\Windows\";
+        public string RootDirectoryPath => @"C:\Windows\";
 
         /// <inheritdoc/>
         public string ContentDirectoryName => "Fonts";
@@ -42,7 +42,7 @@ namespace Velaptor.Content.Fonts
                 throw new ArgumentException($"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension.", nameof(contentName));
             }
 
-            var contentDirPath = $@"{RootDirectory}{ContentDirectoryName}\";
+            var contentDirPath = $@"{RootDirectoryPath}{ContentDirectoryName}\";
             var fullContentPath = $"{contentDirPath}{contentName}{FileExtension}";
             var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
                               where string.Compare(
@@ -60,6 +60,6 @@ namespace Velaptor.Content.Fonts
         }
 
         /// <inheritdoc/>
-        public string ResolveDirPath() => $@"{RootDirectory}{ContentDirectoryName}\";
+        public string ResolveDirPath() => $@"{RootDirectoryPath}{ContentDirectoryName}\";
     }
 }

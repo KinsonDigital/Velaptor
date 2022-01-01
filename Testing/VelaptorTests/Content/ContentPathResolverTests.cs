@@ -41,8 +41,8 @@ namespace VelaptorTests.Content
             var resolver = new ContentPathResolverFake();
 
             // Act
-            resolver.RootDirectory = rootDirectory;
-            var actual = resolver.RootDirectory;
+            resolver.RootDirectoryPath = rootDirectory;
+            var actual = resolver.RootDirectoryPath;
 
             // Assert
             Assert.Equal(expected, actual);
@@ -94,7 +94,7 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var resolver = new ContentPathResolverFake();
-            resolver.RootDirectory = @"C:\temp\my-content\";
+            resolver.RootDirectoryPath = @"C:\temp\my-content\";
             resolver.ContentDirectoryName = "test-content";
 
             // Act

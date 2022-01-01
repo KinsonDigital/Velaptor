@@ -18,7 +18,7 @@ namespace Velaptor.Content
         private string contentDirName = string.Empty;
 
         /// <inheritdoc/>
-        public string RootDirectory
+        public string RootDirectoryPath
         {
             get => this.contentRootDirectory;
             set

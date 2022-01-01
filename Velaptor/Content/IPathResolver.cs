@@ -12,7 +12,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets the root directory of the content.
         /// </summary>
-        string RootDirectory { get; }
+        string RootDirectoryPath { get; }
 
         /// <summary>
         /// Gets the name of the content directory.
@@ -20,7 +20,7 @@ namespace Velaptor.Content
         /// <remarks>
         /// <para>
         ///     This directory is not a path. It is just a name and is always located
-        ///     as a child directory of the <see cref="RootDirectory"/>.
+        ///     as a child directory of the <see cref="RootDirectoryPath"/>.
         /// </para>
         /// <para>
         ///     If the value is a file path, the file name will be stripped and the
@@ -34,7 +34,7 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="contentName">The name of the content item with or without the file extension.</param>
         /// <returns>
-        ///     The <see cref="RootDirectory"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
+        ///     The <see cref="RootDirectoryPath"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
         /// </returns>
         string ResolveFilePath(string contentName);
 

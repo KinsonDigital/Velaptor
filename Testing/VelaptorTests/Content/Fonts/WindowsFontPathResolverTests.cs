@@ -32,7 +32,7 @@ namespace VelaptorTests.Content.Fonts
             var resolver = CreateResolver();
 
             // Act
-            var actual = resolver.RootDirectory;
+            var actual = resolver.RootDirectoryPath;
 
             // Assert
             Assert.Equal(@"C:\Windows\", actual);
