@@ -15,7 +15,7 @@ namespace Velaptor.Content
         bool IsLoaded { get; }
 
         /// <summary>
-        /// Load the content for an object.
+        /// Loads the content for an object.
         /// </summary>
         void LoadContent();
 
