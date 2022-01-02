@@ -40,7 +40,7 @@ namespace Velaptor.Content
         ///     file will be loaded, not the '.mp3' file.
         /// </para>
         /// <para>
-        ///     If no '.ogg' file exists but a '.mp3' file does not, then the '.mp3' file will be loaded.
+        ///     If no '.ogg' file exists but a '.mp3' file does, then the '.mp3' file will be loaded.
         /// </para>
         /// </remarks>
         public override string ResolveFilePath(string contentName)
