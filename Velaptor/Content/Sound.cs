@@ -46,7 +46,7 @@ namespace Velaptor.Content
         public SoundTime Position => this.sound.Position;
 
         /// <summary>
-        /// Gets the length of the song.
+        /// Gets the length of the sound.
         /// </summary>
         public SoundTime Length => this.sound.Length;
 
@@ -97,7 +97,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Fast forwards the sound by the given amount of <paramref name="seconds"/>.
         /// </summary>
-        /// <param name="seconds">The amount of seconds to fast forward the song.</param>
+        /// <param name="seconds">The amount of seconds to fast forward the sound.</param>
         public void FastForward(float seconds) => this.sound.FastForward(seconds);
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Rewinds the sound by the given amount of <paramref name="seconds"/>.
         /// </summary>
-        /// <param name="seconds">The amount of seconds to rewind the song.</param>
+        /// <param name="seconds">The amount of seconds to rewind the sound.</param>
         public void Rewind(float seconds) => this.sound.Rewind(seconds);
 
         /// <summary>
