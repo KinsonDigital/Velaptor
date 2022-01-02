@@ -22,7 +22,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoader"/> class.
         /// </summary>
-        /// <param name="textureLoader">The loader used to load textures.</param>
+        /// <param name="textureLoader">Loads textures.</param>
         /// <param name="soundLoader">Loads sounds.</param>
         /// <param name="atlasLoader">Loads a texture atlas.</param>
         /// <param name="fontLoader">Loads fonts for rendering test.</param>
