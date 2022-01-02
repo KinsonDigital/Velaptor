@@ -25,15 +25,14 @@ namespace Velaptor.Content
 
         /*NOTE:
          * This flag is for the purpose of unit testing.  This flag gets set in one location and that is
-         * the finalizer.  This then gets checked to see if it is false in the Dispose() method.
+         * the finalizer.  This gets checked to see if it is false in the Dispose() method.
          *
          * If the finalizer is false and the Texture is pooled, it will then allow the PooledDisposalException
          * to be thrown.
          *
-         * An issue arises when running enough unit tests together with this class being included in those tests
-         * When a lot of tests are ran, the finalizers is being invoked which then in turn invokes the Dispose()
-         * method. This in turn then throws the exception which is not expected in the unit tests which fails the
-         * unit test.
+         * An issue arises when running enough unit tests together with this class being included in those tests.
+         * When a lot of tests are ran, the finalizers are being invoked which in turn invokes the Dispose()
+         * method. This unexpectedly throws the exception which fails the unit test, when it should not fail.
          *
          * This happens when the pooling status of an object is true, and the object was disposed of in the test,
          * but the finalizer gets invoked before the GC.SuppressFinalize(this) is invoked.
