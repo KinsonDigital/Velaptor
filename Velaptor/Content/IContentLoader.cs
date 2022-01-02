@@ -15,7 +15,7 @@ namespace Velaptor.Content
         /// Loads content with the given <paramref name="name"/>.
         /// </summary>
         /// <typeparam name="T">The type of content to load.</typeparam>
-        /// <param name="name">The name of the content to load.</param>
+        /// <param name="name">The name of content to load.</param>
         /// <returns>A texture to render.</returns>
         T Load<T>(string name)
             where T : class, IContent;
@@ -24,7 +24,7 @@ namespace Velaptor.Content
         /// Unloads content with the given <paramref name="name"/>.
         /// </summary>
         /// <typeparam name="T">The type of content to unload.</typeparam>
-        /// <param name="name">The name of the content to unload.</param>
+        /// <param name="name">The name of content to unload.</param>
         void Unload<T>(string name)
             where T : class, IContent;
     }
