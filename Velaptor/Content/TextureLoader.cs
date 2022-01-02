@@ -112,7 +112,7 @@ namespace Velaptor.Content
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing"><see langword="true"/> To dispose of managed resources.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)
