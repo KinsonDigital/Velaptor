@@ -385,7 +385,7 @@ namespace Velaptor.OpenGL
     {
         /// <summary>
         /// Clamps the coordinates between 0 and 1.  The result is that higher coordinates
-        /// become clamped tot he edge, resulting in a stretched edge pattern.
+        /// become clamped to the edge, resulting in a stretched edge pattern.
         /// </summary>
         ClampToEdge = 33071,
     }
