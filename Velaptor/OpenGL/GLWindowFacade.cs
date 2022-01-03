@@ -394,14 +394,14 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked when any mouseInput buttons transitions from the up position to the down position.
+        /// Invoked when any mouseInput buttons transition from the up position to the down position.
         /// </summary>
         /// <param name="mouse">The system mouseInput.</param>
         /// <param name="button">The button that was pushed down.</param>
         private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, true);
 
         /// <summary>
-        /// Invoked when any mouseInput buttons transitions from the down position to the up position.
+        /// Invoked when any mouseInput buttons transition from the down position to the up position.
         /// </summary>
         /// <param name="mouse">The system mouseInput.</param>
         /// <param name="button">The button that was pushed down.</param>
@@ -440,13 +440,13 @@ namespace Velaptor.OpenGL
         private void GLWindow_Resize(Vector2D<int> obj) => this.Resize?.Invoke(this, new WindowSizeEventArgs(obj.X, obj.Y));
 
         /// <summary>
-        /// Invoked once a frame and invokes the <see cref="RenderFrame"/> event.
+        /// Invoked once per frame and invokes the <see cref="RenderFrame"/> event.
         /// </summary>
         /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         private void GLWindow_Render(double frameTime) => this.RenderFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
 
         /// <summary>
-        /// Invoked once a frame and invokes the <see cref="UpdateFrame"/> event.
+        /// Invoked once per frame and invokes the <see cref="UpdateFrame"/> event.
         /// </summary>
         /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         private void GLWindow_Update(double frameTime) => this.UpdateFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
