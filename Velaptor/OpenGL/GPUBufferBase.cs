@@ -223,7 +223,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Looks for an pulls settings out of various attributes to help set the state of the buffer.
+        /// Looks for and pulls settings out of various attributes to help set the state of the buffer.
         /// </summary>
         private void ProcessCustomAttributes()
         {
