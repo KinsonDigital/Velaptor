@@ -22,7 +22,7 @@ namespace Velaptor.Factories
     public static class WindowFactory
     {
         /// <summary>
-        /// Creates a single instance of a Velaptor window implementation.
+        /// Creates an instance of a Velaptor window implementation.
         /// </summary>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
