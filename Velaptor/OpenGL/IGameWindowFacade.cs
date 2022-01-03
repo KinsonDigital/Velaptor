@@ -58,7 +58,7 @@ namespace Velaptor.OpenGL
         double UpdateFrequency { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the mouse cursor is visible.
+        /// Gets or sets a value indicating whether or not the mouse cursor is visible.
         /// </summary>
         bool CursorVisible { get; set; }
 
@@ -78,7 +78,7 @@ namespace Velaptor.OpenGL
         string Title { get; set; }
 
         /// <summary>
-        /// Runs initilization code before the <see cref="Init(int, int)"/> code is ran.
+        /// Runs initialization code before the <see cref="Init(int, int)"/> code is run.
         /// </summary>
         void PreInit();
 
