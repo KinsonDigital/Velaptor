@@ -1,4 +1,4 @@
-// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -42,7 +42,7 @@ namespace Velaptor.Services
         /// <param name="freeTypeInvoker">Provides low level calls to the FreeType2 library.</param>
         /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="imageService">Manages image data.</param>
-        /// <param name="systemMonitorService">Provides information about the system monitor.</param>
+        /// <param name="systemMonitorService">Provides information about the system monitors.</param>
         /// <param name="file">Performs file operations.</param>
         public FontAtlasService(
             IFreeTypeInvoker freeTypeInvoker,
