@@ -30,7 +30,7 @@ namespace Velaptor
     internal static class InternalExtensionMethods
     {
         /// <summary>
-        /// Returns a value indicating whether the given file or directory path
+        /// Returns a value indicating whether or not the given file or directory path
         /// only contains a root drive path with no directories.
         /// </summary>
         /// <param name="fileOrDirPath">The path to check.</param>
@@ -152,7 +152,7 @@ namespace Velaptor
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
         /// <param name="predicate">
-        ///     The predicate that determines whether the <typeparamref name="TImplementation"/> can be applied for
+        ///     The predicate that determines whether or not the <typeparamref name="TImplementation"/> can be applied for
         ///     the requested service type. This predicate can be used to build a fallback mechanism
         ///     where multiple registrations for the same service type are made. Note that the
         ///     predicate will be called a finite number of times and its result will be cached

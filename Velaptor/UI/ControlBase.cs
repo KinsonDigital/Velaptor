@@ -89,7 +89,7 @@ namespace Velaptor.UI
         public virtual bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Gets a value indicating whether the mouse is hovering over the button.
+        /// Gets a value indicating whether or not the mouse is hovering over the button.
         /// </summary>
         public bool IsMouseOver { get; private set; }
 
@@ -122,7 +122,7 @@ namespace Velaptor.UI
         protected Color TintColor { get; private set; } = Color.White;
 
         /// <summary>
-        /// Gets a value indicating whether the control has been disposed.
+        /// Gets a value indicating whether or not the control has been disposed.
         /// </summary>
         [ExcludeFromCodeCoverage]
         protected bool IsDisposed { get; private set; }

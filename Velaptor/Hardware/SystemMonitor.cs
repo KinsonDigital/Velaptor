@@ -23,7 +23,7 @@ namespace Velaptor.Hardware
         public SystemMonitor(IPlatform platform) => this.platform = platform;
 
         /// <summary>
-        /// Gets a value indicating whether the monitor is the main monitor in the system.
+        /// Gets a value indicating whether or not the monitor is the primary monitor in the system.
         /// </summary>
         public bool IsMain { get; init; }
 

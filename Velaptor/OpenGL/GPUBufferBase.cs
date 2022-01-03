@@ -53,7 +53,7 @@ namespace Velaptor.OpenGL
         protected internal uint BatchSize { get; private set; } = 100;
 
         /// <summary>
-        /// Gets a value indicating whether gets a value indicating if the buffer has been initialized.
+        /// Gets a value indicating whether or not the buffer has been initialized.
         /// </summary>
         protected internal bool IsInitialized { get; private set; }
 

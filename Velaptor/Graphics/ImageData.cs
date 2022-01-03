@@ -1,4 +1,4 @@
-// <copyright file="ImageData.cs" company="KinsonDigital">
+﻿// <copyright file="ImageData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -49,7 +49,7 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Returns a value indicating whether 2 <see cref="ImageData"/> types are equal.
+        /// Returns a value indicating whether or not 2 <see cref="ImageData"/> types are equal.
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
@@ -57,7 +57,7 @@ namespace Velaptor.Graphics
         public static bool operator ==(ImageData left, ImageData right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating whether 2 <see cref="ImageData"/> types are not equal.
+        /// Returns a value indicating whether or not 2 <see cref="ImageData"/> types are not equal.
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>

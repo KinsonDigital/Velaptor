@@ -51,7 +51,7 @@ namespace Velaptor.Content
         public SoundTime Length => this.sound.Length;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the sound loops back to the beginning once the end has been reached.
+        /// Gets or sets a value indicating whether or not the sound loops back to the beginning once the end has been reached.
         /// </summary>
         public bool IsLooping
         {

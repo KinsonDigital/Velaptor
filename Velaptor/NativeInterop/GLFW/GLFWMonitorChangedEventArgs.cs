@@ -19,7 +19,7 @@ namespace Velaptor.NativeInterop.GLFW
         public GLFWMonitorChangedEventArgs(bool isConnected) => IsConnected = isConnected;
 
         /// <summary>
-        /// Gets a value indicating whether a monitor has been connected.
+        /// Gets a value indicating whether or not a monitor has been connected.
         /// </summary>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Used by library users")]

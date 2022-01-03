@@ -29,7 +29,7 @@ namespace Velaptor.Content
         FontStyle Style { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the font has kerning for text rendering layout.
+        /// Gets a value indicating whether or not the font has kerning for text rendering layout.
         /// </summary>
         bool HasKerning { get; }
 
