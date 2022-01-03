@@ -15,7 +15,7 @@ namespace Velaptor.UI
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// A system window that graphics can be rendered to.
+    /// A system window where graphics can be rendered.
     /// </summary>
     public abstract class Window : IWindowProps, IDisposable
     {
