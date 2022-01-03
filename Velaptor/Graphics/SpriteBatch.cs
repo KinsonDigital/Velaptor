@@ -345,7 +345,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> if managed resources should be disposed of.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/></param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)
