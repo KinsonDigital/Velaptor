@@ -26,7 +26,6 @@ namespace VelaptorTests.Helpers
         /// </summary>
         public static T[]? LoadTestData<T>(string? relativeDirPath, string fileName)
         {
-             // return new T[0];
             const string loadTestDataPrefix = "Loading test data error:\n\t";
 
             if (string.IsNullOrEmpty(relativeDirPath))
