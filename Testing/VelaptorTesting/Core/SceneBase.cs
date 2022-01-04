@@ -2,14 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace VelaptorTesting.Core
 {
     using System;
     using System.Collections.Generic;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Graphics;
     using Velaptor.UI;
 
     /// <summary>
