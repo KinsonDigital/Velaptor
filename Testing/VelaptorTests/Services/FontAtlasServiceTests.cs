@@ -1,12 +1,9 @@
-﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace VelaptorTests.Services
 {
-#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
@@ -18,13 +15,13 @@ namespace VelaptorTests.Services
     using Moq;
     using Velaptor;
     using Velaptor.Exceptions;
+    using Velaptor.Graphics;
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
     using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="FontAtlasService"/> class.
