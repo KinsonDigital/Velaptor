@@ -1,4 +1,4 @@
-// <copyright file="TestMouseScene.cs" company="KinsonDigital">
+﻿// <copyright file="TestMouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,9 +18,6 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestMouseScene : SceneBase
     {
-        private const int LeftMargin = 5;
-        private const int TopMargin = 25;
-        private const int LineSpacing = 20;
         private readonly Mouse mouse;
         private Label? mouseInfoLabel;
         private MouseState currentMouseState;
@@ -66,7 +63,6 @@ namespace VelaptorTesting.Scenes
             mouseInfo += $"\nMouse Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
             mouseInfo += $"\nMouse Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
             mouseInfo += $"\nMouse Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
-            // TODO: Fix the scroll wheel value.  It is not working
             mouseInfo += $"\nMouse Middle Button: {this.currentMouseState.GetScrollWheelValue()} - Currently Broken";
 
             this.mouseInfoLabel.Text = mouseInfo;
