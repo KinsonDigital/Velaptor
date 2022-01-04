@@ -1,9 +1,8 @@
-// <copyright file="AssertExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="AssertExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 // ReSharper disable UnusedMember.Global
-
 #pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Helpers
 {
