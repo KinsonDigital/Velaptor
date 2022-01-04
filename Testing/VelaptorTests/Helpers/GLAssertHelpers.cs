@@ -259,7 +259,7 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Verifies that a quand with given <paramref name="srcRect"/> has been executed the given amount of <paramref name="times"/>.
+        /// Verifies that a quad with given <paramref name="srcRect"/> has been executed the given amount of <paramref name="times"/>.
         /// </summary>
         /// <param name="mock">The mock being verified.</param>
         /// <param name="srcRect">The source rectangle.</param>
