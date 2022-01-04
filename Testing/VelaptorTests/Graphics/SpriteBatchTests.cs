@@ -1187,7 +1187,7 @@ namespace VelaptorTests.Graphics
         /// <param name="openGLInitObservable">The observable to use for OpenGL initialization.</param>
         /// <returns>The instance to test with.</returns>
         /// <summary>
-        ///     If <paramref name="openGLInitObservable"/> is null, then this.<see cref="glInitObservable"/> will be used.
+        ///     If <paramref name="openGLInitObservable"/> is null, then this <see cref="glInitObservable"/> will be used.
         /// </summary>
         private SpriteBatch CreateSpriteBatch(IObservable<bool>? openGLInitObservable = null)
         {
