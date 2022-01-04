@@ -71,7 +71,7 @@ namespace Velaptor.Content.Fonts
             Style = this.freeTypeExtensions.GetFontStyle(path);
             Name = name;
             Path = path;
-            // TODO: Get the family name and set it
+            FamilyName = this.freeTypeExtensions.GetFamilyName(path);
             LineSpacing = this.freeTypeExtensions.GetFontScaledLineSpacing(this.facePtr, Size) * 64f;
             HasKerning = this.freeTypeExtensions.HasKerning(this.facePtr);
         }
