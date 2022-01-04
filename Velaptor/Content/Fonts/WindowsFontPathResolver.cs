@@ -51,12 +51,7 @@ namespace Velaptor.Content.Fonts
                                   StringComparison.OrdinalIgnoreCase) == 0
                 select f).ToArray();
 
-            if (files.Length <= 0)
-            {
-                throw new FileNotFoundException($"The font file '{fullContentPath}' does not exist.");
-            }
-
-            return files[0];
+            return files.Length <= 0 ? string.Empty : files[0];
         }
 
         /// <inheritdoc/>

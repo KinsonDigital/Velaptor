@@ -96,7 +96,7 @@ namespace Velaptor.UI
                 return;
             }
 
-            this.font = this.contentLoader?.Load<IFont>("TimesNewRoman");
+            this.font = this.contentLoader?.Load<IFont>("times");
 
             UpdateLabelSize();
 

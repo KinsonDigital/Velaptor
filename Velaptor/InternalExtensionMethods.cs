@@ -29,6 +29,10 @@ namespace Velaptor
     /// </summary>
     internal static class InternalExtensionMethods
     {
+        public static bool NotStartsWith(this string stringToCheck, char value) => !stringToCheck.StartsWith(value);
+
+        public static bool NotEndsWith(this string stringToCheck, char value) => !stringToCheck.EndsWith(value);
+
         /// <summary>
         /// Returns a value indicating whether the given file or directory path
         /// only contains a root drive path with no directories.

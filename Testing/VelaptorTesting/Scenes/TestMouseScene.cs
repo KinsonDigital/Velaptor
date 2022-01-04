@@ -46,7 +46,7 @@ namespace VelaptorTesting.Scenes
 
             this.mouseInfoLabel = new Label(ContentLoader) { Color = Color.White };
 
-            var font = ContentLoader.Load<IFont>("TimesNewRoman");
+            var font = ContentLoader.Load<IFont>("times");
             this.glyphHeights = new Dictionary<char, float>(font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphHeight)));
 
             this.mouseInfoLabel.LoadContent();

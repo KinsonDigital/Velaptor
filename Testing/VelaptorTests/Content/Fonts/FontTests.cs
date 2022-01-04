@@ -2,6 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+using System.Drawing;
+using Velaptor.NativeInterop.OpenGL;
+using Velaptor.Services;
+
 namespace VelaptorTests.Content.Fonts
 {
     using System;
@@ -24,6 +29,7 @@ namespace VelaptorTests.Content.Fonts
     public class FontTests : IDisposable
     {
         private const char InvalidCharacter = '□';
+        private const string FontPath = @"C:\test-dir\fonts\";
         private readonly char[] glyphChars =
         {
             'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -31,29 +37,51 @@ namespace VelaptorTests.Content.Fonts
             '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
             '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
         };
-        private readonly IntPtr facePtr = new (1234);
-        private readonly Mock<ITexture> mockFontTexture;
+        private readonly IntPtr libraryPtr = new (1234);
+        private readonly IntPtr facePtr = new (5678);
+        private readonly Mock<IGLInvoker> mockGL;
+        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
         private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
+        private readonly Mock<IFontAtlasService> mockFontAtlasService;
+        private readonly Mock<IImageService> mockImageService;
+        private readonly Mock<ITexture> mockTexture;
         private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\SampleTestData\";
-        private GlyphMetrics[]? glyphMetrics;
+        private Dictionary<char, GlyphMetrics> glyphMetrics = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontTests"/> class.
         /// </summary>
         public FontTests()
         {
-            this.mockFontTexture = new Mock<ITexture>();
+            this.mockGL = new Mock<IGLInvoker>();
+            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
             this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
-            this.mockFreeTypeInvoker.Setup(m => m.FT_Get_Face()).Returns(this.facePtr);
-
-            this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
+            this.mockFreeTypeInvoker.Setup(m => m.FT_Init_FreeType()).Returns(this.libraryPtr);
 
             const string glyphTestDataFileName = "glyph-test-data.json";
             var glyphMetricFilePath = $"{this.sampleTestDataDirPath}{glyphTestDataFileName}";
             var glyphMetricData = File.ReadAllText(glyphMetricFilePath);
 
-            this.glyphMetrics = JsonConvert.DeserializeObject<GlyphMetrics[]>(glyphMetricData);
+            var glyphMetricItems = JsonConvert.DeserializeObject<GlyphMetrics[]>(glyphMetricData);
+
+            foreach (var metric in glyphMetricItems)
+            {
+                this.glyphMetrics.Add(metric.Glyph, metric);
+            }
+
+            this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
+            this.mockFreeTypeExtensions.Setup(m => m.CreateFontFace(this.libraryPtr, FontPath)).Returns(this.facePtr);
+            this.mockFreeTypeExtensions.Setup(m => m.CreateGlyphMetrics(this.facePtr, null))
+                .Returns(this.glyphMetrics);
+
+            this.mockFontAtlasService = new Mock<IFontAtlasService>();
+            this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns((default, this.glyphMetrics.Values.ToArray()));
+
+            this.mockImageService = new Mock<IImageService>();
+
+            this.mockTexture = new Mock<ITexture>();
         }
 
         #region Constructor Tests
@@ -61,67 +89,49 @@ namespace VelaptorTests.Content.Fonts
         public void Ctor_WhenInvoked_SetsPropertyValues()
         {
             // Arrange
-            var settings = new FontSettings()
+            var pixels = new[,]
             {
-                Size = 14,
-                Style = FontStyle.Regular,
+                { Color.FromArgb(1, 2, 3, 4), Color.FromArgb(5, 6, 7, 8) },
             };
+            var atlasImageData = new ImageData(pixels, 11, 22);
+
+            this.mockFreeTypeExtensions.Setup(m => m.GetFamilyName(FontPath)).Returns("test-font-family");
+            this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(FontPath, 12))
+                .Returns((atlasImageData, this.glyphMetrics.Values.ToArray()));
 
             // Act
-            var font = new Font(this.mockFontTexture.Object,
+            var font = new Font(
+                this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
-                this.glyphMetrics,
-                settings,
-                It.IsAny<char[]>(),
+                this.glyphMetrics.Values.ToArray(),
                 "test-name",
-                "test-path");
+                FontPath,
+                It.IsAny<int>());
 
             // Assert
-            Assert.Same(font.FontTextureAtlas, this.mockFontTexture.Object);
-            Assert.Equal(font.Metrics.Count, this.glyphMetrics.Length);
+            // Check that the texture was properly created
+            Assert.Equal("test-name", font.FontTextureAtlas.Name);
+            Assert.Equal(FontPath, font.FontTextureAtlas.Path);
+            Assert.True(font.FontTextureAtlas.IsPooled);
+
+            Assert.Equal(font.Metrics.Count, this.glyphMetrics.Count);
             Assert.Equal("test-name", font.Name);
-            Assert.Equal(14, font.Size);
+            Assert.Equal("test-font-family", font.FamilyName);
+            Assert.Equal(12, font.Size);
             Assert.Equal(FontStyle.Regular, font.Style);
-            Assert.Equal("test-path", font.Path);
+            Assert.Equal(FontPath, font.Path);
         }
         #endregion
 
         #region Prop Tests
         [Fact]
-        public void Metrics_WhenGettingValueAtIndex_ReturnsCorrectResult()
-        {
-            // Arrange
-            var settings = new FontSettings()
-            {
-                Size = 14,
-                Style = FontStyle.Regular,
-            };
-
-            var font = new Font(
-                this.mockFontTexture.Object,
-                this.mockFreeTypeInvoker.Object,
-                this.mockFreeTypeExtensions.Object,
-                this.glyphMetrics,
-                settings,
-                It.IsAny<char[]>(),
-                It.IsAny<string>(),
-                It.IsAny<string>());
-
-            // Act
-            var actual = font.Metrics[0];
-
-            // Assert
-            Assert.Equal(this.glyphMetrics[0], actual);
-        }
-
-        [Fact]
         public void LineSpacing_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var fontSettings = new FontSettings();
-            this.mockFreeTypeExtensions.Setup(m => m.GetFontScaledLineSpacing(this.facePtr)).Returns(0.5f);
-            var font = CreateFont(fontSettings);
+            this.mockFreeTypeExtensions.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
+                .Returns(0.5f);
+            var font = CreateFont();
 
             // Act
             var actual = font.LineSpacing;
@@ -134,13 +144,7 @@ namespace VelaptorTests.Content.Fonts
         public void IsPooled_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var settings = new FontSettings()
-            {
-                Size = 14,
-                Style = FontStyle.Regular,
-            };
-
-            var font = CreateFont(settings);
+            var font = CreateFont();
 
             // Act
             font.IsPooled = true;
@@ -155,22 +159,16 @@ namespace VelaptorTests.Content.Fonts
         {
             // Arrange
             this.mockFreeTypeExtensions.Setup(m => m.HasKerning(this.facePtr)).Returns(true);
-            var settings = new FontSettings()
-            {
-                Size = 14,
-                Style = FontStyle.Regular,
-            };
 
             // Act
             var font = new Font(
-                this.mockFontTexture.Object,
+                this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
-                Array.Empty<GlyphMetrics>(),
-                settings,
-                It.IsAny<char[]>(),
-                It.IsAny<string>(),
-                It.IsAny<string>());
+                this.glyphMetrics.Values.ToArray(),
+                "test-name",
+                FontPath,
+                It.IsAny<int>());
 
             var actual = font.HasKerning;
 
@@ -184,28 +182,20 @@ namespace VelaptorTests.Content.Fonts
         public void GetAvailableGlyphCharacters_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            var expected = new[] { 'a', 'b', 'c', 'd' };
-            var settings = new FontSettings()
-            {
-                Size = 14,
-                Style = FontStyle.Regular,
-            };
-
             var font = new Font(
-                this.mockFontTexture.Object,
+                this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
-                Array.Empty<GlyphMetrics>(),
-                settings,
-                new[] { 'a', 'b', 'c', 'd' },
-                It.IsAny<string>(),
-                It.IsAny<string>());
+                this.glyphMetrics.Values.ToArray(),
+                "test-name",
+                FontPath,
+                It.IsAny<int>());
 
             // Act
             var actual = font.GetAvailableGlyphCharacters();
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(this.glyphChars, actual);
         }
 
         [Theory]
@@ -222,8 +212,7 @@ namespace VelaptorTests.Content.Fonts
                     => m.FT_Get_Kerning(this.facePtr, leftGlyphIndex, rightGlyphIndex, (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT))
                         .Returns(ftVector);
             this.mockFreeTypeExtensions.Setup(m => m.HasKerning(this.facePtr)).Returns(hasKerning);
-            var fontSettings = new FontSettings();
-            var font = CreateFont(fontSettings);
+            var font = CreateFont();
 
             // Act
             var actual = font.GetKerning(leftGlyphIndex, rightGlyphIndex);
@@ -238,7 +227,7 @@ namespace VelaptorTests.Content.Fonts
         public void Measure_WithNullOrEmptyText_ReturnsEmptySize(string text)
         {
             // Arrange
-            var font = CreateFont(new FontSettings());
+            var font = CreateFont();
 
             // Act
             var actual = font.Measure(text);
@@ -253,22 +242,19 @@ namespace VelaptorTests.Content.Fonts
         {
             // Arrange
             const string text = "hello\nworld";
-            var availableGlyphChars = new[] { 'h', 'e', 'l', 'o', 'w', 'r', 'd' };
 
-            this.mockFreeTypeExtensions.Setup(m => m.GetFontScaledLineSpacing(this.facePtr)).Returns(2f);
+            this.mockFreeTypeExtensions.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12)).Returns(2f);
             this.mockFreeTypeExtensions.Setup(m => m.HasKerning(this.facePtr)).Returns(true);
             MockGlyphKernings(text);
 
-            var fontSettings = new FontSettings();
             var font = new Font(
-                this.mockFontTexture.Object,
+                this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
-                this.glyphMetrics,
-                fontSettings,
-                availableGlyphChars,
-                "test-font",
-                "test-path");
+                this.glyphMetrics.Values.ToArray(),
+                "test-name",
+                FontPath,
+                It.IsAny<int>());
 
             // Act
             var actual = font.Measure(text);
@@ -283,7 +269,7 @@ namespace VelaptorTests.Content.Fonts
         {
             // Arrange
             const string text = "test©";
-            var font = CreateFont(new FontSettings());
+            var font = CreateFont();
 
             // Act
             var actual = font.ToGlyphMetrics(text);
@@ -301,17 +287,7 @@ namespace VelaptorTests.Content.Fonts
         public void Dispose_WhenInvoked_DisposesFont()
         {
             // Arrange
-            var settings = new FontSettings()
-            {
-                Size = 14,
-                Style = FontStyle.Regular,
-            };
-
-            // Simulate that the texture has been pooled
-            this.mockFontTexture.SetupProperty(p => p.IsPooled);
-            this.mockFontTexture.Object.IsPooled = true;
-
-            var font = CreateFont(settings);
+            var font = CreateFont();
 
             // Act
             font.Dispose();
@@ -319,20 +295,13 @@ namespace VelaptorTests.Content.Fonts
 
             // Assert
             Assert.False(font.FontTextureAtlas.IsPooled);
-            this.mockFontTexture.Verify(m => m.Dispose(), Times.Once());
         }
 
         [Fact]
         public void Dispose_WhilePooled_ThrowsException()
         {
             // Arrange
-            var settings = new FontSettings()
-            {
-                Size = 14,
-                Style = FontStyle.Regular,
-            };
-
-            var font = CreateFont(settings);
+            var font = CreateFont();
             font.IsPooled = true;
 
             // Act & Assert
@@ -349,18 +318,16 @@ namespace VelaptorTests.Content.Fonts
         /// <summary>
         /// Creates a new instance of <see cref="Font"/> for the purpose of testing.
         /// </summary>
-        /// <param name="settings">The font settings to use for the test.</param>
         /// <returns>The instance to test.</returns>
-        private Font CreateFont(FontSettings settings)
+        private Font CreateFont(uint size = 12)
             => new (
-                this.mockFontTexture.Object,
+                this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
-                this.glyphMetrics,
-                settings,
-                this.glyphChars,
-                It.IsAny<string>(),
-                It.IsAny<string>());
+                this.glyphMetrics.Values.ToArray(),
+                "test-name",
+                FontPath,
+                It.IsAny<int>());
 
         /// <summary>
         /// Mocks the kerning value for each character in the given <paramref name="text"/>.
@@ -368,7 +335,7 @@ namespace VelaptorTests.Content.Fonts
         /// <param name="text">The text to mock the kerning values for.</param>
         private void MockGlyphKernings(string text)
         {
-            if (this.glyphMetrics is null || this.glyphMetrics.Length <= 0)
+            if (this.glyphMetrics is null || this.glyphMetrics.Count <= 0)
             {
                 Assert.True(false, $"Cannot run test with the static class member '{this.glyphMetrics}' being null or empty.");
             }
@@ -395,7 +362,7 @@ namespace VelaptorTests.Content.Fonts
 
                 if (i > 0)
                 {
-                    var foundGlyphMetric = (from m in this.glyphMetrics
+                    var foundGlyphMetric = (from m in this.glyphMetrics.Values
                         where m.Glyph == glyphChar
                         select m).FirstOrDefault();
 
@@ -417,6 +384,38 @@ namespace VelaptorTests.Content.Fonts
 
                 leftGlyphIndex = rightGlyphIndex;
             }
+        }
+
+        private GlyphMetrics[] CreateMetrics(string testText)
+        {
+            var start = 0;
+            var result = new List<GlyphMetrics>();
+
+            foreach (var character in testText)
+            {
+                var newGlyphMetric = default(GlyphMetrics);
+
+                newGlyphMetric.Ascender = start + 1;
+                newGlyphMetric.Descender = start + 2;
+                newGlyphMetric.Glyph = character;
+                newGlyphMetric.CharIndex = (uint)(start + 3);
+                newGlyphMetric.GlyphBounds = new RectangleF(start + 4, start + 5, start + 6, start + 7);
+                newGlyphMetric.GlyphHeight = start + 8;
+                newGlyphMetric.GlyphWidth = start + 9;
+                newGlyphMetric.HorizontalAdvance = start + 10;
+                newGlyphMetric.XMax = start + 11;
+                newGlyphMetric.XMin = start + 12;
+                newGlyphMetric.YMax = start + 13;
+                newGlyphMetric.YMin = start + 14;
+                newGlyphMetric.HoriBearingX = start + 15;
+                newGlyphMetric.HoriBearingY = start + 16;
+
+                result.Add(newGlyphMetric);
+
+                start += 16;
+            }
+
+            return result.ToArray();
         }
     }
 }

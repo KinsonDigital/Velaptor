@@ -1,8 +1,9 @@
-﻿// <copyright file="IoC.cs" company="KinsonDigital">
+// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 using System.Runtime.CompilerServices;
+using Velaptor.Graphics;
 
 [assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
@@ -106,6 +107,9 @@ namespace Velaptor
             IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
+            IoCContainer.Register<IDisposableItemCache<(string, string), ITexture>, TextureCache>(Lifestyle.Singleton);
+            IoCContainer.Register<IDisposableItemCache<(string, uint), ITexture>, FontTextureAtlasCache>(Lifestyle.Singleton);
+            IoCContainer.Register<IItemCache<(string, uint), (ImageData, GlyphMetrics[])>, FontAtlasDataCache>(Lifestyle.Singleton);
 
             IoCContainer.Register<ITaskService, TaskService>();
             IoCContainer.SuppressDisposableTransientWarning<ITaskService>();

@@ -1,6 +1,9 @@
-﻿// <copyright file="FreeTypeInvoker.cs" company="KinsonDigital">
+// <copyright file="FreeTypeInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
+
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Velaptor.NativeInterop.FreeType
 {
@@ -17,9 +20,9 @@ namespace Velaptor.NativeInterop.FreeType
     [ExcludeFromCodeCoverage]
     internal class FreeTypeInvoker : IFreeTypeInvoker
     {
+        private static readonly Dictionary<string, IntPtr> FacePointers = new ();
         private IntPtr libraryPtr;
         private bool isDisposed;
-        private IntPtr facePtr;
 
         /// <summary>
         /// Finalizes an instance of the <see cref="FreeTypeInvoker"/> class.
@@ -90,6 +93,11 @@ namespace Velaptor.NativeInterop.FreeType
                 return IntPtr.Zero;
             }
 
+            if (FacePointers.ContainsKey(filepathname))
+            {
+                return FacePointers[filepathname];
+            }
+
             var error = FT.FT_New_Face(library, filepathname, face_index, out IntPtr aface);
 
             if (error != FT_Error.FT_Err_Ok)
@@ -98,10 +106,12 @@ namespace Velaptor.NativeInterop.FreeType
                 return IntPtr.Zero;
             }
 
-            this.facePtr = aface;
+            FacePointers.Add(filepathname, aface);
 
             return aface;
         }
+
+        // TODO: Add code to every method that takes a face pointer and verify if that face already exists.  If not, throw exception
 
         /// <inheritdoc/>
         public void FT_Set_Char_Size(IntPtr face, IntPtr char_width, IntPtr char_height, uint horz_resolution, uint vert_resolution)
@@ -124,7 +134,16 @@ namespace Velaptor.NativeInterop.FreeType
                 this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
             }
 
-            this.facePtr = IntPtr.Zero;
+            var foundFaceKey = (from p in FacePointers
+                                     where p.Value == face
+                                     select p.Key).FirstOrDefault();
+
+            if (foundFaceKey is null)
+            {
+                return;
+            }
+
+            FacePointers.Remove(foundFaceKey);
         }
 
         /// <inheritdoc/>
@@ -150,9 +169,6 @@ namespace Velaptor.NativeInterop.FreeType
             this.libraryPtr = IntPtr.Zero;
         }
 
-        /// <inheritdoc/>
-        public IntPtr FT_Get_Face() => this.facePtr;
-
         // ReSharper restore IdentifierTypo
         // ReSharper restore InconsistentNaming
 
@@ -164,7 +180,11 @@ namespace Velaptor.NativeInterop.FreeType
                 return;
             }
 
-            FT.FT_Done_Face(this.facePtr);
+            foreach (var facePtr in FacePointers.Values.ToArray())
+            {
+                FT_Done_Face(facePtr);
+            }
+
             FT.FT_Done_FreeType(this.libraryPtr);
 
             this.isDisposed = true;

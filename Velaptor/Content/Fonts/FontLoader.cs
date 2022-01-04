@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Factories;
+
 namespace Velaptor.Content.Fonts
 {
     // ReSharper disable RedundantNameQualifier
@@ -23,6 +25,7 @@ namespace Velaptor.Content.Fonts
     /// </summary>
     public sealed class FontLoader : ILoader<IFont>
     {
+        private const string FontExtension = ".ttf";
         private readonly ConcurrentDictionary<string, IFont> fonts = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
@@ -56,7 +59,7 @@ namespace Velaptor.Content.Fonts
             this.freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
             this.freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
             this.fontAtlasService = fontAtlasService;
-            this.fontPathResolver = fontPathResolver;
+            this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
             this.imageService = imageService;
@@ -103,62 +106,34 @@ namespace Velaptor.Content.Fonts
         /// <inheritdoc/>
         public IFont Load(string name)
         {
+            var size = 12;
+
+            if (name.Contains('|') &&
+                name.NotStartsWith('|') &&
+                name.NotEndsWith('|'))
+            {
+                var sections = name.Split('|');
+
+                // TODO: Convert to uint
+                var success = int.TryParse(name, out var parsedSize);
+
+                if (success)
+                {
+                    size = parsedSize;
+                }
+
+                name = sections[0];
+            }
+
             name = this.path.HasExtension(name)
                 ? this.path.GetFileNameWithoutExtension(name)
                 : name;
 
-            var fontsDirPath = this.fontPathResolver.ResolveDirPath();
-            var filePathNoExtension = $"{fontsDirPath}{name}";
+            var fontFilePath = this.fontPathResolver.ResolveFilePath(name);
 
-            // If the requested font is already loaded into the pool
-            // and has been disposed, remove it.
-            foreach (var font in this.fonts)
+            return this.fonts.GetOrAdd(fontFilePath, filePath =>
             {
-                if (font.Key != filePathNoExtension || !font.Value.IsDisposed)
-                {
-                    continue;
-                }
-
-                this.fonts.TryRemove(font);
-                break;
-            }
-
-            return this.fonts.GetOrAdd(filePathNoExtension, filePath =>
-            {
-                var fontDataFilePath = $"{filePath}.json";
-                var fontFilePath = $"{filePath}.ttf";
-
-                if (this.file.Exists(fontDataFilePath) is false)
-                {
-                    throw new FileNotFoundException($"The JSON data file '{fontDataFilePath}' describing the font settings for font content '{name}' is missing.");
-                }
-
-                var rawData = this.file.ReadAllText(fontDataFilePath);
-
-                FontSettings? fontSettings;
-
-                try
-                {
-                    fontSettings = JsonConvert.DeserializeObject<FontSettings>(rawData);
-
-                    if (fontSettings is null)
-                    {
-                        throw new Exception("Deserialized font settings are null.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{fontDataFilePath}'.\n{ex.Message}");
-                }
-
-                var fontStyle = this.freeTypeExtensions.GetFontStyle(fontFilePath);
-
-                if (fontStyle != fontSettings.Style)
-                {
-                    throw new LoadFontException($@"The font '{name}' with the style '{fontSettings.Style}' does not exist.");
-                }
-
-                var (fontAtlasImage, atlasData) = this.fontAtlasService.CreateFontAtlas(fontFilePath, fontSettings.Size);
+                var (fontAtlasImage, atlasData) = this.fontAtlasService.CreateFontAtlas(filePath, size);
 
                 // OpenGL origin Y is at the bottom instead of the top.  This means
                 // that the current image data which is vertically oriented correctly, needs
@@ -167,7 +142,7 @@ namespace Velaptor.Content.Fonts
 
                 var fontAtlasTexture = new Texture(this.gl, this.glExtensions, name, filePath, fontAtlasImage) { IsPooled = true };
 
-                return new Font(fontAtlasTexture, this.freeTypeInvoker, this.freeTypeExtensions, atlasData, fontSettings, this.glyphChars, name, filePath)
+                return new Font(fontAtlasTexture, this.freeTypeInvoker, this.freeTypeExtensions, atlasData, name, filePath, size)
                 {
                     IsPooled = true,
                 };

@@ -20,9 +20,9 @@ namespace Velaptor.Content
         ITexture FontTextureAtlas { get; }
 
         /// <summary>
-        /// Gets the size of the font in points.
+        /// Gets or sets the size of the font in points.
         /// </summary>
-        int Size { get; }
+        int Size { get; set; }
 
         /// <summary>
         /// Gets the style of the font.
@@ -30,7 +30,12 @@ namespace Velaptor.Content
         VelFontStyle Style { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the font has kerning for text rendering layout.
+        /// Gets the name of the font family.
+        /// </summary>
+        string FamilyName { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether or not the font has kerning for text rendering layout.
         /// </summary>
         bool HasKerning { get; }
 

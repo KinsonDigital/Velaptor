@@ -238,7 +238,7 @@ namespace VelaptorTests.Services
             service.CreateFontAtlas(FontFilePath, fontSize);
 
             // Assert
-            this.mockFreeTypeExtensions.Verify(m => m.SetCharacterSize(this.facePtr, 12, 96, 96), Times.Once());
+            this.mockFreeTypeExtensions.Verify(m => m.SetCharacterSize(this.facePtr, 12), Times.Once());
         }
 
         [Fact]

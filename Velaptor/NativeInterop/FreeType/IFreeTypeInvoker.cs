@@ -139,12 +139,6 @@ namespace Velaptor.NativeInterop.FreeType
         /// <param name="library">A handle to the target library object.</param>
         void FT_Done_FreeType(IntPtr library);
 
-        /// <summary>
-        /// Returns the face pointer that was created using the <see cref="FT_New_Face(IntPtr, string, int)"/> call.
-        /// </summary>
-        /// <returns>The pointer to the font face.</returns>
-        IntPtr FT_Get_Face();
-
         // ReSharper restore IdentifierTypo
         // ReSharper restore InconsistentNaming
     }

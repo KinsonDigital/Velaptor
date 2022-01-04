@@ -52,7 +52,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.font = ContentLoader.Load<IFont>("TimesNewRoman");
+            this.font = ContentLoader.Load<IFont>("times");
             var textLines = new List<string>
             {
                     "Use arrow keys to flip the texture horizontally and vertically.",

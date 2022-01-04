@@ -21,7 +21,8 @@ namespace VelaptorTesting.Scenes
         private const float SizeChangeAmount = 0.5f;
         private const string SingleLineText = "Change me using the buttons below.";
         private const string MultiLineText = "Change me using\nthe buttons below.";
-        private IFont? font;
+        private IFont? textFont;
+        private IFont? otherTextFont;
         private Button? btnRotateCW;
         private Button? btnRotateCCW;
         private Button? btnIncreaseSize;
@@ -32,7 +33,7 @@ namespace VelaptorTesting.Scenes
         private bool ccwButtonDown;
         private bool increaseBtnDown;
         private bool decreaseBtnDown;
-        private bool isMultiLine;
+        private bool isMultiLine = true;
         private bool isClrSet;
         private float angle;
         private float size = 1f;
@@ -56,9 +57,10 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.font = ContentLoader.Load<IFont>("TimesNewRoman");
+            this.textFont = ContentLoader.Load<IFont>("times|22");
+            // this.otherTextFont = ContentLoader.Load<IFont>("times|22");
 
-            // Rotate CW Button
+            // // Rotate CW Button
             this.btnRotateCW = new Button(ContentLoader);
             this.btnRotateCW.Text = "CW";
             this.btnRotateCW.MouseDown += (_, _) =>
@@ -73,7 +75,6 @@ namespace VelaptorTesting.Scenes
                 this.ccwButtonDown = false;
             };
             this.btnRotateCW.LoadContent();
-            this.btnRotateCW.Size = 0.50f;
 
             // Rotate CCW Button
             this.btnRotateCCW = new Button(ContentLoader);
@@ -91,7 +92,6 @@ namespace VelaptorTesting.Scenes
                 this.cwButtonDown = false;
             };
             this.btnRotateCCW.LoadContent();
-            this.btnRotateCCW.Size = 0.50f;
 
             // Increase Size Button
             this.btnIncreaseSize = new Button(ContentLoader);
@@ -109,7 +109,6 @@ namespace VelaptorTesting.Scenes
                 this.decreaseBtnDown = false;
             };
             this.btnIncreaseSize.LoadContent();
-            this.btnIncreaseSize.Size = 0.50f;
 
             // Decrease Size Button
             this.btnDecreaseSize = new Button(ContentLoader);
@@ -127,7 +126,6 @@ namespace VelaptorTesting.Scenes
                 this.decreaseBtnDown = false;
             };
             this.btnDecreaseSize.LoadContent();
-            this.btnDecreaseSize.Size = 0.50f;
 
             // Set Multi-Line
             this.btnSetMultiLine = new Button(ContentLoader);
@@ -137,10 +135,19 @@ namespace VelaptorTesting.Scenes
             this.btnSetMultiLine.MouseUp += (_, _) =>
             {
                 this.isMultiLine = !this.isMultiLine;
-                this.btnSetMultiLine.Text = $"Multi-Line: {this.isMultiLine}";
+                if (this.textFont.Size == 22)
+                {
+                    this.textFont.Size = 12;
+                }
+                else
+                {
+                    this.textFont.Size = 22;
+                }
+
+                // TODO: Reenable this and remove code above
+                // this.btnSetMultiLine.Text = $"Multi-Line: {this.isMultiLine}";
             };
             this.btnSetMultiLine.LoadContent();
-            this.btnSetMultiLine.Size = 0.50f;
 
             // Set Color
             this.btnSetColor = new Button(ContentLoader);
@@ -153,7 +160,6 @@ namespace VelaptorTesting.Scenes
                 this.btnSetColor.Text = $"Set Color: {(this.isClrSet ? "On" : "Off")}";
             };
             this.btnSetColor.LoadContent();
-            this.btnSetColor.Size = 0.50f;
 
             SetupUIControlPositioning();
 
@@ -218,13 +224,22 @@ namespace VelaptorTesting.Scenes
             var yPos = (int)MainWindow.WindowHeight / 2;
 
             spriteBatch.Render(
-                this.font,
+                this.textFont,
                 this.isMultiLine ? MultiLineText : SingleLineText,
                 xPos,
                 yPos,
                 this.size,
                 this.angle,
                 this.isClrSet ? Color.CornflowerBlue : Color.White);
+
+            // spriteBatch.Render(
+            //     this.otherTextFont,
+            //     "Other Text Font",
+            //     xPos,
+            //     yPos + 100,
+            //     this.size,
+            //     this.angle,
+            //     Color.IndianRed);
 
             this.btnRotateCW.Render(spriteBatch);
             this.btnRotateCCW.Render(spriteBatch);
@@ -255,7 +270,9 @@ namespace VelaptorTesting.Scenes
         /// <summary>
         /// Unloads the scenes content.
         /// </summary>
-        private void UnloadSceneContent() => this.font = null;
+        private void UnloadSceneContent()
+        {
+        }
 
         /// <summary>
         /// Sets up the positioning of all the UI controls in the window.
@@ -266,7 +283,16 @@ namespace VelaptorTesting.Scenes
             const int buttonSpacing = 15;
             var leftMargin = 15 + (int)(this.btnRotateCW.Width / 2);
 
-            var buttonTops = (int)(MainWindow.WindowHeight - (new[] { this.btnRotateCW.Height, this.btnRotateCCW.Height }.Max() + 20));
+            var buttonTops = (int)(MainWindow.WindowHeight -
+                                   (new[]
+                                   {
+                                       this.btnRotateCW.Height,
+                                       // this.btnRotateCCW.Height,
+                                       // this.btnIncreaseSize.Height,
+                                       // this.btnDecreaseSize.Height,
+                                       // this.btnSetMultiLine.Height,
+                                       // this.btnSetColor.Height,
+                                   }.Max() + 20));
 
             this.btnRotateCW.Position = new Point(leftMargin, buttonTops);
 

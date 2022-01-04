@@ -94,9 +94,7 @@ namespace Velaptor.Services
 
             this.freeTypeExtensions.SetCharacterSize(
                 this.facePtr,
-                size,
-                (uint)this.monitorService.MainMonitor.HorizontalDPI,
-                (uint)this.monitorService.MainMonitor.VerticalDPI);
+                size);
 
             var glyphIndices = this.freeTypeExtensions.GetGlyphIndices(this.facePtr, this.glyphChars);
 

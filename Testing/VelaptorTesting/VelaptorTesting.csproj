@@ -46,10 +46,7 @@
     <None Update="Content\Atlas\Main-Atlas.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Fonts\TimesNewRoman.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Fonts\TimesNewRoman.TTF">
+    <None Update="Content\Fonts\times.TTF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

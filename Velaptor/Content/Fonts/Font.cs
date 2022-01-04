@@ -25,12 +25,19 @@ namespace Velaptor.Content.Fonts
     public sealed class Font : IFont
     {
         private const char InvalidCharacter = '□';
-        private readonly char[] availableGlyphCharacters;
         private readonly GlyphMetrics[] metrics;
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IFreeTypeExtensions freeTypeExtensions;
         private readonly IntPtr facePtr;
         private readonly GlyphMetrics invalidGlyph;
+        private readonly char[] availableGlyphCharacters =
+        {
+            'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
+            '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
+        };
+        private int size;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
@@ -39,19 +46,17 @@ namespace Velaptor.Content.Fonts
         /// <param name="freeTypeInvoker">Invokes native FreeType function calls.</param>
         /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="glyphMetrics">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
-        /// <param name="fontSettings">The various font settings.</param>
-        /// <param name="availableGlyphChars">The list of available glyph characters for this font.</param>
         /// <param name="name">The name of the font content.</param>
         /// <param name="path">The path to the font content.</param>
+        // TODO: Change font size across project to uint
         internal Font(
             ITexture texture,
             IFreeTypeInvoker freeTypeInvoker,
             IFreeTypeExtensions freeTypeExtensions,
             GlyphMetrics[] glyphMetrics,
-            FontSettings fontSettings,
-            char[] availableGlyphChars,
             string name,
-            string path)
+            string path,
+            int size)
         {
             FontTextureAtlas = texture;
             this.freeTypeInvoker = freeTypeInvoker;
@@ -59,13 +64,15 @@ namespace Velaptor.Content.Fonts
             this.metrics = glyphMetrics;
             this.invalidGlyph = glyphMetrics.FirstOrDefault(m => m.Glyph == InvalidCharacter);
 
-            this.facePtr = freeTypeInvoker.FT_Get_Face();
-            Size = fontSettings.Size;
-            Style = fontSettings.Style;
-            this.availableGlyphCharacters = availableGlyphChars;
+            var libraryPtr = this.freeTypeInvoker.FT_Init_FreeType();
+            this.facePtr = this.freeTypeExtensions.CreateFontFace(libraryPtr, path);
+
+            Size = size;
+            Style = this.freeTypeExtensions.GetFontStyle(path);
             Name = name;
             Path = path;
-            LineSpacing = this.freeTypeExtensions.GetFontScaledLineSpacing(this.facePtr) * 64f;
+            // TODO: Get the family name and set it
+            LineSpacing = this.freeTypeExtensions.GetFontScaledLineSpacing(this.facePtr, Size) * 64f;
             HasKerning = this.freeTypeExtensions.HasKerning(this.facePtr);
         }
 
@@ -78,11 +85,23 @@ namespace Velaptor.Content.Fonts
         /// <inheritdoc/>
         public ITexture FontTextureAtlas { get; }
 
+        // TODO: Need to reload and recreate the font data every time this value has changed and only if it has changed
         /// <inheritdoc/>
-        public int Size { get; private set; }
+        public int Size
+        {
+            get => this.size;
+            set
+            {
+                this.size = value;
+            }
+        }
 
+        // TODO: Need to reload and recreate the font data every time this value has changed and only if it has changed
         /// <inheritdoc/>
         public VelFontStyle Style { get; private set; }
+
+        /// <inheritdoc/>
+        public string FamilyName { get; private set; }
 
         /// <inheritdoc/>
         public bool HasKerning { get; private set; }

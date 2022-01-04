@@ -59,7 +59,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// <param name="sizeInPoints">The size in points to set the characters.</param>
         /// <param name="horiResolution">The horizontal resolution.</param>
         /// <param name="vertResolution">The vertical resolution.</param>
-        void SetCharacterSize(IntPtr facePtr, int sizeInPoints, uint horiResolution, uint vertResolution);
+        void SetCharacterSize(IntPtr facePtr, int sizeInPoints);
 
         /// <summary>
         /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
@@ -69,17 +69,24 @@ namespace Velaptor.NativeInterop.FreeType
         bool HasKerning(IntPtr facePtr);
 
         /// <summary>
-        /// Gets the style of the font at the given <see cref="fontFilePath"/>.
+        /// Gets the style of the font at the given <paramref name="fontFilePath"/>.
         /// </summary>
         /// <param name="fontFilePath">The path to the font file.</param>
         /// <returns>The style of the font.</returns>
         FontStyle GetFontStyle(string fontFilePath);
 
         /// <summary>
+        /// Gets the name of the font family of the font at the given <paramref name="fontFilePath"/>.
+        /// </summary>
+        /// <param name="fontFilePath">The path to the font file.</param>
+        /// <returns>The family name of the font.</returns>
+        string GetFamilyName(string fontFilePath);
+
+        /// <summary>
         /// Returns the line spacing as a scaled value.
         /// </summary>
         /// <param name="facePtr">The pointer to the font face.</param>
         /// <returns>The line spacing as a scaled value.</returns>
-        float GetFontScaledLineSpacing(IntPtr facePtr);
+        float GetFontScaledLineSpacing(IntPtr facePtr, int sizeInPoints);
     }
 }

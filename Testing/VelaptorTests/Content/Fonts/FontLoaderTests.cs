@@ -41,7 +41,6 @@ namespace VelaptorTests.Content.Fonts
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Objects,
         };
-        private readonly FontSettings fontSettings;
         private readonly Mock<IPath> mockPath;
 
         /// <summary>
@@ -71,16 +70,8 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontPathResolver = new Mock<IPathResolver>();
             this.mockFontPathResolver.Setup(m => m.ResolveDirPath()).Returns(this.fontsDirPath);
 
-            this.fontSettings = new FontSettings
-            {
-                Size = 12,
-                Style = FontStyle.Regular,
-            };
-
             this.mockFile = new Mock<IFile>();
             this.mockFile.Setup(m => m.Exists(this.fontDataFilePath)).Returns(true);
-            this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath)).Returns(()
-                => JsonConvert.SerializeObject(this.fontSettings, this.jsonSettings));
 
             this.mockPath = new Mock<IPath>();
 
@@ -105,8 +96,6 @@ namespace VelaptorTests.Content.Fonts
             // Assert
             this.mockFile.Verify(m => m.ReadAllText(this.fontDataFilePath), Times.Once());
             this.mockImageService.Verify(m => m.FlipVertically(It.IsAny<ImageData>()), Times.Once());
-            Assert.Equal(this.fontSettings.Size, actual.Size);
-            Assert.Equal(this.fontSettings.Style, actual.Style);
             Assert.Equal(FontContentName, actual.Name);
             Assert.Equal($"{this.fontsDirPath}{FontContentName}", actual.Path);
             Assert.Equal(this.glyphMetricData.Length, actual.Metrics.Count);
