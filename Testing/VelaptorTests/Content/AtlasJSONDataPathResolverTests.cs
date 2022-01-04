@@ -9,8 +9,8 @@ namespace VelaptorTests.Content
     using System.Reflection;
     using Moq;
     using Velaptor.Content;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasJSONDataPathResolver"/> class.
@@ -46,7 +46,7 @@ namespace VelaptorTests.Content
             var actual = resolver.ContentDirectoryName;
 
             // Assert
-            Assert.Equal("Atlas", actual);
+            AssertExtensions.Equal("Atlas", actual);
         }
         #endregion
 
@@ -69,7 +69,7 @@ namespace VelaptorTests.Content
             var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The texture atlas data file '{this.contentFilePath}' does not exist.");

@@ -15,7 +15,6 @@ namespace VelaptorTests.Services
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
@@ -239,6 +238,13 @@ namespace VelaptorTests.Services
         }
         #endregion
 
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose()
+        {
+            this.testCompareImage.Dispose();
+            this.testCompareImage = null;
+        }
+
         /// <summary>
         /// Asserts that all of the given <paramref name="pixels"/> with the dimensions given by
         /// <paramref name="width"/> and <paramref name="height"/> match the given <paramref name="expectedClr"/>
@@ -256,30 +262,30 @@ namespace VelaptorTests.Services
         [ExcludeFromCodeCoverage]
         private static void AssertThatPixelsMatch(NETColor[,] pixels, uint width, uint height, NETRectangle assertRect, NETColor expectedClr)
         {
-            Assert.All(pixels, width, height, (pixel, x, y) =>
+            AssertExtensions.All(pixels, width, height, (pixel, x, y) =>
             {
                 if (assertRect.Contains(x, y))
                 {
                     var message = $"The pixel at location '{x},{y}' is incorrect with the ARGB value of '{pixel}'.";
-                    Assert.True(
+                    AssertExtensions.True(
                         condition: pixel.A == expectedClr.A,
                         message: message,
                         expected: $"Alpha {expectedClr.A}",
                         actual: $"Alpha {pixel.A}");
 
-                    Assert.True(
+                    AssertExtensions.True(
                         condition: pixel.R == expectedClr.R,
                         message: message,
                         expected: $"Red {expectedClr.R}",
                         actual: $"Red {pixel.R}");
 
-                    Assert.True(
+                    AssertExtensions.True(
                         condition: pixel.G == expectedClr.G,
                         message: message,
                         expected: $"Green {expectedClr.G}",
                         actual: $"Green {pixel.G}");
 
-                    Assert.True(
+                    AssertExtensions.True(
                         condition: pixel.B == expectedClr.B,
                         message: message,
                         expected: $"Blue {expectedClr.B}",
@@ -315,13 +321,6 @@ namespace VelaptorTests.Services
             }
 
             return result;
-        }
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            this.testCompareImage.Dispose();
-            this.testCompareImage = null;
         }
     }
 }

@@ -9,8 +9,8 @@ namespace VelaptorTests.Input
     using System;
     using System.Linq;
     using Velaptor.Input;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
 #pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
@@ -46,7 +46,7 @@ namespace VelaptorTests.Input
             var actual = keyboard.GetState();
 
             // Assert
-            Assert.AllItemsAre(actual.GetKeyStates(), state =>
+            AssertExtensions.AllItemsAre(actual.GetKeyStates(), state =>
             {
                 if (state.Key == KeyCode.T)
                 {
@@ -82,7 +82,7 @@ namespace VelaptorTests.Input
             var actual = keyboard.GetState();
 
             // Assert
-            Assert.AllItemsAre(actual.GetKeyStates(), state =>
+            AssertExtensions.AllItemsAre(actual.GetKeyStates(), state =>
             {
                 if (state.Key == KeyCode.F)
                 {

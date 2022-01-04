@@ -8,8 +8,8 @@ namespace VelaptorTests.Content
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
     using VelaptorTests.Fakes;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="ContentLoader"/> class.
@@ -100,7 +100,7 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<UnknownContentException>(() =>
+            AssertExtensions.ThrowsWithMessage<UnknownContentException>(() =>
             {
                 loader.Load<IInvalidContent>("test-texture");
             }, "Content of type 'VelaptorTests.Fakes.IInvalidContent' invalid.  Content types must inherit from interface 'IContent'.");
@@ -169,7 +169,7 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<UnknownContentException>(() =>
+            AssertExtensions.ThrowsWithMessage<UnknownContentException>(() =>
             {
                 loader.Unload<IUnknownContentItem>("unknown-content");
             }, $"The content of type '{typeof(IUnknownContentItem)}' is unknown.");
