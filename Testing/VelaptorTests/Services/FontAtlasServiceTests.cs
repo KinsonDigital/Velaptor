@@ -1,4 +1,4 @@
-// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -21,7 +21,6 @@ namespace VelaptorTests.Services
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="FontAtlasService"/> class.
@@ -172,7 +171,7 @@ namespace VelaptorTests.Services
             var service = CreateService(false);
 
             // Act & Assert
-            Assert.ThrowsWithMessage<InvalidOperationException>(() =>
+            AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
             {
                 service.CreateFontAtlas(It.IsAny<string>(), It.IsAny<int>());
             }, "The available glyph characters must be set first before creating a font texture atlas.");
@@ -187,7 +186,7 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
             }, "The font file path argument must not be null. (Parameter 'fontFilePath')");
@@ -201,7 +200,7 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
             }, $"The file '{FontFilePath}' does not exist.");
@@ -216,7 +215,7 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<SystemMonitorException>(() =>
+            AssertExtensions.ThrowsWithMessage<SystemMonitorException>(() =>
             {
                 service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
             }, "The main system monitor must not be null.");
