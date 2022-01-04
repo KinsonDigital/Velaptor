@@ -9,8 +9,8 @@ namespace VelaptorTests.Content
     using System.Reflection;
     using Moq;
     using Velaptor.Content;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="SoundPathResolver"/> class.
@@ -69,7 +69,7 @@ namespace VelaptorTests.Content
             var resolver = new SoundPathResolver(mockDirectory.Object);
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The sound file '{this.contentFilePath}' does not exist.");
