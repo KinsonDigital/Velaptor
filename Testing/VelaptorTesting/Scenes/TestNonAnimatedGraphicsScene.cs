@@ -2,15 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using Velaptor.Input;
-
 namespace VelaptorTesting.Scenes
 {
+    using System.Collections.Generic;
     using System.Drawing;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Graphics;
+    using Velaptor.Input;
     using VelaptorTesting.Core;
 
     /// <summary>
@@ -23,7 +22,7 @@ namespace VelaptorTesting.Scenes
         private readonly int windowHalfHeight;
         private IAtlasData? mainAtlas;
         private AtlasSubTextureData? octagonData;
-        private IFont font;
+        private IFont? font;
         private KeyboardState currentKeyState;
         private KeyboardState prevKeyState;
         private RenderEffects renderEffects = RenderEffects.None;
@@ -80,6 +79,7 @@ namespace VelaptorTesting.Scenes
             }
 
             this.mainAtlas = null;
+            this.font?.Dispose();
 
             base.UnloadContent();
         }
