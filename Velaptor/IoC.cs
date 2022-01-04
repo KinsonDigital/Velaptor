@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.Runtime.CompilerServices;
-using Velaptor.Graphics;
 
 [assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
@@ -14,7 +13,9 @@ namespace Velaptor
     using System.IO.Abstractions;
     using SimpleInjector;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts.Services;
     using Velaptor.Factories;
+    using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
@@ -107,6 +108,14 @@ namespace Velaptor
             IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
+
+            IoCContainer.Register<IFontStatsService>(
+                () => new FontStatsService(
+                    IoCContainer.GetInstance<IFreeTypeExtensions>(),
+                    PathResolverFactory.CreateFontPathResolver(),
+                    PathResolverFactory.CreateSystemFontPathResolver(),
+                    IoCContainer.GetInstance<IDirectory>()), Lifestyle.Singleton);
+
             IoCContainer.Register<IDisposableItemCache<(string, string), ITexture>, TextureCache>(Lifestyle.Singleton);
             IoCContainer.Register<IDisposableItemCache<(string, uint), ITexture>, FontTextureAtlasCache>(Lifestyle.Singleton);
             IoCContainer.Register<IItemCache<(string, uint), (ImageData, GlyphMetrics[])>, FontAtlasDataCache>(Lifestyle.Singleton);
