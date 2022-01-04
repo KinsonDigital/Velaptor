@@ -108,7 +108,7 @@ namespace Velaptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="srcRect">The rectangle of the sub texture within the texture to render.</param>
         /// <param name="destRect">The destination rectangle of rendering.</param>
-        /// <param name="size">The size to render the texture at. 1 is for 100%/normal size.</param>
+        /// <param name="size">The size to render the texture. 1 is for 100%/normal size.</param>
         /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
         /// <param name="color">The color to apply to the rendering.</param>
         /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>

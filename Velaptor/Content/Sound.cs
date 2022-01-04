@@ -67,7 +67,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets or sets the play speed to the given value.
         /// </summary>
-        /// <param name="value">The speed that the sound should play at.</param>
+        /// <param name="value">The speed that the sound should play.</param>
         /// <remarks>
         ///     The valid range of <paramref name="value"/> is between 0.25 and 2.0
         ///     with a <paramref name="value"/> less than 0.25 defaulting to 0.25 and

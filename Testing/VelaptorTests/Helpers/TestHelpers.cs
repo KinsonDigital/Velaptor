@@ -46,7 +46,7 @@ namespace VelaptorTests.Helpers
         /// </summary>
         /// <param name="color">The color to set all of the <see cref="ImageData.Pixels"/>.</param>
         /// <param name="width">The width of the image that the pixels represent.</param>
-        /// <param name="height">The heightof the image that the pixels represent.</param>
+        /// <param name="height">The height of the image that the pixels represent.</param>
         /// <returns>The struct to test.</returns>
         public static ImageData CreateImageData(NETColor color, uint width, uint height)
             => new ImageData(CreatePixels(color, width, height), width, height);
@@ -98,7 +98,7 @@ namespace VelaptorTests.Helpers
         /// <param name="src">The source image to draw.</param>
         /// <param name="dest">The destination image to draw the source onto.</param>
         /// <param name="location">The location of where to draw the <paramref name="src"/> image.</param>
-        /// <returns>The resulting image after the draw operationi.</returns>
+        /// <returns>The resulting image after the draw operation.</returns>
         public static ImageData Draw(ImageData src, ImageData dest, NETPoint location)
         {
             if ((location.X < 0 && location.X > dest.Width) ||
@@ -204,8 +204,8 @@ namespace VelaptorTests.Helpers
         /// </summary>
         /// <param name="image">The image data that contains the row.</param>
         /// <param name="row">The row of pixels to return.</param>
-        /// <param name="colStart">The column in the row to start at.</param>
-        /// <param name="colStop">The column in the row to stop at.</param>
+        /// <param name="colStart">The column in the row where to start.</param>
+        /// <param name="colStop">The column in the row where to stop.</param>
         /// <returns>The list of row pixel colors.</returns>
         /// <remarks>The row, colStart, and colStop are 0 index based.</remarks>
         public static NETColor[] GetRow(ImageData image, uint row, uint colStart, uint colStop)
