@@ -34,7 +34,7 @@ namespace VelaptorTests.Content
             this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(SoundName)).Returns(this.oggSoundFilepath);
 
             this.mockSound = new Mock<ISound>();
-            this.mockSound.SetupGet(p => p.Path).Returns(this.oggSoundFilepath);
+            this.mockSound.SetupGet(p => p.FilePath).Returns(this.oggSoundFilepath);
 
             this.soundFactory = new Mock<ISoundFactory>();
             this.soundFactory.Setup(m => m.CreateSound(this.oggSoundFilepath)).Returns(this.mockSound.Object);
@@ -60,7 +60,7 @@ namespace VelaptorTests.Content
 
             // Assert
             this.soundFactory.Verify(m => m.CreateSound($"{OggSoundDirPath}{SoundName}.ogg"), Times.Once());
-            Assert.Equal(actual.Path, this.oggSoundFilepath);
+            Assert.Equal(actual.FilePath, this.oggSoundFilepath);
         }
 
         [Fact]

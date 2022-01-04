@@ -70,7 +70,7 @@ namespace Velaptor.Content.Fonts
             Size = size;
             Style = this.freeTypeExtensions.GetFontStyle(path);
             Name = name;
-            Path = path;
+            FilePath = fontFilePath;
             FamilyName = this.freeTypeExtensions.GetFamilyName(path);
             LineSpacing = this.freeTypeExtensions.GetFontScaledLineSpacing(this.facePtr, Size) * 64f;
             HasKerning = this.freeTypeExtensions.HasKerning(this.facePtr);
@@ -80,7 +80,7 @@ namespace Velaptor.Content.Fonts
         public string Name { get; }
 
         /// <inheritdoc/>
-        public string Path { get; }
+        public string FilePath { get; }
 
         /// <inheritdoc/>
         public ITexture FontTextureAtlas { get; }

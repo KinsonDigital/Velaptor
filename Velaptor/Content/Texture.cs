@@ -51,7 +51,7 @@ namespace Velaptor.Content
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            Path = path;
+            FilePath = path;
             Init(name, imageData);
         }
 
@@ -67,7 +67,7 @@ namespace Velaptor.Content
         {
             this.gl = gl;
             this.glExtensions = glExtensions;
-            Path = path;
+            FilePath = path;
             Init(name, imageData);
         }
 
@@ -88,7 +88,7 @@ namespace Velaptor.Content
         public string Name { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
-        public string Path { get; }
+        public string FilePath { get; }
 
         /// <inheritdoc/>
         public uint Width { get; private set; }

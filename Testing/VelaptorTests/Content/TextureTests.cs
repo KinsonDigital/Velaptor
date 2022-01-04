@@ -171,7 +171,7 @@ namespace VelaptorTests.Content
             var texture = CreateTexture();
 
             // Act
-            var actual = texture.Path;
+            var actual = texture.FilePath;
 
             // Assert
             Assert.Equal(TexturePath, actual);

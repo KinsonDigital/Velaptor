@@ -1,4 +1,4 @@
-﻿// <copyright file="FontTests.cs" company="KinsonDigital">
+// <copyright file="FontTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -112,7 +112,7 @@ namespace VelaptorTests.Content.Fonts
             // Assert
             // Check that the texture was properly created
             Assert.Equal("test-name", font.FontTextureAtlas.Name);
-            Assert.Equal(FontPath, font.FontTextureAtlas.Path);
+            Assert.Equal(FontPath, font.FontTextureAtlas.FilePath);
             Assert.True(font.FontTextureAtlas.IsPooled);
 
             Assert.Equal(font.Metrics.Count, this.glyphMetrics.Count);
@@ -120,7 +120,7 @@ namespace VelaptorTests.Content.Fonts
             Assert.Equal("test-font-family", font.FamilyName);
             Assert.Equal(12, font.Size);
             Assert.Equal(FontStyle.Regular, font.Style);
-            Assert.Equal(FontPath, font.Path);
+            Assert.Equal(FontPath, font.FilePath);
         }
         #endregion
 

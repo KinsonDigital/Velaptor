@@ -110,7 +110,7 @@ namespace VelaptorTests.Content
             var data = CreateAtlasData();
 
             // Act
-            var actual = data.Path;
+            var actual = data.FilePath;
 
             // Assert
             Assert.Equal(AtlasImagePath, actual);

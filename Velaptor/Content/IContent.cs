@@ -19,7 +19,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets the path to the content.
         /// </summary>
-        string Path { get; }
+        string FilePath { get; }
 
         /// <summary>
         /// Gets a value indicating whether the content item has been disposed.

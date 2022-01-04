@@ -36,7 +36,7 @@ namespace Velaptor.Content
             this.subTextures = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
 
             Name = atlasName;
-            Path = path;
+            FilePath = path;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Velaptor.Content
         public string Name { get; }
 
         /// <inheritdoc/>
-        public string Path { get; }
+        public string FilePath { get; }
 
         /// <inheritdoc/>
         public ITexture Texture { get; private set; }

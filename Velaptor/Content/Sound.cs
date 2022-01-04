@@ -83,7 +83,7 @@ namespace Velaptor.Content
         public string Name => this.sound.Name;
 
         /// <inheritdoc/>
-        public string Path => this.sound.Path;
+        public string FilePath => this.sound.Path;
 
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }

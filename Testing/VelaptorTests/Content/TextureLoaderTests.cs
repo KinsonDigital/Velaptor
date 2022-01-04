@@ -62,7 +62,7 @@ namespace VelaptorTests.Content
 
             // Assert
             Assert.NotNull(actual);
-            Assert.Equal(actual.Path, this.textureFilePath);
+            Assert.Equal(actual.FilePath, this.textureFilePath);
             this.mockGL.Verify(m => m.GenTexture(), Times.Once());
             this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
         }
@@ -100,7 +100,7 @@ namespace VelaptorTests.Content
 
             // Assert
             Assert.Equal(textureA.Name, textureB.Name);
-            Assert.Equal(textureA.Path, textureB.Path);
+            Assert.Equal(textureA.FilePath, textureB.FilePath);
             Assert.Same(textureA, textureB);
         }
 
