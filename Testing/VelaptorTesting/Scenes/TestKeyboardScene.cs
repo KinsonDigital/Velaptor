@@ -13,7 +13,7 @@ namespace VelaptorTesting.Scenes
     using VelaptorTesting.Core;
 
     /// <summary>
-    /// Used to test out if the keyboard works correctly.
+    /// Used to test that the keyboard works correctly.
     /// </summary>
     public class TestKeyboardScene : SceneBase
     {
