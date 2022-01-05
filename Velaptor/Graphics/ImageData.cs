@@ -152,6 +152,12 @@ namespace Velaptor.Graphics
             return Equals(imageData);
         }
 
+        /// <summary>
+        /// Returns a value indicating if the <see cref="ImageData"/> contents are empty.
+        /// </summary>
+        /// <returns><c>true</c> if empty.</returns>
+        public bool IsEmpty() => this.Width == 0 && this.Height == 0 && (this.Pixels == null || this.Pixels.Length == 0);
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override int GetHashCode() => HashCode.Combine(this.Pixels, this.Width, this.Height);

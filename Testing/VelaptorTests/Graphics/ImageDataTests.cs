@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Graphics
 {
+    using System.Collections.Generic;
     using System.Drawing;
     using Velaptor.Graphics;
     using VelaptorTests.Helpers;
@@ -14,6 +15,18 @@ namespace VelaptorTests.Graphics
     /// </summary>
     public class ImageDataTests
     {
+        /// <summary>
+        /// Returns the data used to test the <see cref="ImageData.IsEmpty"/> method.
+        /// </summary>
+        /// <returns>The data to use for testing.</returns>
+        public static IEnumerable<object[]> IsEmptyTestData()
+        {
+            yield return new object[] { 0u, 0u, new Color[0, 0], true };
+            yield return new object[] { 11u, 0u, new Color[0, 0], false };
+            yield return new object[] { 0u, 22u, new Color[0, 0], false };
+            yield return new object[] { 0u, 0u, new[,] { { Color.Red, Color.Blue } }, false };
+        }
+
         #region Method Tests
         [Fact]
         public void DrawImage_WhenDrawingWithingBounds_DrawsWholeImageOntoOther()
@@ -339,6 +352,20 @@ namespace VelaptorTests.Graphics
 
             // Assert
             Assert.False(actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(IsEmptyTestData))]
+        public void IsEmpty_WhenEmpty_ReturnsCorrectResult(uint width, uint height, Color[,] pixels, bool expected)
+        {
+            // Arrange
+            var data = new ImageData(pixels, width, height);
+
+            // Act
+            var actual = data.IsEmpty();
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
         #endregion
     }
