@@ -2,18 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Factories;
-
 namespace Velaptor.Content.Fonts
 {
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
     using System.IO.Abstractions;
-    using Newtonsoft.Json;
-    using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Fonts.Services;
+    using Velaptor.Factories;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
@@ -25,15 +22,14 @@ namespace Velaptor.Content.Fonts
     /// </summary>
     public sealed class FontLoader : ILoader<IFont>
     {
-        private const string FontExtension = ".ttf";
         private readonly ConcurrentDictionary<string, IFont> fonts = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly IFreeTypeExtensions freeTypeExtensions;
         private readonly IFontAtlasService fontAtlasService;
+        private readonly IFontStatsService fontStatsService;
         private readonly IPathResolver fontPathResolver;
-        private readonly IFile file;
         private readonly IPath path;
         private readonly IImageService imageService;
         private readonly char[] glyphChars =
@@ -48,21 +44,18 @@ namespace Velaptor.Content.Fonts
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
         /// </summary>
-        /// <param name="fontAtlasService">Loads font files and builds atlas textures from them.</param>
-        /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
-        /// <param name="imageService">Manipulates image data.</param>
         [ExcludeFromCodeCoverage]
-        public FontLoader(IFontAtlasService fontAtlasService, IPathResolver fontPathResolver, IImageService imageService)
+        public FontLoader()
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             this.freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
             this.freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
-            this.fontAtlasService = fontAtlasService;
+            this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
+            this.fontStatsService = IoC.Container.GetInstance<IFontStatsService>();
             this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
-            this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
-            this.imageService = imageService;
+            this.imageService = IoC.Container.GetInstance<IImageService>();
 
             this.fontAtlasService.SetAvailableCharacters(this.glyphChars);
         }
@@ -75,9 +68,9 @@ namespace Velaptor.Content.Fonts
         /// <param name="freeTypeInvoker">Makes calls to the native free type library.</param>
         /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="fontAtlasService">Loads font files and builds atlas textures from them.</param>
+        /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
         /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
         /// <param name="imageService">Manipulates image data.</param>
-        /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         internal FontLoader(
             IGLInvoker gl,
@@ -85,9 +78,9 @@ namespace Velaptor.Content.Fonts
             IFreeTypeInvoker freeTypeInvoker,
             IFreeTypeExtensions freeTypeExtensions,
             IFontAtlasService fontAtlasService,
+            IFontStatsService fontStatsService,
             IPathResolver fontPathResolver,
             IImageService imageService,
-            IFile file,
             IPath path)
         {
             this.gl = gl;
@@ -95,8 +88,8 @@ namespace Velaptor.Content.Fonts
             this.freeTypeInvoker = freeTypeInvoker;
             this.freeTypeExtensions = freeTypeExtensions;
             this.fontAtlasService = fontAtlasService;
+            this.fontStatsService = fontStatsService;
             this.fontPathResolver = fontPathResolver;
-            this.file = file;
             this.path = path;
             this.imageService = imageService;
 
@@ -142,7 +135,15 @@ namespace Velaptor.Content.Fonts
 
                 var fontAtlasTexture = new Texture(this.gl, this.glExtensions, name, filePath, fontAtlasImage) { IsPooled = true };
 
-                return new Font(fontAtlasTexture, this.freeTypeInvoker, this.freeTypeExtensions, atlasData, name, filePath, size)
+                return new Font(
+                    fontAtlasTexture,
+                    this.freeTypeInvoker,
+                    this.freeTypeExtensions,
+                    this.fontStatsService,
+                    atlasData,
+                    name,
+                    filePath,
+                    size)
                 {
                     IsPooled = true,
                 };

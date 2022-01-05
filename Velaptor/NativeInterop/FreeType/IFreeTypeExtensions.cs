@@ -56,9 +56,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// Sets the nominal character size in points.
         /// </summary>
         /// <param name="facePtr">The pointer to the font face.</param>
-        /// <param name="sizeInPoints">The size in points to set the characters.</param>
-        /// <param name="horiResolution">The horizontal resolution.</param>
-        /// <param name="vertResolution">The vertical resolution.</param>
+        /// <param name="sizeInPoints">The size in points used to calculate the character size.</param>
         void SetCharacterSize(IntPtr facePtr, int sizeInPoints);
 
         /// <summary>
@@ -72,20 +70,23 @@ namespace Velaptor.NativeInterop.FreeType
         /// Gets the style of the font at the given <paramref name="fontFilePath"/>.
         /// </summary>
         /// <param name="fontFilePath">The path to the font file.</param>
+        /// <param name="disposeAfter">If <see langword="true"/>, disposes of the font face created in this process.</param>
         /// <returns>The style of the font.</returns>
-        FontStyle GetFontStyle(string fontFilePath);
+        FontStyle GetFontStyle(string fontFilePath, bool disposeAfter = false);
 
         /// <summary>
         /// Gets the name of the font family of the font at the given <paramref name="fontFilePath"/>.
         /// </summary>
         /// <param name="fontFilePath">The path to the font file.</param>
+        /// <param name="disposeAfter">If <see langword="true"/>, disposes of the font face created in this process.</param>
         /// <returns>The family name of the font.</returns>
-        string GetFamilyName(string fontFilePath);
+        string GetFamilyName(string fontFilePath, bool disposeAfter = false);
 
         /// <summary>
         /// Returns the line spacing as a scaled value.
         /// </summary>
         /// <param name="facePtr">The pointer to the font face.</param>
+        /// <param name="sizeInPoints">The size in points used to calculate the line spacing.</param>
         /// <returns>The line spacing as a scaled value.</returns>
         float GetFontScaledLineSpacing(IntPtr facePtr, int sizeInPoints);
     }

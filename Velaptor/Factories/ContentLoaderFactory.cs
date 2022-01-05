@@ -1,4 +1,4 @@
-﻿// <copyright file="ContentLoaderFactory.cs" company="KinsonDigital">
+// <copyright file="ContentLoaderFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,6 +9,7 @@ namespace Velaptor.Factories
     using System.IO.Abstractions;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
+    using Velaptor.Content.Fonts.Services;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
@@ -71,7 +72,7 @@ namespace Velaptor.Factories
         /// Creates a loader for loading atlas data from disk.
         /// </summary>
         /// <returns>A loader for loading texture atlas data.</returns>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left public for library users.")]
         public static ILoader<IAtlasData> CreateTextureAtlasLoader()
         {
             if (atlasLoader is not null)
@@ -132,6 +133,7 @@ namespace Velaptor.Factories
             var freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
             var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
+            var fontStatsService = IoC.Container.GetInstance<IFontStatsService>();
 
             fontLoader = new FontLoader(
                 glInvoker,
@@ -139,9 +141,9 @@ namespace Velaptor.Factories
                 freeTypeInvoker,
                 freeTypeExtensions,
                 fontAtlasService,
+                fontStatsService,
                 fontPathResolver,
                 IoC.Container.GetInstance<IImageService>(),
-                IoC.Container.GetInstance<IFile>(),
                 IoC.Container.GetInstance<IPath>());
 
             return fontLoader;

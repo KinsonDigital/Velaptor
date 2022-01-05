@@ -8,10 +8,10 @@ namespace VelaptorTests.Content.Fonts
     using System.IO;
     using System.IO.Abstractions;
     using Moq;
-    using Newtonsoft.Json;
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Fonts;
+    using Velaptor.Content.Fonts.Services;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.OpenGL;
@@ -33,14 +33,10 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
         private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
+        private readonly Mock<IFontStatsService> mockFontStatsService;
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPathResolver> mockFontPathResolver;
         private readonly Mock<IImageService> mockImageService;
-        private readonly JsonSerializerSettings jsonSettings = new ()
-        {
-            Formatting = Formatting.Indented,
-            TypeNameHandling = TypeNameHandling.Objects,
-        };
         private readonly Mock<IPath> mockPath;
 
         /// <summary>
@@ -66,6 +62,8 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontAtlasService = new Mock<IFontAtlasService>();
             this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(fontFilepath, It.IsAny<int>()))
                 .Returns(() => (default, this.glyphMetricData));
+
+            this.mockFontStatsService = new Mock<IFontStatsService>();
 
             this.mockFontPathResolver = new Mock<IPathResolver>();
             this.mockFontPathResolver.Setup(m => m.ResolveDirPath()).Returns(this.fontsDirPath);
@@ -97,7 +95,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockFile.Verify(m => m.ReadAllText(this.fontDataFilePath), Times.Once());
             this.mockImageService.Verify(m => m.FlipVertically(It.IsAny<ImageData>()), Times.Once());
             Assert.Equal(FontContentName, actual.Name);
-            Assert.Equal($"{this.fontsDirPath}{FontContentName}", actual.Path);
+            Assert.Equal($"{this.fontsDirPath}{FontContentName}", actual.FilePath);
             Assert.Equal(this.glyphMetricData.Length, actual.Metrics.Count);
         }
 
@@ -211,7 +209,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockPath.Setup(m => m.HasExtension(It.IsAny<string>())).Returns(false);
             this.mockFile.Setup(m => m.ReadAllText(this.fontDataFilePath))
                 .Returns(fontSettingsJSON);
-            this.mockFreeTypeExtensions.Setup(m => m.GetFontStyle(this.fontDataFilePath))
+            this.mockFreeTypeExtensions.Setup(m => m.GetFontStyle(this.fontDataFilePath, true))
                 .Returns(FontStyle.Regular);
 
             var loader = CreateLoader();
@@ -292,9 +290,9 @@ namespace VelaptorTests.Content.Fonts
             this.mockFreeTypeInvoker.Object,
             this.mockFreeTypeExtensions.Object,
             this.mockFontAtlasService.Object,
+            this.mockFontStatsService.Object,
             this.mockFontPathResolver.Object,
             this.mockImageService.Object,
-            this.mockFile.Object,
             this.mockPath.Object);
     }
 }

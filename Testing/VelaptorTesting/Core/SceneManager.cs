@@ -7,7 +7,6 @@ namespace VelaptorTesting.Core
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
     using System.Linq;
     using Velaptor;
     using Velaptor.Content;

@@ -1,9 +1,10 @@
-// <copyright file="FontTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 using System.Collections.Generic;
 using System.Drawing;
+using Velaptor.Content.Fonts.Services;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.Services;
 
@@ -44,7 +45,7 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
         private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
-        private readonly Mock<IImageService> mockImageService;
+        private readonly Mock<IFontStatsService> mockFontStatsService;
         private readonly Mock<ITexture> mockTexture;
         private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\SampleTestData\";
         private Dictionary<char, GlyphMetrics> glyphMetrics = new ();
@@ -79,7 +80,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(It.IsAny<string>(), It.IsAny<int>()))
                 .Returns((default, this.glyphMetrics.Values.ToArray()));
 
-            this.mockImageService = new Mock<IImageService>();
+            this.mockFontStatsService = new Mock<IFontStatsService>();
 
             this.mockTexture = new Mock<ITexture>();
         }
@@ -95,7 +96,7 @@ namespace VelaptorTests.Content.Fonts
             };
             var atlasImageData = new ImageData(pixels, 11, 22);
 
-            this.mockFreeTypeExtensions.Setup(m => m.GetFamilyName(FontPath)).Returns("test-font-family");
+            this.mockFreeTypeExtensions.Setup(m => m.GetFamilyName(FontPath, true)).Returns("test-font-family");
             this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(FontPath, 12))
                 .Returns((atlasImageData, this.glyphMetrics.Values.ToArray()));
 
@@ -104,6 +105,7 @@ namespace VelaptorTests.Content.Fonts
                 this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
+                this.mockFontStatsService.Object,
                 this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
@@ -165,6 +167,7 @@ namespace VelaptorTests.Content.Fonts
                 this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
+                this.mockFontStatsService.Object,
                 this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
@@ -186,6 +189,7 @@ namespace VelaptorTests.Content.Fonts
                 this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
+                this.mockFontStatsService.Object,
                 this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
@@ -251,6 +255,7 @@ namespace VelaptorTests.Content.Fonts
                 this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
+                this.mockFontStatsService.Object,
                 this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
@@ -324,6 +329,7 @@ namespace VelaptorTests.Content.Fonts
                 this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
+                this.mockFontStatsService.Object,
                 this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,

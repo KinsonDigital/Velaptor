@@ -9,7 +9,6 @@ namespace Velaptor.NativeInterop.GLFW
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using Silk.NET.GLFW;
-    using Velaptor.OpenGL;
 
     /// <summary>
     /// Invokes GLFW calls.

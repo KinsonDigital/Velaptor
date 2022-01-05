@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO.Abstractions;
-using System.Runtime.CompilerServices;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.Services;

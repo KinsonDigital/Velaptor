@@ -201,7 +201,7 @@ namespace Velaptor.NativeInterop.FreeType
         }
 
         /// <inheritdoc/>
-        public FontStyle GetFontStyle(string fontFilePath)
+        public FontStyle GetFontStyle(string fontFilePath, bool disposeAfter = false)
         {
             FontStyle result;
 
@@ -225,13 +225,18 @@ namespace Velaptor.NativeInterop.FreeType
                 result = Environment.Is64BitProcess
                     ? (FontStyle)faceRec->style_flags.ToInt64()
                     : (FontStyle)faceRec->style_flags.ToInt32();
+
+                if (disposeAfter)
+                {
+                    this.freeTypeInvoker.FT_Done_Face(fontFace);
+                }
             }
 
             return result;
         }
 
         /// <inheritdoc/>
-        public string GetFamilyName(string fontFilePath)
+        public string GetFamilyName(string fontFilePath, bool disposeAfter = false)
         {
             string? result;
 
@@ -247,6 +252,11 @@ namespace Velaptor.NativeInterop.FreeType
                 var faceRec = (FT_FaceRec*)fontFace;
 
                 result = Marshal.PtrToStringAnsi(faceRec->family_name);
+
+                if (disposeAfter)
+                {
+                    this.freeTypeInvoker.FT_Done_Face(fontFace);
+                }
             }
 
             return result ?? string.Empty;
