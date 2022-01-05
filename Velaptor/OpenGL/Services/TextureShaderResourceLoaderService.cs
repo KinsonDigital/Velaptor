@@ -1,4 +1,4 @@
-// <copyright file="TextureShaderResourceLoaderService.cs" company="KinsonDigital">
+﻿// <copyright file="TextureShaderResourceLoaderService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -41,7 +41,7 @@ namespace Velaptor.OpenGL.Services
 
         /// <inheritdoc cref="IShaderLoaderService{TValue}.LoadVertSource"/>
         /// <remarks>
-        ///     The props in this context only needs to be a single tuple item which is the batch size.
+        ///     The props in this context only need to be a single tuple item which is the batch size.
         /// </remarks>
         public string LoadVertSource(string shaderName, IEnumerable<(string name, uint value)>? props = null)
         {
