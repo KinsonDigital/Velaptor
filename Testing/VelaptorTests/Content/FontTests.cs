@@ -364,7 +364,7 @@ namespace VelaptorTests.Content
         /// <summary>
         /// Mocks the kerning value for each character in the given <paramref name="text"/>.
         /// </summary>
-        /// <param name="text">The text to mock the kerning values for.</param>
+        /// <param name="text">The text to mock the kerning values.</param>
         private void MockGlyphKernings(string text)
         {
             if (this.glyphMetrics is null || this.glyphMetrics.Length <= 0)
