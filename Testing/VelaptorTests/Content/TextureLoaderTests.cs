@@ -4,12 +4,16 @@
 
 namespace VelaptorTests.Content
 {
+    using System.Drawing;
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Velaptor.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -17,9 +21,11 @@ namespace VelaptorTests.Content
     /// </summary>
     public class TextureLoaderTests
     {
-        private const string TextureFileName = "test-texture.png";
+        private const string TextureExtension = ".png";
+        private const string TextureDirPath = @"C:\textures\";
+        private const string TextureFileName = "test-texture";
         private const uint OpenGLTextureId = 1234;
-        private readonly string textureFilePath;
+        private readonly string textureFilePath = $"{TextureDirPath}{TextureFileName}{TextureExtension}";
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IImageService> mockImageService;
@@ -31,28 +37,37 @@ namespace VelaptorTests.Content
         /// </summary>
         public TextureLoaderTests()
         {
-            this.textureFilePath = $@"C:\temp\{TextureFileName}";
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGL.Setup(m => m.GenTexture()).Returns(OpenGLTextureId); // Mock out the OpenGL texture ID
 
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
 
+            var imageData = new ImageData(new Color[3, 1], 3, 1);
+
             this.mockImageService = new Mock<IImageService>();
+            this.mockImageService.Setup(m => m.Load(this.textureFilePath))
+                .Returns(imageData);
+
             this.mockTexturePathResolver = new Mock<IPathResolver>();
-            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName)).Returns(this.textureFilePath);
+            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName))
+                .Returns(this.textureFilePath);
 
             this.mockPath = new Mock<IPath>();
             this.mockPath.Setup(m => m.HasExtension(TextureFileName)).Returns(false);
+            this.mockPath.Setup(m => m.HasExtension($"{TextureFileName}{TextureExtension}")).Returns(true);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}")).Returns(TextureFileName);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}{TextureExtension}")).Returns(TextureFileName);
         }
 
         #region Method Tests
         [Theory]
         [InlineData(TextureFileName, "")]
         [InlineData(TextureFileName, ".txt")]
-        public void Load_WhenInvoked_LoadsTexture(string contentName, string extension)
+        public void Load_WhenLoadingAppContentByName_LoadsTexture(string contentName, string extension)
         {
             // Arrange
-            this.mockPath.Setup(m => m.HasExtension($"{contentName}.txt")).Returns(true);
+            this.mockPath.Setup(m => m.HasExtension($"{contentName}{extension}")).Returns(!string.IsNullOrEmpty(extension));
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}")).Returns(contentName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
 
             var loader = CreateLoader();
@@ -62,9 +77,22 @@ namespace VelaptorTests.Content
 
             // Assert
             Assert.NotNull(actual);
-            Assert.Equal(actual.FilePath, this.textureFilePath);
             this.mockGL.Verify(m => m.GenTexture(), Times.Once());
             this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
+        }
+
+        [Fact]
+        public void Load_WhenLoadingContentWithFullPath_LoadsTexture()
+        {
+            // Arrange
+            var loader = CreateLoader();
+
+            // Act
+            var actual = loader.Load(this.textureFilePath);
+
+            // Assert
+            Assert.NotNull(actual);
+            this.mockImageService.Verify(m => m.Load(this.textureFilePath), Times.Once);
         }
 
         [Fact]
@@ -102,6 +130,61 @@ namespace VelaptorTests.Content
             Assert.Equal(textureA.Name, textureB.Name);
             Assert.Equal(textureA.FilePath, textureB.FilePath);
             Assert.Same(textureA, textureB);
+        }
+
+        [Fact]
+        public void Load_WhenPathIsInvalidWithUnknownContentFile_ThrowsException()
+        {
+            // Arrange
+            const string invalidPath = "invalid-path.png";
+            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+                .Returns(invalidPath);
+
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<LoadContentException>(() =>
+            {
+                var unused = loader.Load(invalidPath);
+            }, $"The content file path '{invalidPath}' is not a valid path.");
+        }
+
+        [Fact]
+        public void Load_WhenPathIsInvalidWithTextureContentFile_ThrowsException()
+        {
+            // Arrange
+            const string invalidPath = "invalid-path.png";
+            this.mockPath.Setup(m => m.HasExtension(invalidPath)).Returns(true);
+            this.mockPath.Setup(m => m.GetExtension(invalidPath)).Returns(".png");
+            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+                .Returns(invalidPath);
+
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<LoadTextureException>(() =>
+            {
+                var unused = loader.Load(invalidPath);
+            }, $"The texture file path '{invalidPath}' is not a valid path.");
+        }
+
+        [Fact]
+        public void Load_WhenPathIsInvalidWithFontContentFile_ThrowsException()
+        {
+            // Arrange
+            const string invalidPath = "invalid-path.ttf";
+            this.mockPath.Setup(m => m.HasExtension(invalidPath)).Returns(true);
+            this.mockPath.Setup(m => m.GetExtension(invalidPath)).Returns(".ttf");
+            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
+                .Returns(invalidPath);
+
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<LoadFontException>(() =>
+            {
+                var unused = loader.Load(invalidPath);
+            }, $"The font file path '{invalidPath}' is not a valid path.");
         }
 
         [Fact]

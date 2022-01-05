@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureLoader.cs" company="KinsonDigital">
+// <copyright file="TextureLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,6 +9,8 @@ namespace Velaptor.Content
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Factories;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
@@ -19,6 +21,8 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class TextureLoader : ILoader<ITexture>
     {
+        private const string TextureFileExtension = ".png";
+        private const string FontFileExtension = ".ttf";
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
@@ -30,15 +34,14 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
-        /// <param name="imageService">Loads an image file.</param>
-        /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         [ExcludeFromCodeCoverage]
-        public TextureLoader(IImageService imageService, IPathResolver texturePathResolver)
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+        public TextureLoader()
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            this.imageService = imageService;
-            this.pathResolver = texturePathResolver;
+            this.imageService = IoC.Container.GetInstance<ImageService>();
+            this.pathResolver = PathResolverFactory.CreateTexturePathResolver();
             this.path = IoC.Container.GetInstance<IPath>();
         }
 
@@ -50,7 +53,12 @@ namespace Velaptor.Content
         /// <param name="imageService">Loads an image file.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         /// <param name="path">Processes directory and fle paths.</param>
-        internal TextureLoader(IGLInvoker gl, IGLInvokerExtensions glExtensions, IImageService imageService, IPathResolver texturePathResolver, IPath path)
+        internal TextureLoader(
+            IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
+            IImageService imageService,
+            IPathResolver texturePathResolver,
+            IPath path)
         {
             this.gl = gl;
             this.glExtensions = glExtensions;
@@ -60,17 +68,30 @@ namespace Velaptor.Content
         }
 
         /// <summary>
-        /// Loads a texture with the given <paramref name="name"/>.
+        /// Loads a texture with the given <paramref name="contentPathOrName"/>.
         /// </summary>
-        /// <param name="name">The name of the texture to load.</param>
+        /// <param name="contentPathOrName">The name of the texture to load.</param>
         /// <returns>The loaded texture.</returns>
-        public ITexture Load(string name)
+        /// <exception cref="LoadContentException">Thrown if the resulting content file path is invalid.</exception>
+        /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+        /// <exception cref="LoadFontException">Thrown if the resulting font content file path is invalid.</exception>
+        public ITexture Load(string contentPathOrName)
         {
-            name = this.path.HasExtension(name)
-                ? this.path.GetFileNameWithoutExtension(name)
-                : name;
+            var isFullFilePath = contentPathOrName.IsValidFullFilePath();
+            var name = string.Empty;
+            string filePath;
 
-            var filePath = this.pathResolver.ResolveFilePath(name);
+            if (isFullFilePath)
+            {
+                name = this.path.GetFileNameWithoutExtension(contentPathOrName);
+                filePath = contentPathOrName;
+            }
+            else
+            {
+                contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
+
+                filePath = this.pathResolver.ResolveFilePath(contentPathOrName);
+            }
 
             // If the requested texture is already loaded into the pool
             // and has been disposed, remove it.
@@ -83,6 +104,22 @@ namespace Velaptor.Content
 
                 this.textures.TryRemove(texture);
                 break;
+            }
+
+            // If the file path is valid
+            if (filePath.IsValidFullFilePath() is false && this.path.HasExtension(filePath) is false)
+            {
+                throw new LoadContentException($"The content file path '{filePath}' is not a valid path.");
+            }
+
+            if (filePath.IsValidFullFilePath() is false && this.path.GetExtension(filePath) == TextureFileExtension)
+            {
+                throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
+            }
+
+            if (filePath.IsValidFullFilePath() is false && this.path.GetExtension(filePath) == FontFileExtension)
+            {
+                throw new LoadFontException($"The font file path '{filePath}' is not a valid path.");
             }
 
             return this.textures.GetOrAdd(filePath, (filePathToLoad) =>

@@ -42,8 +42,6 @@ namespace Velaptor.Content
         public T Load<T>(string name)
             where T : class, IContent
         {
-            name = Path.GetFileNameWithoutExtension(name);
-
             if (typeof(T) == typeof(ITexture))
             {
                 return (T)this.textureLoader.Load(name);
@@ -51,17 +49,17 @@ namespace Velaptor.Content
 
             if (typeof(T) == typeof(ISound))
             {
-                return (T)this.soundLoader.Load(name);
+                return (T)this.soundLoader.Load(Path.GetFileNameWithoutExtension(name));
             }
 
             if (typeof(T) == typeof(IAtlasData))
             {
-                return (T)this.atlasLoader.Load(name);
+                return (T)this.atlasLoader.Load(Path.GetFileNameWithoutExtension(name));
             }
 
             if (typeof(T) == typeof(IFont))
             {
-                return (T)this.fontLoader.Load(name);
+                return (T)this.fontLoader.Load(Path.GetFileNameWithoutExtension(name));
             }
 
             throw new UnknownContentException($"Content of type '{typeof(T)}' invalid.  Content types must inherit from interface '{nameof(IContent)}'.");
