@@ -57,8 +57,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.textFont = ContentLoader.Load<IFont>("times|22");
-            // this.otherTextFont = ContentLoader.Load<IFont>("times|22");
+            this.textFont = ContentLoader.Load<IFont>("times|12");
 
             // // Rotate CW Button
             this.btnRotateCW = new Button(ContentLoader);

@@ -108,7 +108,7 @@ namespace Velaptor.Content.Fonts
                 var sections = name.Split('|');
 
                 // TODO: Convert to uint
-                var success = int.TryParse(name, out var parsedSize);
+                var success = int.TryParse(sections[1], out var parsedSize);
 
                 if (success)
                 {
