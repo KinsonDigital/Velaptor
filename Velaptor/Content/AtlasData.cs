@@ -119,7 +119,7 @@ namespace Velaptor.Content
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/></param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
         private void Dispose(bool disposing)
         {

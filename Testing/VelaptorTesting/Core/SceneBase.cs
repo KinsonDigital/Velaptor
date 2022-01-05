@@ -109,7 +109,7 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/></param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (IsDisposed)
