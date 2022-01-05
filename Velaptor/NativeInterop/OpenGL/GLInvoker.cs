@@ -517,7 +517,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// </summary>
         /// <param name="source">The debug source.</param>
         /// <param name="type">The debug type.</param>
-        /// <param name="id">The id of the error or message.</param>
+        /// <param name="id">The ID of the error or message.</param>
         /// <param name="severity">The severity of the message.</param>
         /// <param name="length">The length of the message.</param>
         /// <param name="message">The error message.</param>
