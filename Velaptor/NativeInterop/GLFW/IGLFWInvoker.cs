@@ -118,7 +118,7 @@ namespace Velaptor.NativeInterop.GLFW
         /// <returns>A pointer to the current video mode of the monitor, or <c>null</c> if an error occurred.</returns>
         /// <remarks>
         /// <para>
-        ///     The returned array is allocated and freed by GLFW
+        ///     The returned array is allocated and freed by GLFW.
         ///     You should not free it yourself.
         ///     It is valid until the specified monitor is disconnected or the library is terminated.
         /// </para>
