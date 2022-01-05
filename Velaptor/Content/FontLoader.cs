@@ -4,7 +4,7 @@
 
 namespace Velaptor.Content
 {
-// ReSharper disable RedundantNameQualifier
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
@@ -16,7 +16,7 @@ namespace Velaptor.Content
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
-    // ReS harper restore RedundantNameQualifier
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Loads font content for rendering text.
