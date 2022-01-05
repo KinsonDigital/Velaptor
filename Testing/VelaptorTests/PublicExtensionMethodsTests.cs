@@ -273,6 +273,25 @@ namespace VelaptorTests
             Assert.Equal(6f, actual.YMin);
             Assert.Equal(123u, actual.CharIndex);
         }
+
+        [Theory]
+        [InlineData(@"C:\test-dir\test-file.txt", true)]
+        [InlineData(@"C:\test-dir\test-file", false)]
+        [InlineData("", false)]
+        [InlineData(null, false)]
+        [InlineData(@"C:\test-dir\", false)]
+        [InlineData(@"C:\", false)]
+        [InlineData("non-path-value", false)]
+        [InlineData(@"\test-dir\", false)]
+        [InlineData(@"test-dir\", false)]
+        public void IsValidFullFilePath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
+        {
+            // Act
+            var actual = path.IsValidFullFilePath();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
         #endregion
     }
 }

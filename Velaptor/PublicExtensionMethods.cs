@@ -7,6 +7,7 @@ namespace Velaptor
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Drawing;
+    using System.IO;
     using System.Numerics;
     using Velaptor.Graphics;
 
@@ -260,6 +261,58 @@ namespace Velaptor
             value.YMax = value.YMax.ApplySize(size);
 
             return value;
+        }
+
+        /// <summary>
+        /// Returns a value indicating if the given <see langword="string"/> <paramref name="path"/>
+        /// is a fully qualified path.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns>True if a fully valid path.</returns>
+        /// <remarks>
+        /// Must have the following to be valid:
+        /// <list type="number">
+        ///     <item>Not <c>null</c></item>
+        ///     <item>Not empty</item>
+        ///     <item>
+        ///         Start with a drive letter
+        ///         <para>Valid: C:\ or D:\</para>
+        ///     </item>
+        ///     <item>
+        ///         Contain at least 1 directory
+        ///         <para>Valid: C:\my-directory</para>
+        ///         <para>Invalid: C:\</para>
+        ///     </item>
+        ///     <item>
+        ///         Must contain a file name with file extension
+        ///         <para>Valid: C:\my-directory\my-file.txt</para>
+        ///         <para>Invalid: C:\my-directory\my-file</para>
+        ///         <para>Invalid: C:\my-directory\.txt</para>
+        ///     </item>
+        /// </list>
+        /// </remarks>
+        public static bool IsValidFullFilePath(this string path)
+        {
+            // Must not be null or empty
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
+            // Must have a drive letter
+            if (path.Contains(':') is false && path.NotStartsWith(':'))
+            {
+                return false;
+            }
+
+            // Must have a directory path
+            if (string.IsNullOrEmpty(Path.GetDirectoryName(path)))
+            {
+                return false;
+            }
+
+            // Must have a file name with an extension
+            return !string.IsNullOrEmpty(Path.GetFileName(path)) && !string.IsNullOrEmpty(Path.GetExtension(path));
         }
     }
 }
