@@ -287,7 +287,26 @@ namespace VelaptorTests
         public void IsValidFullFilePath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act
-            var actual = path.IsValidFullFilePath();
+            var actual = path.IsValidFilePath();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(@"C:\test-dir\test-file.txt", false)]
+        [InlineData(@"C:\test-dir\test-file", true)]
+        [InlineData("", true)]
+        [InlineData(null, true)]
+        [InlineData(@"C:\test-dir\", true)]
+        [InlineData(@"C:\", true)]
+        [InlineData("non-path-value", true)]
+        [InlineData(@"\test-dir\", true)]
+        [InlineData(@"test-dir\", true)]
+        public void IsInvalidFullFilePath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
+        {
+            // Act
+            var actual = path.IsValidFilePath();
 
             // Assert
             Assert.Equal(expected, actual);

@@ -268,30 +268,30 @@ namespace Velaptor
         /// is a fully qualified path.
         /// </summary>
         /// <param name="path">The path to check.</param>
-        /// <returns>True if a fully valid path.</returns>
-        /// <remarks>
-        /// Must have the following to be valid:
+        /// <returns><c>true</c> if valid.</returns>
+        /// <example>
         /// <list type="number">
-        ///     <item>Not <c>null</c></item>
-        ///     <item>Not empty</item>
+        ///     <item>Value of <c>null</c> will return <c>false</c>.</item>
+        ///     <item><c>null</c> or <c>empty</c> will returns <c>false</c>.</item>
         ///     <item>
         ///         Start with a drive letter
-        ///         <para>Valid: C:\ or D:\</para>
+        ///         <para>Value of <c>C:\</c> will return <c>true</c>.</para>
         ///     </item>
         ///     <item>
         ///         Contain at least 1 directory
-        ///         <para>Valid: C:\my-directory</para>
-        ///         <para>Invalid: C:\</para>
+        ///         <para>will return <c>true</c>: C:\my-directory</para>
         ///     </item>
         ///     <item>
         ///         Must contain a file name with file extension
-        ///         <para>Valid: C:\my-directory\my-file.txt</para>
-        ///         <para>Invalid: C:\my-directory\my-file</para>
-        ///         <para>Invalid: C:\my-directory\.txt</para>
+        ///         <list type="bullet">
+        ///             <item>Value of <c>C:\my-directory\my-file.txt</c> will return <c>true</c>.</item>
+        ///             <item>Value of <c>C:\my-directory\my-file</c> will return <c>false</c></item>
+        ///             <item>Value of <c>C:\my-directory\.txt</c> will return <c>false</c></item>
+        ///         </list>
         ///     </item>
         /// </list>
-        /// </remarks>
-        public static bool IsValidFullFilePath(this string path)
+        /// </example>
+        public static bool IsValidFilePath(this string path)
         {
             // Must not be null or empty
             if (string.IsNullOrEmpty(path))
@@ -314,5 +314,35 @@ namespace Velaptor
             // Must have a file name with an extension
             return !string.IsNullOrEmpty(Path.GetFileName(path)) && !string.IsNullOrEmpty(Path.GetExtension(path));
         }
+
+        /// <summary>
+        /// Returns a value indicating if the given <see langword="string"/> <paramref name="path"/>
+        /// is an invalid fully qualified path.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if invalid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>null</c> will return <c>true</c>.</item>
+        ///     <item><c>null</c> or <c>empty</c> will returns <c>true</c>.</item>
+        ///     <item>
+        ///         Start with a drive letter
+        ///         <para>Value of <c>C:\</c> will return <c>false</c>.</para>
+        ///     </item>
+        ///     <item>
+        ///         Contain at least 1 directory
+        ///         <para>will return <c>false</c>: C:\my-directory</para>
+        ///     </item>
+        ///     <item>
+        ///         Must contain a file name with file extension
+        ///         <list type="bullet">
+        ///             <item>Value of <c>C:\my-directory\my-file.txt</c> will return <c>false</c>.</item>
+        ///             <item>Value of <c>C:\my-directory\my-file</c> will return <c>true</c></item>
+        ///             <item>Value of <c>C:\my-directory\.txt</c> will return <c>true</c></item>
+        ///         </list>
+        ///     </item>
+        /// </list>
+        /// </example>
+        public static bool IsInvalidFilePath(this string path) => !IsValidFilePath(path);
     }
 }
