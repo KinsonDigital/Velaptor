@@ -131,6 +131,11 @@ namespace Velaptor.Content
         /// <param name="imageData">The image data of the texture.</param>
         private void Init(string name, ImageData imageData)
         {
+            if (imageData.IsEmpty())
+            {
+                throw new ArgumentException("The image data must not be empty.", nameof(imageData));
+            }
+
             Id = this.gl.GenTexture();
 
             this.gl.BindTexture(GLTextureTarget.Texture2D, Id);

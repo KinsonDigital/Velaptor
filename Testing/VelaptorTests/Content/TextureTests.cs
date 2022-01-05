@@ -13,6 +13,7 @@ namespace VelaptorTests.Content
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -74,6 +75,16 @@ namespace VelaptorTests.Content
         }
 
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WithEmptyImageData_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+            {
+                var unused = CreateTexture(true);
+            }, "The image data must not be empty. (Parameter 'imageData')");
+        }
+
         [Fact]
         public void Ctor_WhenInvoked_UploadsTextureDataToGPU()
         {
@@ -238,6 +249,12 @@ namespace VelaptorTests.Content
         /// Creates a texture for the purpose of testing.
         /// </summary>
         /// <returns>The texture instance to test.</returns>
-        private Texture CreateTexture() => new (this.mockGL.Object, this.mockGLExtensions.Object, TextureName, TexturePath, this.imageData);
+        private Texture CreateTexture(bool useEmptyData = false)
+            => new (
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
+                TextureName,
+                TexturePath,
+                useEmptyData ? default : this.imageData);
     }
 }
