@@ -28,7 +28,7 @@ namespace Velaptor.NativeInterop.GLFW
         /// Used an invalid enum value on a function.
         /// </summary>
         /// <remarks>
-        /// This should hopefully never happen in the bindings, due to the
+        /// This should never happen in the bindings, due to the
         /// added type safety of C# enums VS. GLFW's native #defines.
         /// </remarks>
         InvalidEnum = 65539,
@@ -62,7 +62,7 @@ namespace Velaptor.NativeInterop.GLFW
         VersionUnavailable = 65543,
 
         /// <summary>
-        /// A platform-specific error occurred that doesn't fit into any more specific category.
+        /// A platform-specific error occurred that doesn't fit into a more specific category.
         /// </summary>
         /// <remarks>
         ///     Report this to the GLFW issue tracker if encountered.
