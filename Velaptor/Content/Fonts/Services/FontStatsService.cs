@@ -63,7 +63,7 @@ namespace Velaptor.Content.Fonts.Services
                     {
                         FontFilePath = filePath,
                         FamilyName = fontFamilyName,
-                        Style = this.freeTypeExtensions.GetFontStyle(filePath),
+                        Style = this.freeTypeExtensions.GetFontStyle(filePath, true),
                     }).ToArray();
 
             foreach (var result in results)
@@ -98,7 +98,7 @@ namespace Velaptor.Content.Fonts.Services
                     {
                         FontFilePath = filePath,
                         FamilyName = fontFamilyName,
-                        Style = this.freeTypeExtensions.GetFontStyle(filePath),
+                        Style = this.freeTypeExtensions.GetFontStyle(filePath, true),
                     }).ToArray();
 
             foreach (var result in results)

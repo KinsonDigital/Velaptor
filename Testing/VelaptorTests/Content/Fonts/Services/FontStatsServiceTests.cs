@@ -1,4 +1,4 @@
-﻿// <copyright file="FontStatsServiceTests.cs" company="KinsonDigital">
+// <copyright file="FontStatsServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -57,7 +57,7 @@ namespace VelaptorTests.Content.Fonts.Services
         {
             // Arrange
             const string fontFamily = "Times New Roman";
-            var fontTimesRegular = BuildContentFontPath("TimesNewRoman.ttf");
+            var fontTimesRegular = BuildContentFontPath("TimesNewRoman-Regular.ttf");
             var fontTimesBold = BuildContentFontPath("TimesNewRoman-Bold.ttf");
             var fontTimesItalic = BuildContentFontPath("TimesNewRoman-Italic.ttf");
             var fontTimesBoldItalic = BuildContentFontPath("TimesNewRoman-BoldItalic.ttf");
@@ -75,7 +75,7 @@ namespace VelaptorTests.Content.Fonts.Services
             MockFontStyle(fontTimesRegular, FontStyle.Regular);
             MockFontStyle(fontTimesBold, FontStyle.Bold);
             MockFontStyle(fontTimesItalic, FontStyle.Italic);
-            MockFontStyle(fontTimesBoldItalic, FontStyle.Bold & FontStyle.Italic);
+            MockFontStyle(fontTimesBoldItalic, FontStyle.Bold | FontStyle.Italic);
 
             this.mockDirectory.Setup(m => m.GetFiles(this.fullContentFontDirPath, "*.ttf"))
                 .Returns(() => fontFiles);
@@ -83,9 +83,9 @@ namespace VelaptorTests.Content.Fonts.Services
             var expected = new[]
             {
                 new FontStats { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular },
-                new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Regular },
-                new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Regular },
-                new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold & FontStyle.Italic },
+                new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold },
+                new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic },
+                new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic },
             };
 
             var service = CreateService();
@@ -103,7 +103,7 @@ namespace VelaptorTests.Content.Fonts.Services
         {
             // Arrange
             const string fontFamily = "Times New Roman";
-            var fontTimesRegular = BuildSystemFontPath("TimesNewRoman.ttf");
+            var fontTimesRegular = BuildSystemFontPath("TimesNewRoman-Regular.ttf");
             var fontTimesBold = BuildSystemFontPath("TimesNewRoman-Bold.ttf");
             var fontTimesItalic = BuildSystemFontPath("TimesNewRoman-Italic.ttf");
             var fontTimesBoldItalic = BuildSystemFontPath("TimesNewRoman-BoldItalic.ttf");
@@ -121,23 +121,23 @@ namespace VelaptorTests.Content.Fonts.Services
             MockFontStyle(fontTimesRegular, FontStyle.Regular);
             MockFontStyle(fontTimesBold, FontStyle.Bold);
             MockFontStyle(fontTimesItalic, FontStyle.Italic);
-            MockFontStyle(fontTimesBoldItalic, FontStyle.Bold & FontStyle.Italic);
+            MockFontStyle(fontTimesBoldItalic, FontStyle.Bold | FontStyle.Italic);
 
             this.mockDirectory.Setup(m => m.GetFiles(this.fullSystemFontDirPath, "*.ttf"))
                 .Returns(() => fontFiles);
 
             var expected = new[]
             {
-                new FontStats() { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular },
-                new FontStats() { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Regular },
-                new FontStats() { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Regular },
-                new FontStats() { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold & FontStyle.Italic },
+                new FontStats { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular },
+                new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold },
+                new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic },
+                new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic },
             };
 
             var service = CreateService();
 
             // Act
-            var _ = service.GetSystemStatsForFontFamily(fontFamily);
+            var unused = service.GetSystemStatsForFontFamily(fontFamily);
             var actual = service.GetSystemStatsForFontFamily(fontFamily);
 
             // Assert
