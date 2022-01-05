@@ -271,7 +271,7 @@ namespace Velaptor.Services
         }
 
         /// <summary>
-        /// Occurs when there is a free type associated error.
+        /// Occurs when there is a FreeType associated error.
         /// </summary>
         private void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e)
         {

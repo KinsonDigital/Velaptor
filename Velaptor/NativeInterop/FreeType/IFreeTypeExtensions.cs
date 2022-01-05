@@ -1,4 +1,4 @@
-// <copyright file="IFreeTypeExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="IFreeTypeExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,14 +12,14 @@ namespace Velaptor.NativeInterop.FreeType
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Provides extensions to free type library operations to help simplify working with free type.
+    /// Provides helper methods for <see cref="IFreeTypeInvoker"/>.
     /// </summary>
     internal interface IFreeTypeExtensions
     {
         /// <summary>
         /// Creates a new font face from a font file at the given <paramref name="fontFilePath"/>.
         /// </summary>
-        /// <param name="freeTypeLibPtr">The pointer to the free type library.</param>
+        /// <param name="freeTypeLibPtr">The pointer to the FreeType library.</param>
         /// <param name="fontFilePath">The path to the font file to create the face from.</param>
         /// <returns>
         ///     The pointer to the created font face.

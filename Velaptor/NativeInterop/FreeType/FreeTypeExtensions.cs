@@ -1,4 +1,4 @@
-// <copyright file="FreeTypeExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="FreeTypeExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,7 +16,7 @@ namespace Velaptor.NativeInterop.FreeType
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Provides extensions to free type library operations to help simplify working with free type.
+    /// Provides extensions to FreeType library operations to help simplify working with FreeType.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal class FreeTypeExtensions : IFreeTypeExtensions
