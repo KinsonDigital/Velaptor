@@ -4,13 +4,13 @@
 
 namespace Velaptor.Content.Fonts
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Holds information about fonts.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    internal struct FontStats
+    internal struct FontStats : IEquatable<FontStats>
     {
         /// <summary>
         /// The file path to the font that the font stats represent.
@@ -34,5 +34,18 @@ namespace Velaptor.Content.Fonts
         /// </list>
         /// </remarks>
         public FontStyle Style;
+
+        /// <inheritdoc/>
+        public bool Equals(FontStats other) =>
+            this.FontFilePath == other.FontFilePath &&
+            this.FamilyName == other.FamilyName &&
+            this.Style == other.Style;
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj) => obj is FontStats other && Equals(other);
+
+        /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
+        public override int GetHashCode() => HashCode.Combine(this.FontFilePath, this.FamilyName, (int)this.Style);
     }
 }

@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Velaptor.NativeInterop.FreeType
 {
+    // TODO: Throw an exception for every method that takes a zero pointer.  Create custom exception for this
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using FreeTypeSharp.Native;
 
     /// <summary>
