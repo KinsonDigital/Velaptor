@@ -94,13 +94,13 @@ namespace Velaptor.Content.Fonts
 
             var allStyles = new[]
             {
-                FontStyle.Regular, FontStyle.Bold, FontStyle.Italic, FontStyle.Bold & FontStyle.Italic,
+                FontStyle.Regular, FontStyle.Bold, FontStyle.Italic, FontStyle.Bold | FontStyle.Italic,
             };
 
             bool AllStylesFound() => this.fontStatData.Length == 4 && this.fontStatData.All(d => d.Style is FontStyle.Regular or
                     FontStyle.Bold or
                     FontStyle.Italic or
-                    (FontStyle.Bold & FontStyle.Italic));
+                    (FontStyle.Bold | FontStyle.Italic));
 
             // If all for styles have been found, then were finished
             if (AllStylesFound())

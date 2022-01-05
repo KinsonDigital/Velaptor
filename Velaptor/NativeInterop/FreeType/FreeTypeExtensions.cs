@@ -220,7 +220,7 @@ namespace Velaptor.NativeInterop.FreeType
                     0 = regular
                     1 = italic
                     2 = bold
-                    3 = bold & italic
+                    3 = bold | italic
                  */
                 result = Environment.Is64BitProcess
                     ? (FontStyle)faceRec->style_flags.ToInt64()
