@@ -29,6 +29,7 @@ namespace VelaptorTests.Content
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IImageService> mockImageService;
+        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IPath> mockPath;
 
@@ -51,6 +52,8 @@ namespace VelaptorTests.Content
             this.mockTexturePathResolver = new Mock<IPathResolver>();
             this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName))
                 .Returns(this.textureFilePath);
+
+            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
 
             this.mockPath = new Mock<IPath>();
             this.mockPath.Setup(m => m.HasExtension(TextureFileName)).Returns(false);
@@ -225,6 +228,7 @@ namespace VelaptorTests.Content
             => new (this.mockGL.Object,
              this.mockGLExtensions.Object,
              this.mockImageService.Object,
+             this.mockTextureCache.Object,
              this.mockTexturePathResolver.Object,
              this.mockPath.Object);
     }

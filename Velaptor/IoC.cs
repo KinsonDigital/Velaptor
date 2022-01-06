@@ -116,7 +116,7 @@ namespace Velaptor
                     PathResolverFactory.CreateSystemFontPathResolver(),
                     IoCContainer.GetInstance<IDirectory>()), Lifestyle.Singleton);
 
-            IoCContainer.Register<IDisposableItemCache<(string, string), ITexture>, TextureCache>(Lifestyle.Singleton);
+            IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
             IoCContainer.Register<IDisposableItemCache<(string, uint), ITexture>, FontTextureAtlasCache>(Lifestyle.Singleton);
             IoCContainer.Register<IItemCache<(string, uint), (ImageData, GlyphMetrics[])>, FontAtlasDataCache>(Lifestyle.Singleton);
 

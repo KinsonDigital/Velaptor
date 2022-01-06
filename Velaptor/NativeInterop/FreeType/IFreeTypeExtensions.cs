@@ -89,5 +89,11 @@ namespace Velaptor.NativeInterop.FreeType
         /// <param name="sizeInPoints">The size in points used to calculate the line spacing.</param>
         /// <returns>The line spacing as a scaled value.</returns>
         float GetFontScaledLineSpacing(IntPtr facePtr, int sizeInPoints);
+
+        /// <summary>
+        /// Disposes of the font face that the given <paramref name="facePtr"/> points to.
+        /// </summary>
+        /// <param name="facePtr">The pointer to the face to dispose of.</param>
+        void DisposeFace(IntPtr facePtr);
     }
 }

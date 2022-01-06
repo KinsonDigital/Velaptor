@@ -281,5 +281,7 @@ namespace Velaptor.NativeInterop.FreeType
                 return (face.size->metrics.height.ToInt64() >> 6) / 64f;
             }
         }
+
+        public void DisposeFace(IntPtr facePtr) => this.freeTypeInvoker.FT_Done_Face(facePtr);
     }
 }

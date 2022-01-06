@@ -23,6 +23,7 @@ namespace Velaptor.Content
     {
         private const string TextureFileExtension = ".png";
         private const string FontFileExtension = ".ttf";
+        private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
@@ -41,6 +42,7 @@ namespace Velaptor.Content
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             this.imageService = IoC.Container.GetInstance<ImageService>();
+            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             this.pathResolver = PathResolverFactory.CreateTexturePathResolver();
             this.path = IoC.Container.GetInstance<IPath>();
         }
@@ -57,12 +59,14 @@ namespace Velaptor.Content
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IImageService imageService,
+            IDisposableItemCache<string, ITexture> textureCache,
             IPathResolver texturePathResolver,
             IPath path)
         {
             this.gl = gl;
             this.glExtensions = glExtensions;
             this.imageService = imageService;
+            this.textureCache = textureCache;
             this.pathResolver = texturePathResolver;
             this.path = path;
         }
@@ -77,7 +81,7 @@ namespace Velaptor.Content
         /// <exception cref="LoadFontException">Thrown if the resulting font content file path is invalid.</exception>
         public ITexture Load(string contentPathOrName)
         {
-            var isFullFilePath = contentPathOrName.IsValidFullFilePath();
+            var isFullFilePath = contentPathOrName.IsValidFilePath();
             var name = string.Empty;
             string filePath;
 
@@ -107,27 +111,28 @@ namespace Velaptor.Content
             }
 
             // If the file path is valid
-            if (filePath.IsValidFullFilePath() is false && this.path.HasExtension(filePath) is false)
+            if (filePath.IsValidFilePath() is false && this.path.HasExtension(filePath) is false)
             {
                 throw new LoadContentException($"The content file path '{filePath}' is not a valid path.");
             }
 
-            if (filePath.IsValidFullFilePath() is false && this.path.GetExtension(filePath) == TextureFileExtension)
+            if (filePath.IsValidFilePath() is false && this.path.GetExtension(filePath) == TextureFileExtension)
             {
                 throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
             }
 
-            if (filePath.IsValidFullFilePath() is false && this.path.GetExtension(filePath) == FontFileExtension)
+            if (filePath.IsValidFilePath() is false && this.path.GetExtension(filePath) == FontFileExtension)
             {
                 throw new LoadFontException($"The font file path '{filePath}' is not a valid path.");
             }
 
-            return this.textures.GetOrAdd(filePath, (filePathToLoad) =>
-            {
-                var imageData = this.imageService.Load(filePathToLoad);
-
-                return new Texture(this.gl, this.glExtensions, name, filePathToLoad, imageData) { IsPooled = true };
-            });
+            return this.textureCache.GetItem(filePath);
+            // return this.textures.GetOrAdd(filePath, (filePathToLoad) =>
+            // {
+            //     var imageData = this.imageService.Load(filePathToLoad);
+            //
+            //     return new Texture(this.gl, this.glExtensions, name, filePathToLoad, imageData) { IsPooled = true };
+            // });
         }
 
         /// <inheritdoc/>

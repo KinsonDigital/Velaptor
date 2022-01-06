@@ -55,6 +55,7 @@ namespace Velaptor.Factories
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var imageService = IoC.Container.GetInstance<IImageService>();
+            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
             var path = IoC.Container.GetInstance<IPath>();
 
@@ -62,6 +63,7 @@ namespace Velaptor.Factories
                 glInvoker,
                 glInvokerExtensions,
                 imageService,
+                textureCache,
                 texturePathResolver,
                 path);
 

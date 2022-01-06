@@ -1,43 +1,58 @@
 using System;
 using System.Collections.Concurrent;
+using System.IO.Abstractions;
+using Velaptor.Content.Exceptions;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.Services;
 
 namespace Velaptor.Content
 {
-    internal class TextureCache : IDisposableItemCache<(string name, string filePath), ITexture>
+    internal class TextureCache : IDisposableItemCache<string, ITexture>
     {
-        private readonly ConcurrentDictionary<(string name, string filePath), ITexture> textures = new ();
+        private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
         private readonly IImageService imageService;
+        private readonly IPath path;
         private bool isDisposed;
+        private readonly ITextureFactory textureFactory;
 
         public TextureCache(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IImageService imageService)
+            IImageService imageService,
+            ITextureFactory textureFactory,
+            IPath path)
         {
             this.gl = gl;
             this.glExtensions = glExtensions;
             this.imageService = imageService;
+            this.textureFactory = textureFactory;
+            this.path = path;
         }
 
         ~TextureCache() => Dispose(false);
 
-        public ITexture GetItem((string name, string filePath) pathAndSize)
-            => this.textures.GetOrAdd(pathAndSize, nameAndPathValue =>
+        public ITexture GetItem(string filePath)
+        {
+            if (filePath.IsValidFilePath() is false)
             {
-                var (name, textureFilePath) = nameAndPathValue;
+                throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
+            }
 
+            return this.textures.GetOrAdd(filePath, textureFilePath =>
+            {
                 var imageData = this.imageService.Load(textureFilePath);
 
-                return new Texture(this.gl, this.glExtensions, name, textureFilePath, imageData) { IsPooled = true };
-            });
+                var name = this.path.GetFileNameWithoutExtension(textureFilePath);
 
-        public void Unload((string name, string filePath) key)
+                return this.textureFactory.Create(name, textureFilePath, imageData, true);
+            });
+        }
+
+        public void Unload(string filePath)
         {
-            this.textures.TryRemove(key, out var texture);
+            this.textures.TryRemove(filePath, out var texture);
 
             if (texture is null)
             {
