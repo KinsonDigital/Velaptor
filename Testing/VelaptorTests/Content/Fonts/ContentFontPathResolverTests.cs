@@ -51,29 +51,6 @@ namespace VelaptorTests.Content.Fonts
         #endregion
 
         #region Method Tests
-        [Fact]
-        public void ResolveFilePath_WhenContentItemDoesNotExist_ThrowsException()
-        {
-            // Arrange
-            this.mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.ttf"))
-                .Returns(() =>
-                {
-                    return new[]
-                    {
-                        $"{this.baseDir}other-file-A.ttf",
-                        $"{this.baseDir}other-file-B.txt",
-                    };
-                });
-
-            var resolver = CreateResolver();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-            {
-                resolver.ResolveFilePath(ContentName);
-            }, $"The font file '{this.contentFilePath}' does not exist.");
-        }
-
         [Theory]
         [InlineData("test-content")]
         [InlineData("test-content.ttf")]

@@ -111,34 +111,6 @@ namespace VelaptorTests.Content.Fonts
         }
 
         [Fact]
-        public void ResolveFilePath_WhenContentDoesNotExist_ThrowsException()
-        {
-            // Arrange
-            const string rootDir = @"C:\Windows\";
-            const string contentDirName = "Fonts";
-            const string contentName = "test-content";
-            const string extension = ".ttf";
-            var fullContentDirPath = $@"{rootDir}{contentDirName}\";
-            var expected = $@"{fullContentDirPath}{contentName}{extension}";
-
-            var files = new[]
-            {
-                $"{fullContentDirPath}other-file.txt",
-            };
-
-            this.mockDirectory.Setup(m => m.GetFiles(fullContentDirPath, $"*{extension}"))
-                .Returns(files);
-
-            var resolver = CreateResolver();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-            {
-                resolver.ResolveFilePath(contentName);
-            }, $"The font file '{expected}' does not exist.");
-        }
-
-        [Fact]
         public void ResolveDirPath_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange

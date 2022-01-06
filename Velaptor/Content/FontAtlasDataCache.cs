@@ -41,6 +41,9 @@ namespace Velaptor.Content
             this.freeTypeLibPtr = this.freeTypeInvoker.FT_Init_FreeType();
         }
 
+        /// <inheritdoc/>
+        public int TotalCachedItems => this.fontAtlasData.Count;
+
         public (ImageData, GlyphMetrics[]) GetItem((string filePath, uint size) pathAndSize)
         {
             return this.fontAtlasData.GetOrAdd(pathAndSize, filePathAndSize =>
@@ -97,7 +100,7 @@ namespace Velaptor.Content
             });
         }
 
-        public void Unload((string, uint) key)
+        public void Unload((string, uint) cacheKey)
         {
 
         }

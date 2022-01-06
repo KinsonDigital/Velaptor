@@ -33,6 +33,9 @@ namespace Velaptor.Content
 
         ~FontTextureAtlasCache() => Dispose(false);
 
+        /// <inheritdoc/>
+        public int TotalCachedItems => this.textures.Count;
+
         public ITexture GetItem((string filePath, uint size) pathAndSize) =>
             this.textures.GetOrAdd(pathAndSize, nameAndPathValue =>
             {
@@ -45,9 +48,9 @@ namespace Velaptor.Content
                 return new Texture(this.gl, this.glExtensions, name, fontFilePath, imageData) { IsPooled = true };
             });
 
-        public void Unload((string filePath, uint size) key)
+        public void Unload((string filePath, uint size) cacheKey)
         {
-            this.textures.TryRemove(key, out var texture);
+            this.textures.TryRemove(cacheKey, out var texture);
 
             if (texture is null)
             {

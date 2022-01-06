@@ -1,43 +1,74 @@
-using System;
-using System.Collections.Concurrent;
-using System.IO.Abstractions;
-using Velaptor.Content.Exceptions;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Services;
+// <copyright file="TextureCache.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace Velaptor.Content
 {
-    internal class TextureCache : IDisposableItemCache<string, ITexture>
+    // ReSharper disable RedundantNameQualifier
+    using System;
+    using System.Collections.Concurrent;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO.Abstractions;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Services;
+
+    // ReSharper restore RedundantNameQualifier
+
+    /// <summary>
+    /// Caches <see cref="ITexture"/> objects for performant retrieval at a later time.
+    /// </summary>
+    internal sealed class TextureCache : IDisposableItemCache<string, ITexture>
     {
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
-        private readonly IGLInvoker gl;
-        private readonly IGLInvokerExtensions glExtensions;
         private readonly IImageService imageService;
+        private readonly ITextureFactory textureFactory;
         private readonly IPath path;
         private bool isDisposed;
-        private readonly ITextureFactory textureFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextureCache"/> class.
+        /// </summary>
+        /// <param name="imageService">Provides image related services.</param>
+        /// <param name="textureFactory">Creates <see cref="ITexture"/> objects.</param>
+        /// <param name="path">Provides path related services.</param>
         public TextureCache(
-            IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
             IImageService imageService,
             ITextureFactory textureFactory,
             IPath path)
         {
-            this.gl = gl;
-            this.glExtensions = glExtensions;
             this.imageService = imageService;
             this.textureFactory = textureFactory;
             this.path = path;
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="TextureCache"/> class.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
         ~TextureCache() => Dispose(false);
 
+        /// <inheritdoc/>
+        public int TotalCachedItems => this.textures.Count;
+
+        /// <inheritdoc/>
         public ITexture GetItem(string filePath)
         {
             if (filePath.IsValidFilePath() is false)
             {
                 throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
+            }
+
+            // If the requested texture is already loaded into the pool
+            // and has been disposed, remove it.
+            foreach (var texture in this.textures)
+            {
+                if (texture.Key != filePath || !texture.Value.IsDisposed)
+                {
+                    continue;
+                }
+
+                this.textures.TryRemove(texture);
+                break;
             }
 
             return this.textures.GetOrAdd(filePath, textureFilePath =>
@@ -50,9 +81,10 @@ namespace Velaptor.Content
             });
         }
 
-        public void Unload(string filePath)
+        /// <inheritdoc/>
+        public void Unload(string cacheKey)
         {
-            this.textures.TryRemove(filePath, out var texture);
+            this.textures.TryRemove(cacheKey, out var texture);
 
             if (texture is null)
             {
@@ -63,13 +95,18 @@ namespace Velaptor.Content
             texture.Dispose();
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        /// <summary>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// </summary>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
+        private void Dispose(bool disposing)
         {
             if (this.isDisposed)
             {

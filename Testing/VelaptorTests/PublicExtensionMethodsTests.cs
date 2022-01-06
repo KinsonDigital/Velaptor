@@ -306,7 +306,7 @@ namespace VelaptorTests
         public void IsInvalidFullFilePath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act
-            var actual = path.IsValidFilePath();
+            var actual = path.IsInvalidFilePath();
 
             // Assert
             Assert.Equal(expected, actual);

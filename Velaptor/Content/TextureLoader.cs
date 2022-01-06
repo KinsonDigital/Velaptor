@@ -6,13 +6,10 @@ namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
     using System;
-    using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Content.Exceptions;
     using Velaptor.Factories;
-    using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -22,12 +19,7 @@ namespace Velaptor.Content
     public sealed class TextureLoader : ILoader<ITexture>
     {
         private const string TextureFileExtension = ".png";
-        private const string FontFileExtension = ".ttf";
         private readonly IDisposableItemCache<string, ITexture> textureCache;
-        private readonly ConcurrentDictionary<string, ITexture> textures = new ();
-        private readonly IGLInvoker gl;
-        private readonly IGLInvokerExtensions glExtensions;
-        private readonly IImageService imageService;
         private readonly IPathResolver pathResolver;
         private readonly IPath path;
         private bool isDisposed;
@@ -39,9 +31,6 @@ namespace Velaptor.Content
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public TextureLoader()
         {
-            this.gl = IoC.Container.GetInstance<IGLInvoker>();
-            this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            this.imageService = IoC.Container.GetInstance<ImageService>();
             this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             this.pathResolver = PathResolverFactory.CreateTexturePathResolver();
             this.path = IoC.Container.GetInstance<IPath>();
@@ -50,22 +39,14 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
-        /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="imageService">Loads an image file.</param>
+        /// <param name="textureCache">Caches textures for later use to improve performance.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         internal TextureLoader(
-            IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
-            IImageService imageService,
             IDisposableItemCache<string, ITexture> textureCache,
             IPathResolver texturePathResolver,
             IPath path)
         {
-            this.gl = gl;
-            this.glExtensions = glExtensions;
-            this.imageService = imageService;
             this.textureCache = textureCache;
             this.pathResolver = texturePathResolver;
             this.path = path;
@@ -82,12 +63,10 @@ namespace Velaptor.Content
         public ITexture Load(string contentPathOrName)
         {
             var isFullFilePath = contentPathOrName.IsValidFilePath();
-            var name = string.Empty;
             string filePath;
 
             if (isFullFilePath)
             {
-                name = this.path.GetFileNameWithoutExtension(contentPathOrName);
                 filePath = contentPathOrName;
             }
             else
@@ -97,56 +76,17 @@ namespace Velaptor.Content
                 filePath = this.pathResolver.ResolveFilePath(contentPathOrName);
             }
 
-            // If the requested texture is already loaded into the pool
-            // and has been disposed, remove it.
-            foreach (var texture in this.textures)
-            {
-                if (texture.Key != filePath || !texture.Value.IsDisposed)
-                {
-                    continue;
-                }
-
-                this.textures.TryRemove(texture);
-                break;
-            }
-
-            // If the file path is valid
-            if (filePath.IsValidFilePath() is false && this.path.HasExtension(filePath) is false)
-            {
-                throw new LoadContentException($"The content file path '{filePath}' is not a valid path.");
-            }
-
             if (filePath.IsValidFilePath() is false && this.path.GetExtension(filePath) == TextureFileExtension)
             {
                 throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
             }
 
-            if (filePath.IsValidFilePath() is false && this.path.GetExtension(filePath) == FontFileExtension)
-            {
-                throw new LoadFontException($"The font file path '{filePath}' is not a valid path.");
-            }
-
             return this.textureCache.GetItem(filePath);
-            // return this.textures.GetOrAdd(filePath, (filePathToLoad) =>
-            // {
-            //     var imageData = this.imageService.Load(filePathToLoad);
-            //
-            //     return new Texture(this.gl, this.glExtensions, name, filePathToLoad, imageData) { IsPooled = true };
-            // });
         }
 
         /// <inheritdoc/>
         [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-        public void Unload(string name)
-        {
-            var filePath = this.pathResolver.ResolveFilePath(name);
-
-            if (this.textures.TryRemove(filePath, out var texture))
-            {
-                texture.IsPooled = false;
-                texture.Dispose();
-            }
-        }
+        public void Unload(string name) => this.textureCache.Unload(name);
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);
@@ -164,13 +104,7 @@ namespace Velaptor.Content
 
             if (disposing)
             {
-                foreach (var texture in this.textures.Values)
-                {
-                    texture.IsPooled = false;
-                    texture.Dispose();
-                }
-
-                this.textures.Clear();
+                this.textureCache.Dispose();
             }
 
             this.isDisposed = true;

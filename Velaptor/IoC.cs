@@ -108,6 +108,7 @@ namespace Velaptor
             IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
+            IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(

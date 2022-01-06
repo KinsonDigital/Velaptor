@@ -41,9 +41,9 @@ namespace Velaptor.Graphics
         /// <param name="pixels">The pixel data of the image.</param>
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
-        public ImageData(Color[,] pixels, uint width, uint height)
+        public ImageData(Color[,]? pixels, uint width, uint height)
         {
-            this.Pixels = pixels;
+            this.Pixels = pixels ?? new Color[0, 0];
             this.Width = width;
             this.Height = height;
         }
@@ -142,15 +142,7 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object? obj)
-        {
-            if (obj is not ImageData imageData)
-            {
-                return false;
-            }
-
-            return Equals(imageData);
-        }
+        public override bool Equals(object? obj) => obj is ImageData imageData && Equals(imageData);
 
         /// <summary>
         /// Returns a value indicating if the <see cref="ImageData"/> contents are empty.
