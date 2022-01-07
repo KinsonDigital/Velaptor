@@ -58,14 +58,15 @@ namespace Velaptor
         /// </summary>
         private static void SetupContainer()
         {
-            SetupOpenGL();
+            SetupNativeInterop();
+
+            SetupCaching();
+
+            SetupFactories();
 
             SetupServices();
 
             SetupContent();
-
-            IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IFreeTypeExtensions, FreeTypeExtensions>(Lifestyle.Singleton);
 
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
@@ -81,20 +82,36 @@ namespace Velaptor
         /// <summary>
         /// Setup container registration related to OpenGL.
         /// </summary>
-        private static void SetupOpenGL()
+        private static void SetupNativeInterop()
         {
             IoCContainer.Register(() => FileSystem.File, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Directory, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Path, Lifestyle.Singleton);
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
 
+            IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLInvokerExtensions, GLInvokerExtensions>(Lifestyle.Singleton);
 
             IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
 
-            IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
+
+            IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IFreeTypeExtensions, FreeTypeExtensions>(Lifestyle.Singleton);
+        }
+
+        private static void SetupCaching()
+        {
+            IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
+            IoCContainer.Register<IDisposableItemCache<(string, uint), ITexture>, FontTextureAtlasCache>(Lifestyle.Singleton);
+            IoCContainer.Register<IItemCache<(string, uint), (ImageData, GlyphMetrics[])>, FontAtlasDataCache>(Lifestyle.Singleton);
+        }
+
+        private static void SetupFactories()
+        {
+            IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
         }
 
         /// <summary>
@@ -108,7 +125,7 @@ namespace Velaptor
             IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
-            IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(
@@ -116,10 +133,6 @@ namespace Velaptor
                     PathResolverFactory.CreateFontPathResolver(),
                     PathResolverFactory.CreateSystemFontPathResolver(),
                     IoCContainer.GetInstance<IDirectory>()), Lifestyle.Singleton);
-
-            IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
-            IoCContainer.Register<IDisposableItemCache<(string, uint), ITexture>, FontTextureAtlasCache>(Lifestyle.Singleton);
-            IoCContainer.Register<IItemCache<(string, uint), (ImageData, GlyphMetrics[])>, FontAtlasDataCache>(Lifestyle.Singleton);
 
             IoCContainer.Register<ITaskService, TaskService>();
             IoCContainer.SuppressDisposableTransientWarning<ITaskService>();

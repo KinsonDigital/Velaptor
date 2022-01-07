@@ -54,7 +54,7 @@ namespace Velaptor.Content
 
             if (typeof(T) == typeof(IAtlasData))
             {
-                return (T)this.atlasLoader.Load(Path.GetFileNameWithoutExtension(name));
+                return (T)this.atlasLoader.Load(name);
             }
 
             if (typeof(T) == typeof(IFont))

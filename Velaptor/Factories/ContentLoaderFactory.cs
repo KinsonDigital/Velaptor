@@ -76,15 +76,16 @@ namespace Velaptor.Factories
                 return atlasLoader;
             }
 
-            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var atlasDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
+            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
+            var atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
+            var jsonService = IoC.Container.GetInstance<IJSONService>();
 
             atlasLoader = new AtlasLoader(
-                glInvoker,
-                glInvokerExtensions,
-                IoC.Container.GetInstance<IImageService>(),
+                textureCache,
+                atlasDataFactory,
                 atlasDataPathResolver,
+                jsonService,
                 IoC.Container.GetInstance<IFile>(),
                 IoC.Container.GetInstance<IPath>());
 

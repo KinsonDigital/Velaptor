@@ -6,13 +6,12 @@ namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
     using System;
-    using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
-    using Newtonsoft.Json;
+    using System.Linq;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -22,11 +21,12 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class AtlasLoader : ILoader<IAtlasData>
     {
-        private readonly ConcurrentDictionary<string, IAtlasData> atlases = new ();
-        private readonly IGLInvoker gl;
-        private readonly IGLInvokerExtensions glExtensions;
-        private readonly IImageService imageService;
+        private const string TextureExtension = ".png";
+        private const string AtlasDataExtension = ".json";
+        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IAtlasDataFactory atlasDataFactory;
         private readonly IPathResolver atlasDataPathResolver;
+        private readonly IJSONService jsonService;
         private readonly IFile file;
         private readonly IPath path;
         private bool isDisposed;
@@ -34,17 +34,13 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
         /// </summary>
-        /// <param name="imageService">Loads image data from disk.</param>
-        /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
         [ExcludeFromCodeCoverage]
-        public AtlasLoader(
-            IImageService imageService,
-            IPathResolver atlasDataPathResolver)
+        public AtlasLoader()
         {
-            this.gl = IoC.Container.GetInstance<IGLInvoker>();
-            this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            this.imageService = imageService;
-            this.atlasDataPathResolver = atlasDataPathResolver;
+            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            this.atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
+            this.atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
+            this.jsonService = IoC.Container.GetInstance<IJSONService>();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
         }
@@ -52,93 +48,109 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
         /// </summary>
-        /// <param name="gl">Makes calls to OpenGL.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="imageService">Loads image data from disk.</param>
+        /// <param name="textureCache">Provides texture caching services.</param>
+        /// <param name="atlasDataFactory">Generates <see cref="IAtlasData"/> instances.</param>
         /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
+        /// <param name="jsonService">Provides JSON related services.</param>
         /// <param name="file">Used to load the texture atlas.</param>
         /// <param name="path">Processes directory and file paths.</param>
         internal AtlasLoader(
-            IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
-            IImageService imageService,
+            IDisposableItemCache<string, ITexture> textureCache,
+            IAtlasDataFactory atlasDataFactory,
             IPathResolver atlasDataPathResolver,
+            IJSONService jsonService,
             IFile file,
             IPath path)
         {
-            this.gl = gl;
-            this.glExtensions = glExtensions;
-            this.imageService = imageService;
-            this.atlasDataPathResolver = atlasDataPathResolver;
-            this.file = file;
-            this.path = path;
+            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
+            this.atlasDataFactory = atlasDataFactory ?? throw new ArgumentNullException(nameof(atlasDataFactory), "The parameter must not be null.");
+            this.atlasDataPathResolver = atlasDataPathResolver ?? throw new ArgumentNullException(nameof(atlasDataPathResolver), "The parameter must not be null.");
+            this.jsonService = jsonService ?? throw new ArgumentNullException(nameof(jsonService), "The parameter must not be null.");
+            this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
         }
 
         /// <inheritdoc/>
-        public IAtlasData Load(string name)
+        public IAtlasData Load(string contentPathOrName)
         {
-            name = this.path.HasExtension(name)
-                ? this.path.GetFileNameWithoutExtension(name)
-                : name;
+            var isFullFilePath = contentPathOrName.IsValidFilePath();
+            string name;
+            string dirPath;
 
-            var atlasDataPathNoExtension = $"{this.atlasDataPathResolver.ResolveDirPath()}{name}";
-
-            // If the requested texture atlas is already loaded into the pool
-            // and has been disposed, remove it.
-            foreach (var font in this.atlases)
+            if (isFullFilePath)
             {
-                if (font.Key != atlasDataPathNoExtension || !font.Value.IsDisposed)
+                var validExtensions = new[] { TextureExtension, AtlasDataExtension };
+                var extension = this.path.GetExtension(contentPathOrName);
+
+                if (validExtensions.All(e => e != extension))
                 {
-                    continue;
+                    var exceptionMsg = $"When performing full content file path loads,";
+                    exceptionMsg += $" the files must be a '{TextureExtension}' or '{AtlasDataExtension}' extension.";
+
+                    throw new LoadAtlasException(exceptionMsg);
                 }
 
-                this.atlases.TryRemove(font);
-                break;
+                name = this.path.GetFileNameWithoutExtension(contentPathOrName);
+
+                dirPath = $@"{this.path.GetDirectoryName(contentPathOrName).TrimEnd('\\')}\";
+            }
+            else
+            {
+                if (contentPathOrName.IsFullyQualifiedDirPath() || contentPathOrName.IsUNCPath())
+                {
+                    var exceptionMsg = "Directory paths not allowed when loading texture atlas data.\n";
+                    exceptionMsg += "Relative and fully qualified directory paths not valid.\n";
+                    exceptionMsg += "The path must be a fully qualified file path or content item name\n";
+                    exceptionMsg += @"located in the application's './Content/Atlas' directory.";
+
+                    throw new LoadAtlasException(exceptionMsg);
+                }
+
+                // Remove a possible file extension and return just the 'name' of the content.
+                // The name of the content should always match the name of the file without the extension
+                name = this.path.GetFileNameWithoutExtension(contentPathOrName);
+
+                // Resolve to the application's content directory where atlas data is located
+                dirPath = this.atlasDataPathResolver.ResolveDirPath();
             }
 
-            return this.atlases.GetOrAdd(atlasDataPathNoExtension, (filePath) =>
+            var atlasDataFilePath = $"{dirPath}{name}{AtlasDataExtension}";
+
+            if (this.file.Exists(atlasDataFilePath) is false)
             {
-                var atlasDataFilePath = $"{filePath}.json";
-                var atlasImageFilePath = $"{filePath}.png";
+                var exceptionMsg = $"The atlas data directory '{dirPath}' does not contain the";
+                exceptionMsg += $" required '{dirPath}{name}{AtlasDataExtension}' atlas data file.";
 
-                var rawData = this.file.ReadAllText(atlasDataFilePath);
+                throw new LoadAtlasException(exceptionMsg);
+            }
 
-                AtlasSubTextureData[]? atlasSpriteData;
+            var atlasImageFilePath = $"{dirPath}{name}{TextureExtension}";
 
-                try
-                {
-                    atlasSpriteData = JsonConvert.DeserializeObject<AtlasSubTextureData[]>(rawData);
+            if (this.file.Exists(atlasImageFilePath) is false)
+            {
+                var exceptionMsg = $"The atlas data directory '{dirPath}' does not contain the";
+                exceptionMsg += $" required '{dirPath}{name}{TextureExtension}' atlas image file.";
 
-                    if (atlasSpriteData is null)
-                    {
-                        throw new Exception($"Deserialized atlas sub texture data is null.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{atlasDataFilePath}'.\n{ex.Message}");
-                }
+                throw new LoadAtlasException(exceptionMsg);
+            }
 
-                var data = this.imageService.Load(atlasImageFilePath);
+            var rawData = this.file.ReadAllText(atlasDataFilePath);
+            var atlasSpriteData = this.jsonService.Deserialize<AtlasSubTextureData[]>(rawData);
 
-                var atlasTexture = new Texture(this.gl, this.glExtensions, name, filePath, data) { IsPooled = true };
+            if (atlasSpriteData is null)
+            {
+                throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{atlasDataFilePath}'.");
+            }
 
-                return new AtlasData(atlasTexture, atlasSpriteData, name, filePath) { IsPooled = true };
-            });
+            var atlasName = isFullFilePath
+                ? name
+                : contentPathOrName;
+
+            return this.atlasDataFactory.Create(atlasSpriteData, dirPath, atlasName);
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-        public void Unload(string name)
-        {
-            var filePathNoExtension = $"{this.atlasDataPathResolver.ResolveDirPath()}{name}";
-
-            if (this.atlases.TryRemove(filePathNoExtension, out var atlas))
-            {
-                atlas.IsPooled = false;
-                atlas.Dispose();
-            }
-        }
+        public void Unload(string contentPathOrName) => this.textureCache.Unload(contentPathOrName);
 
         /// <inheritdoc/>
         public void Dispose() => Dispose(true);
@@ -156,13 +168,7 @@ namespace Velaptor.Content
 
             if (disposing)
             {
-                foreach (var atlas in this.atlases.Values)
-                {
-                    atlas.IsPooled = false;
-                    atlas.Dispose();
-                }
-
-                this.atlases.Clear();
+                this.textureCache.Dispose();
             }
 
             this.isDisposed = true;
