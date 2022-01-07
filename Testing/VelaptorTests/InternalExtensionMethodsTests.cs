@@ -25,6 +25,66 @@ namespace VelaptorTests
     {
         #region Method Tests
         [Theory]
+        [InlineData('x', true)]
+        [InlineData('k', false)]
+        public void NotStartsWith_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
+        {
+            // Arrange
+            const string stringToCheck = "kinson";
+
+            // Act
+            var actual = stringToCheck.NotStartsWith(character);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("digital", true)]
+        [InlineData("kinson", false)]
+        public void NotStartsWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
+        {
+            // Arrange
+            const string stringToCheck = "kinson digital";
+
+            // Act
+            var actual = stringToCheck.NotStartsWith(stringValue);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData('x', true)]
+        [InlineData('n', false)]
+        public void NotEndsWith_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
+        {
+            // Arrange
+            const string stringToCheck = "kinson";
+
+            // Act
+            var actual = stringToCheck.NotEndsWith(character);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("kinson", true)]
+        [InlineData("digital", false)]
+        public void NotEndsWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
+        {
+            // Arrange
+            const string stringToCheck = "kinson digital";
+
+            // Act
+            var actual = stringToCheck.NotEndsWith(stringValue);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
         [InlineData("", false)]
         [InlineData(@"C:\", true)]
         [InlineData(@"C:", false)]
@@ -272,7 +332,7 @@ namespace VelaptorTests
         /// and <paramref name="height"/> with each row having its own colors described by the given
         /// <paramref name="rowColors"/> dictionary.
         /// </summary>
-        /// <param name="width">The width of the iamge.</param>
+        /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
         /// <param name="rowColors">The color for each row.</param>
         /// <returns>An image with the given row colors.</returns>
@@ -292,7 +352,7 @@ namespace VelaptorTests
 
             foreach (var row in availableRows)
             {
-                if (row < 0 && row > height - 1)
+                if (row > height - 1)
                 {
                     Assert.True(false, $"The row '{row}' is not within the range of rows for the image height '{height}' for the definition of row colors.");
                 }
