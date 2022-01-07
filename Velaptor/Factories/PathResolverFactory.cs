@@ -22,6 +22,7 @@ namespace Velaptor.Factories
     {
         private static readonly IPlatform Platform;
         private static IPathResolver? texturePathResolver;
+        private static IPathResolver? textureAtlasPathResolver;
         private static IPathResolver? soundPathResolver;
         private static IPathResolver? fontPathResolver;
         private static IPathResolver? contentFontPathResolver;
@@ -39,6 +40,14 @@ namespace Velaptor.Factories
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
         public static IPathResolver CreateTexturePathResolver() =>
             texturePathResolver ??= new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+
+        /// <summary>
+        /// Creates a path resolver that resolves paths to texture atlas textures.
+        /// </summary>
+        /// <returns>The resolver to texture content.</returns>
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
+        public static IPathResolver CreateTextureAtlasPathResolver() =>
+            textureAtlasPathResolver ??= new AtlasTexturePathResolver(IoC.Container.GetInstance<IDirectory>());
 
         /// <summary>
         /// Creates a path resolver that resolves paths to fonts in the application's content directory.
