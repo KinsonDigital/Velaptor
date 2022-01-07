@@ -4,11 +4,13 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor;
-    using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Creates <see cref="ITexture"/> objects for rendering.
