@@ -8,6 +8,7 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Content;
+    using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.NativeInterop.FreeType;
@@ -106,8 +107,12 @@ namespace Velaptor.Factories
 
             var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
             var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
+            var path = IoC.Container.GetInstance<IPath>();
 
-            soundLoader = new SoundLoader(soundPathResolver, soundFactory);
+            soundLoader = new SoundLoader(
+                soundPathResolver,
+                soundFactory,
+                path);
 
             return soundLoader;
         }
@@ -131,6 +136,9 @@ namespace Velaptor.Factories
             var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
             var fontStatsService = IoC.Container.GetInstance<IFontStatsService>();
+            var imageService = IoC.Container.GetInstance<IImageService>();
+            var path = IoC.Container.GetInstance<IPath>();
+            var fontFactory = IoC.Container.GetInstance<IFontFactory>();
 
             fontLoader = new FontLoader(
                 glInvoker,
@@ -140,8 +148,9 @@ namespace Velaptor.Factories
                 fontAtlasService,
                 fontStatsService,
                 fontPathResolver,
-                IoC.Container.GetInstance<IImageService>(),
-                IoC.Container.GetInstance<IPath>());
+                imageService,
+                fontFactory,
+                path);
 
             return fontLoader;
         }

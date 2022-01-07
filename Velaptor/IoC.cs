@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.Runtime.CompilerServices;
-
 [assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
 namespace Velaptor
@@ -13,6 +12,7 @@ namespace Velaptor
     using System.IO.Abstractions;
     using SimpleInjector;
     using Velaptor.Content;
+    using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Factories;
     using Velaptor.Graphics;
@@ -71,8 +71,6 @@ namespace Velaptor
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
 
-            IoCContainer.Register<ISoundFactory, SoundFactory>();
-
             IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
             IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
 
@@ -110,8 +108,10 @@ namespace Velaptor
 
         private static void SetupFactories()
         {
+            IoCContainer.Register<ISoundFactory, SoundFactory>();
             IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<IFontFactory, FontFactory>();
         }
 
         /// <summary>

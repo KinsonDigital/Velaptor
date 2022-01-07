@@ -10,6 +10,7 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using System.Linq;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Factories;
     using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Services;

@@ -1,17 +1,21 @@
-﻿using System.Drawing;
-using System.IO.Abstractions;
-using Moq;
-using Silk.NET.Vulkan;
-using Velaptor.Content;
-using Velaptor.Content.Exceptions;
-using Velaptor.Graphics;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Services;
-using VelaptorTests.Helpers;
-using Xunit;
+﻿// <copyright file="TextureCacheTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
 
 namespace VelaptorTests.Content
 {
+    using System.Drawing;
+    using System.IO.Abstractions;
+    using Moq;
+    using Velaptor.Content;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Factories;
+    using Velaptor.Graphics;
+    using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Services;
+    using VelaptorTests.Helpers;
+    using Xunit;
+
     public class TextureCacheTests
     {
         private const string TextureExtension = ".png";
@@ -19,8 +23,6 @@ namespace VelaptorTests.Content
         private const string TextureDirPath = @"C:\content\";
         private readonly string textureFilePath = $"{TextureDirPath}{TextureName}{TextureExtension}";
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<ITextureFactory> mockTextureFactory;
         private readonly Mock<IImageService> mockImageService;
 
@@ -29,8 +31,6 @@ namespace VelaptorTests.Content
         /// </summary>
         public TextureCacheTests()
         {
-            this.mockGL = new Mock<IGLInvoker>();
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
             this.mockImageService = new Mock<IImageService>();
             this.mockTextureFactory = new Mock<ITextureFactory>();
 

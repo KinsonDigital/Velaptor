@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories
+namespace Velaptor.Content.Factories
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
@@ -14,9 +14,9 @@ namespace Velaptor.Factories
     /// Creates sounds based on the sound file at a location.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class SoundFactory : ISoundFactory
+    internal class SoundFactory : ISoundFactory
     {
         /// <inheritdoc/>
-        ISound ISoundFactory.CreateSound(string filePath) => new Sound(filePath);
+        ISound ISoundFactory.Create(string filePath) => new Sound(filePath);
     }
 }

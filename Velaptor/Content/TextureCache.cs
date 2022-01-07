@@ -10,6 +10,7 @@ namespace Velaptor.Content
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Factories;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
