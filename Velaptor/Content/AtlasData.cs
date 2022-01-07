@@ -9,6 +9,7 @@ namespace Velaptor.Content
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO.Abstractions;
     using System.Linq;
     using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
@@ -20,23 +21,41 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class AtlasData : IAtlasData
     {
+        private const string AtlasDataExtension = ".json";
+        private const string TextureExtension = ".png";
+        private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly AtlasSubTextureData[] subTextures;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasData"/> class.
         /// </summary>
-        /// <param name="texture">The texture data of the atlas.</param>
+        /// <param name="textureCache">Caches textures for later use to improve performance.</param>
+        /// <param name="path">Performs path related operations.</param>
         /// <param name="atlasSubTextureData">The sub texture data of all of the sub textures in the atlas.</param>
+        /// <param name="dirPath">The path to the content.</param>
         /// <param name="atlasName">The name of the atlas.</param>
-        /// <param name="path">The path to the content.</param>
-        public AtlasData(ITexture texture, AtlasSubTextureData[] atlasSubTextureData, string atlasName, string path)
+        public AtlasData(
+            IDisposableItemCache<string, ITexture> textureCache,
+            IPath path,
+            IEnumerable<AtlasSubTextureData> atlasSubTextureData,
+            string dirPath,
+            string atlasName)
         {
-            Texture = texture ?? throw new ArgumentNullException(nameof(texture), "The parameter must not be null.");
-
+            this.textureCache = textureCache;
             this.subTextures = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
 
+            // Throw exception if the path is not a directory path
+            if (string.IsNullOrEmpty(path.GetDirectoryName(dirPath)))
+            {
+                throw new Exception("The path must be a valid directory path.");
+            }
+
+            atlasName = path.GetFileNameWithoutExtension(atlasName);
+
             Name = atlasName;
-            FilePath = path;
+            FilePath = $"{dirPath}{atlasName}{TextureExtension}";
+            AtlasDataPath = $"{dirPath}{atlasName}{AtlasDataExtension}";
+            Texture = this.textureCache.GetItem(FilePath);
         }
 
         /// <summary>
@@ -70,11 +89,16 @@ namespace Velaptor.Content
         /// </summary>
         public string Name { get; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the path to the texture.
+        /// </summary>
         public string FilePath { get; }
 
         /// <inheritdoc/>
-        public ITexture Texture { get; private set; }
+        public string AtlasDataPath { get; }
+
+        /// <inheritdoc/>
+        public ITexture Texture { get; }
 
         /// <inheritdoc/>
         public uint Width => Texture.Width;
@@ -135,10 +159,10 @@ namespace Velaptor.Content
 
             if (disposing)
             {
-                Texture.IsPooled = false;
-                Texture.Dispose();
-                IsDisposed = true;
+                this.textureCache.Unload(FilePath);
             }
+
+            IsDisposed = true;
         }
     }
 }

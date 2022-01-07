@@ -38,6 +38,11 @@ namespace Velaptor.Content
         uint Height { get; }
 
         /// <summary>
+        /// Gets the file path to the atlas data.
+        /// </summary>
+        string AtlasDataPath { get; }
+
+        /// <summary>
         /// The iterator for the atlas sub texture data.
         /// </summary>
         /// <param name="index">The index of the item to retrieve.</param>
