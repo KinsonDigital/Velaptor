@@ -106,10 +106,10 @@ namespace VelaptorTests.Content.Fonts
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
                 this.mockFontStatsService.Object,
-                this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
-                It.IsAny<int>());
+                It.IsAny<int>(),
+                this.glyphMetrics.Values.ToArray());
 
             // Assert
             // Check that the texture was properly created
@@ -168,10 +168,10 @@ namespace VelaptorTests.Content.Fonts
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
                 this.mockFontStatsService.Object,
-                this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
-                It.IsAny<int>());
+                It.IsAny<int>(),
+                this.glyphMetrics.Values.ToArray());
 
             var actual = font.HasKerning;
 
@@ -190,10 +190,10 @@ namespace VelaptorTests.Content.Fonts
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
                 this.mockFontStatsService.Object,
-                this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
-                It.IsAny<int>());
+                It.IsAny<int>(),
+                this.glyphMetrics.Values.ToArray());
 
             // Act
             var actual = font.GetAvailableGlyphCharacters();
@@ -256,10 +256,10 @@ namespace VelaptorTests.Content.Fonts
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
                 this.mockFontStatsService.Object,
-                this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
-                It.IsAny<int>());
+                It.IsAny<int>(),
+                this.glyphMetrics.Values.ToArray());
 
             // Act
             var actual = font.Measure(text);
@@ -324,16 +324,16 @@ namespace VelaptorTests.Content.Fonts
         /// Creates a new instance of <see cref="Font"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private Font CreateFont(uint size = 12)
+        private Font CreateFont(int size = 12)
             => new (
                 this.mockTexture.Object,
                 this.mockFreeTypeInvoker.Object,
                 this.mockFreeTypeExtensions.Object,
                 this.mockFontStatsService.Object,
-                this.glyphMetrics.Values.ToArray(),
                 "test-name",
                 FontPath,
-                It.IsAny<int>());
+                size,
+                this.glyphMetrics.Values.ToArray());
 
         /// <summary>
         /// Mocks the kerning value for each character in the given <paramref name="text"/>.

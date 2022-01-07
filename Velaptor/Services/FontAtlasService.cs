@@ -21,7 +21,7 @@ namespace Velaptor.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Creates font atlas textures for rendering text.
+    /// Creates font atlas data for rendering text.
     /// </summary>
     internal class FontAtlasService : IFontAtlasService
     {

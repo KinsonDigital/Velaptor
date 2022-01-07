@@ -49,20 +49,20 @@ namespace Velaptor.Content.Fonts
         /// <param name="freeTypeInvoker">Invokes native FreeType function calls.</param>
         /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
-        /// <param name="glyphMetrics">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
         /// <param name="name">The name of the font content.</param>
         /// <param name="fontFilePath">The path to the font content.</param>
         /// <param name="size">The size to set the font to.</param>
+        /// <param name="glyphMetrics">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
         // TODO: Change font size across project to uint
         internal Font(
             ITexture texture,
             IFreeTypeInvoker freeTypeInvoker,
             IFreeTypeExtensions freeTypeExtensions,
             IFontStatsService fontStatsService,
-            GlyphMetrics[] glyphMetrics,
             string name,
             string fontFilePath,
-            int size)
+            int size,
+            GlyphMetrics[] glyphMetrics)
         {
             FontTextureAtlas = texture;
             this.freeTypeInvoker = freeTypeInvoker;

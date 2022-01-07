@@ -10,6 +10,7 @@ namespace VelaptorTests.Content.Fonts
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Graphics;
@@ -37,6 +38,7 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPathResolver> mockFontPathResolver;
         private readonly Mock<IImageService> mockImageService;
+        private readonly Mock<IFontFactory> mockFontFactory;
         private readonly Mock<IPath> mockPath;
 
         /// <summary>
@@ -71,9 +73,9 @@ namespace VelaptorTests.Content.Fonts
             this.mockFile = new Mock<IFile>();
             this.mockFile.Setup(m => m.Exists(this.fontDataFilePath)).Returns(true);
 
-            this.mockPath = new Mock<IPath>();
-
             this.mockImageService = new Mock<IImageService>();
+            this.mockFontFactory = new Mock<IFontFactory>();
+            this.mockPath = new Mock<IPath>();
         }
 
         #region Method Tests
@@ -293,6 +295,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontStatsService.Object,
             this.mockFontPathResolver.Object,
             this.mockImageService.Object,
+            this.mockFontFactory.Object,
             this.mockPath.Object);
     }
 }

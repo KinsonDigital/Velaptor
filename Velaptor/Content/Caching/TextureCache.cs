@@ -9,8 +9,10 @@ namespace Velaptor.Content.Caching
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
+    using System.Linq;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
+    using Velaptor.Graphics;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -20,9 +22,12 @@ namespace Velaptor.Content.Caching
     /// </summary>
     internal sealed class TextureCache : IDisposableItemCache<string, ITexture>
     {
+        private const string TextureFileExtension = ".png";
+        private const string FontFileExtension = ".ttf";
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IImageService imageService;
         private readonly ITextureFactory textureFactory;
+        private readonly IFontAtlasService fontAtlasService;
         private readonly IPath path;
         private bool isDisposed;
 
@@ -31,15 +36,17 @@ namespace Velaptor.Content.Caching
         /// </summary>
         /// <param name="imageService">Provides image related services.</param>
         /// <param name="textureFactory">Creates <see cref="ITexture"/> objects.</param>
+        /// <param name="fontAtlasService">Provides font atlas services.</param>
         /// <param name="path">Provides path related services.</param>
         public TextureCache(
-            // TODO: Bring in the font atlas service
             IImageService imageService,
             ITextureFactory textureFactory,
+            IFontAtlasService fontAtlasService,
             IPath path)
         {
             this.imageService = imageService;
             this.textureFactory = textureFactory;
+            this.fontAtlasService = fontAtlasService;
             this.path = path;
         }
 
@@ -55,6 +62,28 @@ namespace Velaptor.Content.Caching
         /// <inheritdoc/>
         public ITexture GetItem(string filePath)
         {
+            // TODO: Throw exception here is null or empty
+
+            var (invalid, fontSize, containsMetaData, metaData) = ParseMetaData(filePath);
+
+            if (invalid && containsMetaData)
+            {
+                var exceptionMsg = "Font metadata required when caching fonts.";
+                exceptionMsg += string.IsNullOrEmpty(metaData)
+                    ? string.Empty
+                    : $"\nCurrent metadata: '{metaData}'";
+                exceptionMsg += "Required metadata syntax: '|size:<number-here>'";
+
+                throw new CachingMetaDataException(exceptionMsg);
+            }
+
+            filePath = containsMetaData && !invalid
+                ? filePath.Replace(metaData, string.Empty)
+                : filePath;
+
+            var isTextureFile = this.path.GetExtension(filePath) == TextureFileExtension;
+            var isFontFile = this.path.GetExtension(filePath) == FontFileExtension;
+
             if (filePath.IsValidFilePath() is false)
             {
                 throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
@@ -73,16 +102,32 @@ namespace Velaptor.Content.Caching
                 break;
             }
 
-            return this.textures.GetOrAdd(filePath, textureFilePath =>
+            return this.textures.GetOrAdd(filePath, textureOrFontFilePath =>
             {
-                // TODO: Detect if the file path/cache key is a .ttf font file. If so, then use the FontAtlasService
-                // to create the required data for the TextureFactory.  If it is a .png file, then we create the
-                // image data using the ImageService
-                var imageData = this.imageService.Load(textureFilePath);
+                ImageData imageData;
 
-                var name = this.path.GetFileNameWithoutExtension(textureFilePath);
+                if (isTextureFile && isFontFile is false)
+                {
+                    imageData = this.imageService.Load(textureOrFontFilePath);
+                }
+                else if (isFontFile && isTextureFile is false)
+                {
+                    var (atlasImageData, _) = this.fontAtlasService.CreateFontAtlas(textureOrFontFilePath, fontSize);
+                    imageData = atlasImageData;
+                }
+                else
+                {
+                    var exceptionMsg = "Texture Caching Error:";
+                    exceptionMsg += $"\nWhen caching textures, the only file types allowed";
+                    exceptionMsg += $" are '{TextureFileExtension}' and '{FontFileExtension}' files.";
+                    exceptionMsg += "\nFont files are converted into texture atlases for the font glyphs.";
 
-                return this.textureFactory.Create(name, textureFilePath, imageData, true);
+                    throw new CachingException(exceptionMsg);
+                }
+
+                var name = this.path.GetFileNameWithoutExtension(textureOrFontFilePath);
+
+                return this.textureFactory.Create(name, textureOrFontFilePath, imageData, true);
             });
         }
 
@@ -128,6 +173,60 @@ namespace Velaptor.Content.Caching
             }
 
             this.isDisposed = true;
+        }
+
+        /// <summary>
+        /// Parses the given value for font meta data and returns a result.
+        /// </summary>
+        /// <param name="value">The value to parse.</param>
+        /// <returns>A number of values representing the parsing results.</returns>
+        private (bool invalid, int fontSize, bool containsMetaData, string metaData) ParseMetaData(string value)
+        {
+            var pipeIndex = value.IndexOf('|');
+
+            // If no pipe exists, then we must assume there is no metadata
+            if (pipeIndex <= -1 || value.Length < 3)
+            {
+                return (true, -1, false, string.Empty);
+            }
+
+            var pipeSections = value.Split('|');
+            var varAndValue = pipeSections[1];
+
+            var consecutivePipes = value.Contains("||");
+            var moreThanTwoPipesAndEndsWithPipe = value.Count(c => c == '|') >= 2 && value.EndsWith('|');
+            var endsWithSinglePipe = value.EndsWith('|');
+
+            if (consecutivePipes || moreThanTwoPipesAndEndsWithPipe || endsWithSinglePipe)
+            {
+                return (true, -1, true, string.Empty);
+            }
+
+            var colonIndex = varAndValue.IndexOf(':');
+
+            if (colonIndex == -1 || varAndValue.StartsWith(':') || varAndValue.EndsWith(':'))
+            {
+                return (true, -1, true, $"|{varAndValue}");
+            }
+
+            if (varAndValue.Contains("::"))
+            {
+                return (true, -1, true, string.Empty);
+            }
+
+            var sizeIndex = varAndValue.IndexOf("size", StringComparison.Ordinal);
+            var missingSizeVar = sizeIndex == -1 ||
+                                      sizeIndex + "size".Length - 1 > colonIndex;
+
+            var sizeAndValueSections = varAndValue.Split(':');
+            var parseFailure = int.TryParse(sizeAndValueSections[1], out var size) is false;
+
+            if (missingSizeVar || parseFailure)
+            {
+                return (true, -1, true, $"|{varAndValue}");
+            }
+
+            return (false, size, true, $"|{varAndValue}");
         }
     }
 }

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Content.Factories;
+
 namespace Velaptor.Content.Fonts
 {
     // ReSharper disable RedundantNameQualifier
@@ -30,6 +32,7 @@ namespace Velaptor.Content.Fonts
         private readonly IFontAtlasService fontAtlasService;
         private readonly IFontStatsService fontStatsService;
         private readonly IPathResolver fontPathResolver;
+        private readonly IFontFactory fontFactory;
         private readonly IPath path;
         private readonly IImageService imageService;
         private readonly char[] glyphChars =
@@ -71,8 +74,10 @@ namespace Velaptor.Content.Fonts
         /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
         /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
         /// <param name="imageService">Manipulates image data.</param>
+        /// <param name="fontFactory">Generates new <see cref="IFont"/> instances.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         internal FontLoader(
+            // TODO: Inject TextureCache
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IFreeTypeInvoker freeTypeInvoker,
@@ -81,6 +86,7 @@ namespace Velaptor.Content.Fonts
             IFontStatsService fontStatsService,
             IPathResolver fontPathResolver,
             IImageService imageService,
+            IFontFactory fontFactory,
             IPath path)
         {
             this.gl = gl;
@@ -90,6 +96,8 @@ namespace Velaptor.Content.Fonts
             this.fontAtlasService = fontAtlasService;
             this.fontStatsService = fontStatsService;
             this.fontPathResolver = fontPathResolver;
+            this.imageService = imageService;
+            this.fontFactory = fontFactory;
             this.path = path;
         }
 
@@ -121,26 +129,35 @@ namespace Velaptor.Content.Fonts
 
             var fontFilePath = this.fontPathResolver.ResolveFilePath(name);
 
+            // TODO: This code below should be replace with a TextureCache call.  The returning texture is what will
+            // get injected into the Font() ctor.
+
+
             return this.fonts.GetOrAdd(fontFilePath, filePath =>
             {
+                // TODO: this will be removed.  This is going to be dealt with in the TextureCache class
                 var (fontAtlasImage, atlasData) = this.fontAtlasService.CreateFontAtlas(filePath, size);
 
                 // OpenGL origin Y is at the bottom instead of the top.  This means
                 // that the current image data which is vertically oriented correctly, needs
                 // to be flipped vertically before being sent to OpenGL.
+                // TODO: this will be removed.  This is going to be dealt with in the TextureCache class
                 fontAtlasImage = this.imageService.FlipVertically(fontAtlasImage);
 
+                // TODO: this will be removed.  This is going to be returned by TextureCache class
                 var fontAtlasTexture = new Texture(this.gl, this.glExtensions, name, filePath, fontAtlasImage) { IsPooled = true };
+
+                // TODO: When storing the font texture atlas into the texture cache, the key needs to be
 
                 return new Font(
                     fontAtlasTexture,
                     this.freeTypeInvoker,
                     this.freeTypeExtensions,
                     this.fontStatsService,
-                    atlasData,
                     name,
                     filePath,
-                    size)
+                    size,
+                    atlasData)
                 {
                     IsPooled = true,
                 };
