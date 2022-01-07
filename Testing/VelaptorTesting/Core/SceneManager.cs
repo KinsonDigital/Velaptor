@@ -7,6 +7,7 @@ namespace VelaptorTesting.Core
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Drawing;
     using System.Linq;
     using Velaptor;
     using Velaptor.Content;
@@ -112,6 +113,7 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// Moves to the previous scene.
         /// </summary>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Need for future use.")]
         public void PreviousScene()
         {
             if (this.scenes.Count <= 0)
@@ -146,16 +148,16 @@ namespace VelaptorTesting.Core
             }
 
             this.scenes[this.currentSceneIndex].LoadContent();
-            // this.nextButton.LoadContent();
-            // this.previousButton.LoadContent();
-            //
-            // const int buttonSpacing = 15;
-            // const int rightMargin = 15;
-            //
-            // var buttonTops = (int)(MainWindow.WindowHeight - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
-            // var buttonGroupLeft = (int)(MainWindow.WindowWidth - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
-            // this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
-            // this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
+            this.nextButton.LoadContent();
+            this.previousButton.LoadContent();
+
+            const int buttonSpacing = 15;
+            const int rightMargin = 15;
+
+            var buttonTops = (int)(MainWindow.WindowHeight - (new[] { this.nextButton.Height, this.previousButton.Height }.Max() + 20));
+            var buttonGroupLeft = (int)(MainWindow.WindowWidth - (this.nextButton.Width + this.previousButton.Width + buttonSpacing + rightMargin));
+            this.previousButton.Position = new Point(buttonGroupLeft, buttonTops);
+            this.nextButton.Position = new Point(this.previousButton.Position.X + (int)this.previousButton.Width + buttonSpacing, buttonTops);
 
             this.isLoaded = true;
         }
@@ -184,8 +186,8 @@ namespace VelaptorTesting.Core
                 return;
             }
 
-            // this.nextButton.Update(frameTime);
-            // this.previousButton.Update(frameTime);
+            this.nextButton.Update(frameTime);
+            this.previousButton.Update(frameTime);
 
             this.scenes[this.currentSceneIndex].Update(frameTime);
         }
@@ -206,8 +208,8 @@ namespace VelaptorTesting.Core
             this.scenes[this.currentSceneIndex].Render(this.spriteBatch);
 
             // Render the scene manager UI on top of all other textures
-            // this.nextButton.Render(this.spriteBatch);
-            // this.previousButton.Render(this.spriteBatch);
+            this.nextButton.Render(this.spriteBatch);
+            this.previousButton.Render(this.spriteBatch);
 
             this.spriteBatch.EndBatch();
         }

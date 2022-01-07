@@ -231,15 +231,6 @@ namespace VelaptorTesting.Scenes
                 this.angle,
                 this.isClrSet ? Color.CornflowerBlue : Color.White);
 
-            // spriteBatch.Render(
-            //     this.otherTextFont,
-            //     "Other Text Font",
-            //     xPos,
-            //     yPos + 100,
-            //     this.size,
-            //     this.angle,
-            //     Color.IndianRed);
-
             this.btnRotateCW.Render(spriteBatch);
             this.btnRotateCCW.Render(spriteBatch);
             this.btnIncreaseSize.Render(spriteBatch);
@@ -286,11 +277,11 @@ namespace VelaptorTesting.Scenes
                                    (new[]
                                    {
                                        this.btnRotateCW.Height,
-                                       // this.btnRotateCCW.Height,
-                                       // this.btnIncreaseSize.Height,
-                                       // this.btnDecreaseSize.Height,
-                                       // this.btnSetMultiLine.Height,
-                                       // this.btnSetColor.Height,
+                                       this.btnRotateCCW.Height,
+                                       this.btnIncreaseSize.Height,
+                                       this.btnDecreaseSize.Height,
+                                       this.btnSetMultiLine.Height,
+                                       this.btnSetColor.Height,
                                    }.Max() + 20));
 
             this.btnRotateCW.Position = new Point(leftMargin, buttonTops);
