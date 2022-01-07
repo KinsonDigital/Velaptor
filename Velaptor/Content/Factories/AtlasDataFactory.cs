@@ -8,6 +8,7 @@ namespace Velaptor.Content.Factories
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
+    using Velaptor.Content.Caching;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier

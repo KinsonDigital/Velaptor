@@ -7,7 +7,7 @@ namespace VelaptorTests.Content
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
-    using Velaptor.Factories;
+    using Velaptor.Content.Factories;
     using Xunit;
 
     /// <summary>

@@ -8,6 +8,7 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using Velaptor.Content;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
     using Velaptor.Content.Fonts.Services;

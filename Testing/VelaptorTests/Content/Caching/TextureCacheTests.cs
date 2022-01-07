@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Content
+namespace VelaptorTests.Content.Caching
 {
     using System.Drawing;
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;

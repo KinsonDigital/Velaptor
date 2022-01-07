@@ -11,6 +11,7 @@ namespace VelaptorTests.Content
     using System.Linq;
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Graphics;

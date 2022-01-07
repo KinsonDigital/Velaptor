@@ -12,10 +12,10 @@ namespace Velaptor
     using System.IO.Abstractions;
     using SimpleInjector;
     using Velaptor.Content;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Factories;
-    using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
@@ -99,12 +99,7 @@ namespace Velaptor
             IoCContainer.Register<IFreeTypeExtensions, FreeTypeExtensions>(Lifestyle.Singleton);
         }
 
-        private static void SetupCaching()
-        {
-            IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
-            IoCContainer.Register<IDisposableItemCache<(string, uint), ITexture>, FontTextureAtlasCache>(Lifestyle.Singleton);
-            IoCContainer.Register<IItemCache<(string, uint), (ImageData, GlyphMetrics[])>, FontAtlasDataCache>(Lifestyle.Singleton);
-        }
+        private static void SetupCaching() => IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
 
         private static void SetupFactories()
         {

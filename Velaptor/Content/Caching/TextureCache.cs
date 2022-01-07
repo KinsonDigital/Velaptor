@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Content.Caching
 {
     // ReSharper disable RedundantNameQualifier
     using System;
@@ -33,6 +33,7 @@ namespace Velaptor.Content
         /// <param name="textureFactory">Creates <see cref="ITexture"/> objects.</param>
         /// <param name="path">Provides path related services.</param>
         public TextureCache(
+            // TODO: Bring in the font atlas service
             IImageService imageService,
             ITextureFactory textureFactory,
             IPath path)
@@ -74,6 +75,9 @@ namespace Velaptor.Content
 
             return this.textures.GetOrAdd(filePath, textureFilePath =>
             {
+                // TODO: Detect if the file path/cache key is a .ttf font file. If so, then use the FontAtlasService
+                // to create the required data for the TextureFactory.  If it is a .png file, then we create the
+                // image data using the ImageService
                 var imageData = this.imageService.Load(textureFilePath);
 
                 var name = this.path.GetFileNameWithoutExtension(textureFilePath);

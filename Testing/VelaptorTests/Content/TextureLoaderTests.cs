@@ -7,6 +7,7 @@ namespace VelaptorTests.Content
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using VelaptorTests.Helpers;
     using Xunit;
