@@ -43,7 +43,40 @@ namespace Velaptor.Graphics
         /// <param name="height">The height of the image.</param>
         public ImageData(Color[,]? pixels, uint width, uint height)
         {
-            this.Pixels = pixels ?? new Color[0, 0];
+            if (pixels is null)
+            {
+                this.Pixels = new Color[width, height];
+
+                // Make all the pixels white
+                for (var y = 0; y < height; y++)
+                {
+                    for (var x = 0; x < width; x++)
+                    {
+                        this.Pixels[x, y] = Color.White;
+                    }
+                }
+            }
+            else
+            {
+                if (pixels.GetUpperBound(0) != width - 1)
+                {
+                    var exceptionMsg = $"The length of the 1st dimension of the '{nameof(pixels)}' parameter";
+                    exceptionMsg += $" must match the '{nameof(width)}' parameter.";
+
+                    throw new ArgumentException(exceptionMsg);
+                }
+
+                if (pixels.GetUpperBound(1) != height - 1)
+                {
+                    var exceptionMsg = $"The length of the 1st dimension of the '{nameof(pixels)}' parameter";
+                    exceptionMsg += $" must match the '{nameof(height)}' parameter.";
+
+                    throw new ArgumentException(exceptionMsg);
+                }
+
+                this.Pixels = pixels;
+            }
+
             this.Width = width;
             this.Height = height;
         }
@@ -148,7 +181,7 @@ namespace Velaptor.Graphics
         /// Returns a value indicating if the <see cref="ImageData"/> contents are empty.
         /// </summary>
         /// <returns><c>true</c> if empty.</returns>
-        public bool IsEmpty() => this.Width == 0 && this.Height == 0 && (this.Pixels == null || this.Pixels.Length == 0);
+        public bool IsEmpty() => this.Width == 0 && this.Height == 0;
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]

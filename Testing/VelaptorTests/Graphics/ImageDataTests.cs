@@ -2,6 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System;
+using Velaptor.OpenGL;
+using Xunit.Sdk;
+
 namespace VelaptorTests.Graphics
 {
     using System.Collections.Generic;
@@ -15,17 +19,52 @@ namespace VelaptorTests.Graphics
     /// </summary>
     public class ImageDataTests
     {
-        /// <summary>
-        /// Returns the data used to test the <see cref="ImageData.IsEmpty"/> method.
-        /// </summary>
-        /// <returns>The data to use for testing.</returns>
-        public static IEnumerable<object[]> IsEmptyTestData()
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WhenPixelParamIsNull_ProperlyCreatesDefaultPixelData()
         {
-            yield return new object[] { 0u, 0u, new Color[0, 0], true };
-            yield return new object[] { 11u, 0u, new Color[0, 0], false };
-            yield return new object[] { 0u, 22u, new Color[0, 0], false };
-            yield return new object[] { 0u, 0u, new[,] { { Color.Red, Color.Blue } }, false };
+            // Act
+            var imageData = new ImageData(null, 3, 2);
+
+            // Assert
+            Assert.Equal(2, imageData.Pixels.GetUpperBound(0));
+            Assert.Equal(1, imageData.Pixels.GetUpperBound(1));
+
+
+            var row0 = GetRow(imageData.Pixels, 0);
+            var row1 = GetRow(imageData.Pixels, 1);
+
+            Assert.All(row0, pixel =>
+            {
+                Assert.True(pixel == Color.White, $"Actual Pixel Color (Row 0): {pixel}");
+            });
+
+            Assert.All(row0, pixel =>
+            {
+                Assert.True(pixel == Color.White, $"Actual Pixel Color (Row 0): {pixel}");
+            });
         }
+
+        [Fact]
+        public void Ctor_WhenWidthAndPixelDimensionDoesNotMatch_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+            {
+                var unused = new ImageData(new Color[1, 2], 11, 2);
+            }, "The length of the 1st dimension of the 'pixels' parameter must match the 'width' parameter.");
+        }
+
+        [Fact]
+        public void Ctor_WhenHeightAndPixelDimensionDoesNotMatch_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+            {
+                var unused = new ImageData(new Color[1, 2], 1, 22);
+            }, "The length of the 1st dimension of the 'pixels' parameter must match the 'height' parameter.");
+        }
+        #endregion
 
         #region Method Tests
         [Fact]
@@ -187,20 +226,6 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void Equals_WhenBothAreSameTypeAndBothHaveNoPixels_ReturnsTrue()
-        {
-            // Arrange
-            var imageDataA = TestHelpers.CreateImageData(Color.White, 0, 0);
-            var imageDataB = TestHelpers.CreateImageData(Color.White, 0, 0);
-
-            // Act
-            var actual = imageDataA.Equals(imageDataB);
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
         public void Equals_WhenParamIsObjectTypeAndPixelLengthsAreNotEqual_ReturnsFalse()
         {
             // Arrange
@@ -257,25 +282,11 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void Equals_WhenParamIsObjectTypeAndBothHaveNoPixels_ReturnsTrue()
-        {
-            // Arrange
-            var imageDataA = TestHelpers.CreateImageData(Color.White, 0, 0);
-            object imageDataB = TestHelpers.CreateImageData(Color.White, 0, 0);
-
-            // Act
-            var actual = imageDataA.Equals(imageDataB);
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
         public void EqualsOperator_WhenBothPixelLengthsAreNotEqual_ReturnsFalse()
         {
             // Arrange
-            var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2);
-            var imageDataB = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 3, 3);
+            var imageDataA = new ImageData(new Color[2, 2], 2, 2);
+            var imageDataB = new ImageData(new Color[3, 3], 3, 3);
 
             // Act
             var actual = imageDataA == imageDataB;
@@ -299,34 +310,6 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void EqualsOperator_WhenBothHaveNoPixels_ReturnsTrue()
-        {
-            // Arrange
-            var imageDataA = TestHelpers.CreateImageData(Color.White, 0, 0);
-            var imageDataB = TestHelpers.CreateImageData(Color.White, 0, 0);
-
-            // Act
-            var actual = imageDataA == imageDataB;
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void NotEqualsOperator_WhenBothPixelLengthsAreNotEqual_ReturnsTrue()
-        {
-            // Arrange
-            var imageDataA = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 2, 2);
-            var imageDataB = TestHelpers.CreateImageData(Color.FromArgb(11, 22, 33, 44), 3, 3);
-
-            // Act
-            var actual = imageDataA != imageDataB;
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
         public void NotEqualsOperator_WhenBothHaveDifferentColorPixels_ReturnsTrue()
         {
             // Arrange
@@ -340,26 +323,14 @@ namespace VelaptorTests.Graphics
             Assert.True(actual);
         }
 
-        [Fact]
-        public void NotEqualsOperator_WhenBothHaveNoPixels_ReturnsFalse()
-        {
-            // Arrange
-            var imageDataA = TestHelpers.CreateImageData(Color.White, 0, 0);
-            var imageDataB = TestHelpers.CreateImageData(Color.White, 0, 0);
-
-            // Act
-            var actual = imageDataA != imageDataB;
-
-            // Assert
-            Assert.False(actual);
-        }
-
         [Theory]
-        [MemberData(nameof(IsEmptyTestData))]
-        public void IsEmpty_WhenEmpty_ReturnsCorrectResult(uint width, uint height, Color[,] pixels, bool expected)
+        [InlineData(0u, 0u, true)]
+        [InlineData(1u, 0u, false)]
+        [InlineData(0u, 1u, false)]
+        public void IsEmpty_WhenEmpty_ReturnsCorrectResult(uint width, uint height, bool expected)
         {
             // Arrange
-            var data = new ImageData(pixels, width, height);
+            var data = new ImageData(null, width, height);
 
             // Act
             var actual = data.IsEmpty();
@@ -368,5 +339,23 @@ namespace VelaptorTests.Graphics
             Assert.Equal(expected, actual);
         }
         #endregion
+
+        /// <summary>
+        /// Gets the given <paramref name="row"/> of pixels from the 2D array of pixels.
+        /// </summary>
+        /// <param name="pixels">The pixel data.</param>
+        /// <param name="row">The row number to retrieve.</param>
+        /// <returns>The data to test.</returns>
+        private static Color[] GetRow(Color[,] pixels, int row)
+        {
+            var result = new List<Color>();
+
+            for (var x = 0; x < pixels.GetUpperBound(1); x++)
+            {
+                result.Add(pixels[x, row]);
+            }
+
+            return result.ToArray();
+        }
     }
 }
