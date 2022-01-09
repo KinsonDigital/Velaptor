@@ -1,4 +1,4 @@
-﻿// <copyright file="FontLoader.cs" company="KinsonDigital">
+// <copyright file="FontLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -91,9 +91,6 @@ namespace Velaptor.Content.Fonts
             this.fontStatsService = fontStatsService;
             this.fontPathResolver = fontPathResolver;
             this.path = path;
-            this.imageService = imageService;
-
-            this.fontAtlasService.SetAvailableCharacters(this.glyphChars);
         }
 
         /// <inheritdoc/>

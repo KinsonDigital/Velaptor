@@ -32,8 +32,14 @@ namespace Velaptor.Services
         private readonly ISystemMonitorService monitorService;
         private readonly IFile file;
         private readonly IntPtr freeTypeLibPtr;
+        private readonly char[] glyphChars =
+        {
+            'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
+            '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ', '□',
+        };
         private IntPtr facePtr;
-        private char[]? glyphChars;
         private bool isDisposed;
 
         /// <summary>
@@ -70,11 +76,6 @@ namespace Velaptor.Services
         /// <inheritdoc/>
         public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, int size)
         {
-            if (this.glyphChars is null)
-            {
-                throw new InvalidOperationException("The available glyph characters must be set first before creating a font texture atlas.");
-            }
-
             if (string.IsNullOrEmpty(fontFilePath))
             {
                 throw new ArgumentNullException(nameof(fontFilePath), "The font file path argument must not be null.");
@@ -123,21 +124,6 @@ namespace Velaptor.Services
             }
 
             return (atlasImage, glyphMetrics.Values.ToArray());
-        }
-
-        /// <inheritdoc/>
-        public void SetAvailableCharacters(char[] glyphs)
-        {
-            // Make sure to add the '□' character to represent missing characters
-            // This will be rendered in place of characters that do not exist
-            var currentList = glyphs.ToList();
-
-            if (currentList.Contains(InvalidCharacter) is false)
-            {
-                currentList.Add(InvalidCharacter);
-            }
-
-            this.glyphChars = currentList.ToArray();
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
