@@ -132,11 +132,8 @@ namespace Velaptor.Factories
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
-            var freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
             var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
-            var fontStatsService = IoC.Container.GetInstance<IFontStatsService>();
             var imageService = IoC.Container.GetInstance<IImageService>();
             var path = IoC.Container.GetInstance<IPath>();
             var fontFactory = IoC.Container.GetInstance<IFontFactory>();
@@ -144,10 +141,7 @@ namespace Velaptor.Factories
             fontLoader = new FontLoader(
                 glInvoker,
                 glInvokerExtensions,
-                freeTypeInvoker,
-                freeTypeExtensions,
                 fontAtlasService,
-                fontStatsService,
                 fontPathResolver,
                 imageService,
                 fontFactory,

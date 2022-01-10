@@ -1,4 +1,4 @@
-// <copyright file="FontLoader.cs" company="KinsonDigital">
+﻿// <copyright file="FontLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -27,21 +27,11 @@ namespace Velaptor.Content.Fonts
         private readonly ConcurrentDictionary<string, IFont> fonts = new ();
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
-        private readonly IFreeTypeInvoker freeTypeInvoker;
-        private readonly IFreeTypeExtensions freeTypeExtensions;
         private readonly IFontAtlasService fontAtlasService;
-        private readonly IFontStatsService fontStatsService;
         private readonly IPathResolver fontPathResolver;
         private readonly IFontFactory fontFactory;
         private readonly IPath path;
         private readonly IImageService imageService;
-        private readonly char[] glyphChars =
-        {
-            'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-            'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-            '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
-            '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
-        };
         private bool isDisposed;
 
         /// <summary>
@@ -52,15 +42,10 @@ namespace Velaptor.Content.Fonts
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            this.freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
-            this.freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
             this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
-            this.fontStatsService = IoC.Container.GetInstance<IFontStatsService>();
             this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
-            this.path = IoC.Container.GetInstance<IPath>();
             this.imageService = IoC.Container.GetInstance<IImageService>();
-
-            this.fontAtlasService.SetAvailableCharacters(this.glyphChars);
+            this.path = IoC.Container.GetInstance<IPath>();
         }
 
         /// <summary>
@@ -80,10 +65,7 @@ namespace Velaptor.Content.Fonts
             // TODO: Inject TextureCache
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IFreeTypeInvoker freeTypeInvoker,
-            IFreeTypeExtensions freeTypeExtensions,
             IFontAtlasService fontAtlasService,
-            IFontStatsService fontStatsService,
             IPathResolver fontPathResolver,
             IImageService imageService,
             IFontFactory fontFactory,
@@ -91,10 +73,7 @@ namespace Velaptor.Content.Fonts
         {
             this.gl = gl;
             this.glExtensions = glExtensions;
-            this.freeTypeInvoker = freeTypeInvoker;
-            this.freeTypeExtensions = freeTypeExtensions;
             this.fontAtlasService = fontAtlasService;
-            this.fontStatsService = fontStatsService;
             this.fontPathResolver = fontPathResolver;
             this.imageService = imageService;
             this.fontFactory = fontFactory;
@@ -147,20 +126,9 @@ namespace Velaptor.Content.Fonts
                 // TODO: this will be removed.  This is going to be returned by TextureCache class
                 var fontAtlasTexture = new Texture(this.gl, this.glExtensions, name, filePath, fontAtlasImage) { IsPooled = true };
 
-                // TODO: When storing the font texture atlas into the texture cache, the key needs to be
+                // TODO: When storing the font texture atlas into the texture cache, the key needs to be a full font file path with metadata
 
-                return new Font(
-                    fontAtlasTexture,
-                    this.freeTypeInvoker,
-                    this.freeTypeExtensions,
-                    this.fontStatsService,
-                    name,
-                    filePath,
-                    size,
-                    atlasData)
-                {
-                    IsPooled = true,
-                };
+                return this.fontFactory.Create(fontAtlasTexture, name, filePath, size, atlasData);
             });
         }
 
