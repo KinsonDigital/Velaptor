@@ -59,25 +59,70 @@ namespace Velaptor.Content.Caching
         /// <inheritdoc/>
         public int TotalCachedItems => this.textures.Count;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets a cached texture that matches the given <paramref name="filePath"/>.
+        /// </summary>
+        /// <param name="filePath">The texture(.png) or font(.ttf) file to cache as a texture.</param>
+        /// <returns>The cached item.</returns>
+        /// <remarks>
+        /// <para>If the item does not already exist in the cached, it is created then cached.</para>
+        /// <para>If the item does already exist in the cache, then that cached item is returned.</para>
+        /// <para>If the item is a font(.ttf) file, a texture atlas is created of all the font glyphs and cached.</para>
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="filePath"/> is null or empty.</exception>
+        /// <exception cref="CachingMetaDataException">
+        /// Thrown for the following reasons:
+        /// <list type="bullet">
+        ///     <item>
+        ///         Thrown if the given <paramref name="filePath"/> is a font(.ttf) file and no metadata exists.
+        ///     </item>
+        ///
+        ///     <item>
+        ///         Thrown if the given <paramref name="filePath"/> is a font(.ttf) file and the metadata is invalid.
+        ///     </item>
+        /// </list>
+        /// </exception>
+        /// <exception cref="LoadTextureException">
+        ///     Thrown if the given <paramref name="filePath"/> to the content file does not exist.
+        /// </exception>
+        /// <exception cref="CachingException">
+        ///     Thrown if the given <paramref name="filePath"/> to the content is not a
+        ///     texture(.png) or font(.ttf) file.
+        /// </exception>
         public ITexture GetItem(string filePath)
         {
-            // TODO: Throw exception here is null or empty
+            if (string.IsNullOrEmpty(filePath))
+            {
+                throw new ArgumentNullException(nameof(filePath), "The parameter must not be null or empty");
+            }
 
             var (invalid, fontSize, containsMetaData, metaData) = ParseMetaData(filePath);
 
-            if (invalid && containsMetaData)
+            // If the required metadata is missing
+            if (invalid)
             {
-                var exceptionMsg = "Font metadata required when caching fonts.";
-                exceptionMsg += string.IsNullOrEmpty(metaData)
-                    ? string.Empty
-                    : $"\nCurrent metadata: '{metaData}'";
-                exceptionMsg += "Required metadata syntax: '|size:<number-here>'";
+                if (containsMetaData)
+                {
+                    var exceptionMsg = "Font metadata required when caching fonts.";
+                    exceptionMsg += string.IsNullOrEmpty(metaData)
+                        ? string.Empty
+                        : $"\nCurrent metadata: '{metaData}'";
+                    exceptionMsg += "Required metadata syntax: '|size:<number-here>'";
 
-                throw new CachingMetaDataException(exceptionMsg);
+                    throw new CachingMetaDataException(exceptionMsg);
+                }
+                else
+                {
+                    var exceptionMsg = "Font metadata required when caching fonts.";
+                    exceptionMsg += "Required metadata syntax: '|size:<number-here>'";
+                    exceptionMsg += "\nIf the '|' character is missing, it signifies that no metadata exists.";
+
+                    throw new CachingMetaDataException(exceptionMsg);
+                }
             }
 
-            filePath = containsMetaData && !invalid
+            // If the required meta data is all or partly there but invalid
+            filePath = containsMetaData
                 ? filePath.Replace(metaData, string.Empty)
                 : filePath;
 
@@ -152,6 +197,72 @@ namespace Velaptor.Content.Caching
             GC.SuppressFinalize(this);
         }
 
+                /// <summary>
+        /// Parses the given value for font meta data and returns a result.
+        /// </summary>
+        /// <param name="value">The value to parse.</param>
+        /// <returns>A number of values representing the parsing results.</returns>
+        private static (bool invalid, int fontSize, bool containsMetaData, string metaData) ParseMetaData(string value)
+        {
+            const int noFontSize = -1;
+            const bool isValid = false;
+            const bool isInvalid = true;
+            const string emptyMetaData = "";
+            var pipeIndex = value.IndexOf('|');
+            var pipeSections = value.Split('|');
+            var filePath = pipeSections[0];
+            var varAndValue = pipeSections.Length >= 2 ? pipeSections[1] : string.Empty;
+
+            var isFontFile = filePath.Contains(FontFileExtension);
+
+            // If no pipe exists, then we must assume there is no metadata
+            if ((pipeIndex <= -1 || value.Length < 3) && isFontFile)
+            {
+                return (isInvalid, noFontSize, false, emptyMetaData);
+            }
+
+            // If not a font file, then metadata is not processed
+            if (isFontFile is false)
+            {
+                return (isValid, noFontSize, false, emptyMetaData);
+            }
+
+            var consecutivePipes = value.Contains("||");
+            var moreThanTwoPipesAndEndsWithPipe = value.Count(c => c == '|') >= 2 && value.EndsWith('|');
+            var endsWithSinglePipe = value.EndsWith('|');
+
+            if (consecutivePipes || moreThanTwoPipesAndEndsWithPipe || endsWithSinglePipe)
+            {
+                return (isInvalid, noFontSize, true, emptyMetaData);
+            }
+
+            var colonIndex = varAndValue.IndexOf(':');
+
+            if (colonIndex == -1 || varAndValue.StartsWith(':') || varAndValue.EndsWith(':'))
+            {
+                return (isInvalid, noFontSize, true, $"|{varAndValue}");
+            }
+
+            if (varAndValue.Contains("::"))
+            {
+                return (isInvalid, noFontSize, true, emptyMetaData);
+            }
+
+            var sizeIndex = varAndValue.IndexOf("size", StringComparison.Ordinal);
+            var missingSizeVar = sizeIndex == -1 ||
+                                      sizeIndex + "size".Length - 1 > colonIndex;
+
+            var sizeAndValueSections = varAndValue.Split(':');
+            var parseFailure = int.TryParse(sizeAndValueSections[1], out var size) is false;
+
+            if (missingSizeVar || parseFailure)
+            {
+                return (isInvalid, noFontSize, true, $"|{varAndValue}");
+            }
+
+            return (isValid, size, true, $"|{varAndValue}");
+        }
+
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
@@ -173,60 +284,6 @@ namespace Velaptor.Content.Caching
             }
 
             this.isDisposed = true;
-        }
-
-        /// <summary>
-        /// Parses the given value for font meta data and returns a result.
-        /// </summary>
-        /// <param name="value">The value to parse.</param>
-        /// <returns>A number of values representing the parsing results.</returns>
-        private (bool invalid, int fontSize, bool containsMetaData, string metaData) ParseMetaData(string value)
-        {
-            var pipeIndex = value.IndexOf('|');
-
-            // If no pipe exists, then we must assume there is no metadata
-            if (pipeIndex <= -1 || value.Length < 3)
-            {
-                return (true, -1, false, string.Empty);
-            }
-
-            var pipeSections = value.Split('|');
-            var varAndValue = pipeSections[1];
-
-            var consecutivePipes = value.Contains("||");
-            var moreThanTwoPipesAndEndsWithPipe = value.Count(c => c == '|') >= 2 && value.EndsWith('|');
-            var endsWithSinglePipe = value.EndsWith('|');
-
-            if (consecutivePipes || moreThanTwoPipesAndEndsWithPipe || endsWithSinglePipe)
-            {
-                return (true, -1, true, string.Empty);
-            }
-
-            var colonIndex = varAndValue.IndexOf(':');
-
-            if (colonIndex == -1 || varAndValue.StartsWith(':') || varAndValue.EndsWith(':'))
-            {
-                return (true, -1, true, $"|{varAndValue}");
-            }
-
-            if (varAndValue.Contains("::"))
-            {
-                return (true, -1, true, string.Empty);
-            }
-
-            var sizeIndex = varAndValue.IndexOf("size", StringComparison.Ordinal);
-            var missingSizeVar = sizeIndex == -1 ||
-                                      sizeIndex + "size".Length - 1 > colonIndex;
-
-            var sizeAndValueSections = varAndValue.Split(':');
-            var parseFailure = int.TryParse(sizeAndValueSections[1], out var size) is false;
-
-            if (missingSizeVar || parseFailure)
-            {
-                return (true, -1, true, $"|{varAndValue}");
-            }
-
-            return (false, size, true, $"|{varAndValue}");
         }
     }
 }

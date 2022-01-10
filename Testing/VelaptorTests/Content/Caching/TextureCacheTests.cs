@@ -81,21 +81,45 @@ namespace VelaptorTests.Content.Caching
         }
 
         [Theory]
-        [InlineData("|size22", "\nCurrent metadata: '|size22'")]
-        [InlineData("size:22|", "")]
-        [InlineData("|size:NAN", "\nCurrent metadata: '|size:NAN'")]
-        [InlineData("||size:22", "")]
-        [InlineData("|size:22|", "")]
-        public void GetItem_WithMissingOrInvalidFontPathMetaData_ThrowsException(string fontMetaData, string expectedMetaData)
+        [InlineData("size22")]
+        public void GetItem_WithMissingFontPathMetaData_ThrowsException(string fontMetaData)
         {
             // Arrange
             const string dirPath = @"C:\content\fonts\";
             const string contentName = "TimesNewRoman-Regular";
-            const string fontExtension = ".ttf";
-            var fontFilePath = $@"{dirPath}{contentName}{fontExtension}{fontMetaData}";
+            var fontFilePath = $@"{dirPath}{contentName}{FontExtension}";
+            var fontFilePathWithMetaData = $@"{fontFilePath}{fontMetaData}";
 
             var expected = "Font metadata required when caching fonts.";
-            expected += expectedMetaData;
+            expected += "Required metadata syntax: '|size:<number-here>'";
+            expected += "\nIf the '|' character is missing, it signifies that no metadata exists.";
+
+            this.mockPath.Setup(m => m.GetExtension(fontFilePath)).Returns($"{FontExtension}size22");
+            var cache = CreateCache();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
+            {
+                cache.GetItem(fontFilePathWithMetaData);
+            }, expected);
+        }
+
+        [Theory]
+        [InlineData("|size22", FontExtension, "\nCurrent metadata: '|size22'")]
+        [InlineData("size:22|", FontExtension, "")]
+        [InlineData("|size:NAN", FontExtension, "\nCurrent metadata: '|size:NAN'")]
+        [InlineData("||size:22", FontExtension, "")]
+        [InlineData("|size:22|", FontExtension, "")]
+        public void GetItem_WithInvalidFontPathMetaData_ThrowsException(string fontMetaData, string extension, string exceptionMsg)
+        {
+            // Arrange
+            const string dirPath = @"C:\content\fonts\";
+            const string contentName = "TimesNewRoman-Regular";
+            var fontFilePath = $@"{dirPath}{contentName}{extension}";
+            var fontFilePathWithMetaData = $@"{fontFilePath}{fontMetaData}";
+
+            var expected = "Font metadata required when caching fonts.";
+            expected += exceptionMsg;
             expected += "Required metadata syntax: '|size:<number-here>'";
 
             var cache = CreateCache();
@@ -103,7 +127,7 @@ namespace VelaptorTests.Content.Caching
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
             {
-                cache.GetItem(fontFilePath);
+                cache.GetItem(fontFilePathWithMetaData);
             }, expected);
         }
 
