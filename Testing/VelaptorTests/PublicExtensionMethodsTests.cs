@@ -1,4 +1,4 @@
-// <copyright file="PublicExtensionMethodsTests.cs" company="KinsonDigital">
+﻿// <copyright file="PublicExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -535,6 +535,19 @@ namespace VelaptorTests
         {
             // Act
             var actual = value.OnlyContainsLetters();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("HelloWorld", false)]
+        [InlineData("Hello World", true)]
+        [InlineData("Hello-World", true)]
+        public void DoesNotOnlyContainsLetters_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
+        {
+            // Act
+            var actual = value.DoesNotOnlyContainsLetters();
 
             // Assert
             Assert.Equal(expected, actual);

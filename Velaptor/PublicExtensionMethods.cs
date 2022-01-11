@@ -1,4 +1,4 @@
-// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
+﻿// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -556,5 +556,12 @@ namespace Velaptor
         /// <param name="value">The string to check.</param>
         /// <returns><c>true</c> if the string only contains letters.</returns>
         public static bool OnlyContainsLetters(this string value) => value.All(character => !character.IsNotLetter());
+
+        /// <summary>
+        /// Returns a value indicating whether this string does not only contains letters.
+        /// </summary>
+        /// <param name="value">The string to check.</param>
+        /// <returns><c>true</c> if the string contains other characters besides letters.</returns>
+        public static bool DoesNotOnlyContainsLetters(this string value) => !value.OnlyContainsLetters();
     }
 }
