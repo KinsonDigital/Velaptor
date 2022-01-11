@@ -510,6 +510,22 @@ namespace VelaptorTests
             // Assert
             Assert.Equal(expected, actual);
         }
+
+        [Theory]
+        [InlineData("hello world", 'w', false)]
+        [InlineData("hello", 'w', true)]
+        [InlineData("", 'w', true)]
+        public void DoestNotContain_WhenUsingACharParam_ReturnsCorrectResult(
+            string stringToSearchIn,
+            char valueToSearchFor,
+            bool expected)
+        {
+            // Act
+            var actual = stringToSearchIn.DoesNotContain(valueToSearchFor);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
         #endregion
     }
 }

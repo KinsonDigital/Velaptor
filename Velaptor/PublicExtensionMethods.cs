@@ -531,5 +531,23 @@ namespace Velaptor
 
             return !stringToSearchIn.Contains(value);
         }
+
+        /// <summary>
+        /// Returns a value indicating whether a specified character does not occur within this string.
+        /// </summary>
+        /// <param name="stringToSearchIn">The string to search that might or might contain the <paramref name="value"/>.</param>
+        /// <param name="value">The character to seek.</param>
+        /// <returns>
+        ///     <c>true</c> if the value parameter does not occur within this string.
+        /// </returns>
+        public static bool DoesNotContain(this string stringToSearchIn, char value)
+        {
+            if (string.IsNullOrEmpty(stringToSearchIn))
+            {
+                return true;
+            }
+
+            return !stringToSearchIn.Contains(value);
+        }
     }
 }
