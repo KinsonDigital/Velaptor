@@ -526,6 +526,19 @@ namespace VelaptorTests
             // Assert
             Assert.Equal(expected, actual);
         }
+
+        [Theory]
+        [InlineData("HelloWorld", true)]
+        [InlineData("Hello World", false)]
+        [InlineData("Hello-World", false)]
+        public void OnlyContainsLetters_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
+        {
+            // Act
+            var actual = value.OnlyContainsLetters();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
         #endregion
     }
 }

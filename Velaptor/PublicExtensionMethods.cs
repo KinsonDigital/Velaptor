@@ -549,5 +549,12 @@ namespace Velaptor
 
             return !stringToSearchIn.Contains(value);
         }
+
+        /// <summary>
+        /// Returns a value indicating whether this string only contains letters.
+        /// </summary>
+        /// <param name="value">The string to check.</param>
+        /// <returns><c>true</c> if the string only contains letters.</returns>
+        public static bool OnlyContainsLetters(this string value) => value.All(character => !character.IsNotLetter());
     }
 }
