@@ -1,4 +1,4 @@
-﻿// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
+// <copyright file="PublicExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -512,6 +512,24 @@ namespace Velaptor
             }
 
             return path.Contains(':') is false;
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether a specified substring does not occur within this string.
+        /// </summary>
+        /// <param name="stringToSearchIn">The string to search that might or might contain the <paramref name="value"/>.</param>
+        /// <param name="value">The string to seek.</param>
+        /// <returns>
+        ///     <c>true</c> if the value parameter does not occur within this string.
+        /// </returns>
+        public static bool DoesNotContain(this string stringToSearchIn, string value)
+        {
+            if (string.IsNullOrEmpty(stringToSearchIn) is false && string.IsNullOrEmpty(value))
+            {
+                return true;
+            }
+
+            return !stringToSearchIn.Contains(value);
         }
     }
 }

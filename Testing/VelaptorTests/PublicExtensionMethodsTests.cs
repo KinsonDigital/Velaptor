@@ -1,4 +1,4 @@
-﻿// <copyright file="PublicExtensionMethodsTests.cs" company="KinsonDigital">
+// <copyright file="PublicExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -488,6 +488,24 @@ namespace VelaptorTests
         {
             // Act
             var actual = path.IsUNCPath();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("hello world", "world", false)]
+        [InlineData("hello", "world", true)]
+        [InlineData("hello", "", true)]
+        [InlineData("", "world", true)]
+        [InlineData("", "", false)]
+        public void DoestNotContain_WhenUsingAStringParam_ReturnsCorrectResult(
+            string stringToSearchIn,
+            string valueToSearchFor,
+            bool expected)
+        {
+            // Act
+            var actual = stringToSearchIn.DoesNotContain(valueToSearchFor);
 
             // Assert
             Assert.Equal(expected, actual);
