@@ -39,7 +39,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.mainAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
+            this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
             this.frames = this.mainAtlas.GetFrames("circle");
 
             base.LoadContent();

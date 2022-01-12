@@ -4,9 +4,12 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.IO;
     using Velaptor.Content.Exceptions;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Loads content.
@@ -39,59 +42,44 @@ namespace Velaptor.Content
         }
 
         /// <inheritdoc/>
-        public T Load<T>(string name)
-            where T : class, IContent
-        {
-            if (typeof(T) == typeof(ITexture))
-            {
-                return (T)this.textureLoader.Load(name);
-            }
-
-            if (typeof(T) == typeof(ISound))
-            {
-                return (T)this.soundLoader.Load(Path.GetFileNameWithoutExtension(name));
-            }
-
-            if (typeof(T) == typeof(IAtlasData))
-            {
-                return (T)this.atlasLoader.Load(name);
-            }
-
-            if (typeof(T) == typeof(IFont))
-            {
-                return (T)this.fontLoader.Load(Path.GetFileNameWithoutExtension(name));
-            }
-
-            throw new UnknownContentException($"Content of type '{typeof(T)}' invalid.  Content types must inherit from interface '{nameof(IContent)}'.");
-        }
+        public ITexture LoadTexture(string nameOrFilePath) => this.textureLoader.Load(nameOrFilePath);
 
         /// <inheritdoc/>
-        public void Unload<T>(string name)
+        public ISound LoadSound(string nameOrFilePath) => this.soundLoader.Load(Path.GetFileNameWithoutExtension(nameOrFilePath));
+
+        /// <inheritdoc/>
+        public IAtlasData LoadAtlas(string nameOrFilePath) => this.atlasLoader.Load(nameOrFilePath);
+
+        /// <inheritdoc/>
+        public IFont LoadFont(string nameOrFilePath, int size) => this.fontLoader.Load($"{nameOrFilePath}|size:{size}");
+
+        /// <inheritdoc/>
+        public void Unload<T>(string nameOrFilePath)
             where T : class, IContent
         {
-            name = Path.GetFileNameWithoutExtension(name);
+            nameOrFilePath = Path.GetFileNameWithoutExtension(nameOrFilePath);
 
             if (typeof(T) == typeof(ITexture))
             {
-                this.textureLoader.Unload(name);
+                this.textureLoader.Unload(nameOrFilePath);
                 return;
             }
 
             if (typeof(T) == typeof(IAtlasData))
             {
-                this.atlasLoader.Unload(name);
+                this.atlasLoader.Unload(nameOrFilePath);
                 return;
             }
 
             if (typeof(T) == typeof(ISound))
             {
-                this.soundLoader.Unload(name);
+                this.soundLoader.Unload(nameOrFilePath);
                 return;
             }
 
             if (typeof(T) == typeof(IFont))
             {
-                this.fontLoader.Unload(name);
+                this.fontLoader.Unload(nameOrFilePath);
                 return;
             }
 

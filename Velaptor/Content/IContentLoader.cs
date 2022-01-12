@@ -12,20 +12,40 @@ namespace Velaptor.Content
     public interface IContentLoader : IDisposable
     {
         /// <summary>
-        /// Loads content with the given <paramref name="name"/>.
+        /// Loads texture content using the given <paramref name="nameOrFilePath"/>.
         /// </summary>
-        /// <typeparam name="T">The type of content to load.</typeparam>
-        /// <param name="name">The name of the content to load.</param>
-        /// <returns>A texture to render.</returns>
-        T Load<T>(string name)
-            where T : class, IContent;
+        /// <param name="nameOrFilePath">The name content in the application content directory or direct file path to the content.</param>
+        /// <returns>The loaded texture content.</returns>
+        ITexture LoadTexture(string nameOrFilePath);
 
         /// <summary>
-        /// Unloads content with the given <paramref name="name"/>.
+        /// Loads sound content using the given <paramref name="nameOrFilePath"/>.
+        /// </summary>
+        /// <param name="nameOrFilePath">The name content in the application content directory or direct file path to the content.</param>
+        /// <returns>The loaded sound content.</returns>
+        ISound LoadSound(string nameOrFilePath);
+
+        /// <summary>
+        /// Loads the texture atlas data using the given <paramref name="nameOrFilePath"/>.
+        /// </summary>
+        /// <param name="nameOrFilePath">The name content in the application content directory or direct file path to the content.</param>
+        /// <returns>The loaded texture atlas data.</returns>
+        IAtlasData LoadAtlas(string nameOrFilePath);
+
+        /// <summary>
+        /// Loads font content using the given <paramref name="nameOrFilePath"/> and <paramref name="size"/>.
+        /// </summary>
+        /// <param name="nameOrFilePath">The name content in the application content directory or direct file path to the content.</param>
+        /// <param name="size">The size of the font.</param>
+        /// <returns>The loaded font content.</returns>
+        IFont LoadFont(string nameOrFilePath, int size);
+
+        /// <summary>
+        /// Unloads content with the given <paramref name="nameOrFilePath"/>.
         /// </summary>
         /// <typeparam name="T">The type of content to unload.</typeparam>
-        /// <param name="name">The name of the content to unload.</param>
-        void Unload<T>(string name)
+        /// <param name="nameOrFilePath">The name content in the application content directory or direct file path to the content.</param>
+        void Unload<T>(string nameOrFilePath)
             where T : class, IContent;
     }
 }

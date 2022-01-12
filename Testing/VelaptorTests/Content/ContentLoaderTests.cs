@@ -48,7 +48,7 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.Load<ITexture>(TextureName);
+            loader.LoadTexture(TextureName);
 
             // Assert
             this.mockTextureLoader.Verify(m => m.Load(TextureName), Times.Once());
@@ -61,7 +61,7 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.Load<ISound>(SoundName);
+            loader.LoadSound(SoundName);
 
             // Assert
             this.mockSoundLoader.Verify(m => m.Load(SoundName), Times.Once());
@@ -74,7 +74,7 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.Load<IAtlasData>(AtlasName);
+            loader.LoadAtlas(AtlasName);
 
             // Assert
             this.mockAtlasLoader.Verify(m => m.Load(AtlasName), Times.Once());
@@ -87,23 +87,10 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.Load<IFont>(FontName);
+            loader.LoadFont(FontName, 12);
 
             // Assert
             this.mockFontLoader.Verify(m => m.Load(FontName), Times.Once());
-        }
-
-        [Fact]
-        public void Load_WhenLoadingUnknownContent_ThrowsException()
-        {
-            // Arrange
-            var loader = CreateContentLoader();
-
-            // Act & Assert
-            Assert.ThrowsWithMessage<UnknownContentException>(() =>
-            {
-                loader.Load<IInvalidContent>("test-texture");
-            }, "Content of type 'VelaptorTests.Fakes.IInvalidContent' invalid.  Content types must inherit from interface 'IContent'.");
         }
 
         [Fact]
@@ -111,7 +98,7 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var loader = CreateContentLoader();
-            loader.Load<ITexture>(TextureName);
+            loader.LoadTexture(TextureName);
 
             // Act
             loader.Unload<ITexture>(TextureName);
@@ -125,7 +112,7 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var loader = CreateContentLoader();
-            loader.Load<ISound>(SoundName);
+            loader.LoadSound(SoundName);
 
             // Act
             loader.Unload<ISound>(SoundName);
@@ -139,7 +126,7 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var loader = CreateContentLoader();
-            loader.Load<IAtlasData>(AtlasName);
+            loader.LoadAtlas(AtlasName);
 
             // Act
             loader.Unload<IAtlasData>(AtlasName);
@@ -153,7 +140,7 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var loader = CreateContentLoader();
-            loader.Load<IFont>(FontName);
+            loader.LoadFont(FontName, 12);
 
             // Act
             loader.Unload<IFont>(FontName);

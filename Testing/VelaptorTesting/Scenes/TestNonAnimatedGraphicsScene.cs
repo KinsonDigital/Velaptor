@@ -52,7 +52,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.font = ContentLoader.Load<IFont>(@"times");
+            this.font = ContentLoader.LoadFont(@"times", 12);
             var textLines = new List<string>
             {
                     "Use arrow keys to flip the texture horizontally and vertically.",
@@ -65,7 +65,7 @@ namespace VelaptorTesting.Scenes
 
             this.textSize = this.font.Measure(this.instructions);
 
-            this.mainAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
+            this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
             this.octagonData = this.mainAtlas.GetFrame("octagon-flip");
 
             base.LoadContent();

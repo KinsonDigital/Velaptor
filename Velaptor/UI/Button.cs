@@ -104,7 +104,7 @@ namespace Velaptor.UI
             // TODO: Once the label can be injected into the constructor, setup caching for the
             // size property so that way it can be set before the LoadContent() method is called
 
-            this.texture = this.contentLoader.Load<ITexture>(FaceTextureName);
+            this.texture = this.contentLoader.LoadTexture(FaceTextureName);
             this.label = new Label(this.contentLoader);
             this.label.LoadContent();
             this.label.Text = this.cachedText;
