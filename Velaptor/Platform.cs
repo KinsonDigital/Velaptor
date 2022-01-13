@@ -15,13 +15,19 @@ namespace Velaptor
     [ExcludeFromCodeCoverage]
     public class Platform : IPlatform
     {
-        private static readonly OSPlatform[] Platforms = new OSPlatform[]
+        private static readonly OSPlatform[] Platforms =
         {
             OSPlatform.Windows,
             OSPlatform.OSX,
             OSPlatform.Linux,
             OSPlatform.FreeBSD,
         };
+
+        /// <inheritdoc/>
+        public bool Is64BitProcess => Environment.Is64BitProcess;
+
+        /// <inheritdoc/>
+        public bool Is32BitProcess => !Is64BitProcess;
 
         /// <inheritdoc/>
         public OSPlatform CurrentPlatform
