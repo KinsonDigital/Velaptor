@@ -35,17 +35,23 @@ namespace Velaptor.Content.Fonts
         /// </remarks>
         public FontStyle Style;
 
+        /// <summary>
+        /// The source of where the font was loaded.
+        /// </summary>
+        public FontSource Source;
+
         /// <inheritdoc/>
         public bool Equals(FontStats other) =>
             this.FontFilePath == other.FontFilePath &&
             this.FamilyName == other.FamilyName &&
-            this.Style == other.Style;
+            this.Style == other.Style &&
+            this.Source == other.Source;
 
         /// <inheritdoc/>
         public override bool Equals(object? obj) => obj is FontStats other && Equals(other);
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
-        public override int GetHashCode() => HashCode.Combine(this.FontFilePath, this.FamilyName, (int)this.Style);
+        public override int GetHashCode() => HashCode.Combine(this.FontFilePath, this.FamilyName, (int)this.Style, this.Source);
     }
 }

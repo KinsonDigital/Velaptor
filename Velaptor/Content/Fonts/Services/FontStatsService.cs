@@ -8,37 +8,41 @@ namespace Velaptor.Content.Fonts.Services
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Linq;
-    using Velaptor.NativeInterop.FreeType;
 
     // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc cref="IFontStatsService"/>
     internal class FontStatsService : IFontStatsService
     {
+        private const string FontFileExtension = ".ttf";
         private readonly Dictionary<string, FontStats> contentFontStatsCache = new ();
         private readonly Dictionary<string, FontStats> systemFontStatsCache = new ();
         private readonly IFontService fontService;
-        private readonly IPathResolver systemFontPathResolver;
-        private readonly IPathResolver contentPathResolver;
+        private readonly IPathResolver sysFontPathResolver;
+        private readonly IPathResolver contentFontPathResolver;
         private readonly IDirectory directory;
+        private readonly IPath path;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontStatsService"/> class.
         /// </summary>
         /// <param name="fontService">Provides extensions/helpers to free type library functionality.</param>
-        /// <param name="contentPathResolver">Resolves paths to the application's content directory.</param>
-        /// <param name="systemFontPathResolver">Resolves paths to the systems font directory.</param>
+        /// <param name="contentFontPathResolver">Resolves paths to the application's content directory.</param>
+        /// <param name="sysFontPathResolver">Resolves paths to the systems font directory.</param>
         /// <param name="directory">Performs directory operations.</param>
+        /// <param name="path">Processes directory and file paths.</param>
         public FontStatsService(
             IFontService fontService,
-            IPathResolver contentPathResolver,
-            IPathResolver systemFontPathResolver,
-            IDirectory directory)
+            IPathResolver contentFontPathResolver,
+            IPathResolver sysFontPathResolver,
+            IDirectory directory,
+            IPath path)
         {
             this.fontService = fontService;
-            this.contentPathResolver = contentPathResolver;
-            this.systemFontPathResolver = systemFontPathResolver;
+            this.contentFontPathResolver = contentFontPathResolver;
+            this.sysFontPathResolver = sysFontPathResolver;
             this.directory = directory;
+            this.path = path;
         }
 
         /// <inheritdoc/>
@@ -54,16 +58,17 @@ namespace Velaptor.Content.Fonts.Services
                 return foundFamilyItems;
             }
 
-            var fontFiles = this.directory.GetFiles(this.contentPathResolver.ResolveDirPath(), "*.ttf");
+            var fontFiles = this.directory.GetFiles(this.contentFontPathResolver.ResolveDirPath(), $"*{FontFileExtension}");
 
             var results =
                 (from filePath in fontFiles
-                    where this.fontService.GetFamilyName(filePath, true) == fontFamilyName
+                    where this.fontService.GetFamilyName(filePath) == fontFamilyName
                     select new FontStats()
                     {
                         FontFilePath = filePath,
                         FamilyName = fontFamilyName,
-                        Style = this.fontService.GetFontStyle(filePath, true),
+                        Style = this.fontService.GetFontStyle(filePath),
+                        Source = GetFontSource(filePath),
                     }).ToArray();
 
             foreach (var result in results)
@@ -89,16 +94,17 @@ namespace Velaptor.Content.Fonts.Services
                 return foundFamilyItems;
             }
 
-            var fontFiles = this.directory.GetFiles(this.systemFontPathResolver.ResolveDirPath(), "*.ttf");
+            var fontFiles = this.directory.GetFiles(this.sysFontPathResolver.ResolveDirPath(), $"*{FontFileExtension}");
 
             var results =
                 (from filePath in fontFiles
-                    where this.fontService.GetFamilyName(filePath, true) == fontFamilyName
+                    where this.fontService.GetFamilyName(filePath) == fontFamilyName
                     select new FontStats()
                     {
                         FontFilePath = filePath,
                         FamilyName = fontFamilyName,
-                        Style = this.fontService.GetFontStyle(filePath, true),
+                        Style = this.fontService.GetFontStyle(filePath),
+                        Source = GetFontSource(filePath),
                     }).ToArray();
 
             foreach (var result in results)
@@ -109,6 +115,28 @@ namespace Velaptor.Content.Fonts.Services
             return (from s in this.systemFontStatsCache.Values
                 where s.FamilyName == fontFamilyName
                 select s).ToArray();
+        }
+
+        /// <summary>
+        /// Returns the source of the font using the given <paramref name="fileOrDirPath"/>.
+        /// </summary>
+        /// <param name="fileOrDirPath">The directory or file path of the font.</param>
+        /// <returns>The source of the font.</returns>
+        private FontSource GetFontSource(string fileOrDirPath)
+        {
+            var contentFontDirPath = this.contentFontPathResolver.ResolveDirPath().ToLower();
+            var sysFontDirPath = this.sysFontPathResolver.ResolveDirPath().ToLower();
+
+            fileOrDirPath = this.path.GetDirectoryName(fileOrDirPath).ToLower();
+
+            if (fileOrDirPath != contentFontDirPath && fileOrDirPath != sysFontDirPath)
+            {
+                return FontSource.Unknown;
+            }
+
+            return fileOrDirPath == contentFontDirPath
+                ? FontSource.AppContent
+                : FontSource.System;
         }
     }
 }

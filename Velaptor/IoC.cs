@@ -128,7 +128,8 @@ namespace Velaptor
                     IoCContainer.GetInstance<IFontService>(),
                     PathResolverFactory.CreateFontPathResolver(),
                     PathResolverFactory.CreateSystemFontPathResolver(),
-                    IoCContainer.GetInstance<IDirectory>()), Lifestyle.Singleton);
+                    IoCContainer.GetInstance<IDirectory>(),
+                    IoCContainer.GetInstance<IPath>()), Lifestyle.Singleton);
 
             IoCContainer.Register<ITaskService, TaskService>();
             IoCContainer.SuppressDisposableTransientWarning<ITaskService>();

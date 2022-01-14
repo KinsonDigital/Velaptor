@@ -10,7 +10,6 @@ namespace VelaptorTests.Content.Fonts.Services
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
     using Velaptor.Content.Fonts.Services;
-    using Velaptor.NativeInterop.FreeType;
     using Xunit;
 
     /// <summary>
@@ -28,6 +27,7 @@ namespace VelaptorTests.Content.Fonts.Services
         private readonly Mock<IPathResolver> mockSystemFontPathResolver;
         private readonly Mock<IPathResolver> mockContentPathResolver;
         private readonly Mock<IDirectory> mockDirectory;
+        private readonly Mock<IPath> mockPath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontStatsServiceTests"/> class.
@@ -49,6 +49,8 @@ namespace VelaptorTests.Content.Fonts.Services
                 .Returns(DirNameForSystemPath);
 
             this.mockDirectory = new Mock<IDirectory>();
+
+            this.mockPath = new Mock<IPath>();
         }
 
         #region Method Tests
@@ -61,6 +63,11 @@ namespace VelaptorTests.Content.Fonts.Services
             var fontTimesBold = BuildContentFontPath("TimesNewRoman-Bold.ttf");
             var fontTimesItalic = BuildContentFontPath("TimesNewRoman-Italic.ttf");
             var fontTimesBoldItalic = BuildContentFontPath("TimesNewRoman-BoldItalic.ttf");
+
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesRegular)).Returns(this.fullContentFontDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBold)).Returns(this.fullContentFontDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesItalic)).Returns(this.fullContentFontDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBoldItalic)).Returns(this.fullContentFontDirPath);
 
             var fontFiles = new[]
             {
@@ -82,16 +89,16 @@ namespace VelaptorTests.Content.Fonts.Services
 
             var expected = new[]
             {
-                new FontStats { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular },
-                new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold },
-                new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic },
-                new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic },
+                new FontStats { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular, Source = FontSource.AppContent },
+                new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold, Source = FontSource.AppContent },
+                new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic, Source = FontSource.AppContent },
+                new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic, Source = FontSource.AppContent },
             };
 
             var service = CreateService();
 
             // Act
-            var unused = service.GetContentStatsForFontFamily(fontFamily);
+            service.GetContentStatsForFontFamily(fontFamily); // Executed 2 times to check for caching
             var actual = service.GetContentStatsForFontFamily(fontFamily);
 
             // Assert
@@ -107,6 +114,11 @@ namespace VelaptorTests.Content.Fonts.Services
             var fontTimesBold = BuildSystemFontPath("TimesNewRoman-Bold.ttf");
             var fontTimesItalic = BuildSystemFontPath("TimesNewRoman-Italic.ttf");
             var fontTimesBoldItalic = BuildSystemFontPath("TimesNewRoman-BoldItalic.ttf");
+
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesRegular)).Returns(this.fullSystemFontDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBold)).Returns(this.fullSystemFontDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesItalic)).Returns(this.fullSystemFontDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBoldItalic)).Returns(this.fullSystemFontDirPath);
 
             var fontFiles = new[]
             {
@@ -128,16 +140,67 @@ namespace VelaptorTests.Content.Fonts.Services
 
             var expected = new[]
             {
-                new FontStats { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular },
-                new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold },
-                new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic },
-                new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic },
+                new FontStats { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular, Source = FontSource.System },
+                new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold, Source = FontSource.System },
+                new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic, Source = FontSource.System },
+                new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic, Source = FontSource.System },
             };
 
             var service = CreateService();
 
             // Act
-            var unused = service.GetSystemStatsForFontFamily(fontFamily);
+            service.GetSystemStatsForFontFamily(fontFamily); // Executed 2 times to check for caching
+            var actual = service.GetSystemStatsForFontFamily(fontFamily);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetSystemStatsForFontFamily_WithNonContentOrSystemFontPaths_ReturnsCorrectListOfFontStyles()
+        {
+            // Arrange
+            const string fontFamily = "Times New Roman";
+            const string unknownDirPath = @"C:\Unknown\";
+            var fontTimesRegular = $"{unknownDirPath}TimesNewRoman-Regular.ttf";
+            var fontTimesBold = $"{unknownDirPath}TimesNewRoman-Bold.ttf";
+            var fontTimesItalic = $"{unknownDirPath}TimesNewRoman-Italic.ttf";
+            var fontTimesBoldItalic = $"{unknownDirPath}TimesNewRoman-BoldItalic.ttf";
+
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesRegular)).Returns(unknownDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBold)).Returns(unknownDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesItalic)).Returns(unknownDirPath);
+            this.mockPath.Setup(m => m.GetDirectoryName(fontTimesBoldItalic)).Returns(unknownDirPath);
+
+            var fontFiles = new[]
+            {
+                fontTimesRegular,
+                fontTimesBold,
+                fontTimesItalic,
+                fontTimesBoldItalic,
+            };
+
+            MockAllFontFamilies(fontFiles, fontFamily);
+
+            MockFontStyle(fontTimesRegular, FontStyle.Regular);
+            MockFontStyle(fontTimesBold, FontStyle.Bold);
+            MockFontStyle(fontTimesItalic, FontStyle.Italic);
+            MockFontStyle(fontTimesBoldItalic, FontStyle.Bold | FontStyle.Italic);
+
+            this.mockDirectory.Setup(m => m.GetFiles(this.fullSystemFontDirPath, "*.ttf"))
+                .Returns(() => fontFiles);
+
+            var expected = new[]
+            {
+                new FontStats { FontFilePath = fontTimesRegular, FamilyName = fontFamily, Style = FontStyle.Regular, Source = FontSource.Unknown },
+                new FontStats { FontFilePath = fontTimesBold, FamilyName = fontFamily, Style = FontStyle.Bold, Source = FontSource.Unknown },
+                new FontStats { FontFilePath = fontTimesItalic, FamilyName = fontFamily, Style = FontStyle.Italic, Source = FontSource.Unknown },
+                new FontStats { FontFilePath = fontTimesBoldItalic, FamilyName = fontFamily, Style = FontStyle.Bold | FontStyle.Italic, Source = FontSource.Unknown },
+            };
+
+            var service = CreateService();
+
+            // Act
             var actual = service.GetSystemStatsForFontFamily(fontFamily);
 
             // Assert
@@ -153,18 +216,39 @@ namespace VelaptorTests.Content.Fonts.Services
                 this.mockFontService.Object,
                 this.mockContentPathResolver.Object,
                 this.mockSystemFontPathResolver.Object,
-                this.mockDirectory.Object);
+                this.mockDirectory.Object,
+                this.mockPath.Object);
 
+        /// <summary>
+        /// Builds a path to a application font directory location.
+        /// </summary>
+        /// <param name="fileName">The file name to include in the path.</param>
+        /// <returns>The application file path.</returns>
         private string BuildContentFontPath(string fileName) => $"{this.fullContentFontDirPath}{fileName}";
 
+        /// <summary>
+        /// Builds a path to a system font location.
+        /// </summary>
+        /// <param name="fileName">The file name to include in the path.</param>
+        /// <returns>The system file path.</returns>
         private string BuildSystemFontPath(string fileName) => $"{this.fullSystemFontDirPath}{fileName}";
 
+        /// <summary>
+        /// Mocks the font at the given <paramref name="filePath"/> with the given font <paramref name="familyName"/>.
+        /// </summary>
+        /// <param name="filePath">The file path to the font file.</param>
+        /// <param name="familyName">The family of the font to mock.</param>
         private void MockFontFamilyName(string filePath, string familyName)
         {
-            this.mockFontService.Setup(m => m.GetFamilyName(filePath, true))
+            this.mockFontService.Setup(m => m.GetFamilyName(filePath))
                 .Returns(familyName);
         }
 
+        /// <summary>
+        /// Mocks all of the font families at the given <paramref name="filePaths"/> with the given font <paramref name="familyName"/>.
+        /// </summary>
+        /// <param name="filePaths">All of the file paths to the fonts.</param>
+        /// <param name="familyName">The family of the font to mock.</param>
         private void MockAllFontFamilies(IEnumerable<string> filePaths, string familyName)
         {
             foreach (var path in filePaths)
@@ -173,9 +257,14 @@ namespace VelaptorTests.Content.Fonts.Services
             }
         }
 
+        /// <summary>
+        /// Mocks the given font style of the font at the given <paramref name="filePath"/> using the given font <paramref name="style"/>.
+        /// </summary>
+        /// <param name="filePath">The path to the font file.</param>
+        /// <param name="style">The style to mock.</param>
         private void MockFontStyle(string filePath, FontStyle style)
         {
-            this.mockFontService.Setup(m => m.GetFontStyle(filePath, true))
+            this.mockFontService.Setup(m => m.GetFontStyle(filePath))
                 .Returns(style);
         }
     }
