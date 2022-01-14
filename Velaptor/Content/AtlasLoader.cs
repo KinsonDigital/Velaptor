@@ -72,17 +72,51 @@ namespace Velaptor.Content
             this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
         }
 
-        /// <inheritdoc/>
-        public IAtlasData Load(string contentPathOrName)
+        /// <summary>
+        /// Loads texture atlas data using the given <param name="contentNameOrPath"></param>.
+        /// </summary>
+        /// <param name="contentNameOrPath">The content name or file path to the atlas data.</param>
+        /// <returns>The loaded atlas data.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     Occurs if <paramref name="contentNameOrPath"/> is null or empty.
+        /// </exception>
+        /// <exception cref="LoadAtlasException">
+        ///     If the given full file path is not a <c>Texture(.png)</c> or <c>Atlas Data(.json)</c> file.
+        /// </exception>
+        /// <exception cref="LoadContentException">
+        ///     Occurs if directory path is used.  A non path content name or fully qualified file path is required.
+        /// </exception>
+        /// <remarks>
+        /// Valid Values:
+        /// <list type="bullet">
+        ///     <item>MyAtlas</item>
+        ///     <item>C:\Atlas\MyAtlas.png</item>
+        ///     <item>C:\Atlas\MyAtlas.json</item>
+        /// </list>
+        ///
+        /// Invalid Values:
+        /// <list type="bullet">
+        ///     <item>C:\Atlas\MyAtlas</item>
+        ///     <item>C:\Atlas\MyAtlas.txt</item>
+        /// </list>
+        /// </remarks>
+        public IAtlasData Load(string contentNameOrPath)
         {
-            var isFullFilePath = contentPathOrName.IsValidFilePath();
+            if (string.IsNullOrEmpty(contentNameOrPath))
+            {
+                throw new ArgumentNullException(
+                    nameof(contentNameOrPath),
+                    "The parameter must not be null or empty.");
+            }
+
+            var isFullFilePath = contentNameOrPath.IsValidFilePath();
             string name;
             string dirPath;
 
             if (isFullFilePath)
             {
                 var validExtensions = new[] { TextureExtension, AtlasDataExtension };
-                var extension = this.path.GetExtension(contentPathOrName);
+                var extension = this.path.GetExtension(contentNameOrPath);
 
                 if (validExtensions.All(e => e != extension))
                 {
@@ -92,13 +126,13 @@ namespace Velaptor.Content
                     throw new LoadAtlasException(exceptionMsg);
                 }
 
-                name = this.path.GetFileNameWithoutExtension(contentPathOrName);
+                name = this.path.GetFileNameWithoutExtension(contentNameOrPath);
 
-                dirPath = $@"{this.path.GetDirectoryName(contentPathOrName).TrimEnd('\\')}\";
+                dirPath = $@"{this.path.GetDirectoryName(contentNameOrPath).TrimEnd('\\')}\";
             }
             else
             {
-                if (contentPathOrName.IsFullyQualifiedDirPath() || contentPathOrName.IsUNCPath())
+                if (contentNameOrPath.IsFullyQualifiedDirPath() || contentNameOrPath.IsUNCPath())
                 {
                     var exceptionMsg = "Directory paths not allowed when loading texture atlas data.\n";
                     exceptionMsg += "Relative and fully qualified directory paths not valid.\n";
@@ -110,7 +144,7 @@ namespace Velaptor.Content
 
                 // Remove a possible file extension and return just the 'name' of the content.
                 // The name of the content should always match the name of the file without the extension
-                name = this.path.GetFileNameWithoutExtension(contentPathOrName);
+                name = this.path.GetFileNameWithoutExtension(contentNameOrPath);
 
                 // Resolve to the application's content directory where atlas data is located
                 dirPath = this.atlasDataPathResolver.ResolveDirPath();
@@ -146,7 +180,7 @@ namespace Velaptor.Content
 
             var atlasName = isFullFilePath
                 ? name
-                : contentPathOrName;
+                : contentNameOrPath;
 
             return this.atlasDataFactory.Create(atlasSpriteData, dirPath, atlasName);
         }

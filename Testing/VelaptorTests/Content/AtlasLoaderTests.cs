@@ -162,6 +162,21 @@ namespace VelaptorTests.Content
         #endregion
 
         #region Method Tests
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Load_WithNullOrEmptyValue_ThrowsException(string value)
+        {
+            // Arrange
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                loader.Load(value);
+            }, "The parameter must not be null or empty. (Parameter 'contentNameOrPath')");
+        }
+
         [Fact]
         public void Load_WithInvalidFullFilePathExtensions_ThrowsException()
         {

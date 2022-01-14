@@ -7,6 +7,7 @@ namespace Velaptor.Content.Fonts
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
     using Velaptor.Content.Caching;
@@ -28,6 +29,7 @@ namespace Velaptor.Content.Fonts
         private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly IFontFactory fontFactory;
         private readonly IFontMetaDataParser fontMetaDataParser;
+        private readonly IFile file;
         private readonly IPath path;
         private bool isDisposed;
 
@@ -42,6 +44,7 @@ namespace Velaptor.Content.Fonts
             this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             this.fontFactory = IoC.Container.GetInstance<IFontFactory>();
             this.fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
+            this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
         }
 
@@ -53,6 +56,7 @@ namespace Velaptor.Content.Fonts
         /// <param name="textureCache">Caches textures for later use to improve performance.</param>
         /// <param name="fontFactory">Generates new <see cref="IFont"/> instances.</param>
         /// <param name="fontMetaDataParser">Parses metadata from strings.</param>
+        /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         internal FontLoader(
             IFontAtlasService fontAtlasService,
@@ -60,6 +64,7 @@ namespace Velaptor.Content.Fonts
             IDisposableItemCache<string, ITexture> textureCache,
             IFontFactory fontFactory,
             IFontMetaDataParser fontMetaDataParser,
+            IFile file,
             IPath path)
         {
             this.fontAtlasService = fontAtlasService;
@@ -67,6 +72,7 @@ namespace Velaptor.Content.Fonts
             this.textureCache = textureCache;
             this.fontFactory = fontFactory;
             this.fontMetaDataParser = fontMetaDataParser;
+            this.file = file;
             this.path = path;
         }
 
@@ -80,6 +86,9 @@ namespace Velaptor.Content.Fonts
         /// </exception>
         /// <exception cref="CachingMetaDataException">
         ///     Occurs if the meta data is missing or invalid.
+        /// </exception>
+        /// <exception cref="FileNotFoundException">
+        ///     Occurs if the font file does not exist.
         /// </exception>
         /// <remarks>
         ///     If a path is used, it must be a fully qualified file path.
@@ -151,12 +160,11 @@ namespace Velaptor.Content.Fonts
                 : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
 
             // If the full font file path is empty, then the font does not exist. Throw an exception
-            if (string.IsNullOrEmpty(fullFontFilePath))
+            if (this.file.Exists(fullFontFilePath) is false)
             {
-                var exceptionMsg = $"The font content item '{parseResult.MetaDataPrefix}' does not exist.";
-                exceptionMsg += $"\nCheck the applications font content directory '{this.fontPathResolver.ResolveDirPath()}' to see if it exists.";
+                var exceptionMsg = $"The font content item '{fullFontFilePath}' does not exist.";
 
-                throw new LoadFontException(exceptionMsg);
+                throw new FileNotFoundException(exceptionMsg, fullFontFilePath);
             }
 
             var contentName = this.path.GetFileNameWithoutExtension(fullFontFilePath);

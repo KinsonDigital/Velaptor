@@ -1,14 +1,13 @@
-// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
-
-using System.IO;
 
 namespace VelaptorTests.Content.Fonts
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Drawing;
+    using System.IO;
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
@@ -42,6 +41,7 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
         private readonly Mock<IPath> mockPath;
         private readonly Mock<ITexture> mockFontAtlasTexture;
+        private readonly Mock<IFile> mockFile;
         private readonly Mock<IFont> mockFont;
 
         /// <summary>
@@ -99,6 +99,9 @@ namespace VelaptorTests.Content.Fonts
                     FontContentName,
                     this.metaData,
                     FontSize));
+
+            this.mockFile = new Mock<IFile>();
+            this.mockFile.Setup(m => m.Exists(this.fontFilePath)).Returns(true);
 
             // Mock for both full file paths and content names with metadata
             this.mockPath = new Mock<IPath>();
@@ -181,19 +184,16 @@ namespace VelaptorTests.Content.Fonts
         public void Load_WhenContentItemDoesNotExist_ThrowsException()
         {
             // Arrange
-            const string appFontContentDirPath = @"C:\AppDir\Content\Fonts\";
-            this.mockFontPathResolver.Setup(m => m.ResolveDirPath()).Returns(appFontContentDirPath);
-            this.mockFontPathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>())).Returns(string.Empty);
+            this.mockFile.Setup(m => m.Exists(this.fontFilePath)).Returns(false);
 
-            var expected = $"The font content item '{FontContentName}' does not exist.";
-            expected += $"\nCheck the applications font content directory '{appFontContentDirPath}' to see if it exists.";
+            var expected = $"The font content item '{this.fontFilePath}' does not exist.";
 
             var loader = CreateLoader();
 
             // Act & Assert
-            AssertExtensions.ThrowsWithMessage<LoadFontException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
-                loader.Load(this.contentNameWithMetaData);
+                loader.Load(this.filePathWithMetaData);
             }, expected);
         }
 
@@ -446,6 +446,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockTextureCache.Object,
             this.mockFontFactory.Object,
             this.mockFontMetaDataParser.Object,
+            this.mockFile.Object,
             this.mockPath.Object);
     }
 }

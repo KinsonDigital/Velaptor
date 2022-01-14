@@ -56,11 +56,13 @@ namespace Velaptor.Factories
 
             var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+            var file = IoC.Container.GetInstance<IFile>();
             var path = IoC.Container.GetInstance<IPath>();
 
             textureLoader = new TextureLoader(
                 textureCache,
                 texturePathResolver,
+                file,
                 path);
 
             return textureLoader;
@@ -130,12 +132,13 @@ namespace Velaptor.Factories
                 return fontLoader;
             }
 
-            var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
+            var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
-            var path = IoC.Container.GetInstance<IPath>();
             var fontFactory = IoC.Container.GetInstance<IFontFactory>();
             var fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
+            var file = IoC.Container.GetInstance<IFile>();
+            var path = IoC.Container.GetInstance<IPath>();
 
             fontLoader = new FontLoader(
                 fontAtlasService,
@@ -143,6 +146,7 @@ namespace Velaptor.Factories
                 textureCache,
                 fontFactory,
                 fontMetaDataParser,
+                file,
                 path);
 
             return fontLoader;

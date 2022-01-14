@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Content
 {
+    using System.IO;
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
@@ -24,6 +25,7 @@ namespace VelaptorTests.Content
         private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IPath> mockPath;
+        private readonly Mock<IFile> mockFile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
@@ -36,9 +38,11 @@ namespace VelaptorTests.Content
 
             this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
 
+            this.mockFile = new Mock<IFile>();
+            this.mockFile.Setup(m => m.Exists(this.textureFilePath)).Returns(true);
+
             this.mockPath = new Mock<IPath>();
-            this.mockPath.Setup(m => m.HasExtension(TextureFileName)).Returns(false);
-            this.mockPath.Setup(m => m.HasExtension($"{TextureFileName}{TextureExtension}")).Returns(true);
+            this.mockPath.Setup(m => m.GetExtension(this.textureFilePath)).Returns(TextureExtension);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}")).Returns(TextureFileName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}{TextureExtension}")).Returns(TextureFileName);
         }
@@ -64,7 +68,7 @@ namespace VelaptorTests.Content
 
         [Theory]
         [InlineData(TextureFileName, "")]
-        // [InlineData(TextureFileName, ".txt")]
+        [InlineData(TextureFileName, ".txt")]
         public void Load_WhenLoadingAppContentByName_LoadsTexture(string contentName, string extension)
         {
             // Arrange
@@ -86,22 +90,36 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Load_WhenPathIsInvalidWithTextureContentFile_ThrowsException()
+        public void Load_WhenFileDoesNotExist_ThrowsException()
         {
             // Arrange
-            const string invalidPath = "invalid-path.png";
-            this.mockPath.Setup(m => m.HasExtension(invalidPath)).Returns(true);
-            this.mockPath.Setup(m => m.GetExtension(invalidPath)).Returns(".png");
-            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(It.IsAny<string>()))
-                .Returns(invalidPath);
+            this.mockFile.Setup(m => m.Exists(It.IsAny<string>())).Returns(false);
+
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
+            {
+                loader.Load(this.textureFilePath);
+            }, $"The texture file '{this.textureFilePath}' does not exist.");
+        }
+
+        [Fact]
+        public void Load_WhenFileExistsButIsNotATextureContentFile_ThrowsException()
+        {
+            // Arrange
+            const string extension = ".txt";
+            var filePathWithInvalidExtension = $"{TextureDirPath}{TextureFileName}{extension}";
+            this.mockFile.Setup(m => m.Exists(filePathWithInvalidExtension)).Returns(true);
+            this.mockPath.Setup(m => m.GetExtension(filePathWithInvalidExtension)).Returns(extension);
 
             var loader = CreateLoader();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<LoadTextureException>(() =>
             {
-                var unused = loader.Load(invalidPath);
-            }, $"The texture file path '{invalidPath}' is not a valid path.");
+                loader.Load(filePathWithInvalidExtension);
+            }, $"The file '{filePathWithInvalidExtension}' must be a texture file with the extension '{TextureExtension}'.");
         }
 
         [Fact]
@@ -139,6 +157,7 @@ namespace VelaptorTests.Content
         private TextureLoader CreateLoader()
             => new (this.mockTextureCache.Object,
              this.mockTexturePathResolver.Object,
+             this.mockFile.Object,
              this.mockPath.Object);
     }
 }

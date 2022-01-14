@@ -7,6 +7,7 @@ namespace Velaptor.Content
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.IO.Abstractions;
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
@@ -22,6 +23,7 @@ namespace Velaptor.Content
         private const string TextureFileExtension = ".png";
         private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly IPathResolver pathResolver;
+        private readonly IFile file;
         private readonly IPath path;
         private bool isDisposed;
 
@@ -34,6 +36,7 @@ namespace Velaptor.Content
         {
             this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             this.pathResolver = PathResolverFactory.CreateTexturePathResolver();
+            this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
         }
 
@@ -42,14 +45,17 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="textureCache">Caches textures for later use to improve performance.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
+        /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         internal TextureLoader(
             IDisposableItemCache<string, ITexture> textureCache,
             IPathResolver texturePathResolver,
+            IFile file,
             IPath path)
         {
             this.textureCache = textureCache;
             this.pathResolver = texturePathResolver;
+            this.file = file;
             this.path = path;
         }
 
@@ -58,9 +64,8 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="contentPathOrName">The name of the texture to load.</param>
         /// <returns>The loaded texture.</returns>
-        /// <exception cref="LoadContentException">Thrown if the resulting content file path is invalid.</exception>
         /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
-        /// <exception cref="LoadFontException">Thrown if the resulting font content file path is invalid.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
         public ITexture Load(string contentPathOrName)
         {
             var isFullFilePath = contentPathOrName.IsValidFilePath();
@@ -79,9 +84,17 @@ namespace Velaptor.Content
                 cacheKey = filePath;
             }
 
-            if (filePath.IsValidFilePath() is false && this.path.GetExtension(filePath) == TextureFileExtension)
+            if (this.file.Exists(filePath))
             {
-                throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
+                if (this.path.GetExtension(filePath) is not TextureFileExtension)
+                {
+                    throw new LoadTextureException(
+                        $"The file '{filePath}' must be a texture file with the extension '{TextureFileExtension}'.");
+                }
+            }
+            else
+            {
+                throw new FileNotFoundException($"The texture file '{filePath}' does not exist.", filePath);
             }
 
             return this.textureCache.GetItem(cacheKey);
