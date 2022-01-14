@@ -1,10 +1,9 @@
-// <copyright file="FontMetaDataParser.cs" company="KinsonDigital">
+﻿// <copyright file="FontMetaDataParser.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Services
 {
-    using System.IO.Abstractions;
     using System.Linq;
 
     /// <inheritdoc/>

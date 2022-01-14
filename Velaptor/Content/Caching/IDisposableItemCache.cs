@@ -11,7 +11,7 @@ namespace Velaptor.Content.Caching
     /// </summary>
     /// <typeparam name="TCacheKey">The unique assigned for a particular cached item.</typeparam>
     /// <typeparam name="TCacheType">The type of item being cached.</typeparam>
-    public interface IDisposableItemCache<in TCacheKey, out TCacheType> : IItemCache<TCacheKey, TCacheType>, IDisposable
+    public interface IDisposableItemCache<TCacheKey, out TCacheType> : IItemCache<TCacheKey, TCacheType>, IDisposable
         where TCacheType : IDisposable
     {
     }
