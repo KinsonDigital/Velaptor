@@ -19,171 +19,276 @@ namespace VelaptorTests.Content.Caching
 
     public class TextureCacheTests
     {
+        private const int FontSize = 12;
         private const string TextureExtension = ".png";
+        private const string TextureDirPath = @"C:\textures\";
+        private const string TextureName = "text-texture";
+        private const string FontDirPath = @"C:\fonts\";
+        private const string FontName = "test-font";
         private const string FontExtension = ".ttf";
-        private const string TextureName = "texture";
-        private const string TextureDirPath = @"C:\content\";
         private readonly string textureFilePath = $"{TextureDirPath}{TextureName}{TextureExtension}";
+        private readonly string fontFilePath = $"{FontDirPath}{FontName}{FontExtension}";
+        private string fontFilePathWithMetaData;
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<ITextureFactory> mockTextureFactory;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
+        private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
         private readonly Mock<IPath> mockPath;
+        private readonly Mock<ITexture> mockRegularTexture;
+        private readonly Mock<ITexture> mockFontAtlasTexture;
+        private readonly ImageData textureImageData;
+        private readonly ImageData fontImageData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureCacheTests"/> class.
         /// </summary>
         public TextureCacheTests()
         {
+            this.fontFilePathWithMetaData = $"{this.fontFilePath}|size:{FontSize}";
+
+            this.textureImageData = new ImageData(new Color[1, 2], 1, 2);
+            this.fontImageData = new ImageData(new Color[2, 1], 2, 1);
+
             this.mockImageService = new Mock<IImageService>();
-            this.mockTextureFactory = new Mock<ITextureFactory>();
+            this.mockImageService.Setup(m => m.Load(this.textureFilePath))
+                .Returns(this.textureImageData);
+            this.mockImageService.Setup(m => m.FlipVertically(this.fontImageData))
+                .Returns(this.fontImageData);
 
             this.mockFontAtlasService = new Mock<IFontAtlasService>();
+            this.mockFontAtlasService.Setup(m =>
+                    m.CreateFontAtlas(this.fontFilePath, FontSize))
+                .Returns((this.fontImageData, Array.Empty<GlyphMetrics>()));
+
+            this.mockRegularTexture = new Mock<ITexture>();
+            this.mockFontAtlasTexture = new Mock<ITexture>();
+
+            this.mockTextureFactory = new Mock<ITextureFactory>();
+
+            // Mock the return of a regular texture if the texture content was a texture file
+            this.mockTextureFactory.Setup(m =>
+                    m.Create(TextureName, this.textureFilePath, this.textureImageData, It.IsAny<bool>()))
+                .Returns(this.mockRegularTexture.Object);
+
+            // Mock the return of a font texture atlas if the texture content was a font file
+            this.mockTextureFactory.Setup(m =>
+                    m.Create(FontName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()))
+                .Returns(this.mockFontAtlasTexture.Object);
+
+            this.mockFontMetaDataParser = new Mock<IFontMetaDataParser>();
 
             this.mockPath = new Mock<IPath>();
+            // Mock getting extension for full texture file path
+            this.mockPath.Setup(m => m.GetExtension(this.textureFilePath)).Returns(TextureExtension);
+            // Mock getting extension for full font file path
+            this.mockPath.Setup(m => m.GetExtension(this.fontFilePath)).Returns(FontExtension);
+
+            // Mock the process of getting the texture name
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.textureFilePath))
                 .Returns(TextureName);
-            this.mockPath.Setup(m => m.GetExtension(this.textureFilePath)).Returns(TextureExtension);
+
+            // Mock the process of getting the font name
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.fontFilePath))
+                .Returns(FontName);
         }
 
         #region Method Tests
-        [Fact]
-        public void GetItem_WithInvalidPath_ThrowsException()
-        {
-            // Arrange
-            var cache = CreateCache();
-
-            // Act
-            AssertExtensions.ThrowsWithMessage<LoadTextureException>(() =>
-            {
-                var unused = cache.GetItem("invalid-path");
-            }, $"The texture file path 'invalid-path' is not a valid path.");
-        }
-
-        [Fact]
-        public void GetItem_WhenCachingStandardTexture_ReturnsCorrectResult()
-        {
-            // Arrange
-            var mockTexture = new Mock<ITexture>();
-            MockImageData();
-            MockTextureCreation(mockTexture.Object);
-
-            var cache = CreateCache();
-
-            // Act
-            var firstItem = cache.GetItem(this.textureFilePath);
-            var secondItem = cache.GetItem(this.textureFilePath);
-
-            // Assert
-            this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(It.IsAny<string>(), It.IsAny<int>()), Times.Never);
-            this.mockImageService.Verify(m => m.Load(this.textureFilePath), Times.Once);
-            Assert.Same(mockTexture.Object, firstItem);
-            Assert.Same(mockTexture.Object, secondItem);
-        }
-
         [Theory]
-        [InlineData("size22")]
-        public void GetItem_WithMissingFontPathMetaData_ThrowsException(string fontMetaData)
+        [InlineData("")]
+        [InlineData(null)]
+        public void GetItem_WithNullOrEmptyFilePath_ThrowsException(string filePath)
         {
             // Arrange
-            const string dirPath = @"C:\content\fonts\";
-            const string contentName = "TimesNewRoman-Regular";
-            var fontFilePath = $@"{dirPath}{contentName}{FontExtension}";
-            var fontFilePathWithMetaData = $@"{fontFilePath}{fontMetaData}";
-
-            var expected = "Font metadata required when caching fonts.";
-            expected += "Required metadata syntax: '|size:<number-here>'";
-            expected += "\nIf the '|' character is missing, it signifies that no metadata exists.";
-
-            this.mockPath.Setup(m => m.GetExtension(fontFilePath)).Returns($"{FontExtension}size22");
             var cache = CreateCache();
 
             // Act & Assert
-            AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                cache.GetItem(fontFilePathWithMetaData);
-            }, expected);
-        }
-
-        [Theory]
-        [InlineData("|size22", FontExtension, "\nCurrent metadata: '|size22'")]
-        [InlineData("size:22|", FontExtension, "")]
-        [InlineData("|size:NAN", FontExtension, "\nCurrent metadata: '|size:NAN'")]
-        [InlineData("||size:22", FontExtension, "")]
-        [InlineData("|size:22|", FontExtension, "")]
-        public void GetItem_WithInvalidFontPathMetaData_ThrowsException(string fontMetaData, string extension, string exceptionMsg)
-        {
-            // Arrange
-            const string dirPath = @"C:\content\fonts\";
-            const string contentName = "TimesNewRoman-Regular";
-            var fontFilePath = $@"{dirPath}{contentName}{extension}";
-            var fontFilePathWithMetaData = $@"{fontFilePath}{fontMetaData}";
-
-            var expected = "Font metadata required when caching fonts.";
-            expected += exceptionMsg;
-            expected += "Required metadata syntax: '|size:<number-here>'";
-
-            var cache = CreateCache();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
-            {
-                cache.GetItem(fontFilePathWithMetaData);
-            }, expected);
+                cache.GetItem(filePath);
+            }, "The parameter must not be null or empty. (Parameter 'textureFilePath')");
         }
 
         [Fact]
-        public void GetItem_WhenCachingFontTextureAtlas_ReturnsCorrectResult()
+        public void GetItem_WhenFileIsNotATextureOrFontWithNoMetaData_ThrowsException()
         {
             // Arrange
-            const string dirPath = @"C:\content\fonts\";
-            const string contentName = "TimesNewRoman-Regular";
-            const string fontExtension = ".ttf";
-            const int fontSize = 22;
-            var metaData = $"|size:{fontSize}";
-            var fontFilePath = $@"{dirPath}{contentName}{fontExtension}";
-            var fontFilePathWithMetaData = $@"{dirPath}{contentName}{fontExtension}{metaData}";
-            var mockTexture = new Mock<ITexture>();
-            var imageData = new ImageData(new Color[3, 1], 3, 1);
-            this.mockPath.Setup(m => m.GetExtension(fontFilePath)).Returns(fontExtension);
-            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fontFilePath)).Returns(contentName);
-            MockFontAtlasData(imageData, fontFilePath, fontSize);
-            MockTextureCreation(mockTexture.Object, contentName, fontFilePath);
-
-            var cache = CreateCache();
-
-            // Act
-            var firstItem = cache.GetItem(fontFilePathWithMetaData);
-            var secondItem = cache.GetItem(fontFilePathWithMetaData);
-
-            // Assert
-            this.mockFontAtlasService.Verify(m =>
-                m.CreateFontAtlas(fontFilePath, 22), Times.Once);
-            this.mockImageService.Verify(m => m.Load(It.IsAny<string>()), Times.Never);
-            Assert.Same(mockTexture.Object, firstItem);
-            Assert.Same(mockTexture.Object, secondItem);
-        }
-
-        [Fact]
-        public void GetItem_WhenNotAnImageOrFontFile_ThrowsException()
-        {
-            // Arrange
-            const string invalidFilePath = @"C:\Content\Graphics\invalid-extension.txt";
-            var expected = "Texture Caching Error:";
-            expected += $"\nWhen caching textures, the only file types allowed";
-            expected += $" are '{TextureExtension}' and '{FontExtension}' files.";
-            expected += "\nFont files are converted into texture atlases for the font glyphs.";
-
-            var mockTexture = new Mock<ITexture>();
-            MockImageData();
-            MockTextureCreation(mockTexture.Object);
-            this.mockPath.Setup(m => m.GetExtension(invalidFilePath)).Returns(".txt");
-
+            var invalidFileType = $"{TextureDirPath}{TextureName}.txt";
+            this.mockPath.Setup(m => m.GetExtension(invalidFileType)).Returns(".txt");
+            this.mockFontMetaDataParser.Setup(m => m.Parse(invalidFileType))
+                .Returns(() => new FontMetaDataParseResult(
+                    false,
+                    false,
+                    string.Empty,
+                    string.Empty,
+                    -1));
             var cache = CreateCache();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<CachingException>(() =>
             {
-                cache.GetItem(invalidFilePath);
+                cache.GetItem(invalidFileType);
+            }, $"Texture caching must be a '{TextureExtension}' file type.");
+        }
+
+        [Fact]
+        public void GetItem_WhenPathContainsMetaDataAndIsNotAFontFileType_ThrowsException()
+        {
+            // Arrange
+            const string extension = ".txt";
+            const string metaData = "|size:12";
+            var nonFontFilePath = $"{FontDirPath}{FontName}{extension}";
+            var nonFontFilePathWithMetaData = $"{nonFontFilePath}{metaData}";
+
+            this.mockPath.Setup(m => m.GetExtension(nonFontFilePath)).Returns(extension);
+            this.mockFontMetaDataParser.Setup(m => m.Parse(nonFontFilePathWithMetaData))
+                .Returns(() => new FontMetaDataParseResult(
+                    true,
+                    true,
+                    nonFontFilePath,
+                    metaData,
+                    12));
+            var cache = CreateCache();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<CachingException>(() =>
+            {
+                cache.GetItem(nonFontFilePathWithMetaData);
+            }, $"Font caching must be a '{FontExtension}' file type.");
+        }
+
+        [Fact]
+        public void GetItem_WhenFontPathIsNotFullFilePath_ThrowsException()
+        {
+            // Arrange
+            const string metaData = "|size:12";
+            var nonFullFilePath = $"{FontName}{FontExtension}{metaData}";
+            this.mockPath.Setup(m => m.GetExtension(nonFullFilePath)).Returns(FontExtension);
+            this.mockFontMetaDataParser.Setup(m => m.Parse(nonFullFilePath))
+                .Returns(() => new FontMetaDataParseResult(
+                    true,
+                    true,
+                    nonFullFilePath,
+                    metaData,
+                    12));
+            var cache = CreateCache();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<CachingException>(() =>
+            {
+                cache.GetItem(nonFullFilePath);
+            }, $"The font file path '{nonFullFilePath}' must be a fully qualified file path of type '{FontExtension}'.");
+        }
+
+        [Fact]
+        public void GetItem_WhenFontPathMetaDataIsInvalid_ThrowsException()
+        {
+            // Arrange
+            const string metaData = "|size12";
+            var fullFilePath = $"{FontDirPath}{FontName}{FontExtension}{metaData}";
+            this.mockPath.Setup(m => m.GetExtension(fullFilePath)).Returns(FontExtension);
+            this.mockFontMetaDataParser.Setup(m => m.Parse(fullFilePath))
+                .Returns(() => new FontMetaDataParseResult(
+                    true,
+                    false,
+                    fullFilePath,
+                    metaData,
+                    12));
+            var cache = CreateCache();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
+            {
+                cache.GetItem(fullFilePath);
+            }, $"The meta data '{metaData}' is invalid and is required for font files of type '{FontExtension}'.");
+        }
+
+        [Fact]
+        public void GetItem_WhenTexturePathIsNotFullFilePath_ThrowsException()
+        {
+            // Arrange
+            var nonFullFilePath = $"{TextureName}{TextureExtension}";
+            this.mockPath.Setup(m => m.GetExtension(nonFullFilePath)).Returns(TextureExtension);
+            this.mockFontMetaDataParser.Setup(m => m.Parse(nonFullFilePath))
+                .Returns(() => new FontMetaDataParseResult(
+                    false,
+                    false,
+                    string.Empty,
+                    string.Empty,
+                    -1));
+            var cache = CreateCache();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<CachingException>(() =>
+            {
+                cache.GetItem(nonFullFilePath);
+            }, $"The texture file path '{nonFullFilePath}' must be a fully qualified file path of type '{TextureExtension}'.");
+        }
+
+        [Fact]
+        public void GetItem_WhenGettingTexture_CachesAndReturnsSameTexture()
+        {
+            // Arrange
+            MockTextureParseResult();
+            var cache = CreateCache();
+
+            // Act
+            var actualA = cache.GetItem(this.textureFilePath);
+            var actualB = cache.GetItem(this.textureFilePath);
+
+            // Assert
+            this.mockFontMetaDataParser.Verify(m => m.Parse(this.textureFilePath), Times.Exactly(2));
+            this.mockPath.Verify(m => m.GetExtension(this.textureFilePath), Times.Exactly(2));
+            this.mockImageService.Verify(m => m.Load(this.textureFilePath), Times.Once);
+            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.textureFilePath), Times.Once);
+            this.mockTextureFactory.Verify(m =>
+                m.Create(TextureName, this.textureFilePath, this.textureImageData, It.IsAny<bool>()), Times.Once);
+
+            Assert.Same(actualA, actualB);
+        }
+
+        [Fact]
+        public void GetItem_WhenGettingFontAtlasTexture_CachesAndReturnsSameAtlasTexture()
+        {
+            // Arrange
+            MockFontParseResult();
+            var cache = CreateCache();
+
+            // Act
+            var actualA = cache.GetItem(this.fontFilePathWithMetaData);
+            var actualB = cache.GetItem(this.fontFilePathWithMetaData);
+
+            // Assert
+            this.mockFontMetaDataParser.Verify(m => m.Parse(this.fontFilePathWithMetaData), Times.Exactly(2));
+            this.mockPath.Verify(m => m.GetExtension(this.fontFilePath), Times.Exactly(2));
+
+            this.mockFontAtlasService.Verify(m =>
+                m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
+
+            this.mockImageService.Verify(m => m.FlipVertically(this.fontImageData), Times.Once);
+            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Once);
+
+            this.mockTextureFactory.Verify(m =>
+                m.Create(FontName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()), Times.Once);
+
+            Assert.Same(actualA, actualB);
+        }
+
+        [Fact]
+        public void GetItem_WhenValueUsedIsFontFileWithNoMetaData_ThrowsException()
+        {
+            // Arrange
+            var expected = "Font file paths must include metadata.";
+            expected += $"\nFont Content Path MetaData Syntax: <file-path>|size:<font-size>";
+            expected += @"\nExample: C:\Windows\Fonts\my-font.ttf|size:12";
+
+            MockTextureParseResult();
+
+            var cache = CreateCache();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
+            {
+                cache.GetItem(this.fontFilePath);
             }, expected);
         }
 
@@ -213,7 +318,7 @@ namespace VelaptorTests.Content.Caching
         }
 
         [Fact]
-        public void Unload_WhenInvoked_DisposesOfTextures()
+        public void Dispose_WhenInvoked_DisposesOfTextures()
         {
             // Arrange
             var mockTextureA = new Mock<ITexture>();
@@ -255,7 +360,30 @@ namespace VelaptorTests.Content.Caching
             new (this.mockImageService.Object,
                 this.mockTextureFactory.Object,
                 this.mockFontAtlasService.Object,
+                this.mockFontMetaDataParser.Object,
                 this.mockPath.Object);
+
+        private void MockTextureParseResult()
+        {
+            this.mockFontMetaDataParser.Setup(m => m.Parse(this.textureFilePath))
+                .Returns(() => new FontMetaDataParseResult(
+                    false,
+                    true,
+                    string.Empty,
+                    string.Empty,
+                    -1));
+        }
+
+        private void MockFontParseResult()
+        {
+            this.mockFontMetaDataParser.Setup(m => m.Parse(this.fontFilePathWithMetaData))
+                .Returns(() => new FontMetaDataParseResult(
+                    true,
+                    true,
+                    this.fontFilePath,
+                    $"|size:{FontSize}",
+                    FontSize));
+        }
 
         private void MockImageData()
         {
@@ -275,7 +403,7 @@ namespace VelaptorTests.Content.Caching
             var name = textureName ?? TextureName;
             var path = filePath ?? this.textureFilePath;
 
-            this.mockTextureFactory.Setup(m => m.Create(name, path, It.IsAny<ImageData>(), true))
+            this.mockTextureFactory.Setup(m => m.Create(name, path, It.IsAny<ImageData>(), It.IsAny<bool>()))
                 .Returns(texture);
         }
 

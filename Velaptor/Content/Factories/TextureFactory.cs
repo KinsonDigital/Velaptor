@@ -24,7 +24,7 @@ namespace Velaptor.Content.Factories
             var gl = IoC.Container.GetInstance<IGLInvoker>();
             var glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
 
-            return new Texture(gl, glExtensions, name, filePath, imageData) { IsPooled = true };
+            return new Texture(gl, glExtensions, name, filePath, imageData) { IsPooled = false };
         }
     }
 }

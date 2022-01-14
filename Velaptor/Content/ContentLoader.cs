@@ -54,37 +54,16 @@ namespace Velaptor.Content
         public IFont LoadFont(string nameOrFilePath, int size) => this.fontLoader.Load($"{nameOrFilePath}|size:{size}");
 
         /// <inheritdoc/>
-        public void Unload<T>(string nameOrFilePath)
-            where T : class, IContent
-        {
-            nameOrFilePath = Path.GetFileNameWithoutExtension(nameOrFilePath);
+        public void UnloadTexture(ITexture content) => this.textureLoader.Unload(content.FilePath);
 
-            if (typeof(T) == typeof(ITexture))
-            {
-                this.textureLoader.Unload(nameOrFilePath);
-                return;
-            }
+        /// <inheritdoc/>
+        public void UnloadSound(ISound content) => this.soundLoader.Unload(content.FilePath);
 
-            if (typeof(T) == typeof(IAtlasData))
-            {
-                this.atlasLoader.Unload(nameOrFilePath);
-                return;
-            }
+        /// <inheritdoc/>
+        public void UnloadAtlas(IAtlasData content) => this.atlasLoader.Unload(content.FilePath);
 
-            if (typeof(T) == typeof(ISound))
-            {
-                this.soundLoader.Unload(nameOrFilePath);
-                return;
-            }
-
-            if (typeof(T) == typeof(IFont))
-            {
-                this.fontLoader.Unload(nameOrFilePath);
-                return;
-            }
-
-            throw new UnknownContentException($"The content of type '{typeof(T)}' is unknown.");
-        }
+        /// <inheritdoc/>
+        public void UnloadFont(IFont content) => this.fontLoader.Unload($"{content.FilePath}|size:{content.Size}");
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);

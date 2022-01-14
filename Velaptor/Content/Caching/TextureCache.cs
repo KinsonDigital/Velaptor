@@ -7,6 +7,7 @@ namespace Velaptor.Content.Caching
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using System.Linq;
@@ -28,6 +29,7 @@ namespace Velaptor.Content.Caching
         private readonly IImageService imageService;
         private readonly ITextureFactory textureFactory;
         private readonly IFontAtlasService fontAtlasService;
+        private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IPath path;
         private bool isDisposed;
 
@@ -37,16 +39,19 @@ namespace Velaptor.Content.Caching
         /// <param name="imageService">Provides image related services.</param>
         /// <param name="textureFactory">Creates <see cref="ITexture"/> objects.</param>
         /// <param name="fontAtlasService">Provides font atlas services.</param>
+        /// <param name="fontMetaDataParser">Parses meta data that might be attached to the file path.</param>
         /// <param name="path">Provides path related services.</param>
         public TextureCache(
             IImageService imageService,
             ITextureFactory textureFactory,
             IFontAtlasService fontAtlasService,
+            IFontMetaDataParser fontMetaDataParser,
             IPath path)
         {
             this.imageService = imageService;
             this.textureFactory = textureFactory;
             this.fontAtlasService = fontAtlasService;
+            this.fontMetaDataParser = fontMetaDataParser;
             this.path = path;
         }
 
@@ -59,86 +64,119 @@ namespace Velaptor.Content.Caching
         /// <inheritdoc/>
         public int TotalCachedItems => this.textures.Count;
 
+        /// <inheritdoc/>
+        public ReadOnlyCollection<string> CacheKeys => new (this.textures.Keys.ToArray());
+
         /// <summary>
-        /// Gets a cached texture that matches the given <paramref name="filePath"/>.
+        /// Gets a texture using the given <paramref name="textureFilePath"/>.
+        /// <para>
+        ///     If the given <paramref name="textureFilePath"/> is a <c>.ttf</c> font file, then the texture will be a font atlas
+        ///     texture created from the font.  Font file paths must include metadata.
+        /// </para>
+        /// <para>
+        ///     If the item has not been retrieved before, it will create it and then cache it for fast retrieval
+        ///     on the next call.
+        /// </para>
         /// </summary>
-        /// <param name="filePath">The texture(.png) or font(.ttf) file to cache as a texture.</param>
-        /// <returns>The cached item.</returns>
-        /// <remarks>
-        /// <para>If the item does not already exist in the cached, it is created then cached.</para>
-        /// <para>If the item does already exist in the cache, then that cached item is returned.</para>
-        /// <para>If the item is a font(.ttf) file, a texture atlas is created of all the font glyphs and cached.</para>
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="filePath"/> is null or empty.</exception>
-        /// <exception cref="CachingMetaDataException">
-        /// Thrown for the following reasons:
-        /// <list type="bullet">
-        ///     <item>
-        ///         Thrown if the given <paramref name="filePath"/> is a font(.ttf) file and no metadata exists.
-        ///     </item>
-        ///
-        ///     <item>
-        ///         Thrown if the given <paramref name="filePath"/> is a font(.ttf) file and the metadata is invalid.
-        ///     </item>
-        /// </list>
-        /// </exception>
-        /// <exception cref="LoadTextureException">
-        ///     Thrown if the given <paramref name="filePath"/> to the content file does not exist.
+        /// <param name="textureFilePath">
+        ///     The full file path to a <c>Texture(.png)</c> or <c>Font(.ttf)</c> file.
+        /// </param>
+        /// <returns>A standard texture or font atlas texture created from a font.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown if the <paramref name="textureFilePath"/> is null or empty.
         /// </exception>
         /// <exception cref="CachingException">
-        ///     Thrown if the given <paramref name="filePath"/> to the content is not a
-        ///     texture(.png) or font(.ttf) file.
+        ///     Thrown for the following reasons:
+        /// <list type="bullet">
+        ///     <item>If a full file path is used with metadata that is not a <c>Font(.ttf)</c> file type.</item>
+        ///     <item>If a <c>Font</c> path with metadata is not a fully qualified <c>Font</c> file path.</item>
+        ///     <item>If a fully qualified <c>Font</c> file path has no metadata attached.</item>
+        ///     <item>If a fully qualified <c>Texture</c> file path is not a <c>Texture(.png)</c> file type.</item>
+        ///     <item>If a <c>Texture</c> path is not a fully qualified <c>Texture</c> file path.</item>
+        /// </list>
         /// </exception>
-        public ITexture GetItem(string filePath)
+        /// <exception cref="CachingMetaDataException">
+        ///     Thrown if the metadata attached to the end of the path is invalid.
+        /// </exception>
+        public ITexture GetItem(string textureFilePath)
         {
-            if (string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(textureFilePath))
             {
-                throw new ArgumentNullException(nameof(filePath), "The parameter must not be null or empty");
+                throw new ArgumentNullException(nameof(textureFilePath), "The parameter must not be null or empty.");
             }
 
-            var (invalid, fontSize, containsMetaData, metaData) = ParseMetaData(filePath);
+            var parseResult = this.fontMetaDataParser.Parse(textureFilePath);
 
-            // If the required metadata is missing
-            if (invalid)
+            string fullFilePath;
+            var isFontFile = false;
+            string cacheKey;
+
+            if (parseResult.ContainsMetaData)
             {
-                if (containsMetaData)
+                // If the metadata is valid and the prefix is a full qualified file path
+                if (parseResult.IsValid)
                 {
-                    var exceptionMsg = "Font metadata required when caching fonts.";
-                    exceptionMsg += string.IsNullOrEmpty(metaData)
-                        ? string.Empty
-                        : $"\nCurrent metadata: '{metaData}'";
-                    exceptionMsg += "Required metadata syntax: '|size:<number-here>'";
+                    if (parseResult.MetaDataPrefix.IsValidFilePath())
+                    {
+                        if (this.path.GetExtension(parseResult.MetaDataPrefix).ToLower() != FontFileExtension)
+                        {
+                            throw new CachingException($"Font caching must be a '{FontFileExtension}' file type.");
+                        }
 
-                    throw new CachingMetaDataException(exceptionMsg);
+                        fullFilePath = parseResult.MetaDataPrefix;
+                        cacheKey = $"{parseResult.MetaDataPrefix}|size:{parseResult.FontSize}";
+                        isFontFile = true;
+                    }
+                    else
+                    {
+                        var exceptionMsg = $"The font file path '{parseResult.MetaDataPrefix}' must be a";
+                        exceptionMsg += $" fully qualified file path of type '{FontFileExtension}'.";
+                        throw new CachingException(exceptionMsg);
+                    }
                 }
                 else
                 {
-                    var exceptionMsg = "Font metadata required when caching fonts.";
-                    exceptionMsg += "Required metadata syntax: '|size:<number-here>'";
-                    exceptionMsg += "\nIf the '|' character is missing, it signifies that no metadata exists.";
-
+                    var exceptionMsg = $"The meta data '{parseResult.MetaData}' is invalid and is required";
+                    exceptionMsg += $" for font files of type '{FontFileExtension}'.";
                     throw new CachingMetaDataException(exceptionMsg);
                 }
             }
-
-            // If the required meta data is all or partly there but invalid
-            filePath = containsMetaData
-                ? filePath.Replace(metaData, string.Empty)
-                : filePath;
-
-            var isTextureFile = this.path.GetExtension(filePath) == TextureFileExtension;
-            var isFontFile = this.path.GetExtension(filePath) == FontFileExtension;
-
-            if (filePath.IsValidFilePath() is false)
+            else
             {
-                throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
+                if (textureFilePath.IsValidFilePath())
+                {
+                    var fileExtension = this.path.GetExtension(textureFilePath).ToLower();
+
+                    if (fileExtension == FontFileExtension)
+                    {
+                        var exceptionMsg = "Font file paths must include metadata.";
+                        exceptionMsg += "\nFont Content Path MetaData Syntax: <file-path>|size:<font-size>";
+                        exceptionMsg += @"\nExample: C:\Windows\Fonts\my-font.ttf|size:12";
+
+                        throw new CachingMetaDataException(exceptionMsg);
+                    }
+
+                    if (fileExtension != TextureFileExtension)
+                    {
+                        throw new CachingException($"Texture caching must be a '{TextureFileExtension}' file type.");
+                    }
+
+                    fullFilePath = textureFilePath;
+                    cacheKey = textureFilePath;
+                }
+                else
+                {
+                    var exceptionMsg = $"The texture file path '{textureFilePath}' must be a";
+                    exceptionMsg += $" fully qualified file path of type '{TextureFileExtension}'.";
+                    throw new CachingException(exceptionMsg);
+                }
             }
 
             // If the requested texture is already loaded into the pool
             // and has been disposed, remove it.
             foreach (var texture in this.textures)
             {
-                if (texture.Key != filePath || !texture.Value.IsDisposed)
+                if (texture.Key != cacheKey || !texture.Value.IsDisposed)
                 {
                     continue;
                 }
@@ -147,32 +185,25 @@ namespace Velaptor.Content.Caching
                 break;
             }
 
-            return this.textures.GetOrAdd(filePath, textureOrFontFilePath =>
+            return this.textures.GetOrAdd(cacheKey, _ =>
             {
                 ImageData imageData;
 
-                if (isTextureFile && isFontFile is false)
+                if (isFontFile)
                 {
-                    imageData = this.imageService.Load(textureOrFontFilePath);
-                }
-                else if (isFontFile && isTextureFile is false)
-                {
-                    var (atlasImageData, _) = this.fontAtlasService.CreateFontAtlas(textureOrFontFilePath, fontSize);
+                    var (atlasImageData, _) = this.fontAtlasService.CreateFontAtlas(fullFilePath, parseResult.FontSize);
+
+                    atlasImageData = this.imageService.FlipVertically(atlasImageData);
                     imageData = atlasImageData;
                 }
                 else
                 {
-                    var exceptionMsg = "Texture Caching Error:";
-                    exceptionMsg += $"\nWhen caching textures, the only file types allowed";
-                    exceptionMsg += $" are '{TextureFileExtension}' and '{FontFileExtension}' files.";
-                    exceptionMsg += "\nFont files are converted into texture atlases for the font glyphs.";
-
-                    throw new CachingException(exceptionMsg);
+                    imageData = this.imageService.Load(fullFilePath);
                 }
 
-                var name = this.path.GetFileNameWithoutExtension(textureOrFontFilePath);
+                var contentName = this.path.GetFileNameWithoutExtension(fullFilePath);
 
-                return this.textureFactory.Create(name, textureOrFontFilePath, imageData, true);
+                return this.textureFactory.Create(contentName, fullFilePath, imageData, false);
             });
         }
 
@@ -180,14 +211,7 @@ namespace Velaptor.Content.Caching
         public void Unload(string cacheKey)
         {
             this.textures.TryRemove(cacheKey, out var texture);
-
-            if (texture is null)
-            {
-                return;
-            }
-
-            texture.IsPooled = false;
-            texture.Dispose();
+            texture?.Dispose();
         }
 
         /// <inheritdoc/>
@@ -195,72 +219,6 @@ namespace Velaptor.Content.Caching
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-                /// <summary>
-        /// Parses the given value for font meta data and returns a result.
-        /// </summary>
-        /// <param name="value">The value to parse.</param>
-        /// <returns>A number of values representing the parsing results.</returns>
-        private static (bool invalid, int fontSize, bool containsMetaData, string metaData) ParseMetaData(string value)
-        {
-            const int noFontSize = -1;
-            const bool isValid = false;
-            const bool isInvalid = true;
-            const string emptyMetaData = "";
-            var pipeIndex = value.IndexOf('|');
-            var pipeSections = value.Split('|');
-            var filePath = pipeSections[0];
-            var varAndValue = pipeSections.Length >= 2 ? pipeSections[1] : string.Empty;
-
-            var isFontFile = filePath.Contains(FontFileExtension);
-
-            // If no pipe exists, then we must assume there is no metadata
-            if ((pipeIndex <= -1 || value.Length < 3) && isFontFile)
-            {
-                return (isInvalid, noFontSize, false, emptyMetaData);
-            }
-
-            // If not a font file, then metadata is not processed
-            if (isFontFile is false)
-            {
-                return (isValid, noFontSize, false, emptyMetaData);
-            }
-
-            var consecutivePipes = value.Contains("||");
-            var moreThanTwoPipesAndEndsWithPipe = value.Count(c => c == '|') >= 2 && value.EndsWith('|');
-            var endsWithSinglePipe = value.EndsWith('|');
-
-            if (consecutivePipes || moreThanTwoPipesAndEndsWithPipe || endsWithSinglePipe)
-            {
-                return (isInvalid, noFontSize, true, emptyMetaData);
-            }
-
-            var colonIndex = varAndValue.IndexOf(':');
-
-            if (colonIndex == -1 || varAndValue.StartsWith(':') || varAndValue.EndsWith(':'))
-            {
-                return (isInvalid, noFontSize, true, $"|{varAndValue}");
-            }
-
-            if (varAndValue.Contains("::"))
-            {
-                return (isInvalid, noFontSize, true, emptyMetaData);
-            }
-
-            var sizeIndex = varAndValue.IndexOf("size", StringComparison.Ordinal);
-            var missingSizeVar = sizeIndex == -1 ||
-                                      sizeIndex + "size".Length - 1 > colonIndex;
-
-            var sizeAndValueSections = varAndValue.Split(':');
-            var parseFailure = int.TryParse(sizeAndValueSections[1], out var size) is false;
-
-            if (missingSizeVar || parseFailure)
-            {
-                return (isInvalid, noFontSize, true, $"|{varAndValue}");
-            }
-
-            return (isValid, size, true, $"|{varAndValue}");
         }
 
         /// <summary>
@@ -276,10 +234,13 @@ namespace Velaptor.Content.Caching
 
             if (disposing)
             {
-                foreach (var texture in this.textures.Values)
+                var cacheKeys = this.textures.Keys.ToArray();
+
+                // Dispose of all textures no matter what type
+                foreach (var cacheKey in cacheKeys)
                 {
-                    texture.IsPooled = false;
-                    texture.Dispose();
+                    this.textures.TryRemove(cacheKey, out var texture);
+                    texture?.Dispose();
                 }
             }
 

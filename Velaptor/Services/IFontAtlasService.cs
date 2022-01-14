@@ -14,7 +14,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Creates font atlas textures for rendering text.
     /// </summary>
-    public interface IFontAtlasService : IDisposable
+    public interface IFontAtlasService
     {
         /// <summary>
         /// Creates a font atlas texture and atlas data that can be used for rendering.

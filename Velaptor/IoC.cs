@@ -71,6 +71,7 @@ namespace Velaptor
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
 
+            IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
             IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
             IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
 
@@ -96,7 +97,7 @@ namespace Velaptor
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
 
             IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IFreeTypeExtensions, FreeTypeExtensions>(Lifestyle.Singleton);
+            IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
         }
 
         private static void SetupCaching() => IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
@@ -124,7 +125,7 @@ namespace Velaptor
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(
-                    IoCContainer.GetInstance<IFreeTypeExtensions>(),
+                    IoCContainer.GetInstance<IFontService>(),
                     PathResolverFactory.CreateFontPathResolver(),
                     PathResolverFactory.CreateSystemFontPathResolver(),
                     IoCContainer.GetInstance<IDirectory>()), Lifestyle.Singleton);

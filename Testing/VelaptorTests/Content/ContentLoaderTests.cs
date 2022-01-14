@@ -6,35 +6,29 @@ namespace VelaptorTests.Content
 {
     using Moq;
     using Velaptor.Content;
-    using Velaptor.Content.Exceptions;
-    using VelaptorTests.Fakes;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="ContentLoader"/> class.
     /// </summary>
     public class ContentLoaderTests
     {
-        private const string TextureName = "test-texture";
-        private const string AtlasName = "test-atlas";
-        private const string SoundName = "test-sound";
-        private const string FontName = "test-font";
+        private const string TextureContentName = "test-texture";
+        private const string AtlasContentName = "test-atlas";
+        private const string SoundContentName = "test-sound";
+        private const string FontContentName = "test-font";
         private readonly Mock<ILoader<ITexture>> mockTextureLoader;
         private readonly Mock<ILoader<ISound>> mockSoundLoader;
         private readonly Mock<ILoader<IAtlasData>> mockAtlasLoader;
         private readonly Mock<ILoader<IFont>> mockFontLoader;
-        private readonly Mock<ITexture> mockTexture;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoaderTests"/> class.
         /// </summary>
         public ContentLoaderTests()
         {
-            this.mockTexture = new Mock<ITexture>();
             this.mockTextureLoader = new Mock<ILoader<ITexture>>();
-            this.mockTextureLoader.Setup(m => m.Load(TextureName)).Returns(this.mockTexture.Object);
-
+            this.mockSoundLoader = new Mock<ILoader<ISound>>();
             this.mockSoundLoader = new Mock<ILoader<ISound>>();
             this.mockAtlasLoader = new Mock<ILoader<IAtlasData>>();
             this.mockFontLoader = new Mock<ILoader<IFont>>();
@@ -48,10 +42,10 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.LoadTexture(TextureName);
+            loader.LoadTexture(TextureContentName);
 
             // Assert
-            this.mockTextureLoader.Verify(m => m.Load(TextureName), Times.Once());
+            this.mockTextureLoader.Verify(m => m.Load(TextureContentName), Times.Once());
         }
 
         [Fact]
@@ -61,10 +55,10 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.LoadSound(SoundName);
+            loader.LoadSound(SoundContentName);
 
             // Assert
-            this.mockSoundLoader.Verify(m => m.Load(SoundName), Times.Once());
+            this.mockSoundLoader.Verify(m => m.Load(SoundContentName), Times.Once());
         }
 
         [Fact]
@@ -74,10 +68,10 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.LoadAtlas(AtlasName);
+            loader.LoadAtlas(AtlasContentName);
 
             // Assert
-            this.mockAtlasLoader.Verify(m => m.Load(AtlasName), Times.Once());
+            this.mockAtlasLoader.Verify(m => m.Load(AtlasContentName), Times.Once());
         }
 
         [Fact]
@@ -87,79 +81,88 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.LoadFont(FontName, 12);
+            loader.LoadFont(FontContentName, 12);
 
             // Assert
-            this.mockFontLoader.Verify(m => m.Load(FontName), Times.Once());
+            this.mockFontLoader.Verify(m => m.Load($"{FontContentName}|size:12"), Times.Once());
         }
 
         [Fact]
         public void Unload_WhenUnloadingTextures_UnloadsTexture()
         {
             // Arrange
+            var mockTexture = new Mock<ITexture>();
+            mockTexture.SetupGet(p => p.FilePath).Returns(TextureContentName);
+
+            this.mockTextureLoader.Setup(m => m.Load(TextureContentName)).Returns(mockTexture.Object);
+
             var loader = CreateContentLoader();
-            loader.LoadTexture(TextureName);
+            var texture = loader.LoadTexture(TextureContentName);
 
             // Act
-            loader.Unload<ITexture>(TextureName);
+            loader.UnloadTexture(texture);
 
             // Assert
-            this.mockTextureLoader.Verify(m => m.Unload(TextureName), Times.Once());
+            this.mockTextureLoader.Verify(m => m.Unload(TextureContentName), Times.Once());
         }
 
         [Fact]
         public void Unload_WhenUnloadingSounds_UnloadsSound()
         {
             // Arrange
+            var mockSound = new Mock<ISound>();
+            mockSound.SetupGet(p => p.FilePath).Returns(SoundContentName);
+
+            this.mockSoundLoader.Setup(m => m.Load(SoundContentName)).Returns(mockSound.Object);
+
             var loader = CreateContentLoader();
-            loader.LoadSound(SoundName);
+            var sound = loader.LoadSound(SoundContentName);
 
             // Act
-            loader.Unload<ISound>(SoundName);
+            loader.UnloadSound(sound);
 
             // Assert
-            this.mockSoundLoader.Verify(m => m.Unload(SoundName), Times.Once());
+            this.mockSoundLoader.Verify(m => m.Unload(SoundContentName), Times.Once());
         }
 
         [Fact]
         public void Unload_WhenUnloadingAtlasData_UnloadsAtlasData()
         {
             // Arrange
+            var mockAtlasData = new Mock<IAtlasData>();
+            mockAtlasData.SetupGet(p => p.FilePath).Returns(AtlasContentName);
+
+            this.mockAtlasLoader.Setup(m => m.Load(AtlasContentName)).Returns(mockAtlasData.Object);
+
             var loader = CreateContentLoader();
-            loader.LoadAtlas(AtlasName);
+            var atlasData = loader.LoadAtlas(AtlasContentName);
 
             // Act
-            loader.Unload<IAtlasData>(AtlasName);
+            loader.UnloadAtlas(atlasData);
 
             // Assert
-            this.mockAtlasLoader.Verify(m => m.Unload(AtlasName), Times.Once());
+            this.mockAtlasLoader.Verify(m => m.Unload(AtlasContentName), Times.Once());
         }
 
         [Fact]
         public void Unload_WhenUnloadingFonts_UnloadsFont()
         {
             // Arrange
+            const int fontSize = 12;
+            var mockFont = new Mock<IFont>();
+            mockFont.SetupGet(p => p.FilePath).Returns(FontContentName);
+            mockFont.SetupGet(p => p.Size).Returns(fontSize);
+
+            this.mockFontLoader.Setup(m => m.Load($"{FontContentName}|size:{fontSize}")).Returns(mockFont.Object);
+
             var loader = CreateContentLoader();
-            loader.LoadFont(FontName, 12);
+            var font = loader.LoadFont(FontContentName, fontSize);
 
             // Act
-            loader.Unload<IFont>(FontName);
+            loader.UnloadFont(font);
 
             // Assert
-            this.mockFontLoader.Verify(m => m.Unload(FontName), Times.Once());
-        }
-
-        [Fact]
-        public void Unload_IfUnloadingUnknownContentType_ThrowException()
-        {
-            // Arrange
-            var loader = CreateContentLoader();
-
-            // Act & Assert
-            Assert.ThrowsWithMessage<UnknownContentException>(() =>
-            {
-                loader.Unload<IUnknownContentItem>("unknown-content");
-            }, $"The content of type '{typeof(IUnknownContentItem)}' is unknown.");
+            this.mockFontLoader.Verify(m => m.Unload($"{FontContentName}|size:{fontSize}"), Times.Once());
         }
 
         [Fact]
@@ -185,8 +188,8 @@ namespace VelaptorTests.Content
         /// <returns>A content loader instance to use for testing.</returns>
         private ContentLoader CreateContentLoader()
             => new (this.mockTextureLoader.Object,
-                                 this.mockSoundLoader.Object,
-                                 this.mockAtlasLoader.Object,
-                                 this.mockFontLoader.Object);
+                    this.mockSoundLoader.Object,
+                    this.mockAtlasLoader.Object,
+                    this.mockFontLoader.Object);
     }
 }

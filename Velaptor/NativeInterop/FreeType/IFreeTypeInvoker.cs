@@ -17,7 +17,7 @@ namespace Velaptor.NativeInterop.FreeType
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Maintains code style.")]
-    internal interface IFreeTypeInvoker : IDisposable
+    internal interface IFreeTypeInvoker
     {
         /// <summary>
         /// Occurs when an error has occured.

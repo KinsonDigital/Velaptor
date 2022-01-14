@@ -2,19 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Content.Factories;
-
 namespace Velaptor.Content.Fonts
 {
     // ReSharper disable RedundantNameQualifier
     using System;
-    using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
-    using Velaptor.Content.Fonts.Services;
+    using System.Linq;
+    using Velaptor.Content.Caching;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Factories;
     using Velaptor.Factories;
-    using Velaptor.NativeInterop.FreeType;
-    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
 
     // ReS harper restore RedundantNameQualifier
@@ -24,14 +22,13 @@ namespace Velaptor.Content.Fonts
     /// </summary>
     public sealed class FontLoader : ILoader<IFont>
     {
-        private readonly ConcurrentDictionary<string, IFont> fonts = new ();
-        private readonly IGLInvoker gl;
-        private readonly IGLInvokerExtensions glExtensions;
+        private const string ExpectedMetaDataSyntax = "size:<font-size>";
         private readonly IFontAtlasService fontAtlasService;
         private readonly IPathResolver fontPathResolver;
+        private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly IFontFactory fontFactory;
+        private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IPath path;
-        private readonly IImageService imageService;
         private bool isDisposed;
 
         /// <summary>
@@ -40,108 +37,171 @@ namespace Velaptor.Content.Fonts
         [ExcludeFromCodeCoverage]
         public FontLoader()
         {
-            this.gl = IoC.Container.GetInstance<IGLInvoker>();
-            this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
             this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
-            this.imageService = IoC.Container.GetInstance<IImageService>();
+            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            this.fontFactory = IoC.Container.GetInstance<IFontFactory>();
+            this.fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
             this.path = IoC.Container.GetInstance<IPath>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
         /// </summary>
-        /// <param name="gl">Makes native calls to OpenGL.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="freeTypeInvoker">Makes calls to the native free type library.</param>
-        /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="fontAtlasService">Loads font files and builds atlas textures from them.</param>
-        /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
         /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
-        /// <param name="imageService">Manipulates image data.</param>
+        /// <param name="textureCache">Caches textures for later use to improve performance.</param>
         /// <param name="fontFactory">Generates new <see cref="IFont"/> instances.</param>
+        /// <param name="fontMetaDataParser">Parses metadata from strings.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         internal FontLoader(
-            // TODO: Inject TextureCache
-            IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
             IFontAtlasService fontAtlasService,
             IPathResolver fontPathResolver,
-            IImageService imageService,
+            IDisposableItemCache<string, ITexture> textureCache,
             IFontFactory fontFactory,
+            IFontMetaDataParser fontMetaDataParser,
             IPath path)
         {
-            this.gl = gl;
-            this.glExtensions = glExtensions;
             this.fontAtlasService = fontAtlasService;
             this.fontPathResolver = fontPathResolver;
-            this.imageService = imageService;
+            this.textureCache = textureCache;
             this.fontFactory = fontFactory;
+            this.fontMetaDataParser = fontMetaDataParser;
             this.path = path;
         }
 
-        /// <inheritdoc/>
-        public IFont Load(string name)
+        /// <summary>
+        /// Loads font content from the application's content directory or directly using a full file path.
+        /// </summary>
+        /// <param name="contentWithMetaData">The name or full file path to the font with metadata.</param>
+        /// <returns>The loaded font.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     Occurs when the <paramref name="contentWithMetaData"/> argument is null or empty.
+        /// </exception>
+        /// <exception cref="CachingMetaDataException">
+        ///     Occurs if the meta data is missing or invalid.
+        /// </exception>
+        /// <remarks>
+        ///     If a path is used, it must be a fully qualified file path.
+        ///     <para>Directory paths are not valid.</para>
+        /// </remarks>
+        /// <example>
+        ///     <code>
+        ///     // Valid Value
+        ///     ContentLoader.Load("my-font|size:12");
+        ///
+        ///     // Valid Value
+        ///     ContentLoader.Load(@"C:\fonts\my-font.ttf|size:12");
+        ///
+        ///     // Invalid Value
+        ///     ContentLoader.Load("my-font|size:12");
+        ///
+        ///     ContentLoader.Load("my-font|size:12");
+        ///     </code>
+        /// </example>
+        public IFont Load(string contentWithMetaData)
         {
-            var size = 12;
-
-            if (name.Contains('|') &&
-                name.NotStartsWith('|') &&
-                name.NotEndsWith('|'))
+            if (string.IsNullOrEmpty(contentWithMetaData))
             {
-                var sections = name.Split('|');
-
-                // TODO: Convert to uint
-                var success = int.TryParse(sections[1], out var parsedSize);
-
-                if (success)
-                {
-                    size = parsedSize;
-                }
-
-                name = sections[0];
+                throw new ArgumentNullException(nameof(contentWithMetaData), "The parameter must not be null.");
             }
 
-            name = this.path.HasExtension(name)
-                ? this.path.GetFileNameWithoutExtension(name)
-                : name;
+            var parseResult = this.fontMetaDataParser.Parse(contentWithMetaData);
+            string fullFontFilePath;
 
-            var fontFilePath = this.fontPathResolver.ResolveFilePath(name);
-
-            // TODO: This code below should be replace with a TextureCache call.  The returning texture is what will
-            // get injected into the Font() ctor.
-
-
-            return this.fonts.GetOrAdd(fontFilePath, filePath =>
+            if (parseResult.ContainsMetaData)
             {
-                // TODO: this will be removed.  This is going to be dealt with in the TextureCache class
-                var (fontAtlasImage, atlasData) = this.fontAtlasService.CreateFontAtlas(filePath, size);
+                if (parseResult.IsValid)
+                {
+                    fullFontFilePath = parseResult.MetaDataPrefix;
 
-                // OpenGL origin Y is at the bottom instead of the top.  This means
-                // that the current image data which is vertically oriented correctly, needs
-                // to be flipped vertically before being sent to OpenGL.
-                // TODO: this will be removed.  This is going to be dealt with in the TextureCache class
-                fontAtlasImage = this.imageService.FlipVertically(fontAtlasImage);
+                    // If the file path is a full file path, leave it be.
+                    // If it is not, then it is a content name and could be a file name with an extension.
+                    // If this is the case, remove the extension
+                    if (parseResult.MetaDataPrefix.IsValidFilePath() is false)
+                    {
+                        var newMetaDataPrefix = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
 
-                // TODO: this will be removed.  This is going to be returned by TextureCache class
-                var fontAtlasTexture = new Texture(this.gl, this.glExtensions, name, filePath, fontAtlasImage) { IsPooled = true };
+                        parseResult = new FontMetaDataParseResult(
+                            parseResult.ContainsMetaData,
+                            parseResult.IsValid,
+                            newMetaDataPrefix,
+                            parseResult.MetaData,
+                            parseResult.FontSize);
+                    }
+                }
+                else
+                {
+                    var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when loading '{contentWithMetaData}'.";
+                    exceptionMsg += $"\n\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
+                    exceptionMsg += "\n\tExample: size:12";
+                    throw new CachingMetaDataException(exceptionMsg);
+                }
+            }
+            else
+            {
+                var exceptionMsg = "The font content item 'missing-metadata' must have metadata post fixed to the";
+                exceptionMsg += " end of a content name or full file path";
 
-                // TODO: When storing the font texture atlas into the texture cache, the key needs to be a full font file path with metadata
+                throw new CachingMetaDataException(exceptionMsg);
+            }
 
-                return this.fontFactory.Create(fontAtlasTexture, name, filePath, size, atlasData);
-            });
+            fullFontFilePath = fullFontFilePath.IsValidFilePath()
+                ? parseResult.MetaDataPrefix
+                : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
+
+            // If the full font file path is empty, then the font does not exist. Throw an exception
+            if (string.IsNullOrEmpty(fullFontFilePath))
+            {
+                var exceptionMsg = $"The font content item '{parseResult.MetaDataPrefix}' does not exist.";
+                exceptionMsg += $"\nCheck the applications font content directory '{this.fontPathResolver.ResolveDirPath()}' to see if it exists.";
+
+                throw new LoadFontException(exceptionMsg);
+            }
+
+            var contentName = this.path.GetFileNameWithoutExtension(fullFontFilePath);
+
+            var (_, atlasData) = this.fontAtlasService.CreateFontAtlas(fullFontFilePath, parseResult.FontSize);
+
+            var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
+            var fontAtlasTexture = this.textureCache.GetItem(cacheKey);
+
+            return this.fontFactory.Create(fontAtlasTexture, contentName, fullFontFilePath, parseResult.FontSize, atlasData);
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-        public void Unload(string name)
+        public void Unload(string contentWithMetaData)
         {
-            var filePathNoExtension = $"{this.fontPathResolver.ResolveDirPath()}{name}";
+            var parseResult = this.fontMetaDataParser.Parse(contentWithMetaData);
 
-            if (this.fonts.TryRemove(filePathNoExtension, out var font))
+            if (parseResult.ContainsMetaData)
             {
-                font.IsPooled = false;
-                font.Dispose();
+                if (parseResult.IsValid)
+                {
+                    var fullFilePath = parseResult.MetaDataPrefix.IsValidFilePath()
+                        ? parseResult.MetaDataPrefix
+                        : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
+
+                    var cacheKey = $"{fullFilePath}|{parseResult.MetaData}";
+
+                    this.textureCache.Unload(cacheKey);
+                }
+                else
+                {
+                    var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when unloading '{contentWithMetaData}'.";
+                    exceptionMsg += $"\n\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
+                    exceptionMsg += "\n\tExample: size:12";
+                    throw new CachingMetaDataException(exceptionMsg);
+                }
+            }
+            else
+            {
+                var exceptionMsg = "When unloading fonts, the name of or the full file path of the font";
+                exceptionMsg += " must be supplied with valid metadata syntax.";
+                exceptionMsg += $"\n\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
+                exceptionMsg += "\n\tExample: size:12";
+
+                throw new CachingMetaDataException(exceptionMsg);
             }
         }
 
@@ -151,7 +211,7 @@ namespace Velaptor.Content.Fonts
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing"><c>true</c> to dispose of managed resources.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)
@@ -161,10 +221,13 @@ namespace Velaptor.Content.Fonts
 
             if (disposing)
             {
-                foreach (var font in this.fonts.Values)
+                var fontAtlasTextureKeys = (from k in this.textureCache.CacheKeys
+                                                where this.fontMetaDataParser.Parse(k).ContainsMetaData
+                                                select k).ToArray();
+
+                foreach (var key in fontAtlasTextureKeys)
                 {
-                    font.IsPooled = false;
-                    font.Dispose();
+                    this.textureCache.Unload(key);
                 }
             }
 

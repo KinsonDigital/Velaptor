@@ -41,11 +41,27 @@ namespace Velaptor.Content
         IFont LoadFont(string nameOrFilePath, int size);
 
         /// <summary>
-        /// Unloads content with the given <paramref name="nameOrFilePath"/>.
+        /// Unloads the texture content.
         /// </summary>
-        /// <typeparam name="T">The type of content to unload.</typeparam>
-        /// <param name="nameOrFilePath">The name content in the application content directory or direct file path to the content.</param>
-        void Unload<T>(string nameOrFilePath)
-            where T : class, IContent;
+        /// <param name="content">The content to unload.</param>
+        void UnloadTexture(ITexture content);
+
+        /// <summary>
+        /// Unloads the sound content.
+        /// </summary>
+        /// <param name="content">The content to unload.</param>
+        void UnloadSound(ISound content);
+
+        /// <summary>
+        /// Unloads the atlas data content.
+        /// </summary>
+        /// <param name="content">The content to unload.</param>
+        void UnloadAtlas(IAtlasData content);
+
+        /// <summary>
+        /// Unloads the font.
+        /// </summary>
+        /// <param name="content">The content to unload.</param>
+        void UnloadFont(IFont content);
     }
 }

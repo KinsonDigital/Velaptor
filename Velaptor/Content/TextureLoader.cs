@@ -65,16 +65,18 @@ namespace Velaptor.Content
         {
             var isFullFilePath = contentPathOrName.IsValidFilePath();
             string filePath;
+            string cacheKey;
 
             if (isFullFilePath)
             {
                 filePath = contentPathOrName;
+                cacheKey = filePath;
             }
             else
             {
                 contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
-
                 filePath = this.pathResolver.ResolveFilePath(contentPathOrName);
+                cacheKey = filePath;
             }
 
             if (filePath.IsValidFilePath() is false && this.path.GetExtension(filePath) == TextureFileExtension)
@@ -82,12 +84,12 @@ namespace Velaptor.Content
                 throw new LoadTextureException($"The texture file path '{filePath}' is not a valid path.");
             }
 
-            return this.textureCache.GetItem(filePath);
+            return this.textureCache.GetItem(cacheKey);
         }
 
         /// <inheritdoc/>
         [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-        public void Unload(string name) => this.textureCache.Unload(name);
+        public void Unload(string nameOrPath) => this.textureCache.Unload(nameOrPath);
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);

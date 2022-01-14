@@ -40,7 +40,7 @@
     <None Update="Content\Fonts\TimesNewRoman-BoldItalic.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Fonts\TimesNewRoman-Regular.TTF">
+    <None Update="Content\Fonts\TimesNewRoman-Regular.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Content\Fonts\TimesNewRoman-Bold.ttf">

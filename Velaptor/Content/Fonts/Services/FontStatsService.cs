@@ -17,7 +17,7 @@ namespace Velaptor.Content.Fonts.Services
     {
         private readonly Dictionary<string, FontStats> contentFontStatsCache = new ();
         private readonly Dictionary<string, FontStats> systemFontStatsCache = new ();
-        private readonly IFreeTypeExtensions freeTypeExtensions;
+        private readonly IFontService fontService;
         private readonly IPathResolver systemFontPathResolver;
         private readonly IPathResolver contentPathResolver;
         private readonly IDirectory directory;
@@ -25,17 +25,17 @@ namespace Velaptor.Content.Fonts.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="FontStatsService"/> class.
         /// </summary>
-        /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
+        /// <param name="fontService">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="contentPathResolver">Resolves paths to the application's content directory.</param>
         /// <param name="systemFontPathResolver">Resolves paths to the systems font directory.</param>
         /// <param name="directory">Performs directory operations.</param>
         public FontStatsService(
-            IFreeTypeExtensions freeTypeExtensions,
+            IFontService fontService,
             IPathResolver contentPathResolver,
             IPathResolver systemFontPathResolver,
             IDirectory directory)
         {
-            this.freeTypeExtensions = freeTypeExtensions;
+            this.fontService = fontService;
             this.contentPathResolver = contentPathResolver;
             this.systemFontPathResolver = systemFontPathResolver;
             this.directory = directory;
@@ -58,12 +58,12 @@ namespace Velaptor.Content.Fonts.Services
 
             var results =
                 (from filePath in fontFiles
-                    where this.freeTypeExtensions.GetFamilyName(filePath, true) == fontFamilyName
+                    where this.fontService.GetFamilyName(filePath, true) == fontFamilyName
                     select new FontStats()
                     {
                         FontFilePath = filePath,
                         FamilyName = fontFamilyName,
-                        Style = this.freeTypeExtensions.GetFontStyle(filePath, true),
+                        Style = this.fontService.GetFontStyle(filePath, true),
                     }).ToArray();
 
             foreach (var result in results)
@@ -93,12 +93,12 @@ namespace Velaptor.Content.Fonts.Services
 
             var results =
                 (from filePath in fontFiles
-                    where this.freeTypeExtensions.GetFamilyName(filePath, true) == fontFamilyName
+                    where this.fontService.GetFamilyName(filePath, true) == fontFamilyName
                     select new FontStats()
                     {
                         FontFilePath = filePath,
                         FamilyName = fontFamilyName,
-                        Style = this.freeTypeExtensions.GetFontStyle(filePath, true),
+                        Style = this.fontService.GetFontStyle(filePath, true),
                     }).ToArray();
 
             foreach (var result in results)

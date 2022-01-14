@@ -4,6 +4,7 @@
 
 namespace Velaptor.Content.Caching
 {
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
@@ -11,13 +12,18 @@ namespace Velaptor.Content.Caching
     /// </summary>
     /// <typeparam name="TCacheKey">The unique assigned for a particular cached item.</typeparam>
     /// <typeparam name="TCacheType">The type of item being cached.</typeparam>
-    public interface IItemCache<in TCacheKey, out TCacheType>
+    public interface IItemCache<TCacheKey, out TCacheType>
     {
         /// <summary>
         /// Gets the total number of cached items.
         /// </summary>
         [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
         int TotalCachedItems { get; }
+
+        /// <summary>
+        /// Gets the list of all the cache keys
+        /// </summary>
+        ReadOnlyCollection<TCacheKey> CacheKeys { get;  }
 
         /// <summary>
         /// Gets a cached item that matches the given <param name="cacheKey"></param>.

@@ -22,7 +22,6 @@ namespace VelaptorTesting.Scenes
         private const string SingleLineText = "Change me using the buttons below.";
         private const string MultiLineText = "Change me using\nthe buttons below.";
         private IFont? textFont;
-        private IFont? otherTextFont;
         private Button? btnRotateCW;
         private Button? btnRotateCCW;
         private Button? btnIncreaseSize;
@@ -57,7 +56,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.textFont = ContentLoader.LoadFont("TimesNewRoman-Regular", 12);
+            this.textFont = ContentLoader.LoadFont("times", 12);
 
             // // Rotate CW Button
             this.btnRotateCW = new Button(ContentLoader);
@@ -134,17 +133,9 @@ namespace VelaptorTesting.Scenes
             this.btnSetMultiLine.MouseUp += (_, _) =>
             {
                 this.isMultiLine = !this.isMultiLine;
-                if (this.textFont.Size == 22)
-                {
-                    this.textFont.Size = 12;
-                }
-                else
-                {
-                    this.textFont.Size = 22;
-                }
+                this.textFont.Size = this.textFont.Size == 22 ? 12 : 22;
 
-                // TODO: Reenable this and remove code above
-                // this.btnSetMultiLine.Text = $"Multi-Line: {this.isMultiLine}";
+                this.btnSetMultiLine.Text = $"Multi-Line: {this.isMultiLine}";
             };
             this.btnSetMultiLine.LoadContent();
 
@@ -262,6 +253,7 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         private void UnloadSceneContent()
         {
+            ContentLoader.UnloadFont(this.textFont);
         }
 
         /// <summary>

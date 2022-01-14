@@ -18,13 +18,9 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestMouseScene : SceneBase
     {
-        private const int LeftMargin = 5;
-        private const int TopMargin = 25;
-        private const int LineSpacing = 20;
         private readonly Mouse mouse;
         private Label? mouseInfoLabel;
         private MouseState currentMouseState;
-        private Dictionary<char, float>? glyphHeights;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestMouseScene"/> class.
@@ -45,9 +41,6 @@ namespace VelaptorTesting.Scenes
             }
 
             this.mouseInfoLabel = new Label(ContentLoader) { Color = Color.White };
-
-            var font = ContentLoader.LoadFont("times", 12);
-            this.glyphHeights = new Dictionary<char, float>(font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphHeight)));
 
             this.mouseInfoLabel.LoadContent();
             this.mouseInfoLabel.Position = new Point((int)MainWindow.WindowWidth / 2, (int)MainWindow.WindowHeight / 2);
@@ -82,8 +75,6 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            UnloadSceneContent();
-
             base.UnloadContent();
         }
 
@@ -95,23 +86,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            if (disposing)
-            {
-                UnloadSceneContent();
-            }
-
             base.Dispose(disposing);
-        }
-
-        /// <summary>
-        /// Unloads the scenes content.
-        /// </summary>
-        private void UnloadSceneContent()
-        {
-            RemoveControl(this.mouseInfoLabel);
-
-            this.glyphHeights.Clear();
-            this.glyphHeights = null;
         }
     }
 }

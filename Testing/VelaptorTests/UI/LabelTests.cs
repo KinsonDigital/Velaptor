@@ -35,7 +35,7 @@ namespace VelaptorTests.UI
             MockGlyphs(TextValue);
 
             this.mockContentLoader = new Mock<IContentLoader>();
-            this.mockContentLoader.Setup(m => m.Load<IFont>(It.IsAny<string>()))
+            this.mockContentLoader.Setup(m => m.LoadFont(It.IsAny<string>(), It.IsAny<int>()))
                 .Returns(this.mockFont.Object);
         }
 
@@ -246,7 +246,7 @@ namespace VelaptorTests.UI
             label.LoadContent();
 
             // Assert
-            this.mockContentLoader.Verify(m => m.Load<IFont>("TimesNewRoman"), Times.Once);
+            this.mockContentLoader.Verify(m => m.LoadFont("times", 12), Times.Once);
         }
 
         [Fact]

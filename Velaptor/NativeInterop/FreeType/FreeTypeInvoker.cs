@@ -6,9 +6,7 @@ namespace Velaptor.NativeInterop.FreeType
 {
     // TODO: Throw an exception for every method that takes a zero pointer.  Create custom exception for this
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using FreeTypeSharp.Native;
 
     /// <summary>
@@ -20,15 +18,6 @@ namespace Velaptor.NativeInterop.FreeType
     [ExcludeFromCodeCoverage]
     internal class FreeTypeInvoker : IFreeTypeInvoker
     {
-        private static readonly Dictionary<string, IntPtr> FacePointers = new ();
-        private IntPtr libraryPtr;
-        private bool isDisposed;
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="FreeTypeInvoker"/> class.
-        /// </summary>
-        ~FreeTypeInvoker() => Dispose();
-
         /// <inheritdoc/>
         public event EventHandler<FreeTypeErrorEventArgs>? OnError;
 
@@ -66,11 +55,6 @@ namespace Velaptor.NativeInterop.FreeType
         /// <inheritdoc/>
         public IntPtr FT_Init_FreeType()
         {
-            if (this.libraryPtr != IntPtr.Zero)
-            {
-                return this.libraryPtr;
-            }
-
             var error = FT.FT_Init_FreeType(out IntPtr result);
 
             if (error != FT_Error.FT_Err_Ok)
@@ -79,25 +63,12 @@ namespace Velaptor.NativeInterop.FreeType
                 return IntPtr.Zero;
             }
 
-            this.libraryPtr = result;
-
             return result;
         }
 
         /// <inheritdoc/>
         public IntPtr FT_New_Face(IntPtr library, string filepathname, int face_index)
         {
-            if (this.libraryPtr != library)
-            {
-                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
-                return IntPtr.Zero;
-            }
-
-            if (FacePointers.ContainsKey(filepathname))
-            {
-                return FacePointers[filepathname];
-            }
-
             var error = FT.FT_New_Face(library, filepathname, face_index, out IntPtr aface);
 
             if (error != FT_Error.FT_Err_Ok)
@@ -105,8 +76,6 @@ namespace Velaptor.NativeInterop.FreeType
                 this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
                 return IntPtr.Zero;
             }
-
-            FacePointers.Add(filepathname, aface);
 
             return aface;
         }
@@ -133,17 +102,6 @@ namespace Velaptor.NativeInterop.FreeType
             {
                 this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
             }
-
-            var foundFaceKey = (from p in FacePointers
-                                     where p.Value == face
-                                     select p.Key).FirstOrDefault();
-
-            if (foundFaceKey is null)
-            {
-                return;
-            }
-
-            FacePointers.Remove(foundFaceKey);
         }
 
         /// <inheritdoc/>
@@ -152,44 +110,16 @@ namespace Velaptor.NativeInterop.FreeType
         /// <inheritdoc/>
         public void FT_Done_FreeType(IntPtr library)
         {
-            if (this.libraryPtr != library)
-            {
-                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
-                return;
-            }
-
             var error = FT.FT_Done_FreeType(library);
 
             if (error != FT_Error.FT_Err_Ok)
             {
                 this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-                return;
             }
-
-            this.libraryPtr = IntPtr.Zero;
         }
 
         // ReSharper restore IdentifierTypo
         // ReSharper restore InconsistentNaming
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            foreach (var facePtr in FacePointers.Values.ToArray())
-            {
-                FT_Done_Face(facePtr);
-            }
-
-            FT.FT_Done_FreeType(this.libraryPtr);
-
-            this.isDisposed = true;
-            GC.SuppressFinalize(this);
-        }
 
         /// <summary>
         /// Creates n error message from the standard Free Type message.

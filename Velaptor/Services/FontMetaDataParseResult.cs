@@ -21,9 +21,9 @@ namespace Velaptor.Services
         public readonly bool IsValid;
 
         /// <summary>
-        /// Gets the full file path to the font.
+        /// Gets the data before the metadata section.
         /// </summary>
-        public readonly string FilePath;
+        public readonly string MetaDataPrefix;
 
         /// <summary>
         /// Gets the meta data string.
@@ -41,13 +41,13 @@ namespace Velaptor.Services
         /// <param name="containsMetaData">Value indicating whether or not the string contains any metadata.</param>
         /// <param name="isValid">Value indicating whether or not the metadata is valid.</param>
         /// <param name="metaData">The metadata in a string.</param>
-        /// <param name="filePath">The full file path to the font.</param>
+        /// <param name="metaDataPrefix">The data before the metadata section.</param>
         /// <param name="fontSize">The size of the font embedded in the metadata.</param>
-        public FontMetaDataParseResult(bool containsMetaData, bool isValid, string filePath, string metaData, int fontSize)
+        public FontMetaDataParseResult(bool containsMetaData, bool isValid, string metaDataPrefix, string metaData, int fontSize)
         {
             this.ContainsMetaData = containsMetaData;
             this.IsValid = isValid;
-            this.FilePath = filePath;
+            this.MetaDataPrefix = metaDataPrefix;
             this.MetaData = metaData;
             this.FontSize = fontSize;
         }

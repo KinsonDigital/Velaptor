@@ -4,7 +4,6 @@
 
 namespace VelaptorTests.Services
 {
-#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Collections.Generic;
     using System.Drawing;
@@ -13,15 +12,13 @@ namespace VelaptorTests.Services
     using System.Runtime.InteropServices;
     using Moq;
     using Velaptor;
+    using Velaptor.Content.Fonts.Services;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.Hardware;
-    using Velaptor.NativeInterop.FreeType;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="FontAtlasService"/> class.
@@ -29,12 +26,10 @@ namespace VelaptorTests.Services
     public class FontAtlasServiceTests
     {
         private const string FontFilePath = @"C:\temp\test-font.ttf";
-        private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
-        private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
+        private readonly Mock<IFontService> mockFontService;
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<ISystemMonitorService> mockMonitorService;
         private readonly Mock<IPlatform> mockPlatform;
-        private readonly IntPtr freeTypeLibPtr = new (1234);
         private readonly char[] glyphChars =
         {
             'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -59,21 +54,16 @@ namespace VelaptorTests.Services
                 this.glyphIndices.Add(glyphChar, glyphChar);
             }
 
-            this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
-            this.mockFreeTypeInvoker.Setup(m => m.FT_New_Face(this.freeTypeLibPtr, FontFilePath, 0))
-                .Returns(this.facePtr);
-            this.mockFreeTypeInvoker.Setup(m => m.FT_Init_FreeType()).Returns(this.freeTypeLibPtr);
-
-            this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
-            this.mockFreeTypeExtensions.Setup(m => m.CreateFontFace(this.freeTypeLibPtr, FontFilePath))
+            this.mockFontService = new Mock<IFontService>();
+            this.mockFontService.Setup(m => m.CreateFontFace(FontFilePath))
                 .Returns(() => this.facePtr);
 
-            this.mockFreeTypeExtensions.Setup(m => m.GetGlyphIndices(this.facePtr, this.glyphChars))
+            this.mockFontService.Setup(m => m.GetGlyphIndices(this.facePtr, this.glyphChars))
                 .Returns(() => this.glyphIndices);
 
-            this.mockFreeTypeExtensions.Setup(m => m.CreateGlyphMetrics(
+            this.mockFontService.Setup(m => m.CreateGlyphMetrics(
                 this.facePtr,
-                this.mockFreeTypeExtensions.Object.GetGlyphIndices(this.facePtr, this.glyphChars)))
+                this.mockFontService.Object.GetGlyphIndices(this.facePtr, this.glyphChars)))
                     .Returns(() =>
                     {
                         var result = new Dictionary<char, GlyphMetrics>();
@@ -102,7 +92,7 @@ namespace VelaptorTests.Services
                         return result;
                     });
 
-            this.mockFreeTypeExtensions.Setup(m => m.CreateGlyphImage(this.facePtr, It.IsAny<char>(), It.IsAny<uint>()))
+            this.mockFontService.Setup(m => m.CreateGlyphImage(this.facePtr, It.IsAny<char>(), It.IsAny<uint>()))
                 .Returns(() =>
                 {
                     return (new byte[]
@@ -128,21 +118,6 @@ namespace VelaptorTests.Services
             this.mockFile.Setup(m => m.Exists(FontFilePath)).Returns(true);
         }
 
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WhenInvoked_InitializesFreeType()
-        {
-            // Act
-            var unused = CreateService();
-
-            // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Init_FreeType(), Times.Once());
-            this.mockFreeTypeInvoker.VerifyAdd(s => s.OnError += It.IsAny<EventHandler<FreeTypeErrorEventArgs>>(),
-                Times.Once(),
-                $"Subscription of the '{nameof(IFreeTypeInvoker.OnError)}' event did not occur.");
-        }
-        #endregion
-
         #region Method Tests
         [Theory]
         [InlineData("")]
@@ -153,7 +128,7 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
             }, "The font file path argument must not be null. (Parameter 'fontFilePath')");
@@ -167,7 +142,7 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
             }, $"The file '{FontFilePath}' does not exist.");
@@ -182,7 +157,7 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<SystemMonitorException>(() =>
+            AssertExtensions.ThrowsWithMessage<SystemMonitorException>(() =>
             {
                 service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
             }, "The main system monitor must not be null.");
@@ -219,33 +194,12 @@ namespace VelaptorTests.Services
             TestHelpers.SaveImageForTest(actualImage);
 
             // Assert
-            this.mockFreeTypeExtensions.Verify(
+            this.mockFontService.Verify(
                 m => m.CreateGlyphImage(
                     It.IsAny<IntPtr>(),
                     It.IsAny<char>(),
                     It.IsAny<uint>()),
                 Times.Exactly(95));
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_ProperlyDisposesOfFreeType()
-        {
-            // TODO: This needs to be figured out.  The Dispose() method has some code that is doing
-            // some casting from IntPtr to unsafe pointers and it is causing issues
-
-            // Arrange
-            var service = CreateService();
-            service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
-
-            // Act
-            service.Dispose();
-            service.Dispose();
-
-            // Assert
-            this.mockFreeTypeInvoker.VerifyRemove(s => s.OnError -= It.IsAny<EventHandler<FreeTypeErrorEventArgs>>(),
-                Times.Once(),
-                $"Unsubscription of the '{nameof(IFreeTypeInvoker.OnError)}' event did not occur.");
-            this.mockFreeTypeInvoker.Verify(m => m.Dispose(), Times.Once());
         }
         #endregion
 
@@ -256,8 +210,7 @@ namespace VelaptorTests.Services
         private FontAtlasService CreateService()
         {
             var result = new FontAtlasService(
-                this.mockFreeTypeInvoker.Object,
-                this.mockFreeTypeExtensions.Object,
+                this.mockFontService.Object,
                 this.mockImageService.Object,
                 this.mockMonitorService.Object,
                 this.mockFile.Object);

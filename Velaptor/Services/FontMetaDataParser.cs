@@ -10,14 +10,6 @@ namespace Velaptor.Services
     /// <inheritdoc/>
     internal class FontMetaDataParser : IFontMetaDataParser
     {
-        private readonly IPath path;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FontMetaDataParser"/> class.
-        /// </summary>
-        /// <param name="path">Process directory and file paths.</param>
-        public FontMetaDataParser(IPath path) => this.path = path;
-
         /// <inheritdoc/>
         public FontMetaDataParseResult Parse(string stringToParse)
         {
@@ -26,7 +18,6 @@ namespace Velaptor.Services
             const bool dataIsValid = true;
             const bool dataIsInvalid = false;
             const int invalidSize = -1;
-            const string fontFileExtension = ".ttf";
             const string emptyMetaData = "";
             const string emptyFilePath = "";
             var doesNotContainMetaData = stringToParse.DoesNotContain(metaDataSignifier);
@@ -61,36 +52,6 @@ namespace Velaptor.Services
             var wholeSections = stringToParse.Split(metaDataSignifier);
             var fullFilePath = wholeSections[0];
             var metaData = wholeSections[1];
-
-            if (this.path.HasExtension(fullFilePath) is false)
-            {
-                return new FontMetaDataParseResult(
-                    !doesNotContainMetaData,
-                    dataIsInvalid,
-                    fullFilePath,
-                    metaData,
-                    invalidSize);
-            }
-
-            if (this.path.GetExtension(fullFilePath) != fontFileExtension)
-            {
-                return new FontMetaDataParseResult(
-                    !doesNotContainMetaData,
-                    dataIsInvalid,
-                    fullFilePath,
-                    metaData,
-                    invalidSize);
-            }
-
-            if (string.IsNullOrEmpty(this.path.GetDirectoryName(fullFilePath)))
-            {
-                return new FontMetaDataParseResult(
-                    !doesNotContainMetaData,
-                    dataIsInvalid,
-                    fullFilePath,
-                    metaData,
-                    invalidSize);
-            }
 
             if (doesNotContainNameValueSeparator)
             {

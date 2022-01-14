@@ -69,6 +69,7 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var mockTexture = new Mock<ITexture>();
+
             this.mockTextureCache.Setup(m => m.GetItem(this.textureFilePath))
                 .Returns(mockTexture.Object);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}")).Returns(contentName);

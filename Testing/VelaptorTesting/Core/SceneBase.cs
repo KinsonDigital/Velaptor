@@ -63,6 +63,16 @@ namespace VelaptorTesting.Core
         /// <inheritdoc cref="IScene.UnloadContent"/>
         public virtual void UnloadContent()
         {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            foreach (var control in this.controls)
+            {
+                control.Dispose();
+            }
+
             this.controls.Clear();
             IsLoaded = false;
         }

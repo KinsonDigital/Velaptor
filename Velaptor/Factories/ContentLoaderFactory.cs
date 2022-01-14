@@ -130,21 +130,19 @@ namespace Velaptor.Factories
                 return fontLoader;
             }
 
-            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
-            var imageService = IoC.Container.GetInstance<IImageService>();
+            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             var path = IoC.Container.GetInstance<IPath>();
             var fontFactory = IoC.Container.GetInstance<IFontFactory>();
+            var fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
 
             fontLoader = new FontLoader(
-                glInvoker,
-                glInvokerExtensions,
                 fontAtlasService,
                 fontPathResolver,
-                imageService,
+                textureCache,
                 fontFactory,
+                fontMetaDataParser,
                 path);
 
             return fontLoader;

@@ -519,7 +519,7 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                control.Invoke_Exception_In_Method_ThrowExceptionIfLoadingWhenDisposed();
+                control.Invoke_Exception_In_Method_ThrowsExceptionIfLoadingWhenDisposed();
             }, "Cannot load a control that has been disposed.");
         }
 
@@ -532,7 +532,7 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.DoesNotThrow<Exception>(() =>
             {
-                control.Invoke_Exception_In_Method_ThrowExceptionIfLoadingWhenDisposed();
+                control.Invoke_Exception_In_Method_ThrowsExceptionIfLoadingWhenDisposed();
             });
         }
         #endregion

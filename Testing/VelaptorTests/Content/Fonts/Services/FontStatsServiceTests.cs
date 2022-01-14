@@ -24,7 +24,7 @@ namespace VelaptorTests.Content.Fonts.Services
         private const string DirNameForSystemPath = "system-fonts";
         private readonly string fullContentFontDirPath = $@"{RootContentDirPath}{DirNameForContentPath}\";
         private readonly string fullSystemFontDirPath = $@"{RootSystemDirPath}{DirNameForSystemPath}\";
-        private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
+        private readonly Mock<IFontService> mockFontService;
         private readonly Mock<IPathResolver> mockSystemFontPathResolver;
         private readonly Mock<IPathResolver> mockContentPathResolver;
         private readonly Mock<IDirectory> mockDirectory;
@@ -34,7 +34,7 @@ namespace VelaptorTests.Content.Fonts.Services
         /// </summary>
         public FontStatsServiceTests()
         {
-            this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
+            this.mockFontService = new Mock<IFontService>();
 
             this.mockContentPathResolver = new Mock<IPathResolver>();
             this.mockContentPathResolver.Setup(m => m.ResolveDirPath())
@@ -150,7 +150,7 @@ namespace VelaptorTests.Content.Fonts.Services
         /// </summary>
         /// <returns>The instance to test.</returns>
         private FontStatsService CreateService() => new (
-                this.mockFreeTypeExtensions.Object,
+                this.mockFontService.Object,
                 this.mockContentPathResolver.Object,
                 this.mockSystemFontPathResolver.Object,
                 this.mockDirectory.Object);
@@ -161,7 +161,7 @@ namespace VelaptorTests.Content.Fonts.Services
 
         private void MockFontFamilyName(string filePath, string familyName)
         {
-            this.mockFreeTypeExtensions.Setup(m => m.GetFamilyName(filePath, true))
+            this.mockFontService.Setup(m => m.GetFamilyName(filePath, true))
                 .Returns(familyName);
         }
 
@@ -175,7 +175,7 @@ namespace VelaptorTests.Content.Fonts.Services
 
         private void MockFontStyle(string filePath, FontStyle style)
         {
-            this.mockFreeTypeExtensions.Setup(m => m.GetFontStyle(filePath, true))
+            this.mockFontService.Setup(m => m.GetFontStyle(filePath, true))
                 .Returns(style);
         }
     }
