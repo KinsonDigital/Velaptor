@@ -1,8 +1,8 @@
-// <copyright file="IFreeTypeExtensions.cs" company="KinsonDigital">
+// <copyright file="IFontService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.FreeType
+namespace Velaptor.Content.Fonts.Services
 {
     // ReSharper disable RedundantNameQualifier
     using System;
@@ -15,17 +15,16 @@ namespace Velaptor.NativeInterop.FreeType
     /// <summary>
     /// Provides extensions to free type library operations to help simplify working with free type.
     /// </summary>
-    internal interface IFreeTypeExtensions
+    internal interface IFontService : IDisposable
     {
         /// <summary>
         /// Creates a new font face from a font file at the given <paramref name="fontFilePath"/>.
         /// </summary>
-        /// <param name="freeTypeLibPtr">The pointer to the free type library.</param>
         /// <param name="fontFilePath">The path to the font file to create the face from.</param>
         /// <returns>
         ///     The pointer to the created font face.
         /// </returns>
-        IntPtr CreateFontFace(IntPtr freeTypeLibPtr, string fontFilePath);
+        IntPtr CreateFontFace(string fontFilePath);
 
         /// <summary>
         /// Pulls the 8-bit grayscale bitmap data for the given <paramref name="glyphChar"/>.
@@ -57,7 +56,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// </summary>
         /// <param name="facePtr">The pointer to the font face.</param>
         /// <param name="sizeInPoints">The size in points used to calculate the character size.</param>
-        void SetCharacterSize(IntPtr facePtr, int sizeInPoints);
+        void SetFontSize(IntPtr facePtr, uint sizeInPoints);
 
         /// <summary>
         /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
@@ -67,20 +66,31 @@ namespace Velaptor.NativeInterop.FreeType
         bool HasKerning(IntPtr facePtr);
 
         /// <summary>
+        /// Gets the kerning value between 2 glyphs.
+        /// </summary>
+        /// <param name="facePtr">The pointer to the font face.</param>
+        /// <param name="leftGlyphIndex">The character index of the glyph to the left of the right glyph.</param>
+        /// <param name="rightGlyphIndex">The character index of the glyph to the right of the left glyph.</param>
+        /// <returns>The kerning (horizontal spacing) between the glyphs.</returns>
+        /// <remarks>
+        /// Refer to the URL below for more info.
+        /// <para>https://freetype.org/freetype2/docs/glyphs/glyphs-4.html#section-1.</para>
+        /// </remarks>
+        float GetKerning(IntPtr facePtr, uint leftGlyphIndex, uint rightGlyphIndex);
+
+        /// <summary>
         /// Gets the style of the font at the given <paramref name="fontFilePath"/>.
         /// </summary>
         /// <param name="fontFilePath">The path to the font file.</param>
-        /// <param name="disposeAfter">If <see langword="true"/>, disposes of the font face created in this process.</param>
         /// <returns>The style of the font.</returns>
-        FontStyle GetFontStyle(string fontFilePath, bool disposeAfter = false);
+        FontStyle GetFontStyle(string fontFilePath);
 
         /// <summary>
         /// Gets the name of the font family of the font at the given <paramref name="fontFilePath"/>.
         /// </summary>
         /// <param name="fontFilePath">The path to the font file.</param>
-        /// <param name="disposeAfter">If <see langword="true"/>, disposes of the font face created in this process.</param>
         /// <returns>The family name of the font.</returns>
-        string GetFamilyName(string fontFilePath, bool disposeAfter = false);
+        string GetFamilyName(string fontFilePath);
 
         /// <summary>
         /// Returns the line spacing as a scaled value.
@@ -88,7 +98,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// <param name="facePtr">The pointer to the font face.</param>
         /// <param name="sizeInPoints">The size in points used to calculate the line spacing.</param>
         /// <returns>The line spacing as a scaled value.</returns>
-        float GetFontScaledLineSpacing(IntPtr facePtr, int sizeInPoints);
+        float GetFontScaledLineSpacing(IntPtr facePtr, uint sizeInPoints);
 
         /// <summary>
         /// Disposes of the font face that the given <paramref name="facePtr"/> points to.

@@ -1,8 +1,8 @@
-// <copyright file="FreeTypeExtensions.cs" company="KinsonDigital">
+// <copyright file="FontService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.FreeType
+namespace Velaptor.Content.Fonts.Services
 {
     // ReSharper disable RedundantNameQualifier
     using System;
@@ -13,7 +13,9 @@ namespace Velaptor.NativeInterop.FreeType
     using FreeTypeSharp.Native;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Fonts;
+    using Velaptor.Exceptions;
     using Velaptor.Graphics;
+    using Velaptor.NativeInterop.FreeType;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -22,26 +24,34 @@ namespace Velaptor.NativeInterop.FreeType
     /// Provides extensions to free type library operations to help simplify working with free type.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class FreeTypeExtensions : IFreeTypeExtensions
+    internal class FontService : IFontService
     {
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly ISystemMonitorService systemMonitorService;
+        private readonly IPlatform platform;
+        private static readonly Dictionary<string, IntPtr> FacePointers = new ();
+        private IntPtr libraryPtr;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FreeTypeExtensions"/> class.
+        /// Initializes a new instance of the <see cref="FontService"/> class.
         /// </summary>
         /// <param name="freeTypeInvoker">Makes calls to the native FreeType library.</param>
         /// <param name="systemMonitorService">Provides information about the system monitor.</param>
-        public FreeTypeExtensions(IFreeTypeInvoker freeTypeInvoker, ISystemMonitorService systemMonitorService)
+        public FontService(IFreeTypeInvoker freeTypeInvoker, ISystemMonitorService systemMonitorService, IPlatform platform)
         {
             this.freeTypeInvoker = freeTypeInvoker;
             this.systemMonitorService = systemMonitorService;
+            this.platform = platform;
+
+            this.libraryPtr = this.freeTypeInvoker.FT_Init_FreeType();
+
+            this.freeTypeInvoker.OnError += FreeTypeInvoker_OnError;
         }
 
         /// <inheritdoc/>
-        public IntPtr CreateFontFace(IntPtr freeTypeLibPtr, string fontFilePath)
+        public IntPtr CreateFontFace(string fontFilePath)
         {
-            var result = this.freeTypeInvoker.FT_New_Face(freeTypeLibPtr, fontFilePath, 0);
+            var result = this.freeTypeInvoker.FT_New_Face(this.libraryPtr, fontFilePath, 0);
 
             if (result == IntPtr.Zero)
             {
@@ -162,7 +172,7 @@ namespace Velaptor.NativeInterop.FreeType
 
         // TODO: Convert the sizeInPoints to an uint data type
         /// <inheritdoc/>
-        public void SetCharacterSize(IntPtr facePtr, int sizeInPoints)
+        public void SetFontSize(IntPtr facePtr, uint sizeInPoints)
         {
             if (sizeInPoints <= 0)
             {
@@ -170,6 +180,12 @@ namespace Velaptor.NativeInterop.FreeType
             }
 
             var sizeInPointsPtr = (IntPtr)(sizeInPoints << 6);
+
+            // If the main monitor is null, throw an exception.  This is required to set the character size.
+            if (this.systemMonitorService.MainMonitor is null)
+            {
+                throw new SystemMonitorException("Cannot set the font size if there is no monitor to use for DPI settings.");
+            }
 
             this.freeTypeInvoker.FT_Set_Char_Size(
                 facePtr,
@@ -201,7 +217,26 @@ namespace Velaptor.NativeInterop.FreeType
         }
 
         /// <inheritdoc/>
-        public FontStyle GetFontStyle(string fontFilePath, bool disposeAfter = false)
+        public float GetKerning(IntPtr facePtr, uint leftGlyphIndex, uint rightGlyphIndex)
+        {
+            if (HasKerning(facePtr) is false || leftGlyphIndex == 0 || rightGlyphIndex == 0)
+            {
+                return 0f;
+            }
+
+            var result = this.freeTypeInvoker.FT_Get_Kerning(
+                facePtr,
+                leftGlyphIndex,
+                rightGlyphIndex,
+                (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
+
+            return this.platform.Is32BitProcess
+                ? (float)(result.x.ToInt32() >> 6)
+                : result.x.ToInt64() >> 6;
+        }
+
+        /// <inheritdoc/>
+        public FontStyle GetFontStyle(string fontFilePath)
         {
             FontStyle result;
 
@@ -212,8 +247,7 @@ namespace Velaptor.NativeInterop.FreeType
 
             unsafe
             {
-                var freeTypeLibPtr = this.freeTypeInvoker.FT_Init_FreeType();
-                var fontFace = CreateFontFace(freeTypeLibPtr, fontFilePath);
+                var fontFace = CreateFontFace(fontFilePath);
                 var faceRec = (FT_FaceRec*)fontFace;
 
                 /* Style Values
@@ -226,17 +260,14 @@ namespace Velaptor.NativeInterop.FreeType
                     ? (FontStyle)faceRec->style_flags.ToInt64()
                     : (FontStyle)faceRec->style_flags.ToInt32();
 
-                if (disposeAfter)
-                {
-                    this.freeTypeInvoker.FT_Done_Face(fontFace);
-                }
+                this.freeTypeInvoker.FT_Done_Face(fontFace);
             }
 
             return result;
         }
 
         /// <inheritdoc/>
-        public string GetFamilyName(string fontFilePath, bool disposeAfter = false)
+        public string GetFamilyName(string fontFilePath)
         {
             string? result;
 
@@ -247,16 +278,12 @@ namespace Velaptor.NativeInterop.FreeType
 
             unsafe
             {
-                var freeTypeLibPtr = this.freeTypeInvoker.FT_Init_FreeType();
-                var fontFace = CreateFontFace(freeTypeLibPtr, fontFilePath);
+                var fontFace = CreateFontFace(fontFilePath);
                 var faceRec = (FT_FaceRec*)fontFace;
 
                 result = Marshal.PtrToStringAnsi(faceRec->family_name);
 
-                if (disposeAfter)
-                {
-                    this.freeTypeInvoker.FT_Done_Face(fontFace);
-                }
+                this.freeTypeInvoker.FT_Done_Face(fontFace);
             }
 
             return result ?? string.Empty;
@@ -265,23 +292,49 @@ namespace Velaptor.NativeInterop.FreeType
         // TODO: Convert the size parameter to uint
 
         /// <inheritdoc/>
-        public float GetFontScaledLineSpacing(IntPtr facePtr, int sizeInPoints)
+        public float GetFontScaledLineSpacing(IntPtr facePtr, uint sizeInPoints)
         {
             if (facePtr == IntPtr.Zero)
             {
                 throw new ArgumentException("The font face pointer must not be null.", nameof(facePtr));
             }
 
-            SetCharacterSize(facePtr, sizeInPoints);
+            SetFontSize(facePtr, sizeInPoints);
 
             var face = Marshal.PtrToStructure<FT_FaceRec>(facePtr);
 
             unsafe
             {
-                return (face.size->metrics.height.ToInt64() >> 6) / 64f;
+                return face.size->metrics.height.ToInt64() >> 6;
             }
         }
 
         public void DisposeFace(IntPtr facePtr) => this.freeTypeInvoker.FT_Done_Face(facePtr);
+
+        public void Dispose()
+        {
+            // if (this.isDisposed)
+            // {
+            //     return;
+            // }
+            //
+            // this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
+
+            // foreach (var facePtr in FacePointers.Values.ToArray())
+            // {
+            //     FT_Done_Face(facePtr);
+            // }
+            //
+            // this.isDisposed = true;
+            // GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Occurs when there is a free type associated error.
+        /// </summary>
+        private void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e)
+        {
+            // TODO: Throw custom free type exception here
+        }
     }
 }
