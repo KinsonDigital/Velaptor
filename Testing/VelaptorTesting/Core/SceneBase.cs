@@ -58,7 +58,15 @@ namespace VelaptorTesting.Core
         public void RemoveControl(IControl control) => this.controls.Remove(control);
 
         /// <inheritdoc cref="IScene.LoadContent"/>
-        public virtual void LoadContent() => IsLoaded = true;
+        public virtual void LoadContent()
+        {
+            foreach (var control in this.controls)
+            {
+                control.LoadContent();
+            }
+
+            IsLoaded = true;
+        }
 
         /// <inheritdoc cref="IScene.UnloadContent"/>
         public virtual void UnloadContent()
