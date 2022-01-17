@@ -2,14 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL.Services
+namespace Velaptor.Services
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using Velaptor.Services;
 
     /// <summary>
     /// Loads embedded text file resources.
