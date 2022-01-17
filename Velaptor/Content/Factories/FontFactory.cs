@@ -7,10 +7,11 @@ namespace Velaptor.Content.Factories
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Fonts;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop.FreeType;
+    using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -23,16 +24,24 @@ namespace Velaptor.Content.Factories
         private const string NullCtorParamMessage = "The parameter must not be null.";
         private readonly IFontService fontService;
         private readonly IFontStatsService fontStatsService;
+        private readonly IFontAtlasService fontAtlasService;
+        private readonly IDisposableItemCache<string, ITexture> textureCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontFactory"/> class.
         /// </summary>
         /// <param name="fontService">Helper methods for FreeType like operations.</param>
         /// <param name="fontStatsService">Provides font stat services.</param>
+        /// <param name="fontAtlasService">Provides services for building font atlas textures.</param>
+        /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
         public FontFactory(
             IFontService fontService,
-            IFontStatsService fontStatsService)
+            IFontStatsService fontStatsService,
+            IFontAtlasService fontAtlasService,
+            IDisposableItemCache<string, ITexture> textureCache)
         {
+            this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), NullCtorParamMessage);
+            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), NullCtorParamMessage);
             this.fontService = fontService ?? throw new ArgumentNullException(nameof(fontService), NullCtorParamMessage);
             this.fontStatsService = fontStatsService ?? throw new ArgumentNullException(nameof(fontStatsService), NullCtorParamMessage);
         }
@@ -43,6 +52,8 @@ namespace Velaptor.Content.Factories
                 textureAtlas,
                 this.fontService,
                 this.fontStatsService,
+                this.fontAtlasService,
+                this.textureCache,
                 name,
                 fontFilePath,
                 size,

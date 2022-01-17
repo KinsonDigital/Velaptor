@@ -2,26 +2,23 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Drawing;
-using Velaptor.Content.Fonts.Services;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Services;
-
 namespace VelaptorTests.Content.Fonts
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using FreeTypeSharp.Native;
     using Moq;
     using Newtonsoft.Json;
     using Velaptor.Content;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Fonts;
+    using Velaptor.Content.Fonts.Services;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop.FreeType;
+    using Velaptor.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -30,23 +27,16 @@ namespace VelaptorTests.Content.Fonts
     public class FontTests : IDisposable
     {
         private const char InvalidCharacter = '□';
-        private const string FontPath = @"C:\test-dir\fonts\";
-        private readonly char[] glyphChars =
-        {
-            'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-            'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-            '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
-            '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
-        };
-        private readonly IntPtr libraryPtr = new (1234);
+        private const string DirPath = @"C:\test-dir\fonts\";
+        private const string FontName = "test-font";
+        private const string FontExtension = ".ttf";
+        private readonly string fontFilePath;
         private readonly IntPtr facePtr = new (5678);
-        private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
-        private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
-        private readonly Mock<IFontAtlasService> mockFontAtlasService;
+        private readonly Mock<IFontService> mockFontService;
         private readonly Mock<IFontStatsService> mockFontStatsService;
         private readonly Mock<ITexture> mockTexture;
+        private readonly Mock<IFontAtlasService> mockFontAtlasService;
+        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
         private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\SampleTestData\";
         private Dictionary<char, GlyphMetrics> glyphMetrics = new ();
 
@@ -55,10 +45,7 @@ namespace VelaptorTests.Content.Fonts
         /// </summary>
         public FontTests()
         {
-            this.mockGL = new Mock<IGLInvoker>();
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
-            this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
-            this.mockFreeTypeInvoker.Setup(m => m.FT_Init_FreeType()).Returns(this.libraryPtr);
+            this.fontFilePath = $"{DirPath}{FontName}{FontExtension}";
 
             const string glyphTestDataFileName = "glyph-test-data.json";
             var glyphMetricFilePath = $"{this.sampleTestDataDirPath}{glyphTestDataFileName}";
@@ -71,16 +58,16 @@ namespace VelaptorTests.Content.Fonts
                 this.glyphMetrics.Add(metric.Glyph, metric);
             }
 
-            this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
-            this.mockFreeTypeExtensions.Setup(m => m.CreateFontFace(this.libraryPtr, FontPath)).Returns(this.facePtr);
-            this.mockFreeTypeExtensions.Setup(m => m.CreateGlyphMetrics(this.facePtr, null))
+            this.mockFontService = new Mock<IFontService>();
+            this.mockFontService.Setup(m => m.CreateFontFace(this.fontFilePath)).Returns(this.facePtr);
+            this.mockFontService.Setup(m => m.CreateGlyphMetrics(this.facePtr, null))
                 .Returns(this.glyphMetrics);
-
-            this.mockFontAtlasService = new Mock<IFontAtlasService>();
-            this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns((default, this.glyphMetrics.Values.ToArray()));
+            this.mockFontService.Setup(m => m.HasKerning(this.facePtr)).Returns(true);
 
             this.mockFontStatsService = new Mock<IFontStatsService>();
+
+            this.mockFontAtlasService = new Mock<IFontAtlasService>();
+            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
 
             this.mockTexture = new Mock<ITexture>();
         }
@@ -90,48 +77,135 @@ namespace VelaptorTests.Content.Fonts
         public void Ctor_WhenInvoked_SetsPropertyValues()
         {
             // Arrange
-            var pixels = new[,]
-            {
-                { Color.FromArgb(1, 2, 3, 4), Color.FromArgb(5, 6, 7, 8) },
-            };
-            var atlasImageData = new ImageData(pixels, 11, 22);
-
-            this.mockFreeTypeExtensions.Setup(m => m.GetFamilyName(FontPath, true)).Returns("test-font-family");
-            this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(FontPath, 12))
-                .Returns((atlasImageData, this.glyphMetrics.Values.ToArray()));
+            this.mockTexture.SetupGet(p => p.FilePath);
+            this.mockFontService.Setup(m => m.GetFontStyle(this.fontFilePath)).Returns(FontStyle.Italic);
+            this.mockFontService.Setup(m => m.GetFamilyName(this.fontFilePath)).Returns("test-font-family");
 
             // Act
-            var font = new Font(
-                this.mockTexture.Object,
-                this.mockFreeTypeInvoker.Object,
-                this.mockFreeTypeExtensions.Object,
-                this.mockFontStatsService.Object,
-                "test-name",
-                FontPath,
-                It.IsAny<int>(),
-                this.glyphMetrics.Values.ToArray());
+            var font = CreateFont();
 
             // Assert
-            // Check that the texture was properly created
-            Assert.Equal("test-name", font.FontTextureAtlas.Name);
-            Assert.Equal(FontPath, font.FontTextureAtlas.FilePath);
-            Assert.True(font.FontTextureAtlas.IsPooled);
+            Assert.Same(this.mockTexture.Object, font.FontTextureAtlas);
+            AssertExtensions.EqualWithMessage(font.Metrics.Count, this.glyphMetrics.Count, $"Total Glyph Metrics");
+            AssertExtensions.EqualWithMessage(FontName, font.Name, $"Property: {nameof(font.Name)}");
+            AssertExtensions.EqualWithMessage("test-font-family", font.FamilyName, $"Property: {nameof(font.FamilyName)}");
+            AssertExtensions.EqualWithMessage(true, font.HasKerning, $"Property: {nameof(font.HasKerning)}");
+            AssertExtensions.EqualWithMessage(this.fontFilePath, font.FilePath, $"Property: {nameof(font.FilePath)}");
+        }
 
-            Assert.Equal(font.Metrics.Count, this.glyphMetrics.Count);
-            Assert.Equal("test-name", font.Name);
-            Assert.Equal("test-font-family", font.FamilyName);
-            Assert.Equal(12, font.Size);
-            Assert.Equal(FontStyle.Regular, font.Style);
-            Assert.Equal(FontPath, font.FilePath);
+        [Fact]
+        public void Ctor_WithAtLeastOneOrMoreFontStyles_SetsFontSource()
+        {
+            // Arrange
+            const string familyName = "test-font-family";
+            const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
+            var contentFontStats = new FontStats[]
+            {
+                new () { Style = FontStyle.Regular, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
+                new () { Style = FontStyle.Bold, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
+                new () { Style = FontStyle.Italic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
+                new () { Style = boldItalic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
+            };
+
+            this.mockFontService.Setup(m => m.GetFamilyName(this.fontFilePath)).Returns(familyName);
+            this.mockFontService.Setup(m => m.GetFontStyle(this.fontFilePath)).Returns(FontStyle.Bold);
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(familyName))
+                .Returns(contentFontStats);
+
+            // Act
+            var font = CreateFont();
+
+            // Assert
+            Assert.Equal(FontSource.AppContent, font.Source);
+        }
+
+        [Fact]
+        public void Ctor_WithMissingStylesInContentButExistsInSystem_SetsFontSource()
+        {
+            // Arrange
+            const string familyName = "test-font-family";
+            const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
+            var contentFontStats = new FontStats[]
+            {
+                new () { Style = FontStyle.Regular, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
+                new () { Style = FontStyle.Bold, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
+                new () { Style = FontStyle.Italic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
+            };
+            var systemFontStats = new FontStats[]
+            {
+                new () { Style = boldItalic, Source = FontSource.AppContent, FamilyName = familyName, FontFilePath = this.fontFilePath },
+            };
+
+            this.mockFontService.Setup(m => m.GetFamilyName(this.fontFilePath)).Returns(familyName);
+            this.mockFontService.Setup(m => m.GetFontStyle(this.fontFilePath)).Returns(boldItalic);
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(familyName))
+                .Returns(contentFontStats);
+            this.mockFontStatsService.Setup(m => m.GetSystemStatsForFontFamily(familyName))
+                .Returns(systemFontStats);
+
+            // Act
+            var font = CreateFont();
+
+            // Assert
+            Assert.Equal(FontSource.AppContent, font.Source);
+            Assert.Equal(boldItalic, font.Style);
+        }
+
+        [Fact]
+        public void Ctor_WithNoFontStyles_SetsFontSourceToUnknown()
+        {
+            // Arrange
+            this.mockFontService.Setup(m => m.GetFamilyName(this.fontFilePath)).Returns("test-font-family");
+            this.mockFontService.Setup(m => m.GetFontStyle(this.fontFilePath)).Returns(FontStyle.Bold);
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily("test-font-family"))
+                .Returns(Array.Empty<FontStats>());
+
+            // Act
+            var font = CreateFont();
+
+            // Assert
+            Assert.Equal(FontSource.Unknown, font.Source);
         }
         #endregion
 
         #region Prop Tests
         [Fact]
+        public void AvailableStylesForFamily_WhenNoStylesExist_ReturnsEmpty()
+        {
+            // Arrange
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(It.IsAny<string>()))
+                .Returns(Array.Empty<FontStats>());
+
+            var font = CreateFont();
+
+            // Act
+            var actual = font.AvailableStylesForFamily;
+
+            // Assert
+            Assert.Empty(actual);
+        }
+
+        [Fact]
+        public void AvailableStylesForFamily_WhenAnyStylesExist_Returns()
+        {
+            // Arrange
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(It.IsAny<string>()))
+                .Returns(new FontStats[] { new () { Style = FontStyle.Bold } });
+
+            var font = CreateFont();
+
+            // Act
+            var actual = font.AvailableStylesForFamily;
+
+            // Assert
+            Assert.Single(actual);
+        }
+
+        [Fact]
         public void LineSpacing_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockFreeTypeExtensions.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
+            this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
                 .Returns(0.5f);
             var font = CreateFont();
 
@@ -139,7 +213,7 @@ namespace VelaptorTests.Content.Fonts
             var actual = font.LineSpacing;
 
             // Assert
-            Assert.Equal(32, actual);
+            Assert.Equal(0.5, actual);
         }
 
         [Fact]
@@ -157,72 +231,71 @@ namespace VelaptorTests.Content.Fonts
         }
 
         [Fact]
-        public void HasKerning_WhenGettingValue_ReturnsCorrectResult()
+        public void Style_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockFreeTypeExtensions.Setup(m => m.HasKerning(this.facePtr)).Returns(true);
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(It.IsAny<string>()))
+                .Returns(new FontStats[] { new () { Style = FontStyle.Italic, FontFilePath = this.fontFilePath } });
+
+            var font = CreateFont();
 
             // Act
-            var font = new Font(
-                this.mockTexture.Object,
-                this.mockFreeTypeInvoker.Object,
-                this.mockFreeTypeExtensions.Object,
-                this.mockFontStatsService.Object,
-                "test-name",
-                FontPath,
-                It.IsAny<int>(),
-                this.glyphMetrics.Values.ToArray());
-
-            var actual = font.HasKerning;
+            font.Style = FontStyle.Italic;
+            var actual = font.Style;
 
             // Assert
-            Assert.True(actual);
+            Assert.Equal(FontStyle.Italic, actual);
+        }
+
+        [Fact]
+        public void Style_WhenUsingStyleThatDoesNotExist_ThrowsException()
+        {
+            // Arrange
+            this.mockFontService.Setup(m => m.GetFamilyName(this.fontFilePath)).Returns("test-font-family");
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(It.IsAny<string>()))
+                .Returns(new FontStats[] { new () { Style = FontStyle.Bold } });
+
+            var font = CreateFont();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<LoadFontException>(() =>
+            {
+                font.Style = FontStyle.Italic;
+            }, "The font style 'Italic' does not exist for the font family 'test-font-family'.");
+        }
+
+        [Fact]
+        public void Size_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(It.IsAny<string>()))
+                .Returns(new FontStats[] { new () { Style = FontStyle.Regular, FontFilePath = this.fontFilePath } });
+
+            var font = CreateFont();
+
+            // Act
+            font.Size = 22;
+            var actual = font.Size;
+
+            // Assert
+            Assert.Equal(22u, actual);
         }
         #endregion
 
         #region Method Tests
         [Fact]
-        public void GetAvailableGlyphCharacters_WhenInvoked_ReturnsCorrectResult()
+        public void GetKerning_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            var font = new Font(
-                this.mockTexture.Object,
-                this.mockFreeTypeInvoker.Object,
-                this.mockFreeTypeExtensions.Object,
-                this.mockFontStatsService.Object,
-                "test-name",
-                FontPath,
-                It.IsAny<int>(),
-                this.glyphMetrics.Values.ToArray());
-
-            // Act
-            var actual = font.GetAvailableGlyphCharacters();
-
-            // Assert
-            Assert.Equal(this.glyphChars, actual);
-        }
-
-        [Theory]
-        [InlineData(true,  1u, 2u, 10f)]
-        [InlineData(false, 1u, 2u, 0f)]
-        [InlineData(true, 0u, 2u, 0f)]
-        [InlineData(true, 1u, 0u, 0f)]
-        public void GetKerning_WhenInvoked_ReturnsCorrectResult(bool hasKerning, uint leftGlyphIndex, uint rightGlyphIndex, float expected)
-        {
-            // Arrange
-            var ftVector = default(FT_Vector);
-            ftVector.x = new IntPtr(640);
-            this.mockFreeTypeInvoker.Setup(m
-                    => m.FT_Get_Kerning(this.facePtr, leftGlyphIndex, rightGlyphIndex, (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT))
-                        .Returns(ftVector);
-            this.mockFreeTypeExtensions.Setup(m => m.HasKerning(this.facePtr)).Returns(hasKerning);
+            this.mockFontService.Setup(m => m.GetKerning(this.facePtr, 11, 22)).Returns(33);
             var font = CreateFont();
 
             // Act
-            var actual = font.GetKerning(leftGlyphIndex, rightGlyphIndex);
+            var actual = font.GetKerning(11, 22);
 
             // Assert
-            Assert.Equal(expected, actual);
+            this.mockFontService.Verify(m => m.GetKerning(this.facePtr, 11, 22), Times.Once);
+            Assert.Equal(33, actual);
         }
 
         [Theory]
@@ -247,18 +320,19 @@ namespace VelaptorTests.Content.Fonts
             // Arrange
             const string text = "hello\nworld";
 
-            this.mockFreeTypeExtensions.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12)).Returns(2f);
-            this.mockFreeTypeExtensions.Setup(m => m.HasKerning(this.facePtr)).Returns(true);
+            this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12)).Returns(2f);
+            this.mockFontService.Setup(m => m.HasKerning(this.facePtr)).Returns(true);
             MockGlyphKernings(text);
 
             var font = new Font(
                 this.mockTexture.Object,
-                this.mockFreeTypeInvoker.Object,
-                this.mockFreeTypeExtensions.Object,
+                this.mockFontService.Object,
                 this.mockFontStatsService.Object,
+                this.mockFontAtlasService.Object,
+                this.mockTextureCache.Object,
                 "test-name",
-                FontPath,
-                It.IsAny<int>(),
+                DirPath,
+                It.IsAny<uint>(),
                 this.glyphMetrics.Values.ToArray());
 
             // Act
@@ -266,7 +340,7 @@ namespace VelaptorTests.Content.Fonts
 
             // Assert
             Assert.Equal(103, actual.Width);
-            Assert.Equal(159, actual.Height);
+            Assert.Equal(31, actual.Height);
         }
 
         [Fact]
@@ -324,14 +398,15 @@ namespace VelaptorTests.Content.Fonts
         /// Creates a new instance of <see cref="Font"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private Font CreateFont(int size = 12)
+        private Font CreateFont(uint size = 12)
             => new (
                 this.mockTexture.Object,
-                this.mockFreeTypeInvoker.Object,
-                this.mockFreeTypeExtensions.Object,
+                this.mockFontService.Object,
                 this.mockFontStatsService.Object,
-                "test-name",
-                FontPath,
+                this.mockFontAtlasService.Object,
+                this.mockTextureCache.Object,
+                FontName,
+                this.fontFilePath,
                 size,
                 this.glyphMetrics.Values.ToArray());
 
@@ -375,53 +450,13 @@ namespace VelaptorTests.Content.Fonts
                     rightGlyphIndex = foundGlyphMetric.CharIndex;
                 }
 
-                var ftVector = default(FT_Vector);
-                ftVector.x = new IntPtr(i + 1);
-
                 var leftIndex = leftGlyphIndex;
                 var rightIndex = rightGlyphIndex;
-                this.mockFreeTypeInvoker.Setup(m
-                        => m.FT_Get_Kerning(
-                            this.facePtr,
-                            leftIndex,
-                            rightIndex,
-                            (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT))
-                    .Returns(ftVector);
+                this.mockFontService.Setup(m => m.GetKerning(this.facePtr, leftIndex, rightIndex))
+                    .Returns(i + 1);
 
                 leftGlyphIndex = rightGlyphIndex;
             }
-        }
-
-        private GlyphMetrics[] CreateMetrics(string testText)
-        {
-            var start = 0;
-            var result = new List<GlyphMetrics>();
-
-            foreach (var character in testText)
-            {
-                var newGlyphMetric = default(GlyphMetrics);
-
-                newGlyphMetric.Ascender = start + 1;
-                newGlyphMetric.Descender = start + 2;
-                newGlyphMetric.Glyph = character;
-                newGlyphMetric.CharIndex = (uint)(start + 3);
-                newGlyphMetric.GlyphBounds = new RectangleF(start + 4, start + 5, start + 6, start + 7);
-                newGlyphMetric.GlyphHeight = start + 8;
-                newGlyphMetric.GlyphWidth = start + 9;
-                newGlyphMetric.HorizontalAdvance = start + 10;
-                newGlyphMetric.XMax = start + 11;
-                newGlyphMetric.XMin = start + 12;
-                newGlyphMetric.YMax = start + 13;
-                newGlyphMetric.YMin = start + 14;
-                newGlyphMetric.HoriBearingX = start + 15;
-                newGlyphMetric.HoriBearingY = start + 16;
-
-                result.Add(newGlyphMetric);
-
-                start += 16;
-            }
-
-            return result.ToArray();
         }
     }
 }

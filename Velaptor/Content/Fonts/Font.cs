@@ -10,11 +10,11 @@ namespace Velaptor.Content.Fonts
     using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Linq;
-    using FreeTypeSharp.Native;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop.FreeType;
+    using Velaptor.Services;
     using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 
     // ReSharper restore RedundantNameQualifier
@@ -26,10 +26,10 @@ namespace Velaptor.Content.Fonts
     public sealed class Font : IFont
     {
         private const char InvalidCharacter = '□';
-        private readonly GlyphMetrics[] metrics;
-        private readonly IFreeTypeInvoker freeTypeInvoker;
-        private readonly IFreeTypeExtensions freeTypeExtensions;
+        private readonly IFontService fontService;
         private readonly IFontStatsService fontStatsService;
+        private readonly IFontAtlasService fontAtlasService;
+        private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly IntPtr facePtr;
         private readonly GlyphMetrics invalidGlyph;
         private readonly char[] availableGlyphCharacters =
@@ -39,130 +39,114 @@ namespace Velaptor.Content.Fonts
             '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
             '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
         };
-        private FontStats[] fontStatData;
-        private int size;
+        private readonly bool fontInitialized;
+        private GlyphMetrics[] metrics;
+        private FontStats[]? fontStats;
+        private FontStyle fontStyle;
+        private uint size;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Font"/> class.
         /// </summary>
         /// <param name="texture">The font atlas texture that contains bitmap data for all of the available glyphs.</param>
-        /// <param name="freeTypeInvoker">Invokes native FreeType function calls.</param>
-        /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
+        /// <param name="fontService">Provides extensions/helpers to free type library functionality.</param>
         /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
+        /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
+        /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
         /// <param name="name">The name of the font content.</param>
         /// <param name="fontFilePath">The path to the font content.</param>
         /// <param name="size">The size to set the font to.</param>
         /// <param name="glyphMetrics">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
-        // TODO: Change font size across project to uint
         internal Font(
             ITexture texture,
-            IFreeTypeInvoker freeTypeInvoker,
-            IFreeTypeExtensions freeTypeExtensions,
+            IFontService fontService,
             IFontStatsService fontStatsService,
+            IFontAtlasService fontAtlasService,
+            IDisposableItemCache<string, ITexture> textureCache,
             string name,
             string fontFilePath,
             uint size,
             GlyphMetrics[] glyphMetrics)
         {
             FontTextureAtlas = texture;
-            this.freeTypeInvoker = freeTypeInvoker;
-            this.freeTypeExtensions = freeTypeExtensions;
+            this.fontService = fontService;
             this.fontStatsService = fontStatsService;
+            this.fontAtlasService = fontAtlasService;
+            this.textureCache = textureCache;
+
             this.metrics = glyphMetrics;
             this.invalidGlyph = glyphMetrics.FirstOrDefault(m => m.Glyph == InvalidCharacter);
 
-            var libraryPtr = this.freeTypeInvoker.FT_Init_FreeType();
-            this.facePtr = this.freeTypeExtensions.CreateFontFace(libraryPtr, fontFilePath);
+            this.facePtr = this.fontService.CreateFontFace(fontFilePath);
 
-            Size = size;
+            this.size = size;
             Name = name;
             FilePath = fontFilePath;
-            FamilyName = this.freeTypeExtensions.GetFamilyName(fontFilePath);
+            FamilyName = this.fontService.GetFamilyName(fontFilePath);
 
             GetFontStatData(FilePath);
 
-            LineSpacing = this.freeTypeExtensions.GetFontScaledLineSpacing(this.facePtr, Size) * 64f;
-            HasKerning = this.freeTypeExtensions.HasKerning(this.facePtr);
+            HasKerning = this.fontService.HasKerning(this.facePtr);
+            LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
+
+            this.fontInitialized = true;
         }
-
-        private void GetFontStatData(string path)
-        {
-            Style = this.freeTypeExtensions.GetFontStyle(path);
-
-            // First collect all of the data from the content directory
-            this.fontStatData = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
-
-            var allStyles = new[]
-            {
-                FontStyle.Regular, FontStyle.Bold, FontStyle.Italic, FontStyle.Bold | FontStyle.Italic,
-            };
-
-            bool AllStylesFound() => this.fontStatData.Length == 4 && this.fontStatData.All(d => d.Style is FontStyle.Regular or
-                    FontStyle.Bold or
-                    FontStyle.Italic or
-                    (FontStyle.Bold | FontStyle.Italic));
-
-            // If all for styles have been found, then were finished
-            if (AllStylesFound())
-            {
-                return;
-            }
-
-            // If all of the font styles were not found, attempt to find them in the systems directory
-            var missingStyles = (from style in allStyles
-                where this.fontStatData.Any(s => s.Style == style) is false
-                select style).ToArray();
-
-            // Try to find each missing style in the system fonts
-            var systemFontFiles = this.fontStatsService.GetSystemStatsForFontFamily(FamilyName);
-
-            var missingStylesFontStatData = (from f in systemFontFiles
-                where missingStyles.Contains(f.Style)
-                select f).ToArray();
-
-            var newList = new List<FontStats>();
-            newList.AddRange(missingStylesFontStatData);
-            newList.AddRange(this.fontStatData);
-            this.fontStatData = newList.ToArray();
-        }
-
-        private bool StyleExists(string path)
-        {
-
-
-            return false;
-        }
-
 
         /// <inheritdoc/>
         public string Name { get; }
 
         /// <inheritdoc/>
+        public FontSource Source => this.fontStats?.Length <= 0
+            ? FontSource.Unknown
+            : (from s in this.fontStats where s.Style == this.fontStyle select s.Source).FirstOrDefault();
+
+        /// <inheritdoc/>
         public string FilePath { get; }
 
         /// <inheritdoc/>
-        public ITexture FontTextureAtlas { get; }
+        public ITexture FontTextureAtlas { get; private set; }
 
-        // TODO: Need to reload and recreate the font data every time this value has changed and only if it has changed
         /// <inheritdoc/>
-        public uint Size { get; set; }
+        public uint Size
         {
             get => this.size;
             set
             {
                 this.size = value;
+
+                if (this.fontInitialized)
+                {
+                    RebuildFontAtlasTexture();
+                }
             }
         }
 
-        // TODO: Need to reload and recreate the font data every time this value has changed and only if it has changed
         /// <inheritdoc/>
-        public VelFontStyle Style { get; private set; }
+        public VelFontStyle Style
+        {
+            get => this.fontStyle;
+            set
+            {
+                this.fontStyle = value;
+
+                if (this.fontInitialized)
+                {
+                    RebuildFontAtlasTexture();
+                }
+            }
+        }
 
         /// <inheritdoc/>
-        public string FamilyName { get; private set; }
+        public IEnumerable<FontStyle> AvailableStylesForFamily
+            => this.fontStats is null
+                ? Array.Empty<VelFontStyle>().ToReadOnlyCollection()
+                : this.fontStats.Select(s => s.Style).ToReadOnlyCollection();
 
         /// <inheritdoc/>
-        public bool HasKerning { get; private set; }
+        public string FamilyName { get; }
+
+        /// <inheritdoc/>
+        public bool HasKerning { get; }
 
         /// <inheritdoc/>
         public float LineSpacing { get; private set; }
@@ -177,9 +161,7 @@ namespace Velaptor.Content.Fonts
         public ReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.ToReadOnlyCollection();
 
         /// <inheritdoc/>
-        public char[] GetAvailableGlyphCharacters() => this.availableGlyphCharacters;
-
-        /// <inheritdoc/>
+        // TODO: Look into caching measurements with a cache total that is maintained
         public SizeF Measure(string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -188,7 +170,6 @@ namespace Velaptor.Content.Fonts
             }
 
             // TODO: Trim end of line escape sequences off the end
-            // TODO: Look into caching measurements with a cache total that is maintained
             var foundGlyphs = text.Select(character
                 => this.metrics.FirstOrDefault(g => g.Glyph == character)).ToList();
 
@@ -212,16 +193,9 @@ namespace Velaptor.Content.Fonts
                 // Take into account any kerning
                 foreach (var currentCharacter in charMetrics)
                 {
-                    if (HasKerning && leftCharacterIndex != 0 && currentCharacter.CharIndex != 0)
-                    {
-                        var delta = this.freeTypeInvoker.FT_Get_Kerning(
-                            this.facePtr,
-                            leftCharacterIndex,
-                            currentCharacter.CharIndex,
-                            (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
-
-                        width += delta.x.ToInt32() >> 6;
-                    }
+                    width += HasKerning
+                        ? this.fontService.GetKerning(this.facePtr, leftCharacterIndex, currentCharacter.CharIndex)
+                        : 0;
 
                     width += currentCharacter.HorizontalAdvance;
 
@@ -299,23 +273,83 @@ namespace Velaptor.Content.Fonts
         /// <para>https://freetype.org/freetype2/docs/glyphs/glyphs-4.html#section-1.</para>
         /// </remarks>
         public float GetKerning(uint leftGlyphIndex, uint rightGlyphIndex)
-        {
-            if (HasKerning is false || leftGlyphIndex == 0 || rightGlyphIndex == 0)
-            {
-                return 0;
-            }
-
-            var delta = this.freeTypeInvoker.FT_Get_Kerning(
-                this.facePtr,
-                leftGlyphIndex,
-                rightGlyphIndex,
-                (uint)FT_Kerning_Mode.FT_KERNING_DEFAULT);
-
-            return delta.x.ToInt32() >> 6;
-        }
+            => this.fontService.GetKerning(this.facePtr, leftGlyphIndex, rightGlyphIndex);
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);
+
+        /// <summary>
+        /// Gets all of the stats for a font at the given <paramref name="filePath"/>.
+        /// </summary>
+        /// <param name="filePath">The file path to the font file.</param>
+        private void GetFontStatData(string filePath)
+        {
+            this.fontStyle = this.fontService.GetFontStyle(filePath);
+
+            // First collect all of the data from the content directory
+            this.fontStats = this.fontStatsService.GetContentStatsForFontFamily(FamilyName);
+
+            var allStyles = new[]
+            {
+                FontStyle.Regular, FontStyle.Bold, FontStyle.Italic, FontStyle.Bold | FontStyle.Italic,
+            };
+
+            bool AllStylesFound()
+            {
+                const FontStyle boldItalic = FontStyle.Bold | FontStyle.Italic;
+
+                return this.fontStats.Length == 4 && this.fontStats.All(d =>
+                    d.Style is FontStyle.Regular or FontStyle.Bold or FontStyle.Italic or boldItalic);
+            }
+
+            // If all for styles have been found, then were finished
+            if (AllStylesFound())
+            {
+                return;
+            }
+
+            // If all of the font styles were not found, attempt to find them in the systems directory
+            var missingStyles = (from style in allStyles
+                where this.fontStats.Any(s => s.Style == style) is false
+                select style).ToArray();
+
+            // Try to find each missing style in the system fonts
+            var systemFontStats = this.fontStatsService.GetSystemStatsForFontFamily(FamilyName);
+
+            var missingFontStyles = (from f in systemFontStats
+                where missingStyles.Contains(f.Style)
+                select f).ToArray();
+
+            var newList = new List<FontStats>();
+            newList.AddRange(missingFontStyles);
+            newList.AddRange(this.fontStats);
+            this.fontStats = newList.ToArray();
+        }
+
+        /// <summary>
+        /// Rebuilds the font atlas texture and glyph metrics.
+        /// </summary>
+        /// <exception cref="LoadFontException">Thrown if the current style that is being attempted does not exist.</exception>
+        private void RebuildFontAtlasTexture()
+        {
+            var fontFilePath = (from s in this.fontStats
+                where s.Style == this.fontStyle
+                select s.FontFilePath).FirstOrDefault();
+
+            if (string.IsNullOrEmpty(fontFilePath))
+            {
+                throw new LoadFontException($"The font style '{this.fontStyle}' does not exist for the font family '{FamilyName}'.");
+            }
+
+            var filePathWithMetaData = $"{fontFilePath}|size:{Size}";
+            FontTextureAtlas = this.textureCache.GetItem(filePathWithMetaData);
+
+            var (_, glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fontFilePath, Size);
+
+            LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
+
+            this.metrics = glyphMetrics;
+        }
 
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
