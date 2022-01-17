@@ -1,4 +1,4 @@
-﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -163,7 +163,7 @@ namespace VelaptorTests.Content.Fonts
                     false,
                     string.Empty,
                     string.Empty,
-                    -1));
+                    0));
 
             var expected = "The font content item 'missing-metadata' must have metadata post fixed to the";
             expected += " end of a content name or full file path";
@@ -383,7 +383,7 @@ namespace VelaptorTests.Content.Fonts
                     false,
                     string.Empty,
                     string.Empty,
-                    -1));
+                    0));
 
             this.mockFontMetaDataParser.Setup(m => m.Parse(fontPathWithMetaData))
                 .Returns(new FontMetaDataParseResult(
@@ -391,7 +391,7 @@ namespace VelaptorTests.Content.Fonts
                     true,
                     fontPath,
                     this.metaData,
-                    -1));
+                    0));
 
             var loader = CreateLoader();
 

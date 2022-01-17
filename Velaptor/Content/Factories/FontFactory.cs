@@ -38,7 +38,7 @@ namespace Velaptor.Content.Factories
         }
 
         /// <inheritdoc/>
-        public IFont Create(ITexture textureAtlas, string name, string fontFilePath, int size, GlyphMetrics[] glyphMetrics) =>
+        public IFont Create(ITexture textureAtlas, string name, string fontFilePath, uint size, GlyphMetrics[] glyphMetrics) =>
             new Font(
                 textureAtlas,
                 this.fontService,

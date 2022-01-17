@@ -1,4 +1,4 @@
-﻿// <copyright file="IFont.cs" company="KinsonDigital">
+// <copyright file="IFont.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -22,7 +22,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets or sets the size of the font in points.
         /// </summary>
-        int Size { get; set; }
+        uint Size { get; set; }
 
         /// <summary>
         /// Gets the style of the font.

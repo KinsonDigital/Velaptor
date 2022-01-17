@@ -1,4 +1,4 @@
-﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -130,7 +130,7 @@ namespace VelaptorTests.Services
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
+                service.CreateFontAtlas(fontFilePath, It.IsAny<uint>());
             }, "The font file path argument must not be null. (Parameter 'fontFilePath')");
         }
 
@@ -144,7 +144,7 @@ namespace VelaptorTests.Services
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
-                service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
+                service.CreateFontAtlas(FontFilePath, It.IsAny<uint>());
             }, $"The file '{FontFilePath}' does not exist.");
         }
 
@@ -159,7 +159,7 @@ namespace VelaptorTests.Services
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<SystemMonitorException>(() =>
             {
-                service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
+                service.CreateFontAtlas(FontFilePath, It.IsAny<uint>());
             }, "The main system monitor must not be null.");
         }
 
@@ -175,7 +175,7 @@ namespace VelaptorTests.Services
             service.CreateFontAtlas(FontFilePath, fontSize);
 
             // Assert
-            this.mockFreeTypeExtensions.Verify(m => m.SetCharacterSize(this.facePtr, 12), Times.Once());
+            this.mockFontService.Verify(m => m.SetFontSize(this.facePtr, 12), Times.Once());
         }
 
         [Fact]

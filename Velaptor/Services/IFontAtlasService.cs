@@ -33,6 +33,6 @@ namespace Velaptor.Services
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="fontFilePath"/> is null or empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown if the file cannot be found.</exception>
-        (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, int size);
+        (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint size);
     }
 }

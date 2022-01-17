@@ -61,7 +61,7 @@ namespace Velaptor.Content.Fonts
             IFontStatsService fontStatsService,
             string name,
             string fontFilePath,
-            int size,
+            uint size,
             GlyphMetrics[] glyphMetrics)
         {
             FontTextureAtlas = texture;
@@ -145,7 +145,7 @@ namespace Velaptor.Content.Fonts
 
         // TODO: Need to reload and recreate the font data every time this value has changed and only if it has changed
         /// <inheritdoc/>
-        public int Size
+        public uint Size { get; set; }
         {
             get => this.size;
             set

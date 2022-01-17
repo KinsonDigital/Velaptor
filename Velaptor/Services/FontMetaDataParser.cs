@@ -1,4 +1,4 @@
-﻿// <copyright file="FontMetaDataParser.cs" company="KinsonDigital">
+// <copyright file="FontMetaDataParser.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,7 +17,7 @@ namespace Velaptor.Services
             const char metaDataSignifier = '|';
             const bool dataIsValid = true;
             const bool dataIsInvalid = false;
-            const int invalidSize = -1;
+            const uint invalidSize = 0;
             const string emptyMetaData = "";
             const string emptyFilePath = "";
             var doesNotContainMetaData = stringToParse.DoesNotContain(metaDataSignifier);
@@ -86,7 +86,7 @@ namespace Velaptor.Services
 
             var valueAsString = metaDataSections[1];
 
-            var valueParseSuccess = int.TryParse(valueAsString, out var valueAsInt);
+            var valueParseSuccess = uint.TryParse(valueAsString, out var valueAsInt);
 
             return valueParseSuccess
                 ? new FontMetaDataParseResult(!doesNotContainMetaData, dataIsValid, fullFilePath, metaData, valueAsInt)

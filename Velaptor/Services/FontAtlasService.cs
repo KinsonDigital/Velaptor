@@ -58,7 +58,7 @@ namespace Velaptor.Services
         }
 
         /// <inheritdoc/>
-        public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, int size)
+        public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint size)
         {
             if (string.IsNullOrEmpty(fontFilePath))
             {

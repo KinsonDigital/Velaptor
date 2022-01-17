@@ -120,7 +120,7 @@ namespace VelaptorTests.Content.Caching
                     false,
                     string.Empty,
                     string.Empty,
-                    -1));
+                    0));
             var cache = CreateCache();
 
             // Act & Assert
@@ -214,7 +214,7 @@ namespace VelaptorTests.Content.Caching
                     false,
                     string.Empty,
                     string.Empty,
-                    -1));
+                    0));
             var cache = CreateCache();
 
             // Act & Assert
@@ -371,7 +371,7 @@ namespace VelaptorTests.Content.Caching
                     true,
                     string.Empty,
                     string.Empty,
-                    -1));
+                    0));
         }
 
         private void MockFontParseResult()
@@ -413,7 +413,7 @@ namespace VelaptorTests.Content.Caching
         /// <param name="data">The image data to return if the mock is successful.</param>
         /// <param name="filePath">The path to use.</param>
         /// <param name="fontSize">The font size to use.</param>
-        private void MockFontAtlasData(ImageData data, string filePath, int fontSize)
+        private void MockFontAtlasData(ImageData data, string filePath, uint fontSize)
         {
             this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(filePath, fontSize))
                 .Returns((data, Array.Empty<GlyphMetrics>()));

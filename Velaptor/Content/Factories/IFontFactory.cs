@@ -23,6 +23,6 @@ namespace Velaptor.Content.Factories
         /// <param name="size">The size of the font.</param>
         /// <param name="glyphMetrics">The metrics of all the font glyphs.</param>
         /// <returns>The <see cref="IFont"/> instance.</returns>
-        IFont Create(ITexture textureAtlas, string name, string fontFilePath, int size, GlyphMetrics[] glyphMetrics);
+        IFont Create(ITexture textureAtlas, string name, string fontFilePath, uint size, GlyphMetrics[] glyphMetrics);
     }
 }

@@ -33,7 +33,7 @@ namespace Velaptor.Services
         /// <summary>
         /// Gets the font size that was embedded in the metadata.
         /// </summary>
-        public readonly int FontSize;
+        public readonly uint FontSize;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontMetaDataParseResult"/> struct.
@@ -43,7 +43,7 @@ namespace Velaptor.Services
         /// <param name="metaData">The metadata in a string.</param>
         /// <param name="metaDataPrefix">The data before the metadata section.</param>
         /// <param name="fontSize">The size of the font embedded in the metadata.</param>
-        public FontMetaDataParseResult(bool containsMetaData, bool isValid, string metaDataPrefix, string metaData, int fontSize)
+        public FontMetaDataParseResult(bool containsMetaData, bool isValid, string metaDataPrefix, string metaData, uint fontSize)
         {
             this.ContainsMetaData = containsMetaData;
             this.IsValid = isValid;

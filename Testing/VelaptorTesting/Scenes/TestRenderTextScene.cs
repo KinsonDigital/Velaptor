@@ -133,7 +133,7 @@ namespace VelaptorTesting.Scenes
             this.btnSetMultiLine.MouseUp += (_, _) =>
             {
                 this.isMultiLine = !this.isMultiLine;
-                this.textFont.Size = this.textFont.Size == 22 ? 12 : 22;
+                this.textFont.Size = this.textFont.Size == 22u ? 12u : 22u;
 
                 this.btnSetMultiLine.Text = $"Multi-Line: {this.isMultiLine}";
             };
