@@ -20,7 +20,7 @@ namespace Velaptor.OpenGL.Services
         private const string VertShaderFileExtension = ".vert";
         private const string FragShaderFileExtension = ".frag";
         private readonly ITemplateProcessorService shaderSrcTemplateService;
-        private readonly IEmbeddedResourceLoaderService resourceLoaderService;
+        private readonly IEmbeddedResourceLoaderService<string> resourceLoaderService;
         private readonly IPath path;
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Velaptor.OpenGL.Services
         /// <param name="path">Processes directory and file paths.</param>
         public TextureShaderResourceLoaderService(
             ITemplateProcessorService shaderSrcTemplateService,
-            IEmbeddedResourceLoaderService resourceLoaderService,
+            IEmbeddedResourceLoaderService<string> resourceLoaderService,
             IPath path)
         {
             this.shaderSrcTemplateService = shaderSrcTemplateService;

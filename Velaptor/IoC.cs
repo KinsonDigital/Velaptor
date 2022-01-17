@@ -116,7 +116,7 @@ namespace Velaptor
         private static void SetupServices()
         {
             IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
-            IoCContainer.Register<IEmbeddedResourceLoaderService, TextResourceLoaderService>(Lifestyle.Singleton);
+            IoCContainer.Register<IEmbeddedResourceLoaderService<string>, TextResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ITemplateProcessorService, ShaderTemplateProcessorService>(Lifestyle.Singleton);
             IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);

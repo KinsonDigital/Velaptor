@@ -15,9 +15,14 @@ namespace Velaptor.OpenGL.Services
     /// Loads embedded text file resources.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class TextResourceLoaderService : IEmbeddedResourceLoaderService
+    internal class TextResourceLoaderService : IEmbeddedResourceLoaderService<string>
     {
-        /// <inheritdoc cref="IEmbeddedResourceLoaderService.LoadResource"/>
+        /// <summary>
+        /// Loads embedded text file resources that match the given <param name="name"></param>.
+        /// </summary>
+        /// <param name="name">The name of the embedded text file.</param>
+        /// <returns>The embedded text file content.</returns>
+        /// <exception cref="Exception"></exception>
         public string LoadResource(string name)
         {
             var assembly = Assembly.GetExecutingAssembly();

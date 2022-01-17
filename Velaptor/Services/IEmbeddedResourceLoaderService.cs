@@ -5,15 +5,16 @@
 namespace Velaptor.Services
 {
     /// <summary>
-    /// Loads embedded text file resources.
+    /// Loads embedded file resources.
     /// </summary>
-    internal interface IEmbeddedResourceLoaderService
+    /// <typeparam name="TResourceType">The type of data being returned from the contents of the embedded resource.</typeparam>
+    internal interface IEmbeddedResourceLoaderService<out TResourceType>
     {
         /// <summary>
-        /// Load a text resources that matches the given <paramref name="name"/>.
+        /// Load an embedded resources that matches the given <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The file name of the embedded resource.</param>
-        /// <returns>The text content from the embedded text resource.</returns>
-        string LoadResource(string name);
+        /// <returns>The content from the embedded resource.</returns>
+        TResourceType LoadResource(string name);
     }
 }
