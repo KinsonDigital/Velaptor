@@ -1,4 +1,4 @@
-﻿// <copyright file="EmbeddedResourceLoaderService.cs" company="KinsonDigital">
+﻿// <copyright file="TextResourceLoaderService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace Velaptor.OpenGL.Services
     /// Loads embedded text file resources.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class EmbeddedResourceLoaderService : IEmbeddedResourceLoaderService
+    internal class TextResourceLoaderService : IEmbeddedResourceLoaderService
     {
         /// <inheritdoc cref="IEmbeddedResourceLoaderService.LoadResource"/>
         public string LoadResource(string name)
