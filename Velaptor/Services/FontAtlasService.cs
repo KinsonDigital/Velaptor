@@ -60,6 +60,9 @@ namespace Velaptor.Services
         /// <inheritdoc/>
         public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint size)
         {
+            // TODO: Add caching to the for the atlas image and glyph metrics
+
+
             if (string.IsNullOrEmpty(fontFilePath))
             {
                 throw new ArgumentNullException(nameof(fontFilePath), "The font file path argument must not be null.");

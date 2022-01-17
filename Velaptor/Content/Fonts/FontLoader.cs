@@ -169,12 +169,12 @@ namespace Velaptor.Content.Fonts
 
             var contentName = this.path.GetFileNameWithoutExtension(fullFontFilePath);
 
-            var (_, atlasData) = this.fontAtlasService.CreateFontAtlas(fullFontFilePath, parseResult.FontSize);
+            var (_, glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fullFontFilePath, parseResult.FontSize);
 
             var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
             var fontAtlasTexture = this.textureCache.GetItem(cacheKey);
 
-            return this.fontFactory.Create(fontAtlasTexture, contentName, fullFontFilePath, parseResult.FontSize, atlasData);
+            return this.fontFactory.Create(fontAtlasTexture, contentName, fullFontFilePath, parseResult.FontSize, glyphMetrics);
         }
 
         /// <inheritdoc/>

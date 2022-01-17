@@ -49,7 +49,7 @@ namespace Velaptor.Content.Fonts.Services
         /// <param name="facePtr">The pointer to the font face.</param>
         /// <param name="glyphChars">The list of glyphs to get the indices for.</param>
         /// <returns>The index for each glyph.</returns>
-        Dictionary<char, uint> GetGlyphIndices(IntPtr facePtr, char[] glyphChars);
+        Dictionary<char, uint> GetGlyphIndices(IntPtr facePtr, char[]? glyphChars);
 
         /// <summary>
         /// Sets the nominal character size in points.

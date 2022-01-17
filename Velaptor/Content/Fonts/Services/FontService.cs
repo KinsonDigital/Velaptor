@@ -27,20 +27,24 @@ namespace Velaptor.Content.Fonts.Services
     internal class FontService : IFontService
     {
         private readonly IFreeTypeInvoker freeTypeInvoker;
-        private readonly ISystemMonitorService systemMonitorService;
+        private readonly ISystemMonitorService sysMonitorService;
         private readonly IPlatform platform;
-        private static readonly Dictionary<string, IntPtr> FacePointers = new ();
-        private IntPtr libraryPtr;
+        private readonly IntPtr libraryPtr;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontService"/> class.
         /// </summary>
         /// <param name="freeTypeInvoker">Makes calls to the native FreeType library.</param>
-        /// <param name="systemMonitorService">Provides information about the system monitor.</param>
-        public FontService(IFreeTypeInvoker freeTypeInvoker, ISystemMonitorService systemMonitorService, IPlatform platform)
+        /// <param name="sysMonitorService">Provides information about the system monitor.</param>
+        /// <param name="platform">Provides information about the current platform.</param>
+        public FontService(
+            IFreeTypeInvoker freeTypeInvoker,
+            ISystemMonitorService sysMonitorService,
+            IPlatform platform)
         {
             this.freeTypeInvoker = freeTypeInvoker;
-            this.systemMonitorService = systemMonitorService;
+            this.sysMonitorService = sysMonitorService;
             this.platform = platform;
 
             this.libraryPtr = this.freeTypeInvoker.FT_Init_FreeType();
@@ -148,7 +152,7 @@ namespace Velaptor.Content.Fonts.Services
         }
 
         /// <inheritdoc/>
-        public Dictionary<char, uint> GetGlyphIndices(IntPtr facePtr, char[] glyphChars)
+        public Dictionary<char, uint> GetGlyphIndices(IntPtr facePtr, char[]? glyphChars)
         {
             if (glyphChars is null)
             {
@@ -157,10 +161,8 @@ namespace Velaptor.Content.Fonts.Services
 
             var result = new Dictionary<char, uint>();
 
-            for (var i = 0; i < glyphChars.Length; i++)
+            foreach (var glyphChar in glyphChars)
             {
-                var glyphChar = glyphChars[i];
-
                 // Get the glyph image and the character map index
                 var charIndex = this.freeTypeInvoker.FT_Get_Char_Index(facePtr, glyphChar);
 
@@ -170,7 +172,6 @@ namespace Velaptor.Content.Fonts.Services
             return result;
         }
 
-        // TODO: Convert the sizeInPoints to an uint data type
         /// <inheritdoc/>
         public void SetFontSize(IntPtr facePtr, uint sizeInPoints)
         {
@@ -182,7 +183,7 @@ namespace Velaptor.Content.Fonts.Services
             var sizeInPointsPtr = (IntPtr)(sizeInPoints << 6);
 
             // If the main monitor is null, throw an exception.  This is required to set the character size.
-            if (this.systemMonitorService.MainMonitor is null)
+            if (this.sysMonitorService.MainMonitor is null)
             {
                 throw new SystemMonitorException("Cannot set the font size if there is no monitor to use for DPI settings.");
             }
@@ -191,8 +192,8 @@ namespace Velaptor.Content.Fonts.Services
                 facePtr,
                 sizeInPointsPtr,
                 sizeInPointsPtr,
-                (uint)this.systemMonitorService.MainMonitor.HorizontalDPI,
-                (uint)this.systemMonitorService.MainMonitor.VerticalDPI);
+                (uint)this.sysMonitorService.MainMonitor.HorizontalDPI,
+                (uint)this.sysMonitorService.MainMonitor.VerticalDPI);
         }
 
         /// <inheritdoc/>
@@ -309,24 +310,20 @@ namespace Velaptor.Content.Fonts.Services
             }
         }
 
+        /// <inheritdoc/>
         public void DisposeFace(IntPtr facePtr) => this.freeTypeInvoker.FT_Done_Face(facePtr);
 
+        /// <inheritdoc/>
         public void Dispose()
         {
-            // if (this.isDisposed)
-            // {
-            //     return;
-            // }
-            //
-            // this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
+            if (this.isDisposed)
+            {
+                return;
+            }
 
-            // foreach (var facePtr in FacePointers.Values.ToArray())
-            // {
-            //     FT_Done_Face(facePtr);
-            // }
-            //
-            // this.isDisposed = true;
-            // GC.SuppressFinalize(this);
+            this.freeTypeInvoker.FT_Done_FreeType(this.libraryPtr);
+
+            this.isDisposed = true;
         }
 
         /// <summary>
