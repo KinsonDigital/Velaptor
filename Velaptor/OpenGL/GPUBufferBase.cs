@@ -17,7 +17,7 @@ namespace Velaptor.OpenGL
     /// Base functionality for managing buffer data in the GPU.
     /// </summary>
     /// <typeparam name="TData">The type of data in the GPU buffer.</typeparam>
-    public abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
+    internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         where TData : struct
     {
         private readonly IDisposable glObservableUnsubscriber;
