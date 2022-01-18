@@ -11,7 +11,7 @@ namespace Velaptor.Content
     /// <summary>
     /// Manages the content source.
     /// </summary>
-    public abstract class ContentPathResolver : IPathResolver
+    internal abstract class ContentPathResolver : IPathResolver
     {
         private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
         private string contentRootDirectory = @$"{BaseDir}Content{Path.DirectorySeparatorChar}";

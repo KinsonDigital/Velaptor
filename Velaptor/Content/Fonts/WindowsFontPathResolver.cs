@@ -12,7 +12,7 @@ namespace Velaptor.Content.Fonts
     /// <summary>
     /// Resolves paths to windows system fonts.
     /// </summary>
-    public class WindowsFontPathResolver : IPathResolver
+    internal class WindowsFontPathResolver : IPathResolver
     {
         private const string FileExtension = ".ttf";
         private readonly IDirectory directory;

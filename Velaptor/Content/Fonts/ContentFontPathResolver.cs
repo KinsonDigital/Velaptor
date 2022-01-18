@@ -12,7 +12,7 @@ namespace Velaptor.Content.Fonts
     /// <summary>
     /// Resolves paths to font content.
     /// </summary>
-    public class ContentFontPathResolver : ContentPathResolver
+    internal class ContentFontPathResolver : ContentPathResolver
     {
         private const string FileExtension = ".ttf";
         private readonly IDirectory directory;
