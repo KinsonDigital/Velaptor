@@ -17,7 +17,7 @@ namespace Velaptor.OpenGL
 
     /// <inheritdoc/>
     [SpriteBatchSize(ISpriteBatch.BatchSize)]
-    public abstract class ShaderProgram : IShaderProgram
+    internal abstract class ShaderProgram : IShaderProgram
     {
         private readonly IShaderLoaderService<uint> shaderLoaderService;
         private readonly IDisposable glObservableUnsubscriber;
