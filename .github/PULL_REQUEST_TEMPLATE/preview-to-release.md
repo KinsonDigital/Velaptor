@@ -18,15 +18,15 @@ This pull request performs a preview release for version **_[add version here]_*
 - Bug Fix(es)
   - [ ] A **_bug_** label has been added to the PR
 - [ ] Contains breaking change(s)
-  - 💡 This would force library users to change their code.  This would involve a public facing API change, behavior that would force a change to the users code base, or even an update in behavior that could force a change to the library users code base.  Sometimes this it is unclear if the change is a breaking change.  If it is unclear, reach out so we can discuss and investigate if it is indeed a breaking change.
+  - 💡 Any changes, including behavioral, that prevent a library user's application from compiling or behaving correctly.  Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract) for more information.
 - Additional feature and/or behavior added.~~~~
   - [ ] Yes
-    - An **_enhancement_** label has been added to the PR
+    - An **_enhancement_** label has been added to the PR.
       - [ ] Yes
       - [ ] No
   - [ ] No
-- I have changes related to workflows (CI/CD)
-  - 💡 These kinds of changes are only done by the project owner and maintainers that are allowed to make changes to workflows
+- I have changes related to workflows (CI/CD).
+  - 💡 These kinds of changes are only done by the project owner and maintainers.
   - [ ] Yes
     - A **_workflow_** label has been added to the PR
       - [ ] Yes

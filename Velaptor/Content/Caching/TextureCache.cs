@@ -19,7 +19,7 @@ namespace Velaptor.Content.Caching
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Caches <see cref="ITexture"/> objects for performant retrieval at a later time.
+    /// Caches <see cref="ITexture"/> objects for retrieval at a later time.
     /// </summary>
     internal sealed class TextureCache : IDisposableItemCache<string, ITexture>
     {

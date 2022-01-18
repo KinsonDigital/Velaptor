@@ -37,7 +37,7 @@ namespace VelaptorTests.Content
 
         #region Method Tests
         [Fact]
-        public void Load_WhenLoadingTextures_LoadsTexture()
+        public void LoadTexture_WhenLoadingTextures_LoadsTexture()
         {
             // Arrange
             var loader = CreateContentLoader();
@@ -50,7 +50,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Load_WhenLoadingSounds_LoadsSound()
+        public void LoadSound_WhenLoadingSounds_LoadsSound()
         {
             // Arrange
             var loader = CreateContentLoader();
@@ -63,7 +63,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Load_WhenLoadingAtlasData_LoadsAtlasData()
+        public void LoadAtlas_WhenLoadingAtlasData_LoadsAtlasData()
         {
             // Arrange
             var loader = CreateContentLoader();
@@ -76,7 +76,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Load_WhenLoadingFonts_LoadsFont()
+        public void LoadFont_WhenLoadingFonts_LoadsFont()
         {
             // Arrange
             var loader = CreateContentLoader();
@@ -89,7 +89,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Unload_WhenUnloadingTextures_UnloadsTexture()
+        public void UnloadTexture_WhenUnloadingTextures_UnloadsTexture()
         {
             // Arrange
             var mockTexture = new Mock<ITexture>();
@@ -108,7 +108,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Unload_WhenUnloadingSounds_UnloadsSound()
+        public void UnloadSound_WhenUnloadingSounds_UnloadsSound()
         {
             // Arrange
             var mockSound = new Mock<ISound>();
@@ -127,7 +127,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Unload_WhenUnloadingAtlasData_UnloadsAtlasData()
+        public void UnloadAtlas_WhenUnloadingAtlasData_UnloadsAtlasData()
         {
             // Arrange
             var mockAtlasData = new Mock<IAtlasData>();
@@ -146,7 +146,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Unload_WhenUnloadingFonts_UnloadsFont()
+        public void UnloadFont_WhenUnloadingFonts_UnloadsFont()
         {
             // Arrange
             const int fontSize = 12;
