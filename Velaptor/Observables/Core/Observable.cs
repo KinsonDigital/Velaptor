@@ -47,7 +47,7 @@ namespace Velaptor.Observables.Core
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)

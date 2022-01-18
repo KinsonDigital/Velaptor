@@ -64,7 +64,7 @@ namespace Velaptor.Graphics
         void EndBatch();
 
         /// <summary>
-        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> location.
+        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
         /// </summary>
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X location of the texture.</param>
@@ -73,7 +73,7 @@ namespace Velaptor.Graphics
         void Render(ITexture texture, int x, int y);
 
         /// <summary>
-        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> location.
+        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
         /// </summary>
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X location of the texture.</param>
@@ -83,7 +83,7 @@ namespace Velaptor.Graphics
         void Render(ITexture texture, int x, int y, RenderEffects effects);
 
         /// <summary>
-        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> location.
+        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
         /// </summary>
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X location of the texture.</param>
@@ -93,7 +93,7 @@ namespace Velaptor.Graphics
         void Render(ITexture texture, int x, int y, Color color);
 
         /// <summary>
-        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> location.
+        /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
         /// </summary>
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X location of the texture.</param>
@@ -109,13 +109,13 @@ namespace Velaptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="srcRect">The rectangle of the sub texture within the texture to render.</param>
         /// <param name="destRect">The destination rectangle of rendering.</param>
-        /// <param name="size">The size to render the texture at. 1 is for 100%/normal size.</param>
+        /// <param name="size">The size to render the texture. 1 is for 100%/normal size.</param>
         /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
         /// <param name="color">The color to apply to the rendering.</param>
         /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
         /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
         /// <remarks>
-        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </remarks>
         void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color color, RenderEffects effects);
@@ -129,20 +129,20 @@ namespace Velaptor.Graphics
         /// <param name="x">The X coordinate location to render the text.</param>
         /// <param name="y">The Y coordinate location to render the text.</param>
         /// <remarks>
-        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </remarks>
         void Render(IFont font, string text, int x, int y);
 
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
-        /// using the given <paramref name="position"/>.
+        /// and <paramref name="position"/>.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
         /// <param name="position">The position to render the text.</param>
         /// <remarks>
-        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </remarks>
         void Render(IFont font, string text, Vector2 position);
@@ -159,20 +159,20 @@ namespace Velaptor.Graphics
         /// <param name="angle">The angle of the text in degrees.</param>
         /// <remarks>
         /// <para>
-        ///     position: The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </para>
         ///
         /// <para>
-        ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        ///     The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, int x, int y, float size, float angle);
 
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
-        /// using the given <paramref name="position"/>, <paramref name="size"/>, and <paramref name="angle"/>.
+        /// at the given <paramref name="position"/>, with the given <paramref name="size"/>, and <paramref name="angle"/>.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
@@ -181,13 +181,13 @@ namespace Velaptor.Graphics
         /// <param name="angle">The angle of the text in degrees.</param>
         /// <remarks>
         /// <para>
-        ///     position: The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </para>
         ///
         /// <para>
-        ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        ///     The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, Vector2 position, float size, float angle);
@@ -195,7 +195,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
         /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates
-        /// and the font <paramref name="color"/>.
+        /// and <paramref name="color"/>.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
@@ -204,34 +204,34 @@ namespace Velaptor.Graphics
         /// <param name="color">The color of the text.</param>
         /// <remarks>
         /// <para>
-        ///     position: The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </para>
         ///
         /// <para>
-        ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        ///     The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, int x, int y, Color color);
 
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
-        /// using the given <paramref name="position"/> and <paramref name="color"/>.
+        /// at the given <paramref name="position"/> with the given <paramref name="color"/>.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
         /// <param name="position">The position to render the text.</param>
         /// <param name="color">The color of the text.</param>
         /// <remarks>
-        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </remarks>
         void Render(IFont font, string text, Vector2 position, Color color);
 
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
-        /// using the given <paramref name="position"/>, <paramref name="angle"/>, and font <paramref name="color"/>.
+        /// at the given <paramref name="position"/>, <paramref name="angle"/>, and <paramref name="color"/>.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
@@ -239,7 +239,7 @@ namespace Velaptor.Graphics
         /// <param name="angle">The angle of the text in degrees.</param>
         /// <param name="color">The color of the text.</param>
         /// <remarks>
-        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </remarks>
         void Render(IFont font, string text, Vector2 position, float angle, Color color);
@@ -247,7 +247,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
         /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates,
-        /// <paramref name="angle"/>, and the font <paramref name="color"/>.
+        /// with the given <paramref name="angle"/>, and <paramref name="color"/>.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
@@ -256,7 +256,7 @@ namespace Velaptor.Graphics
         /// <param name="angle">The angle of the text in degrees.</param>
         /// <param name="color">The color to apply to the rendering.</param>
         /// <remarks>
-        ///     The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </remarks>
         void Render(IFont font, string text, int x, int y, float angle, Color color);
@@ -264,7 +264,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
         /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates,
-        /// <paramref name="angle"/>, <paramref name="size"/>, and the font <paramref name="color"/>.
+        /// with the given <paramref name="angle"/>, <paramref name="size"/>, and <paramref name="color"/>.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
@@ -275,13 +275,13 @@ namespace Velaptor.Graphics
         /// <param name="color">The color to apply to the rendering.</param>
         /// <remarks>
         /// <para>
-        ///     position: The position is based on the center of the text.  The center of the text is determined based on the
+        ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
         /// </para>
         ///
         /// <para>
-        ///     size: The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger then the normal size.
+        ///     The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+        ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, int x, int y, float size, float angle, Color color);

@@ -1,4 +1,4 @@
-// <copyright file="MouseState.cs" company="KinsonDigital">
+﻿// <copyright file="MouseState.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -58,37 +58,37 @@ namespace Velaptor.Input
         public int GetY() => this.position.Y;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the left mouse button is in the down position.
+        /// Gets or sets a value indicating whether or not the left mouse button is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the button is down.</returns>
         public bool IsLeftButtonDown() => this.isLeftButtonDown;
 
         /// <summary>
-        /// Returns a value indicating whether the left mouse button is in the up position.
+        /// Returns a value indicating whether or not the left mouse button is in the up position.
         /// </summary>
         /// <returns><see langword="true"/> if the button is up.</returns>
         public bool IsLeftButtonUp() => !IsLeftButtonDown();
 
         /// <summary>
-        /// Gets or sets a value indicating whether the middle mouse button is in the down position.
+        /// Gets or sets a value indicating whether or not the middle mouse button is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the button is down.</returns>
         public bool IsMiddleButtonDown() => this.isMiddleButtonDown;
 
         /// <summary>
-        /// Returns a value indicating whether the middle mouse button is in the up position.
+        /// Returns a value indicating whether or not the middle mouse button is in the up position.
         /// </summary>
         /// <returns><see langword="true"/> if the button is up.</returns>
         public bool IsMiddleButtonUp() => !IsMiddleButtonDown();
 
         /// <summary>
-        /// Gets or sets a value indicating whether the right mouse button is in the down position.
+        /// Gets or sets a value indicating whether or not the right mouse button is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the button is down.</returns>
         public bool IsRightButtonDown() => this.isRightButtonDown;
 
         /// <summary>
-        /// Returns a value indicating whether the right mouse button is in the up position.
+        /// Returns a value indicating whether or not the right mouse button is in the up position.
         /// </summary>
         /// <returns><see langword="true"/> if the button is up.</returns>
         public bool IsRightButtonUp() => !IsRightButtonDown();

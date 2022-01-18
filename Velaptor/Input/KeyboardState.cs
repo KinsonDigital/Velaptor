@@ -99,18 +99,18 @@ namespace Velaptor.Input
         /*TODO: Get these 2 properties working with SILK.NET
 
         /// <summary>
-        /// Gets a value indicating whether gets a value indicating if the caps lock key is on.
+        /// Gets a value indicating whether or not the caps lock key is on.
         /// </summary>
         public bool CapsLockOn => IsKeyDown(KeyCode.CapsLock);
 
         //// <summary>
-        //// Gets or sets a value indicating whether gets a value indicating if the num lock key is on.
+        //// Gets or sets a value indicating whether or not the num lock key is on.
         //// </summary>
         public bool NumLockOn => IsKeyDown(KeyCode.NumLock);
         */
 
         /// <summary>
-        /// Returns a value indicating whether the <paramref name="left"/> and <paramref name="right"/> operands are equal.
+        /// Returns a value indicating whether or not the <paramref name="left"/> and <paramref name="right"/> operands are equal.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -118,7 +118,7 @@ namespace Velaptor.Input
         public static bool operator ==(KeyboardState left, KeyboardState right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating whether the <paramref name="left"/> and <paramref name="right"/> operands are not equal.
+        /// Returns a value indicating whether or not the <paramref name="left"/> and <paramref name="right"/> operands are not equal.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -138,37 +138,37 @@ namespace Velaptor.Input
         }
 
         /// <summary>
-        /// Gets a value indicating whether the left shift key is in the down position.
+        /// Gets a value indicating whether or not the left shift key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the left shift key is down.</returns>
         public bool IsLeftShiftDown() => IsKeyDown(KeyCode.LeftShift);
 
         /// <summary>
-        /// Gets a value indicating whether the right shift key is in the down position.
+        /// Gets a value indicating whether or not the right shift key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the right shift key is down.</returns>
         public bool IsRightShiftDown() => IsKeyDown(KeyCode.RightShift);
 
         /// <summary>
-        /// Gets a value indicating whether the left control key is in the down position.
+        /// Gets a value indicating whether or not the left control key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the left control key is down.</returns>
         public bool IsLeftCtrlDown() => IsKeyDown(KeyCode.LeftControl);
 
         /// <summary>
-        /// Gets a value indicating whether the right control key is in the down position.
+        /// Gets a value indicating whether or not the right control key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the right control key is down.</returns>
         public bool IsRightCtrlDown() => IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
-        /// Gets a value indicating whether the left alt key is in the down position.
+        /// Gets a value indicating whether or not the left alt key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the left alt key is down.</returns>
         public bool IsLeftAltDown() => IsKeyDown(KeyCode.LeftAlt);
 
         /// <summary>
-        /// Gets a value indicating whether the right alt key is in the down position.
+        /// Gets a value indicating whether or not the right alt key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the right alt key is down.</returns>
         public bool IsRightAltDown() => IsKeyDown(KeyCode.RightAlt);

@@ -1,4 +1,4 @@
-// <copyright file="IScene.cs" company="KinsonDigital">
+﻿// <copyright file="IScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -24,12 +24,12 @@ namespace VelaptorTesting.Core
         Guid Id { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the scene has been loaded.
+        /// Gets a value indicating whether or not the scene has been loaded.
         /// </summary>
         bool IsLoaded { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the scene is active.
+        /// Gets or sets a value indicating whether or not the scene is active.
         /// </summary>
         bool IsActive { get; set; }
 

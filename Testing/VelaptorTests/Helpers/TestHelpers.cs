@@ -172,8 +172,8 @@ namespace VelaptorTests.Helpers
         /// </summary>
         /// <param name="image">The image data that contains the row.</param>
         /// <param name="row">The row of pixels to return.</param>
-        /// <param name="colStart">The column in the row to start at.</param>
-        /// <param name="colStop">The column in the row to stop at.</param>
+        /// <param name="colStart">The column in the row where to start.</param>
+        /// <param name="colStop">The column in the row where to stop.</param>
         /// <returns>The list of row pixel colors.</returns>
         /// <remarks>The row, colStart, and colStop are 0 index based.</remarks>
         public static IEnumerable<NETColor> GetRow(ImageData image, uint row, uint colStart, uint colStop)

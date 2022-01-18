@@ -15,7 +15,7 @@ namespace Velaptor.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Gets information about the monitors in the system.
+    /// Gets information about all of the monitors in the system.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class SystemMonitorService : ISystemMonitorService

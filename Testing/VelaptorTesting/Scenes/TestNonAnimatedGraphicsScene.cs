@@ -81,6 +81,7 @@ namespace VelaptorTesting.Scenes
             }
 
             this.mainAtlas = null;
+            this.font?.Dispose();
 
             base.UnloadContent();
         }

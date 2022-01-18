@@ -22,7 +22,7 @@ namespace Velaptor.OpenGL
         /// <remarks>
         ///     Think of the <paramref name="index"/> as the offset/location of
         ///     the data in GPU memory. For example, if you think of the memory
-        ///     being laid out like and array of data, this would be the location
+        ///     being laid out like an array of data, this would be the location
         ///     of the 'chunk' of <paramref name="data"/> in the array.
         /// </remarks>
         void UploadData(TData data, uint index);

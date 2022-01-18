@@ -22,12 +22,12 @@ namespace Velaptor.Content
         string FilePath { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the content item has been disposed.
+        /// Gets a value indicating whether or not the content item has been disposed.
         /// </summary>
         bool IsDisposed { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the content is pooled by the content subsystem.
+        /// Gets or sets a value indicating whether or not the content is pooled by the content subsystem.
         /// </summary>
         /// <remarks>
         ///     If true, this means that the content is being pooled by the content loaders

@@ -1,4 +1,4 @@
-// <copyright file="SceneBase.cs" company="KinsonDigital">
+﻿// <copyright file="SceneBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -41,7 +41,7 @@ namespace VelaptorTesting.Core
         public bool IsActive { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether true if the scene has been disposed of.
+        /// Gets a value indicating whether or not the scene has been disposed.
         /// </summary>
         protected bool IsDisposed { get; private set; }
 
@@ -127,7 +127,7 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (IsDisposed)

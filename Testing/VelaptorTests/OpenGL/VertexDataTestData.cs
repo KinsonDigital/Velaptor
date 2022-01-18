@@ -18,7 +18,7 @@ namespace VelaptorTests.OpenGL
         /// <inheritdoc/>
         public IEnumerator<object[]> GetEnumerator()
         {
-            //                                Vertex                  Texture Coord                      Tint Color                     Expected Result
+            //                                Vertex           Texture Coord          Tint Color                  Expected Result
             yield return new object[] { new Vector2(1, 2),   new Vector2(4, 5),  Color.FromArgb(6, 7, 8, 9),         true };
             yield return new object[] { new Vector2(11, 2),  new Vector2(4, 5),  Color.FromArgb(6, 7, 8, 9),         false };
             yield return new object[] { new Vector2(1, 2),   new Vector2(44, 5), Color.FromArgb(6, 7, 8, 9),         false };

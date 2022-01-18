@@ -60,14 +60,14 @@ namespace Velaptor
         public static float ToRadians(this float degrees) => degrees * (float)Math.PI / 180f;
 
         /// <summary>
-        /// Sets the value to positive if its negative.
+        /// Sets the value to positive if it's negative.
         /// </summary>
         /// <param name="value">The value to force.</param>
         /// <returns>The value as a positive number.</returns>
         public static float ForcePositive(this float value) => value < 0 ? value * -1 : value;
 
         /// <summary>
-        /// Sets the value to negative if its positive.
+        /// Sets the value to negative if it's positive.
         /// </summary>
         /// <param name="value">The value to force.</param>
         /// <returns>The value as a negative number.</returns>

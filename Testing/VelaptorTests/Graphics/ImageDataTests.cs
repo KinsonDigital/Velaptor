@@ -132,7 +132,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void DrawImage_WithWidthAndHeightLargerThenTarget_DrawsPartialSourceImageOntoTarget()
+        public void DrawImage_WithWidthAndHeightLargerThanTarget_DrawsPartialSourceImageOntoTarget()
         {
             // Arrange
             var targetImgData = TestHelpers.CreateImageData(Color.FromArgb(255, 0, 0, 255), 6, 6);

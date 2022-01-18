@@ -228,7 +228,7 @@ namespace VelaptorTesting.Core
         }
 
         /// <summary>
-        /// Returns a value indicating whether a scene with the given ID already exists.
+        /// Returns a value indicating whether or not a scene with the given ID already exists.
         /// </summary>
         /// <param name="id">The ID of the scene to check for.</param>
         /// <returns>True if the scene exists.</returns>

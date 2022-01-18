@@ -15,7 +15,7 @@ namespace Velaptor.UI
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// A system window that graphics can be rendered to.
+    /// A system window where graphics can be rendered.
     /// </summary>
     public abstract class Window : IWindowProps, IDisposable
     {
@@ -190,7 +190,7 @@ namespace Velaptor.UI
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)

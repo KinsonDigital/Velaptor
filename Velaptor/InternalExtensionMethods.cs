@@ -63,7 +63,7 @@ namespace Velaptor
         public static bool DoesNotEndWith(this string stringToCheck, string value) => !stringToCheck.EndsWith(value);
 
         /// <summary>
-        /// Returns a value indicating whether the given file or directory path
+        /// Returns a value indicating whether or not the given file or directory path
         /// only contains a root drive path with no directories.
         /// </summary>
         /// <param name="fileOrDirPath">The path to check.</param>
@@ -144,12 +144,12 @@ namespace Velaptor
             => new (items.ToList());
 
         /// <summary>
-        /// Converts the given list of <paramref name="items"/> to a readonly dictionary where
+        /// Converts the given list of <paramref name="items"/> to a read only dictionary where
         /// the key is the <paramref name="items"/> array item index.
         /// </summary>
         /// <param name="items">The list of items to convert.</param>
         /// <typeparam name="T">The type of values in the lists.</typeparam>
-        /// <returns>A readonly dictionary of the given <paramref name="items"/>.</returns>
+        /// <returns>A read only dictionary of the given <paramref name="items"/>.</returns>
         public static ReadOnlyDictionary<uint, T> ToReadOnlyDictionary<T>(this T[] items)
         {
             var result = new Dictionary<uint, T>();
@@ -176,16 +176,16 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Conditionally registers that a new instance of <typeparamref name="TImplementation"/> will be returned
-        /// every time a <typeparamref name="TService"/> is requested (transient) and where the supplied predicate
-        /// returns true. The predicate will only be evaluated a finite number of times;
-        /// the predicate is unsuited for making decisions based on runtime conditions.
+        ///    Conditionally registers that a new instance of <typeparamref name="TImplementation"/> will be returned
+        ///    every time a <typeparamref name="TService"/> is requested (transient) and where the supplied predicate
+        ///    returns true. The predicate will only be evaluated a finite number of times;
+        ///    the predicate is unsuited for making decisions based on runtime conditions.
         /// </summary>
         /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
         /// <param name="predicate">
-        ///     The predicate that determines whether the <typeparamref name="TImplementation"/> can be applied for
+        ///     The predicate that determines whether or not the <typeparamref name="TImplementation"/> can be applied for
         ///     the requested service type. This predicate can be used to build a fallback mechanism
         ///     where multiple registrations for the same service type are made. Note that the
         ///     predicate will be called a finite number of times and its result will be cached
@@ -198,7 +198,7 @@ namespace Velaptor
         ///     lifestyle for the specified type. By default this will be Transient.
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
         [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
         public static void RegisterConditional<TService, TImplementation>(this Container container, Predicate<PredicateContext> predicate, bool suppressDisposal = false)
@@ -226,7 +226,7 @@ namespace Velaptor
         ///     lifestyle for the specified type. By default this will be Transient.
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
         [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Left here for future development.")]
         public static void Register<TService, TImplementation>(this Container container, bool suppressDisposal = false)
@@ -248,7 +248,7 @@ namespace Velaptor
         /// <param name="container">The container that the registration applies to.</param>
         /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
         [ExcludeFromCodeCoverage]
         public static void Register<TImplementation>(this Container container, bool suppressDisposal = false)
             where TImplementation : class
@@ -277,7 +277,7 @@ namespace Velaptor
         /// <param name="instanceCreator">The delegate that allows building or creating new instances.</param>
         /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <exception cref="T:System.InvalidOperationException">
-        /// Thrown when this container instance is locked and can not be altered, or when the
+        /// Thrown when this container instance is locked and cannot be altered, or when the
         /// <typeparamref name="TService" /> has already been registered.</exception>
         /// <exception cref="T:System.ArgumentNullException">
         /// Thrown when <paramref name="instanceCreator" /> is a null reference.</exception>
@@ -295,8 +295,8 @@ namespace Velaptor
         }
 
         /// <summary>
-        ///     Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
-        ///     a <typeparamref name="TService"/> is requested (transient).
+        /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
+        /// a <typeparamref name="TService"/> is requested (transient).
         /// </summary>
         /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
@@ -308,7 +308,7 @@ namespace Velaptor
         ///     lifestyle for the specified type. By default this will be Transient.
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and can not be altered.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
         [ExcludeFromCodeCoverage]
         public static void Register<TService, TImplementation>(this Container container, Lifestyle lifestyle, bool suppressDisposal = false)
             where TService : class

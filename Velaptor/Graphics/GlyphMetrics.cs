@@ -31,7 +31,7 @@ namespace Velaptor.Graphics
         /// <remarks>
         ///     Unfortunately, font formats don't define the ascender in a
         ///     uniform way. For some formats, it represents the ascent of all capital latin characters
-        ///     (without accents), for others it is the ascent of the highest accented character, and finally,
+        ///     (without accents), for others it is the ascent of the highest accented character. Finally,
         ///     other formats define it as being equal to Y max value of the global bounding box.
         /// </remarks>
         public float Ascender { get; set; }
@@ -42,8 +42,8 @@ namespace Velaptor.Graphics
         /// <remarks>
         ///     Unfortunately, font formats don't define the descender in a uniform way. For some formats,
         ///     it represents the descent of all capital latin characters (without accents), for others it is
-        ///     the ascent of the lowest accented character, and finally, other formats define it as being equal
-        ///     to Y min value of the global bounding box. This field is negative for values below the baseline.
+        ///     the ascent of the lowest accented character. Finally, other formats define it as being equal
+        ///     to the Y min value of the global bounding box. This field is negative for values below the baseline.
         /// </remarks>
         public float Descender { get; set; }
 

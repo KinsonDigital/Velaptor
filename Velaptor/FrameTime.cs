@@ -13,7 +13,7 @@ namespace Velaptor
     public struct FrameTime : IEquatable<FrameTime>
     {
         /// <summary>
-        /// Gets or sets the total time that has passed.
+        /// Gets or sets the total time that the entire application has been running.
         /// </summary>
         public TimeSpan TotalTime { get; set; }
 

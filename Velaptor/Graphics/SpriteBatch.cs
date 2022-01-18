@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -168,7 +168,7 @@ namespace Velaptor.Graphics
 
         /// <inheritdoc/>
         /// <exception cref="InvalidOperationException">
-        ///     Thrown if the <see cref="BeginBatch"/>() method is not called first before calling this method.
+        ///     Thrown if the <see cref="BeginBatch"/>() method is not called before calling this method.
         /// </exception>
         /// <exception cref="ArgumentException">
         ///     Thrown if the <see cref="Rectangle.Width"/> or <see cref="Rectangle.Height"/> property
@@ -249,7 +249,7 @@ namespace Velaptor.Graphics
 
         /// <inheritdoc/>
         /// <exception cref="InvalidOperationException">
-        ///     Thrown if the <see cref="BeginBatch"/>() method is not called first before calling this method.
+        ///     Thrown if the <see cref="BeginBatch"/>() method is not called before calling this method.
         /// </exception>
         public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
         {
@@ -346,7 +346,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> if managed resources should be disposed of.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)
@@ -381,7 +381,7 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Invoked every time the batch of textures are ready to be rendered.
+        /// Invoked every time the batch of textures is ready to be rendered.
         /// </summary>
         private void TextureBatchService_BatchFilled(object? sender, EventArgs e)
         {
@@ -427,7 +427,7 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Invoked every time the batch of fonts are ready to be rendered.
+        /// Invoked every time the batch of fonts is ready to be rendered.
         /// </summary>
         private void FontBatchService_BatchFilled(object? sender, EventArgs e)
         {

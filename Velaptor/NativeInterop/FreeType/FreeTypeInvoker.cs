@@ -124,10 +124,10 @@ namespace Velaptor.NativeInterop.FreeType
         /// <summary>
         /// Creates n error message from the standard Free Type message.
         /// </summary>
-        /// <param name="freeTypeMsg">The free type message to change.</param>
+        /// <param name="freeTypeMsg">The error message coming from the FreeType library.</param>
         /// <returns>The C# friendly exception message.</returns>
         /// <remarks>
-        ///     The standard free type error messages come from the <see cref="FT_Error"/> enum.
+        ///     The FreeType error message.
         /// </remarks>
         private static string CreateErrorMessage(string freeTypeMsg)
         {

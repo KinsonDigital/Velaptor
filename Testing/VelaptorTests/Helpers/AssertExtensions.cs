@@ -1,4 +1,4 @@
-// <copyright file="AssertExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="AssertExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

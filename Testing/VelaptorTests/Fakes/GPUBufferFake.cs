@@ -1,4 +1,4 @@
-// <copyright file="GPUBufferFake.cs" company="KinsonDigital">
+﻿// <copyright file="GPUBufferFake.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -25,42 +25,42 @@ namespace VelaptorTests.Fakes
         }
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="SetupVAO"/>() method has been invoked.
+        /// Gets a value indicating whether or not the <see cref="SetupVAO"/>() method has been invoked.
         /// </summary>
         /// <remarks>Used for unit testing.</remarks>
         public bool SetupVAOInvoked { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="GenerateData"/>() method has been invoked.
+        /// Gets a value indicating whether or not the <see cref="GenerateData"/>() method has been invoked.
         /// </summary>
         /// <remarks>Used for unit testing.</remarks>
         public bool GenerateDataInvoked { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="PrepareForUpload"/>() method has been invoked.
+        /// Gets a value indicating whether or not the <see cref="PrepareForUpload"/>() method has been invoked.
         /// </summary>
         /// <remarks>Used for unit testing.</remarks>
         public bool PrepareForUseInvoked { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="GenerateIndices"/>() method has been invoked.
+        /// Gets a value indicating whether or not the <see cref="GenerateIndices"/>() method has been invoked.
         /// </summary>
         /// <remarks>Used for unit testing.</remarks>
         public bool GenerateIndicesInvoked { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="UploadVertexData"/>() method has been invoked.
+        /// Gets a value indicating whether or not the <see cref="UploadVertexData"/>() method has been invoked.
         /// </summary>
         /// <remarks>Used for unit testing.</remarks>
         public bool UpdateVertexDataInvoked { get; private set; }
 
         /// <summary>
-        /// Set the <see cref="SetupVAOInvoked"/> to true to simulated that the VAO has been setup.
+        /// Set the <see cref="SetupVAOInvoked"/> to true to simulate that the VAO has been setup.
         /// </summary>
         protected internal override void SetupVAO() => SetupVAOInvoked = true;
 
         /// <summary>
-        /// Set the <see cref="UpdateVertexDataInvoked"/> to true to simulated that the vertex data has been updated.
+        /// Set the <see cref="UpdateVertexDataInvoked"/> to true to simulate that the vertex data has been updated.
         /// </summary>
         /// <param name="data">The fake data to use for the test.</param>
         /// <param name="batchIndex">The fake batch index to use for the text.</param>
@@ -74,7 +74,7 @@ namespace VelaptorTests.Fakes
 
         /// <summary>
         /// Sets the <see cref="GenerateDataInvoked"/> to true to simulate that the method has
-        /// been invoked and return fake data.
+        /// been invoked and returns fake data.
         /// </summary>
         /// <returns>The data to use for testing.</returns>
         protected internal override float[] GenerateData()
@@ -85,7 +85,7 @@ namespace VelaptorTests.Fakes
 
         /// <summary>
         /// Sets the <see cref="GenerateIndicesInvoked"/> to true to simulate that the method has
-        /// been invoked and return fake data.
+        /// been invoked and returns fake data.
         /// </summary>
         /// <returns>The data to use for testing.</returns>
         protected internal override uint[] GenerateIndices()

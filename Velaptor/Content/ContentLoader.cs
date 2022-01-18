@@ -25,7 +25,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoader"/> class.
         /// </summary>
-        /// <param name="textureLoader">The loader used to load textures.</param>
+        /// <param name="textureLoader">Loads textures.</param>
         /// <param name="soundLoader">Loads sounds.</param>
         /// <param name="atlasLoader">Loads a texture atlas.</param>
         /// <param name="fontLoader">Loads fonts for rendering test.</param>
@@ -71,7 +71,7 @@ namespace Velaptor.Content
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)
