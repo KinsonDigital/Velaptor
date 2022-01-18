@@ -334,7 +334,7 @@ namespace Velaptor
         /// <remarks>
         ///     This does not check if the path actually exists.  This is for valid path syntax checks only.
         /// </remarks>
-        public static bool IsValidFilePath(this string path)
+        public static bool HasValidFullFilePathSyntax(this string path)
         {
             // Must not be null or empty
             if (string.IsNullOrEmpty(path))
@@ -343,7 +343,7 @@ namespace Velaptor
             }
 
             // Must have a drive letter
-            if (path.Contains(':') is false && path.NotStartsWith(':'))
+            if (path.Contains(':') is false && path.DoesNotStartWith(':'))
             {
                 return false;
             }
@@ -396,7 +396,7 @@ namespace Velaptor
         /// <remarks>
         ///     This does not check if the path actually exists.  This is for valid path syntax checks only.
         /// </remarks>
-        public static bool IsInvalidFilePath(this string path) => !IsValidFilePath(path);
+        public static bool HasInvalidFullFilePathSyntax(this string path) => !HasValidFullFilePathSyntax(path);
 
         /// <summary>
         /// Returns a value indicating if the given <paramref name="path"/> a valid drive.
@@ -416,7 +416,7 @@ namespace Velaptor
         /// <remarks>
         ///     This does not check if the drive actually exists.  This is for valid path syntax checks only.
         /// </remarks>
-        public static bool ContainsValidDrive(this string path)
+        public static bool HasValidDriveSyntax(this string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -456,14 +456,14 @@ namespace Velaptor
         /// <remarks>
         ///     This does not check if the directory path actually exists.  This is for valid path syntax checks only.
         /// </remarks>
-        public static bool IsFullyQualifiedDirPath(this string dirPath)
+        public static bool HasValidFullDirPathSyntax(this string dirPath)
         {
             if (string.IsNullOrEmpty(dirPath))
             {
                 return false;
             }
 
-            if (dirPath.ContainsValidDrive() is false)
+            if (dirPath.HasValidDriveSyntax() is false)
             {
                 return false;
             }
@@ -492,7 +492,7 @@ namespace Velaptor
         /// <remarks>
         ///     This does not check if the UNC directory path actually exists.  This is for valid path syntax checks only.
         /// </remarks>
-        public static bool IsUNCPath(this string path)
+        public static bool HasValidUNCPathSyntax(this string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -506,7 +506,7 @@ namespace Velaptor
 
             path = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-            if (path.NotStartsWith($@"{Path.AltDirectorySeparatorChar}{Path.AltDirectorySeparatorChar}"))
+            if (path.DoesNotStartWith($@"{Path.AltDirectorySeparatorChar}{Path.AltDirectorySeparatorChar}"))
             {
                 return false;
             }

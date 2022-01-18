@@ -8,6 +8,7 @@ namespace Velaptor.Content
     using System;
     using System.IO;
     using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Fonts;
 
     // ReSharper restore RedundantNameQualifier
 

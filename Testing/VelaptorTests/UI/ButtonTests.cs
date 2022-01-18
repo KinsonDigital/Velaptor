@@ -11,6 +11,7 @@ namespace VelaptorTests.UI
     using System.Linq;
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.UI;
     using VelaptorTests.Helpers;

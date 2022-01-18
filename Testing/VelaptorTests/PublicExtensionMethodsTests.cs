@@ -62,7 +62,7 @@ namespace VelaptorTests
 
         #region Unit Test Data
         /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.IsValidFilePath"/>() method.
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidFullFilePathSyntax"/>() method.
         /// </summary>
         /// <returns>The test data.</returns>
         public static IEnumerable<object[]> IsValidFilePathTestData()
@@ -81,7 +81,7 @@ namespace VelaptorTests
         }
 
         /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.IsInvalidFilePath"/>() method.
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasInvalidFullFilePathSyntax"/>() method.
         /// </summary>
         /// <returns>The test data.</returns>
         public static IEnumerable<object[]> IsInvalidFilePathTestData()
@@ -100,7 +100,7 @@ namespace VelaptorTests
         }
 
         /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.ContainsValidDrive"/>() method.
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidDriveSyntax"/>() method.
         /// </summary>
         /// <returns>The test data.</returns>
         public static IEnumerable<object[]> ContainsValidDriveTestData()
@@ -119,7 +119,7 @@ namespace VelaptorTests
         }
 
         /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.IsFullyQualifiedDirPath"/>() method.
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidFullDirPathSyntax"/>() method.
         /// </summary>
         /// <returns>The test data.</returns>
         public static IEnumerable<object[]> IsFullyQualifiedDirPathTestData()
@@ -136,7 +136,7 @@ namespace VelaptorTests
         }
 
         /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.IsUNCPath"/>() method.
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidUNCPathSyntax"/>() method.
         /// </summary>
         /// <returns>The test data.</returns>
         public static IEnumerable<object[]> IsUNCPathTestData()
@@ -413,7 +413,7 @@ namespace VelaptorTests
         public void IsValidFilePath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act
-            var actual = path.IsValidFilePath();
+            var actual = path.HasValidFullFilePathSyntax();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -424,7 +424,7 @@ namespace VelaptorTests
         public void IsInvalidFilePath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act
-            var actual = path.IsInvalidFilePath();
+            var actual = path.HasInvalidFullFilePathSyntax();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -465,7 +465,7 @@ namespace VelaptorTests
         public void ContainsValidDrive_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
         {
             // Act
-            var actual = dirPath.ContainsValidDrive();
+            var actual = dirPath.HasValidDriveSyntax();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -476,7 +476,7 @@ namespace VelaptorTests
         public void IsFullyQualifiedDirPath_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
         {
             // Act
-            var actual = dirPath.IsFullyQualifiedDirPath();
+            var actual = dirPath.HasValidFullDirPathSyntax();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -487,7 +487,7 @@ namespace VelaptorTests
         public void IsUNCPath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act
-            var actual = path.IsUNCPath();
+            var actual = path.HasValidUNCPathSyntax();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -499,7 +499,7 @@ namespace VelaptorTests
         [InlineData("hello", "", true)]
         [InlineData("", "world", true)]
         [InlineData("", "", false)]
-        public void DoestNotContain_WhenUsingAStringParam_ReturnsCorrectResult(
+        public void DoesNotContain_WhenUsingAStringParam_ReturnsCorrectResult(
             string stringToSearchIn,
             string valueToSearchFor,
             bool expected)
@@ -515,7 +515,7 @@ namespace VelaptorTests
         [InlineData("hello world", 'w', false)]
         [InlineData("hello", 'w', true)]
         [InlineData("", 'w', true)]
-        public void DoestNotContain_WhenUsingACharParam_ReturnsCorrectResult(
+        public void DoesNotContain_WhenUsingACharParam_ReturnsCorrectResult(
             string stringToSearchIn,
             char valueToSearchFor,
             bool expected)

@@ -5,6 +5,7 @@
 namespace Velaptor.Content.Factories
 {
     // ReSharper disable RedundantNameQualifier
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier

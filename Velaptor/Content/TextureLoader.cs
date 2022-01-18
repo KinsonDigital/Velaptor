@@ -68,7 +68,7 @@ namespace Velaptor.Content
         /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
         public ITexture Load(string contentPathOrName)
         {
-            var isFullFilePath = contentPathOrName.IsValidFilePath();
+            var isFullFilePath = contentPathOrName.HasValidFullFilePathSyntax();
             string filePath;
             string cacheKey;
 

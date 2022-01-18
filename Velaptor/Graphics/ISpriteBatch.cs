@@ -10,6 +10,7 @@ namespace Velaptor.Graphics
     using System.Drawing;
     using System.Numerics;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
 
     // ReSharper restore RedundantNameQualifier
 

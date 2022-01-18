@@ -100,7 +100,7 @@ namespace VelaptorTests.Content
         }
 
         [Theory]
-        // [InlineData("")]
+        [InlineData("")]
         [InlineData(".json")]
         public void FilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
         {

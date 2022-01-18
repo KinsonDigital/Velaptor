@@ -55,7 +55,7 @@ namespace VelaptorTests.Content.Fonts
         [InlineData("test-content")]
         [InlineData("test-content.ttf")]
         [InlineData("TEST-CONTENT.ttf")]
-        public void ResolveFilePath_WhenInvoked_ResolvesFilepath(string contentName)
+        public void ResolveFilePath_WhenInvoked_ResolvesFilePath(string contentName)
         {
             // Arrange
             this.mockDirectory.Setup(m => m.GetFiles(this.atlasContentDir, "*.ttf"))

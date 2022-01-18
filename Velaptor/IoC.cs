@@ -100,11 +100,16 @@ namespace Velaptor
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
 
             IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
         }
 
+        /// <summary>
+        /// Setup container registration related to caching.
+        /// </summary>
         private static void SetupCaching() => IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
 
+        /// <summary>
+        /// Setup container registration related to factories.
+        /// </summary>
         private static void SetupFactories()
         {
             IoCContainer.Register<ISoundFactory, SoundFactory>();
@@ -126,6 +131,7 @@ namespace Velaptor
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
             IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
+            IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(

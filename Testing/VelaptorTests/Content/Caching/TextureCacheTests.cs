@@ -199,7 +199,7 @@ namespace VelaptorTests.Content.Caching
             AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
             {
                 cache.GetItem(fullFilePath);
-            }, $"The meta data '{metaData}' is invalid and is required for font files of type '{FontExtension}'.");
+            }, $"The metadata '{metaData}' is invalid and is required for font files of type '{FontExtension}'.");
         }
 
         [Fact]
@@ -363,6 +363,9 @@ namespace VelaptorTests.Content.Caching
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object);
 
+        /// <summary>
+        /// Mocks parse result when caching texture file paths.
+        /// </summary>
         private void MockTextureParseResult()
         {
             this.mockFontMetaDataParser.Setup(m => m.Parse(this.textureFilePath))
@@ -374,6 +377,9 @@ namespace VelaptorTests.Content.Caching
                     0));
         }
 
+        /// <summary>
+        /// Mocks the parse result when caching font file paths.
+        /// </summary>
         private void MockFontParseResult()
         {
             this.mockFontMetaDataParser.Setup(m => m.Parse(this.fontFilePathWithMetaData))
@@ -385,6 +391,9 @@ namespace VelaptorTests.Content.Caching
                     FontSize));
         }
 
+        /// <summary>
+        /// Mocks the image data result when loading a texture file path.
+        /// </summary>
         private void MockImageData()
         {
             var imageData = new ImageData(new Color[3, 1], 3, 1);
@@ -405,18 +414,6 @@ namespace VelaptorTests.Content.Caching
 
             this.mockTextureFactory.Setup(m => m.Create(name, path, It.IsAny<ImageData>(), It.IsAny<bool>()))
                 .Returns(texture);
-        }
-
-        /// <summary>
-        /// Mocks the font atlas data being returned when using the <see cref="FontAtlasService"/> mock.
-        /// </summary>
-        /// <param name="data">The image data to return if the mock is successful.</param>
-        /// <param name="filePath">The path to use.</param>
-        /// <param name="fontSize">The font size to use.</param>
-        private void MockFontAtlasData(ImageData data, string filePath, uint fontSize)
-        {
-            this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(filePath, fontSize))
-                .Returns((data, Array.Empty<GlyphMetrics>()));
         }
     }
 }

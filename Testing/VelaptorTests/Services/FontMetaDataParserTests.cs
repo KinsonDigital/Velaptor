@@ -19,17 +19,17 @@ namespace VelaptorTests.Services
 
         #region Method Tests
         [Theory]
-        /*                    stringToParse         |         containsMetaData,  | isValid,         |       metaDataPrefix      |         metaData      |      fontSize */
-        [InlineData(FontFilePath,                                false,          true,           "",                               "",                         0u)]
-        [InlineData("|" + FontFilePath + "text-before-pipe",     true,           false,          "",                               "",                         0u)]
-        [InlineData(FontFilePath + "|",                          true,           false,          "",                               "",                         0u)]
-        [InlineData(FontFilePath + "|size22",                    true,           false,          FontFilePath,                     "size22",                   0u)]
-        [InlineData(FontFilePath + "||ize22",                    true,           false,          "",                               "",                         0u)]
-        [InlineData(":" + FontFilePath + "|size22",              true,           false,          ":" + FontFilePath,               "",                         0u)]
-        [InlineData(FontFilePath + "|size22:",                   true,           false,          FontFilePath,                     "",                         0u)]
-        [InlineData(FontFilePath + "|si(ze:22",                  true,           false,          FontFilePath,                     "si(ze:22",                 0u)]
-        [InlineData(FontFilePath + "|size:not-a-number",         true,           false,          FontFilePath,                     "size:not-a-number",        0u)]
-        [InlineData(FontFilePath + "|size:22",                   true,           true,           FontFilePath,                     "size:22",                  22u)]
+        /*                    stringToParse         |       containsMetaData,   |    isValid,    |     metaDataPrefix    |       metaData        |  fontSize */
+        [InlineData(FontFilePath,                                false,              true,           "",                  "",                         0u)]
+        [InlineData("|" + FontFilePath + "text-before-pipe",     true,               false,          "",                  "",                         0u)]
+        [InlineData(FontFilePath + "|",                          true,               false,          "",                  "",                         0u)]
+        [InlineData(FontFilePath + "|size22",                    true,               false,          FontFilePath,        "size22",                   0u)]
+        [InlineData(FontFilePath + "||ize22",                    true,               false,          "",                  "",                         0u)]
+        [InlineData(":" + FontFilePath + "|size22",              true,               false,          ":" + FontFilePath,  "",                         0u)]
+        [InlineData(FontFilePath + "|size22:",                   true,               false,          FontFilePath,        "",                         0u)]
+        [InlineData(FontFilePath + "|si(ze:22",                  true,               false,          FontFilePath,        "si(ze:22",                 0u)]
+        [InlineData(FontFilePath + "|size:not-a-number",         true,               false,          FontFilePath,        "size:not-a-number",        0u)]
+        [InlineData(FontFilePath + "|size:22",                   true,               true,           FontFilePath,        "size:22",                  22u)]
         public void Parse_Invoke_ReturnsCorrectResult(
             string stringToParse,
             bool containsMetaData,
@@ -45,17 +45,17 @@ namespace VelaptorTests.Services
             var actual = parser.Parse(stringToParse);
 
             var failureMsg = "Expected Results:";
-            failureMsg +=  $"\n\tContains Meta Data: {containsMetaData}";
+            failureMsg +=  $"\n\tContains Metadata: {containsMetaData}";
             failureMsg += $"\n\tIs Valid: {isValid}";
-            failureMsg += $"\n\tMeta Data Prefix: {metaDataPrefix}";
-            failureMsg += $"\n\tMeta Data: {(string.IsNullOrEmpty(metaData) ? "Null Or Empty" : metaData)}";
+            failureMsg += $"\n\tMetadata Prefix: {metaDataPrefix}";
+            failureMsg += $"\n\tMetadata: {(string.IsNullOrEmpty(metaData) ? "Null Or Empty" : metaData)}";
             failureMsg += $"\n\tFont Size: {fontSize}";
 
             failureMsg += "\nActual Results:";
-            failureMsg +=  $"\n\tContains Meta Data: {actual.ContainsMetaData}";
+            failureMsg +=  $"\n\tContains Metadata: {actual.ContainsMetaData}";
             failureMsg += $"\n\tIs Valid: {actual.IsValid}";
-            failureMsg += $"\n\tMeta Data Prefix: {actual.MetaDataPrefix}";
-            failureMsg += $"\n\tMeta Data: {(string.IsNullOrEmpty(actual.MetaData) ? "Null Or Empty" : actual.MetaData)}";
+            failureMsg += $"\n\tMetadata Prefix: {actual.MetaDataPrefix}";
+            failureMsg += $"\n\tMetadata: {(string.IsNullOrEmpty(actual.MetaData) ? "Null Or Empty" : actual.MetaData)}";
             failureMsg += $"\n\tFont Size: {actual.FontSize}";
             failureMsg += "\n------------------------------------------------------------------------------------------";
 

@@ -39,7 +39,7 @@ namespace Velaptor.Content.Caching
         /// <param name="imageService">Provides image related services.</param>
         /// <param name="textureFactory">Creates <see cref="ITexture"/> objects.</param>
         /// <param name="fontAtlasService">Provides font atlas services.</param>
-        /// <param name="fontMetaDataParser">Parses meta data that might be attached to the file path.</param>
+        /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
         /// <param name="path">Provides path related services.</param>
         public TextureCache(
             IImageService imageService,
@@ -116,7 +116,7 @@ namespace Velaptor.Content.Caching
                 // If the metadata is valid and the prefix is a full qualified file path
                 if (parseResult.IsValid)
                 {
-                    if (parseResult.MetaDataPrefix.IsValidFilePath())
+                    if (parseResult.MetaDataPrefix.HasValidFullFilePathSyntax())
                     {
                         if (this.path.GetExtension(parseResult.MetaDataPrefix).ToLower() != FontFileExtension)
                         {
@@ -136,14 +136,14 @@ namespace Velaptor.Content.Caching
                 }
                 else
                 {
-                    var exceptionMsg = $"The meta data '{parseResult.MetaData}' is invalid and is required";
+                    var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid and is required";
                     exceptionMsg += $" for font files of type '{FontFileExtension}'.";
                     throw new CachingMetaDataException(exceptionMsg);
                 }
             }
             else
             {
-                if (textureFilePath.IsValidFilePath())
+                if (textureFilePath.HasValidFullFilePathSyntax())
                 {
                     var fileExtension = this.path.GetExtension(textureFilePath).ToLower();
 

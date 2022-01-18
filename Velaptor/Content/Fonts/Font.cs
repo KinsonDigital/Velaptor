@@ -20,8 +20,7 @@ namespace Velaptor.Content.Fonts
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Represents a font with a particular size that
-    /// can be used to render text to the screen.
+    /// Represents a font with a set size and style that can be used to render text to the screen.
     /// </summary>
     public sealed class Font : IFont
     {
@@ -188,9 +187,8 @@ namespace Velaptor.Content.Fonts
                 var width = 0f;
                 var height = 0f;
 
-                // Total all of the space between each character,
-                // except the space before the first character. Also
-                // Take into account any kerning
+                // Total all of the space between each character, except the space before the first character.
+                // Also takes into account any kerning.
                 foreach (var currentCharacter in charMetrics)
                 {
                     width += HasKerning

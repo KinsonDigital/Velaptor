@@ -7,7 +7,7 @@ namespace Velaptor.Content.Exceptions
     using System;
 
     /// <summary>
-    /// Thrown when there is an issue caching items.
+    /// Thrown when there is an issue with processing metadata during the caching process when loading fonts.
     /// </summary>
     public class CachingMetaDataException : Exception
     {
@@ -15,7 +15,7 @@ namespace Velaptor.Content.Exceptions
         /// Initializes a new instance of the <see cref="CachingMetaDataException"/> class.
         /// </summary>
         public CachingMetaDataException()
-            : base($"There was an issue with the caching meta data.")
+            : base($"There was an issue with caching the metadata.")
         {
         }
 

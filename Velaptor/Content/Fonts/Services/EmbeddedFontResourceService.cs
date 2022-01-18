@@ -26,7 +26,7 @@ namespace Velaptor.Content.Fonts.Services
         /// <param name="name">The name of the embedded font file.</param>
         /// <returns>The stream to the embedded file data.</returns>
         /// <exception cref="LoadEmbeddedResourceException">
-        ///     Thrown if the given embedded file resources does not exist.
+        ///     Thrown if the given embedded file resource does not exist.
         /// </exception>
         public Stream? LoadResource(string name)
         {

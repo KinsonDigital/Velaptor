@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using Velaptor.Input;
-
 namespace VelaptorTesting.Scenes
 {
+    using System.Collections.Generic;
     using System.Drawing;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
+    using Velaptor.Input;
     using VelaptorTesting.Core;
 
     /// <summary>

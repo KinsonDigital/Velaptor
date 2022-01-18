@@ -48,7 +48,7 @@ namespace Velaptor.Content.Fonts.Services
         /// <inheritdoc/>
         public FontStats[] GetContentStatsForFontFamily(string fontFamilyName)
         {
-            // If any items already exist with the give font family, then it has already been added
+            // If any items already exist with the given font family, then it has already been added
             var foundFamilyItems = (from s in this.contentFontStatsCache.Values
                 where s.FamilyName == fontFamilyName
                 select s).ToArray();

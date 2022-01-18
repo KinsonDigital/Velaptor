@@ -13,6 +13,7 @@ namespace Velaptor.Graphics
     using System.Numerics;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;

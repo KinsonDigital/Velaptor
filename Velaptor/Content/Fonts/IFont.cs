@@ -2,13 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Content.Fonts
 {
     // ReSharper disable RedundantNameQualifier
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Drawing;
-    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 
@@ -66,7 +65,7 @@ namespace Velaptor.Content
         ReadOnlyCollection<GlyphMetrics> Metrics { get; }
 
         /// <summary>
-        /// Measures the width and height bounds of the give <paramref name="text"/>.
+        /// Measures the width and height bounds of the given <paramref name="text"/>.
         /// </summary>
         /// <param name="text">The text to measure.</param>
         /// <returns>The width and height of the text in pixels.</returns>

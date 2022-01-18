@@ -40,7 +40,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets the file path to the atlas data.
         /// </summary>
-        string AtlasDataPath { get; }
+        string AtlasDataFilePath { get; }
 
         /// <summary>
         /// The iterator for the atlas sub texture data.

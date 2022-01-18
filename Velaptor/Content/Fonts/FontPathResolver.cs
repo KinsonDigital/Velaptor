@@ -13,9 +13,9 @@ namespace Velaptor.Content.Fonts
     /// </summary>
     /// <remarks>
     ///     The location of fonts will first be checked in the default content location
-    ///     '&lt;app-dir&gt;/Content/Fonts' directory.  If the font exists in this directory, it will be loaded.  If the font
-    ///     does not exist in that location, then the path will be resolved to the current operating systems system font
-    ///     location.
+    ///     '&lt;app-dir&gt;/Content/Fonts' directory.  If the font exists in this directory, it will be loaded.
+    ///     If the font does not exist in that location, then the path will be resolved to the current
+    ///     operating system font location.
     /// <para/>
     /// <para>
     ///     NOTE: Only windows system fonts are currently supported.
@@ -59,9 +59,11 @@ namespace Velaptor.Content.Fonts
 
         /// <summary>
         /// Gets the root directory of the content.
-        /// This will depend if the default content directory exists and what the current platform for
-        /// the root directory of the system fonts if the default content directory does not exist.
         /// </summary>
+        /// <remarks>
+        ///     This will depend if the default content directory exists and what the current platform for
+        ///     the root directory of the system fonts if the default content directory does not exist.
+        /// </remarks>
         /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
         public string RootDirectoryPath
         {
@@ -83,9 +85,11 @@ namespace Velaptor.Content.Fonts
 
         /// <summary>
         /// Gets the name of the directory that contains the content that is located in the <see cref="RootDirectoryPath"/>.
-        /// This will depend if the default content directory exists and what the current platform for
-        /// the root directory of the system fonts if the default content directory does not exist.
         /// </summary>
+        /// <remarks>
+        ///     This will depend if the default content directory exists and what the current platform for
+        ///     the root directory of the system fonts if the default content directory does not exist.
+        /// </remarks>
         /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
         public string ContentDirectoryName
         {

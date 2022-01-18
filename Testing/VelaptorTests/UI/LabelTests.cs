@@ -11,6 +11,7 @@ namespace VelaptorTests.UI
     using System.Linq;
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.UI;
     using VelaptorTests.Helpers;
@@ -178,7 +179,6 @@ namespace VelaptorTests.UI
             Assert.Equal(0u, actualHeight);
         }
 
-        // TODO:
         [Fact(Skip = "Cannot be tested until IFont is injected for mocking.")]
         public void Style_WhenSettingValue_ReturnsCorrectResult()
         {

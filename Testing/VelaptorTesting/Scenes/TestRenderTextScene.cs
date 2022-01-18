@@ -63,7 +63,7 @@ namespace VelaptorTesting.Scenes
 
             this.textFont = ContentLoader.LoadFont("times", 12);
 
-            // // Rotate CW Button
+            // Rotate CW Button
             this.btnRotateCW = new Button(ContentLoader);
             this.btnRotateCW.Text = "CW";
             this.btnRotateCW.MouseDown += (_, _) =>
@@ -299,10 +299,7 @@ namespace VelaptorTesting.Scenes
         /// <summary>
         /// Unloads the scenes content.
         /// </summary>
-        private void UnloadSceneContent()
-        {
-            ContentLoader.UnloadFont(this.textFont);
-        }
+        private void UnloadSceneContent() => ContentLoader.UnloadFont(this.textFont);
 
         /// <summary>
         /// Sets up the positioning of all the UI controls in the window.

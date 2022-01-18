@@ -13,6 +13,7 @@ namespace VelaptorTests.Graphics
     using Moq;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;

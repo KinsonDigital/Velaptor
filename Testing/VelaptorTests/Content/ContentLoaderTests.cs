@@ -6,6 +6,7 @@ namespace VelaptorTests.Content
 {
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Xunit;
 
     /// <summary>

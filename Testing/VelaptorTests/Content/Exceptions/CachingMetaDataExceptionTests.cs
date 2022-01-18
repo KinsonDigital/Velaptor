@@ -21,7 +21,7 @@ namespace VelaptorTests.Content.Exceptions
             var exception = new CachingMetaDataException();
 
             // Assert
-            Assert.Equal($"There was an issue with the caching meta data.", exception.Message);
+            Assert.Equal($"There was an issue with caching the metadata.", exception.Message);
         }
 
         [Fact]

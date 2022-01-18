@@ -109,7 +109,7 @@ namespace Velaptor.Content.Fonts
         ///     Occurs when the <paramref name="contentWithMetaData"/> argument is null or empty.
         /// </exception>
         /// <exception cref="CachingMetaDataException">
-        ///     Occurs if the meta data is missing or invalid.
+        ///     Occurs if the metadata is missing or invalid.
         /// </exception>
         /// <exception cref="FileNotFoundException">
         ///     Occurs if the font file does not exist.
@@ -151,7 +151,7 @@ namespace Velaptor.Content.Fonts
                     // If the file path is a full file path, leave it be.
                     // If it is not, then it is a content name and could be a file name with an extension.
                     // If this is the case, remove the extension
-                    if (parseResult.MetaDataPrefix.IsValidFilePath() is false)
+                    if (parseResult.MetaDataPrefix.HasValidFullFilePathSyntax() is false)
                     {
                         var newMetaDataPrefix = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
 
@@ -179,7 +179,7 @@ namespace Velaptor.Content.Fonts
                 throw new CachingMetaDataException(exceptionMsg);
             }
 
-            fullFontFilePath = fullFontFilePath.IsValidFilePath()
+            fullFontFilePath = fullFontFilePath.HasValidFullFilePathSyntax()
                 ? parseResult.MetaDataPrefix
                 : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
 
@@ -210,7 +210,7 @@ namespace Velaptor.Content.Fonts
             {
                 if (parseResult.IsValid)
                 {
-                    var fullFilePath = parseResult.MetaDataPrefix.IsValidFilePath()
+                    var fullFilePath = parseResult.MetaDataPrefix.HasValidFullFilePathSyntax()
                         ? parseResult.MetaDataPrefix
                         : this.fontPathResolver.ResolveFilePath(parseResult.MetaDataPrefix);
 

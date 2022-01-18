@@ -109,7 +109,7 @@ namespace Velaptor.Content
                     "The parameter must not be null or empty.");
             }
 
-            var isFullFilePath = contentNameOrPath.IsValidFilePath();
+            var isFullFilePath = contentNameOrPath.HasValidFullFilePathSyntax();
             string name;
             string dirPath;
 
@@ -132,7 +132,7 @@ namespace Velaptor.Content
             }
             else
             {
-                if (contentNameOrPath.IsFullyQualifiedDirPath() || contentNameOrPath.IsUNCPath())
+                if (contentNameOrPath.HasValidFullDirPathSyntax() || contentNameOrPath.HasValidUNCPathSyntax())
                 {
                     var exceptionMsg = "Directory paths not allowed when loading texture atlas data.\n";
                     exceptionMsg += "Relative and fully qualified directory paths not valid.\n";

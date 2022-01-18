@@ -27,13 +27,13 @@ namespace VelaptorTests
         [Theory]
         [InlineData('x', true)]
         [InlineData('k', false)]
-        public void NotStartsWith_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
+        public void DoesNotStartWidth_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
         {
             // Arrange
             const string stringToCheck = "kinson";
 
             // Act
-            var actual = stringToCheck.NotStartsWith(character);
+            var actual = stringToCheck.DoesNotStartWith(character);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -42,13 +42,13 @@ namespace VelaptorTests
         [Theory]
         [InlineData("digital", true)]
         [InlineData("kinson", false)]
-        public void NotStartsWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
+        public void DoesNotStartWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
         {
             // Arrange
             const string stringToCheck = "kinson digital";
 
             // Act
-            var actual = stringToCheck.NotStartsWith(stringValue);
+            var actual = stringToCheck.DoesNotStartWith(stringValue);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -57,13 +57,13 @@ namespace VelaptorTests
         [Theory]
         [InlineData('x', true)]
         [InlineData('n', false)]
-        public void NotEndsWith_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
+        public void DoesNotEndWith_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
         {
             // Arrange
             const string stringToCheck = "kinson";
 
             // Act
-            var actual = stringToCheck.NotEndsWith(character);
+            var actual = stringToCheck.DoesNotEndWith(character);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -72,13 +72,13 @@ namespace VelaptorTests
         [Theory]
         [InlineData("kinson", true)]
         [InlineData("digital", false)]
-        public void NotEndsWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
+        public void DoesNotEndWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
         {
             // Arrange
             const string stringToCheck = "kinson digital";
 
             // Act
-            var actual = stringToCheck.NotEndsWith(stringValue);
+            var actual = stringToCheck.DoesNotEndWith(stringValue);
 
             // Assert
             Assert.Equal(expected, actual);

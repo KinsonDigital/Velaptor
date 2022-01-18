@@ -5,7 +5,7 @@
 namespace Velaptor.Services
 {
     /// <summary>
-    /// Holds information after the result of parsing font meta data from font file paths
+    /// Holds information after the result of parsing font metadata from font file paths
     /// using the <see cref="FontMetaDataParser"/>.
     /// </summary>
     internal readonly struct FontMetaDataParseResult
@@ -16,7 +16,7 @@ namespace Velaptor.Services
         public readonly bool ContainsMetaData;
 
         /// <summary>
-        /// Gets a value indicating whether or not the meta data in the string is valid.
+        /// Gets a value indicating whether or not the metadata in the string is valid.
         /// </summary>
         public readonly bool IsValid;
 
@@ -26,7 +26,7 @@ namespace Velaptor.Services
         public readonly string MetaDataPrefix;
 
         /// <summary>
-        /// Gets the meta data string.
+        /// Gets the metadata string.
         /// </summary>
         public readonly string MetaData;
 

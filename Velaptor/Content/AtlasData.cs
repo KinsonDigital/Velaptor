@@ -55,7 +55,7 @@ namespace Velaptor.Content
 
             Name = atlasName;
             FilePath = $"{dirPath}{atlasName}{TextureExtension}";
-            AtlasDataPath = $"{dirPath}{atlasName}{AtlasDataExtension}";
+            AtlasDataFilePath = $"{dirPath}{atlasName}{AtlasDataExtension}";
             Texture = this.textureCache.GetItem(FilePath);
         }
 
@@ -96,7 +96,7 @@ namespace Velaptor.Content
         public string FilePath { get; }
 
         /// <inheritdoc/>
-        public string AtlasDataPath { get; }
+        public string AtlasDataFilePath { get; }
 
         /// <inheritdoc/>
         public ITexture Texture { get; }
