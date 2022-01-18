@@ -11,11 +11,5 @@ namespace VelaptorTests.Fakes
     /// </summary>
     internal class ContentPathResolverFake : ContentPathResolver
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContentPathResolverFake"/> class.
-        /// </summary>
-        public ContentPathResolverFake()
-        {
-        }
     }
 }

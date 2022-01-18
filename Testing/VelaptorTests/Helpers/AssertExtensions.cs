@@ -3,8 +3,6 @@
 // </copyright>
 
 // ReSharper disable UnusedMember.Global
-
-#pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Helpers
 {
     using System;

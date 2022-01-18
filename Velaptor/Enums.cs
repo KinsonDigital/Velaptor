@@ -4,6 +4,11 @@
 
 namespace Velaptor
 {
+    // ReSharper disable RedundantNameQualifier
+    using Velaptor.UI;
+
+    // ReSharper restore RedundantNameQualifier
+
     /// <summary>
     /// The different kinds of borders that a <see cref="IWindow"/> can have.
     /// </summary>

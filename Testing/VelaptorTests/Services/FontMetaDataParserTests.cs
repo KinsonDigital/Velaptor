@@ -4,8 +4,6 @@
 
 namespace VelaptorTests.Services
 {
-    using System.IO.Abstractions;
-    using Moq;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;

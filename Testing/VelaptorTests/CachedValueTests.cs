@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable RedundantArgumentDefaultValue Used to force being explicit for CachedValue Ctor
 namespace VelaptorTests
 {
     using Moq;
@@ -51,7 +52,7 @@ namespace VelaptorTests
 
         #region Prop Tests
         [Fact]
-        public void IsCaching_WhenGoingFromCachingOffToOn_ReturnsRecorrectResult()
+        public void IsCaching_WhenGoingFromCachingOffToOn_ReturnsCorrectResult()
         {
             // Arrange
             var externalSystemValue = 0;
@@ -59,10 +60,12 @@ namespace VelaptorTests
                 1234,
                 () => externalSystemValue,
                 (value) => externalSystemValue = value,
-                false);
+                false)
+            {
+                // Act
+                IsCaching = true,
+            };
 
-            // Act
-            cachedValue.IsCaching = true;
             var actual = cachedValue.GetValue();
 
             // Assert
@@ -78,10 +81,12 @@ namespace VelaptorTests
                 1234,
                 () => externalSystemValue,
                 (value) => externalSystemValue = value,
-                true);
+                true)
+                {
+                    // Act
+                    IsCaching = false,
+                };
 
-            // Act
-            cachedValue.IsCaching = false;
             var actual = cachedValue.GetValue();
 
             // Assert
@@ -96,7 +101,7 @@ namespace VelaptorTests
             // Arrange
             var cachedValue = new CachedValue<int>(
                 1234,
-                () => It.IsAny<int>(),
+                It.IsAny<int>,
                 (_) => { });
 
             // Act

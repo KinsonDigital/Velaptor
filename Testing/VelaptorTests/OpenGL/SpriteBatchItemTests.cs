@@ -196,7 +196,6 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-
             var batchItemB = default(SpriteBatchItem);
             batchItemB.Angle = angle;
             batchItemB.Effects = effects;

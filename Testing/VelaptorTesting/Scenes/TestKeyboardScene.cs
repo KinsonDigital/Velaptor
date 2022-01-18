@@ -2,11 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Text;
-
 namespace VelaptorTesting.Scenes
 {
     using System.Drawing;
+    using System.Text;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Input;

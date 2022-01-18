@@ -2,12 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.OpenGL;
-using Xunit.Sdk;
-
+// ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
 namespace VelaptorTests.Graphics
 {
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
     using Velaptor.Graphics;
@@ -30,9 +28,7 @@ namespace VelaptorTests.Graphics
             Assert.Equal(2, imageData.Pixels.GetUpperBound(0));
             Assert.Equal(1, imageData.Pixels.GetUpperBound(1));
 
-
             var row0 = GetRow(imageData.Pixels, 0);
-            var row1 = GetRow(imageData.Pixels, 1);
 
             Assert.All(row0, pixel =>
             {

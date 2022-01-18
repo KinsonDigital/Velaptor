@@ -24,11 +24,11 @@ namespace VelaptorTesting.Scenes
         private readonly int windowHalfHeight;
         private IAtlasData? mainAtlas;
         private AtlasSubTextureData? octagonData;
-        private IFont font;
+        private IFont? font;
         private KeyboardState currentKeyState;
         private KeyboardState prevKeyState;
         private RenderEffects renderEffects = RenderEffects.None;
-        private string instructions;
+        private string instructions = string.Empty;
         private SizeF textSize;
 
         /// <summary>

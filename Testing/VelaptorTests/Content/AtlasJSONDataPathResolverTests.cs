@@ -9,8 +9,8 @@ namespace VelaptorTests.Content
     using System.Reflection;
     using Moq;
     using Velaptor.Content;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="AtlasJSONDataPathResolver"/> class.
@@ -20,7 +20,6 @@ namespace VelaptorTests.Content
         private const string ContentName = "test-content";
         private readonly string contentFilePath;
         private readonly string baseDir;
-        private readonly string baseContentDir;
         private readonly string atlasContentDir;
 
         /// <summary>
@@ -29,8 +28,7 @@ namespace VelaptorTests.Content
         public AtlasJSONDataPathResolverTests()
         {
             this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-            this.baseContentDir = $@"{this.baseDir}Content\";
-            this.atlasContentDir = $@"{this.baseContentDir}Atlas\";
+            this.atlasContentDir = $@"{this.baseDir}Content\Atlas\";
             this.contentFilePath = $"{this.atlasContentDir}{ContentName}.json";
         }
 
@@ -69,7 +67,7 @@ namespace VelaptorTests.Content
             var resolver = new AtlasJSONDataPathResolver(mockDirectory.Object);
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The texture atlas data file '{this.contentFilePath}' does not exist.");

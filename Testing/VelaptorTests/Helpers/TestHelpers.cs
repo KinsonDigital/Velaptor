@@ -18,10 +18,10 @@ namespace VelaptorTests.Helpers
     using NETPoint = System.Drawing.Point;
 
     [ExcludeFromCodeCoverage]
-    public static unsafe class TestHelpers
+    public static class TestHelpers
     {
+        private const string TestResultDirName = "ImageTestResults";
         private static readonly string BasePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-        private static readonly string TestResultDirName = "ImageTestResults";
         private static readonly string TestResultDirPath = @$"{BasePath}{TestResultDirName}\";
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace VelaptorTests.Helpers
         /// </summary>
         /// <param name="color">The color to set all of the <see cref="ImageData.Pixels"/>.</param>
         /// <param name="width">The width of the image that the pixels represent.</param>
-        /// <param name="height">The heightof the image that the pixels represent.</param>
+        /// <param name="height">The height of the image that the pixels represent.</param>
         /// <returns>The struct to test.</returns>
         public static ImageData CreateImageData(NETColor color, uint width, uint height)
-            => new ImageData(CreatePixels(color, width, height), width, height);
+            => new (CreatePixels(color, width, height), width, height);
 
         /// <summary>
         /// Returns all of the pixels from the given <paramref name="image"/>
@@ -98,54 +98,37 @@ namespace VelaptorTests.Helpers
         /// <param name="src">The source image to draw.</param>
         /// <param name="dest">The destination image to draw the source onto.</param>
         /// <param name="location">The location of where to draw the <paramref name="src"/> image.</param>
-        /// <returns>The resulting image after the draw operationi.</returns>
+        /// <returns>The resulting image after the draw operation.</returns>
+        [SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "Action is safe to perform.")]
         public static ImageData Draw(ImageData src, ImageData dest, NETPoint location)
         {
             if ((location.X < 0 && location.X > dest.Width) ||
                 (location.Y < 0 && location.Y > dest.Height))
             {
                 var exMsg = "The location to draw is outside of the bounds of the destination image.";
-                exMsg = $"\n\tDestination Size: W:{dest.Width}, H: {dest.Height}";
-                exMsg = $"\n\tDestination Location: X:{location.X}, Y: {location.Y}";
+                exMsg += $"\n\tDestination Size: W:{dest.Width}, H: {dest.Height}";
+                exMsg += $"\n\tDestination Location: X:{location.X}, Y: {location.Y}";
 
-                throw new ArgumentException(nameof(location), exMsg);
+                throw new ArgumentException(exMsg, nameof(location));
             }
 
             var srcImage = src.ToSixLaborImage();
+            if (srcImage is null)
+            {
+                throw new NullReferenceException("Failed to create six labor image.");
+            }
+
             var destImage = dest.ToSixLaborImage();
+            if (destImage is null)
+            {
+                throw new NullReferenceException("Failed to create six labor image.");
+            }
 
             destImage.Mutate(context => context.DrawImage(srcImage, new Point(location.X, location.Y), 1));
 
             srcImage.Dispose();
 
             return destImage.ToImageData();
-        }
-
-        /// <summary>
-        /// Converts the given <paramref name="image"/> of type <see cref="ImageData"/>
-        /// to the type of <see cref="Image{Rgba32}"/>.
-        /// </summary>
-        /// <param name="image">The image data to convert.</param>
-        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        public static Image<Rgba32> ToSixLaborImage(this ImageData image)
-        {
-            var result = new Image<Rgba32>((int)image.Width, (int)image.Height);
-
-            for (var y = 0; y < result.Height; y++)
-            {
-                var pixelRowSpan = result.GetPixelRowSpan(y);
-
-                for (var x = 0; x < result.Width; x++)
-                {
-                    pixelRowSpan[x] = new Rgba32(
-                        image.Pixels[x, y].R,
-                        image.Pixels[x, y].G,
-                        image.Pixels[x, y].B,
-                        image.Pixels[x, y].A);
-                }
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -176,21 +159,6 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Returns an unsafe pointer to the given <paramref name="unmanagedData"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of unmanaged data.</typeparam>
-        /// <param name="unmanagedData">The unmanaged data to conver.</param>
-        /// <returns>The unsafe pointer to the unmanaged data.</returns>
-        public static T* ToUnsafePointer<T>(ref T unmanagedData)
-            where T : unmanaged
-        {
-            fixed (T* slotRecPtr = &unmanagedData)
-            {
-                return slotRecPtr;
-            }
-        }
-
-        /// <summary>
         /// Returns the color of all of the pixels in the given <paramref name="row"/>.
         /// </summary>
         /// <param name="image">The image data that contains the row.</param>
@@ -208,9 +176,9 @@ namespace VelaptorTests.Helpers
         /// <param name="colStop">The column in the row to stop at.</param>
         /// <returns>The list of row pixel colors.</returns>
         /// <remarks>The row, colStart, and colStop are 0 index based.</remarks>
-        public static NETColor[] GetRow(ImageData image, uint row, uint colStart, uint colStop)
+        public static IEnumerable<NETColor> GetRow(ImageData image, uint row, uint colStart, uint colStop)
         {
-            if (row < 0 || row > image.Height - 1)
+            if (row > image.Height - 1)
             {
                 throw new Exception($"The row '{row}' does not exist.");
             }
@@ -270,6 +238,33 @@ namespace VelaptorTests.Helpers
                 for (var y = 0; y < height; y++)
                 {
                     result[x, y] = color;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="ImageData"/>
+        /// to the type of <see cref="Image{Rgba32}"/>.
+        /// </summary>
+        /// <param name="image">The image data to convert.</param>
+        /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
+        private static Image<Rgba32> ToSixLaborImage(this ImageData image)
+        {
+            var result = new Image<Rgba32>((int)image.Width, (int)image.Height);
+
+            for (var y = 0; y < result.Height; y++)
+            {
+                var pixelRowSpan = result.GetPixelRowSpan(y);
+
+                for (var x = 0; x < result.Width; x++)
+                {
+                    pixelRowSpan[x] = new Rgba32(
+                        image.Pixels[x, y].R,
+                        image.Pixels[x, y].G,
+                        image.Pixels[x, y].B,
+                        image.Pixels[x, y].A);
                 }
             }
 

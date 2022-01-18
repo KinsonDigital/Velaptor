@@ -9,7 +9,6 @@ namespace VelaptorTests.Content.Fonts
     using System.Reflection;
     using Moq;
     using Velaptor.Content.Fonts;
-    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -19,7 +18,6 @@ namespace VelaptorTests.Content.Fonts
     {
         private const string ContentName = "test-content";
         private readonly string contentFilePath;
-        private readonly string baseDir;
         private readonly string atlasContentDir;
         private readonly Mock<IDirectory> mockDirectory;
 
@@ -29,8 +27,8 @@ namespace VelaptorTests.Content.Fonts
         public ContentFontPathResolverTests()
         {
             this.mockDirectory = new Mock<IDirectory>();
-            this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-            var baseContentDir = $@"{this.baseDir}Content\";
+            var baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+            var baseContentDir = $@"{baseDir}Content\";
             this.atlasContentDir = $@"{baseContentDir}Fonts\";
             this.contentFilePath = $"{this.atlasContentDir}{ContentName}.ttf";
         }

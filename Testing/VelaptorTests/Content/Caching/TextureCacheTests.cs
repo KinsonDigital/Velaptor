@@ -28,14 +28,12 @@ namespace VelaptorTests.Content.Caching
         private const string FontExtension = ".ttf";
         private readonly string textureFilePath = $"{TextureDirPath}{TextureName}{TextureExtension}";
         private readonly string fontFilePath = $"{FontDirPath}{FontName}{FontExtension}";
-        private string fontFilePathWithMetaData;
+        private readonly string fontFilePathWithMetaData;
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<ITextureFactory> mockTextureFactory;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
         private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<ITexture> mockRegularTexture;
-        private readonly Mock<ITexture> mockFontAtlasTexture;
         private readonly ImageData textureImageData;
         private readonly ImageData fontImageData;
 
@@ -60,20 +58,20 @@ namespace VelaptorTests.Content.Caching
                     m.CreateFontAtlas(this.fontFilePath, FontSize))
                 .Returns((this.fontImageData, Array.Empty<GlyphMetrics>()));
 
-            this.mockRegularTexture = new Mock<ITexture>();
-            this.mockFontAtlasTexture = new Mock<ITexture>();
+            var mockRegularTexture = new Mock<ITexture>();
+            var mockFontAtlasTexture = new Mock<ITexture>();
 
             this.mockTextureFactory = new Mock<ITextureFactory>();
 
             // Mock the return of a regular texture if the texture content was a texture file
             this.mockTextureFactory.Setup(m =>
                     m.Create(TextureName, this.textureFilePath, this.textureImageData, It.IsAny<bool>()))
-                .Returns(this.mockRegularTexture.Object);
+                .Returns(mockRegularTexture.Object);
 
             // Mock the return of a font texture atlas if the texture content was a font file
             this.mockTextureFactory.Setup(m =>
                     m.Create(FontName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()))
-                .Returns(this.mockFontAtlasTexture.Object);
+                .Returns(mockFontAtlasTexture.Object);
 
             this.mockFontMetaDataParser = new Mock<IFontMetaDataParser>();
 

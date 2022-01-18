@@ -10,8 +10,8 @@ namespace VelaptorTests.Content
     using System.Reflection;
     using Velaptor.Content;
     using VelaptorTests.Fakes;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="ContentPathResolver"/> class.
@@ -38,7 +38,9 @@ namespace VelaptorTests.Content
         public void RootDirectory_WhenSettingValue_ReturnsCorrectResult(string rootDirectory, string expected)
         {
             // Arrange
+            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
+            // ReSharper restore UseObjectOrCollectionInitializer
 
             // Act
             resolver.RootDirectoryPath = rootDirectory;
@@ -52,7 +54,9 @@ namespace VelaptorTests.Content
         public void FileDirectoryName_WhenSettingWithDirectoryPath_CorrectlySetsResult()
         {
             // Arrange
+            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
+            // ReSharper restore UseObjectOrCollectionInitializer
 
             // Act
             resolver.ContentDirectoryName = @"C:\temp\test-dir-name";
@@ -63,13 +67,13 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void FileDirectoryName_WhenValueIsNullOrEmpty_ThrowsExeption()
+        public void FileDirectoryName_WhenValueIsNullOrEmpty_ThrowsException()
         {
             // Arrange
             var resolver = new ContentPathResolverFake();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<Exception>(() =>
+            AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 resolver.ContentDirectoryName = null;
             }, "The 'ContentDirectoryName' must not be null or empty.");
@@ -93,7 +97,9 @@ namespace VelaptorTests.Content
         public void ResolveDirPath_WhenInvoked_ResolvesContentDirPath()
         {
             // Arrange
+            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
+            // ReSharper restore UseObjectOrCollectionInitializer
             resolver.RootDirectoryPath = @"C:\temp\my-content\";
             resolver.ContentDirectoryName = "test-content";
 
@@ -111,7 +117,7 @@ namespace VelaptorTests.Content
             var resolver = new ContentPathResolverFake();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 resolver.ResolveFilePath(null);
             }, "The parameter must not be null or empty. (Parameter 'contentName')");
@@ -124,7 +130,7 @@ namespace VelaptorTests.Content
             var resolver = new ContentPathResolverFake();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
                 resolver.ResolveFilePath($@"{ContentName}\");
             }, $@"The '{ContentName}\' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");

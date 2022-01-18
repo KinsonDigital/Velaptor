@@ -5,7 +5,6 @@
 namespace VelaptorTests.Content.Fonts
 {
     using System;
-    using System.IO;
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content.Fonts;

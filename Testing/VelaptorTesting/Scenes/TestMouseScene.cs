@@ -4,9 +4,7 @@
 
 namespace VelaptorTesting.Scenes
 {
-    using System.Collections.Generic;
     using System.Drawing;
-    using System.Linq;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Input;

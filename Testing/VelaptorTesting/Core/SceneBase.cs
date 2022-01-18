@@ -2,14 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace VelaptorTesting.Core
 {
     using System;
     using System.Collections.Generic;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Graphics;
     using Velaptor.UI;
 
     /// <summary>
@@ -30,7 +29,7 @@ namespace VelaptorTesting.Core
         }
 
         /// <inheritdoc cref="IScene.Name"/>
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; init; } = string.Empty;
 
         /// <inheritdoc cref="IScene.Id"/>
         public Guid Id { get; } = Guid.NewGuid();

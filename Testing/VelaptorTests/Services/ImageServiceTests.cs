@@ -15,7 +15,6 @@ namespace VelaptorTests.Services
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
@@ -26,11 +25,8 @@ namespace VelaptorTests.Services
     public class ImageServiceTests : IDisposable
     {
         private const string TestAssetDirName = "TestAssets";
-        private const string TestResultDirName = "ImageTestResults";
-        private const string TestResultImageFileName = "SaveResultImage.png";
         private const string TestImageFileName = "TestCompareImage.png";
         private readonly string basePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-        private readonly string testAssetDirPath;
         private readonly string testAssetFilePath;
         private Image<Rgba32> testCompareImage;
 
@@ -39,8 +35,7 @@ namespace VelaptorTests.Services
         /// </summary>
         public ImageServiceTests()
         {
-            this.testAssetDirPath = $@"{this.basePath}{TestAssetDirName}\";
-            this.testAssetFilePath = $"{this.testAssetDirPath}{TestImageFileName}";
+            this.testAssetFilePath = $@"{this.basePath}{TestAssetDirName}\{TestImageFileName}";
 
             TestHelpers.SetupTestResultDirPath();
 
@@ -78,24 +73,21 @@ namespace VelaptorTests.Services
 
                 for (var x = 0; x < width; x++)
                 {
-                    if (x >= 0 && x <= 3 && y >= 0 && y <= 3)
+                    pixelClr = x switch
                     {
-                        pixelClr = NETColor.FromArgb(255, 128, 128, 128); // Gray | Top Left Corner
-                    }
+                        >= 0 and <= 3 when y is >= 0 and <= 3 => NETColor.FromArgb(255, 128, 128, 128),
+                        >= 4 and <= 7 when y is >= 0 and <= 3 => NETColor.FromArgb(255, 255, 0, 0),
+                        _ => pixelClr
+                    };
 
-                    if (x >= 4 && x <= 7 && y >= 0 && y <= 3)
+                    switch (x)
                     {
-                        pixelClr = NETColor.FromArgb(255, 255, 0, 0); // Red | Top Right Corner
-                    }
-
-                    if (x >= 0 && x <= 3 && y >= 4 && y <= 7)
-                    {
-                        pixelClr = NETColor.FromArgb(255, 0, 255, 0); // Green | Bottom Left Corner
-                    }
-
-                    if (x >= 4 && x <= 7 && y >= 4 && y <= 7)
-                    {
-                        pixelClr = NETColor.FromArgb(255, 0, 0, 255); // Blue | Bottom Right Corner
+                        case >= 0 and <= 3 when y is >= 4 and <= 7:
+                            pixelClr = NETColor.FromArgb(255, 0, 255, 0); // Green | Bottom Left Corner
+                            break;
+                        case >= 4 and <= 7 when y is >= 4 and <= 7:
+                            pixelClr = NETColor.FromArgb(255, 0, 0, 255); // Blue | Bottom Right Corner
+                            break;
                     }
 
                     expectedPixelData[x, y] = pixelClr;
@@ -120,10 +112,10 @@ namespace VelaptorTests.Services
         {
             // Arrange
             var service = new ImageService();
-            var testCompareImage = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+            var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
 
             // Act
-            var flippedImage = service.FlipVertically(testCompareImage);
+            var flippedImage = service.FlipVertically(comparisonSample);
 
             TestHelpers.SaveImageForTest(flippedImage);
 
@@ -166,10 +158,10 @@ namespace VelaptorTests.Services
         {
             // Arrange
             var service = new ImageService();
-            var testCompareImage = TestHelpers.ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
+            var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
 
             // Act
-            var flippedImage = service.FlipHorizontally(testCompareImage);
+            var flippedImage = service.FlipHorizontally(comparisonSample);
 
             TestHelpers.SaveImageForTest(flippedImage, nameof(FlipHorizontally_WhenInvoked_FlipsImageVertically));
 
@@ -212,7 +204,7 @@ namespace VelaptorTests.Services
         {
             /*NOTE:
              * The location of '3,3' where the srcImage is drawn onto the destImage
-             * is purposly not centered on the destImage so that way any horizontal
+             * is purposely not centered on the destImage so that way any horizontal
              * or vertically flipping of the drawn image can be detected.
              */
 
@@ -239,6 +231,13 @@ namespace VelaptorTests.Services
         }
         #endregion
 
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        public void Dispose()
+        {
+            this.testCompareImage.Dispose();
+            this.testCompareImage = null;
+        }
+
         /// <summary>
         /// Asserts that all of the given <paramref name="pixels"/> with the dimensions given by
         /// <paramref name="width"/> and <paramref name="height"/> match the given <paramref name="expectedClr"/>
@@ -251,40 +250,42 @@ namespace VelaptorTests.Services
         /// <param name="expectedClr">The color that the pixels must be.</param>
         /// <remarks>
         ///     As long as the pixel is inside of the given <paramref name="assertRect"/>, the pixel
-        ///     color will be asserted againt the given <paramref name="expectedClr"/>.
+        ///     color will be asserted against the given <paramref name="expectedClr"/>.
         /// </remarks>
         [ExcludeFromCodeCoverage]
         private static void AssertThatPixelsMatch(NETColor[,] pixels, uint width, uint height, NETRectangle assertRect, NETColor expectedClr)
         {
-            Assert.All(pixels, width, height, (pixel, x, y) =>
+            AssertExtensions.All(pixels, width, height, (pixel, x, y) =>
             {
-                if (assertRect.Contains(x, y))
+                if (!assertRect.Contains(x, y))
                 {
-                    var message = $"The pixel at location '{x},{y}' is incorrect with the ARGB value of '{pixel}'.";
-                    Assert.True(
-                        condition: pixel.A == expectedClr.A,
-                        message: message,
-                        expected: $"Alpha {expectedClr.A}",
-                        actual: $"Alpha {pixel.A}");
-
-                    Assert.True(
-                        condition: pixel.R == expectedClr.R,
-                        message: message,
-                        expected: $"Red {expectedClr.R}",
-                        actual: $"Red {pixel.R}");
-
-                    Assert.True(
-                        condition: pixel.G == expectedClr.G,
-                        message: message,
-                        expected: $"Green {expectedClr.G}",
-                        actual: $"Green {pixel.G}");
-
-                    Assert.True(
-                        condition: pixel.B == expectedClr.B,
-                        message: message,
-                        expected: $"Blue {expectedClr.B}",
-                        actual: $"Red {pixel.B}");
+                    return;
                 }
+
+                var message = $"The pixel at location '{x},{y}' is incorrect with the ARGB value of '{pixel}'.";
+                AssertExtensions.True(
+                    pixel.A == expectedClr.A,
+                    message,
+                    $"Alpha {expectedClr.A}",
+                    $"Alpha {pixel.A}");
+
+                AssertExtensions.True(
+                    pixel.R == expectedClr.R,
+                    message,
+                    $"Red {expectedClr.R}",
+                    $"Red {pixel.R}");
+
+                AssertExtensions.True(
+                    pixel.G == expectedClr.G,
+                    message,
+                    $"Green {expectedClr.G}",
+                    $"Green {pixel.G}");
+
+                AssertExtensions.True(
+                    pixel.B == expectedClr.B,
+                    message,
+                    $"Blue {expectedClr.B}",
+                    $"Red {pixel.B}");
             });
         }
 
@@ -315,13 +316,6 @@ namespace VelaptorTests.Services
             }
 
             return result;
-        }
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            this.testCompareImage.Dispose();
-            this.testCompareImage = null;
         }
     }
 }

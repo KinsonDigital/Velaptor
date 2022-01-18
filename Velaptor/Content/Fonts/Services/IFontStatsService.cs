@@ -16,7 +16,7 @@ namespace Velaptor.Content.Fonts.Services
         /// <returns>Information about all the different styles of the fonts that match the font family.</returns>
         /// <remarks>
         /// <para>
-        ///     Default Content Dir Path: ~\App-Directory\Content\Fonts
+        ///     Default Content Dir Path: ~\App-Directory\Content\Fonts.
         /// </para>
         /// </remarks>
         FontStats[] GetContentStatsForFontFamily(string fontFamilyName);
@@ -28,7 +28,7 @@ namespace Velaptor.Content.Fonts.Services
         /// <returns>Information about all the different styles of the fonts that match the font family.</returns>
         /// <remarks>
         /// <para>
-        ///     Windows Font Dir Path: C:\Windows\Fonts\
+        ///     Windows Font Dir Path: C:\Windows\Fonts\.
         /// </para>
         /// </remarks>
         FontStats[] GetSystemStatsForFontFamily(string fontFamilyName);
