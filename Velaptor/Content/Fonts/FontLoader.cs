@@ -24,11 +24,19 @@ namespace Velaptor.Content.Fonts
     public sealed class FontLoader : ILoader<IFont>
     {
         private const string ExpectedMetaDataSyntax = "size:<font-size>";
+        private const string FontExtension = ".ttf";
+        private readonly string defaultRegularFontName = $"TimesNewRoman-Regular{FontExtension}";
+        private readonly string defaultBoldFontName = $"TimesNewRoman-Bold{FontExtension}";
+        private readonly string defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
+        private readonly string defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
         private readonly IFontAtlasService fontAtlasService;
+        private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
         private readonly IPathResolver fontPathResolver;
         private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly IFontFactory fontFactory;
         private readonly IFontMetaDataParser fontMetaDataParser;
+        private readonly IDirectory directory;
+        private readonly IFileStreamFactory fileStream;
         private readonly IFile file;
         private readonly IPath path;
         private bool isDisposed;
@@ -40,40 +48,56 @@ namespace Velaptor.Content.Fonts
         public FontLoader()
         {
             this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
+            this.embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
             this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             this.fontFactory = IoC.Container.GetInstance<IFontFactory>();
             this.fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
+            this.directory = IoC.Container.GetInstance<IDirectory>();
             this.file = IoC.Container.GetInstance<IFile>();
+            this.fileStream = IoC.Container.GetInstance<IFileStreamFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
+
+            SetupDefaultFonts();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
         /// </summary>
         /// <param name="fontAtlasService">Loads font files and builds atlas textures from them.</param>
+        /// <param name="embeddedFontResourceService">Gives access to embedded font file resources.</param>
         /// <param name="fontPathResolver">Resolves paths to JSON font data files.</param>
         /// <param name="textureCache">Caches textures for later use to improve performance.</param>
         /// <param name="fontFactory">Generates new <see cref="IFont"/> instances.</param>
         /// <param name="fontMetaDataParser">Parses metadata from strings.</param>
+        /// <param name="directory">Manages and deals with directories.</param>
         /// <param name="file">Performs file related operations.</param>
+        /// <param name="fileStream">Provides a stream to a file for file operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         internal FontLoader(
             IFontAtlasService fontAtlasService,
+            IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
             IPathResolver fontPathResolver,
             IDisposableItemCache<string, ITexture> textureCache,
             IFontFactory fontFactory,
             IFontMetaDataParser fontMetaDataParser,
+            IDirectory directory,
             IFile file,
+            IFileStreamFactory fileStream,
             IPath path)
         {
             this.fontAtlasService = fontAtlasService;
+            this.embeddedFontResourceService = embeddedFontResourceService;
             this.fontPathResolver = fontPathResolver;
             this.textureCache = textureCache;
             this.fontFactory = fontFactory;
             this.fontMetaDataParser = fontMetaDataParser;
+            this.directory = directory;
             this.file = file;
+            this.fileStream = fileStream;
             this.path = path;
+
+            SetupDefaultFonts();
         }
 
         /// <summary>
@@ -240,6 +264,52 @@ namespace Velaptor.Content.Fonts
             }
 
             this.isDisposed = true;
+        }
+
+        /// <summary>
+        /// Checks for and sets up the default fonts.
+        /// </summary>
+        private void SetupDefaultFonts()
+        {
+            var rootDirPath = $"{this.fontPathResolver.RootDirectoryPath.TrimEnd('\\').TrimEnd('/')}{this.path.AltDirectorySeparatorChar}";
+            var contentDirName = this.fontPathResolver.ContentDirectoryName;
+            var fontContentDirPath = $"{rootDirPath}{contentDirName}{this.path.AltDirectorySeparatorChar}";
+
+            var fontNames = new[]
+            {
+                this.defaultRegularFontName,
+                this.defaultBoldFontName,
+                this.defaultItalicFontName,
+                this.defaultBoldItalicFontName,
+            };
+
+            // Create the content directory if it does not exist
+            if (this.directory.Exists(rootDirPath) is false)
+            {
+                this.directory.CreateDirectory(rootDirPath);
+            }
+
+            // Create the font content directory if it does not exist
+            if (this.directory.Exists(fontContentDirPath) is false)
+            {
+                this.directory.CreateDirectory(fontContentDirPath);
+            }
+
+            foreach (var fontName in fontNames)
+            {
+                var filePath = $"{fontContentDirPath}{fontName}";
+
+                // If the regular font does not exist in the font content directory, extract it from the embedded resources
+                if (this.file.Exists(filePath) is not false)
+                {
+                    continue;
+                }
+
+                using var fontFileStream = this.embeddedFontResourceService.LoadResource(fontName);
+                using var copyToStream = this.fileStream.Create(filePath, FileMode.Create, FileAccess.Write);
+
+                fontFileStream?.CopyTo(copyToStream);
+            }
         }
     }
 }

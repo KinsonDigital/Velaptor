@@ -58,6 +58,14 @@
     <EmbeddedResource Include="OpenGL\Shaders\font.frag" />
     <None Remove="OpenGL\Shaders\font.vert" />
     <EmbeddedResource Include="OpenGL\Shaders\font.vert" />
+    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
+    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
+    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
+    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
   </ItemGroup>
 
   <ItemGroup>

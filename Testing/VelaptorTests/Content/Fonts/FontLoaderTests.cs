@@ -26,22 +26,27 @@ namespace VelaptorTests.Content.Fonts
     public class FontLoaderTests
     {
         private const int FontSize = 12;
-        private const string DirPath = @"C:\fonts\";
-        private const string FontContentName = "test-font";
         private const string FontExtension = ".ttf";
+        private const string FontDirName = "fonts";
+        private const string ContentDirPath = @"C:/content/";
+        private const string FontContentName = "test-font";
         private readonly string metaData = $"size:{FontSize}";
+        private readonly string fontContentDirPath = $@"{ContentDirPath}{FontDirName}/";
         private readonly string fontFilePath;
         private readonly string filePathWithMetaData;
         private readonly string contentNameWithMetaData;
         private readonly GlyphMetrics[] glyphMetricData;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
+        private readonly Mock<IEmbeddedResourceLoaderService<Stream?>> mockEmbeddedFontResourceService;
         private readonly Mock<IPathResolver> mockFontPathResolver;
         private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IFontFactory> mockFontFactory;
         private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
         private readonly Mock<IPath> mockPath;
         private readonly Mock<ITexture> mockFontAtlasTexture;
+        private readonly Mock<IDirectory> mockDirectory;
         private readonly Mock<IFile> mockFile;
+        private readonly Mock<IFileStreamFactory> mockFileStream;
         private readonly Mock<IFont> mockFont;
 
         /// <summary>
@@ -49,11 +54,12 @@ namespace VelaptorTests.Content.Fonts
         /// </summary>
         public FontLoaderTests()
         {
-            this.fontFilePath = $@"{DirPath}{FontContentName}{FontExtension}";
+            this.fontFilePath = $@"{ContentDirPath}{FontDirName}\{FontContentName}{FontExtension}";
             this.filePathWithMetaData = $"{this.fontFilePath}|{this.metaData}";
             this.contentNameWithMetaData = $"{FontContentName}|{this.metaData}";
 
             this.mockFontAtlasTexture = new Mock<ITexture>();
+
             this.mockFont = new Mock<IFont>();
 
             this.glyphMetricData = new[]
@@ -66,8 +72,13 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(this.fontFilePath, FontSize))
                 .Returns(() => (It.IsAny<ImageData>(), this.glyphMetricData));
 
+            this.mockEmbeddedFontResourceService = new Mock<IEmbeddedResourceLoaderService<Stream?>>();
+
             // Mock for full file paths with metadata
             this.mockFontPathResolver = new Mock<IPathResolver>();
+            this.mockFontPathResolver.SetupGet(p => p.RootDirectoryPath).Returns(ContentDirPath);
+            this.mockFontPathResolver.SetupGet(p => p.ContentDirectoryName).Returns(FontDirName);
+
             this.mockFontPathResolver.Setup(m => m.ResolveFilePath(FontContentName)).Returns(this.fontFilePath);
 
             // Mock for both full file paths and content names with metadata
@@ -100,8 +111,12 @@ namespace VelaptorTests.Content.Fonts
                     this.metaData,
                     FontSize));
 
+            this.mockDirectory = new Mock<IDirectory>();
+
             this.mockFile = new Mock<IFile>();
             this.mockFile.Setup(m => m.Exists(this.fontFilePath)).Returns(true);
+
+            this.mockFileStream = new Mock<IFileStreamFactory>();
 
             // Mock for both full file paths and content names with metadata
             this.mockPath = new Mock<IPath>();
@@ -112,6 +127,79 @@ namespace VelaptorTests.Content.Fonts
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.fontFilePath))
                 .Returns(FontContentName);
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WhenFontContentDirectoryDoesNotExist_CreatesFontContentDirectory()
+        {
+            // Arrange
+            var defaultRegularFontName = $"TimesNewRoman-Regular{FontExtension}";
+            var defaultBoldFontName = $"TimesNewRoman-Bold{FontExtension}";
+            var defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
+            var defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
+
+            var defaultRegularFontFilePath = $"{this.fontContentDirPath}{defaultRegularFontName}";
+            var defaultBoldFontFilePath = $"{this.fontContentDirPath}{defaultBoldFontName}";
+            var defaultItalicFontFilePath = $"{this.fontContentDirPath}{defaultItalicFontName}";
+            var defaultBoldItalicFontFilePath = $"{this.fontContentDirPath}{defaultBoldItalicFontName}";
+
+            var mockRegularFontFileStream = MockLoadResource(defaultRegularFontName);
+            var mockBoldFontFileStream = MockLoadResource(defaultBoldFontName);
+            var mockItalicFontFileStream = MockLoadResource(defaultItalicFontName);
+            var mockBoldItalicFontFileStream = MockLoadResource(defaultBoldItalicFontName);
+
+            var mockCopyToRegularStream = MockCopyToStream(defaultRegularFontFilePath);
+            var mockCopyToBoldStream = MockCopyToStream(defaultBoldFontFilePath);
+            var mockCopyToItalicStream = MockCopyToStream(defaultItalicFontFilePath);
+            var mockCopyToBoldItalicStream = MockCopyToStream(defaultBoldItalicFontFilePath);
+
+            this.mockDirectory.Setup(m => m.Exists(ContentDirPath)).Returns(false);
+            this.mockDirectory.Setup(m => m.Exists(this.fontContentDirPath)).Returns(false);
+
+            this.mockFile.Setup(m => m.Exists(defaultRegularFontFilePath)).Returns(false);
+            this.mockFile.Setup(m => m.Exists(defaultBoldFontFilePath)).Returns(false);
+            this.mockFile.Setup(m => m.Exists(defaultItalicFontFilePath)).Returns(false);
+            this.mockFile.Setup(m => m.Exists(defaultBoldItalicFontFilePath)).Returns(false);
+
+            this.mockPath.SetupGet(p => p.AltDirectorySeparatorChar).Returns('/');
+
+            // Act
+            CreateLoader();
+
+            // Assert
+            this.mockFontPathResolver.VerifyGet(p => p.RootDirectoryPath, Times.Once);
+            this.mockFontPathResolver.VerifyGet(p => p.ContentDirectoryName, Times.Once);
+
+            // Check for directory existence
+            this.mockDirectory.Verify(m => m.Exists(ContentDirPath), Times.Once);
+            this.mockDirectory.Verify(m => m.Exists(this.fontContentDirPath), Times.Once);
+
+            // Each file was verified if it exists
+            this.mockFile.Verify(m => m.Exists(defaultRegularFontFilePath), Times.Once);
+            this.mockFile.Verify(m => m.Exists(defaultBoldFontFilePath), Times.Once);
+            this.mockFile.Verify(m => m.Exists(defaultItalicFontFilePath), Times.Once);
+            this.mockFile.Verify(m => m.Exists(defaultBoldItalicFontFilePath), Times.Once);
+
+            // Check that each file was created
+            this.mockFileStream.Verify(m =>
+                m.Create(defaultRegularFontFilePath, FileMode.Create, FileAccess.Write),
+                    Times.Once);
+            this.mockFileStream.Verify(m =>
+                m.Create(defaultBoldFontFilePath, FileMode.Create, FileAccess.Write),
+                    Times.Once);
+            this.mockFileStream.Verify(m =>
+                m.Create(defaultItalicFontFilePath, FileMode.Create, FileAccess.Write),
+                    Times.Once);
+            this.mockFileStream.Verify(m =>
+                m.Create(defaultBoldItalicFontFilePath, FileMode.Create, FileAccess.Write),
+                    Times.Once);
+
+            mockRegularFontFileStream.Verify(m => m.CopyTo(mockCopyToRegularStream.Object, It.IsAny<int>()), Times.Once);
+            mockBoldFontFileStream.Verify(m => m.CopyTo(mockCopyToBoldStream.Object, It.IsAny<int>()), Times.Once);
+            mockItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToItalicStream.Object, It.IsAny<int>()), Times.Once);
+            mockBoldItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToBoldItalicStream.Object, It.IsAny<int>()), Times.Once);
+        }
+        #endregion
 
         #region Method Tests
         [Theory]
@@ -442,11 +530,43 @@ namespace VelaptorTests.Content.Fonts
         /// <returns>The instance to test.</returns>
         private FontLoader CreateLoader() => new (
             this.mockFontAtlasService.Object,
+            this.mockEmbeddedFontResourceService.Object,
             this.mockFontPathResolver.Object,
             this.mockTextureCache.Object,
             this.mockFontFactory.Object,
             this.mockFontMetaDataParser.Object,
+            this.mockDirectory.Object,
             this.mockFile.Object,
+            this.mockFileStream.Object,
             this.mockPath.Object);
+
+        /// <summary>
+        /// Mocks the loading of an embedded font resource file using the given name for the purpose of testing.
+        /// </summary>
+        /// <param name="name">The name of the resource to mock.</param>
+        /// <returns>The mock object to verify against.</returns>
+        private Mock<Stream> MockLoadResource(string name)
+        {
+            var result = new Mock<Stream>();
+            this.mockEmbeddedFontResourceService.Setup(m => m.LoadResource(name))
+                .Returns(result.Object);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Mocks the creation of a file stream for the given <paramref name="filePath"/>
+        /// for the purpose of testing.
+        /// </summary>
+        /// <param name="filePath">The file path to mock.</param>
+        /// <returns>The mock object to verify against.</returns>
+        private Mock<Stream> MockCopyToStream(string filePath)
+        {
+            var result = new Mock<Stream>();
+            this.mockFileStream.Setup(m => m.Create(filePath, FileMode.Create, FileAccess.Write))
+                .Returns(result.Object);
+
+            return result;
+        }
     }
 }

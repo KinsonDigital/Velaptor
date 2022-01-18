@@ -9,6 +9,7 @@ namespace Velaptor
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.IO.Abstractions;
     using SimpleInjector;
     using Velaptor.Content;
@@ -34,6 +35,7 @@ namespace Velaptor
     internal static class IoC
     {
         private static readonly FileSystem FileSystem = new ();
+        private static readonly IFileStreamFactory FileStream = FileSystem.FileStream;
         private static readonly Container IoCContainer = new ();
         private static bool isInitialized;
 
@@ -86,6 +88,7 @@ namespace Velaptor
             IoCContainer.Register(() => FileSystem.File, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Directory, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Path, Lifestyle.Singleton);
+            IoCContainer.Register(() => FileStream, Lifestyle.Singleton);
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
 
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
@@ -122,6 +125,7 @@ namespace Velaptor
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
             IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
+            IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(

@@ -6,14 +6,12 @@ namespace Velaptor.Factories
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.IO.Abstractions;
     using Velaptor.Content;
     using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
-    using Velaptor.Content.Fonts.Services;
-    using Velaptor.NativeInterop.FreeType;
-    using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 
@@ -133,20 +131,26 @@ namespace Velaptor.Factories
             }
 
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
+            var embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
             var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
             var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             var fontFactory = IoC.Container.GetInstance<IFontFactory>();
             var fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
+            var directory = IoC.Container.GetInstance<IDirectory>();
             var file = IoC.Container.GetInstance<IFile>();
+            var fileStream = IoC.Container.GetInstance<IFileStreamFactory>();
             var path = IoC.Container.GetInstance<IPath>();
 
             fontLoader = new FontLoader(
                 fontAtlasService,
+                embeddedFontResourceService,
                 fontPathResolver,
                 textureCache,
                 fontFactory,
                 fontMetaDataParser,
+                directory,
                 file,
+                fileStream,
                 path);
 
             return fontLoader;
