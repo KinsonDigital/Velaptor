@@ -11,7 +11,7 @@ namespace Velaptor.Services
     internal interface IEmbeddedResourceLoaderService<out TResourceType>
     {
         /// <summary>
-        /// Load embedded resources that match the given <paramref name="name"/>.
+        /// Loads an embedded resource that matches the given <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The file name of the embedded resource.</param>
         /// <returns>The content from the embedded resource.</returns>

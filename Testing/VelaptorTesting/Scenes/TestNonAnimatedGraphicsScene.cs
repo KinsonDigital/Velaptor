@@ -18,6 +18,7 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestNonAnimatedGraphicsScene : SceneBase
     {
+        private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private readonly Keyboard keyboard;
         private readonly int windowHalfWidth;
         private readonly int windowHalfHeight;
@@ -52,7 +53,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.font = ContentLoader.LoadFont(@"times", 12);
+            this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
             var textLines = new List<string>
             {
                     "Use arrow keys to flip the texture horizontally and vertically.",
