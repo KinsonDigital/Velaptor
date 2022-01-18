@@ -180,7 +180,7 @@ namespace VelaptorTests.UI
 
             // Assert
             this.mockContentLoader.Verify(m => m.LoadTexture(TextureName), Times.Once);
-            this.mockContentLoader.Verify(m => m.LoadFont("times", 12), Times.Once);
+            this.mockContentLoader.Verify(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12), Times.Once);
         }
 
         [Fact]

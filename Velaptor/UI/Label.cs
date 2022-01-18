@@ -18,6 +18,10 @@ namespace Velaptor.UI
     /// </summary>
     public sealed class Label : ControlBase
     {
+        private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
+        private const string DefaultBoldFont = "TimesNewRoman-Bold.ttf";
+        private const string DefaultItalicFont = "TimesNewRoman-Italic.ttf";
+        private const string DefaultBoldItalicFont = "TimesNewRoman-BoldItalic.ttf";
         private readonly IContentLoader? contentLoader;
         private IFont? font;
         private string labelText = string.Empty;
@@ -73,7 +77,12 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets or sets the font style of the text.
         /// </summary>
-        public FontStyle Style { get; set; }
+        public FontStyle Style
+        {
+            // TODO: Need to do style caching and use proper style in LoadContent if cached item has been used
+            get => this.font.Style;
+            set => this.font.Style = value;
+        }
 
         /// <summary>
         /// Gets or sets the color of the text.
@@ -96,7 +105,7 @@ namespace Velaptor.UI
                 return;
             }
 
-            this.font = this.contentLoader?.LoadFont("times", 12);
+            this.font = this.contentLoader?.LoadFont(DefaultRegularFont, 12);
 
             UpdateLabelSize();
 

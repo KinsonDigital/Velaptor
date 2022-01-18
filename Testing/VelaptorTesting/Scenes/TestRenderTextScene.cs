@@ -168,7 +168,7 @@ namespace VelaptorTesting.Scenes
                     FontStyle.Bold => FontStyle.Italic,
                     FontStyle.Italic => FontStyle.Bold | FontStyle.Italic,
                     FontStyle.Bold | FontStyle.Italic => FontStyle.Regular,
-                    _ => throw new ArgumentOutOfRangeException()
+                    _ => throw new ArgumentOutOfRangeException(nameof(this.textFont.Style), "FontStyle value invalid."),
                 };
 
                 this.btnSetStyle.Text = $"Style: {this.textFont.Style}";
