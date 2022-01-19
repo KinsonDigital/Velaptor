@@ -5,13 +5,12 @@
 namespace VelaptorTests.Exceptions
 {
     using System;
-    using Velaptor.Content.Exceptions;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="UnknownContentException"/> class.
+    /// Tests the <see cref="InvalidRenderEffectsException"/> class.
     /// </summary>
     public class InvalidRenderEffectsExceptionTests
     {
