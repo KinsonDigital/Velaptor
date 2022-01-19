@@ -47,7 +47,7 @@ namespace Velaptor.Graphics
             {
                 this.Pixels = new Color[width, height];
 
-                // Make all the pixels white
+                // Makes all the pixels white
                 for (var y = 0; y < height; y++)
                 {
                     for (var x = 0; x < width; x++)

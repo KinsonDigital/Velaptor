@@ -31,9 +31,9 @@ namespace Velaptor.Services
         private readonly IFile file;
         private readonly char[] glyphChars =
         {
-            'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-            'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-            '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
             '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ', '□',
         };
         private IntPtr facePtr;
@@ -41,7 +41,7 @@ namespace Velaptor.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="FontAtlasService"/> class.
         /// </summary>
-        /// <param name="fontService">Provides extensions/helpers to free type library functionality.</param>
+        /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
         /// <param name="imageService">Manages image data.</param>
         /// <param name="systemMonitorService">Provides information about the system monitors.</param>
         /// <param name="file">Performs file operations.</param>

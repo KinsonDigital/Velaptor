@@ -13,14 +13,14 @@ namespace Velaptor.Content.Fonts.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Provides extensions to free type library operations to help simplify working with free type.
+    /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.
     /// </summary>
     internal interface IFontService : IDisposable
     {
         /// <summary>
         /// Creates a new font face from a font file at the given <paramref name="fontFilePath"/>.
         /// </summary>
-        /// <param name="fontFilePath">The path to the font file to create the face from.</param>
+        /// <param name="fontFilePath">The path to the font file to create the face.</param>
         /// <returns>
         ///     The pointer to the created font face.
         /// </returns>

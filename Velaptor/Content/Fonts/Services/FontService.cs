@@ -21,7 +21,7 @@ namespace Velaptor.Content.Fonts.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Provides extensions to free type library operations to help simplify working with free type.
+    /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal class FontService : IFontService
@@ -35,7 +35,7 @@ namespace Velaptor.Content.Fonts.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="FontService"/> class.
         /// </summary>
-        /// <param name="freeTypeInvoker">Makes calls to the native FreeType library.</param>
+        /// <param name="freeTypeInvoker">Makes calls to the native <c>FreeType</c> library.</param>
         /// <param name="sysMonitorService">Provides information about the system monitor.</param>
         /// <param name="platform">Provides information about the current platform.</param>
         public FontService(
@@ -163,7 +163,7 @@ namespace Velaptor.Content.Fonts.Services
 
             foreach (var glyphChar in glyphChars)
             {
-                // Get the glyph image and the character map index
+                // Gets the glyph image and the character map index
                 var charIndex = this.freeTypeInvoker.FT_Get_Char_Index(facePtr, glyphChar);
 
                 result.Add(glyphChar, charIndex);
@@ -327,7 +327,7 @@ namespace Velaptor.Content.Fonts.Services
         }
 
         /// <summary>
-        /// Occurs when there is a free type associated error.
+        /// Occurs when there is a <c>FreeType</c> associated error.
         /// </summary>
         private void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e)
         {

@@ -33,9 +33,9 @@ namespace Velaptor.Content.Fonts
         private readonly GlyphMetrics invalidGlyph;
         private readonly char[] availableGlyphCharacters =
         {
-            'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-            'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-            '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
             '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
         };
         private readonly bool fontInitialized;
@@ -48,13 +48,13 @@ namespace Velaptor.Content.Fonts
         /// Initializes a new instance of the <see cref="Font"/> class.
         /// </summary>
         /// <param name="texture">The font atlas texture that contains bitmap data for all of the available glyphs.</param>
-        /// <param name="fontService">Provides extensions/helpers to free type library functionality.</param>
+        /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
         /// <param name="fontStatsService">Used to gather stats about content or system fonts.</param>
         /// <param name="fontAtlasService">Creates font atlas textures and glyph metric data.</param>
         /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
         /// <param name="name">The name of the font content.</param>
         /// <param name="fontFilePath">The path to the font content.</param>
-        /// <param name="size">The size to set the font to.</param>
+        /// <param name="size">The size to set the font.</param>
         /// <param name="glyphMetrics">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
         internal Font(
             ITexture texture,
@@ -300,7 +300,7 @@ namespace Velaptor.Content.Fonts
                     d.Style is FontStyle.Regular or FontStyle.Bold or FontStyle.Italic or boldItalic);
             }
 
-            // If all for styles have been found, then were finished
+            // If all four styles have been found and finished
             if (AllStylesFound())
             {
                 return;

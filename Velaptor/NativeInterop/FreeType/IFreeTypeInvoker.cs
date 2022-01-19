@@ -11,7 +11,7 @@ namespace Velaptor.NativeInterop.FreeType
     // TODO: Refactor invoke calls to follow this => https://docs.microsoft.com/en-us/dotnet/standard/native-interop/best-practices
 
     /// <summary>
-    /// Invokes calls to the FreeType library for loading and managing fonts.
+    /// Invokes calls to the <c>FreeType</c> library for loading and managing fonts.
     /// </summary>
     /// <remarks>
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
@@ -27,7 +27,7 @@ namespace Velaptor.NativeInterop.FreeType
         // ReSharper disable IdentifierTypo
         // ReSharper disable InconsistentNaming
         /// <summary>
-        /// Initialize a new FreeType library object. The set of modules that are registered by this function is determined at build time.
+        /// Initialize a new <c>FreeType</c> library object. The set of modules that are registered by this function is determined at build time.
         /// </summary>
         /// <returns>A handle to a new library object.</returns>
         IntPtr FT_Init_FreeType();
@@ -66,7 +66,7 @@ namespace Velaptor.NativeInterop.FreeType
         ///     the glyph loading process (e.g., whether the outline should be scaled, whether to load bitmaps
         ///     or not, whether to hint the outline, etc).
         /// </param>
-        /// <returns>FreeType error code. 0 means success.</returns>
+        /// <returns><c>FreeType</c> error code. 0 means success.</returns>
         FT_Error FT_Load_Glyph(IntPtr face, uint glyph_index, int load_flags);
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Velaptor.NativeInterop.FreeType
         ///     the glyph loading process (e.g., whether the outline should be scaled, whether to load bitmaps
         ///     or not, whether to hint the outline, etc).
         /// </param>
-        /// <returns>FreeType error code. 0 means success.</returns>
+        /// <returns><c>FreeType</c> error code. 0 means success.</returns>
         FT_Error FT_Load_Char(IntPtr face, uint char_code, int load_flags);
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Velaptor.NativeInterop.FreeType
         ///     This is an experimental feature; see FT_LOAD_COLOR for more information.
         /// </para>
         /// </param>
-        /// <returns>FreeType error code. 0 means success.</returns>
+        /// <returns><c>FreeType</c> error code. 0 means success.</returns>
         FT_Error FT_Render_Glyph(IntPtr slot, FT_Render_Mode render_mode);
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Velaptor.NativeInterop.FreeType
         void FT_Done_Glyph(IntPtr glyph);
 
         /// <summary>
-        /// Destroy a given FreeType library object and all of its children, including resources, drivers, faces, sizes, etc.
+        /// Destroy a given <c>FreeType</c> library object and all of its children, including resources, drivers, faces, sizes, etc.
         /// </summary>
         /// <param name="library">A handle to the target library object.</param>
         void FT_Done_FreeType(IntPtr library);

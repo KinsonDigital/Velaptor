@@ -24,7 +24,7 @@ namespace Velaptor.Content.Fonts
         FontSource Source { get; }
 
         /// <summary>
-        /// Gets the font atlas texture that contains all of the bitmap data for all of the available glyphs for the font.
+        /// Gets the font atlas texture that contains all of the bitmap data for all available glyphs for the font.
         /// </summary>
         ITexture FontTextureAtlas { get; }
 

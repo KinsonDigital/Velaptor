@@ -81,7 +81,7 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Setup container registration related to OpenGL.
+        /// Sets up container registration related to OpenGL.
         /// </summary>
         private static void SetupNativeInterop()
         {
@@ -103,12 +103,12 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Setup container registration related to caching.
+        /// Sets up container registration related to caching.
         /// </summary>
         private static void SetupCaching() => IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
 
         /// <summary>
-        /// Setup container registration related to factories.
+        /// Sets up container registration related to factories.
         /// </summary>
         private static void SetupFactories()
         {
@@ -119,7 +119,7 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Setup container registration related to services.
+        /// Sets up container registration related to services.
         /// </summary>
         private static void SetupServices()
         {
@@ -146,7 +146,7 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Setup container registration related to content.
+        /// Sets up container registration related to content.
         /// </summary>
         private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>();
     }

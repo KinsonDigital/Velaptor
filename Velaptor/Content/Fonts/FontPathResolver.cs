@@ -19,7 +19,7 @@ namespace Velaptor.Content.Fonts
     /// <para/>
     /// <para>
     ///     NOTE: Only windows system fonts are currently supported.
-    ///     Other systems will be supported in a future release.
+    ///     Other systems will be supported in a future releases.
     /// </para>
     /// </remarks>
     internal class FontPathResolver : IPathResolver
@@ -61,8 +61,8 @@ namespace Velaptor.Content.Fonts
         /// Gets the root directory of the content.
         /// </summary>
         /// <remarks>
-        ///     This will depend if the default content directory exists and what the current platform for
-        ///     the root directory of the system fonts if the default content directory does not exist.
+        ///     Will return the application's font content directory if it exists.  If it does not exist, it returns
+        ///     the current system's font content directory.
         /// </remarks>
         /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
         public string RootDirectoryPath
@@ -87,8 +87,8 @@ namespace Velaptor.Content.Fonts
         /// Gets the name of the directory that contains the content that is located in the <see cref="RootDirectoryPath"/>.
         /// </summary>
         /// <remarks>
-        ///     This will depend if the default content directory exists and what the current platform for
-        ///     the root directory of the system fonts if the default content directory does not exist.
+        ///     Will return the application's font content directory name if it exists.  If it does not exist, it
+        ///     returns the current system's font content directory name.
         /// </remarks>
         /// <exception cref="NotImplementedException">Thrown if the current platform is not Windows.</exception>
         public string ContentDirectoryName

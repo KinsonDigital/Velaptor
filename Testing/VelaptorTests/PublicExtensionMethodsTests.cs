@@ -410,7 +410,7 @@ namespace VelaptorTests
 
         [Theory]
         [MemberData(nameof(IsValidFilePathTestData))]
-        public void IsValidFilePath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
+        public void HasValidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act
             var actual = path.HasValidFullFilePathSyntax();
@@ -421,7 +421,7 @@ namespace VelaptorTests
 
         [Theory]
         [MemberData(nameof(IsInvalidFilePathTestData))]
-        public void IsInvalidFilePath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
+        public void HasInvalidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act
             var actual = path.HasInvalidFullFilePathSyntax();
@@ -462,7 +462,7 @@ namespace VelaptorTests
 
         [Theory]
         [MemberData(nameof(ContainsValidDriveTestData))]
-        public void ContainsValidDrive_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
+        public void HasValidDriveSyntax_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
         {
             // Act
             var actual = dirPath.HasValidDriveSyntax();
@@ -473,7 +473,7 @@ namespace VelaptorTests
 
         [Theory]
         [MemberData(nameof(IsFullyQualifiedDirPathTestData))]
-        public void IsFullyQualifiedDirPath_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
+        public void HasValidFullDirPathSyntax_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
         {
             // Act
             var actual = dirPath.HasValidFullDirPathSyntax();
@@ -484,7 +484,7 @@ namespace VelaptorTests
 
         [Theory]
         [MemberData(nameof(IsUNCPathTestData))]
-        public void IsUNCPath_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
+        public void HasValidUNCPathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act
             var actual = path.HasValidUNCPathSyntax();

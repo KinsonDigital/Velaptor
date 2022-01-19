@@ -26,7 +26,7 @@ namespace Velaptor.Content.Fonts.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="FontStatsService"/> class.
         /// </summary>
-        /// <param name="fontService">Provides extensions/helpers to free type library functionality.</param>
+        /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
         /// <param name="contentFontPathResolver">Resolves paths to the application's content directory.</param>
         /// <param name="sysFontPathResolver">Resolves paths to the systems font directory.</param>
         /// <param name="directory">Performs directory operations.</param>

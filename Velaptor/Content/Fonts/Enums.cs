@@ -32,7 +32,7 @@ namespace Velaptor.Content.Fonts
     }
 
     /// <summary>
-    /// Represents the source of where a font was loaded from.
+    /// Represents the source of where a font was loaded.
     /// </summary>
     /// <remarks>
     ///     When loading fonts, the font that is attempting to be loaded will be
@@ -44,7 +44,7 @@ namespace Velaptor.Content.Fonts
     public enum FontSource
     {
         /// <summary>
-        /// Loaded from another location other then the system or applications font content directory.
+        /// Loaded from another location other then the system or application's font content directory.
         /// </summary>
         Unknown,
 

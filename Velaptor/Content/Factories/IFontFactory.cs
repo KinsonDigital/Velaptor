@@ -18,7 +18,7 @@ namespace Velaptor.Content.Factories
         /// <summary>
         /// Creates an <see cref="IFont"/> object for use for rendering text to the screen.
         /// </summary>
-        /// <param name="textureAtlas">The texture atlas of of the font face.</param>
+        /// <param name="textureAtlas">The texture atlas of the font face.</param>
         /// <param name="name">The name of the font content item.</param>
         /// <param name="fontFilePath">The file path to the font file.</param>
         /// <param name="size">The size of the font.</param>

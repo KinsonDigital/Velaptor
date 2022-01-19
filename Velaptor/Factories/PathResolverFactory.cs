@@ -58,7 +58,7 @@ namespace Velaptor.Factories
             contentFontPathResolver ??= new ContentFontPathResolver(IoC.Container.GetInstance<IDirectory>());
 
         /// <summary>
-        /// Creates a path resolver that resolves paths to fonts in the systems font directory.
+        /// Creates a path resolver that resolves paths to fonts in the system's font directory.
         /// </summary>
         /// <returns>The resolver instance.</returns>
         public static IPathResolver CreateSystemFontPathResolver()
@@ -96,7 +96,7 @@ namespace Velaptor.Factories
             soundPathResolver ??= new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
 
         /// <summary>
-        /// Creates a path resolver that resolves paths to fonts in the windows font directory.
+        /// Creates a path resolver that resolves paths to fonts in the window's font directory.
         /// </summary>
         /// <returns>The resolver instance.</returns>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left internal for future access")]

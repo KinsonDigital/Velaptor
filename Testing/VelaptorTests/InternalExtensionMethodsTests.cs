@@ -89,11 +89,11 @@ namespace VelaptorTests
         [InlineData(@"C:\", true)]
         [InlineData(@"C:", false)]
         [InlineData(@"C\", false)]
-        [InlineData(@"C:\test-file.txt", true)]
-        public void IsDirectoryRootDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
+        [InlineData(@"C:\test-file.txt", false)]
+        public void OnlyContainsDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
         {
             // Act
-            var actual = value.IsDirectoryRootDrive();
+            var actual = value.OnlyContainsDrive();
 
             // Assert
             Assert.Equal(expected, actual);

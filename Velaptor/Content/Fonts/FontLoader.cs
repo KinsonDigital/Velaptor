@@ -16,7 +16,7 @@ namespace Velaptor.Content.Fonts
     using Velaptor.Factories;
     using Velaptor.Services;
 
-    // ReS harper restore RedundantNameQualifier
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Loads font content for rendering text.

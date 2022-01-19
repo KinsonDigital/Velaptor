@@ -10,7 +10,7 @@ namespace Velaptor.NativeInterop.FreeType
     using FreeTypeSharp.Native;
 
     /// <summary>
-    /// Invokes calls to the FreeType library for loading and managing fonts.
+    /// Invokes calls to the <c>FreeType</c> library for loading and managing fonts.
     /// </summary>
     /// <remarks>
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
@@ -122,12 +122,12 @@ namespace Velaptor.NativeInterop.FreeType
         // ReSharper restore InconsistentNaming
 
         /// <summary>
-        /// Creates n error message from the standard Free Type message.
+        /// Creates n error message from the standard <c>FreeType</c> message.
         /// </summary>
-        /// <param name="freeTypeMsg">The error message coming from the FreeType library.</param>
+        /// <param name="freeTypeMsg">The error message coming from the <c>FreeType</c> library.</param>
         /// <returns>The C# friendly exception message.</returns>
         /// <remarks>
-        ///     The FreeType error message.
+        ///     The <c>FreeType</c> error message.
         /// </remarks>
         private static string CreateErrorMessage(string freeTypeMsg)
         {

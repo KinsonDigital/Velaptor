@@ -5,7 +5,7 @@
 namespace Velaptor.Services
 {
     /// <summary>
-    /// Holds information after the result of parsing font metadata from font file paths
+    /// Holds information after the result of parsing font metadata from font file paths.
     /// using the <see cref="FontMetaDataParser"/>.
     /// </summary>
     internal readonly struct FontMetaDataParseResult

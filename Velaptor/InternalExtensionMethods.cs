@@ -30,7 +30,7 @@ namespace Velaptor
     internal static class InternalExtensionMethods
     {
         /// <summary>
-        /// Determines whether this string instance does not start with the specified character.
+        /// Determines whether or not this string instance starts with the specified character.
         /// </summary>
         /// <param name="stringToCheck">The string to check.</param>
         /// <param name="value">The character to compare.</param>
@@ -38,7 +38,7 @@ namespace Velaptor
         public static bool DoesNotStartWith(this string stringToCheck, char value) => !stringToCheck.StartsWith(value);
 
         /// <summary>
-        /// Determines whether this string instance does not start with the specified string.
+        /// Determines whether or not this string instance starts with the specified string.
         /// </summary>
         /// <param name="stringToCheck">The string to check.</param>
         /// <param name="value">The string to compare.</param>
@@ -46,7 +46,7 @@ namespace Velaptor
         public static bool DoesNotStartWith(this string stringToCheck, string value) => !stringToCheck.StartsWith(value);
 
         /// <summary>
-        /// Determines whether the end of this string instance matches the specified character.
+        /// Determines whether or not the end of this string instance matches the specified character.
         /// </summary>
         /// <param name="stringToCheck">The string to check.</param>
         /// <param name="value">The character to compare to the character at the end of this instance.</param>
@@ -54,7 +54,7 @@ namespace Velaptor
         public static bool DoesNotEndWith(this string stringToCheck, char value) => !stringToCheck.EndsWith(value);
 
         /// <summary>
-        /// Determines whether the end of this string instance matches the specified string.
+        /// Determines whether or not the end of this string instance matches the specified string.
         /// </summary>
         /// <param name="stringToCheck">The string to check.</param>
         /// <param name="value">The string to compare to the character at the end of this instance.</param>
@@ -64,11 +64,11 @@ namespace Velaptor
 
         /// <summary>
         /// Returns a value indicating whether or not the given file or directory path
-        /// only contains a root drive path with no directories.
+        /// is only a root drive path with no directories or file names.
         /// </summary>
         /// <param name="fileOrDirPath">The path to check.</param>
         /// <returns><see langword="true"/> if there are no directories and is just a root drive.</returns>
-        public static bool IsDirectoryRootDrive(this string fileOrDirPath)
+        public static bool OnlyContainsDrive(this string fileOrDirPath)
         {
             if (string.IsNullOrEmpty(fileOrDirPath))
             {
@@ -79,7 +79,15 @@ namespace Velaptor
                 ? Path.GetDirectoryName(fileOrDirPath) !
                 : fileOrDirPath;
 
-            return onlyDirPath.Count(c => c == ':') == 1 && onlyDirPath.Count(c => c == '\\') == 1;
+            var noExtension = !Path.HasExtension(fileOrDirPath);
+            var onlySingleColon = onlyDirPath.Count(c => c == ':') == 1;
+            var onlySinglePathSeparator = onlyDirPath.Count(c => c == '\\') == 1;
+            var correctLen = onlyDirPath.Length == 3;
+
+            return noExtension &&
+                   onlySingleColon &&
+                   onlySinglePathSeparator &&
+                   correctLen;
         }
 
         /// <summary>
@@ -120,7 +128,7 @@ namespace Velaptor
             }
 
             // If the directory path is just a root drive path
-            if (onlyDirPath.IsDirectoryRootDrive())
+            if (onlyDirPath.OnlyContainsDrive())
             {
                 var sections = onlyDirPath.Split(':', StringSplitOptions.RemoveEmptyEntries);
 
