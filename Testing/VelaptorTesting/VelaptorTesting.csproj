@@ -43,6 +43,9 @@
     <None Update="Content\Graphics\button-face-extra-large.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Graphics\button-next-prev-scene.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
@@ -62,7 +65,6 @@
 
   <ItemGroup>
     <Folder Include="Content\Atlas\" />
-    <Folder Include="Content\Fonts\" />
   </ItemGroup>
 
   <ItemGroup>

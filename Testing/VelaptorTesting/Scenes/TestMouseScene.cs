@@ -1,4 +1,4 @@
-﻿// <copyright file="TestMouseScene.cs" company="KinsonDigital">
+// <copyright file="TestMouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -72,6 +72,8 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
+            RemoveControl(this.mouseInfoLabel);
+
             base.UnloadContent();
         }
 
@@ -81,6 +83,11 @@ namespace VelaptorTesting.Scenes
             if (IsDisposed || !IsLoaded)
             {
                 return;
+            }
+
+            if (disposing)
+            {
+                UnloadContent();
             }
 
             base.Dispose(disposing);

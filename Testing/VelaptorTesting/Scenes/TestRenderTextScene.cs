@@ -1,4 +1,4 @@
-﻿// <copyright file="TestRenderTextScene.cs" company="KinsonDigital">
+// <copyright file="TestRenderTextScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,6 +19,7 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestRenderTextScene : SceneBase
     {
+        private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private const float AngularVelocity = 10f;
         private const float SizeChangeAmount = 0.5f;
         private const string SingleLineText = "Change me using the buttons below.";
@@ -61,7 +62,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.textFont = ContentLoader.LoadFont("times", 12);
+            this.textFont = ContentLoader.LoadFont(DefaultRegularFont, 12);
 
             // Rotate CW Button
             this.btnRotateCW = new Button(ContentLoader);

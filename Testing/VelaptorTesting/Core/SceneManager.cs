@@ -1,4 +1,4 @@
-﻿// <copyright file="SceneManager.cs" company="KinsonDigital">
+// <copyright file="SceneManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -38,10 +38,12 @@ namespace VelaptorTesting.Core
 
             this.nextButton = new Button(contentLoader);
             this.nextButton.Text = "-->";
+            this.nextButton.FaceTextureName = "button-next-prev-scene";
             this.nextButton.Click += (_, _) => NextScene();
 
             this.previousButton = new Button(contentLoader);
             this.previousButton.Text = "<--";
+            this.previousButton.FaceTextureName = "button-next-prev-scene";
             this.previousButton.Click += (_, _) => PreviousScene();
         }
 
