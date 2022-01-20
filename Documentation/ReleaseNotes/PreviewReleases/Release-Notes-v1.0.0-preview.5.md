@@ -44,6 +44,7 @@ As with all software, there is always a chance for issues and bugs to exist with
     - This is to help provide a easy testable way to manage JSON data used in games and multi-media applications. 
     - `IJSONService`
     - `JSONService`
+18. Added ability for the `SpriteBatch` class to throw an exception if attempting to render a texture or font. 
 
 ---
 
