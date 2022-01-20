@@ -23,6 +23,11 @@ namespace Velaptor.Content.Caching
     /// </summary>
     internal sealed class TextureCache : IDisposableItemCache<string, ITexture>
     {
+        private const string DefaultTag = "[DEFAULT]";
+        private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
+        private const string DefaultBoldFont = "TimesNewRoman-Bold.ttf";
+        private const string DefaultItalicFont = "TimesNewRoman-Italic.ttf";
+        private const string DefaultBoldItalicFont = "TimesNewRoman-BoldItalic.ttf";
         private const string TextureFileExtension = ".png";
         private const string FontFileExtension = ".ttf";
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
@@ -31,6 +36,11 @@ namespace Velaptor.Content.Caching
         private readonly IFontAtlasService fontAtlasService;
         private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IPath path;
+        private readonly string[] DefaultFontNames =
+        {
+            DefaultRegularFont, DefaultBoldFont,
+            DefaultItalicFont, DefaultBoldItalicFont,
+        };
         private bool isDisposed;
 
         /// <summary>
@@ -110,6 +120,7 @@ namespace Velaptor.Content.Caching
             string fullFilePath;
             var isFontFile = false;
             string cacheKey;
+            var fileName = string.Empty;
 
             if (parseResult.ContainsMetaData)
             {
@@ -118,13 +129,21 @@ namespace Velaptor.Content.Caching
                 {
                     if (parseResult.MetaDataPrefix.HasValidFullFilePathSyntax())
                     {
+                        fileName = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
+
                         if (this.path.GetExtension(parseResult.MetaDataPrefix).ToLower() != FontFileExtension)
                         {
                             throw new CachingException($"Font caching must be a '{FontFileExtension}' file type.");
                         }
 
                         fullFilePath = parseResult.MetaDataPrefix;
-                        cacheKey = $"{parseResult.MetaDataPrefix}|size:{parseResult.FontSize}";
+
+                        // If the font file is a default font, tag it so it does not get unloaded
+                        var defaultPrefix = this.DefaultFontNames.Contains($"{fileName}{FontFileExtension}")
+                            ? DefaultTag
+                            : string.Empty;
+
+                        cacheKey = $"{defaultPrefix}{parseResult.MetaDataPrefix}|size:{parseResult.FontSize}";
                         isFontFile = true;
                     }
                     else
@@ -145,6 +164,8 @@ namespace Velaptor.Content.Caching
             {
                 if (textureFilePath.HasValidFullFilePathSyntax())
                 {
+                    fileName = this.path.GetFileNameWithoutExtension(textureFilePath);
+
                     var fileExtension = this.path.GetExtension(textureFilePath).ToLower();
 
                     if (fileExtension == FontFileExtension)
@@ -201,7 +222,12 @@ namespace Velaptor.Content.Caching
                     imageData = this.imageService.Load(fullFilePath);
                 }
 
-                var contentName = this.path.GetFileNameWithoutExtension(fullFilePath);
+                var contentName = fileName;
+
+                if (parseResult.ContainsMetaData)
+                {
+                    contentName = $"FontAtlasTexture|{contentName}|{parseResult.MetaData}";
+                }
 
                 return this.textureFactory.Create(contentName, fullFilePath, imageData, false);
             });
@@ -236,7 +262,7 @@ namespace Velaptor.Content.Caching
             {
                 var cacheKeys = this.textures.Keys.ToArray();
 
-                // Dispose of all textures no matter what type
+                // Dispose of all all default and non default textures
                 foreach (var cacheKey in cacheKeys)
                 {
                     this.textures.TryRemove(cacheKey, out var texture);

@@ -367,8 +367,7 @@ namespace Velaptor.Content.Fonts
 
             if (disposing)
             {
-                FontTextureAtlas.IsPooled = false;
-                FontTextureAtlas.Dispose();
+                this.textureCache.Unload(FilePath);
             }
 
             IsDisposed = true;

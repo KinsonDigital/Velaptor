@@ -23,9 +23,11 @@ namespace VelaptorTests.Content.Caching
         private const string TextureExtension = ".png";
         private const string TextureDirPath = @"C:\textures\";
         private const string TextureName = "text-texture";
+        private const string FontTextureAtlasPrefix = "FontAtlasTexture";
         private const string FontDirPath = @"C:\fonts\";
         private const string FontName = "test-font";
         private const string FontExtension = ".ttf";
+        private readonly string fontAtlasTextureName = $"{FontTextureAtlasPrefix}|{FontName}|size:{FontSize}";
         private readonly string textureFilePath = $"{TextureDirPath}{TextureName}{TextureExtension}";
         private readonly string fontFilePath = $"{FontDirPath}{FontName}{FontExtension}";
         private readonly string fontFilePathWithMetaData;
@@ -70,7 +72,7 @@ namespace VelaptorTests.Content.Caching
 
             // Mock the return of a font texture atlas if the texture content was a font file
             this.mockTextureFactory.Setup(m =>
-                    m.Create(FontName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()))
+                    m.Create(this.fontAtlasTextureName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()))
                 .Returns(mockFontAtlasTexture.Object);
 
             this.mockFontMetaDataParser = new Mock<IFontMetaDataParser>();
@@ -263,10 +265,10 @@ namespace VelaptorTests.Content.Caching
                 m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
 
             this.mockImageService.Verify(m => m.FlipVertically(this.fontImageData), Times.Once);
-            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Once);
+            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Exactly(2));
 
             this.mockTextureFactory.Verify(m =>
-                m.Create(FontName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()), Times.Once);
+                m.Create(this.fontAtlasTextureName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()), Times.Once);
 
             Assert.Same(actualA, actualB);
         }
@@ -385,7 +387,7 @@ namespace VelaptorTests.Content.Caching
                     true,
                     true,
                     this.fontFilePath,
-                    $"|size:{FontSize}",
+                    $"size:{FontSize}",
                     FontSize));
         }
 
