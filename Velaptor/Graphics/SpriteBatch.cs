@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="SpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -191,6 +191,11 @@ namespace Velaptor.Graphics
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
+            if (texture.IsDisposed)
+            {
+                throw new InvalidOperationException($"Cannot render texture.  The texture '{texture.Name}' has been disposed.");
+            }
+
             if (!this.hasBegun)
             {
                 throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
@@ -256,6 +261,11 @@ namespace Velaptor.Graphics
             if (string.IsNullOrEmpty(text))
             {
                 return;
+            }
+
+            if (font.IsDisposed)
+            {
+                throw new InvalidOperationException($"Cannot render font.  The font '{font.Name}' has been disposed.");
             }
 
             size = size < 0f ? 0f : size;
