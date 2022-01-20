@@ -144,31 +144,26 @@ namespace Velaptor.Graphics
 
             var arePixelsTrue = true;
 
-            if (this.Pixels.Length > 0 && other.Pixels.Length > 0)
-            {
-                var breakOuterLoop = false;
+            var breakOuterLoop = false;
 
-                for (var x = 0; x < this.Width; x++)
+            for (var x = 0; x < this.Width; x++)
+            {
+                for (var y = 0; y < this.Height; y++)
                 {
-                    for (var y = 0; y < this.Height; y++)
+                    if (this.Pixels[x, y] == other.Pixels[x, y])
                     {
-                        if (this.Pixels[x, y] != other.Pixels[x, y])
-                        {
-                            arePixelsTrue = false;
-                            breakOuterLoop = true;
-                            break;
-                        }
+                        continue;
                     }
 
-                    if (breakOuterLoop)
-                    {
-                        break;
-                    }
+                    arePixelsTrue = false;
+                    breakOuterLoop = true;
+                    break;
                 }
-            }
-            else
-            {
-                arePixelsTrue = true;
+
+                if (breakOuterLoop)
+                {
+                    break;
+                }
             }
 
             return arePixelsTrue && this.Width == other.Width && this.Height == other.Height;

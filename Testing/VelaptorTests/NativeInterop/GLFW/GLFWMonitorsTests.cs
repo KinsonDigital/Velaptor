@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL
+namespace VelaptorTests.NativeInterop.GLFW
 {
     using System;
     using System.Numerics;
@@ -102,7 +102,7 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WhenInvoked_SetsMonitorCallback()
         {
             // Act
-            var unused = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
+            CreateMonitors();
 
             // Assert
             this.mockGLFWInvoker.VerifyAdd(m => m.OnMonitorChanged += It.IsAny<EventHandler<GLFWMonitorChangedEventArgs>>(), Times.Once());
@@ -139,7 +139,7 @@ namespace VelaptorTests.OpenGL
             };
 
             // Act
-            var monitors = new GLFWMonitors(this.mockGLFWInvoker.Object, this.mockPlatform.Object);
+            var monitors = CreateMonitors();
             var actual = monitors.SystemMonitors;
 
             // Assert
@@ -147,5 +147,47 @@ namespace VelaptorTests.OpenGL
             Assert.Equal(expectedMonitorB, actual[1]);
         }
         #endregion
+
+        #region Method Tests
+
+        [Fact]
+        public void WhenMonitorSetupChanges_RefreshesMonitorData()
+        {
+            // Arrange
+            var monitors = CreateMonitors();
+            var refreshInvoked = false;
+
+            this.mockGLFWInvoker.Setup(m => m.GetMonitors())
+                .Callback(() => refreshInvoked = true);
+
+            // Act
+            this.mockGLFWInvoker.Raise(e
+                => e.OnMonitorChanged += null, new GLFWMonitorChangedEventArgs(true));
+
+            // Assert
+            Assert.True(refreshInvoked);
+        }
+
+        [Fact]
+        public void Dispose_WhenInvoked_DisposesProperly()
+        {
+            // Arrange
+            var monitors = CreateMonitors();
+
+            // Act
+            monitors.Dispose();
+            monitors.Dispose();
+
+            // Assert
+            this.mockGLFWInvoker.VerifyRemove(e
+                => e.OnMonitorChanged -= It.IsAny<EventHandler<GLFWMonitorChangedEventArgs>>(), Times.Once);
+        }
+        #endregion
+
+        /// <summary>
+        /// Creates a new instance of <see cref="GLFWMonitors"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test.</returns>
+        private GLFWMonitors CreateMonitors() => new (this.mockGLFWInvoker.Object, this.mockPlatform.Object);
     }
 }

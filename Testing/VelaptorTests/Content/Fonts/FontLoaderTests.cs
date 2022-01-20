@@ -158,7 +158,7 @@ namespace VelaptorTests.Content.Fonts
 
             this.mockFile.Setup(m => m.Exists(defaultRegularFontFilePath)).Returns(false);
             this.mockFile.Setup(m => m.Exists(defaultBoldFontFilePath)).Returns(false);
-            this.mockFile.Setup(m => m.Exists(defaultItalicFontFilePath)).Returns(false);
+            this.mockFile.Setup(m => m.Exists(defaultItalicFontFilePath)).Returns(true);
             this.mockFile.Setup(m => m.Exists(defaultBoldItalicFontFilePath)).Returns(false);
 
             this.mockPath.SetupGet(p => p.AltDirectorySeparatorChar).Returns('/');
@@ -189,14 +189,14 @@ namespace VelaptorTests.Content.Fonts
                     Times.Once);
             this.mockFileStream.Verify(m =>
                 m.Create(defaultItalicFontFilePath, FileMode.Create, FileAccess.Write),
-                    Times.Once);
+                    Times.Never);
             this.mockFileStream.Verify(m =>
                 m.Create(defaultBoldItalicFontFilePath, FileMode.Create, FileAccess.Write),
                     Times.Once);
 
             mockRegularFontFileStream.Verify(m => m.CopyTo(mockCopyToRegularStream.Object, It.IsAny<int>()), Times.Once);
             mockBoldFontFileStream.Verify(m => m.CopyTo(mockCopyToBoldStream.Object, It.IsAny<int>()), Times.Once);
-            mockItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToItalicStream.Object, It.IsAny<int>()), Times.Once);
+            mockItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToItalicStream.Object, It.IsAny<int>()), Times.Never);
             mockBoldItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToBoldItalicStream.Object, It.IsAny<int>()), Times.Once);
         }
         #endregion

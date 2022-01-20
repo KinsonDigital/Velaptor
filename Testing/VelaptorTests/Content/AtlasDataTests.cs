@@ -23,6 +23,7 @@ namespace VelaptorTests.Content
         private const string DirPath = @"C:\Content\Atlas\";
         private const string AtlasName = "test-atlas";
         private const string TextureExtension = ".png";
+        private const string JSONFileExtension = ".json";
         private readonly string atlasImagePath = $"{DirPath}{AtlasName}{TextureExtension}";
         private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPath> mockPath;
@@ -61,6 +62,87 @@ namespace VelaptorTests.Content
                 },
             };
         }
+
+        #region Constructor Tests
+        [Fact]
+        private void Ctor_WithNullTextureCache_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    null,
+                    this.mockPath.Object,
+                    Array.Empty<AtlasSubTextureData>(),
+                    "dir-path",
+                    "atlas-name");
+            }, "The parameters must not be null or empty. (Parameter 'textureCache')");
+        }
+
+        [Fact]
+        private void Ctor_WithNullPath_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    this.mockTextureCache.Object,
+                    null,
+                    Array.Empty<AtlasSubTextureData>(),
+                    "dir-path",
+                    "atlas-name");
+            }, "The parameters must not be null or empty. (Parameter 'path')");
+        }
+
+        [Fact]
+        private void Ctor_WithNullSubTextureData_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    this.mockTextureCache.Object,
+                    this.mockPath.Object,
+                    null,
+                    "dir-path",
+                    "atlas-name");
+            }, "The parameters must not be null or empty. (Parameter 'atlasSubTextureData')");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        private void Ctor_WithNullOrEmptyDirPath_ThrowsException(string dirPath)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    this.mockTextureCache.Object,
+                    this.mockPath.Object,
+                    Array.Empty<AtlasSubTextureData>(),
+                    dirPath,
+                    "atlas-name");
+            }, "The parameters must not be null or empty. (Parameter 'dirPath')");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        private void Ctor_WithNullOrEmptyAtlasName_ThrowsException(string atlasName)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    this.mockTextureCache.Object,
+                    this.mockPath.Object,
+                    Array.Empty<AtlasSubTextureData>(),
+                    "dir-path",
+                    atlasName);
+            }, "The parameters must not be null or empty. (Parameter 'atlasName')");
+        }
+        #endregion
 
         #region Prop Tests
         [Fact]
@@ -101,7 +183,7 @@ namespace VelaptorTests.Content
 
         [Theory]
         [InlineData("")]
-        [InlineData(".json")]
+        [InlineData(".txt")]
         public void FilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
         {
             // Arrange
@@ -114,7 +196,25 @@ namespace VelaptorTests.Content
             var actual = data.FilePath;
 
             // Assert
-            Assert.Equal($"{DirPath}{atlasName}.png", actual);
+            Assert.Equal($"{DirPath}{atlasName}{TextureExtension}", actual);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(".txt")]
+        public void AtlasDataFilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
+        {
+            // Arrange
+            const string atlasName = "atlasWithExtension";
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
+                .Returns(atlasName);
+            var data = CreateAtlasData($"{atlasName}{extension}");
+
+            // Act
+            var actual = data.AtlasDataFilePath;
+
+            // Assert
+            Assert.Equal($"{DirPath}{atlasName}{JSONFileExtension}", actual);
         }
 
         [Fact]

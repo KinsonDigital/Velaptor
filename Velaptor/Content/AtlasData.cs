@@ -25,7 +25,7 @@ namespace Velaptor.Content
         private const string AtlasDataExtension = ".json";
         private const string TextureExtension = ".png";
         private readonly IDisposableItemCache<string, ITexture> textureCache;
-        private readonly AtlasSubTextureData[] subTextures;
+        private readonly AtlasSubTextureData[] subTexturesData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasData"/> class.
@@ -35,6 +35,7 @@ namespace Velaptor.Content
         /// <param name="atlasSubTextureData">The sub texture data of all sub textures in the atlas.</param>
         /// <param name="dirPath">The path to the content.</param>
         /// <param name="atlasName">The name of the atlas.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public AtlasData(
             IDisposableItemCache<string, ITexture> textureCache,
             IPath path,
@@ -42,14 +43,31 @@ namespace Velaptor.Content
             string dirPath,
             string atlasName)
         {
-            this.textureCache = textureCache;
-            this.subTextures = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
+            // Throw exception if the path is not a directory path
+            if (string.IsNullOrEmpty(dirPath))
+            {
+                throw new ArgumentNullException(nameof(dirPath), "The parameters must not be null or empty.");
+            }
 
             // Throw exception if the path is not a directory path
-            if (string.IsNullOrEmpty(path.GetDirectoryName(dirPath)))
+            if (string.IsNullOrEmpty(atlasName))
             {
-                throw new Exception("The path must be a valid directory path.");
+                throw new ArgumentNullException(nameof(atlasName), "The parameters must not be null or empty.");
             }
+
+            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameters must not be null or empty.");
+
+            if (path is null)
+            {
+                throw new ArgumentNullException(nameof(path), "The parameters must not be null or empty.");
+            }
+
+            if (atlasSubTextureData is null)
+            {
+                throw new ArgumentNullException(nameof(atlasSubTextureData), "The parameters must not be null or empty.");
+            }
+
+            this.subTexturesData = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
 
             atlasName = path.GetFileNameWithoutExtension(atlasName);
 
@@ -71,7 +89,7 @@ namespace Velaptor.Content
             get
             {
                 var result = new List<string>();
-                var allNames = this.subTextures.Select(item => item.Name).ToArray();
+                var allNames = this.subTexturesData.Select(item => item.Name).ToArray();
 
                 foreach (var name in allNames)
                 {
@@ -114,12 +132,12 @@ namespace Velaptor.Content
         public bool IsPooled { get; set; }
 
         /// <inheritdoc/>
-        public AtlasSubTextureData this[int index] => this.subTextures[index];
+        public AtlasSubTextureData this[int index] => this.subTexturesData[index];
 
         /// <inheritdoc/>
         public AtlasSubTextureData GetFrame(string subTextureId)
         {
-            var foundFrame = (from s in this.subTextures
+            var foundFrame = (from s in this.subTexturesData
                               where s.Name == subTextureId
                               select s).FirstOrDefault();
 
@@ -134,7 +152,7 @@ namespace Velaptor.Content
 
         /// <inheritdoc/>
         public AtlasSubTextureData[] GetFrames(string subTextureId)
-            => (from s in this.subTextures
+            => (from s in this.subTexturesData
                 where s.Name == subTextureId
                 select s).ToArray();
 

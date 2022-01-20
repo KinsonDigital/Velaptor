@@ -120,7 +120,7 @@ namespace Velaptor.Content.Caching
             string fullFilePath;
             var isFontFile = false;
             string cacheKey;
-            var fileName = string.Empty;
+            string fileNameWithoutExtension;
 
             if (parseResult.ContainsMetaData)
             {
@@ -129,7 +129,7 @@ namespace Velaptor.Content.Caching
                 {
                     if (parseResult.MetaDataPrefix.HasValidFullFilePathSyntax())
                     {
-                        fileName = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
+                        fileNameWithoutExtension = this.path.GetFileNameWithoutExtension(parseResult.MetaDataPrefix);
 
                         if (this.path.GetExtension(parseResult.MetaDataPrefix).ToLower() != FontFileExtension)
                         {
@@ -139,7 +139,7 @@ namespace Velaptor.Content.Caching
                         fullFilePath = parseResult.MetaDataPrefix;
 
                         // If the font file is a default font, tag it so it does not get unloaded
-                        var defaultPrefix = this.DefaultFontNames.Contains($"{fileName}{FontFileExtension}")
+                        var defaultPrefix = this.DefaultFontNames.Contains($"{fileNameWithoutExtension}{FontFileExtension}")
                             ? DefaultTag
                             : string.Empty;
 
@@ -164,7 +164,7 @@ namespace Velaptor.Content.Caching
             {
                 if (textureFilePath.HasValidFullFilePathSyntax())
                 {
-                    fileName = this.path.GetFileNameWithoutExtension(textureFilePath);
+                    fileNameWithoutExtension = this.path.GetFileNameWithoutExtension(textureFilePath);
 
                     var fileExtension = this.path.GetExtension(textureFilePath).ToLower();
 
@@ -222,7 +222,7 @@ namespace Velaptor.Content.Caching
                     imageData = this.imageService.Load(fullFilePath);
                 }
 
-                var contentName = fileName;
+                var contentName = fileNameWithoutExtension;
 
                 if (parseResult.ContainsMetaData)
                 {

@@ -291,6 +291,22 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
+        public void Load_WhenNullJSONDataDeserializationResult_ThrowsException()
+        {
+            // Arrange
+            this.mockJSONService.Setup(m => m.Deserialize<AtlasSubTextureData[]>(It.IsAny<string>()))
+                .Returns(() => null);
+
+            var loader = CreateLoader();
+
+            // Act & Assert1
+            AssertExtensions.ThrowsWithMessage<LoadContentException>(() =>
+            {
+                loader.Load(AtlasContentName);
+            }, $"There was an issue deserializing the JSON atlas data file at '{this.atlasDataFilePath}'.");
+        }
+
+        [Fact]
         public void Load_WithDirPath_ThrowsException()
         {
             // Arrange

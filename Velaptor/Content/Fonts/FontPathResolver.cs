@@ -18,7 +18,7 @@ namespace Velaptor.Content.Fonts
     ///     operating system font location.
     /// <para/>
     /// <para>
-    ///     NOTE: Only windows system fonts are currently supported.
+    ///     NOTE: Only Windows system fonts are currently supported.
     ///     Other systems will be supported in a future releases.
     /// </para>
     /// </remarks>
@@ -38,7 +38,7 @@ namespace Velaptor.Content.Fonts
         /// Resolves the path to the font path in the currently set content directory.
         /// </param>
         /// <param name="windowsFontPathResolver">
-        /// Resolves the path to the windows system fonts directory.
+        /// Resolves the path to the Windows system fonts directory.
         /// </param>
         /// <param name="file">Performs file type operations.</param>
         /// <param name="directory">Performs directory type operations.</param>

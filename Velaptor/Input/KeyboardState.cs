@@ -17,7 +17,7 @@ namespace Velaptor.Input
         /// <summary>
         /// The letter keys including the space bar.
         /// </summary>
-        private static readonly KeyCode[] LetterKeys = new[]
+        private static readonly KeyCode[] LetterKeys =
         {
             KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.D, KeyCode.E,
             KeyCode.F, KeyCode.G, KeyCode.H, KeyCode.I, KeyCode.J,
@@ -30,7 +30,7 @@ namespace Velaptor.Input
         /// <summary>
         /// The standard number keys above the letter keys.
         /// </summary>
-        private static readonly KeyCode[] StandardNumberKeys = new[]
+        private static readonly KeyCode[] StandardNumberKeys =
         {
             KeyCode.D0, KeyCode.D1, KeyCode.D2,
             KeyCode.D3, KeyCode.D4, KeyCode.D5,
@@ -41,7 +41,7 @@ namespace Velaptor.Input
         /// <summary>
         /// The number keys on the numpad.
         /// </summary>
-        private static readonly KeyCode[] NumpadNumberKeys = new[]
+        private static readonly KeyCode[] NumpadNumberKeys =
         {
             KeyCode.KeyPad0, KeyCode.KeyPad1, KeyCode.KeyPad2,
             KeyCode.KeyPad3, KeyCode.KeyPad4, KeyCode.KeyPad5,
@@ -52,7 +52,7 @@ namespace Velaptor.Input
         /// <summary>
         /// The symbol keys.
         /// </summary>
-        private static readonly KeyCode[] SymbolKeys = new[]
+        private static readonly KeyCode[] SymbolKeys =
         {
             KeyCode.Semicolon, KeyCode.Equal, KeyCode.Comma, KeyCode.Minus, KeyCode.Period, KeyCode.Slash,
             KeyCode.LeftBracket, KeyCode.RightBracket, KeyCode.Apostrophe, KeyCode.KeyPadDivide, KeyCode.KeyPadMultiply,
@@ -326,30 +326,25 @@ namespace Velaptor.Input
                     return WithShiftSymbolCharacters[key];
                 }
 
-                if (SymbolKeys.Contains(key))
-                {
-                    return WithShiftSymbolCharacters[key];
-                }
+                return WithShiftSymbolCharacters[key];
             }
-            else
+
+            if (LetterKeys.Contains(key))
             {
-                if (LetterKeys.Contains(key))
-                {
 #pragma warning disable CA1304 // Specify CultureInfo
-                    return key == KeyCode.Space ? ' ' : key.ToString().ToLower()[0];
+                return key == KeyCode.Space ? ' ' : key.ToString().ToLower()[0];
 #pragma warning restore CA1304 // Specify CultureInfo
-                }
+            }
 
-                if (SymbolKeys.Contains(key))
-                {
-                    return NoShiftSymbolCharacters[key];
-                }
+            if (SymbolKeys.Contains(key))
+            {
+                return NoShiftSymbolCharacters[key];
+            }
 
-                // When the shift is is up, the standard number keys return numbers.
-                if (StandardNumberKeys.Contains(key))
-                {
-                    return NoShiftStandardNumberCharacters[key];
-                }
+            // When the shift is is up, the standard number keys return numbers.
+            if (StandardNumberKeys.Contains(key))
+            {
+                return NoShiftStandardNumberCharacters[key];
             }
 
             return (char)0;

@@ -8,6 +8,7 @@ namespace VelaptorTests.OpenGL
     using System.Collections.Generic;
     using System.Drawing;
     using Moq;
+    using Velaptor.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
@@ -122,6 +123,21 @@ namespace VelaptorTests.OpenGL
             {
                 buffer.UploadVertexData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>());
             }, "The texture buffer has not been initialized.");
+        }
+
+        [Fact]
+        public void UploadVertexData_WithInvalidRenderEffects_ThrowsException()
+        {
+            // Arrange
+            var textureQuad = new SpriteBatchItem() { Effects = (RenderEffects)1234, };
+            var buffer = CreateBuffer();
+            this.glInitObservable.OnOpenGLInitialized();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
+            {
+                buffer.UploadVertexData(textureQuad, It.IsAny<uint>());
+            }, "The 'RenderEffects' value of '1234' is not valid.");
         }
 
         [Fact]

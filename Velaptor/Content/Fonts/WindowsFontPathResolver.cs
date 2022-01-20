@@ -10,7 +10,7 @@ namespace Velaptor.Content.Fonts
     using System.Linq;
 
     /// <summary>
-    /// Resolves paths to windows system fonts.
+    /// Resolves paths to Windows system fonts.
     /// </summary>
     internal class WindowsFontPathResolver : IPathResolver
     {

@@ -92,6 +92,37 @@ namespace VelaptorTests.Content.Caching
                 .Returns(FontName);
         }
 
+        #region Prop Tests
+        [Fact]
+        public void TotalCachedItems_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var cache = CreateCache();
+            cache.GetItem(this.textureFilePath);
+
+            // Act
+            var actual = cache.TotalCachedItems;
+
+            // Assert
+            Assert.Equal(1, actual);
+        }
+
+        [Fact]
+        public void CacheKeys_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var cache = CreateCache();
+            cache.GetItem(this.textureFilePath);
+
+            // Act
+            var actual = cache.CacheKeys;
+
+            // Assert
+            Assert.Single(actual);
+            Assert.Equal(this.textureFilePath, actual[0]);
+        }
+        #endregion
+
         #region Method Tests
         [Theory]
         [InlineData("")]
@@ -239,11 +270,66 @@ namespace VelaptorTests.Content.Caching
             this.mockFontMetaDataParser.Verify(m => m.Parse(this.textureFilePath), Times.Exactly(2));
             this.mockPath.Verify(m => m.GetExtension(this.textureFilePath), Times.Exactly(2));
             this.mockImageService.Verify(m => m.Load(this.textureFilePath), Times.Once);
-            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.textureFilePath), Times.Once);
+            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.textureFilePath), Times.Exactly(2));
             this.mockTextureFactory.Verify(m =>
                 m.Create(TextureName, this.textureFilePath, this.textureImageData, It.IsAny<bool>()), Times.Once);
 
             Assert.Same(actualA, actualB);
+        }
+
+        [Fact]
+        public void GetItem_WhenGettingDisposedTexture_RemovesTextureAndRecreatesIt()
+        {
+            // Arrange
+            const string textureDirPath = @"C:\Textures\";
+            const string textureName = "dispose-texture";
+            var textureFileName = $"{textureName}{TextureExtension}";
+            var fullTextureFilePath = $"{textureDirPath}{textureFileName}";
+            var firstCreateInvoked = false;
+
+            MockTextureParseResult();
+            var cache = CreateCache();
+            var mockFirstTexture = new Mock<ITexture>();
+            var mockSecondTexture = new Mock<ITexture>();
+
+            this.mockFontMetaDataParser.Setup(m => m.Parse(fullTextureFilePath))
+                .Returns(() => new FontMetaDataParseResult(
+                    false,
+                    true,
+                    string.Empty,
+                    string.Empty,
+                    0));
+
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fullTextureFilePath))
+                .Returns(textureName);
+            this.mockPath.Setup(m => m.GetExtension(fullTextureFilePath)).Returns(TextureExtension);
+            this.mockTextureFactory.Setup(m =>
+                    m.Create(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<ImageData>(),
+                        It.IsAny<bool>()))
+                .Returns(() => firstCreateInvoked ? mockSecondTexture.Object : mockFirstTexture.Object)
+                .Callback<string, string, ImageData, bool>((_, _, _, _) =>
+                {
+                    if (firstCreateInvoked)
+                    {
+                        return;
+                    }
+
+                    mockFirstTexture.SetupGet(p => p.IsDisposed).Returns(true);
+                    firstCreateInvoked = true;
+                });
+
+            var textureBeforeDisposal = cache.GetItem(fullTextureFilePath);
+
+            // Act
+            var textureAfterDisposal = cache.GetItem(fullTextureFilePath);
+
+            // Assert
+            Assert.NotSame(textureBeforeDisposal, textureAfterDisposal);
+            Assert.True(textureBeforeDisposal.IsDisposed);
+            Assert.False(textureAfterDisposal.IsDisposed);
         }
 
         [Fact]
