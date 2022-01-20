@@ -262,7 +262,7 @@ namespace Velaptor.Content.Caching
             {
                 var cacheKeys = this.textures.Keys.ToArray();
 
-                // Dispose of all all default and non default textures
+                // Dispose of all default and non default textures
                 foreach (var cacheKey in cacheKeys)
                 {
                     this.textures.TryRemove(cacheKey, out var texture);
