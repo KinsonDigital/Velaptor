@@ -290,21 +290,21 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Returns a value indicating if the character is a letter.
+        /// Returns a value indicating whether or not the character is a letter.
         /// </summary>
         /// <param name="character">The character to check.</param>
         /// <returns>True if the character is an upper or lower case letter.</returns>
         public static bool IsLetter(this char character) => Letters.Contains(character);
 
         /// <summary>
-        /// Returns a value indicating if the character is not a letter.
+        /// Returns a value indicating whether or not the character is not a letter.
         /// </summary>
         /// <param name="character">The character to check.</param>
         /// <returns>True if the character is not an upper or lower case letter.</returns>
         public static bool IsNotLetter(this char character) => !Letters.Contains(character);
 
         /// <summary>
-        /// Returns a value indicating if the given <see langword="string"/> <paramref name="path"/>
+        /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
         /// is a fully qualified path.
         /// </summary>
         /// <param name="path">The path to check.</param>
@@ -332,7 +332,7 @@ namespace Velaptor
         /// </list>
         /// </example>
         /// <remarks>
-        ///     This does not check if the path actually exists.  It is for valid path syntax checks only.
+        ///     This does not check if the path exists.  It is for valid path syntax checks only.
         /// </remarks>
         public static bool HasValidFullFilePathSyntax(this string path)
         {
@@ -366,8 +366,8 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Returns a value indicating if the given <see langword="string"/> <paramref name="path"/>
-        /// is an invalid fully qualified path.
+        /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
+        /// is an invalid, fully qualified path.
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns><c>true</c> if invalid.</returns>
@@ -394,12 +394,12 @@ namespace Velaptor
         /// </list>
         /// </example>
         /// <remarks>
-        ///     This does not check if the path actually exists.  This is for valid path syntax checks only.
+        ///     This does not check if the path exists.  This is for valid path syntax checks only.
         /// </remarks>
         public static bool HasInvalidFullFilePathSyntax(this string path) => !HasValidFullFilePathSyntax(path);
 
         /// <summary>
-        /// Returns a value indicating if the given <paramref name="path"/> a valid drive.
+        /// Returns a value indicating whether or not the given <paramref name="path"/> is a valid drive.
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns>True if <paramref name="path"/> contains a valid drive.</returns>
@@ -414,7 +414,7 @@ namespace Velaptor
         /// </list>
         /// </example>
         /// <remarks>
-        ///     This does not check if the drive actually exists.  It is for valid path syntax checks only.
+        ///     This does not check if the drive exists.  It is for valid path syntax checks only.
         /// </remarks>
         public static bool HasValidDriveSyntax(this string path)
         {
@@ -442,7 +442,7 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Returns a value indicating if the given <paramref name="dirPath"/> is valid.
+        /// Returns a value indicating whether or not the given <paramref name="dirPath"/> is valid.
         /// </summary>
         /// <param name="dirPath">The directory path to check.</param>
         /// <returns>True if the <paramref name="dirPath"/> is valid.</returns>
@@ -454,7 +454,7 @@ namespace Velaptor
         /// </list>
         /// </example>
         /// <remarks>
-        ///     This does not check if the directory path actually exists.  It is for valid path syntax checks only.
+        ///     This does not check if the directory path exists.  It is for valid path syntax checks only.
         /// </remarks>
         public static bool HasValidFullDirPathSyntax(this string dirPath)
         {
@@ -479,7 +479,7 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Returns a value indicating if the given <paramref name="path"/> is valid.
+        /// Returns a value indicating whether or not the given <paramref name="path"/> is valid.
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns>True if the <paramref name="path"/> is valid.</returns>
@@ -490,7 +490,7 @@ namespace Velaptor
         /// </list>
         /// </example>
         /// <remarks>
-        ///     This does not check if the UNC directory path actually exists.  It is for valid path syntax checks only.
+        ///     This does not check if the UNC directory path exists.  It is for valid path syntax checks only.
         /// </remarks>
         public static bool HasValidUNCPathSyntax(this string path)
         {
@@ -515,9 +515,9 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Returns a value indicating whether or not a specified substring does not occur within this string.
+        /// Returns a value indicating whether or not a specified substring occurs within this string.
         /// </summary>
-        /// <param name="stringToSearchIn">The string to search that might or might contain the <paramref name="value"/>.</param>
+        /// <param name="stringToSearchIn">The string to search that may or may not contain the <paramref name="value"/>.</param>
         /// <param name="value">The string to seek.</param>
         /// <returns>
         ///     <c>true</c> if the value parameter does not occur within this string.
@@ -533,9 +533,9 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Returns a value indicating whether or not a specified character does not occur within this string.
+        /// Returns a value indicating whether or not a specified character occurs within this string.
         /// </summary>
-        /// <param name="stringToSearchIn">The string to search that might or might contain the <paramref name="value"/>.</param>
+        /// <param name="stringToSearchIn">The string to search that may or may not contain the <paramref name="value"/>.</param>
         /// <param name="value">The character to seek.</param>
         /// <returns>
         ///     <c>true</c> if the value parameter does not occur within this string.
@@ -558,7 +558,7 @@ namespace Velaptor
         public static bool OnlyContainsLetters(this string value) => value.All(character => !character.IsNotLetter());
 
         /// <summary>
-        /// Returns a value indicating whether or not this string contains letters.
+        /// Returns a value indicating whether or not this string does not only contain letters.
         /// </summary>
         /// <param name="value">The string to check.</param>
         /// <returns><c>true</c> if the string contains other characters besides letters.</returns>

@@ -16,7 +16,7 @@ namespace Velaptor.Content.Factories
     internal interface IFontFactory
     {
         /// <summary>
-        /// Creates an <see cref="IFont"/> object for use for rendering text to the screen.
+        /// Creates an <see cref="IFont"/> object to use when rendering text to the screen.
         /// </summary>
         /// <param name="textureAtlas">The texture atlas of the font face.</param>
         /// <param name="name">The name of the font content item.</param>

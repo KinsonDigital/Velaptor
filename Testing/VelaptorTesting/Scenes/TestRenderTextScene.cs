@@ -15,7 +15,7 @@ namespace VelaptorTesting.Scenes
     using VelaptorTesting.Core;
 
     /// <summary>
-    /// Used to test that text is properly being rendered to the screen.
+    /// Used to test whether or not text is properly rendered to the screen.
     /// </summary>
     public class TestRenderTextScene : SceneBase
     {

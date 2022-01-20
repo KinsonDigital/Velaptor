@@ -25,7 +25,7 @@ namespace VelaptorTests.Content.Fonts
 
         #region Prop tests
         [Fact]
-        public void RootDirectory_WhenGettingDefaultValue_ReturnsCorrectResult()
+        public void RootDirectoryPath_WhenGettingDefaultValue_ReturnsCorrectResult()
         {
             // Arrange
             var resolver = CreateResolver();

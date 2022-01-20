@@ -341,7 +341,7 @@ namespace Velaptor.Input
                 return NoShiftSymbolCharacters[key];
             }
 
-            // When the shift is is up, the standard number keys return numbers.
+            // When the shift is up, the standard number keys return numbers.
             if (StandardNumberKeys.Contains(key))
             {
                 return NoShiftStandardNumberCharacters[key];

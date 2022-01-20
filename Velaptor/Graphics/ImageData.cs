@@ -173,7 +173,7 @@ namespace Velaptor.Graphics
         public override bool Equals(object? obj) => obj is ImageData imageData && Equals(imageData);
 
         /// <summary>
-        /// Returns a value indicating if the <see cref="ImageData"/> contents are empty.
+        /// Returns a value indicating whether or not the <see cref="ImageData"/> contents are empty.
         /// </summary>
         /// <returns><c>true</c> if empty.</returns>
         public bool IsEmpty() => this.Width == 0 && this.Height == 0;

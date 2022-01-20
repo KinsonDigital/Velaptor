@@ -67,7 +67,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void FileDirectoryName_WhenValueIsNullOrEmpty_ThrowsException()
+        public void ContentDirectoryName_WhenValueIsNullOrEmpty_ThrowsException()
         {
             // Arrange
             var resolver = new ContentPathResolverFake();

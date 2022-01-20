@@ -11,7 +11,7 @@ namespace Velaptor.Services
     internal readonly struct FontMetaDataParseResult
     {
         /// <summary>
-        /// Gets a value indicating if the string contains the metadata.
+        /// Gets a value indicating whether or not a string contains metadata.
         /// </summary>
         public readonly bool ContainsMetaData;
 
@@ -38,7 +38,7 @@ namespace Velaptor.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="FontMetaDataParseResult"/> struct.
         /// </summary>
-        /// <param name="containsMetaData">Value indicating whether or not the string contains any metadata.</param>
+        /// <param name="containsMetaData">Value indicating whether or not the string contains metadata.</param>
         /// <param name="isValid">Value indicating whether or not the metadata is valid.</param>
         /// <param name="metaData">The metadata in a string.</param>
         /// <param name="metaDataPrefix">The data before the metadata section.</param>

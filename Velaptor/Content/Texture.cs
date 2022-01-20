@@ -23,22 +23,6 @@ namespace Velaptor.Content
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
 
-        /*NOTE:
-         * This flag is for the purpose of unit testing.  This flag gets set in one location and that is
-         * the finalizer.  This gets checked to see if it is false in the Dispose() method.
-         *
-         * If the finalizer is false and the Texture is pooled, it will then allow the PooledDisposalException
-         * to be thrown.
-         *
-         * An issue arises when running enough unit tests together with this class being included in those tests.
-         * When a lot of tests are ran, the finalizers are being invoked which in turn invokes the Dispose()
-         * method. This unexpectedly throws the exception which fails the unit test, when it should not fail.
-         *
-         * This happens when the pooling status of an object is true, and the object was disposed of in the test,
-         * but the finalizer gets invoked before the GC.SuppressFinalize(this) is invoked.
-         */
-        private bool invokedFromFinalizer;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
         /// </summary>
@@ -74,11 +58,7 @@ namespace Velaptor.Content
         /// Finalizes an instance of the <see cref="Texture"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        ~Texture()
-        {
-            this.invokedFromFinalizer = true;
-            Dispose();
-        }
+        ~Texture() => Dispose();
 
         /// <inheritdoc/>
         public uint Id { get; private set; }
@@ -111,7 +91,7 @@ namespace Velaptor.Content
                 return;
             }
 
-            if (IsPooled && this.invokedFromFinalizer is false)
+            if (IsPooled)
             {
                 throw new PooledDisposalException();
             }

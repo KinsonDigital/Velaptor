@@ -8,9 +8,9 @@ As with all software, including releases, there is always a chance for issues an
 
 <h2 style="font-weight:bold" align="center">New 🎉</h2>
 
-1. Added exception named `LoadTextureException` that is thrown when something goes wrong with attempting to load textures.
-2. Added exception named `LoadAtlasException` that is thrown when something goes wrong with attempting to load texture atlas data.
-3. Added exception named `CachingException` that will be thrown if something goes wrong with caching items during the content loading process.
+1. Added exception named `LoadTextureException` that will be thrown if something goes wrong when attempting to load textures.
+2. Added exception named `LoadAtlasException` that will be thrown if something goes wrong when attempting to load texture atlas data.
+3. Added exception named `CachingException` that will be thrown if something goes wrong when caching items during the content loading process.
 4. Added exception named `LoadEmbeddedResourceException` that will be thrown if something goes wrong when loading embedded resources during the content loading process.
 5. Added exception named `CachingMetaDataException` that will be thrown if something goes wrong when processing metadata during the font loading process.
 6. Added property named `AtlasDataFilePath` to the `AtlasData` class and `IAtlasData` interface.

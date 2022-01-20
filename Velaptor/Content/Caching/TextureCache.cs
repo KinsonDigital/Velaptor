@@ -80,12 +80,12 @@ namespace Velaptor.Content.Caching
         /// <summary>
         /// Gets a texture using the given <paramref name="textureFilePath"/>.
         /// <para>
-        ///     If the given <paramref name="textureFilePath"/> is a <c>.ttf</c> font file, then the texture will be a font atlas
-        ///     texture created from the font.  Font file paths must include metadata.
+        ///     If the given <paramref name="textureFilePath"/> is a <c>.ttf</c> font file, then the texture will be
+        ///     a font atlas texture created from the font.  Font file paths must include metadata.
         /// </para>
         /// <para>
-        ///     If the item has not been retrieved before, it will create it and then cache it for fast retrieval
-        ///     on the next call.
+        ///     If the item has not been previously created, the <see cref="TextureCache"/> class will retrieve it,
+        ///     and then cache it for fast retrieval.
         /// </para>
         /// </summary>
         /// <param name="textureFilePath">

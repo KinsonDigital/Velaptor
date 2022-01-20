@@ -149,12 +149,10 @@ namespace VelaptorTests.NativeInterop.GLFW
         #endregion
 
         #region Method Tests
-
         [Fact]
         public void WhenMonitorSetupChanges_RefreshesMonitorData()
         {
             // Arrange
-            var monitors = CreateMonitors();
             var refreshInvoked = false;
 
             this.mockGLFWInvoker.Setup(m => m.GetMonitors())

@@ -35,7 +35,9 @@ namespace Velaptor.Content
         /// <param name="atlasSubTextureData">The sub texture data of all sub textures in the atlas.</param>
         /// <param name="dirPath">The path to the content.</param>
         /// <param name="atlasName">The name of the atlas.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown if any of the constructor parameters are null.
+        /// </exception>
         public AtlasData(
             IDisposableItemCache<string, ITexture> textureCache,
             IPath path,
