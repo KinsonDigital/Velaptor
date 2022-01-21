@@ -87,7 +87,7 @@ namespace VelaptorTesting.Core
         /// <inheritdoc cref="IUpdatable.Update"/>
         public virtual void Update(FrameTime frameTime)
         {
-            if (IsLoaded is false || IsActive)
+            if (IsLoaded is false || IsActive is false)
             {
                 return;
             }
