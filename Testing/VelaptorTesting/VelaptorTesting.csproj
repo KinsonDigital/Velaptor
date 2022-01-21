@@ -7,16 +7,17 @@
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
     <RootNamespace>VelaptorTesting</RootNamespace>
+    <Copyright>Copyright ©2022 Kinson Digital</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>false</Optimize>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Optimize>true</Optimize>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Remove="stylecop.json" />
     <None Update="Content\Graphics\next-scene.png">
@@ -81,7 +82,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy &quot;$(TargetDir)runtimes\win-x64\native\soft_oal.dll&quot; &quot;$(TargetDir)soft_oal.dll&quot; /Y" />
   </Target>
