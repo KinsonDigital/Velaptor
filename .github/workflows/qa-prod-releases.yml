@@ -65,7 +65,7 @@ jobs:
         version: "${{ steps.proj-file-version.outputs.version }}"
         check-nuget: "true"
         fail-if-nuget-version-exists: "true"
-      
+
 
   Validate_Branch:
     name: Validate Branch
@@ -194,7 +194,7 @@ jobs:
       run: dotnet pack "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
         -o "${{ github.workspace }}" `
         -c ${{ needs.Determine_Build_Config.outputs.build-config }}
-   
+
     - name: Publish Nuget Package
       if: endsWith(github.ref, 'master')
       run: dotnet nuget push "${{ github.workspace }}/KinsonDigital.${{ env.PROJECT_NAME }}.${{ steps.proj-file-version.outputs.version }}.nupkg" `
@@ -321,10 +321,11 @@ jobs:
       uses: ethomson/send-tweet-action@v1
       with:
         status: |
-          ${{ env.PROJECT_NAME }} v'${{ steps.proj-file-version.outputs.version }}' just dropped!! 🚀
-          Come check it out to take it for a spin and help support the projects. 🤘
+          ${{ env.PROJECT_NAME }} v${{ steps.proj-file-version.outputs.version }} just dropped!! 🚀
+          Come check it out to take it for a spin and help support development. 🤘
           Release: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/releases/tag/${{ steps.proj-file-version.outputs.version }}
           Nuget Package: https://www.nuget.org/packages/KinsonDigital.${{ env.PROJECT_NAME }}/${{ steps.proj-file-version.outputs.version }}
+          Discord: https://discord.gg/dqNsFSgh
           Project: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}
         consumer-key: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
         consumer-secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
