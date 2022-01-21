@@ -8,6 +8,7 @@ namespace VelaptorTesting.Scenes
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Graphics;
+    using Velaptor.UI;
     using VelaptorTesting.Core;
 
     /// <summary>
@@ -15,8 +16,10 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestAnimatedGraphicsScene : SceneBase
     {
+        private const int TopMargin = 50;
         private IAtlasData? mainAtlas;
         private AtlasSubTextureData[]? frames;
+        private Label? lblInstructions;
         private int elapsedTime;
         private int currentFrame;
 
@@ -41,6 +44,15 @@ namespace VelaptorTesting.Scenes
 
             this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
             this.frames = this.mainAtlas.GetFrames("circle");
+
+            this.lblInstructions = new Label(ContentLoader);
+            this.lblInstructions.Text = "Verify that the Kinson Digital logo is rotating clockwise.";
+            this.lblInstructions.Color = Color.White;
+
+            AddControl(this.lblInstructions);
+
+            this.lblInstructions.Left = (int)(MainWindow.WindowWidth / 2) - (int)(this.lblInstructions.Width / 2);
+            this.lblInstructions.Top = TopMargin;
 
             base.LoadContent();
         }

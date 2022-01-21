@@ -17,10 +17,9 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestKeyboardScene : SceneBase
     {
-        private const int TopMargin = 40;
-        private const int LeftMargin = 5;
+        private const int TopMargin = 50;
         private readonly Keyboard keyboard;
-        private Label? instructions;
+        private Label? lblInstructions;
         private Label? downKeys;
         private KeyboardState currentKeyboardState;
 
@@ -42,19 +41,15 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.instructions = new Label(ContentLoader)
+            this.lblInstructions = new Label(ContentLoader)
             {
                 Name = "Instructions",
                 Color = Color.White,
             };
 
-            this.instructions.Text = "Hit a key on the keyboard to see if it is correct.";
-
-            this.instructions.LoadContent();
-
-            this.instructions.Position = new Point(
-                (int)(this.instructions.Width / 2) + LeftMargin,
-                (int)(this.instructions.Height / 2) + TopMargin);
+            this.lblInstructions.Text = "Hit a key on the keyboard to see if it is correct.";
+            this.lblInstructions.Left = (int)(MainWindow.WindowWidth / 2) - (int)(this.lblInstructions.Width / 2);
+            this.lblInstructions.Top = (int)(this.lblInstructions.Height / 2) + TopMargin;
 
             this.downKeys = new Label(ContentLoader)
             {
@@ -62,9 +57,7 @@ namespace VelaptorTesting.Scenes
                 Color = Color.White,
             };
 
-            this.downKeys.LoadContent();
-
-            AddControl(this.instructions);
+            AddControl(this.lblInstructions);
             AddControl(this.downKeys);
 
             base.LoadContent();
@@ -134,10 +127,10 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         private void UnloadSceneContent()
         {
-            RemoveControl(this.instructions);
+            RemoveControl(this.lblInstructions);
             RemoveControl(this.downKeys);
 
-            this.instructions = null;
+            this.lblInstructions = null;
             this.downKeys = null;
         }
     }

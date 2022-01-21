@@ -57,10 +57,10 @@ namespace VelaptorTesting.Scenes
             var textLines = new List<string>
             {
                     "Use arrow keys to flip the texture horizontally and vertically.",
-                    "\nLeft: Not Flipped Horizontally",
-                    "Right: Flipped Horizontally",
-                    "Up: Not Flipped Vertically",
-                    "Down: Not Flipped Vertically",
+                    "\nLeft: Flip Horizontally",
+                    "Right: Flip Horizontally",
+                    "Up: Flip Vertically",
+                    "Down: Flip Vertically",
             };
             this.instructions = string.Join("\n", textLines);
 

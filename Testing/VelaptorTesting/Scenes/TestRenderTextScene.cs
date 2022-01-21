@@ -22,8 +22,8 @@ namespace VelaptorTesting.Scenes
         private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private const float AngularVelocity = 10f;
         private const float SizeChangeAmount = 0.5f;
-        private const string SingleLineText = "Change me using the buttons below.";
-        private const string MultiLineText = "Change me using\nthe buttons below.";
+        private const string SingleLineText = "Change me using the buttons to the left.";
+        private const string MultiLineText = "Change me using\nthe buttons to the left.";
         private IFont? textFont;
         private Button? btnRotateCW;
         private Button? btnRotateCCW;
@@ -313,22 +313,40 @@ namespace VelaptorTesting.Scenes
         {
             // Control Positioning
             const int buttonSpacing = 15;
-            var largestHalfWidth = (int)new[]
-                                   {
-                                       this.btnRotateCW.Width,
-                                       this.btnRotateCCW.Width,
-                                       this.btnIncreaseRenderSize.Width,
-                                       this.btnDecreaseRenderSize.Width,
-                                       this.btnSetMultiLine.Width,
-                                       this.btnSetColor.Width,
-                                       this.btnSetStyle.Width,
-                                       this.btnIncreaseFontSize.Width,
-                                       this.btnDecreaseFontSize.Width,
-                                   }.Max() / 2;
+            var screenCenterY = (int)(MainWindow.WindowHeight / 2);
+            var buttonWidths = new[]
+            {
+                this.btnRotateCW.Width,
+                this.btnRotateCCW.Width,
+                this.btnIncreaseRenderSize.Width,
+                this.btnDecreaseRenderSize.Width,
+                this.btnSetMultiLine.Width,
+                this.btnSetColor.Width,
+                this.btnSetStyle.Width,
+                this.btnIncreaseFontSize.Width,
+                this.btnDecreaseFontSize.Width,
+            };
+            var buttonHeights = new[]
+            {
+                this.btnRotateCW.Height,
+                this.btnRotateCCW.Height,
+                this.btnIncreaseRenderSize.Height,
+                this.btnDecreaseRenderSize.Height,
+                this.btnSetMultiLine.Height,
+                this.btnSetColor.Height,
+                this.btnSetStyle.Height,
+                this.btnIncreaseFontSize.Height,
+                this.btnDecreaseFontSize.Height,
+            };
+
+            var largestHalfWidth = (int)buttonWidths.Max() / 2;
+
+            var totalButtonHeight = (int)buttonHeights.Sum(h => h) + (buttonHeights.Length * buttonSpacing);
+            var buttonPosYStart = screenCenterY - (totalButtonHeight / 2);
 
             var leftMargin = 15 + largestHalfWidth;
 
-            this.btnRotateCW.Position = new Point(leftMargin, (int)(this.btnRotateCW.Height / 2) + buttonSpacing);
+            this.btnRotateCW.Position = new Point(leftMargin, buttonPosYStart);
 
             this.btnRotateCCW.Position = new Point(
                 leftMargin,
