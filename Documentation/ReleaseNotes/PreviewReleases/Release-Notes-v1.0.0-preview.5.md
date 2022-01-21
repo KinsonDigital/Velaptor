@@ -99,6 +99,12 @@ As with all software, including releases, there is always a chance for issues an
     - These types were not meant to be part of the public facing API.
 20. Changed readonly struct `ImageData` constructor parameter `pixels` from non-nullable to nullable. 
 21. Changed the scope of the `Window.Dispose(bool disposing)` method from `protected` to `private`.
+22. Removed the `IContent.IsPooled` property.  This property does not suite its purpose or intent anymore due to the improvements of the content caching system.
+    - Removed the other implementations of the `IsPooled` property for the other `IContent` implementation classes.  All other references and related code also cleaned up and removed.
+      - `ITexture` interface and `Texture` class.
+      - `ISound` interface and `Sound` class.
+      - `IAtlasData` interface and `AtlasData` class.
+      - `IFont` interface and `Font` class.
 
 ---
 
