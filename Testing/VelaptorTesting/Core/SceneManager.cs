@@ -56,16 +56,31 @@ namespace VelaptorTesting.Core
         /// Adds the given scene.
         /// </summary>
         /// <param name="scene">The scene to add.</param>
+        /// <param name="setToActive">
+        ///     When set to <c>true</c>, the scene being added will be set to active and
+        ///     the all other scenes will bet set to inactive.
+        /// </param>
         /// <exception cref="Exception">
         ///     Thrown if a scene with with the given <paramref name="scene"/>'s ID already exists.
         /// </exception>
-        public void AddScene(IScene scene)
+        public void AddScene(IScene scene, bool setToActive = false)
         {
             if (SceneExists(scene.Id))
             {
                 throw new Exception($"The sceneBase '{scene.Name}' already exists.");
             }
 
+            // If the scene is to be set to active, set all of the other scenes to false first.
+            // Only one scene can be active at a time.
+            if (setToActive)
+            {
+                foreach (var currentScene in this.scenes)
+                {
+                    currentScene.IsActive = false;
+                }
+            }
+
+            scene.IsActive = setToActive;
             this.scenes.Add(scene);
         }
 

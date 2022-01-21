@@ -10,7 +10,6 @@ namespace VelaptorTests.Content
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Caching;
-    using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -350,20 +349,6 @@ namespace VelaptorTests.Content
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.FrameIndex, actual.FrameIndex);
             Assert.Equal(expected.Bounds, actual.Bounds);
-        }
-
-        [Fact]
-        public void Dispose_WhilePooled_ThrowsException()
-        {
-            // Arrange
-            var data = CreateAtlasData();
-            data.IsPooled = true;
-
-            // Act & Assert
-            Assert.Throws<PooledDisposalException>(() =>
-            {
-                data.Dispose();
-            });
         }
 
         [Fact]

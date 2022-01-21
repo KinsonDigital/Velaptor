@@ -157,11 +157,8 @@ namespace Velaptor.UI
 
             if (disposing)
             {
-                if (this.font?.IsPooled is false)
-                {
-                    this.font?.Dispose();
-                    IsLoaded = false;
-                }
+                this.font?.Dispose();
+                IsLoaded = false;
             }
 
             base.Dispose(true);

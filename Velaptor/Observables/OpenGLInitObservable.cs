@@ -17,7 +17,7 @@ namespace Velaptor.Observables
         /// <summary>
         /// Sends a push notification that OpenGL has been initialized.
         /// </summary>
-        public virtual void OnOpenGLInitialized()
+        public void OnOpenGLInitialized()
         {
             foreach (var observer in Observers)
             {

@@ -86,7 +86,6 @@ namespace Velaptor.Content
             return this.sounds.GetOrAdd(filePath, (key) =>
             {
                 var sound = this.soundFactory.Create(key);
-                sound.IsPooled = true;
 
                 return sound;
             });
@@ -100,7 +99,6 @@ namespace Velaptor.Content
 
             if (this.sounds.TryRemove(filePath, out var sound))
             {
-                sound.IsPooled = false;
                 sound.Dispose();
             }
         }
@@ -123,7 +121,6 @@ namespace Velaptor.Content
             {
                 foreach (var sound in this.sounds.Values)
                 {
-                    sound.IsPooled = false;
                     sound.Dispose();
                 }
             }

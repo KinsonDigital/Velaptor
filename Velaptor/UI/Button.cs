@@ -155,12 +155,9 @@ namespace Velaptor.UI
                 return;
             }
 
-            if (disposing && this.texture is not null)
+            if (disposing)
             {
-                if (this.texture.IsPooled is false)
-                {
-                    this.texture.Dispose();
-                }
+                this.texture?.Dispose();
 
                 this.label?.Dispose();
                 IsLoaded = false;

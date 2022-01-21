@@ -25,7 +25,7 @@ namespace Velaptor.Content.Factories
             var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             var path = IoC.Container.GetInstance<IPath>();
 
-            return new AtlasData(textureCache, path, atlasSubTextureData, dirPath, atlasName) { IsPooled = false };
+            return new AtlasData(textureCache, path, atlasSubTextureData, dirPath, atlasName);
         }
     }
 }

@@ -153,9 +153,6 @@ namespace Velaptor.Content.Fonts
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
 
-        /// <inheritdoc cref="IContent.IsPooled"/>
-        public bool IsPooled { get; set; }
-
         /// <inheritdoc/>
         public ReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.ToReadOnlyCollection();
 
@@ -358,11 +355,6 @@ namespace Velaptor.Content.Fonts
             if (IsDisposed)
             {
                 return;
-            }
-
-            if (IsPooled)
-            {
-                throw new PooledDisposalException();
             }
 
             if (disposing)

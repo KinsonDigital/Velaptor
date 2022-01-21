@@ -8,7 +8,6 @@ namespace Velaptor.Content
     using System;
     using System.Diagnostics.CodeAnalysis;
     using CASL;
-    using Velaptor.Content.Exceptions;
     using CASLSound = CASL.Sound;
 
     // ReSharper restore RedundantNameQualifier
@@ -88,9 +87,6 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
 
-        /// <inheritdoc/>
-        public bool IsPooled { get; set; }
-
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);
 
@@ -146,11 +142,6 @@ namespace Velaptor.Content
             if (IsDisposed)
             {
                 return;
-            }
-
-            if (IsPooled)
-            {
-                throw new PooledDisposalException();
             }
 
             if (disposing)

@@ -59,7 +59,6 @@ namespace Velaptor.Graphics
         ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
-        [ExcludeFromCodeCoverage]
         public SpriteBatch(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
@@ -105,6 +104,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Finalizes an instance of the <see cref="SpriteBatch"/> class.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         ~SpriteBatch() => Dispose(false);
 
         /// <inheritdoc/>

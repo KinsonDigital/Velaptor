@@ -322,7 +322,6 @@ namespace VelaptorTests.UI
         public void Dispose_WithLoadedContent_DisposesOfButton()
         {
             // Arrange
-            this.mockTexture.SetupGet(p => p.IsPooled).Returns(false);
             var button = CreateButton();
             button.LoadContent();
 

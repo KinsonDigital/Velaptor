@@ -55,7 +55,7 @@ namespace Velaptor.Content.Factories
                 throw new ArgumentNullException(nameof(filePath), "The parameter must not be null or empty.");
             }
 
-            return new Texture(this.gl, this.glExtensions, name, filePath, imageData) { IsPooled = false };
+            return new Texture(this.gl, this.glExtensions, name, filePath, imageData);
         }
     }
 }

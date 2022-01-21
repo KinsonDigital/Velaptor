@@ -217,20 +217,6 @@ namespace VelaptorTests.Content.Fonts
         }
 
         [Fact]
-        public void IsPooled_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var font = CreateFont();
-
-            // Act
-            font.IsPooled = true;
-            var actual = font.IsPooled;
-
-            // Assert
-            Assert.True(actual);
-        }
-
-        [Fact]
         public void Style_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
@@ -373,21 +359,7 @@ namespace VelaptorTests.Content.Fonts
             font.Dispose();
 
             // Assert
-            Assert.False(font.FontTextureAtlas.IsPooled);
-        }
-
-        [Fact]
-        public void Dispose_WhilePooled_ThrowsException()
-        {
-            // Arrange
-            var font = CreateFont();
-            font.IsPooled = true;
-
-            // Act & Assert
-            Assert.Throws<PooledDisposalException>(() =>
-            {
-                font.Dispose();
-            });
+            this.mockTextureCache.Verify(m => m.Unload(this.fontFilePath), Times.Once);
         }
         #endregion
 

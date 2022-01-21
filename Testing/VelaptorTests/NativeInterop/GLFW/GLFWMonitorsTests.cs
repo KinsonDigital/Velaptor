@@ -154,6 +154,7 @@ namespace VelaptorTests.NativeInterop.GLFW
         {
             // Arrange
             var refreshInvoked = false;
+            CreateMonitors();
 
             this.mockGLFWInvoker.Setup(m => m.GetMonitors())
                 .Callback(() => refreshInvoked = true);

@@ -12,7 +12,6 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using System.Linq;
     using Velaptor.Content.Caching;
-    using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier
@@ -131,9 +130,6 @@ namespace Velaptor.Content
         public bool IsDisposed { get; private set; }
 
         /// <inheritdoc/>
-        public bool IsPooled { get; set; }
-
-        /// <inheritdoc/>
         public AtlasSubTextureData this[int index] => this.subTexturesData[index];
 
         /// <inheritdoc/>
@@ -171,11 +167,6 @@ namespace Velaptor.Content
             if (IsDisposed)
             {
                 return;
-            }
-
-            if (IsPooled)
-            {
-                throw new PooledDisposalException();
             }
 
             if (disposing)

@@ -8,7 +8,6 @@ namespace Velaptor.Content
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
@@ -78,9 +77,6 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
 
-        /// <inheritdoc/>
-        public bool IsPooled { get; set; }
-
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
@@ -89,11 +85,6 @@ namespace Velaptor.Content
             if (IsDisposed)
             {
                 return;
-            }
-
-            if (IsPooled)
-            {
-                throw new PooledDisposalException();
             }
 
             this.gl.DeleteTexture(Id);

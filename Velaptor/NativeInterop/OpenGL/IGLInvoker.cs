@@ -37,12 +37,12 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="id">The identifier of the message.</param>
         /// <param name="length">The length of the message to be sent to the debug output stream.</param>
         /// <param name="message">The string containing the message to be sent to the debug output stream.</param>
-        public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message);
+        void PushDebugGroup(GLDebugSource source, uint id, uint length, string message);
 
         /// <summary>
         /// Pop the active debug group.
         /// </summary>
-        public void PopDebugGroup();
+        void PopDebugGroup();
 
         /// <summary>
         /// Label a named object identified within a namespace.
@@ -51,7 +51,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="name">The name of the object to label.</param>
         /// <param name="length">The length of the label to be used for the object.</param>
         /// <param name="label">The label to assign to the object.</param>
-        public void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label);
+        void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label);
 
         /// <summary>
         /// [requires: v1.0] Enable or disable server-side GL capabilities.

@@ -36,8 +36,8 @@ namespace VelaptorTesting.Scenes
         private Button? btnDecreaseFontSize;
         private bool cwButtonDown;
         private bool ccwButtonDown;
-        private bool increaseBtnDown;
-        private bool decreaseBtnDown;
+        private bool increaseRenderSizeBtnDown;
+        private bool decreaseRenderBtnDown;
         private bool isMultiLine = true;
         private bool isClrSet;
         private float angle;
@@ -102,14 +102,14 @@ namespace VelaptorTesting.Scenes
 
             this.btnIncreaseRenderSize.MouseDown += (_, _) =>
             {
-                this.increaseBtnDown = true;
-                this.decreaseBtnDown = false;
+                this.increaseRenderSizeBtnDown = true;
+                this.decreaseRenderBtnDown = false;
             };
 
             this.btnIncreaseRenderSize.MouseUp += (_, _) =>
             {
-                this.increaseBtnDown = false;
-                this.decreaseBtnDown = false;
+                this.increaseRenderSizeBtnDown = false;
+                this.decreaseRenderBtnDown = false;
                 this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
                 this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
             };
@@ -121,14 +121,14 @@ namespace VelaptorTesting.Scenes
 
             this.btnDecreaseRenderSize.MouseDown += (_, _) =>
             {
-                this.decreaseBtnDown = true;
-                this.increaseBtnDown = false;
+                this.decreaseRenderBtnDown = true;
+                this.increaseRenderSizeBtnDown = false;
             };
 
             this.btnDecreaseRenderSize.MouseUp += (_, _) =>
             {
-                this.increaseBtnDown = false;
-                this.decreaseBtnDown = false;
+                this.increaseRenderSizeBtnDown = false;
+                this.decreaseRenderBtnDown = false;
                 this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
                 this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
             };
@@ -239,16 +239,20 @@ namespace VelaptorTesting.Scenes
                 this.angle -= AngularVelocity * (float)frameTime.ElapsedTime.TotalSeconds;
             }
 
-            // Increase Size
-            if (this.increaseBtnDown && this.decreaseBtnDown is false)
+            // Increase Render Size
+            if (this.increaseRenderSizeBtnDown && this.decreaseRenderBtnDown is false)
             {
                 this.renderSize += SizeChangeAmount * (float)frameTime.ElapsedTime.TotalSeconds;
+                this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
+                this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
             }
 
-            // Decrease Size
-            if (this.decreaseBtnDown && this.increaseBtnDown is false)
+            // Decrease Render Size
+            if (this.decreaseRenderBtnDown && this.increaseRenderSizeBtnDown is false)
             {
                 this.renderSize -= SizeChangeAmount * (float)frameTime.ElapsedTime.TotalSeconds;
+                this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
+                this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
             }
 
             this.renderSize = this.renderSize < 0f ? 0f : this.renderSize;

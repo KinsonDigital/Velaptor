@@ -9,7 +9,6 @@ namespace VelaptorTests.Content
     using System.Drawing;
     using Moq;
     using Velaptor.Content;
-    using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
@@ -228,20 +227,6 @@ namespace VelaptorTests.Content
 
             // Assert
             this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
-        }
-
-        [Fact]
-        public void Dispose_WhilePooled_ThrowsException()
-        {
-            // Arrange
-            var texture = CreateTexture();
-            texture.IsPooled = true;
-
-            // Act & Assert
-            Assert.Throws<PooledDisposalException>(() =>
-            {
-                texture.Dispose();
-            });
         }
         #endregion
 
