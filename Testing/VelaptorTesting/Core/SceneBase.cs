@@ -1,8 +1,6 @@
-// <copyright file="SceneBase.cs" company="KinsonDigital">
+﻿// <copyright file="SceneBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
-
-using Velaptor.Graphics;
 
 namespace VelaptorTesting.Core
 {
@@ -10,6 +8,7 @@ namespace VelaptorTesting.Core
     using System.Collections.Generic;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Graphics;
     using Velaptor.UI;
 
     /// <summary>
@@ -30,7 +29,7 @@ namespace VelaptorTesting.Core
         }
 
         /// <inheritdoc cref="IScene.Name"/>
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; init; } = string.Empty;
 
         /// <inheritdoc cref="IScene.Id"/>
         public Guid Id { get; } = Guid.NewGuid();
@@ -42,7 +41,7 @@ namespace VelaptorTesting.Core
         public bool IsActive { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether true if the scene has been disposed of.
+        /// Gets a value indicating whether or not the scene has been disposed.
         /// </summary>
         protected bool IsDisposed { get; private set; }
 
@@ -58,11 +57,29 @@ namespace VelaptorTesting.Core
         public void RemoveControl(IControl control) => this.controls.Remove(control);
 
         /// <inheritdoc cref="IScene.LoadContent"/>
-        public virtual void LoadContent() => IsLoaded = true;
+        public virtual void LoadContent()
+        {
+            foreach (var control in this.controls)
+            {
+                control.LoadContent();
+            }
+
+            IsLoaded = true;
+        }
 
         /// <inheritdoc cref="IScene.UnloadContent"/>
         public virtual void UnloadContent()
         {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            foreach (var control in this.controls)
+            {
+                control.Dispose();
+            }
+
             this.controls.Clear();
             IsLoaded = false;
         }
@@ -70,7 +87,7 @@ namespace VelaptorTesting.Core
         /// <inheritdoc cref="IUpdatable.Update"/>
         public virtual void Update(FrameTime frameTime)
         {
-            if (IsLoaded is false || IsActive)
+            if (IsLoaded is false || IsActive is false)
             {
                 return;
             }
@@ -110,7 +127,7 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (IsDisposed)

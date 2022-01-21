@@ -72,7 +72,7 @@ namespace VelaptorTesting
                 Name = SplitByUpperCase(nameof(TestAnimatedGraphicsScene)),
             };
 
-            this.sceneManager.AddScene(testRenderTextScene);
+            this.sceneManager.AddScene(testRenderTextScene, true);
             this.sceneManager.AddScene(testMouseScene);
             this.sceneManager.AddScene(testKeyboardScene);
             this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);

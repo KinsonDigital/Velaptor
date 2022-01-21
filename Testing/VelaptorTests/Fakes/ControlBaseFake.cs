@@ -27,13 +27,13 @@ namespace VelaptorTests.Fakes
         /// Invokes the <see cref="ControlBase.ThrowExceptionIfLoadingWhenDisposed"/>() method for the purpose
         /// of invoking an exception for testing.
         /// </summary>
-        public void Invoke_Exception_In_Method_ThrowExceptionIfLoadingWhenDisposed() => ThrowExceptionIfLoadingWhenDisposed();
+        public void Invoke_Exception_In_Method_ThrowsExceptionIfLoadingWhenDisposed() => ThrowExceptionIfLoadingWhenDisposed();
 
         /// <summary>
         /// Invokes the <see cref="ControlBase.ThrowExceptionIfLoadingWhenDisposed"/>() method for the purpose
         /// of not invoking an exception for testing.
         /// </summary>
-        public void Do_Not_Invoke_Exception_In_Method_ThrowExceptionIfLoadingWhenDisposed() =>
+        public void Do_Not_Invoke_Exception_In_Method_ThrowsExceptionIfLoadingWhenDisposed() =>
             ThrowExceptionIfLoadingWhenDisposed();
     }
 }

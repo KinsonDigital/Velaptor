@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureLoader.cs" company="KinsonDigital">
+// <copyright file="TextureLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,11 +6,12 @@ namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
     using System;
-    using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.IO.Abstractions;
-    using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Services;
+    using Velaptor.Content.Caching;
+    using Velaptor.Content.Exceptions;
+    using Velaptor.Factories;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -19,92 +20,89 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class TextureLoader : ILoader<ITexture>
     {
-        private readonly ConcurrentDictionary<string, ITexture> textures = new ();
-        private readonly IGLInvoker gl;
-        private readonly IGLInvokerExtensions glExtensions;
-        private readonly IImageService imageService;
+        private const string TextureFileExtension = ".png";
+        private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly IPathResolver pathResolver;
+        private readonly IFile file;
         private readonly IPath path;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
-        /// <param name="imageService">Loads an image file.</param>
-        /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         [ExcludeFromCodeCoverage]
-        public TextureLoader(IImageService imageService, IPathResolver texturePathResolver)
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+        public TextureLoader()
         {
-            this.gl = IoC.Container.GetInstance<IGLInvoker>();
-            this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            this.imageService = imageService;
-            this.pathResolver = texturePathResolver;
+            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            this.pathResolver = PathResolverFactory.CreateTexturePathResolver();
+            this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
         /// </summary>
-        /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="imageService">Loads an image file.</param>
+        /// <param name="textureCache">Caches textures for later use to improve performance.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
+        /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
-        internal TextureLoader(IGLInvoker gl, IGLInvokerExtensions glExtensions, IImageService imageService, IPathResolver texturePathResolver, IPath path)
+        internal TextureLoader(
+            IDisposableItemCache<string, ITexture> textureCache,
+            IPathResolver texturePathResolver,
+            IFile file,
+            IPath path)
         {
-            this.gl = gl;
-            this.glExtensions = glExtensions;
-            this.imageService = imageService;
+            this.textureCache = textureCache;
             this.pathResolver = texturePathResolver;
+            this.file = file;
             this.path = path;
         }
 
         /// <summary>
-        /// Loads a texture with the given <paramref name="name"/>.
+        /// Loads a texture with the given <paramref name="contentPathOrName"/>.
         /// </summary>
-        /// <param name="name">The name of the texture to load.</param>
+        /// <param name="contentPathOrName">The name of the texture to load.</param>
         /// <returns>The loaded texture.</returns>
-        public ITexture Load(string name)
+        /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
+        public ITexture Load(string contentPathOrName)
         {
-            name = this.path.HasExtension(name)
-                ? this.path.GetFileNameWithoutExtension(name)
-                : name;
+            var isFullFilePath = contentPathOrName.HasValidFullFilePathSyntax();
+            string filePath;
+            string cacheKey;
 
-            var filePath = this.pathResolver.ResolveFilePath(name);
-
-            // If the requested texture is already loaded into the pool
-            // and has been disposed, remove it.
-            foreach (var texture in this.textures)
+            if (isFullFilePath)
             {
-                if (texture.Key != filePath || !texture.Value.IsDisposed)
-                {
-                    continue;
-                }
-
-                this.textures.TryRemove(texture);
-                break;
+                filePath = contentPathOrName;
+                cacheKey = filePath;
+            }
+            else
+            {
+                contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
+                filePath = this.pathResolver.ResolveFilePath(contentPathOrName);
+                cacheKey = filePath;
             }
 
-            return this.textures.GetOrAdd(filePath, (filePathToLoad) =>
+            if (this.file.Exists(filePath))
             {
-                var imageData = this.imageService.Load(filePathToLoad);
+                if (this.path.GetExtension(filePath) is not TextureFileExtension)
+                {
+                    throw new LoadTextureException(
+                        $"The file '{filePath}' must be a texture file with the extension '{TextureFileExtension}'.");
+                }
+            }
+            else
+            {
+                throw new FileNotFoundException($"The texture file '{filePath}' does not exist.", filePath);
+            }
 
-                return new Texture(this.gl, this.glExtensions, name, filePathToLoad, imageData) { IsPooled = true };
-            });
+            return this.textureCache.GetItem(cacheKey);
         }
 
         /// <inheritdoc/>
         [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-        public void Unload(string name)
-        {
-            var filePath = this.pathResolver.ResolveFilePath(name);
-
-            if (this.textures.TryRemove(filePath, out var texture))
-            {
-                texture.IsPooled = false;
-                texture.Dispose();
-            }
-        }
+        public void Unload(string nameOrPath) => this.textureCache.Unload(nameOrPath);
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);
@@ -112,7 +110,7 @@ namespace Velaptor.Content
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)
@@ -122,13 +120,7 @@ namespace Velaptor.Content
 
             if (disposing)
             {
-                foreach (var texture in this.textures.Values)
-                {
-                    texture.IsPooled = false;
-                    texture.Dispose();
-                }
-
-                this.textures.Clear();
+                this.textureCache.Dispose();
             }
 
             this.isDisposed = true;

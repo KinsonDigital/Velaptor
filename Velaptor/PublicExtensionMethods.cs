@@ -6,7 +6,10 @@ namespace Velaptor
 {
     // ReSharper disable RedundantNameQualifier
     using System;
+    using System.Collections.Generic;
     using System.Drawing;
+    using System.IO;
+    using System.Linq;
     using System.Numerics;
     using Velaptor.Graphics;
 
@@ -17,6 +20,30 @@ namespace Velaptor
     /// </summary>
     public static class PublicExtensionMethods
     {
+        private static readonly char[] Letters;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="PublicExtensionMethods"/> class.
+        /// </summary>
+        static PublicExtensionMethods()
+        {
+            var result = new List<char>();
+
+            // Capital letters A-Z
+            for (var i = 'A'; i <= 'Z'; i++)
+            {
+                result.Add(i);
+            }
+
+            // Lowercase letters a-z
+            for (var i = 'a'; i <= 'z'; i++)
+            {
+                result.Add(i);
+            }
+
+            Letters = result.ToArray();
+        }
+
         /// <summary>
         /// Converts the given <paramref name="radians"/> value into degrees.
         /// </summary>
@@ -33,14 +60,14 @@ namespace Velaptor
         public static float ToRadians(this float degrees) => degrees * (float)Math.PI / 180f;
 
         /// <summary>
-        /// Sets the value to positive if its negative.
+        /// Sets the value to positive if it's negative.
         /// </summary>
         /// <param name="value">The value to force.</param>
         /// <returns>The value as a positive number.</returns>
         public static float ForcePositive(this float value) => value < 0 ? value * -1 : value;
 
         /// <summary>
-        /// Sets the value to negative if its positive.
+        /// Sets the value to negative if it's positive.
         /// </summary>
         /// <param name="value">The value to force.</param>
         /// <returns>The value as a negative number.</returns>
@@ -261,5 +288,280 @@ namespace Velaptor
 
             return value;
         }
+
+        /// <summary>
+        /// Returns a value indicating whether or not the character is a letter.
+        /// </summary>
+        /// <param name="character">The character to check.</param>
+        /// <returns>True if the character is an upper or lower case letter.</returns>
+        public static bool IsLetter(this char character) => Letters.Contains(character);
+
+        /// <summary>
+        /// Returns a value indicating whether or not the character is not a letter.
+        /// </summary>
+        /// <param name="character">The character to check.</param>
+        /// <returns>True if the character is not an upper or lower case letter.</returns>
+        public static bool IsNotLetter(this char character) => !Letters.Contains(character);
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
+        /// is a fully qualified path.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if valid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>null</c> will return <c>false</c>.</item>
+        ///     <item><c>null</c> or <c>empty</c> will returns <c>false</c>.</item>
+        ///     <item>
+        ///         Start with a drive letter.
+        ///         <para>Value of <c>C:/</c> will return <c>true</c>.</para>
+        ///     </item>
+        ///     <item>
+        ///         Contains at least 1 directory.
+        ///         <para>will return <c>true</c>: C:/my-directory</para>
+        ///     </item>
+        ///     <item>
+        ///         Must contain a file name with file extension.
+        ///         <list type="bullet">
+        ///             <item>Value of <c>C:/my-directory/my-file.txt</c> will return <c>true</c>.</item>
+        ///             <item>Value of <c>C:/my-directory/my-file</c> will return <c>false</c></item>
+        ///             <item>Value of <c>C:/my-directory/.txt</c> will return <c>false</c></item>
+        ///         </list>
+        ///     </item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the path exists.  It is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasValidFullFilePathSyntax(this string path)
+        {
+            // Must not be null or empty
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
+            // Must have a drive letter
+            if (path.Contains(':') is false && path.DoesNotStartWith(':'))
+            {
+                return false;
+            }
+
+            path = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            if (path.Contains(Path.AltDirectorySeparatorChar) is false)
+            {
+                return false;
+            }
+
+            // Must have a directory path
+            if (string.IsNullOrEmpty(Path.GetDirectoryName(path)))
+            {
+                return false;
+            }
+
+            // Must have a file name with an extension
+            return !string.IsNullOrEmpty(Path.GetFileName(path)) && !string.IsNullOrEmpty(Path.GetExtension(path));
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
+        /// is an invalid, fully qualified path.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if invalid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>null</c> will return <c>true</c>.</item>
+        ///     <item><c>null</c> or <c>empty</c> will returns <c>true</c>.</item>
+        ///     <item>
+        ///         Start with a drive letter
+        ///         <para>Value of <c>C:/</c> will return <c>false</c>.</para>
+        ///     </item>
+        ///     <item>
+        ///         Contains at least 1 directory
+        ///         <para>will return <c>false</c>: C:/my-directory</para>
+        ///     </item>
+        ///     <item>
+        ///         Must contain a file name with a file extension.
+        ///         <list type="bullet">
+        ///             <item>Value of <c>C:/my-directory/my-file.txt</c> will return <c>false</c>.</item>
+        ///             <item>Value of <c>C:/my-directory/my-file</c> will return <c>true</c></item>
+        ///             <item>Value of <c>C:/my-directory/.txt</c> will return <c>true</c></item>
+        ///         </list>
+        ///     </item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the path exists.  This is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasInvalidFullFilePathSyntax(this string path) => !HasValidFullFilePathSyntax(path);
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <paramref name="path"/> is a valid drive.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns>True if <paramref name="path"/> contains a valid drive.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>C:/my-dir</c> will return <c>true</c>.</item>
+        ///     <item>Value of <c>C:my-dir</c> will return <c>true</c>.</item>
+        ///     <item>Value of <c>C/my-dir/my-file.txt</c> will return <c>false</c>.</item>
+        ///     <item>Value of <c>//my-dir</c> will return <c>false</c>.</item>
+        ///     <item>Value of <c>./my-dir</c> will return <c>false</c>.</item>
+        ///     <item>Value of <c>../my-dir</c> will return <c>false</c>.</item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the drive exists.  It is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasValidDriveSyntax(this string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
+            if (path.Length < 2)
+            {
+                return false;
+            }
+
+            if (path.Contains(':') is false)
+            {
+                return false;
+            }
+
+            if (path.StartsWith(':'))
+            {
+                return false;
+            }
+
+            return !path[0].IsNotLetter() && path[1].IsNotLetter();
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <paramref name="dirPath"/> is valid.
+        /// </summary>
+        /// <param name="dirPath">The directory path to check.</param>
+        /// <returns>True if the <paramref name="dirPath"/> is valid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>C:/my-dir</c> will return <c>true</c>.</item>
+        ///     <item>Value of <c>C:/my-dir/</c> will return <c>true</c>.</item>
+        ///     <item>Value of <c>C:/my-dir/my-file.txt</c> will return <c>false</c>.</item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the directory path exists.  It is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasValidFullDirPathSyntax(this string dirPath)
+        {
+            if (string.IsNullOrEmpty(dirPath))
+            {
+                return false;
+            }
+
+            if (dirPath.HasValidDriveSyntax() is false)
+            {
+                return false;
+            }
+
+            dirPath = dirPath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            if (dirPath.Any(c => c == Path.AltDirectorySeparatorChar) is false)
+            {
+                return false;
+            }
+
+            return !Path.HasExtension(dirPath);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <paramref name="path"/> is valid.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns>True if the <paramref name="path"/> is valid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>C:/Windows</c> will return <c>false</c>.</item>
+        ///     <item>Value of <c>//my-share</c> will return <c>true</c>.</item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the UNC directory path exists.  It is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasValidUNCPathSyntax(this string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
+            if (path.Length < 3)
+            {
+                return false;
+            }
+
+            path = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            if (path.DoesNotStartWith($@"{Path.AltDirectorySeparatorChar}{Path.AltDirectorySeparatorChar}"))
+            {
+                return false;
+            }
+
+            return path.Contains(':') is false;
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not a specified substring occurs within this string.
+        /// </summary>
+        /// <param name="stringToSearchIn">The string to search that may or may not contain the <paramref name="value"/>.</param>
+        /// <param name="value">The string to seek.</param>
+        /// <returns>
+        ///     <c>true</c> if the value parameter does not occur within this string.
+        /// </returns>
+        public static bool DoesNotContain(this string stringToSearchIn, string value)
+        {
+            if (string.IsNullOrEmpty(stringToSearchIn) is false && string.IsNullOrEmpty(value))
+            {
+                return true;
+            }
+
+            return !stringToSearchIn.Contains(value);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not a specified character occurs within this string.
+        /// </summary>
+        /// <param name="stringToSearchIn">The string to search that may or may not contain the <paramref name="value"/>.</param>
+        /// <param name="value">The character to seek.</param>
+        /// <returns>
+        ///     <c>true</c> if the value parameter does not occur within this string.
+        /// </returns>
+        public static bool DoesNotContain(this string stringToSearchIn, char value)
+        {
+            if (string.IsNullOrEmpty(stringToSearchIn))
+            {
+                return true;
+            }
+
+            return !stringToSearchIn.Contains(value);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not this string only contains letters.
+        /// </summary>
+        /// <param name="value">The string to check.</param>
+        /// <returns><c>true</c> if the string only contains letters.</returns>
+        public static bool OnlyContainsLetters(this string value) => value.All(character => !character.IsNotLetter());
+
+        /// <summary>
+        /// Returns a value indicating whether or not this string does not only contain letters.
+        /// </summary>
+        /// <param name="value">The string to check.</param>
+        /// <returns><c>true</c> if the string contains other characters besides letters.</returns>
+        public static bool DoesNotOnlyContainsLetters(this string value) => !value.OnlyContainsLetters();
     }
 }

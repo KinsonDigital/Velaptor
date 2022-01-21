@@ -1,4 +1,4 @@
-﻿// <copyright file="ContentLoaderFactory.cs" company="KinsonDigital">
+// <copyright file="ContentLoaderFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,10 +6,12 @@ namespace Velaptor.Factories
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.IO.Abstractions;
     using Velaptor.Content;
-    using Velaptor.NativeInterop.FreeType;
-    using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Content.Caching;
+    using Velaptor.Content.Factories;
+    using Velaptor.Content.Fonts;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 
@@ -50,17 +52,15 @@ namespace Velaptor.Factories
                 return textureLoader;
             }
 
-            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var imageService = IoC.Container.GetInstance<IImageService>();
+            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
             var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
+            var file = IoC.Container.GetInstance<IFile>();
             var path = IoC.Container.GetInstance<IPath>();
 
             textureLoader = new TextureLoader(
-                glInvoker,
-                glInvokerExtensions,
-                imageService,
+                textureCache,
                 texturePathResolver,
+                file,
                 path);
 
             return textureLoader;
@@ -70,7 +70,7 @@ namespace Velaptor.Factories
         /// Creates a loader for loading atlas data from disk.
         /// </summary>
         /// <returns>A loader for loading texture atlas data.</returns>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left public for library users.")]
         public static ILoader<IAtlasData> CreateTextureAtlasLoader()
         {
             if (atlasLoader is not null)
@@ -78,15 +78,16 @@ namespace Velaptor.Factories
                 return atlasLoader;
             }
 
-            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var atlasDataPathResolver = new AtlasJSONDataPathResolver(IoC.Container.GetInstance<IDirectory>());
+            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
+            var atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
+            var jsonService = IoC.Container.GetInstance<IJSONService>();
 
             atlasLoader = new AtlasLoader(
-                glInvoker,
-                glInvokerExtensions,
-                IoC.Container.GetInstance<IImageService>(),
+                textureCache,
+                atlasDataFactory,
                 atlasDataPathResolver,
+                jsonService,
                 IoC.Container.GetInstance<IFile>(),
                 IoC.Container.GetInstance<IPath>());
 
@@ -107,8 +108,12 @@ namespace Velaptor.Factories
 
             var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
             var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
+            var path = IoC.Container.GetInstance<IPath>();
 
-            soundLoader = new SoundLoader(soundPathResolver, soundFactory);
+            soundLoader = new SoundLoader(
+                soundPathResolver,
+                soundFactory,
+                path);
 
             return soundLoader;
         }
@@ -125,23 +130,28 @@ namespace Velaptor.Factories
                 return fontLoader;
             }
 
-            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var freeTypeInvoker = IoC.Container.GetInstance<IFreeTypeInvoker>();
-            var freeTypeExtensions = IoC.Container.GetInstance<IFreeTypeExtensions>();
-            var fontPathResolver = new FontPathResolver(IoC.Container.GetInstance<IDirectory>());
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
+            var embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
+            var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
+            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            var fontFactory = IoC.Container.GetInstance<IFontFactory>();
+            var fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
+            var directory = IoC.Container.GetInstance<IDirectory>();
+            var file = IoC.Container.GetInstance<IFile>();
+            var fileStream = IoC.Container.GetInstance<IFileStreamFactory>();
+            var path = IoC.Container.GetInstance<IPath>();
 
             fontLoader = new FontLoader(
-                glInvoker,
-                glInvokerExtensions,
-                freeTypeInvoker,
-                freeTypeExtensions,
                 fontAtlasService,
+                embeddedFontResourceService,
                 fontPathResolver,
-                IoC.Container.GetInstance<IImageService>(),
-                IoC.Container.GetInstance<IFile>(),
-                IoC.Container.GetInstance<IPath>());
+                textureCache,
+                fontFactory,
+                fontMetaDataParser,
+                directory,
+                file,
+                fileStream,
+                path);
 
             return fontLoader;
         }

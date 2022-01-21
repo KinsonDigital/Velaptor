@@ -9,10 +9,10 @@ namespace VelaptorTests.Content
     using System.Drawing;
     using Moq;
     using Velaptor.Content;
-    using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -74,6 +74,16 @@ namespace VelaptorTests.Content
         }
 
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WithEmptyImageData_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
+            {
+                var unused = CreateTexture(true);
+            }, "The image data must not be empty. (Parameter 'imageData')");
+        }
+
         [Fact]
         public void Ctor_WhenInvoked_UploadsTextureDataToGPU()
         {
@@ -171,7 +181,7 @@ namespace VelaptorTests.Content
             var texture = CreateTexture();
 
             // Act
-            var actual = texture.Path;
+            var actual = texture.FilePath;
 
             // Assert
             Assert.Equal(TexturePath, actual);
@@ -218,26 +228,18 @@ namespace VelaptorTests.Content
             // Assert
             this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
         }
-
-        [Fact]
-        public void Dispose_WhilePooled_ThrowsException()
-        {
-            // Arrange
-            var texture = CreateTexture();
-            texture.IsPooled = true;
-
-            // Act & Assert
-            Assert.Throws<PooledDisposalException>(() =>
-            {
-                texture.Dispose();
-            });
-        }
         #endregion
 
         /// <summary>
         /// Creates a texture for the purpose of testing.
         /// </summary>
         /// <returns>The texture instance to test.</returns>
-        private Texture CreateTexture() => new (this.mockGL.Object, this.mockGLExtensions.Object, TextureName, TexturePath, this.imageData);
+        private Texture CreateTexture(bool useEmptyData = false)
+            => new (
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
+                TextureName,
+                TexturePath,
+                useEmptyData ? default : this.imageData);
     }
 }

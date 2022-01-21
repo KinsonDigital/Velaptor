@@ -17,7 +17,7 @@ namespace Velaptor.OpenGL
     /// Base functionality for managing buffer data in the GPU.
     /// </summary>
     /// <typeparam name="TData">The type of data in the GPU buffer.</typeparam>
-    public abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
+    internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         where TData : struct
     {
         private readonly IDisposable glObservableUnsubscriber;
@@ -53,7 +53,7 @@ namespace Velaptor.OpenGL
         protected internal uint BatchSize { get; private set; } = 100;
 
         /// <summary>
-        /// Gets a value indicating whether gets a value indicating if the buffer has been initialized.
+        /// Gets a value indicating whether or not the buffer has been initialized.
         /// </summary>
         protected internal bool IsInitialized { get; private set; }
 
@@ -223,7 +223,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Looks for an pulls settings out of various attributes to help set the state of the buffer.
+        /// Looks for and pulls settings out of various attributes to help set the state of the buffer.
         /// </summary>
         private void ProcessCustomAttributes()
         {

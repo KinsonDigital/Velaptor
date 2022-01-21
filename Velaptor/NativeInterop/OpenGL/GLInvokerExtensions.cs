@@ -88,7 +88,7 @@ namespace Velaptor.NativeInterop.OpenGL
             return shaderParams >= 1;
         }
 
-                /// <inheritdoc/>
+        /// <inheritdoc/>
         public void BeginGroup(string label)
                     =>
                         this.glInvoker.PushDebugGroup(
@@ -97,18 +97,18 @@ namespace Velaptor.NativeInterop.OpenGL
                             (uint)label.Length,
                             label);
 
-                /// <inheritdoc/>
+        /// <inheritdoc/>
         public void EndGroup() => this.glInvoker.PopDebugGroup();
 
-                /// <inheritdoc/>
+        /// <inheritdoc/>
         public void LabelShader(uint shaderId, string label)
             => this.glInvoker.ObjectLabel(GLObjectIdentifier.Shader, shaderId, (uint)label.Length, label);
 
-                /// <inheritdoc/>
+        /// <inheritdoc/>
         public void LabelShaderProgram(uint shaderId, string label)
             => this.glInvoker.ObjectLabel(GLObjectIdentifier.Program, shaderId, (uint)label.Length, label);
 
-                /// <inheritdoc/>
+        /// <inheritdoc/>
         public void LabelVertexArray(uint vertexArrayId, string label)
         {
             label = string.IsNullOrEmpty(label)

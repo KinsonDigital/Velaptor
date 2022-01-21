@@ -8,7 +8,6 @@ namespace Velaptor.Content
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Content.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
@@ -23,23 +22,6 @@ namespace Velaptor.Content
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
 
-        /*NOTE:
-         * This flag is for the purpose of unit testing.  This flag gets set in one location and that is
-         * the finalizer.  This then gets checked to see if it is false in the Dispose() method.
-         *
-         * If the finalizer is false and the Texture is pooled, it will then allow the PooledDisposalException
-         * to be thrown.
-         *
-         * An issue arises when running enough unit tests together with this class being included in those tests
-         * When a lot of tests are ran, the finalizers is being invoked which then in turn invokes the Dispose()
-         * method. This in turn then throws the exception which is not expected in the unit tests which fails the
-         * unit test.
-         *
-         * This happens when the pooling status of an object is true, and the object was disposed of in the test,
-         * but the finalizer gets invoked before the GC.SuppressFinalize(this) is invoked.
-         */
-        private bool invokedFromFinalizer;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
         /// </summary>
@@ -51,7 +33,7 @@ namespace Velaptor.Content
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            Path = path;
+            FilePath = path;
             Init(name, imageData);
         }
 
@@ -67,7 +49,7 @@ namespace Velaptor.Content
         {
             this.gl = gl;
             this.glExtensions = glExtensions;
-            Path = path;
+            FilePath = path;
             Init(name, imageData);
         }
 
@@ -75,11 +57,7 @@ namespace Velaptor.Content
         /// Finalizes an instance of the <see cref="Texture"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        ~Texture()
-        {
-            this.invokedFromFinalizer = true;
-            Dispose();
-        }
+        ~Texture() => Dispose();
 
         /// <inheritdoc/>
         public uint Id { get; private set; }
@@ -88,7 +66,7 @@ namespace Velaptor.Content
         public string Name { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
-        public string Path { get; }
+        public string FilePath { get; }
 
         /// <inheritdoc/>
         public uint Width { get; private set; }
@@ -99,9 +77,6 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
 
-        /// <inheritdoc/>
-        public bool IsPooled { get; set; }
-
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
@@ -110,11 +85,6 @@ namespace Velaptor.Content
             if (IsDisposed)
             {
                 return;
-            }
-
-            if (IsPooled && this.invokedFromFinalizer is false)
-            {
-                throw new PooledDisposalException();
             }
 
             this.gl.DeleteTexture(Id);
@@ -131,6 +101,11 @@ namespace Velaptor.Content
         /// <param name="imageData">The image data of the texture.</param>
         private void Init(string name, ImageData imageData)
         {
+            if (imageData.IsEmpty())
+            {
+                throw new ArgumentException("The image data must not be empty.", nameof(imageData));
+            }
+
             Id = this.gl.GenTexture();
 
             this.gl.BindTexture(GLTextureTarget.Texture2D, Id);

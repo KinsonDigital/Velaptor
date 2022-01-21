@@ -4,7 +4,11 @@
 
 namespace VelaptorTests
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using System.IO;
+    using System.Linq;
     using System.Numerics;
     using Velaptor;
     using Velaptor.Graphics;
@@ -13,8 +17,138 @@ namespace VelaptorTests
     /// <summary>
     /// Tests the <see cref="PublicExtensionMethods"/> class.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Allowed for unit test classes.")]
     public class PublicExtensionMethodsTests
     {
+        private static readonly char DirSeparator = Path.AltDirectorySeparatorChar;
+        private readonly char[] letters;
+        private readonly char[] nonLetters;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PublicExtensionMethodsTests"/> class.
+        /// </summary>
+        public PublicExtensionMethodsTests()
+        {
+            var result = new List<char>();
+
+            // Capital letters A-Z
+            for (var i = 'A'; i <= 'Z'; i++)
+            {
+                result.Add(i);
+            }
+
+            // Lowercase letters a-z
+            for (var i = 'a'; i <= 'z'; i++)
+            {
+                result.Add(i);
+            }
+
+            this.letters = result.ToArray();
+
+            result.Clear();
+
+            for (var i = 0; i < 127; i++)
+            {
+                if (this.letters.Contains((char)i))
+                {
+                    continue;
+                }
+
+                result.Add((char)i);
+            }
+
+            this.nonLetters = result.ToArray();
+        }
+
+        #region Unit Test Data
+        /// <summary>
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidFullFilePathSyntax"/>() method.
+        /// </summary>
+        /// <returns>The test data.</returns>
+        public static IEnumerable<object[]> IsValidFilePathTestData()
+        {
+            yield return new object[] { "C:windows", false };
+            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}test-file", false };
+            yield return new object[] { string.Empty, false };
+            yield return new object[] { null, false };
+            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}", false };
+            yield return new object[] { $@"C:{DirSeparator}", false };
+            yield return new object[] { "non-path-value", false };
+            yield return new object[] { $@"{DirSeparator}test-dir{DirSeparator}", false };
+            yield return new object[] { $@"test-dir{DirSeparator}", false };
+            yield return new object[] { @"C:\test-dir\test-file.txt", true };
+            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}test-file.txt", true };
+        }
+
+        /// <summary>
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasInvalidFullFilePathSyntax"/>() method.
+        /// </summary>
+        /// <returns>The test data.</returns>
+        public static IEnumerable<object[]> IsInvalidFilePathTestData()
+        {
+            yield return new object[] { $@"C:\test-dir\test-file.txt", false };
+            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}test-file.txt", false };
+            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}test-file", true };
+            yield return new object[] { string.Empty, true };
+            yield return new object[] { null, true };
+            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}", true };
+            yield return new object[] { $@"C:{DirSeparator}", true };
+            yield return new object[] { "non-path-value", true };
+            yield return new object[] { $@"{DirSeparator}test-dir{DirSeparator}", true };
+            yield return new object[] { $@"test-dir{DirSeparator}", true };
+            yield return new object[] { "C:windows", true };
+        }
+
+        /// <summary>
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidDriveSyntax"/>() method.
+        /// </summary>
+        /// <returns>The test data.</returns>
+        public static IEnumerable<object[]> ContainsValidDriveTestData()
+        {
+            yield return new object[] { string.Empty, false };
+            yield return new object[] { null, false };
+            yield return new object[] { "windows", false };
+            yield return new object[] { ":", false };
+            yield return new object[] { "C", false };
+            yield return new object[] { ":C", false };
+            yield return new object[] { "1:", false };
+            yield return new object[] { "windowsC:system32", false };
+            yield return new object[] { $@"C:\Windows\System32", true };
+            yield return new object[] { @"C:windows", true };
+            yield return new object[] { $@"C:{DirSeparator}Windows{DirSeparator}System32", true };
+        }
+
+        /// <summary>
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidFullDirPathSyntax"/>() method.
+        /// </summary>
+        /// <returns>The test data.</returns>
+        public static IEnumerable<object[]> IsFullyQualifiedDirPathTestData()
+        {
+            yield return new object[] { string.Empty, false };
+            yield return new object[] { null, false };
+            yield return new object[] { $@"\Windows\System32", false };
+            yield return new object[] { $@"{DirSeparator}Windows{DirSeparator}System32", false };
+            yield return new object[] { "C:Windows", false };
+            yield return new object[] { $@"{DirSeparator}WindowsC:", false };
+            yield return new object[] { $@"C:{DirSeparator}Windows{DirSeparator}System32{DirSeparator}fake-file.txt", false };
+            yield return new object[] { $@"C:{DirSeparator}Windows{DirSeparator}System32", true };
+            yield return new object[] { $@"C:{DirSeparator}Windows{DirSeparator}System32{DirSeparator}", true };
+        }
+
+        /// <summary>
+        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidUNCPathSyntax"/>() method.
+        /// </summary>
+        /// <returns>The test data.</returns>
+        public static IEnumerable<object[]> IsUNCPathTestData()
+        {
+            yield return new object[] { string.Empty, false };
+            yield return new object[] { null, false };
+            yield return new object[] { $@"\\", false };
+            yield return new object[] { $@"{DirSeparator}{DirSeparator}", false };
+            yield return new object[] { $@"{DirSeparator}{DirSeparator}directory", true };
+        }
+        #endregion
+
         #region Method Tests
         [Fact]
         public void ForcePositive_WhenUsingNegativeValue_ReturnsPositiveResult()
@@ -272,6 +406,151 @@ namespace VelaptorTests
             Assert.Equal(6f, actual.YMax);
             Assert.Equal(6f, actual.YMin);
             Assert.Equal(123u, actual.CharIndex);
+        }
+
+        [Theory]
+        [MemberData(nameof(IsValidFilePathTestData))]
+        public void HasValidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
+        {
+            // Act
+            var actual = path.HasValidFullFilePathSyntax();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(IsInvalidFilePathTestData))]
+        public void HasInvalidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
+        {
+            // Act
+            var actual = path.HasInvalidFullFilePathSyntax();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void IsLetter_WithLetters_ReturnsTrue()
+        {
+            // Act & Assert
+            Assert.All(this.letters, character =>
+            {
+                Assert.True(character.IsLetter());
+            });
+        }
+
+        [Fact]
+        public void IsLetter_WithNonLetters_ReturnsFalse()
+        {
+            // Act & Assert
+            Assert.All(this.nonLetters, character =>
+            {
+                Assert.False(character.IsLetter());
+            });
+        }
+
+        [Fact]
+        public void IsNotLetter_WithNonLetters_ReturnsTrue()
+        {
+            // Act & Assert
+            Assert.All(this.nonLetters, character =>
+            {
+                Assert.True(character.IsNotLetter());
+            });
+        }
+
+        [Theory]
+        [MemberData(nameof(ContainsValidDriveTestData))]
+        public void HasValidDriveSyntax_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
+        {
+            // Act
+            var actual = dirPath.HasValidDriveSyntax();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(IsFullyQualifiedDirPathTestData))]
+        public void HasValidFullDirPathSyntax_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
+        {
+            // Act
+            var actual = dirPath.HasValidFullDirPathSyntax();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(IsUNCPathTestData))]
+        public void HasValidUNCPathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
+        {
+            // Act
+            var actual = path.HasValidUNCPathSyntax();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("hello world", "world", false)]
+        [InlineData("hello", "world", true)]
+        [InlineData("hello", "", true)]
+        [InlineData("", "world", true)]
+        [InlineData("", "", false)]
+        public void DoesNotContain_WhenUsingAStringParam_ReturnsCorrectResult(
+            string stringToSearchIn,
+            string valueToSearchFor,
+            bool expected)
+        {
+            // Act
+            var actual = stringToSearchIn.DoesNotContain(valueToSearchFor);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("hello world", 'w', false)]
+        [InlineData("hello", 'w', true)]
+        [InlineData("", 'w', true)]
+        public void DoesNotContain_WhenUsingACharParam_ReturnsCorrectResult(
+            string stringToSearchIn,
+            char valueToSearchFor,
+            bool expected)
+        {
+            // Act
+            var actual = stringToSearchIn.DoesNotContain(valueToSearchFor);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("HelloWorld", true)]
+        [InlineData("Hello World", false)]
+        [InlineData("Hello-World", false)]
+        public void OnlyContainsLetters_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
+        {
+            // Act
+            var actual = value.OnlyContainsLetters();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("HelloWorld", false)]
+        [InlineData("Hello World", true)]
+        [InlineData("Hello-World", true)]
+        public void DoesNotOnlyContainsLetters_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
+        {
+            // Act
+            var actual = value.DoesNotOnlyContainsLetters();
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
         #endregion
     }

@@ -12,7 +12,7 @@ namespace Velaptor.Content
     /// <summary>
     /// Resolves paths to texture content.
     /// </summary>
-    public class TexturePathResolver : ContentPathResolver
+    internal class TexturePathResolver : ContentPathResolver
     {
         private const string FileExtension = ".png";
         private readonly IDirectory directory;

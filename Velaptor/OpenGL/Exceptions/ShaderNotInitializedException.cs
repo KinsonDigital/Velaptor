@@ -34,8 +34,7 @@ namespace Velaptor.OpenGL.Exceptions
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">
-        ///     The exception that is the cause of the current exception,
-        ///     or a null reference if no inner exception is specified.
+        ///     The <see cref="Exception"/> instance that caused the current exception.
         /// </param>
         public ShaderNotInitializedException(string message, Exception innerException)
             : base(message, innerException)

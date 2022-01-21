@@ -9,6 +9,7 @@ namespace Velaptor.Content
     using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
+    using Velaptor.Content.Factories;
     using Velaptor.Factories;
 
     // ReSharper restore RedundantNameQualifier
@@ -27,13 +28,11 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
-        /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
-        /// <param name="soundFactory">Creates sound instances.</param>
         [ExcludeFromCodeCoverage]
-        public SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory)
+        public SoundLoader()
         {
-            this.soundPathResolver = soundPathResolver;
-            this.soundFactory = soundFactory;
+            this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
+            this.soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
         }
 
@@ -86,8 +85,7 @@ namespace Velaptor.Content
 
             return this.sounds.GetOrAdd(filePath, (key) =>
             {
-                var sound = this.soundFactory.CreateSound(key);
-                sound.IsPooled = true;
+                var sound = this.soundFactory.Create(key);
 
                 return sound;
             });
@@ -101,7 +99,6 @@ namespace Velaptor.Content
 
             if (this.sounds.TryRemove(filePath, out var sound))
             {
-                sound.IsPooled = false;
                 sound.Dispose();
             }
         }
@@ -112,7 +109,7 @@ namespace Velaptor.Content
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)
@@ -124,7 +121,6 @@ namespace Velaptor.Content
             {
                 foreach (var sound in this.sounds.Values)
                 {
-                    sound.IsPooled = false;
                     sound.Dispose();
                 }
             }

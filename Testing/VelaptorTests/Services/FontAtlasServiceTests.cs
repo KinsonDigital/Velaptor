@@ -1,75 +1,45 @@
-﻿// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
+// <copyright file="FontAtlasServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace VelaptorTests.Services
 {
-#pragma warning disable IDE0001 // Name can be simplified
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
     using System.Runtime.InteropServices;
-    using FreeTypeSharp.Native;
     using Moq;
     using Velaptor;
+    using Velaptor.Content.Fonts.Services;
     using Velaptor.Exceptions;
+    using Velaptor.Graphics;
     using Velaptor.Hardware;
-    using Velaptor.NativeInterop.FreeType;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = VelaptorTests.Helpers.AssertExtensions;
-#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// Tests the <see cref="FontAtlasService"/> class.
     /// </summary>
-    public unsafe class FontAtlasServiceTests : IDisposable
+    public class FontAtlasServiceTests
     {
         private const string FontFilePath = @"C:\temp\test-font.ttf";
-        private const int GlyphWidth = 5;
-        private const int GlyphHeight = 6;
-        private readonly Mock<IFreeTypeInvoker> mockFreeTypeInvoker;
-        private readonly Mock<IFreeTypeExtensions> mockFreeTypeExtensions;
+        private readonly Mock<IFontService> mockFontService;
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<ISystemMonitorService> mockMonitorService;
         private readonly Mock<IPlatform> mockPlatform;
-        private readonly IntPtr freeTypeLibPtr = new (1234);
-        private readonly char[] glyphChars = new[]
-        { // This represents how it would be layed out in the atlas
-            'h', 'e',
-            'l', 'o',
-            'w', 'r',
-            'd', ' ',
-            '□',
-        };
-        private readonly Dictionary<char, uint> glyphIndices = new ()
+        private readonly char[]? glyphChars =
         {
-            { 'h', 0 },
-            { 'e', 1 },
-            { 'l', 2 },
-            { 'o', 3 },
-            { 'w', 4 },
-            { 'r', 5 },
-            { 'd', 6 },
-            { ' ', 7 },
-            { '□', 8 },
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
+            '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ', '□',
         };
+        private readonly Dictionary<char, uint> glyphIndices = new ();
         private readonly Mock<IFile> mockFile;
-        private byte[]? bitmapBufferData;
-        private GCHandle bitmapBufferDataHandle;
-        private FT_Bitmap faceBitmap = default;
-        private FT_FaceRec faceRec = default;
-        private FT_GlyphSlotRec glyphSlotRec = default;
-        private FT_SizeRec sizeRec = default;
-        private FT_Size_Metrics sizeMetrics = default;
-        private FT_Glyph_Metrics glyphMetrics = default;
-        private IntPtr facePtr;
+        private readonly IntPtr facePtr = new (5678);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontAtlasServiceTests"/> class.
@@ -78,23 +48,22 @@ namespace VelaptorTests.Services
         {
             TestHelpers.SetupTestResultDirPath();
 
-            SetupTestGlyphData();
+            // Setup the glyph indices
+            foreach (var glyphChar in this.glyphChars)
+            {
+                this.glyphIndices.Add(glyphChar, glyphChar);
+            }
 
-            this.mockFreeTypeInvoker = new Mock<IFreeTypeInvoker>();
-            this.mockFreeTypeInvoker.Setup(m => m.FT_New_Face(this.freeTypeLibPtr, FontFilePath, 0))
-                .Returns(this.facePtr);
-            this.mockFreeTypeInvoker.Setup(m => m.FT_Init_FreeType()).Returns(this.freeTypeLibPtr);
-
-            this.mockFreeTypeExtensions = new Mock<IFreeTypeExtensions>();
-            this.mockFreeTypeExtensions.Setup(m => m.CreateFontFace(this.freeTypeLibPtr, FontFilePath))
+            this.mockFontService = new Mock<IFontService>();
+            this.mockFontService.Setup(m => m.CreateFontFace(FontFilePath))
                 .Returns(() => this.facePtr);
 
-            this.mockFreeTypeExtensions.Setup(m => m.GetGlyphIndices(this.facePtr, this.glyphChars))
+            this.mockFontService.Setup(m => m.GetGlyphIndices(this.facePtr, this.glyphChars))
                 .Returns(() => this.glyphIndices);
 
-            this.mockFreeTypeExtensions.Setup(m => m.CreateGlyphMetrics(
+            this.mockFontService.Setup(m => m.CreateGlyphMetrics(
                 this.facePtr,
-                this.mockFreeTypeExtensions.Object.GetGlyphIndices(this.facePtr, this.glyphChars)))
+                this.mockFontService.Object.GetGlyphIndices(this.facePtr, this.glyphChars)))
                     .Returns(() =>
                     {
                         var result = new Dictionary<char, GlyphMetrics>();
@@ -123,7 +92,7 @@ namespace VelaptorTests.Services
                         return result;
                     });
 
-            this.mockFreeTypeExtensions.Setup(m => m.CreateGlyphImage(this.facePtr, It.IsAny<char>(), It.IsAny<uint>()))
+            this.mockFontService.Setup(m => m.CreateGlyphImage(this.facePtr, It.IsAny<char>(), It.IsAny<uint>()))
                 .Returns(() =>
                 {
                     return (new byte[]
@@ -136,13 +105,10 @@ namespace VelaptorTests.Services
 
             this.mockMonitorService = new Mock<ISystemMonitorService>();
             this.mockMonitorService.SetupGet(p => p.MainMonitor)
-                .Returns(() =>
+                .Returns(() => new SystemMonitor(this.mockPlatform.Object)
                 {
-                    return new SystemMonitor(this.mockPlatform.Object)
-                    {
-                        HorizontalScale = 1,
-                        VerticalScale = 1,
-                    };
+                    HorizontalScale = 1,
+                    VerticalScale = 1,
                 });
 
             this.mockPlatform = new Mock<IPlatform>();
@@ -152,35 +118,7 @@ namespace VelaptorTests.Services
             this.mockFile.Setup(m => m.Exists(FontFilePath)).Returns(true);
         }
 
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WhenInvoked_InitializesFreeType()
-        {
-            // Act
-            var service = CreateService();
-
-            // Assert
-            this.mockFreeTypeInvoker.Verify(m => m.FT_Init_FreeType(), Times.Once());
-            this.mockFreeTypeInvoker.VerifyAdd(s => s.OnError += It.IsAny<EventHandler<FreeTypeErrorEventArgs>>(),
-                Times.Once(),
-                $"Subscription of the '{nameof(IFreeTypeInvoker.OnError)}' event did not occur.");
-        }
-        #endregion
-
         #region Method Tests
-        [Fact]
-        public void CreateFontAtlas_WithUnsetGlyphCharacters_ThrowsException()
-        {
-            // Arrange
-            var service = CreateService(false);
-
-            // Act & Assert
-            Assert.ThrowsWithMessage<InvalidOperationException>(() =>
-            {
-                service.CreateFontAtlas(It.IsAny<string>(), It.IsAny<int>());
-            }, "The available glyph characters must be set first before creating a font texture atlas.");
-        }
-
         [Theory]
         [InlineData("")]
         [InlineData(null)]
@@ -190,9 +128,9 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<ArgumentNullException>(() =>
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                service.CreateFontAtlas(fontFilePath, It.IsAny<int>());
+                service.CreateFontAtlas(fontFilePath, It.IsAny<uint>());
             }, "The font file path argument must not be null. (Parameter 'fontFilePath')");
         }
 
@@ -204,9 +142,9 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
-                service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
+                service.CreateFontAtlas(FontFilePath, It.IsAny<uint>());
             }, $"The file '{FontFilePath}' does not exist.");
         }
 
@@ -219,9 +157,9 @@ namespace VelaptorTests.Services
             var service = CreateService();
 
             // Act & Assert
-            Assert.ThrowsWithMessage<SystemMonitorException>(() =>
+            AssertExtensions.ThrowsWithMessage<SystemMonitorException>(() =>
             {
-                service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
+                service.CreateFontAtlas(FontFilePath, It.IsAny<uint>());
             }, "The main system monitor must not be null.");
         }
 
@@ -229,8 +167,7 @@ namespace VelaptorTests.Services
         public void CreateFontAtlas_WhenInvoked_SetsCharacterSize()
         {
             // Arrange
-            var fontSize = 12;
-            var sizeInPointsPtr = (IntPtr)(fontSize << 6);
+            const int fontSize = 12;
 
             var service = CreateService();
 
@@ -238,7 +175,7 @@ namespace VelaptorTests.Services
             service.CreateFontAtlas(FontFilePath, fontSize);
 
             // Assert
-            this.mockFreeTypeExtensions.Verify(m => m.SetCharacterSize(this.facePtr, 12, 96, 96), Times.Once());
+            this.mockFontService.Verify(m => m.SetFontSize(this.facePtr, 12), Times.Once());
         }
 
         [Fact]
@@ -248,10 +185,6 @@ namespace VelaptorTests.Services
             this.mockImageService.Setup(m => m.Draw(It.IsAny<ImageData>(), It.IsAny<ImageData>(), It.IsAny<Point>()))
                 .Returns<ImageData, ImageData, Point>(TestHelpers.Draw);
 
-            // This is to account for the extra '□' that is used to
-            // render something to the screen when a character/glyph
-            // does not exist as part of the glyphs to render
-            var totalGlyphs = this.glyphChars.Length + 1;
             var service = CreateService();
 
             // Act
@@ -261,155 +194,26 @@ namespace VelaptorTests.Services
             TestHelpers.SaveImageForTest(actualImage);
 
             // Assert
-            this.mockFreeTypeExtensions.Verify(
-                m => m.CreateGlyphImage(It.IsAny<IntPtr>(), It.IsAny<char>(), It.IsAny<uint>()), Times.Exactly(8));
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_ProperlyDisposesOfFreeType()
-        {
-            // TODO: This needs to be figured out.  The Dispose() method has some code that is doing
-            // some casting from IntPtr to unsafe pointers and it is causing issues
-
-            // Arrange
-            var service = CreateService();
-            service.CreateFontAtlas(FontFilePath, It.IsAny<int>());
-
-            // Act
-            service.Dispose();
-            service.Dispose();
-
-            // Assert
-            this.mockFreeTypeInvoker.VerifyRemove(s => s.OnError -= It.IsAny<EventHandler<FreeTypeErrorEventArgs>>(),
-                Times.Once(),
-                $"Unsubscription of the '{nameof(IFreeTypeInvoker.OnError)}' event did not occur.");
-            this.mockFreeTypeInvoker.Verify(m => m.Dispose(), Times.Once());
+            this.mockFontService.Verify(
+                m => m.CreateGlyphImage(
+                    It.IsAny<IntPtr>(),
+                    It.IsAny<char>(),
+                    It.IsAny<uint>()),
+                Times.Exactly(95));
         }
         #endregion
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            /*NOTE:
-             * The purpose of 'bitmapBufferDataHandle' is to create a handle to
-             * the byte data that represents the bitmap data of the glyph.  It is
-             * pinned so the GC cannot collect it.  This is necessary so there
-             * is no way for the GC to clean up the data "before" it is used
-             * in the FontAtlasService which would cause issues while the test is running.
-             */
-            if (this.bitmapBufferDataHandle.IsAllocated is false)
-            {
-                return;
-            }
-
-            // This is required to clean up the data manually because it is pinned in place.
-            // If we did not do this, then we would have a memory leak.
-            this.bitmapBufferDataHandle.Free();
-
-            // Clean up the fact data
-            Marshal.FreeHGlobal(this.facePtr);
-        }
-
-        /// <summary>
-        /// Creates native <see cref="FT_Size_Metrics"/> data for the purpose of testing.
-        /// </summary>
-        /// <param name="width">The width of the size.</param>
-        /// <param name="height">The height of the size.</param>
-        [ExcludeFromCodeCoverage]
-        private void CreateSizeMetrics(int width, int height)
-        {
-            this.sizeMetrics.ascender = new IntPtr(width << 6);
-            this.sizeMetrics.descender = new IntPtr(height << 6);
-        }
-
-        /// <summary>
-        /// Creates native <see cref="FT_Glyph_Metrics"/> data for the purpose of testing.
-        /// </summary>
-        /// <param name="width">The width of the glyph.</param>
-        /// <param name="height">The height of the glyph.</param>
-        /// <param name="horiAdvance">The horizontal advance of the glyph.</param>
-        /// <param name="horiBearingX">The X coordinate of the horizontal bearing.</param>
-        /// <param name="horiBearingY">The Y coordinate of the horizontal bearing.</param>
-        private void CreateGlypMetrics(int width, int height, int horiAdvance, int horiBearingX, int horiBearingY)
-        {
-            this.glyphMetrics.width = new IntPtr(width << 6);
-            this.glyphMetrics.height = new IntPtr(height << 6);
-            this.glyphMetrics.horiAdvance = new IntPtr(horiAdvance << 6);
-            this.glyphMetrics.horiBearingX = new IntPtr(horiBearingX << 6);
-            this.glyphMetrics.horiBearingY = new IntPtr(horiBearingY << 6);
-        }
-
-        /// <summary>
-        /// Creats all of the glyph data for testing purposes.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        private void SetupTestGlyphData()
-        {
-            CreateGlyphBMPData(GlyphWidth, GlyphHeight);
-
-            this.glyphSlotRec.bitmap = this.faceBitmap;
-
-            // Setup the size metric data
-            CreateSizeMetrics(8, 5);
-            this.sizeRec.metrics = this.sizeMetrics;
-
-            this.faceRec.size = TestHelpers.ToUnsafePointer(ref this.sizeRec);
-
-            // Setup the glyph metrics
-            CreateGlypMetrics(5, 6, 13, 15, 7);
-            this.glyphSlotRec.metrics = this.glyphMetrics;
-
-            this.faceRec.glyph = TestHelpers.ToUnsafePointer(ref this.glyphSlotRec);
-
-            this.facePtr = Marshal.AllocHGlobal(Marshal.SizeOf(this.faceRec));
-            Marshal.StructureToPtr(this.faceRec, this.facePtr, false);
-        }
-
-        /// <summary>
-        /// Creates native <see cref="FT_Bitmap"/> data for the purpose of testing.
-        /// </summary>
-        /// <param name="width">The width of the glyph bitmap.</param>
-        /// <param name="height">The height of the glyph bitmap.</param>
-        [ExcludeFromCodeCoverage]
-        private void CreateGlyphBMPData(uint width, uint height)
-        {
-            this.bitmapBufferData = new byte[width * height];
-
-            for (var y = 0; y < height; y++)
-            {
-                for (var x = 0; x < width; x++)
-                {
-                    var arrayIndex = (width * (height == 0 ? height : height - 1)) + x;
-
-                    this.bitmapBufferData[arrayIndex] = 255;
-                }
-            }
-
-            this.bitmapBufferDataHandle = GCHandle.Alloc(this.bitmapBufferData, GCHandleType.Pinned);
-
-            // Setup the face data required to satisfy the test
-            this.faceBitmap.width = width;
-            this.faceBitmap.rows = height;
-            this.faceBitmap.buffer = this.bitmapBufferDataHandle.AddrOfPinnedObject();
-        }
 
         /// <summary>
         /// Creates a new instance of <see cref="FontAtlasService"/> for the purposes of testing.
         /// </summary>
         /// <returns>An instance to use for testing.</returns>
-        private FontAtlasService CreateService(bool setGlyphChars = true)
+        private FontAtlasService CreateService()
         {
             var result = new FontAtlasService(
-                this.mockFreeTypeInvoker.Object,
-                this.mockFreeTypeExtensions.Object,
+                this.mockFontService.Object,
                 this.mockImageService.Object,
                 this.mockMonitorService.Object,
                 this.mockFile.Object);
-
-            if (setGlyphChars)
-            {
-                result.SetAvailableCharacters(this.glyphChars);
-            }
 
             return result;
         }

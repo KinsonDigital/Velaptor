@@ -1,41 +1,47 @@
-﻿// <copyright file="TestRenderTextScene.cs" company="KinsonDigital">
+// <copyright file="TestRenderTextScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTesting.Scenes
 {
+    using System;
     using System.Drawing;
     using System.Linq;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.UI;
     using VelaptorTesting.Core;
 
     /// <summary>
-    /// Used to test out if text is properly being rendered to the screen.
+    /// Used to test whether or not text is properly rendered to the screen.
     /// </summary>
     public class TestRenderTextScene : SceneBase
     {
+        private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private const float AngularVelocity = 10f;
         private const float SizeChangeAmount = 0.5f;
-        private const string SingleLineText = "Change me using the buttons below.";
-        private const string MultiLineText = "Change me using\nthe buttons below.";
-        private IFont? font;
+        private const string SingleLineText = "Change me using the buttons to the left.";
+        private const string MultiLineText = "Change me using\nthe buttons to the left.";
+        private IFont? textFont;
         private Button? btnRotateCW;
         private Button? btnRotateCCW;
-        private Button? btnIncreaseSize;
-        private Button? btnDecreaseSize;
+        private Button? btnIncreaseRenderSize;
+        private Button? btnDecreaseRenderSize;
         private Button? btnSetMultiLine;
         private Button? btnSetColor;
+        private Button? btnSetStyle;
+        private Button? btnIncreaseFontSize;
+        private Button? btnDecreaseFontSize;
         private bool cwButtonDown;
         private bool ccwButtonDown;
-        private bool increaseBtnDown;
-        private bool decreaseBtnDown;
-        private bool isMultiLine;
+        private bool increaseRenderSizeBtnDown;
+        private bool decreaseRenderBtnDown;
+        private bool isMultiLine = true;
         private bool isClrSet;
         private float angle;
-        private float size = 1f;
+        private float renderSize = 1f;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestRenderTextScene"/> class.
@@ -56,7 +62,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.font = ContentLoader.Load<IFont>("TimesNewRoman");
+            this.textFont = ContentLoader.LoadFont(DefaultRegularFont, 12);
 
             // Rotate CW Button
             this.btnRotateCW = new Button(ContentLoader);
@@ -72,8 +78,6 @@ namespace VelaptorTesting.Scenes
                 this.cwButtonDown = false;
                 this.ccwButtonDown = false;
             };
-            this.btnRotateCW.LoadContent();
-            this.btnRotateCW.Size = 0.50f;
 
             // Rotate CCW Button
             this.btnRotateCCW = new Button(ContentLoader);
@@ -90,44 +94,44 @@ namespace VelaptorTesting.Scenes
                 this.ccwButtonDown = false;
                 this.cwButtonDown = false;
             };
-            this.btnRotateCCW.LoadContent();
-            this.btnRotateCCW.Size = 0.50f;
 
-            // Increase Size Button
-            this.btnIncreaseSize = new Button(ContentLoader);
-            this.btnIncreaseSize.Text = "Size +";
+            // Increase Render Size Button
+            this.btnIncreaseRenderSize = new Button(ContentLoader);
+            this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
+            this.btnIncreaseRenderSize.FaceTextureName = "button-face-extra-large";
 
-            this.btnIncreaseSize.MouseDown += (_, _) =>
+            this.btnIncreaseRenderSize.MouseDown += (_, _) =>
             {
-                this.increaseBtnDown = true;
-                this.decreaseBtnDown = false;
+                this.increaseRenderSizeBtnDown = true;
+                this.decreaseRenderBtnDown = false;
             };
 
-            this.btnIncreaseSize.MouseUp += (_, _) =>
+            this.btnIncreaseRenderSize.MouseUp += (_, _) =>
             {
-                this.increaseBtnDown = false;
-                this.decreaseBtnDown = false;
-            };
-            this.btnIncreaseSize.LoadContent();
-            this.btnIncreaseSize.Size = 0.50f;
-
-            // Decrease Size Button
-            this.btnDecreaseSize = new Button(ContentLoader);
-            this.btnDecreaseSize.Text = "Size -";
-
-            this.btnDecreaseSize.MouseDown += (_, _) =>
-            {
-                this.decreaseBtnDown = true;
-                this.increaseBtnDown = false;
+                this.increaseRenderSizeBtnDown = false;
+                this.decreaseRenderBtnDown = false;
+                this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
+                this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
             };
 
-            this.btnDecreaseSize.MouseUp += (_, _) =>
+            // Decrease Render Size Button
+            this.btnDecreaseRenderSize = new Button(ContentLoader);
+            this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
+            this.btnDecreaseRenderSize.FaceTextureName = "button-face-extra-large";
+
+            this.btnDecreaseRenderSize.MouseDown += (_, _) =>
             {
-                this.increaseBtnDown = false;
-                this.decreaseBtnDown = false;
+                this.decreaseRenderBtnDown = true;
+                this.increaseRenderSizeBtnDown = false;
             };
-            this.btnDecreaseSize.LoadContent();
-            this.btnDecreaseSize.Size = 0.50f;
+
+            this.btnDecreaseRenderSize.MouseUp += (_, _) =>
+            {
+                this.increaseRenderSizeBtnDown = false;
+                this.decreaseRenderBtnDown = false;
+                this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
+                this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
+            };
 
             // Set Multi-Line
             this.btnSetMultiLine = new Button(ContentLoader);
@@ -137,10 +141,9 @@ namespace VelaptorTesting.Scenes
             this.btnSetMultiLine.MouseUp += (_, _) =>
             {
                 this.isMultiLine = !this.isMultiLine;
+
                 this.btnSetMultiLine.Text = $"Multi-Line: {this.isMultiLine}";
             };
-            this.btnSetMultiLine.LoadContent();
-            this.btnSetMultiLine.Size = 0.50f;
 
             // Set Color
             this.btnSetColor = new Button(ContentLoader);
@@ -152,12 +155,61 @@ namespace VelaptorTesting.Scenes
                 this.isClrSet = !this.isClrSet;
                 this.btnSetColor.Text = $"Set Color: {(this.isClrSet ? "On" : "Off")}";
             };
-            this.btnSetColor.LoadContent();
-            this.btnSetColor.Size = 0.50f;
 
-            SetupUIControlPositioning();
+            // Set the font style to bold
+            this.btnSetStyle = new Button(ContentLoader);
+            this.btnSetStyle.Text = $"Style: {this.textFont.Style}";
+            this.btnSetStyle.FaceTextureName = "button-face-large";
+
+            this.btnSetStyle.MouseUp += (_, _) =>
+            {
+                this.textFont.Style = this.textFont.Style switch
+                {
+                    FontStyle.Regular => FontStyle.Bold,
+                    FontStyle.Bold => FontStyle.Italic,
+                    FontStyle.Italic => FontStyle.Bold | FontStyle.Italic,
+                    FontStyle.Bold | FontStyle.Italic => FontStyle.Regular,
+                    _ => throw new ArgumentOutOfRangeException(nameof(this.textFont.Style), "FontStyle value invalid."),
+                };
+
+                this.btnSetStyle.Text = $"Style: {this.textFont.Style}";
+            };
+
+            // Increase font size
+            this.btnIncreaseFontSize = new Button(ContentLoader);
+            this.btnIncreaseFontSize.Text = $"Font Size({this.textFont.Size}) +";
+            this.btnIncreaseFontSize.FaceTextureName = "button-face-large";
+            this.btnIncreaseFontSize.MouseUp += (_, _) =>
+            {
+                this.textFont.Size += 1;
+                this.btnIncreaseFontSize.Text = $"Font Size({this.textFont.Size}) +";
+                this.btnDecreaseFontSize.Text = $"Font Size({this.textFont.Size}) -";
+            };
+
+            // Decrease font size
+            this.btnDecreaseFontSize = new Button(ContentLoader);
+            this.btnDecreaseFontSize.Text = $"Font Size({this.textFont.Size}) -";
+            this.btnDecreaseFontSize.FaceTextureName = "button-face-large";
+            this.btnDecreaseFontSize.MouseUp += (_, _) =>
+            {
+                this.textFont.Size -= this.textFont.Size == 0u ? 0u : 1u;
+                this.btnIncreaseFontSize.Text = $"Font Size({this.textFont.Size}) +";
+                this.btnDecreaseFontSize.Text = $"Font Size({this.textFont.Size}) -";
+            };
+
+            AddControl(this.btnRotateCW);
+            AddControl(this.btnRotateCCW);
+            AddControl(this.btnIncreaseRenderSize);
+            AddControl(this.btnDecreaseRenderSize);
+            AddControl(this.btnSetMultiLine);
+            AddControl(this.btnSetColor);
+            AddControl(this.btnSetStyle);
+            AddControl(this.btnIncreaseFontSize);
+            AddControl(this.btnDecreaseFontSize);
 
             base.LoadContent();
+
+            SetupUIControlPositioning();
         }
 
         /// <inheritdoc cref="IScene.UnloadContent"/>
@@ -187,26 +239,23 @@ namespace VelaptorTesting.Scenes
                 this.angle -= AngularVelocity * (float)frameTime.ElapsedTime.TotalSeconds;
             }
 
-            // Increase Size
-            if (this.increaseBtnDown && this.decreaseBtnDown is false)
+            // Increase Render Size
+            if (this.increaseRenderSizeBtnDown && this.decreaseRenderBtnDown is false)
             {
-                this.size += SizeChangeAmount * (float)frameTime.ElapsedTime.TotalSeconds;
+                this.renderSize += SizeChangeAmount * (float)frameTime.ElapsedTime.TotalSeconds;
+                this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
+                this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
             }
 
-            // Decrease Size
-            if (this.decreaseBtnDown && this.increaseBtnDown is false)
+            // Decrease Render Size
+            if (this.decreaseRenderBtnDown && this.increaseRenderSizeBtnDown is false)
             {
-                this.size -= SizeChangeAmount * (float)frameTime.ElapsedTime.TotalSeconds;
+                this.renderSize -= SizeChangeAmount * (float)frameTime.ElapsedTime.TotalSeconds;
+                this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
+                this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
             }
 
-            this.size = this.size < 0f ? 0f : this.size;
-
-            this.btnRotateCW.Update(frameTime);
-            this.btnRotateCCW.Update(frameTime);
-            this.btnIncreaseSize.Update(frameTime);
-            this.btnDecreaseSize.Update(frameTime);
-            this.btnSetMultiLine.Update(frameTime);
-            this.btnSetColor.Update(frameTime);
+            this.renderSize = this.renderSize < 0f ? 0f : this.renderSize;
 
             base.Update(frameTime);
         }
@@ -218,18 +267,18 @@ namespace VelaptorTesting.Scenes
             var yPos = (int)MainWindow.WindowHeight / 2;
 
             spriteBatch.Render(
-                this.font,
+                this.textFont,
                 this.isMultiLine ? MultiLineText : SingleLineText,
                 xPos,
                 yPos,
-                this.size,
+                this.renderSize,
                 this.angle,
                 this.isClrSet ? Color.CornflowerBlue : Color.White);
 
             this.btnRotateCW.Render(spriteBatch);
             this.btnRotateCCW.Render(spriteBatch);
-            this.btnIncreaseSize.Render(spriteBatch);
-            this.btnDecreaseSize.Render(spriteBatch);
+            this.btnIncreaseRenderSize.Render(spriteBatch);
+            this.btnDecreaseRenderSize.Render(spriteBatch);
             this.btnSetMultiLine.Render(spriteBatch);
             this.btnSetColor.Render(spriteBatch);
 
@@ -255,7 +304,7 @@ namespace VelaptorTesting.Scenes
         /// <summary>
         /// Unloads the scenes content.
         /// </summary>
-        private void UnloadSceneContent() => this.font = null;
+        private void UnloadSceneContent() => ContentLoader.UnloadFont(this.textFont);
 
         /// <summary>
         /// Sets up the positioning of all the UI controls in the window.
@@ -264,46 +313,72 @@ namespace VelaptorTesting.Scenes
         {
             // Control Positioning
             const int buttonSpacing = 15;
-            var leftMargin = 15 + (int)(this.btnRotateCW.Width / 2);
+            var screenCenterY = (int)(MainWindow.WindowHeight / 2);
+            var buttonWidths = new[]
+            {
+                this.btnRotateCW.Width,
+                this.btnRotateCCW.Width,
+                this.btnIncreaseRenderSize.Width,
+                this.btnDecreaseRenderSize.Width,
+                this.btnSetMultiLine.Width,
+                this.btnSetColor.Width,
+                this.btnSetStyle.Width,
+                this.btnIncreaseFontSize.Width,
+                this.btnDecreaseFontSize.Width,
+            };
+            var buttonHeights = new[]
+            {
+                this.btnRotateCW.Height,
+                this.btnRotateCCW.Height,
+                this.btnIncreaseRenderSize.Height,
+                this.btnDecreaseRenderSize.Height,
+                this.btnSetMultiLine.Height,
+                this.btnSetColor.Height,
+                this.btnSetStyle.Height,
+                this.btnIncreaseFontSize.Height,
+                this.btnDecreaseFontSize.Height,
+            };
 
-            var buttonTops = (int)(MainWindow.WindowHeight - (new[] { this.btnRotateCW.Height, this.btnRotateCCW.Height }.Max() + 20));
+            var largestHalfWidth = (int)buttonWidths.Max() / 2;
 
-            this.btnRotateCW.Position = new Point(leftMargin, buttonTops);
+            var totalButtonHeight = (int)buttonHeights.Sum(h => h) + (buttonHeights.Length * buttonSpacing);
+            var buttonPosYStart = screenCenterY - (totalButtonHeight / 2);
+
+            var leftMargin = 15 + largestHalfWidth;
+
+            this.btnRotateCW.Position = new Point(leftMargin, buttonPosYStart);
 
             this.btnRotateCCW.Position = new Point(
-                this.btnRotateCW.Position.X +
-                ((int)this.btnRotateCW.Width / 2) +
-                ((int)this.btnRotateCCW.Width / 2) +
-                buttonSpacing,
-                buttonTops);
+                leftMargin,
+                this.btnRotateCW.Bottom + (int)(this.btnRotateCCW.Height / 2) + buttonSpacing);
 
-            this.btnIncreaseSize.Position = new Point(
-                this.btnRotateCCW.Position.X +
-                ((int)this.btnRotateCCW.Width / 2) +
-                ((int)this.btnIncreaseSize.Width / 2) +
-                buttonSpacing,
-                buttonTops);
+            this.btnIncreaseRenderSize.Position = new Point(
+                leftMargin,
+                this.btnRotateCCW.Bottom + (int)(this.btnIncreaseRenderSize.Height / 2) + buttonSpacing);
 
-            this.btnDecreaseSize.Position = new Point(
-                this.btnIncreaseSize.Position.X +
-                ((int)this.btnIncreaseSize.Width / 2) +
-                ((int)this.btnDecreaseSize.Width / 2) +
-                buttonSpacing,
-                buttonTops);
+            this.btnDecreaseRenderSize.Position = new Point(
+                leftMargin,
+                this.btnIncreaseRenderSize.Bottom + ((int)this.btnDecreaseRenderSize.Height / 2) + buttonSpacing);
 
             this.btnSetMultiLine.Position = new Point(
-                this.btnDecreaseSize.Position.X +
-                ((int)this.btnDecreaseSize.Width / 2) +
-                ((int)this.btnSetMultiLine.Width / 2) +
-                buttonSpacing,
-                buttonTops);
+                leftMargin,
+                this.btnDecreaseRenderSize.Bottom + ((int)this.btnSetMultiLine.Height / 2) + buttonSpacing);
 
             this.btnSetColor.Position = new Point(
-                this.btnSetMultiLine.Position.X +
-                ((int)this.btnSetMultiLine.Width / 2) +
-                ((int)this.btnSetColor.Width / 2) +
-                buttonSpacing,
-                buttonTops);
+                leftMargin,
+                this.btnSetMultiLine.Bottom + ((int)this.btnSetColor.Height / 2) + buttonSpacing);
+
+            this.btnSetStyle.Position = new Point(
+                leftMargin,
+                this.btnSetColor.Bottom + ((int)this.btnSetStyle.Height / 2) + buttonSpacing);
+
+            this.btnIncreaseFontSize.Position = new Point(
+                leftMargin,
+                this.btnSetStyle.Bottom + ((int)this.btnIncreaseFontSize.Height / 2) + buttonSpacing);
+
+            this.btnDecreaseFontSize.Position = new Point(
+                leftMargin,
+                this.btnIncreaseFontSize.Bottom + ((int)this.btnDecreaseFontSize.Height / 2) + buttonSpacing);
         }
     }
 }

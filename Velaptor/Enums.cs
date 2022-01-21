@@ -4,13 +4,18 @@
 
 namespace Velaptor
 {
+    // ReSharper disable RedundantNameQualifier
+    using Velaptor.UI;
+
+    // ReSharper restore RedundantNameQualifier
+
     /// <summary>
     /// The different kinds of borders that a <see cref="IWindow"/> can have.
     /// </summary>
     public enum WindowBorder
     {
         /// <summary>
-        /// The window has a re-sizable border. A window with a re-sizable border can be resized
+        /// The window has a resizable border. A window with a resizable border can be resized
         /// by the user or programmatically.
         /// </summary>
         Resizable = 0,
@@ -45,7 +50,7 @@ namespace Velaptor
         Minimized = 1,
 
         /// <summary>
-        /// TRhe window covers the whole working area, which includes the desktop but not the taskbar and/or panels.
+        /// The window covers the whole working area, which includes the desktop but not the taskbar and/or panels.
         /// </summary>
         Maximized = 2,
 

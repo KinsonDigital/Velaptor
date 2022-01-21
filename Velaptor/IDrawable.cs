@@ -4,7 +4,10 @@
 
 namespace Velaptor
 {
+    // ReSharper disable RedundantNameQualifier
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides the ability for an object to be rendered.

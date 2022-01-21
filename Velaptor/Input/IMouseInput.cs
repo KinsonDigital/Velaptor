@@ -16,13 +16,13 @@ namespace Velaptor.Input
         where TInputs : struct, Enum
     {
         /// <summary>
-        /// Sets the X coordinate sate of the mouse.
+        /// Sets the X coordinate state of the mouse.
         /// </summary>
         /// <param name="x">The X coordinate.</param>
         void SetXPos(int x);
 
         /// <summary>
-        /// Sets the Y coordinate sate of the mouse.
+        /// Sets the Y coordinate state of the mouse.
         /// </summary>
         /// <param name="y">The Y coordinate.</param>
         void SetYPos(int y);

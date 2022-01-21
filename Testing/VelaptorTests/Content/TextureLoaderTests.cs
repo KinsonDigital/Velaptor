@@ -4,12 +4,13 @@
 
 namespace VelaptorTests.Content
 {
+    using System.IO;
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
-    using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.OpenGL;
-    using Velaptor.Services;
+    using Velaptor.Content.Caching;
+    using Velaptor.Content.Exceptions;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -17,42 +18,65 @@ namespace VelaptorTests.Content
     /// </summary>
     public class TextureLoaderTests
     {
-        private const string TextureFileName = "test-texture.png";
-        private const uint OpenGLTextureId = 1234;
-        private readonly string textureFilePath;
-        private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<IImageService> mockImageService;
+        private const string TextureExtension = ".png";
+        private const string TextureDirPath = @"C:\textures\";
+        private const string TextureFileName = "test-texture";
+        private readonly string textureFilePath = $"{TextureDirPath}{TextureFileName}{TextureExtension}";
+        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IPath> mockPath;
+        private readonly Mock<IFile> mockFile;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
         /// </summary>
         public TextureLoaderTests()
         {
-            this.textureFilePath = $@"C:\temp\{TextureFileName}";
-            this.mockGL = new Mock<IGLInvoker>();
-            this.mockGL.Setup(m => m.GenTexture()).Returns(OpenGLTextureId); // Mock out the OpenGL texture ID
-
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
-
-            this.mockImageService = new Mock<IImageService>();
             this.mockTexturePathResolver = new Mock<IPathResolver>();
-            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName)).Returns(this.textureFilePath);
+            this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName))
+                .Returns(this.textureFilePath);
+
+            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+
+            this.mockFile = new Mock<IFile>();
+            this.mockFile.Setup(m => m.Exists(this.textureFilePath)).Returns(true);
 
             this.mockPath = new Mock<IPath>();
-            this.mockPath.Setup(m => m.HasExtension(TextureFileName)).Returns(false);
+            this.mockPath.Setup(m => m.GetExtension(this.textureFilePath)).Returns(TextureExtension);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}")).Returns(TextureFileName);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}{TextureExtension}")).Returns(TextureFileName);
         }
 
         #region Method Tests
+        [Fact]
+        public void Load_WhenLoadingContentWithFullPath_LoadsTexture()
+        {
+            // Arrange
+            var mockTexture = new Mock<ITexture>();
+            this.mockTextureCache.Setup(m => m.GetItem(this.textureFilePath))
+                .Returns(mockTexture.Object);
+
+            var loader = CreateLoader();
+
+            // Act
+            var actual = loader.Load(this.textureFilePath);
+
+            // Assert
+            Assert.NotNull(actual);
+            Assert.Same(mockTexture.Object, actual);
+        }
+
         [Theory]
         [InlineData(TextureFileName, "")]
         [InlineData(TextureFileName, ".txt")]
-        public void Load_WhenInvoked_LoadsTexture(string contentName, string extension)
+        public void Load_WhenLoadingAppContentByName_LoadsTexture(string contentName, string extension)
         {
             // Arrange
-            this.mockPath.Setup(m => m.HasExtension($"{contentName}.txt")).Returns(true);
+            var mockTexture = new Mock<ITexture>();
+
+            this.mockTextureCache.Setup(m => m.GetItem(this.textureFilePath))
+                .Returns(mockTexture.Object);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}")).Returns(contentName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
 
             var loader = CreateLoader();
@@ -62,75 +86,67 @@ namespace VelaptorTests.Content
 
             // Assert
             Assert.NotNull(actual);
-            Assert.Equal(actual.Path, this.textureFilePath);
-            this.mockGL.Verify(m => m.GenTexture(), Times.Once());
-            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Exactly(2));
+            Assert.Same(mockTexture.Object, actual);
         }
 
         [Fact]
-        public void Load_WhenLoadingSameContentThatIsDisposed_RemovesDataBeforeAdding()
+        public void Load_WhenFileDoesNotExist_ThrowsException()
+        {
+            // Arrange
+            this.mockFile.Setup(m => m.Exists(It.IsAny<string>())).Returns(false);
+
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
+            {
+                loader.Load(this.textureFilePath);
+            }, $"The texture file '{this.textureFilePath}' does not exist.");
+        }
+
+        [Fact]
+        public void Load_WhenFileExistsButIsNotATextureContentFile_ThrowsException()
+        {
+            // Arrange
+            const string extension = ".txt";
+            var filePathWithInvalidExtension = $"{TextureDirPath}{TextureFileName}{extension}";
+            this.mockFile.Setup(m => m.Exists(filePathWithInvalidExtension)).Returns(true);
+            this.mockPath.Setup(m => m.GetExtension(filePathWithInvalidExtension)).Returns(extension);
+
+            var loader = CreateLoader();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<LoadTextureException>(() =>
+            {
+                loader.Load(filePathWithInvalidExtension);
+            }, $"The file '{filePathWithInvalidExtension}' must be a texture file with the extension '{TextureExtension}'.");
+        }
+
+        [Fact]
+        public void Unload_WhenInvoked_UnloadsCachedTextures()
         {
             // Arrange
             var loader = CreateLoader();
-            var loadedTexture = loader.Load(TextureFileName);
-
-            // Set the font as not being pooled. This will allow us to dispose of
-            // the font to get the font into the disposed state for testing
-            loadedTexture.IsPooled = false;
-            loadedTexture.Dispose();
 
             // Act
-            var actual = loader.Load(TextureFileName);
+            loader.Unload(this.textureFilePath);
 
             // Assert
-            Assert.NotSame(loadedTexture, actual);
+            this.mockTextureCache.Verify(m => m.Unload(this.textureFilePath), Times.Once);
         }
 
         [Fact]
-        public void Load_WhenTextureIsAlreadyLoaded_ReturnsAlreadyLoadedTexture()
+        public void Dispose_WhenInvoked_DisposesOfCachedTextures()
         {
             // Arrange
             var loader = CreateLoader();
-
-            // Act
-            var textureA = loader.Load(TextureFileName);
-            var textureB = loader.Load(TextureFileName);
-
-            // TODO: Verify that this test works
-
-            // Assert
-            Assert.Equal(textureA.Name, textureB.Name);
-            Assert.Equal(textureA.Path, textureB.Path);
-            Assert.Same(textureA, textureB);
-        }
-
-        [Fact]
-        public void Unload_WhenInvoked_UnloadsTexture()
-        {
-            // Arrange
-            var loader = CreateLoader();
-            loader.Load(TextureFileName);
-
-            // Act
-            loader.Unload(TextureFileName);
-
-            // Assert
-            this.mockGL.Verify(m => m.DeleteTexture(OpenGLTextureId), Times.Once());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_ProperlyDisposesOfTextures()
-        {
-            // Arrange
-            var loader = CreateLoader();
-            loader.Load(TextureFileName);
 
             // Act
             loader.Dispose();
             loader.Dispose();
 
             // Assert
-            this.mockGL.Verify(m => m.DeleteTexture(OpenGLTextureId), Times.Once());
+            this.mockTextureCache.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 
@@ -139,10 +155,9 @@ namespace VelaptorTests.Content
         /// </summary>
         /// <returns>The instance to test.</returns>
         private TextureLoader CreateLoader()
-            => new (this.mockGL.Object,
-             this.mockGLExtensions.Object,
-             this.mockImageService.Object,
+            => new (this.mockTextureCache.Object,
              this.mockTexturePathResolver.Object,
+             this.mockFile.Object,
              this.mockPath.Object);
     }
 }

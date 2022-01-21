@@ -1,15 +1,16 @@
-﻿// <copyright file="FreeTypeInvoker.cs" company="KinsonDigital">
+// <copyright file="FreeTypeInvoker.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.NativeInterop.FreeType
 {
+    // TODO: Throw an exception for every method that takes a zero pointer.  Create custom exception for this
     using System;
     using System.Diagnostics.CodeAnalysis;
     using FreeTypeSharp.Native;
 
     /// <summary>
-    /// Invokes calls to the FreeType library for loading and managing fonts.
+    /// Invokes calls to the <c>FreeType</c> library for loading and managing fonts.
     /// </summary>
     /// <remarks>
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
@@ -17,15 +18,6 @@ namespace Velaptor.NativeInterop.FreeType
     [ExcludeFromCodeCoverage]
     internal class FreeTypeInvoker : IFreeTypeInvoker
     {
-        private IntPtr libraryPtr;
-        private bool isDisposed;
-        private IntPtr facePtr;
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="FreeTypeInvoker"/> class.
-        /// </summary>
-        ~FreeTypeInvoker() => Dispose();
-
         /// <inheritdoc/>
         public event EventHandler<FreeTypeErrorEventArgs>? OnError;
 
@@ -71,20 +63,12 @@ namespace Velaptor.NativeInterop.FreeType
                 return IntPtr.Zero;
             }
 
-            this.libraryPtr = result;
-
             return result;
         }
 
         /// <inheritdoc/>
         public IntPtr FT_New_Face(IntPtr library, string filepathname, int face_index)
         {
-            if (this.libraryPtr != library)
-            {
-                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
-                return IntPtr.Zero;
-            }
-
             var error = FT.FT_New_Face(library, filepathname, face_index, out IntPtr aface);
 
             if (error != FT_Error.FT_Err_Ok)
@@ -93,10 +77,10 @@ namespace Velaptor.NativeInterop.FreeType
                 return IntPtr.Zero;
             }
 
-            this.facePtr = aface;
-
             return aface;
         }
+
+        // TODO: Add code to every method that takes a face pointer and verify if that face already exists.  If not, throw exception
 
         /// <inheritdoc/>
         public void FT_Set_Char_Size(IntPtr face, IntPtr char_width, IntPtr char_height, uint horz_resolution, uint vert_resolution)
@@ -118,8 +102,6 @@ namespace Velaptor.NativeInterop.FreeType
             {
                 this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
             }
-
-            this.facePtr = IntPtr.Zero;
         }
 
         /// <inheritdoc/>
@@ -128,51 +110,24 @@ namespace Velaptor.NativeInterop.FreeType
         /// <inheritdoc/>
         public void FT_Done_FreeType(IntPtr library)
         {
-            if (this.libraryPtr != library)
-            {
-                this.OnError?.Invoke(this, new FreeTypeErrorEventArgs($"The library pointer does not exist.  Have you called '{nameof(FT_Init_FreeType)}'?"));
-                return;
-            }
-
             var error = FT.FT_Done_FreeType(library);
 
             if (error != FT_Error.FT_Err_Ok)
             {
                 this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-                return;
             }
-
-            this.libraryPtr = IntPtr.Zero;
         }
-
-        /// <inheritdoc/>
-        public IntPtr FT_Get_Face() => this.facePtr;
 
         // ReSharper restore IdentifierTypo
         // ReSharper restore InconsistentNaming
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            FT.FT_Done_Face(this.facePtr);
-            FT.FT_Done_FreeType(this.libraryPtr);
-
-            this.isDisposed = true;
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
-        /// Creates n error message from the standard Free Type message.
+        /// Creates n error message from the standard <c>FreeType</c> message.
         /// </summary>
-        /// <param name="freeTypeMsg">The free type message to change.</param>
+        /// <param name="freeTypeMsg">The error message coming from the <c>FreeType</c> library.</param>
         /// <returns>The C# friendly exception message.</returns>
         /// <remarks>
-        ///     The standard free type error messages come from the <see cref="FT_Error"/> enum.
+        ///     The <c>FreeType</c> error message.
         /// </remarks>
         private static string CreateErrorMessage(string freeTypeMsg)
         {

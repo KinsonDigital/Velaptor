@@ -7,7 +7,7 @@ namespace VelaptorTests.Content
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
-    using Velaptor.Factories;
+    using Velaptor.Content.Factories;
     using Xunit;
 
     /// <summary>
@@ -34,10 +34,10 @@ namespace VelaptorTests.Content
             this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(SoundName)).Returns(this.oggSoundFilepath);
 
             this.mockSound = new Mock<ISound>();
-            this.mockSound.SetupGet(p => p.Path).Returns(this.oggSoundFilepath);
+            this.mockSound.SetupGet(p => p.FilePath).Returns(this.oggSoundFilepath);
 
             this.soundFactory = new Mock<ISoundFactory>();
-            this.soundFactory.Setup(m => m.CreateSound(this.oggSoundFilepath)).Returns(this.mockSound.Object);
+            this.soundFactory.Setup(m => m.Create(this.oggSoundFilepath)).Returns(this.mockSound.Object);
 
             this.mockPath = new Mock<IPath>();
             this.mockPath.Setup(m => m.HasExtension(SoundName)).Returns(false);
@@ -59,8 +59,8 @@ namespace VelaptorTests.Content
             var actual = loader.Load($"{contentName}{extension}");
 
             // Assert
-            this.soundFactory.Verify(m => m.CreateSound($"{OggSoundDirPath}{SoundName}.ogg"), Times.Once());
-            Assert.Equal(actual.Path, this.oggSoundFilepath);
+            this.soundFactory.Verify(m => m.Create($"{OggSoundDirPath}{SoundName}.ogg"), Times.Once());
+            Assert.Equal(actual.FilePath, this.oggSoundFilepath);
         }
 
         [Fact]

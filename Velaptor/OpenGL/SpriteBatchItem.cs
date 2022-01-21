@@ -78,7 +78,7 @@ namespace Velaptor.OpenGL
         public static bool operator !=(SpriteBatchItem left, SpriteBatchItem right) => !(left == right);
 
         /// <summary>
-        /// Gets a value indicating whether the current <see cref="SpriteBatchItem"/> is empty.
+        /// Gets a value indicating whether or not the current <see cref="SpriteBatchItem"/> is empty.
         /// </summary>
         /// <returns>True if empty.</returns>
         public bool IsEmpty() =>

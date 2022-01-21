@@ -10,20 +10,20 @@ namespace Velaptor.Content
     /// Loads data of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The type of data to load.</typeparam>
-    public interface ILoader<T> : IDisposable
+    public interface ILoader<out T> : IDisposable
         where T : IContent
     {
         /// <summary>
-        /// Loads data with the given <paramref name="name"/>.
+        /// Loads data with the given <paramref name="contentPathOrName"/>.
         /// </summary>
-        /// <param name="name">The name of the content of the data to load.</param>
+        /// <param name="contentPathOrName">The name of the content of the data to load.</param>
         /// <returns>The data loaded from disk.</returns>
-        T Load(string name);
+        T Load(string contentPathOrName);
 
         /// <summary>
-        /// Unloads the data with the given <paramref name="name"/>.
+        /// Unloads the data with the given <paramref name="contentPathOrName"/>.
         /// </summary>
-        /// <param name="name">The name of the content item to unload.</param>
-        void Unload(string name);
+        /// <param name="contentPathOrName">The name of the content item to unload.</param>
+        void Unload(string contentPathOrName);
     }
 }

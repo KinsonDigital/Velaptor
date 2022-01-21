@@ -38,12 +38,12 @@ namespace Velaptor.OpenGL
         event EventHandler<WindowSizeEventArgs>? Resize;
 
         /// <summary>
-        /// Gets or sets a <see cref="Vector2i"/> structure that contains the external size of this window.
+        /// Gets or sets a <see cref="Vector2"/> structure that contains the external size of this window.
         /// </summary>
         Vector2 Size { get; set; }
 
         /// <summary>
-        /// Gets or sets a <see cref="Vector2i"/> structure that contains the location of this window on the desktop.
+        /// Gets or sets a <see cref="Vector2"/> structure that contains the location of this window on the desktop.
         /// </summary>
         Vector2 Location { get; set; }
 
@@ -58,7 +58,7 @@ namespace Velaptor.OpenGL
         double UpdateFrequency { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the mouse cursor is visible.
+        /// Gets or sets a value indicating whether or not the mouse cursor is visible.
         /// </summary>
         bool CursorVisible { get; set; }
 
@@ -78,7 +78,7 @@ namespace Velaptor.OpenGL
         string Title { get; set; }
 
         /// <summary>
-        /// Runs initilization code before the <see cref="Init(int, int)"/> code is ran.
+        /// Runs initialization code before the <see cref="Init(uint, uint)"/> code is ran.
         /// </summary>
         void PreInit();
 

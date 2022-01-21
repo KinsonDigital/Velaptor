@@ -31,7 +31,7 @@ namespace VelaptorTests.UI
             {
                 //              xPos    yPos    mouseDown   expectedAlpha   expectedRed     expectedGreen       expectedBlue
                 new object[] {   75,     75,      true,          255,            190,           190,                190 },
-                new object[] {   75,    75,       false,         255,            230,           230,                230 },
+                new object[] {   75,     75,      false,         255,            230,           230,                230 },
                 new object[] {   200,    75,      true,          255,            255,           255,                255 },
                 new object[] {   200,    75,      false,         255,            255,           255,                255 },
             };
@@ -519,7 +519,7 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                control.Invoke_Exception_In_Method_ThrowExceptionIfLoadingWhenDisposed();
+                control.Invoke_Exception_In_Method_ThrowsExceptionIfLoadingWhenDisposed();
             }, "Cannot load a control that has been disposed.");
         }
 
@@ -532,7 +532,7 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.DoesNotThrow<Exception>(() =>
             {
-                control.Invoke_Exception_In_Method_ThrowExceptionIfLoadingWhenDisposed();
+                control.Invoke_Exception_In_Method_ThrowsExceptionIfLoadingWhenDisposed();
             });
         }
         #endregion

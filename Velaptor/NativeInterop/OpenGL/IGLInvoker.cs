@@ -37,12 +37,12 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="id">The identifier of the message.</param>
         /// <param name="length">The length of the message to be sent to the debug output stream.</param>
         /// <param name="message">The string containing the message to be sent to the debug output stream.</param>
-        public void PushDebugGroup(GLDebugSource source, uint id, uint length, string message);
+        void PushDebugGroup(GLDebugSource source, uint id, uint length, string message);
 
         /// <summary>
         /// Pop the active debug group.
         /// </summary>
-        public void PopDebugGroup();
+        void PopDebugGroup();
 
         /// <summary>
         /// Label a named object identified within a namespace.
@@ -51,7 +51,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="name">The name of the object to label.</param>
         /// <param name="length">The length of the label to be used for the object.</param>
         /// <param name="label">The label to assign to the object.</param>
-        public void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label);
+        void ObjectLabel(GLObjectIdentifier identifier, uint name, uint length, string label);
 
         /// <summary>
         /// [requires: v1.0] Enable or disable server-side GL capabilities.
@@ -153,7 +153,7 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     For the vector (glUniform*v) commands, specifies the number of elements that are to be modified.
         ///     This should be 1 if the targeted uniform variable is not an array, and 1 or more if it is an array.
         /// </param>
-        /// <param name="transpose">For the matrix commands, specifies whether to transpose the matrix as the values are loaded into the uniform variable.</param>
+        /// <param name="transpose">For the matrix commands, specifies whether or not to transpose the matrix as the values are loaded into the uniform variable.</param>
         /// <param name="matrix">The matrix data to send to the GPU.</param>
         void UniformMatrix4(int location, uint count, bool transpose, Matrix4x4 matrix);
 
@@ -447,7 +447,7 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     value is Float.
         /// </param>
         /// <param name="normalized">
-        ///     For glVertexAttribPointer, specifies whether fixed-point data values should be
+        ///     For glVertexAttribPointer, specifies whether or not fixed-point data values should be
         ///     normalized <see langword="true"/> or converted directly as fixed-point values <see langword="false"/> when they
         ///     are accessed.
         /// </param>

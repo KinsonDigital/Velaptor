@@ -4,9 +4,7 @@
 
 namespace VelaptorTesting.Scenes
 {
-    using System.Collections.Generic;
     using System.Drawing;
-    using System.Linq;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Input;
@@ -18,13 +16,9 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestMouseScene : SceneBase
     {
-        private const int LeftMargin = 5;
-        private const int TopMargin = 25;
-        private const int LineSpacing = 20;
         private readonly Mouse mouse;
         private Label? mouseInfoLabel;
         private MouseState currentMouseState;
-        private Dictionary<char, float>? glyphHeights;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestMouseScene"/> class.
@@ -46,9 +40,6 @@ namespace VelaptorTesting.Scenes
 
             this.mouseInfoLabel = new Label(ContentLoader) { Color = Color.White };
 
-            var font = ContentLoader.Load<IFont>("TimesNewRoman");
-            this.glyphHeights = new Dictionary<char, float>(font.Metrics.Select(m => new KeyValuePair<char, float>(m.Glyph, m.GlyphHeight)));
-
             this.mouseInfoLabel.LoadContent();
             this.mouseInfoLabel.Position = new Point((int)MainWindow.WindowWidth / 2, (int)MainWindow.WindowHeight / 2);
 
@@ -66,7 +57,6 @@ namespace VelaptorTesting.Scenes
             mouseInfo += $"\nMouse Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
             mouseInfo += $"\nMouse Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
             mouseInfo += $"\nMouse Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
-            // TODO: Fix the scroll wheel value.  It is not working
             mouseInfo += $"\nMouse Middle Button: {this.currentMouseState.GetScrollWheelValue()} - Currently Broken";
 
             this.mouseInfoLabel.Text = mouseInfo;
@@ -82,7 +72,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            UnloadSceneContent();
+            RemoveControl(this.mouseInfoLabel);
 
             base.UnloadContent();
         }
@@ -97,21 +87,10 @@ namespace VelaptorTesting.Scenes
 
             if (disposing)
             {
-                UnloadSceneContent();
+                UnloadContent();
             }
 
             base.Dispose(disposing);
-        }
-
-        /// <summary>
-        /// Unloads the scenes content.
-        /// </summary>
-        private void UnloadSceneContent()
-        {
-            RemoveControl(this.mouseInfoLabel);
-
-            this.glyphHeights.Clear();
-            this.glyphHeights = null;
         }
     }
 }

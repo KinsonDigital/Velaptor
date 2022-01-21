@@ -6,10 +6,10 @@
     <LangVersion>9.0</LangVersion>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.4</Version>
+    <Version>1.0.0-preview.5</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.4</FileVersion>
+    <FileVersion>1.0.0-preview.5</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
@@ -24,7 +24,7 @@
     <Company>Kinson Digital</Company>
     <Product>Velaptor</Product>
     <Description>2D game or application development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
-    <Copyright>Copyright ©2020 Kinson Digital</Copyright>
+    <Copyright>Copyright ©2022 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
@@ -58,6 +58,14 @@
     <EmbeddedResource Include="OpenGL\Shaders\font.frag" />
     <None Remove="OpenGL\Shaders\font.vert" />
     <EmbeddedResource Include="OpenGL\Shaders\font.vert" />
+    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
+    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
+    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
+    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
+    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
   </ItemGroup>
 
   <ItemGroup>

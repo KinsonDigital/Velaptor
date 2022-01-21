@@ -41,15 +41,48 @@ namespace Velaptor.Graphics
         /// <param name="pixels">The pixel data of the image.</param>
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
-        public ImageData(Color[,] pixels, uint width, uint height)
+        public ImageData(Color[,]? pixels, uint width, uint height)
         {
-            this.Pixels = pixels;
+            if (pixels is null)
+            {
+                this.Pixels = new Color[width, height];
+
+                // Makes all the pixels white
+                for (var y = 0; y < height; y++)
+                {
+                    for (var x = 0; x < width; x++)
+                    {
+                        this.Pixels[x, y] = Color.White;
+                    }
+                }
+            }
+            else
+            {
+                if (pixels.GetUpperBound(0) != width - 1)
+                {
+                    var exceptionMsg = $"The length of the 1st dimension of the '{nameof(pixels)}' parameter";
+                    exceptionMsg += $" must match the '{nameof(width)}' parameter.";
+
+                    throw new ArgumentException(exceptionMsg);
+                }
+
+                if (pixels.GetUpperBound(1) != height - 1)
+                {
+                    var exceptionMsg = $"The length of the 1st dimension of the '{nameof(pixels)}' parameter";
+                    exceptionMsg += $" must match the '{nameof(height)}' parameter.";
+
+                    throw new ArgumentException(exceptionMsg);
+                }
+
+                this.Pixels = pixels;
+            }
+
             this.Width = width;
             this.Height = height;
         }
 
         /// <summary>
-        /// Returns a value indicating whether 2 <see cref="ImageData"/> types are equal.
+        /// Returns a value indicating whether or not 2 <see cref="ImageData"/> types are equal.
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
@@ -57,7 +90,7 @@ namespace Velaptor.Graphics
         public static bool operator ==(ImageData left, ImageData right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating whether 2 <see cref="ImageData"/> types are not equal.
+        /// Returns a value indicating whether or not 2 <see cref="ImageData"/> types are not equal.
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
@@ -111,46 +144,39 @@ namespace Velaptor.Graphics
 
             var arePixelsTrue = true;
 
-            if (this.Pixels.Length > 0 && other.Pixels.Length > 0)
-            {
-                var breakOuterLoop = false;
+            var breakOuterLoop = false;
 
-                for (var x = 0; x < this.Width; x++)
+            for (var x = 0; x < this.Width; x++)
+            {
+                for (var y = 0; y < this.Height; y++)
                 {
-                    for (var y = 0; y < this.Height; y++)
+                    if (this.Pixels[x, y] == other.Pixels[x, y])
                     {
-                        if (this.Pixels[x, y] != other.Pixels[x, y])
-                        {
-                            arePixelsTrue = false;
-                            breakOuterLoop = true;
-                            break;
-                        }
+                        continue;
                     }
 
-                    if (breakOuterLoop)
-                    {
-                        break;
-                    }
+                    arePixelsTrue = false;
+                    breakOuterLoop = true;
+                    break;
                 }
-            }
-            else
-            {
-                arePixelsTrue = true;
+
+                if (breakOuterLoop)
+                {
+                    break;
+                }
             }
 
             return arePixelsTrue && this.Width == other.Width && this.Height == other.Height;
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object? obj)
-        {
-            if (obj is not ImageData imageData)
-            {
-                return false;
-            }
+        public override bool Equals(object? obj) => obj is ImageData imageData && Equals(imageData);
 
-            return Equals(imageData);
-        }
+        /// <summary>
+        /// Returns a value indicating whether or not the <see cref="ImageData"/> contents are empty.
+        /// </summary>
+        /// <returns><c>true</c> if empty.</returns>
+        public bool IsEmpty() => this.Width == 0 && this.Height == 0;
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]

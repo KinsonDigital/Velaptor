@@ -4,11 +4,14 @@
 
 namespace Velaptor.UI
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Content;
     using Velaptor.Graphics;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides the ability to enter text into a box.

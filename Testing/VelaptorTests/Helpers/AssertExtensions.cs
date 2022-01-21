@@ -1,10 +1,8 @@
-// <copyright file="AssertExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="AssertExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 // ReSharper disable UnusedMember.Global
-
-#pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.Helpers
 {
     using System;
@@ -284,8 +282,13 @@ namespace VelaptorTests.Helpers
             }
         }
 
-        public static void EqualWithMessage<T>(T expected, T actual, string message)
-            where T : IEquatable<T>
+        /// <summary>
+        /// Verifies that the two enums are equivalent.
+        /// </summary>
+        /// <param name="expected">The expected enum.</param>
+        /// <param name="actual">The actual enum.</param>
+        /// <param name="message">The message to be shown about the failed assertion.</param>
+        public static void EqualWithMessage(Enum expected, Enum actual, string message)
         {
             var assertException = new AssertActualExpectedException(expected.ToString(), actual.ToString(), message);
 
@@ -293,9 +296,32 @@ namespace VelaptorTests.Helpers
             {
                 Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? string.Empty : message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw assertException;
+            }
+        }
+
+        /// <summary>
+        /// Verifies if the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
+        /// </summary>
+        /// <typeparam name="T">The <see cref="IEquatable{T}"/> type of the <paramref name="expected"/> and <paramref name="actual"/>.</typeparam>
+        /// <param name="expected">The expected <see langword="int"/> value.</param>
+        /// <param name="actual">The actual <see langword="int"/> value.</param>
+        /// <param name="message">The message to be shown about the failed assertion.</param>
+        public static void EqualWithMessage<T>(T? expected, T? actual, string message)
+            where T : IEquatable<T>
+        {
+            try
+            {
+                Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? string.Empty : message);
+            }
+            catch (Exception)
+            {
+                var expectedStr = expected is null ? "NULL" : expected.ToString();
+                var actualStr = actual is null ? "NULL" : actual.ToString();
+
+                throw new AssertActualExpectedException(expectedStr, actualStr, message);
             }
         }
 

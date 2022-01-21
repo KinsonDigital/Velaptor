@@ -17,7 +17,7 @@ namespace Velaptor.NativeInterop.GLFW
     /// </summary>
     internal sealed class GLFWMonitors : IDisposable
     {
-        private static bool glfwInitialized;
+        private readonly bool glfwInitialized;
         private readonly IGLFWInvoker glfwInvoker;
         private readonly IPlatform platform;
         private readonly List<SystemMonitor> monitors = new ();
@@ -33,10 +33,10 @@ namespace Velaptor.NativeInterop.GLFW
             this.glfwInvoker = glfwInvoker;
             this.platform = platform;
 
-            if (!glfwInitialized)
+            if (!this.glfwInitialized)
             {
                 this.glfwInvoker.Init();
-                glfwInitialized = true;
+                this.glfwInitialized = true;
             }
 
             Refresh();
@@ -92,7 +92,7 @@ namespace Velaptor.NativeInterop.GLFW
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)

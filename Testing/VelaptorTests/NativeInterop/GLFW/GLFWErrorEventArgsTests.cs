@@ -5,7 +5,6 @@
 namespace VelaptorTests.NativeInterop.GLFW
 {
     using Velaptor.NativeInterop.GLFW;
-    using Velaptor.OpenGL;
     using Xunit;
 
     public class GLFWErrorEventArgsTests

@@ -20,7 +20,7 @@ namespace Velaptor.OpenGL
         public Vector2 VertexPos; // Location 0 | aPosition
 
         /// <summary>
-        /// The point in a texture that corresponds to this structures <see cref="VertexPos"/>.
+        /// The point in a texture that corresponds to this structure's <see cref="VertexPos"/>.
         /// </summary>
         public Vector2 TextureCoord; // Location 1 | aTexCoord
 

@@ -6,9 +6,10 @@ namespace VelaptorTests.Content
 {
     using System;
     using System.Drawing;
+    using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
-    using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Caching;
     using Velaptor.Graphics;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -18,15 +19,26 @@ namespace VelaptorTests.Content
     /// </summary>
     public class AtlasDataTests
     {
-        private const string AtlasImagePath = @"C:\temp\test-atlas.png";
+        private const string DirPath = @"C:\Content\Atlas\";
+        private const string AtlasName = "test-atlas";
+        private const string TextureExtension = ".png";
+        private const string JSONFileExtension = ".json";
+        private readonly string atlasImagePath = $"{DirPath}{AtlasName}{TextureExtension}";
+        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IPath> mockPath;
         private readonly AtlasSubTextureData[] spriteData;
-        private readonly Mock<ITexture> mockTexture;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasDataTests"/> class.
         /// </summary>
         public AtlasDataTests()
         {
+            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+
+            this.mockPath = new Mock<IPath>();
+            this.mockPath.Setup(m => m.GetDirectoryName(DirPath)).Returns(DirPath);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(AtlasName))
+                .Returns(AtlasName);
             this.spriteData = new[]
             {
                 new AtlasSubTextureData() // First frame of Animating sub texture
@@ -48,21 +60,86 @@ namespace VelaptorTests.Content
                     Bounds = new Rectangle(111, 222, 333, 444),
                 },
             };
-
-            this.mockTexture = new Mock<ITexture>();
-            this.mockTexture.SetupGet(p => p.Width).Returns(100);
-            this.mockTexture.SetupGet(p => p.Height).Returns(200);
         }
 
         #region Constructor Tests
         [Fact]
-        public void Ctor_WhenTextureIsNull_ThrowException()
+        public void Ctor_WithNullTextureCache_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new AtlasData(null, null, It.IsAny<string>(), It.IsAny<string>());
-            }, "The parameter must not be null. (Parameter 'texture')");
+                var unused = new AtlasData(
+                    null,
+                    this.mockPath.Object,
+                    Array.Empty<AtlasSubTextureData>(),
+                    "dir-path",
+                    "atlas-name");
+            }, "The parameters must not be null or empty. (Parameter 'textureCache')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPath_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    this.mockTextureCache.Object,
+                    null,
+                    Array.Empty<AtlasSubTextureData>(),
+                    "dir-path",
+                    "atlas-name");
+            }, "The parameters must not be null or empty. (Parameter 'path')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullSubTextureData_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    this.mockTextureCache.Object,
+                    this.mockPath.Object,
+                    null,
+                    "dir-path",
+                    "atlas-name");
+            }, "The parameters must not be null or empty. (Parameter 'atlasSubTextureData')");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Ctor_WithNullOrEmptyDirPath_ThrowsException(string dirPath)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    this.mockTextureCache.Object,
+                    this.mockPath.Object,
+                    Array.Empty<AtlasSubTextureData>(),
+                    dirPath,
+                    "atlas-name");
+            }, "The parameters must not be null or empty. (Parameter 'dirPath')");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Ctor_WithNullOrEmptyAtlasName_ThrowsException(string atlasName)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new AtlasData(
+                    this.mockTextureCache.Object,
+                    this.mockPath.Object,
+                    Array.Empty<AtlasSubTextureData>(),
+                    "dir-path",
+                    atlasName);
+            }, "The parameters must not be null or empty. (Parameter 'atlasName')");
         }
         #endregion
 
@@ -100,46 +177,79 @@ namespace VelaptorTests.Content
             var actual = data.Name;
 
             // Assert
-            Assert.Equal("test-atlas", actual);
+            Assert.Equal(AtlasName, actual);
         }
 
-        [Fact]
-        public void Path_WhenGettingValue_ReturnsCorrectResult()
+        [Theory]
+        [InlineData("")]
+        [InlineData(".txt")]
+        public void FilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
         {
             // Arrange
-            var data = CreateAtlasData();
+            const string atlasName = "atlasWithExtension";
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
+                .Returns(atlasName);
+            var data = CreateAtlasData($"{atlasName}{extension}");
 
             // Act
-            var actual = data.Path;
+            var actual = data.FilePath;
 
             // Assert
-            Assert.Equal(AtlasImagePath, actual);
+            Assert.Equal($"{DirPath}{atlasName}{TextureExtension}", actual);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(".txt")]
+        public void AtlasDataFilePath_WhenGettingValue_ReturnsCorrectResult(string extension)
+        {
+            // Arrange
+            const string atlasName = "atlasWithExtension";
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
+                .Returns(atlasName);
+            var data = CreateAtlasData($"{atlasName}{extension}");
+
+            // Act
+            var actual = data.AtlasDataFilePath;
+
+            // Assert
+            Assert.Equal($"{DirPath}{atlasName}{JSONFileExtension}", actual);
         }
 
         [Fact]
         public void Width_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
+            var mockTexture = new Mock<ITexture>();
+            mockTexture.SetupGet(p => p.Width).Returns(123);
+            this.mockTextureCache.Setup(m => m.GetItem(this.atlasImagePath))
+                .Returns(mockTexture.Object);
+
             var data = CreateAtlasData();
 
             // Act
             var actual = data.Width;
 
             // Assert
-            Assert.Equal(100u, actual);
+            Assert.Equal(123u, actual);
         }
 
         [Fact]
         public void Height_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
+            var mockTexture = new Mock<ITexture>();
+            mockTexture.SetupGet(p => p.Height).Returns(123);
+            this.mockTextureCache.Setup(m => m.GetItem(this.atlasImagePath))
+                .Returns(mockTexture.Object);
+
             var data = CreateAtlasData();
 
             // Act
             var actual = data.Height;
 
             // Assert
-            Assert.Equal(200u, actual);
+            Assert.Equal(123u, actual);
         }
         #endregion
 
@@ -242,21 +352,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Dispose_WhilePooled_ThrowsException()
-        {
-            // Arrange
-            var data = CreateAtlasData();
-            data.IsPooled = true;
-
-            // Act & Assert
-            Assert.Throws<PooledDisposalException>(() =>
-            {
-                data.Dispose();
-            });
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_DisposesOfTexture()
+        public void Dispose_WhenInvoked_UnloadsTexture()
         {
             // Arrange
             var data = CreateAtlasData();
@@ -266,7 +362,7 @@ namespace VelaptorTests.Content
             data.Dispose();
 
             // Assert
-            this.mockTexture.Verify(m => m.Dispose(), Times.Once());
+            this.mockTextureCache.Verify(m => m.Unload(this.atlasImagePath), Times.Once());
         }
         #endregion
 
@@ -274,7 +370,7 @@ namespace VelaptorTests.Content
         /// Creates a new instance of <see cref="AtlasData"/> for testing purposes.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private AtlasData CreateAtlasData()
-            => new (this.mockTexture.Object, this.spriteData, "test-atlas", AtlasImagePath);
+        private AtlasData CreateAtlasData(string? atlasName = null)
+            => new (this.mockTextureCache.Object, this.mockPath.Object, this.spriteData, DirPath, atlasName ?? AtlasName);
     }
 }

@@ -4,9 +4,12 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.IO;
-    using Velaptor.Content.Exceptions;
+    using Velaptor.Content.Fonts;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Loads content.
@@ -22,7 +25,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoader"/> class.
         /// </summary>
-        /// <param name="textureLoader">The loader used to load textures.</param>
+        /// <param name="textureLoader">Loads textures.</param>
         /// <param name="soundLoader">Loads sounds.</param>
         /// <param name="atlasLoader">Loads a texture atlas.</param>
         /// <param name="fontLoader">Loads fonts for rendering test.</param>
@@ -39,66 +42,28 @@ namespace Velaptor.Content
         }
 
         /// <inheritdoc/>
-        public T Load<T>(string name)
-            where T : class, IContent
-        {
-            name = Path.GetFileNameWithoutExtension(name);
-
-            if (typeof(T) == typeof(ITexture))
-            {
-                return (T)this.textureLoader.Load(name);
-            }
-
-            if (typeof(T) == typeof(ISound))
-            {
-                return (T)this.soundLoader.Load(name);
-            }
-
-            if (typeof(T) == typeof(IAtlasData))
-            {
-                return (T)this.atlasLoader.Load(name);
-            }
-
-            if (typeof(T) == typeof(IFont))
-            {
-                return (T)this.fontLoader.Load(name);
-            }
-
-            throw new UnknownContentException($"Content of type '{typeof(T)}' invalid.  Content types must inherit from interface '{nameof(IContent)}'.");
-        }
+        public ITexture LoadTexture(string nameOrFilePath) => this.textureLoader.Load(nameOrFilePath);
 
         /// <inheritdoc/>
-        public void Unload<T>(string name)
-            where T : class, IContent
-        {
-            name = Path.GetFileNameWithoutExtension(name);
+        public ISound LoadSound(string nameOrFilePath) => this.soundLoader.Load(Path.GetFileNameWithoutExtension(nameOrFilePath));
 
-            if (typeof(T) == typeof(ITexture))
-            {
-                this.textureLoader.Unload(name);
-                return;
-            }
+        /// <inheritdoc/>
+        public IAtlasData LoadAtlas(string nameOrFilePath) => this.atlasLoader.Load(nameOrFilePath);
 
-            if (typeof(T) == typeof(IAtlasData))
-            {
-                this.atlasLoader.Unload(name);
-                return;
-            }
+        /// <inheritdoc/>
+        public IFont LoadFont(string nameOrFilePath, int size) => this.fontLoader.Load($"{nameOrFilePath}|size:{size}");
 
-            if (typeof(T) == typeof(ISound))
-            {
-                this.soundLoader.Unload(name);
-                return;
-            }
+        /// <inheritdoc/>
+        public void UnloadTexture(ITexture content) => this.textureLoader.Unload(content.FilePath);
 
-            if (typeof(T) == typeof(IFont))
-            {
-                this.fontLoader.Unload(name);
-                return;
-            }
+        /// <inheritdoc/>
+        public void UnloadSound(ISound content) => this.soundLoader.Unload(content.FilePath);
 
-            throw new UnknownContentException($"The content of type '{typeof(T)}' is unknown.");
-        }
+        /// <inheritdoc/>
+        public void UnloadAtlas(IAtlasData content) => this.atlasLoader.Unload(content.FilePath);
+
+        /// <inheritdoc/>
+        public void UnloadFont(IFont content) => this.fontLoader.Unload($"{content.FilePath}|size:{content.Size}");
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);
@@ -106,7 +71,7 @@ namespace Velaptor.Content
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)

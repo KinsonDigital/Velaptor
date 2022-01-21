@@ -13,6 +13,7 @@ namespace VelaptorTests.Graphics
     using Moq;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
@@ -364,6 +365,31 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
+        public void RenderTexture_WithDisposedTexture_ThrowsException()
+        {
+            // Arrange
+            var mockTexture = new Mock<ITexture>();
+            mockTexture.SetupGet(p => p.IsDisposed).Returns(true);
+            mockTexture.SetupGet(p => p.Name).Returns("test-texture");
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
+            {
+                batch.Render(
+                    mockTexture.Object,
+                    It.IsAny<Rectangle>(),
+                    It.IsAny<Rectangle>(),
+                    It.IsAny<float>(),
+                    It.IsAny<float>(),
+                    It.IsAny<Color>(),
+                    It.IsAny<RenderEffects>());
+            }, "Cannot render texture.  The texture 'test-texture' has been disposed.");
+        }
+
+        [Fact]
         public void RenderTexture_WhenInvoking3ParamOverload_AddsCorrectItemToBatch()
         {
             // Arrange
@@ -564,6 +590,29 @@ namespace VelaptorTests.Graphics
             this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
             this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
             this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Never);
+        }
+
+        [Fact]
+        public void RenderFont_WithDisposedFont_ThrowsException()
+        {
+            // Arrange
+            this.mockFont.SetupGet(m => m.Name).Returns("test-font");
+            this.mockFont.SetupGet(m => m.IsDisposed).Returns(true);
+
+            var batch = CreateSpriteBatch();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
+            {
+                batch.Render(
+                    this.mockFont.Object,
+                    "test-test",
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<float>(),
+                    It.IsAny<float>(),
+                    It.IsAny<Color>());
+            }, "Cannot render font.  The font 'test-font' has been disposed.");
         }
 
         [Fact]
@@ -1187,7 +1236,7 @@ namespace VelaptorTests.Graphics
         /// <param name="openGLInitObservable">The observable to use for OpenGL initialization.</param>
         /// <returns>The instance to test with.</returns>
         /// <summary>
-        ///     If <paramref name="openGLInitObservable"/> is null, then this.<see cref="glInitObservable"/> will be used.
+        ///     If <paramref name="openGLInitObservable"/> is null, then this <see cref="glInitObservable"/> will be used.
         /// </summary>
         private SpriteBatch CreateSpriteBatch(IObservable<bool>? openGLInitObservable = null)
         {

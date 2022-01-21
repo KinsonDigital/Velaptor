@@ -70,17 +70,17 @@ namespace Velaptor.UI
         int Bottom { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the control is visible.
+        /// Gets or sets a value indicating whether or not the control is visible.
         /// </summary>
         bool Visible { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the control is enabled.
+        /// Gets or sets a value indicating whether or not the control is enabled.
         /// </summary>
         bool Enabled { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether the mouse is hovering over the button.
+        /// Gets a value indicating whether or not the mouse is hovering over the button.
         /// </summary>
         bool IsMouseOver { get; }
 

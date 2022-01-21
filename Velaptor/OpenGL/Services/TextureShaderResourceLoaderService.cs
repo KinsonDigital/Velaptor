@@ -1,4 +1,4 @@
-// <copyright file="TextureShaderResourceLoaderService.cs" company="KinsonDigital">
+﻿// <copyright file="TextureShaderResourceLoaderService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,7 +20,7 @@ namespace Velaptor.OpenGL.Services
         private const string VertShaderFileExtension = ".vert";
         private const string FragShaderFileExtension = ".frag";
         private readonly ITemplateProcessorService shaderSrcTemplateService;
-        private readonly IEmbeddedResourceLoaderService resourceLoaderService;
+        private readonly IEmbeddedResourceLoaderService<string> resourceLoaderService;
         private readonly IPath path;
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Velaptor.OpenGL.Services
         /// <param name="path">Processes directory and file paths.</param>
         public TextureShaderResourceLoaderService(
             ITemplateProcessorService shaderSrcTemplateService,
-            IEmbeddedResourceLoaderService resourceLoaderService,
+            IEmbeddedResourceLoaderService<string> resourceLoaderService,
             IPath path)
         {
             this.shaderSrcTemplateService = shaderSrcTemplateService;
@@ -41,7 +41,7 @@ namespace Velaptor.OpenGL.Services
 
         /// <inheritdoc cref="IShaderLoaderService{TValue}.LoadVertSource"/>
         /// <remarks>
-        ///     The props in this context only needs to be a single tuple item which is the batch size.
+        ///     The props in this context only need to be a single tuple item which is the batch size.
         /// </remarks>
         public string LoadVertSource(string shaderName, IEnumerable<(string name, uint value)>? props = null)
         {

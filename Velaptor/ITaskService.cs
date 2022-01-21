@@ -38,7 +38,7 @@ namespace Velaptor
         /// </para>
         /// </summary>
         /// <param name="continuationAction">
-        ///     An action to run according to the specified continuationOptions. When run, the
+        ///     An action to run according to the specified <paramref name="taskContinuationOptions"/>. When run, the
         ///     delegate will be passed the completed task as an argument.
         /// </param>
         /// <param name="taskContinuationOptions">

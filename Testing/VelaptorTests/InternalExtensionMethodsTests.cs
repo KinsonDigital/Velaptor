@@ -25,15 +25,75 @@ namespace VelaptorTests
     {
         #region Method Tests
         [Theory]
+        [InlineData('x', true)]
+        [InlineData('k', false)]
+        public void DoesNotStartWidth_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
+        {
+            // Arrange
+            const string stringToCheck = "kinson";
+
+            // Act
+            var actual = stringToCheck.DoesNotStartWith(character);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("digital", true)]
+        [InlineData("kinson", false)]
+        public void DoesNotStartWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
+        {
+            // Arrange
+            const string stringToCheck = "kinson digital";
+
+            // Act
+            var actual = stringToCheck.DoesNotStartWith(stringValue);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData('x', true)]
+        [InlineData('n', false)]
+        public void DoesNotEndWith_WhenCheckingForCharacters_ReturnsCorrectResult(char character, bool expected)
+        {
+            // Arrange
+            const string stringToCheck = "kinson";
+
+            // Act
+            var actual = stringToCheck.DoesNotEndWith(character);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("kinson", true)]
+        [InlineData("digital", false)]
+        public void DoesNotEndWith_WhenCheckingForStrings_ReturnsCorrectResult(string stringValue, bool expected)
+        {
+            // Arrange
+            const string stringToCheck = "kinson digital";
+
+            // Act
+            var actual = stringToCheck.DoesNotEndWith(stringValue);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
         [InlineData("", false)]
         [InlineData(@"C:\", true)]
         [InlineData(@"C:", false)]
         [InlineData(@"C\", false)]
-        [InlineData(@"C:\test-file.txt", true)]
-        public void IsDirectoryRootDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
+        [InlineData(@"C:\test-file.txt", false)]
+        public void OnlyContainsDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
         {
             // Act
-            var actual = value.IsDirectoryRootDrive();
+            var actual = value.OnlyContainsDrive();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -272,7 +332,7 @@ namespace VelaptorTests
         /// and <paramref name="height"/> with each row having its own colors described by the given
         /// <paramref name="rowColors"/> dictionary.
         /// </summary>
-        /// <param name="width">The width of the iamge.</param>
+        /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
         /// <param name="rowColors">The color for each row.</param>
         /// <returns>An image with the given row colors.</returns>
@@ -292,7 +352,7 @@ namespace VelaptorTests
 
             foreach (var row in availableRows)
             {
-                if (row < 0 && row > height - 1)
+                if (row > height - 1)
                 {
                     Assert.True(false, $"The row '{row}' is not within the range of rows for the image height '{height}' for the definition of row colors.");
                 }

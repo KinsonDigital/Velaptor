@@ -26,7 +26,7 @@ namespace VelaptorTests.OpenGL.Services
         private const string NoProcessingFragShaderSample = "int totalClrs = 4;";
         private readonly string unprocessedFragShaderSample = $"uniform mat4 uTransform[{InjectionStart} {BatchSizeVarName} {InjectionStop}];";
         private readonly Mock<ITemplateProcessorService> mockShaderSrcTemplateService;
-        private readonly Mock<IEmbeddedResourceLoaderService> mockResourceLoaderService;
+        private readonly Mock<IEmbeddedResourceLoaderService<string>> mockResourceLoaderService;
         private readonly Mock<IPath> mockPath;
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace VelaptorTests.OpenGL.Services
 
             this.mockShaderSrcTemplateService = new Mock<ITemplateProcessorService>();
 
-            this.mockResourceLoaderService = new Mock<IEmbeddedResourceLoaderService>();
+            this.mockResourceLoaderService = new Mock<IEmbeddedResourceLoaderService<string>>();
             this.mockResourceLoaderService.Setup(m
                     => m.LoadResource(fragFileName))
                             .Returns(NoProcessingFragShaderSample);

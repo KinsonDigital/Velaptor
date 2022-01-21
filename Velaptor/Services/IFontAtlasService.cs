@@ -14,7 +14,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Creates font atlas textures for rendering text.
     /// </summary>
-    public interface IFontAtlasService : IDisposable
+    public interface IFontAtlasService
     {
         /// <summary>
         /// Creates a font atlas texture and atlas data that can be used for rendering.
@@ -33,12 +33,6 @@ namespace Velaptor.Services
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="fontFilePath"/> is null or empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown if the file cannot be found.</exception>
-        (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, int size);
-
-        /// <summary>
-        /// Sets the list of available characters that will be rendered into the font texture atlas.
-        /// </summary>
-        /// <param name="glyphs">The list of characters to make available.</param>
-        void SetAvailableCharacters(char[] glyphs);
+        (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint size);
     }
 }

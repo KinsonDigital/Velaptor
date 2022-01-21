@@ -11,6 +11,7 @@ namespace VelaptorTests.UI
     using System.Linq;
     using Moq;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.UI;
     using VelaptorTests.Helpers;
@@ -61,9 +62,9 @@ namespace VelaptorTests.UI
             MockGlyphs(ButtonTextValue);
 
             this.mockContentLoader = new Mock<IContentLoader>();
-            this.mockContentLoader.Setup(m => m.Load<ITexture>(TextureName))
+            this.mockContentLoader.Setup(m => m.LoadTexture(TextureName))
                 .Returns(this.mockTexture.Object);
-            this.mockContentLoader.Setup(m => m.Load<IFont>("TimesNewRoman"))
+            this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman", 12))
                 .Returns(this.mockFont.Object);
         }
 
@@ -179,8 +180,8 @@ namespace VelaptorTests.UI
             button.LoadContent();
 
             // Assert
-            this.mockContentLoader.Verify(m => m.Load<ITexture>(TextureName), Times.Once);
-            this.mockContentLoader.Verify(m => m.Load<IFont>("TimesNewRoman"), Times.Once);
+            this.mockContentLoader.Verify(m => m.LoadTexture(TextureName), Times.Once);
+            this.mockContentLoader.Verify(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12), Times.Once);
         }
 
         [Fact]
@@ -257,7 +258,7 @@ namespace VelaptorTests.UI
             // Arrange
             var mockSpriteBatch = new Mock<ISpriteBatch>();
 
-            this.mockContentLoader.Setup(m => m.Load<ITexture>(TextureName))
+            this.mockContentLoader.Setup(m => m.LoadTexture(TextureName))
                 .Returns(() =>
                 {
                     ITexture? nullTexture = null;
@@ -321,7 +322,6 @@ namespace VelaptorTests.UI
         public void Dispose_WithLoadedContent_DisposesOfButton()
         {
             // Arrange
-            this.mockTexture.SetupGet(p => p.IsPooled).Returns(false);
             var button = CreateButton();
             button.LoadContent();
 

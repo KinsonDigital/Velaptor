@@ -9,8 +9,8 @@ namespace VelaptorTests.Content
     using System.Reflection;
     using Moq;
     using Velaptor.Content;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using Assert = Helpers.AssertExtensions;
 
     /// <summary>
     /// Tests the <see cref="TexturePathResolver"/> class.
@@ -20,7 +20,6 @@ namespace VelaptorTests.Content
         private const string ContentName = "test-content";
         private readonly string contentFilePath;
         private readonly string baseDir;
-        private readonly string baseContentDir;
         private readonly string atlasContentDir;
 
         /// <summary>
@@ -29,8 +28,7 @@ namespace VelaptorTests.Content
         public TexturePathResolverTests()
         {
             this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-            this.baseContentDir = $@"{this.baseDir}Content\";
-            this.atlasContentDir = $@"{this.baseContentDir}Graphics\";
+            this.atlasContentDir = $@"{this.baseDir}Content\Graphics\";
             this.contentFilePath = $"{this.atlasContentDir}{ContentName}.png";
         }
 
@@ -69,7 +67,7 @@ namespace VelaptorTests.Content
             var resolver = new TexturePathResolver(mockDirectory.Object);
 
             // Act & Assert
-            Assert.ThrowsWithMessage<FileNotFoundException>(() =>
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
                 resolver.ResolveFilePath(ContentName);
             }, $"The texture image file '{this.contentFilePath}' does not exist.");

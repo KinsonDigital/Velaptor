@@ -10,31 +10,31 @@ namespace Velaptor.Content
     public interface IPathResolver
     {
         /// <summary>
-        /// Gets or sets the root directory of the content.
+        /// Gets the root directory of the content.
         /// </summary>
-        string RootDirectory { get; set; }
+        string RootDirectoryPath { get; }
 
         /// <summary>
-        /// Gets or sets the name of the content directory.
+        /// Gets the name of the content directory.
         /// </summary>
         /// <remarks>
         /// <para>
         ///     This directory is not a path. It is just a name and is always located
-        ///     as a child directory of the <see cref="RootDirectory"/>.
+        ///     as a child directory of the <see cref="RootDirectoryPath"/>.
         /// </para>
         /// <para>
         ///     If the value is a file path, the file name will be stripped and the
         ///     deepest child directory name will be used.
         /// </para>
         /// </remarks>
-        string ContentDirectoryName { get; set; }
+        string ContentDirectoryName { get; }
 
         /// <summary>
         /// Resolves the full file path to a content item that matches the given <paramref name="contentName"/>.
         /// </summary>
         /// <param name="contentName">The name of the content item with or without the file extension.</param>
         /// <returns>
-        ///     The <see cref="RootDirectory"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
+        ///     The <see cref="RootDirectoryPath"/>, content file name, and the <see cref="ContentDirectoryName"/> combined.
         /// </returns>
         string ResolveFilePath(string contentName);
 

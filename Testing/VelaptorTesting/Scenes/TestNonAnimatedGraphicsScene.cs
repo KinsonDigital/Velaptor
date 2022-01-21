@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using Velaptor.Input;
-
 namespace VelaptorTesting.Scenes
 {
+    using System.Collections.Generic;
     using System.Drawing;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
+    using Velaptor.Input;
     using VelaptorTesting.Core;
 
     /// <summary>
@@ -18,16 +18,17 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestNonAnimatedGraphicsScene : SceneBase
     {
+        private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private readonly Keyboard keyboard;
         private readonly int windowHalfWidth;
         private readonly int windowHalfHeight;
         private IAtlasData? mainAtlas;
         private AtlasSubTextureData? octagonData;
-        private IFont font;
+        private IFont? font;
         private KeyboardState currentKeyState;
         private KeyboardState prevKeyState;
         private RenderEffects renderEffects = RenderEffects.None;
-        private string instructions;
+        private string instructions = string.Empty;
         private SizeF textSize;
 
         /// <summary>
@@ -52,20 +53,20 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.font = ContentLoader.Load<IFont>("TimesNewRoman");
+            this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
             var textLines = new List<string>
             {
                     "Use arrow keys to flip the texture horizontally and vertically.",
-                    "\nLeft: Not Flipped Horizontally",
-                    "Right: Flipped Horizontally",
-                    "Up: Not Flipped Vertically",
-                    "Down: Not Flipped Vertically",
+                    "\nLeft: Flip Horizontally",
+                    "Right: Flip Horizontally",
+                    "Up: Flip Vertically",
+                    "Down: Flip Vertically",
             };
             this.instructions = string.Join("\n", textLines);
 
             this.textSize = this.font.Measure(this.instructions);
 
-            this.mainAtlas = ContentLoader.Load<IAtlasData>("Main-Atlas");
+            this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
             this.octagonData = this.mainAtlas.GetFrame("octagon-flip");
 
             base.LoadContent();
@@ -80,6 +81,7 @@ namespace VelaptorTesting.Scenes
             }
 
             this.mainAtlas = null;
+            this.font?.Dispose();
 
             base.UnloadContent();
         }

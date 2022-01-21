@@ -8,7 +8,7 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <Product>Kinson Digital - Scorpion Core Unit Tests</Product>
-    <Copyright>Copyright © 2018</Copyright>
+    <Copyright>Copyright ©2022 Kinson Digital</Copyright>
     <Version>1.0.0</Version>
     <FileVersion>1.0.0</FileVersion>
     <Company>Kinson Digital</Company>
@@ -54,15 +54,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Remove="Fakes\AudioManagerFake.cs" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Remove="stylecop.json" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>

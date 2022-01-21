@@ -55,7 +55,7 @@ namespace VelaptorTests.Observables.Core
 
         #region Method Tests
         [Fact]
-        public void Dispose_WhenInvoked_RemovesObseverFromObserversList()
+        public void Dispose_WhenInvoked_RemovesObserverFromObserversList()
         {
             // Arrange
             var observer = new Mock<IObserver<It.IsAnyType>>();
@@ -76,6 +76,7 @@ namespace VelaptorTests.Observables.Core
                 observer.Object);
 
             // Act
+            unsubscriber.Dispose();
             unsubscriber.Dispose();
 
             // Assert

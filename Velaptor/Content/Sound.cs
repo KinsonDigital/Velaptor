@@ -8,7 +8,6 @@ namespace Velaptor.Content
     using System;
     using System.Diagnostics.CodeAnalysis;
     using CASL;
-    using Velaptor.Content.Exceptions;
     using CASLSound = CASL.Sound;
 
     // ReSharper restore RedundantNameQualifier
@@ -46,12 +45,12 @@ namespace Velaptor.Content
         public SoundTime Position => this.sound.Position;
 
         /// <summary>
-        /// Gets the length of the song.
+        /// Gets the length of the sound.
         /// </summary>
         public SoundTime Length => this.sound.Length;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the sound loops back to the beginning once the end has been reached.
+        /// Gets or sets a value indicating whether or not the sound loops back to the beginning once the end has been reached.
         /// </summary>
         public bool IsLooping
         {
@@ -67,11 +66,11 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets or sets the play speed to the given value.
         /// </summary>
-        /// <param name="value">The speed that the sound should play at.</param>
+        /// <param name="value">The speed that the sound should play.</param>
         /// <remarks>
         ///     The valid range of <paramref name="value"/> is between 0.25 and 2.0
-        ///     with a <paramref name="value"/> less then 0.25 defaulting to 0.25 and
-        ///     with a <paramref name="value"/> greater then 2.0 defaulting to 2.0.
+        ///     with a <paramref name="value"/> less than 0.25 defaulting to 0.25 and
+        ///     with a <paramref name="value"/> greater than 2.0 defaulting to 2.0.
         /// </remarks>
         public float PlaySpeed
         {
@@ -83,13 +82,10 @@ namespace Velaptor.Content
         public string Name => this.sound.Name;
 
         /// <inheritdoc/>
-        public string Path => this.sound.Path;
+        public string FilePath => this.sound.Path;
 
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
-
-        /// <inheritdoc/>
-        public bool IsPooled { get; set; }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);
@@ -97,7 +93,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Fast forwards the sound by the given amount of <paramref name="seconds"/>.
         /// </summary>
-        /// <param name="seconds">The amount of seconds to fast forward the song.</param>
+        /// <param name="seconds">The amount of seconds to fast forward the sound.</param>
         public void FastForward(float seconds) => this.sound.FastForward(seconds);
 
         /// <summary>
@@ -121,7 +117,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Rewinds the sound by the given amount of <paramref name="seconds"/>.
         /// </summary>
-        /// <param name="seconds">The amount of seconds to rewind the song.</param>
+        /// <param name="seconds">The amount of seconds to rewind the sound.</param>
         public void Rewind(float seconds) => this.sound.Rewind(seconds);
 
         /// <summary>
@@ -139,18 +135,13 @@ namespace Velaptor.Content
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
+        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
         private void Dispose(bool disposing)
         {
             if (IsDisposed)
             {
                 return;
-            }
-
-            if (IsPooled)
-            {
-                throw new PooledDisposalException();
             }
 
             if (disposing)

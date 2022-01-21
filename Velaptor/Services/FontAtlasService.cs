@@ -1,4 +1,4 @@
-// <copyright file="FontAtlasService.cs" company="KinsonDigital">
+﻿// <copyright file="FontAtlasService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,9 +11,9 @@ namespace Velaptor.Services
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Content.Fonts.Services;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
-    using Velaptor.NativeInterop.FreeType;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
@@ -21,60 +21,46 @@ namespace Velaptor.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Creates font atlas textures for rendering text.
+    /// Creates font atlas data for rendering text.
     /// </summary>
-    internal class FontAtlasService : IFontAtlasService
+    internal sealed class FontAtlasService : IFontAtlasService
     {
-        private const char InvalidCharacter = '□';
-        private readonly IFreeTypeInvoker freeTypeInvoker;
-        private readonly IFreeTypeExtensions freeTypeExtensions;
+        private readonly IFontService fontService;
         private readonly IImageService imageService;
         private readonly ISystemMonitorService monitorService;
         private readonly IFile file;
-        private readonly IntPtr freeTypeLibPtr;
+        private readonly char[] glyphChars =
+        {
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
+            '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ', '□',
+        };
         private IntPtr facePtr;
-        private char[]? glyphChars;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontAtlasService"/> class.
         /// </summary>
-        /// <param name="freeTypeInvoker">Provides low level calls to the FreeType2 library.</param>
-        /// <param name="freeTypeExtensions">Provides extensions/helpers to free type library functionality.</param>
+        /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
         /// <param name="imageService">Manages image data.</param>
-        /// <param name="systemMonitorService">Provides information about the system monitor.</param>
+        /// <param name="systemMonitorService">Provides information about the system monitors.</param>
         /// <param name="file">Performs file operations.</param>
         public FontAtlasService(
-            IFreeTypeInvoker freeTypeInvoker,
-            IFreeTypeExtensions freeTypeExtensions,
+            IFontService fontService,
             IImageService imageService,
             ISystemMonitorService systemMonitorService,
             IFile file)
         {
-            this.freeTypeInvoker = freeTypeInvoker;
-            this.freeTypeExtensions = freeTypeExtensions;
+            this.fontService = fontService;
             this.imageService = imageService;
             this.monitorService = systemMonitorService;
             this.file = file;
-
-            this.freeTypeLibPtr = this.freeTypeInvoker.FT_Init_FreeType();
-
-            this.freeTypeInvoker.OnError += FreeTypeInvoker_OnError;
         }
 
-        /// <summary>
-        /// Finalizes an instance of the <see cref="FontAtlasService"/> class.
-        /// </summary>
-        ~FontAtlasService() => Dispose(false);
-
         /// <inheritdoc/>
-        public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, int size)
+        public (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint size)
         {
-            if (this.glyphChars is null)
-            {
-                throw new InvalidOperationException("The available glyph characters must be set first before creating a font texture atlas.");
-            }
-
+            // TODO: Add caching to the for the atlas image and glyph metrics
             if (string.IsNullOrEmpty(fontFilePath))
             {
                 throw new ArgumentNullException(nameof(fontFilePath), "The font file path argument must not be null.");
@@ -85,24 +71,22 @@ namespace Velaptor.Services
                 throw new FileNotFoundException($"The file '{fontFilePath}' does not exist.");
             }
 
-            this.facePtr = this.freeTypeExtensions.CreateFontFace(this.freeTypeLibPtr, fontFilePath);
+            this.facePtr = this.fontService.CreateFontFace(fontFilePath);
 
             if (this.monitorService.MainMonitor is null)
             {
                 throw new SystemMonitorException("The main system monitor must not be null.");
             }
 
-            this.freeTypeExtensions.SetCharacterSize(
+            this.fontService.SetFontSize(
                 this.facePtr,
-                size,
-                (uint)this.monitorService.MainMonitor.HorizontalDPI,
-                (uint)this.monitorService.MainMonitor.VerticalDPI);
+                size);
 
-            var glyphIndices = this.freeTypeExtensions.GetGlyphIndices(this.facePtr, this.glyphChars);
+            var glyphIndices = this.fontService.GetGlyphIndices(this.facePtr, this.glyphChars);
 
             var glyphImages = CreateGlyphImages(glyphIndices);
 
-            var glyphMetrics = this.freeTypeExtensions.CreateGlyphMetrics(this.facePtr, glyphIndices);
+            var glyphMetrics = this.fontService.CreateGlyphMetrics(this.facePtr, glyphIndices);
 
             var fontAtlasMetrics = CalcAtlasMetrics(glyphImages);
 
@@ -125,48 +109,6 @@ namespace Velaptor.Services
             }
 
             return (atlasImage, glyphMetrics.Values.ToArray());
-        }
-
-        /// <inheritdoc/>
-        public void SetAvailableCharacters(char[] glyphs)
-        {
-            // Make sure to add the '□' character to represent missing characters
-            // This will be rendered in place of characters that do not exist
-            var currentList = glyphs.ToList();
-
-            if (currentList.Contains(InvalidCharacter) is false)
-            {
-                currentList.Add(InvalidCharacter);
-            }
-
-            this.glyphChars = currentList.ToArray();
-        }
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.freeTypeInvoker.OnError -= FreeTypeInvoker_OnError;
-                this.freeTypeInvoker.Dispose();
-            }
-
-            this.isDisposed = true;
         }
 
         /// <summary>
@@ -271,14 +213,6 @@ namespace Velaptor.Services
         }
 
         /// <summary>
-        /// Occurs when there is a free type associated error.
-        /// </summary>
-        private void FreeTypeInvoker_OnError(object? sender, FreeTypeErrorEventArgs e)
-        {
-            // TODO: Throw custom free type exception here
-        }
-
-        /// <summary>
         /// Creates all of the glyph images for each glyph.
         /// </summary>
         /// <param name="glyphIndices">The glyph index for each glyph.</param>
@@ -294,7 +228,7 @@ namespace Velaptor.Services
                     continue;
                 }
 
-                var (pixelData, width, height) = this.freeTypeExtensions.CreateGlyphImage(this.facePtr, glyphKeyValue.Key, glyphKeyValue.Value);
+                var (pixelData, width, height) = this.fontService.CreateGlyphImage(this.facePtr, glyphKeyValue.Key, glyphKeyValue.Value);
 
                 var glyphImage = ToImageData(pixelData, width, height);
 

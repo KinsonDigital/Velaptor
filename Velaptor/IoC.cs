@@ -1,18 +1,21 @@
-﻿// <copyright file="IoC.cs" company="KinsonDigital">
+// <copyright file="IoC.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 using System.Runtime.CompilerServices;
-
 [assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
 namespace Velaptor
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.IO.Abstractions;
     using SimpleInjector;
     using Velaptor.Content;
+    using Velaptor.Content.Caching;
+    using Velaptor.Content.Factories;
+    using Velaptor.Content.Fonts.Services;
     using Velaptor.Factories;
     using Velaptor.Input;
     using Velaptor.NativeInterop.FreeType;
@@ -32,6 +35,7 @@ namespace Velaptor
     internal static class IoC
     {
         private static readonly FileSystem FileSystem = new ();
+        private static readonly IFileStreamFactory FileStream = FileSystem.FileStream;
         private static readonly Container IoCContainer = new ();
         private static bool isInitialized;
 
@@ -56,20 +60,20 @@ namespace Velaptor
         /// </summary>
         private static void SetupContainer()
         {
-            SetupOpenGL();
+            SetupNativeInterop();
+
+            SetupCaching();
+
+            SetupFactories();
 
             SetupServices();
 
             SetupContent();
 
-            IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IFreeTypeExtensions, FreeTypeExtensions>(Lifestyle.Singleton);
-
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
 
-            IoCContainer.Register<ISoundFactory, SoundFactory>();
-
+            IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
             IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
             IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
 
@@ -77,42 +81,72 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Setup container registration related to OpenGL.
+        /// Sets up container registration related to OpenGL.
         /// </summary>
-        private static void SetupOpenGL()
+        private static void SetupNativeInterop()
         {
             IoCContainer.Register(() => FileSystem.File, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Directory, Lifestyle.Singleton);
             IoCContainer.Register(() => FileSystem.Path, Lifestyle.Singleton);
+            IoCContainer.Register(() => FileStream, Lifestyle.Singleton);
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
 
+            IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLInvokerExtensions, GLInvokerExtensions>(Lifestyle.Singleton);
 
             IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
 
-            IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
+
+            IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
         }
 
         /// <summary>
-        /// Setup container registration related to services.
+        /// Sets up container registration related to caching.
+        /// </summary>
+        private static void SetupCaching() => IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
+
+        /// <summary>
+        /// Sets up container registration related to factories.
+        /// </summary>
+        private static void SetupFactories()
+        {
+            IoCContainer.Register<ISoundFactory, SoundFactory>();
+            IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<IFontFactory, FontFactory>();
+        }
+
+        /// <summary>
+        /// Sets up container registration related to services.
         /// </summary>
         private static void SetupServices()
         {
             IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
-            IoCContainer.Register<IEmbeddedResourceLoaderService, EmbeddedResourceLoaderService>(Lifestyle.Singleton);
+            IoCContainer.Register<IEmbeddedResourceLoaderService<string>, TextResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ITemplateProcessorService, ShaderTemplateProcessorService>(Lifestyle.Singleton);
             IoCContainer.Register<IShaderLoaderService<uint>, TextureShaderResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ISystemMonitorService, SystemMonitorService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontAtlasService, FontAtlasService>(Lifestyle.Singleton);
+            IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
+            IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
+            IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
+
+            IoCContainer.Register<IFontStatsService>(
+                () => new FontStatsService(
+                    IoCContainer.GetInstance<IFontService>(),
+                    PathResolverFactory.CreateFontPathResolver(),
+                    PathResolverFactory.CreateSystemFontPathResolver(),
+                    IoCContainer.GetInstance<IDirectory>(),
+                    IoCContainer.GetInstance<IPath>()), Lifestyle.Singleton);
 
             IoCContainer.Register<ITaskService, TaskService>();
             IoCContainer.SuppressDisposableTransientWarning<ITaskService>();
         }
 
         /// <summary>
-        /// Setup container registration related to content.
+        /// Sets up container registration related to content.
         /// </summary>
         private static void SetupContent() => IoCContainer.Register<AtlasTexturePathResolver>();
     }
