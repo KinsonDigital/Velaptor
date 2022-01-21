@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 		.github\workflows\validate-preview-release-branches-status-check.yml = .github\workflows\validate-preview-release-branches-status-check.yml
 		.github\workflows\validate-prod-release-branches-status-check.yml = .github\workflows\validate-prod-release-branches-status-check.yml
 		.github\workflows\version-status-check.yml = .github\workflows\version-status-check.yml
+		.github\workflows\preview-qa-release.yml = .github\workflows\preview-qa-release.yml
+		.github\workflows\triage-issue.yml = .github\workflows\triage-issue.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "PullRequestTemplates", "{6653D425-BD0A-42A4-A06C-715674139E0F}"
