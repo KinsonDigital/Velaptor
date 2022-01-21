@@ -36,7 +36,7 @@ namespace Velaptor.Content.Caching
         private readonly IFontAtlasService fontAtlasService;
         private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IPath path;
-        private readonly string[] DefaultFontNames =
+        private readonly string[] defaultFontNames =
         {
             DefaultRegularFont, DefaultBoldFont,
             DefaultItalicFont, DefaultBoldItalicFont,
@@ -139,7 +139,7 @@ namespace Velaptor.Content.Caching
                         fullFilePath = parseResult.MetaDataPrefix;
 
                         // If the font file is a default font, tag it so it does not get unloaded
-                        var defaultPrefix = this.DefaultFontNames.Contains($"{fileNameWithoutExtension}{FontFileExtension}")
+                        var defaultPrefix = this.defaultFontNames.Contains($"{fileNameWithoutExtension}{FontFileExtension}")
                             ? DefaultTag
                             : string.Empty;
 

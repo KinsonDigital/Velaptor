@@ -65,7 +65,7 @@ namespace VelaptorTests.Content
 
         #region Constructor Tests
         [Fact]
-        private void Ctor_WithNullTextureCache_ThrowsException()
+        public void Ctor_WithNullTextureCache_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -80,7 +80,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        private void Ctor_WithNullPath_ThrowsException()
+        public void Ctor_WithNullPath_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -95,7 +95,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        private void Ctor_WithNullSubTextureData_ThrowsException()
+        public void Ctor_WithNullSubTextureData_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -112,7 +112,7 @@ namespace VelaptorTests.Content
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        private void Ctor_WithNullOrEmptyDirPath_ThrowsException(string dirPath)
+        public void Ctor_WithNullOrEmptyDirPath_ThrowsException(string dirPath)
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -129,7 +129,7 @@ namespace VelaptorTests.Content
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        private void Ctor_WithNullOrEmptyAtlasName_ThrowsException(string atlasName)
+        public void Ctor_WithNullOrEmptyAtlasName_ThrowsException(string atlasName)
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
