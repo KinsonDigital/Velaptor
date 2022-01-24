@@ -102,7 +102,7 @@ This can be done by using the included testing application.
 - [ ] Issues exist and are linked to this PR.
 - [ ] My code follows the coding style of this project.
     - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and lets discuss it.
-- [ ] All tests passed locally.
+- [ ] All tests passed locally.~~~~
     - Status checks are put in place to run unit tests every single time a change is pushed to a PR.  This does not mean that the tests pass in both the local and CI environment.
 - [ ] Update library version by updating the **_\<Version/\>_** and **_\<FileVersion/\>_** tags in the **_Velaptor_** **_.csproj_** file.
     - Every change to a PR will run a status check to confirm that the version has the correct syntax, a tag does not exist, and that it has not already been published to [nuget](https://www.nuget.org/)
