@@ -46,6 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "Pul
 		.github\PULL_REQUEST_TEMPLATE\feature-to-develop.md = .github\PULL_REQUEST_TEMPLATE\feature-to-develop.md
 		.github\PULL_REQUEST_TEMPLATE\release-to-master.md = .github\PULL_REQUEST_TEMPLATE\release-to-master.md
 		.github\PULL_REQUEST_TEMPLATE\preview-feature-to-release.md = .github\PULL_REQUEST_TEMPLATE\preview-feature-to-release.md
+		.github\PULL_REQUEST_TEMPLATE\preview-to-release.md = .github\PULL_REQUEST_TEMPLATE\preview-to-release.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IssueTemplates", "IssueTemplates", "{369B0299-64E9-4C42-937B-501E599C1210}"
