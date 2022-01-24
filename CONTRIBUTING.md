@@ -1,4 +1,4 @@
-# Contributing
+<h2 style="font-weight:bold" align="center">Contributing</h2>
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
@@ -6,15 +6,29 @@ email, or any other method with the owners of this repository before making a ch
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 Before contributing, please review all coding standards and development practices put in place for the project.
 
-## Pull Request Process
+---
 
-1. Pull down the latest from the develop branch and create a feature branch from develop using the naming scheme below
-   * feature/us-[user-story-id]-[brief-description]
-2. When finished, create a pull request to merge the feature branch into the develop branch.
-   * NOTE: Before creating a pull request, make sure that the source code follows the projects coding standards and guidelines.
+<h2 style="font-weight:bold" align="center">Pull Request Process</h2>
 
+**Velaptor** encourages and uses [Early Pull Requests](https://medium.com/practical-blend/pull-request-first-f6bb667a9b6). Please don't wait until you're finished with your work before creating a PR.
 
-## Code of Conduct
+1. Fork the repository
+2. Create a feature branch following the feature branch section in the documentation [here](./Documentation/Branching.md)
+3. Add an empty commit to the new feature branch to start your work off.
+   * Use this git command: `git commit --allow-empty -m "start of [thing you're working on]"`
+4. Once you've pushed a commit, open a [**draft pull request**](https://github.blog/2019-02-14-introducing-draft-pull-requests/). Do this **before** you actually start working.
+5. Make your commits in small, incremental steps with clear descriptions.
+6. All unit tests must pass before a PR will be completed.
+7. Make sure that the code follows the the coding standards.
+   * Pay attention to the warnings in **Visual Studio**!!
+   * Refer to the *.editorconfig* files in the code base for rules
+8. Tag a maintainer when you're done and ask for a review!
+
+If you have any questions, contact a project maintainer.
+
+---
+
+<h2 style="font-weight:bold" align="center">Code of Conduct</h2>
 
 ### Our Pledge
 
