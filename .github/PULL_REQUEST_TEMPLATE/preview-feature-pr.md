@@ -16,17 +16,24 @@ This pull request is for preview release **_[add version here]_**
 
 <details open><summary>🌳Branching🌳</summary>
 
-The name of the preview feature branch for this pull request has the following syntax below
+The name of the preview feature branch for this pull request has the following syntax.
 
-**Syntax:** _preview/feature/&lt;issue-id&gt;-&lt;description&gt;_  
-**Example:** _preview/feature/123-my-preview-change_
+Syntax: _preview/feature/&lt;issue-id&gt;-&lt;description&gt;_  
+Example: _preview/feature/123-my-preview-change_
 - [ ] Yes
 - [ ] No
 
-This name of the branch that this branch is merging into follows the following syntax
+The name of the branch for this pull request is merging into a preview branch with the following syntax.
 
-**Syntax:** _preview/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;-preview.&lt;prev-number&gt;_  
-**Example:** _preview/v1.2.3-preview.4_
+Syntax: _preview/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;-preview.&lt;prev-number&gt;_  
+Example: _preview/v1.2.3-preview.4_
+- [ ] Yes
+- [ ] No
+
+The preview feature branch for this pull request was created from a preview branch with the following syntax.
+
+Syntax: _preview/feature/&lt;issue-id&gt;-&lt;description&gt;_  
+Example: _preview/feature/123-my-preview-change_
 - [ ] Yes
 - [ ] No
 </details>
@@ -52,7 +59,7 @@ Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/
 
 <details open><summary>✨Enhancements✨</summary>
 
-Contains enhancements that add a feature or behavior
+Contains enhancements that add a feature or behavior.
 - [ ] Yes
     - [ ] An ![enhancement-label](https://user-images.githubusercontent.com/85414302/150804213-bd043c7b-54d2-4562-ad3f-69a07723a5ef.png) label has been added to the pull request.
 - [ ]  No
@@ -70,7 +77,7 @@ These kinds of changes are only done by the project owner and maintainers.
 
 <details open><summary>📃Documentation Updates📃</summary>
 
-Contains changes that require documentation updates to code docs or **Velaptor** documentation
+Contains changes that require documentation updates to code docs or **Velaptor** documentation.
 - [ ] Yes
     - [ ] I have updated the documentation accordingly.
     - [ ] A ![documentation-label](https://user-images.githubusercontent.com/85414302/150810133-939e985d-2246-4c77-8c9c-815855da3664.png) label has been added to the pull request.
@@ -80,7 +87,7 @@ Contains changes that require documentation updates to code docs or **Velaptor**
 
 <details open><summary>🧪Unit Testing🧪</summary>
 
-My change requires unit tests to be written
+My change requires unit tests to be written.
 - [ ] Yes
     - [ ] I have added tests to cover my changes.
 - [ ] No
@@ -100,10 +107,10 @@ This can be done by using the included testing application.
 
 <!-- Go over all the following points, and put an `x` in all the boxes that apply. -->
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
-- [ ] Pull request title matches the title of the linked issue
+- [ ] Pull request title matches the title of the linked issue.
 - [ ] The **_[add version here]_** text in the pull request description replaced with the version.
 - [ ] Associated issue exists and is linked to this pull request.
-    - One issue per pull request 
+    - One issue per pull request.
 - [ ] My code follows the coding style of this project.
     - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and lets discuss it.
 - [ ] All tests passed locally.

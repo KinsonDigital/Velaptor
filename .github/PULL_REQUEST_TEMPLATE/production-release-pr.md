@@ -16,13 +16,20 @@ This pull request is for production release **_[add version here]_**
 
 <details open><summary>🌳Branching🌳</summary>
 
-The release branch name for this pull request follows the syntax _**release/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;**_  
-**Example:** _release/v1.2.3_
+The release branch name for this pull request has the following the syntax.
+
+Syntax: _release/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;_  
+Example: _release/v1.2.3_
 - [ ] Yes
 - [ ] No
 
-This pull request merges a release branch into a production branch  
-**Example:** _master_
+The name of the branch for this pull request is merging into the production branch with the name **_master_**.
+
+- [ ] Yes
+- [ ] No
+
+This release branch was created from the development branch with the name **_develop_**.
+
 - [ ] Yes
 - [ ] No
 </details>
@@ -48,7 +55,7 @@ Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/
 
 <details open><summary>✨Enhancements✨</summary>
 
-Contains enhancements that add a feature or behavior
+Contains enhancements that add a feature or behavior.
 - [ ] Yes
     - [ ] An ![enhancement-label](https://user-images.githubusercontent.com/85414302/150804213-bd043c7b-54d2-4562-ad3f-69a07723a5ef.png) label has been added to the pull request.
 - [ ]  No
@@ -76,7 +83,7 @@ Contains changes that require documentation updates to code docs or **Velaptor**
 
 <details open><summary>🧪Unit Testing🧪</summary>
 
-My change requires unit tests to be written
+My change requires unit tests to be written.
 - [ ] Yes
     - [ ] I have added tests to cover my changes.
 - [ ] No

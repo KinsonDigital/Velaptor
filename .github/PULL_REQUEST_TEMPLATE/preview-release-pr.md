@@ -16,17 +16,24 @@ This pull request is for preview release **_[add version here]_**
 
 <details open><summary>🌳Branching🌳</summary>
 
-The name of the preview branch for this pull request has the following syntax below
+The name of the preview branch for this pull request has the following syntax.
 
-**Syntax:** _preview/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;-preview.&lt;prev-number&gt;_  
-**Example:** _preview/v1.2.3-preview.4_
+Syntax: _preview/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;-preview.&lt;prev-number&gt;_  
+Example: _preview/v1.2.3-preview.4_
 - [ ] Yes
 - [ ] No
 
-This pull request merges the preview branch for this pull request into a release branch that follows the following syntax
+The name of the branch for this pull request is merging into a release branch with the following syntax.
 
-**Syntax:** _**release/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;**_  
-**Example:** _release/v1.2.3_
+Syntax: _release/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;_  
+Example: _release/v1.2.3_
+- [ ] Yes
+- [ ] No
+
+This preview release branch was created from a release branch with the following syntax.
+
+Syntax: _release/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;_  
+Example: _release/v1.2.3_
 - [ ] Yes
 - [ ] No
 </details>
@@ -52,7 +59,7 @@ Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/
 
 <details open><summary>✨Enhancements✨</summary>
 
-Contains enhancements that add a feature or behavior
+Contains enhancements that add a feature or behavior.
 - [ ] Yes
     - [ ] An ![enhancement-label](https://user-images.githubusercontent.com/85414302/150804213-bd043c7b-54d2-4562-ad3f-69a07723a5ef.png) label has been added to the pull request.
 - [ ]  No
@@ -70,7 +77,7 @@ These kinds of changes are only done by the project owner and maintainers.
 
 <details open><summary>📃Documentation Updates📃</summary>
 
-Contains changes that require documentation updates to code docs or **Velaptor** documentation
+Contains changes that require documentation updates to code docs or **Velaptor** documentation.
 - [ ] Yes
     - [ ] I have updated the documentation accordingly.
     - [ ] A ![documentation-label](https://user-images.githubusercontent.com/85414302/150810133-939e985d-2246-4c77-8c9c-815855da3664.png) label has been added to the pull request.
@@ -80,8 +87,8 @@ Contains changes that require documentation updates to code docs or **Velaptor**
 
 <details open><summary>🧪Unit Testing🧪</summary>
 
-My change requires unit tests to be writ~~ten
-- [ ] Yes~~
+My change requires unit tests to be written.
+- [ ] Yes
     - [ ] I have added tests to cover my changes.
 - [ ] No
 </details>
@@ -101,7 +108,7 @@ This can be done by using the included testing application.
 <!-- Go over all the following points, and put an `x` in all the boxes that apply. -->
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] Pull request title matches the example below with the correct version.
-    - **Example:** 🚀Release To Preview - v1.2.3-preview.4
+    - Example: 🚀Release To Preview - v1.2.3-preview.4
 - [ ] The **_[add version here]_** text in the pull request description replaced with the version.
 - [ ] Issues exist and are linked to this pull request.
 - [ ] My code follows the coding style of this project.
@@ -110,8 +117,8 @@ This can be done by using the included testing application.
     - Status checks are put in place to run unit tests every single time a change is pushed to a pull request.  This does not mean that the tests pass in both the local and CI environment.
 - [ ] Update library version by updating the **_\<Version/\>_** and **_\<FileVersion/\>_** tags in the **_Velaptor_** **_.csproj_** file.
     - Every change to a pull request will run a status check to confirm that the version has the correct syntax, a tag does not exist, and that it has not already been published to [nuget](https://www.nuget.org/)
-    - Make sure to add the **_-preview.\<number\>_** syntax to the end of the version
-      **Example:**
+    - Make sure to add the **_-preview.\<number\>_** syntax to the end of the version.
+      Example:
         ``` html
         <Version>1.2.3-preview.4</Version>
         <FileVersion>1.2.3-preview.4</FileVersion>
