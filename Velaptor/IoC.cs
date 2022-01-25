@@ -62,6 +62,8 @@ namespace Velaptor
         {
             SetupNativeInterop();
 
+            SetupObservables();
+
             SetupCaching();
 
             SetupFactories();
@@ -72,10 +74,7 @@ namespace Velaptor
 
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
-
             IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
-            IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
-            IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
 
             isInitialized = true;
         }
@@ -100,6 +99,16 @@ namespace Velaptor
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
 
             IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
+        }
+
+        /// <summary>
+        /// Sets up container registration related to observables.
+        /// </summary>
+        private static void SetupObservables()
+        {
+            IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
+            IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
+            IoCContainer.Register<RemoveBatchItemObservable>(Lifestyle.Singleton);
         }
 
         /// <summary>

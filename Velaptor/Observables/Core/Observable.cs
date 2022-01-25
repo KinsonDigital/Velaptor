@@ -11,30 +11,30 @@ namespace Velaptor.Observables.Core
     /// <summary>
     /// Defines a provider for push-based notifications.
     /// </summary>
-    /// <typeparam name="T">The information related to the notification.</typeparam>
-    public abstract class Observable<T> : IObservable<T>, IDisposable
+    /// <typeparam name="TData">The data to send with the notification.</typeparam>
+    public abstract class Observable<TData> : IObservable<TData>, IDisposable
     {
-        private readonly List<IObserver<T>> observers = new ();
+        private readonly List<IObserver<TData>> observers = new ();
         private bool isDisposed;
 
         /// <summary>
         /// Gets the list of observers that are subscribed to this <see cref="Observable{T}"/>.
         /// </summary>
-        public ReadOnlyCollection<IObserver<T>> Observers => new (this.observers);
+        public ReadOnlyCollection<IObserver<TData>> Observers => new (this.observers);
 
         /// <summary>
         /// Subscribes the given <paramref name="observer"/> to get push notifications from this <see cref="Observable{T}"/>.
         /// </summary>
         /// <param name="observer">The observer to subscribe.</param>
         /// <returns>The unsubscriber to use to unsubscribe the <see cref="IObserver{T}"/> from this <see cref="Observable{T}"/>.</returns>
-        public virtual IDisposable Subscribe(IObserver<T> observer)
+        public virtual IDisposable Subscribe(IObserver<TData> observer)
         {
             if (!this.observers.Contains(observer))
             {
                 this.observers.Add(observer);
             }
 
-            return new ObserverUnsubscriber<T>(this.observers, observer);
+            return new ObserverUnsubscriber<TData>(this.observers, observer);
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
