@@ -8,6 +8,7 @@ namespace VelaptorTests.Fakes
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Used to test the abstract class <see cref="ShaderProgram"/>.
@@ -26,8 +27,8 @@ namespace VelaptorTests.Fakes
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
-            IObservable<bool> glInitObservable,
-            IObservable<bool> shutDownObservable)
+            VelObservable glInitObservable,
+            VelObservable shutDownObservable)
             : base(gl, glExtensions, shaderLoaderService, glInitObservable, shutDownObservable)
         {
         }

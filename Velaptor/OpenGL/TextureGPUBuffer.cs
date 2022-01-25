@@ -15,6 +15,7 @@ namespace Velaptor.OpenGL
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Exceptions;
     using NETRect = System.Drawing.Rectangle;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -40,8 +41,8 @@ namespace Velaptor.OpenGL
         public TextureGPUBuffer(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IObservable<bool> glInitObservable,
-            IObservable<bool> shutDownObservable)
+            VelObservable glInitObservable,
+            VelObservable shutDownObservable)
             : base(gl, glExtensions, glInitObservable, shutDownObservable)
         {
         }

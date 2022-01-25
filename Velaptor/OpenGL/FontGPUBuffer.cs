@@ -13,6 +13,7 @@ namespace Velaptor.OpenGL
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Exceptions;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -38,8 +39,8 @@ namespace Velaptor.OpenGL
         public FontGPUBuffer(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IObservable<bool> glInitObservable,
-            IObservable<bool> shutDownObservable)
+            VelObservable glInitObservable,
+            VelObservable shutDownObservable)
             : base(gl, glExtensions, glInitObservable, shutDownObservable)
         {
         }

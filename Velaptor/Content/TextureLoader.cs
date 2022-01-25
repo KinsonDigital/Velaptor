@@ -14,6 +14,7 @@ namespace Velaptor.Content
     using Velaptor.Factories;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -62,7 +63,7 @@ namespace Velaptor.Content
             IPathResolver texturePathResolver,
             IFile file,
             IPath path,
-            IObservable<bool> shutDownObservable)
+            VelObservable shutDownObservable)
         {
             this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
             this.texturePathResolver = texturePathResolver ?? throw new ArgumentNullException(nameof(texturePathResolver), "The parameter must not be null.");

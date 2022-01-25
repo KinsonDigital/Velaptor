@@ -12,16 +12,17 @@ namespace Velaptor.Observables
     /// <summary>
     /// Creates an observable to send push notifications to signal that the application is shutting down.
     /// </summary>
-    internal class ShutDownObservable : Observable<bool>
+    public class ShutDownObservable : Observable<bool>
     {
         /// <summary>
         /// Sends a push notification to signal application shutdown.
         /// </summary>
-        public void OnShutDown()
+        /// <param name="data">True to signal that the application is shutting down.</param>
+        public override void PushNotification(bool data)
         {
             foreach (var observer in Observers)
             {
-                observer.OnNext(true);
+                observer.OnNext(data);
             }
         }
     }

@@ -8,6 +8,7 @@ namespace Velaptor.OpenGL
     using System;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Services;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -34,8 +35,8 @@ namespace Velaptor.OpenGL
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
-            IObservable<bool> glInitObservable,
-            IObservable<bool> shutDownObservable)
+            VelObservable glInitObservable,
+            VelObservable shutDownObservable)
             : base(gl, glExtensions, shaderLoaderService, glInitObservable, shutDownObservable)
         {
         }

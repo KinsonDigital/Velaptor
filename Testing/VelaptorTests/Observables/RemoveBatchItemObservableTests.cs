@@ -25,7 +25,7 @@ namespace VelaptorTests.Observables
             observable.Subscribe(observer.Object);
 
             // Act
-            observable.OnRemoveBatchItem(123u);
+            observable.PushNotification(123u);
 
             // Assert
             observer.Verify(m => m.OnNext(123u), Times.Once());

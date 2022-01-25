@@ -12,5 +12,6 @@ namespace VelaptorTests.Fakes
     /// <typeparam name="T">The type of notification to set.</typeparam>
     public class ObservableFake<T> : Observable<T>
     {
+        public override void PushNotification(T data) => throw new System.NotImplementedException();
     }
 }

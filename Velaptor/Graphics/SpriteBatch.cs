@@ -20,6 +20,7 @@ namespace Velaptor.Graphics
     using Velaptor.Services;
     using NETRect = System.Drawing.Rectangle;
     using NETSizeF = System.Drawing.SizeF;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -70,8 +71,8 @@ namespace Velaptor.Graphics
             IGPUBuffer<SpriteBatchItem> fontBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
-            IObservable<bool> glInitObservable,
-            IObservable<bool> shutDownObservable)
+            VelObservable glInitObservable,
+            VelObservable shutDownObservable)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
 

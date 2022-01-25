@@ -18,6 +18,7 @@ namespace VelaptorTests.Content
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="AtlasLoader"/> class.
@@ -37,7 +38,7 @@ namespace VelaptorTests.Content
         private readonly Mock<IJSONService> mockJSONService;
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace VelaptorTests.Content
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(AtlasContentName)).Returns(AtlasContentName);
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Constructor Tests

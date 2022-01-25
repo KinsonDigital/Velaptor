@@ -37,6 +37,9 @@ namespace Velaptor.Observables.Core
             return new ObserverUnsubscriber<TData>(this.observers, observer);
         }
 
+        /// <inheritdoc/>
+        public abstract void PushNotification(TData data);
+
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public virtual void Dispose()
         {

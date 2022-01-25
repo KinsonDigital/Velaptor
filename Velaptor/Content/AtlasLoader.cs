@@ -17,6 +17,7 @@ namespace Velaptor.Content
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
     using Velaptor.Services;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -74,7 +75,7 @@ namespace Velaptor.Content
             IJSONService jsonService,
             IFile file,
             IPath path,
-            IObservable<bool> shutDownObservable)
+            VelObservable shutDownObservable)
         {
             this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
             this.atlasDataFactory = atlasDataFactory ?? throw new ArgumentNullException(nameof(atlasDataFactory), "The parameter must not be null.");

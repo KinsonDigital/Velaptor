@@ -18,7 +18,7 @@ namespace Velaptor.Observables
         /// Sends a push notification to remove a batch item from a batch service.
         /// </summary>
         /// <param name="batchItemId">The ID of the batch item to remove.</param>
-        public void OnRemoveBatchItem(uint batchItemId)
+        public override void PushNotification(uint batchItemId)
         {
             foreach (var observer in Observers)
             {

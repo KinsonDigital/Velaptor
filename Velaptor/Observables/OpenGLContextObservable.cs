@@ -18,7 +18,7 @@ namespace Velaptor.Observables
         /// Sends a push notification that the OpenGL context has been created.
         /// </summary>
         /// <param name="data">The data to send with the notification.</param>
-        public virtual void OnGLContextCreated(object data)
+        public override void PushNotification(object data)
         {
             foreach (var observer in Observers)
             {

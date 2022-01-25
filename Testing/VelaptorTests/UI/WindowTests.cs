@@ -22,6 +22,7 @@ namespace VelaptorTests.UI
     {
         private readonly Mock<IWindow> mockWindow;
         private readonly Mock<IContentLoader> mockContentLoader;
+        private readonly Mock<IObservable<bool>> mockShutDownObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowTests"/> class.
@@ -32,6 +33,7 @@ namespace VelaptorTests.UI
 
             this.mockWindow = new Mock<IWindow>();
             this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
+            this.mockShutDownObservable = new Mock<IObservable<bool>>();
         }
 
         #region Prop Tests
@@ -207,7 +209,7 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new WindowFake(null);
+                var unused = new WindowFake(null, this.mockShutDownObservable.Object);
             }, "Window must not be null. (Parameter 'window')");
         }
 
@@ -259,6 +261,6 @@ namespace VelaptorTests.UI
         /// of testing the abstract <see cref="Window"/> class.
         /// </summary>
         /// <returns>The instance used for testing.</returns>
-        private WindowFake CreateWindow() => new (this.mockWindow.Object);
+        private WindowFake CreateWindow() => new (this.mockWindow.Object, this.mockShutDownObservable.Object);
     }
 }

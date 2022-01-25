@@ -7,6 +7,7 @@ namespace VelaptorTests.Fakes
     using System;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Used to test the abstract class <see cref="GPUBufferBase{TData}"/>.
@@ -22,8 +23,8 @@ namespace VelaptorTests.Fakes
         /// <param name="shutDownObservable">Mocked <see cref="IObservable{T}"/> for application shutdown..</param>
         public GPUBufferFake(IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IObservable<bool> glInitObservable,
-            IObservable<bool> shutDownObservable)
+            VelObservable glInitObservable,
+            VelObservable shutDownObservable)
             : base(gl, glExtensions, glInitObservable, shutDownObservable)
         {
         }

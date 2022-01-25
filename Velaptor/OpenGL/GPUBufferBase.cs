@@ -10,6 +10,7 @@ namespace Velaptor.OpenGL
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables.Core;
     using NETSizeF = System.Drawing.SizeF;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -41,8 +42,8 @@ namespace Velaptor.OpenGL
         internal GPUBufferBase(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IObservable<bool> glInitObservable,
-            IObservable<bool> shutDownObservable)
+            VelObservable glInitObservable,
+            VelObservable shutDownObservable)
         {
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");

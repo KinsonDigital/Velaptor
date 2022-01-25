@@ -19,6 +19,7 @@ namespace VelaptorTests.Content.Fonts
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="FontLoader"/> class.
@@ -48,7 +49,7 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IFileStreamFactory> mockFileStream;
         private readonly Mock<IFont> mockFont;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
@@ -130,7 +131,7 @@ namespace VelaptorTests.Content.Fonts
                 .Returns(FontContentName);
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Constructor Tests

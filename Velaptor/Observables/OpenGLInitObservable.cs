@@ -17,7 +17,8 @@ namespace Velaptor.Observables
         /// <summary>
         /// Sends a push notification that OpenGL has been initialized.
         /// </summary>
-        public void OnOpenGLInitialized()
+        /// <param name="data">True to signal that the application is shutting down.</param>
+        public override void PushNotification(bool data)
         {
             foreach (var observer in Observers)
             {

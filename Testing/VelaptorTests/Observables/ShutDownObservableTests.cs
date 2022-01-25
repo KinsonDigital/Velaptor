@@ -25,7 +25,7 @@ namespace VelaptorTests.Observables
             observable.Subscribe(observer.Object);
 
             // Act
-            observable.OnShutDown();
+            observable.PushNotification(true);
 
             // Assert
             observer.Verify(m => m.OnNext(true), Times.Once());

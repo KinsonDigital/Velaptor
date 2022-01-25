@@ -14,6 +14,7 @@ namespace VelaptorTests.OpenGL
     using Velaptor.OpenGL.Exceptions;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     public class FontGPUBufferTests
     {
@@ -22,9 +23,9 @@ namespace VelaptorTests.OpenGL
         private const uint IndexBufferId = 333;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<IObservable<bool>> mockGLInitObservable;
+        private readonly Mock<VelObservable> mockGLInitObservable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
         private IObserver<bool>? glInitObserver;
         private bool vertexBufferCreated;
@@ -57,7 +58,7 @@ namespace VelaptorTests.OpenGL
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
 
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
-            this.mockGLInitObservable = new Mock<IObservable<bool>>();
+            this.mockGLInitObservable = new Mock<VelObservable>();
             this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
                 .Returns(this.mockGLInitUnsubscriber.Object)
                 .Callback<IObserver<bool>>(observer =>
@@ -70,7 +71,7 @@ namespace VelaptorTests.OpenGL
                     this.glInitObserver = observer;
                 });
 
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
         }
 

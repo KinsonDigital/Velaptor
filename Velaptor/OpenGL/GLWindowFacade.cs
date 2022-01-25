@@ -327,7 +327,7 @@ namespace Velaptor.OpenGL
                 throw new InvalidOperationException(this.nullWindowExceptionMsg);
             }
 
-            this.glContextObservable.OnGLContextCreated(this.glWindow);
+            this.glContextObservable.PushNotification(this.glWindow);
 
             this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
             this.glInputContext = this.glWindow.CreateInput();

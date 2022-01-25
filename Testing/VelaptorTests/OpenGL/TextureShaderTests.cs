@@ -10,6 +10,7 @@ namespace VelaptorTests.OpenGL
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="TextureShader"/> class.
@@ -19,9 +20,9 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IShaderLoaderService<uint>> mockShaderLoaderService;
-        private readonly Mock<IObservable<bool>> mockGLInitObservable;
+        private readonly Mock<VelObservable> mockGLInitObservable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureShaderTests"/> class.
@@ -31,8 +32,8 @@ namespace VelaptorTests.OpenGL
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
             this.mockShaderLoaderService = new Mock<IShaderLoaderService<uint>>();
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
-            this.mockGLInitObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
+            this.mockGLInitObservable = new Mock<VelObservable>();
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         }
 

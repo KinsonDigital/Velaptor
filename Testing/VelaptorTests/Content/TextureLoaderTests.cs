@@ -13,6 +13,7 @@ namespace VelaptorTests.Content
     using Velaptor.Content.Exceptions;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="TextureLoader"/> class.
@@ -27,7 +28,7 @@ namespace VelaptorTests.Content
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace VelaptorTests.Content
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}{TextureExtension}")).Returns(TextureFileName);
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Constructor Tests

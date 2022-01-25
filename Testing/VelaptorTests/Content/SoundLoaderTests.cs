@@ -11,6 +11,7 @@ namespace VelaptorTests.Content
     using Velaptor.Content.Factories;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="SoundLoader"/> class.
@@ -24,7 +25,7 @@ namespace VelaptorTests.Content
         private readonly Mock<ISound> mockSound;
         private readonly Mock<ISoundFactory> soundFactory;
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace VelaptorTests.Content
             this.mockPath.Setup(m => m.HasExtension(SoundName)).Returns(false);
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Constructor Tests

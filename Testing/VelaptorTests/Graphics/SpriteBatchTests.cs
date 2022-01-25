@@ -20,6 +20,7 @@ namespace VelaptorTests.Graphics
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="SpriteBatch"/> class.
@@ -41,9 +42,9 @@ namespace VelaptorTests.Graphics
         private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockFontBuffer;
         private readonly Mock<IBatchManagerService<SpriteBatchItem>> mockFontBatchService;
         private readonly Mock<IFont> mockFont;
-        private readonly Mock<IObservable<bool>> mockGLInitObservable;
+        private readonly Mock<VelObservable> mockGLInitObservable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
         private readonly char[] glyphChars =
         {
@@ -87,7 +88,7 @@ namespace VelaptorTests.Graphics
                 new ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)>(new Dictionary<uint, (bool shouldRender, SpriteBatchItem item)>());
 
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
-            this.mockGLInitObservable = new Mock<IObservable<bool>>();
+            this.mockGLInitObservable = new Mock<VelObservable>();
             this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
                 .Returns(this.mockGLInitUnsubscriber.Object)
                 .Callback<IObserver<bool>>(observer =>
@@ -101,7 +102,7 @@ namespace VelaptorTests.Graphics
                 });
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
 
             var mockFontTextureAtlas = new Mock<ITexture>();
             mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);

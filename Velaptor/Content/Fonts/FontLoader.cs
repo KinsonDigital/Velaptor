@@ -17,6 +17,7 @@ namespace Velaptor.Content.Fonts
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
     using Velaptor.Services;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -96,7 +97,7 @@ namespace Velaptor.Content.Fonts
             IFile file,
             IFileStreamFactory fileStream,
             IPath path,
-            IObservable<bool> shutDownObservable)
+            VelObservable shutDownObservable)
         {
             this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
             this.embeddedFontResourceService = embeddedFontResourceService ?? throw new ArgumentNullException(nameof(embeddedFontResourceService), "The parameter must not be null.");

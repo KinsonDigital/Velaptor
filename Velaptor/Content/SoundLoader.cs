@@ -13,6 +13,7 @@ namespace Velaptor.Content
     using Velaptor.Factories;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -57,7 +58,7 @@ namespace Velaptor.Content
             IPathResolver soundPathResolver,
             ISoundFactory soundFactory,
             IPath path,
-            IObservable<bool> shutDownObservable)
+            VelObservable shutDownObservable)
         {
             this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), "The parameter must not be null.");
             this.soundFactory = soundFactory ?? throw new ArgumentNullException(nameof(soundFactory), "The parameter must not be null.");

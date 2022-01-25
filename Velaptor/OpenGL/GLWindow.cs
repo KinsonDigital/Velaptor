@@ -260,7 +260,7 @@ namespace Velaptor.OpenGL
              * The context of initialized here is that the OpenGL context is set
              *and the related GLFW window has been created and is ready to go.
              */
-            this.glObservable.OnOpenGLInitialized();
+            this.glObservable.PushNotification(true);
 
             Initialized = true;
 

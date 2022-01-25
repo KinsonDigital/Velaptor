@@ -23,11 +23,11 @@ namespace VelaptorTests.Observables
 
             var observer = new Mock<IObserver<object>>();
 
-            var openGLObservable = new OpenGLContextObservable();
-            openGLObservable.Subscribe(observer.Object);
+            var glInitObservable = new OpenGLContextObservable();
+            glInitObservable.Subscribe(observer.Object);
 
             // Act
-            openGLObservable.OnGLContextCreated(notificationData);
+            glInitObservable.PushNotification(notificationData);
 
             // Assert
             observer.Verify(m => m.OnNext(notificationData), Times.Once());

@@ -14,6 +14,7 @@ namespace VelaptorTests.OpenGL
     using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Initializes a new instance of <see cref="ShaderProgramTests"/>.
@@ -31,9 +32,9 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<IObservable<bool>> mockGLInitObservable;
+        private readonly Mock<VelObservable> mockGLInitObservable;
         private readonly Mock<IDisposable> mockGLInitObservableUnsubscriber;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
         private readonly Mock<IDisposable> mockShutDownObservableUnsubscriber;
         private IObserver<bool>? glInitObserver;
 
@@ -70,7 +71,7 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus, out getProgramStatusCode));
             this.mockGL.Setup(m => m.CreateProgram()).Returns(ShaderProgramId);
 
-            this.mockGLInitObservable = new Mock<IObservable<bool>>();
+            this.mockGLInitObservable = new Mock<VelObservable>();
             this.mockGLInitObservableUnsubscriber = new Mock<IDisposable>();
             this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
                 .Returns(this.mockGLInitObservableUnsubscriber.Object)
@@ -84,7 +85,7 @@ namespace VelaptorTests.OpenGL
                     this.glInitObserver = observer;
                 });
 
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
             this.mockShutDownObservableUnsubscriber = new Mock<IDisposable>();
         }
 

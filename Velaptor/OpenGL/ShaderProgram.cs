@@ -12,6 +12,7 @@ namespace Velaptor.OpenGL
     using Velaptor.Observables.Core;
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.OpenGL.Services;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -41,8 +42,8 @@ namespace Velaptor.OpenGL
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
-            IObservable<bool> glInitObservable,
-            IObservable<bool> shutDownObservable)
+            VelObservable glInitObservable,
+            VelObservable shutDownObservable)
         {
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
