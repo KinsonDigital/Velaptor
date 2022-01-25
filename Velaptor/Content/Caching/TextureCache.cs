@@ -229,7 +229,7 @@ namespace Velaptor.Content.Caching
                     contentName = $"FontAtlasTexture|{contentName}|{parseResult.MetaData}";
                 }
 
-                return this.textureFactory.Create(contentName, fullFilePath, imageData, false);
+                return this.textureFactory.Create(contentName, fullFilePath, imageData);
             });
         }
 

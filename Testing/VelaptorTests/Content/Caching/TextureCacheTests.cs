@@ -67,12 +67,12 @@ namespace VelaptorTests.Content.Caching
 
             // Mock the return of a regular texture if the texture content was a texture file
             this.mockTextureFactory.Setup(m =>
-                    m.Create(TextureName, this.textureFilePath, this.textureImageData, It.IsAny<bool>()))
+                    m.Create(TextureName, this.textureFilePath, this.textureImageData))
                 .Returns(mockRegularTexture.Object);
 
             // Mock the return of a font texture atlas if the texture content was a font file
             this.mockTextureFactory.Setup(m =>
-                    m.Create(this.fontAtlasTextureName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()))
+                    m.Create(this.fontAtlasTextureName, this.fontFilePath, this.fontImageData))
                 .Returns(mockFontAtlasTexture.Object);
 
             this.mockFontMetaDataParser = new Mock<IFontMetaDataParser>();
@@ -272,7 +272,7 @@ namespace VelaptorTests.Content.Caching
             this.mockImageService.Verify(m => m.Load(this.textureFilePath), Times.Once);
             this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.textureFilePath), Times.Exactly(2));
             this.mockTextureFactory.Verify(m =>
-                m.Create(TextureName, this.textureFilePath, this.textureImageData, It.IsAny<bool>()), Times.Once);
+                m.Create(TextureName, this.textureFilePath, this.textureImageData), Times.Once);
 
             Assert.Same(actualA, actualB);
         }
@@ -307,10 +307,9 @@ namespace VelaptorTests.Content.Caching
                     m.Create(
                         It.IsAny<string>(),
                         It.IsAny<string>(),
-                        It.IsAny<ImageData>(),
-                        It.IsAny<bool>()))
+                        It.IsAny<ImageData>()))
                 .Returns(() => firstCreateInvoked ? mockSecondTexture.Object : mockFirstTexture.Object)
-                .Callback<string, string, ImageData, bool>((_, _, _, _) =>
+                .Callback<string, string, ImageData>((_, _, _) =>
                 {
                     if (firstCreateInvoked)
                     {
@@ -354,7 +353,7 @@ namespace VelaptorTests.Content.Caching
             this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Exactly(2));
 
             this.mockTextureFactory.Verify(m =>
-                m.Create(this.fontAtlasTextureName, this.fontFilePath, this.fontImageData, It.IsAny<bool>()), Times.Once);
+                m.Create(this.fontAtlasTextureName, this.fontFilePath, this.fontImageData), Times.Once);
 
             Assert.Same(actualA, actualB);
         }
@@ -498,7 +497,7 @@ namespace VelaptorTests.Content.Caching
             var name = textureName ?? TextureName;
             var path = filePath ?? this.textureFilePath;
 
-            this.mockTextureFactory.Setup(m => m.Create(name, path, It.IsAny<ImageData>(), It.IsAny<bool>()))
+            this.mockTextureFactory.Setup(m => m.Create(name, path, It.IsAny<ImageData>()))
                 .Returns(texture);
         }
     }

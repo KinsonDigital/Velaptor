@@ -20,8 +20,7 @@ namespace Velaptor.Content.Factories
         /// <param name="name">The name of the texture.</param>
         /// <param name="filePath">The file path to the texture.</param>
         /// <param name="imageData">The image data of the texture.</param>
-        /// <param name="isPooled">True to have the object pooled.</param>
         /// <returns>The <see cref="ITexture"/> instance.</returns>
-        ITexture Create(string name, string filePath, ImageData imageData, bool isPooled);
+        ITexture Create(string name, string filePath, ImageData imageData);
     }
 }

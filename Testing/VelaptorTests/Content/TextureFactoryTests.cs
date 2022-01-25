@@ -63,7 +63,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                factory.Create(name, "test-path", new ImageData(null, 1, 2), true);
+                factory.Create(name, "test-path", new ImageData(null, 1, 2));
             }, "The parameter must not be null or empty. (Parameter 'name')");
         }
 
@@ -78,7 +78,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                factory.Create("test-name", filePath, new ImageData(null, 1, 2), true);
+                factory.Create("test-name", filePath, new ImageData(null, 1, 2));
             }, "The parameter must not be null or empty. (Parameter 'filePath')");
         }
 
@@ -89,7 +89,7 @@ namespace VelaptorTests.Content
             var factory = CreateFactory();
 
             // Act
-            factory.Create("test-name", "test-path", new ImageData(null, 1, 2), true);
+            factory.Create("test-name", "test-path", new ImageData(null, 1, 2));
 
             // Assert
             // NOTE: These are only here to prove that the same injected objects are the ones being used.

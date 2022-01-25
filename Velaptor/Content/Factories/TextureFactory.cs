@@ -43,7 +43,7 @@ namespace Velaptor.Content.Factories
         }
 
         /// <inheritdoc/>
-        public ITexture Create(string name, string filePath, ImageData imageData, bool isPooled)
+        public ITexture Create(string name, string filePath, ImageData imageData)
         {
             if (string.IsNullOrEmpty(name))
             {
