@@ -25,8 +25,6 @@ namespace VelaptorTests.Content
         private readonly Mock<ISound> mockSound;
         private readonly Mock<ISoundFactory> soundFactory;
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<VelObservable> mockShutDownObservable;
-        private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoaderTests"/> class.
@@ -46,9 +44,6 @@ namespace VelaptorTests.Content
 
             this.mockPath = new Mock<IPath>();
             this.mockPath.Setup(m => m.HasExtension(SoundName)).Returns(false);
-
-            this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Constructor Tests
@@ -61,8 +56,7 @@ namespace VelaptorTests.Content
                 var unused = new SoundLoader(
                     null,
                     this.soundFactory.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'soundPathResolver')");
         }
 
@@ -75,8 +69,7 @@ namespace VelaptorTests.Content
                 var unused = new SoundLoader(
                     this.mockSoundPathResolver.Object,
                     null,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'soundFactory')");
         }
 
@@ -89,23 +82,8 @@ namespace VelaptorTests.Content
                 var unused = new SoundLoader(
                     this.mockSoundPathResolver.Object,
                     this.soundFactory.Object,
-                    null,
-                    this.mockShutDownObservable.Object);
-            }, "The parameter must not be null. (Parameter 'path')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
-        {
-            // Arrange, Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new SoundLoader(
-                    this.mockSoundPathResolver.Object,
-                    this.soundFactory.Object,
-                    this.mockPath.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+            }, "The parameter must not be null. (Parameter 'path')");
         }
         #endregion
 
@@ -141,36 +119,7 @@ namespace VelaptorTests.Content
             loader.Unload(SoundName);
 
             // Assert
-            this.mockSound.Verify(m => m.Dispose(), Times.Once());
-        }
-
-        [Fact]
-        public void WithShutDownNotification_DisposesOfLoader()
-        {
-            // Arrange
-            IObserver<bool>? shutDownObserver = null;
-            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
-                .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
-                {
-                    if (observer is null)
-                    {
-                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
-                    }
-
-                    shutDownObserver = observer;
-                });
-
-            var loader = CreateSoundLoader();
-            loader.Load(SoundName);
-
-            // Act
-            shutDownObserver?.OnNext(true);
-            shutDownObserver?.OnNext(true);
-
-            // Assert
-            this.mockSound.Verify(m => m.Dispose(), Times.Once());
-            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+            Assert.True(false, "Gets this test working again");
         }
         #endregion
 
@@ -181,7 +130,6 @@ namespace VelaptorTests.Content
         private SoundLoader CreateSoundLoader() => new (
             this.mockSoundPathResolver.Object,
             this.soundFactory.Object,
-            this.mockPath.Object,
-            this.mockShutDownObservable.Object);
+            this.mockPath.Object);
     }
 }

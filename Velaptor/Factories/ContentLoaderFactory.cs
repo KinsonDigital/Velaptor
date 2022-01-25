@@ -12,7 +12,6 @@ namespace Velaptor.Factories
     using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
-    using Velaptor.Observables;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 
@@ -57,14 +56,12 @@ namespace Velaptor.Factories
             var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
             var file = IoC.Container.GetInstance<IFile>();
             var path = IoC.Container.GetInstance<IPath>();
-            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
 
             textureLoader = new TextureLoader(
                 textureCache,
                 texturePathResolver,
                 file,
-                path,
-                shutDownObservable);
+                path);
 
             return textureLoader;
         }
@@ -87,7 +84,6 @@ namespace Velaptor.Factories
             var jsonService = IoC.Container.GetInstance<IJSONService>();
             var file = IoC.Container.GetInstance<IFile>();
             var path = IoC.Container.GetInstance<IPath>();
-            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
 
             atlasLoader = new AtlasLoader(
                 textureCache,
@@ -95,8 +91,7 @@ namespace Velaptor.Factories
                 atlasDataPathResolver,
                 jsonService,
                 file,
-                path,
-                shutDownObservable);
+                path);
 
             return atlasLoader;
         }
@@ -116,13 +111,11 @@ namespace Velaptor.Factories
             var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
             var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             var path = IoC.Container.GetInstance<IPath>();
-            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
 
             soundLoader = new SoundLoader(
                 soundPathResolver,
                 soundFactory,
-                path,
-                shutDownObservable);
+                path);
 
             return soundLoader;
         }
@@ -149,7 +142,6 @@ namespace Velaptor.Factories
             var file = IoC.Container.GetInstance<IFile>();
             var fileStream = IoC.Container.GetInstance<IFileStreamFactory>();
             var path = IoC.Container.GetInstance<IPath>();
-            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
 
             fontLoader = new FontLoader(
                 fontAtlasService,
@@ -161,8 +153,7 @@ namespace Velaptor.Factories
                 directory,
                 file,
                 fileStream,
-                path,
-                shutDownObservable);
+                path);
 
             return fontLoader;
         }

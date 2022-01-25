@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundLoader.cs" company="KinsonDigital">
+// <copyright file="SoundLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,8 +11,6 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
-    using Velaptor.Observables;
-    using Velaptor.Observables.Core;
     using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
@@ -26,8 +24,6 @@ namespace Velaptor.Content
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundFactory soundFactory;
         private readonly IPath path;
-        private readonly IDisposable shutDownObservableUnsubscriber;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
@@ -39,9 +35,6 @@ namespace Velaptor.Content
             this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
             this.soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
-
-            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
-            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -50,26 +43,17 @@ namespace Velaptor.Content
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="soundFactory">Creates sound instances.</param>
         /// <param name="path">Processes directory and fle paths.</param>
-        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
         internal SoundLoader(
             IPathResolver soundPathResolver,
             ISoundFactory soundFactory,
-            IPath path,
-            VelObservable shutDownObservable)
+            IPath path)
         {
             this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), "The parameter must not be null.");
             this.soundFactory = soundFactory ?? throw new ArgumentNullException(nameof(soundFactory), "The parameter must not be null.");
             this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
-
-            if (shutDownObservable is null)
-            {
-                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
-            }
-
-            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -122,28 +106,9 @@ namespace Velaptor.Content
 
             if (this.sounds.TryRemove(filePath, out var sound))
             {
-                sound.Dispose();
+                // TODO: Use the DisposeSoundsObservable here
+                // sound.Dispose();
             }
-        }
-
-        /// <summary>
-        /// Shuts down the application by unloading all of the sounds.
-        /// </summary>
-        private void ShutDown()
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            foreach (var sound in this.sounds.Values)
-            {
-                sound.Dispose();
-            }
-
-            this.shutDownObservableUnsubscriber.Dispose();
-
-            this.isDisposed = true;
         }
     }
 }

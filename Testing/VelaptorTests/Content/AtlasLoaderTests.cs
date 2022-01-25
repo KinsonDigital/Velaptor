@@ -38,8 +38,6 @@ namespace VelaptorTests.Content
         private readonly Mock<IJSONService> mockJSONService;
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<VelObservable> mockShutDownObservable;
-        private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasLoaderTests"/> class.
@@ -64,9 +62,6 @@ namespace VelaptorTests.Content
             this.mockPath.Setup(m => m.GetDirectoryName(this.atlasImageFilePath)).Returns(DirPath);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.atlasImageFilePath)).Returns(AtlasContentName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(AtlasContentName)).Returns(AtlasContentName);
-
-            this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Constructor Tests
@@ -82,8 +77,7 @@ namespace VelaptorTests.Content
                     this.mockAtlasPathResolver.Object,
                     this.mockJSONService.Object,
                     this.mockFile.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'textureCache')");
         }
 
@@ -99,8 +93,7 @@ namespace VelaptorTests.Content
                     this.mockAtlasPathResolver.Object,
                     this.mockJSONService.Object,
                     this.mockFile.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'atlasDataFactory')");
         }
 
@@ -116,8 +109,7 @@ namespace VelaptorTests.Content
                     null,
                     this.mockJSONService.Object,
                     this.mockFile.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'atlasDataPathResolver')");
         }
 
@@ -133,8 +125,7 @@ namespace VelaptorTests.Content
                     this.mockAtlasPathResolver.Object,
                     null,
                     this.mockFile.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'jsonService')");
         }
 
@@ -150,8 +141,7 @@ namespace VelaptorTests.Content
                     this.mockAtlasPathResolver.Object,
                     this.mockJSONService.Object,
                     null,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'file')");
         }
 
@@ -167,26 +157,8 @@ namespace VelaptorTests.Content
                     this.mockAtlasPathResolver.Object,
                     this.mockJSONService.Object,
                     this.mockFile.Object,
-                    null,
-                    this.mockShutDownObservable.Object);
-            }, "The parameter must not be null. (Parameter 'path')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
-        {
-            // Arrange & Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new AtlasLoader(
-                    this.mockTextureCache.Object,
-                    this.mockAtlasDataFactory.Object,
-                    this.mockAtlasPathResolver.Object,
-                    this.mockJSONService.Object,
-                    this.mockFile.Object,
-                    this.mockPath.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+            }, "The parameter must not be null. (Parameter 'path')");
         }
         #endregion
 
@@ -369,33 +341,6 @@ namespace VelaptorTests.Content
             // Assert
             this.mockTextureCache.Verify(m => m.Unload(AtlasContentName));
         }
-
-        [Fact]
-        public void WithShutDownNotification_DisposesOfLoader()
-        {
-            // Arrange
-            IObserver<bool>? shutDownObserver = null;
-            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
-                .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
-                {
-                    if (observer is null)
-                    {
-                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
-                    }
-
-                    shutDownObserver = observer;
-                });
-
-            CreateLoader();
-
-            // Act
-            shutDownObserver?.OnNext(true);
-            shutDownObserver?.OnNext(true);
-
-            // Assert
-            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-        }
         #endregion
 
         /// <summary>
@@ -430,8 +375,7 @@ namespace VelaptorTests.Content
                 this.mockAtlasPathResolver.Object,
                 this.mockJSONService.Object,
                 this.mockFile.Object,
-                this.mockPath.Object,
-                this.mockShutDownObservable.Object);
+                this.mockPath.Object);
 
         /// <summary>
         /// Mocks the atlas data factory for the purpose of testing.

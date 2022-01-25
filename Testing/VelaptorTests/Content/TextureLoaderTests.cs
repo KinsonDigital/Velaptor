@@ -28,8 +28,6 @@ namespace VelaptorTests.Content
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<VelObservable> mockShutDownObservable;
-        private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
@@ -49,9 +47,6 @@ namespace VelaptorTests.Content
             this.mockPath.Setup(m => m.GetExtension(this.textureFilePath)).Returns(TextureExtension);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}")).Returns(TextureFileName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}{TextureExtension}")).Returns(TextureFileName);
-
-            this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Constructor Tests
@@ -65,8 +60,7 @@ namespace VelaptorTests.Content
                     null,
                     this.mockTexturePathResolver.Object,
                     this.mockFile.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'textureCache')");
         }
 
@@ -80,8 +74,7 @@ namespace VelaptorTests.Content
                     this.mockTextureCache.Object,
                     null,
                     this.mockFile.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'texturePathResolver')");
         }
 
@@ -95,8 +88,7 @@ namespace VelaptorTests.Content
                     this.mockTextureCache.Object,
                     this.mockTexturePathResolver.Object,
                     null,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'file')");
         }
 
@@ -110,24 +102,8 @@ namespace VelaptorTests.Content
                     this.mockTextureCache.Object,
                     this.mockTexturePathResolver.Object,
                     this.mockFile.Object,
-                    null,
-                    this.mockShutDownObservable.Object);
-            }, "The parameter must not be null. (Parameter 'path')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
-        {
-            // Arrange & Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new TextureLoader(
-                    this.mockTextureCache.Object,
-                    this.mockTexturePathResolver.Object,
-                    this.mockFile.Object,
-                    this.mockPath.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+            }, "The parameter must not be null. (Parameter 'path')");
         }
         #endregion
 
@@ -218,34 +194,6 @@ namespace VelaptorTests.Content
             // Assert
             this.mockTextureCache.Verify(m => m.Unload(this.textureFilePath), Times.Once);
         }
-
-        [Fact]
-        public void WithShutDownNotification_DisposesOfLoader()
-        {
-            // Arrange
-            IObserver<bool>? shutDownObserver = null;
-            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
-                .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
-                {
-                    if (observer is null)
-                    {
-                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
-                    }
-
-                    shutDownObserver = observer;
-                });
-
-            CreateLoader();
-
-            // Act
-            shutDownObserver?.OnNext(true);
-            shutDownObserver?.OnNext(true);
-
-            // Assert
-            Assert.True(false, "Get this test working again.");
-            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-        }
         #endregion
 
         /// <summary>
@@ -254,9 +202,8 @@ namespace VelaptorTests.Content
         /// <returns>The instance to test.</returns>
         private TextureLoader CreateLoader()
             => new (this.mockTextureCache.Object,
-             this.mockTexturePathResolver.Object,
-             this.mockFile.Object,
-             this.mockPath.Object,
-             this.mockShutDownObservable.Object);
+                this.mockTexturePathResolver.Object,
+                this.mockFile.Object,
+                this.mockPath.Object);
     }
 }

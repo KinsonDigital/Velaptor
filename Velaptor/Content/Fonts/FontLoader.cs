@@ -9,13 +9,10 @@ namespace Velaptor.Content.Fonts
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.IO.Abstractions;
-    using System.Linq;
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
-    using Velaptor.Observables;
-    using Velaptor.Observables.Core;
     using Velaptor.Services;
     using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
@@ -42,8 +39,6 @@ namespace Velaptor.Content.Fonts
         private readonly IFileStreamFactory fileStream;
         private readonly IFile file;
         private readonly IPath path;
-        private readonly IDisposable shutDownObservableUnsubscriber;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
@@ -63,9 +58,6 @@ namespace Velaptor.Content.Fonts
             this.fileStream = IoC.Container.GetInstance<IFileStreamFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
 
-            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
-            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
-
             SetupDefaultFonts();
         }
 
@@ -82,7 +74,6 @@ namespace Velaptor.Content.Fonts
         /// <param name="file">Performs file related operations.</param>
         /// <param name="fileStream">Provides a stream to a file for file operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
-        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
@@ -96,8 +87,7 @@ namespace Velaptor.Content.Fonts
             IDirectory directory,
             IFile file,
             IFileStreamFactory fileStream,
-            IPath path,
-            VelObservable shutDownObservable)
+            IPath path)
         {
             this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
             this.embeddedFontResourceService = embeddedFontResourceService ?? throw new ArgumentNullException(nameof(embeddedFontResourceService), "The parameter must not be null.");
@@ -109,13 +99,6 @@ namespace Velaptor.Content.Fonts
             this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
             this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream), "The parameter must not be null.");
             this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
-
-            if (shutDownObservable is null)
-            {
-                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
-            }
-
-            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
 
             SetupDefaultFonts();
         }
@@ -255,30 +238,6 @@ namespace Velaptor.Content.Fonts
 
                 throw new CachingMetaDataException(exceptionMsg);
             }
-        }
-
-        /// <summary>
-        /// Shuts down the application by unloading all of the font atlas textures.
-        /// </summary>
-        private void ShutDown()
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            var fontAtlasTextureKeys = (from k in this.textureCache.CacheKeys
-                                            where this.fontMetaDataParser.Parse(k).ContainsMetaData
-                                            select k).ToArray();
-
-            foreach (var key in fontAtlasTextureKeys)
-            {
-                this.textureCache.Unload(key);
-            }
-
-            this.shutDownObservableUnsubscriber.Dispose();
-
-            this.isDisposed = true;
         }
 
         /// <summary>

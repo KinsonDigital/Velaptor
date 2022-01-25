@@ -5,7 +5,6 @@
 namespace VelaptorTests.Content.Fonts
 {
     using System;
-    using System.Collections.ObjectModel;
     using System.Drawing;
     using System.IO;
     using System.IO.Abstractions;
@@ -49,8 +48,6 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IFileStreamFactory> mockFileStream;
         private readonly Mock<IFont> mockFont;
-        private readonly Mock<VelObservable> mockShutDownObservable;
-        private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoaderTests"/> class.
@@ -129,9 +126,6 @@ namespace VelaptorTests.Content.Fonts
                 .Returns(FontContentName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.fontFilePath))
                 .Returns(FontContentName);
-
-            this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Constructor Tests
@@ -151,8 +145,7 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     this.mockFile.Object,
                     this.mockFileStream.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'fontAtlasService')");
         }
 
@@ -172,8 +165,7 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     this.mockFile.Object,
                     this.mockFileStream.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'embeddedFontResourceService')");
         }
 
@@ -193,8 +185,7 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     this.mockFile.Object,
                     this.mockFileStream.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'fontPathResolver')");
         }
 
@@ -214,8 +205,7 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     this.mockFile.Object,
                     this.mockFileStream.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'textureCache')");
         }
 
@@ -235,8 +225,7 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     this.mockFile.Object,
                     this.mockFileStream.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'fontFactory')");
         }
 
@@ -256,8 +245,7 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     this.mockFile.Object,
                     this.mockFileStream.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'fontMetaDataParser')");
         }
 
@@ -277,8 +265,7 @@ namespace VelaptorTests.Content.Fonts
                     null,
                     this.mockFile.Object,
                     this.mockFileStream.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'directory')");
         }
 
@@ -298,8 +285,7 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     null,
                     this.mockFileStream.Object,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'file')");
         }
 
@@ -319,8 +305,7 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     this.mockFile.Object,
                     null,
-                    this.mockPath.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockPath.Object);
             }, "The parameter must not be null. (Parameter 'fileStream')");
         }
 
@@ -340,30 +325,8 @@ namespace VelaptorTests.Content.Fonts
                     this.mockDirectory.Object,
                     this.mockFile.Object,
                     this.mockFileStream.Object,
-                    null,
-                    this.mockShutDownObservable.Object);
-            }, "The parameter must not be null. (Parameter 'path')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
-        {
-            // Arrange, Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new FontLoader(
-                    this.mockFontAtlasService.Object,
-                    this.mockEmbeddedFontResourceService.Object,
-                    this.mockFontPathResolver.Object,
-                    this.mockTextureCache.Object,
-                    this.mockFontFactory.Object,
-                    this.mockFontMetaDataParser.Object,
-                    this.mockDirectory.Object,
-                    this.mockFile.Object,
-                    this.mockFileStream.Object,
-                    this.mockPath.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+            }, "The parameter must not be null. (Parameter 'path')");
         }
 
         [Fact]
@@ -686,64 +649,6 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontPathResolver.Verify(m => m.ResolveFilePath(FontContentName), Times.Once);
             this.mockTextureCache.Verify(m => m.Unload(this.filePathWithMetaData), Times.Once);
         }
-
-        [Fact]
-        public void WithShutDownNotification_DisposesOfLoader()
-        {
-            // Arrange
-            IObserver<bool>? shutDownObserver = null;
-            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
-                .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
-                {
-                    if (observer is null)
-                    {
-                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
-                    }
-
-                    shutDownObserver = observer;
-                });
-
-            const string texturePath = @"C:\Textures\test-texture.png";
-            const string fontPath = @"C:\Fonts\test-font.ttf";
-            var fontPathWithMetaData = $"{fontPath}|{this.metaData}";
-
-            this.mockTextureCache.SetupGet(p => p.CacheKeys)
-                .Returns(() => new ReadOnlyCollection<string>(new[]
-                {
-                    texturePath,
-                    fontPathWithMetaData,
-                }));
-
-            this.mockFontMetaDataParser.Setup(m => m.Parse(texturePath))
-                .Returns(new FontMetaDataParseResult(
-                    false,
-                    false,
-                    string.Empty,
-                    string.Empty,
-                    0));
-
-            this.mockFontMetaDataParser.Setup(m => m.Parse(fontPathWithMetaData))
-                .Returns(new FontMetaDataParseResult(
-                    true,
-                    true,
-                    fontPath,
-                    this.metaData,
-                    0));
-
-            CreateLoader();
-
-            // Act
-            shutDownObserver?.OnNext(true);
-            shutDownObserver?.OnNext(true);
-
-            // Assert
-            this.mockFontMetaDataParser.Verify(m => m.Parse(texturePath), Times.Once);
-            this.mockFontMetaDataParser.Verify(m => m.Parse(fontPathWithMetaData), Times.Once);
-            this.mockTextureCache.Verify(m => m.Unload(texturePath), Times.Never);
-            this.mockTextureCache.Verify(m => m.Unload(fontPathWithMetaData), Times.Once);
-            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-        }
         #endregion
 
         /// <summary>
@@ -789,8 +694,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockDirectory.Object,
             this.mockFile.Object,
             this.mockFileStream.Object,
-            this.mockPath.Object,
-            this.mockShutDownObservable.Object);
+            this.mockPath.Object);
 
         /// <summary>
         /// Mocks the loading of an embedded font resource file using the given name for the purpose of testing.

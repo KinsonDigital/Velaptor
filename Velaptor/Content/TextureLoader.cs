@@ -12,8 +12,6 @@ namespace Velaptor.Content
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Factories;
-    using Velaptor.Observables;
-    using Velaptor.Observables.Core;
     using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
@@ -28,8 +26,6 @@ namespace Velaptor.Content
         private readonly IPathResolver texturePathResolver;
         private readonly IFile file;
         private readonly IPath path;
-        private readonly IDisposable shutDownObservableUnsubscriber;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
@@ -42,9 +38,6 @@ namespace Velaptor.Content
             this.texturePathResolver = PathResolverFactory.CreateTexturePathResolver();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
-
-            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
-            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -54,7 +47,6 @@ namespace Velaptor.Content
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
-        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
@@ -62,20 +54,12 @@ namespace Velaptor.Content
             IItemCache<string, ITexture> textureCache,
             IPathResolver texturePathResolver,
             IFile file,
-            IPath path,
-            VelObservable shutDownObservable)
+            IPath path)
         {
             this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
             this.texturePathResolver = texturePathResolver ?? throw new ArgumentNullException(nameof(texturePathResolver), "The parameter must not be null.");
             this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
             this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
-
-            if (shutDownObservable is null)
-            {
-                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
-            }
-
-            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -121,20 +105,5 @@ namespace Velaptor.Content
 
         /// <inheritdoc/>
         public void Unload(string nameOrPath) => this.textureCache.Unload(nameOrPath);
-
-        /// <summary>
-        /// Shuts down the application by unloading all of the textures.
-        /// </summary>
-        private void ShutDown()
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            this.shutDownObservableUnsubscriber.Dispose();
-
-            this.isDisposed = true;
-        }
     }
 }
