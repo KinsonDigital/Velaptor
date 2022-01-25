@@ -1267,8 +1267,6 @@ namespace VelaptorTests.Graphics
                 .VerifyRemove(e => e.BatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once());
             this.mockFontBatchService
                 .VerifyRemove(e => e.BatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once());
-            this.mockTextureBuffer.Verify(m => m.Dispose(), Times.Once());
-            this.mockFontBuffer.Verify(m => m.Dispose(), Times.Once());
             this.mockGLInitUnsubscriber.Verify(m => m.Dispose(), Times.Once());
             this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }

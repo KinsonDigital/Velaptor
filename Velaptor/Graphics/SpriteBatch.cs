@@ -361,8 +361,6 @@ namespace Velaptor.Graphics
             this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
             this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
             this.cachedUIntProps.Clear();
-            this.textureBuffer.Dispose();
-            this.fontBuffer.Dispose();
             this.glInitUnsubscriber.Dispose();
             this.shutDownUnsubscriber.Dispose();
 

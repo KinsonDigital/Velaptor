@@ -165,7 +165,6 @@ namespace Velaptor.UI
         public virtual void OnUnload()
         {
             // TODO: Send out shutdown observable notification here
-            GPUBufferFactory.Dispose();
         }
 
         /// <summary>

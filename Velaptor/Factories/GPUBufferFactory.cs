@@ -65,17 +65,5 @@ namespace Velaptor.Factories
 
             return fontBuffer;
         }
-
-        /// <summary>
-        /// Disposes of the GPU buffer instances.
-        /// </summary>
-        public static void Dispose()
-        {
-            textureBuffer?.Dispose();
-            textureBuffer = null;
-
-            fontBuffer?.Dispose();
-            fontBuffer = null;
-        }
     }
 }
