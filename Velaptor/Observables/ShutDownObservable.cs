@@ -5,6 +5,7 @@
 namespace Velaptor.Observables
 {
     // ReSharper disable RedundantNameQualifier
+    using System.Diagnostics.CodeAnalysis;
     using Velaptor.Observables.Core;
 
     // ReSharper restore RedundantNameQualifier
@@ -18,6 +19,7 @@ namespace Velaptor.Observables
         /// Sends a push notification to signal application shutdown.
         /// </summary>
         /// <param name="data">True to signal that the application is shutting down.</param>
+        [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach", Justification = "Required for proper observable operation.")]
         public override void PushNotification(bool data)
         {
             for (var i = 0; i < Observers.Count; i++)

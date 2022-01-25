@@ -10,7 +10,7 @@ namespace Velaptor.Observables.Core
     /// Provides a mechanism for receiving push-based notifications.
     /// </summary>
     /// <typeparam name="T">The information related to the notification.</typeparam>
-    public class Observer<T> : IObserver<T>
+    public sealed class Observer<T> : IObserver<T>
     {
         private readonly Action<T>? onNext;
         private readonly Action? onCompleted;
@@ -30,36 +30,12 @@ namespace Velaptor.Observables.Core
         }
 
         /// <inheritdoc/>
-        public virtual void OnNext(T value)
-        {
-            if (this.onNext is null)
-            {
-                return;
-            }
-
-            this.onNext(value);
-        }
+        public void OnNext(T value) => this.onNext?.Invoke(value);
 
         /// <inheritdoc/>
-        public virtual void OnCompleted()
-        {
-            if (this.onCompleted is null)
-            {
-                return;
-            }
-
-            this.onCompleted();
-        }
+        public void OnCompleted() => this.onCompleted?.Invoke();
 
         /// <inheritdoc/>
-        public virtual void OnError(Exception error)
-        {
-            if (this.onError is null)
-            {
-                return;
-            }
-
-            this.onError(error);
-        }
+        public void OnError(Exception error) => this.onError?.Invoke(error);
     }
 }
