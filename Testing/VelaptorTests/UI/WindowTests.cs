@@ -14,6 +14,7 @@ namespace VelaptorTests.UI
     using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="Window"/> class.
@@ -22,7 +23,7 @@ namespace VelaptorTests.UI
     {
         private readonly Mock<IWindow> mockWindow;
         private readonly Mock<IContentLoader> mockContentLoader;
-        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<VelObservable> mockShutDownObservable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowTests"/> class.
@@ -33,7 +34,7 @@ namespace VelaptorTests.UI
 
             this.mockWindow = new Mock<IWindow>();
             this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
-            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservable = new Mock<VelObservable>();
         }
 
         #region Prop Tests

@@ -90,14 +90,14 @@ namespace VelaptorTesting
         public static uint WindowHeight { get; private set; }
 
         /// <inheritdoc cref="Window.OnLoad"/>
-        public override void OnLoad()
+        protected override void OnLoad()
         {
             this.sceneManager.LoadContent();
             base.OnLoad();
         }
 
         /// <inheritdoc cref="Window.OnUpdate"/>
-        public override void OnUpdate(FrameTime frameTime)
+        protected override void OnUpdate(FrameTime frameTime)
         {
             this.sceneManager.Update(frameTime);
 
@@ -107,7 +107,7 @@ namespace VelaptorTesting
         }
 
         /// <inheritdoc cref="Window.OnDraw"/>
-        public override void OnDraw(FrameTime frameTime)
+        protected override void OnDraw(FrameTime frameTime)
         {
             this.sceneManager.Render();
 
@@ -115,14 +115,14 @@ namespace VelaptorTesting
         }
 
         /// <inheritdoc cref="Window.OnUnload"/>
-        public override void OnUnload()
+        protected override void OnUnload()
         {
             this.sceneManager.UnloadContent();
             base.OnUnload();
         }
 
         /// <inheritdoc cref="Window.OnResize"/>
-        public override void OnResize(SizeU size)
+        protected override void OnResize(SizeU size)
         {
             WindowWidth = Width;
             WindowHeight = Height;

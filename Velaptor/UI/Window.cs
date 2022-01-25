@@ -10,6 +10,8 @@ namespace Velaptor.UI
     using System.Numerics;
     using System.Threading.Tasks;
     using Velaptor.Content;
+    using Velaptor.Observables;
+    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -19,15 +21,40 @@ namespace Velaptor.UI
     public abstract class Window : IWindowProps, IDisposable
     {
         private readonly IWindow window;
+        private readonly VelObservable shutDownObservable;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="window">The window implementation that contains the window functionality.</param>
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        internal Window(IWindow window, VelObservable shutDownObservable)
+        {
+            this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
+            this.shutDownObservable = shutDownObservable;
+
+            this.window.Initialize = OnLoad;
+            this.window.Uninitialize = OnUnload;
+            this.window.Update = OnUpdate;
+            this.window.Draw = OnDraw;
+            this.window.WinResize = OnResize;
+
+            // Set the update frequency to default value of 60
+            // just in case the IWindow implementation is not
+            this.window.UpdateFrequency = 60;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Window"/> class.
+        /// </summary>
+        /// <param name="window">The window implementation that contains the window functionality.</param>
+        [ExcludeFromCodeCoverage]
         protected Window(IWindow window)
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
+            this.shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
+
             this.window.Initialize = OnLoad;
             this.window.Uninitialize = OnUnload;
             this.window.Update = OnUpdate;
@@ -42,6 +69,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Finalizes an instance of the <see cref="Window"/> class.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         ~Window()
         {
             if (UnitTestDetector.IsRunningFromUnitTest)
@@ -140,10 +168,19 @@ namespace Velaptor.UI
         public async Task ShowAsync() => await this.window.ShowAsync().ConfigureAwait(true);
 
         /// <summary>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
         /// Invoked when the window is loaded.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public virtual void OnLoad()
+        protected virtual void OnLoad()
         {
         }
 
@@ -152,7 +189,7 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void OnUpdate(FrameTime frameTime)
+        protected virtual void OnUpdate(FrameTime frameTime)
         {
         }
 
@@ -161,7 +198,7 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void OnDraw(FrameTime frameTime)
+        protected virtual void OnDraw(FrameTime frameTime)
         {
         }
 
@@ -169,27 +206,15 @@ namespace Velaptor.UI
         /// Invoked when the window is unloaded.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public virtual void OnUnload()
-        {
-            // TODO: Send out shutdown observable notification here
-        }
+        protected virtual void OnUnload() => this.shutDownObservable.PushNotification(true);
 
         /// <summary>
         /// Invoked when the window size changes.
         /// </summary>
         /// <param name="size">The new size.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void OnResize(SizeU size)
+        protected virtual void OnResize(SizeU size)
         {
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>

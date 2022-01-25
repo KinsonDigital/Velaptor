@@ -20,9 +20,9 @@ namespace Velaptor.Observables
         /// <param name="data">True to signal that the application is shutting down.</param>
         public override void PushNotification(bool data)
         {
-            foreach (var observer in Observers)
+            for (var i = 0; i < Observers.Count; i++)
             {
-                observer.OnNext(data);
+                Observers[i].OnNext(data);
             }
         }
     }
