@@ -110,6 +110,158 @@ namespace VelaptorTests.Graphics
 
         #region Constructor Tests
         [Fact]
+        public void CtorWithNullGLInvokerParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    null,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.mockGLInitObservable.Object);
+            }, $"The parameter must not be null. (Parameter 'gl')");
+        }
+
+        [Fact]
+        public void CtorWithNullTextureShaderParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    null,
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.mockGLInitObservable.Object);
+            }, $"The parameter must not be null. (Parameter 'textureShader')");
+        }
+
+        [Fact]
+        public void CtorWithNullFontShaderParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    null,
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.mockGLInitObservable.Object);
+            }, $"The parameter must not be null. (Parameter 'fontShader')");
+        }
+
+        [Fact]
+        public void CtorWithNullTextureGPUBufferParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    null,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.mockGLInitObservable.Object);
+            }, $"The parameter must not be null. (Parameter 'textureBuffer')");
+        }
+
+        [Fact]
+        public void CtorWithNullFontGPUBufferParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    null,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    this.mockGLInitObservable.Object);
+            }, $"The parameter must not be null. (Parameter 'fontBuffer')");
+        }
+
+        [Fact]
+        public void CtorWithNullTextureBatchServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    null,
+                    this.mockFontBatchService.Object,
+                    this.mockGLInitObservable.Object);
+            }, $"The parameter must not be null. (Parameter 'textureBatchService')");
+        }
+
+        [Fact]
+        public void CtorWithNullFontBatchServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    null,
+                    this.mockGLInitObservable.Object);
+            }, $"The parameter must not be null. (Parameter 'fontBatchService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullGLInitObservableParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SpriteBatch(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockTextureShader.Object,
+                    this.mockFontShader.Object,
+                    this.mockTextureBuffer.Object,
+                    this.mockFontBuffer.Object,
+                    this.mockTextureBatchService.Object,
+                    this.mockFontBatchService.Object,
+                    null);
+            }, $"The parameter must not be null. (Parameter 'glInitObservable')");
+        }
+
+        [Fact]
         public void Ctor_WhenInvoked_SubscribesToBatchingServicesFilledEvent()
         {
             // Act
@@ -120,101 +272,6 @@ namespace VelaptorTests.Graphics
                 .VerifyAdd(e => e.BatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
             this.mockFontBatchService
                 .VerifyAdd(e => e.BatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-        }
-
-        [Fact]
-        public void Ctor_WhenInvokedWithNullGLInvoker_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new SpriteBatch(
-                    null,
-                    this.mockGLExtensions.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockGLInitObservable.Object);
-            }, $"The '{nameof(IGLInvoker)}' must not be null. (Parameter 'gl')");
-        }
-
-        [Fact]
-        public void Ctor_WhenInvokedWithNullTextureShader_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new SpriteBatch(
-                    this.mockGL.Object,
-                    this.mockGLExtensions.Object,
-                    null,
-                    this.mockFontShader.Object,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockGLInitObservable.Object);
-            }, $"The 'textureShader' must not be null. (Parameter 'textureShader')");
-        }
-
-        [Fact]
-        public void Ctor_WhenInvokedWithNullFontShader_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new SpriteBatch(
-                    this.mockGL.Object,
-                    this.mockGLExtensions.Object,
-                    this.mockTextureShader.Object,
-                    null,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockGLInitObservable.Object);
-            }, $"The 'fontShader' must not be null. (Parameter 'fontShader')");
-        }
-
-        [Fact]
-        public void Ctor_WhenInvokedWithNullTextureGPUBuffer_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new SpriteBatch(
-                    this.mockGL.Object,
-                    this.mockGLExtensions.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    null,
-                    this.mockFontBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockGLInitObservable.Object);
-            }, $"The 'textureBuffer' must not be null. (Parameter 'textureBuffer')");
-        }
-
-        [Fact]
-        public void Ctor_WhenInvokedWithNullFontGPUBuffer_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new SpriteBatch(
-                    this.mockGL.Object,
-                    this.mockGLExtensions.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockTextureBuffer.Object,
-                    null,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockGLInitObservable.Object);
-            }, $"The 'fontBuffer' must not be null. (Parameter 'fontBuffer')");
         }
         #endregion
 

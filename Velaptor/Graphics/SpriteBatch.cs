@@ -71,20 +71,19 @@ namespace Velaptor.Graphics
             IBatchManagerService<SpriteBatchItem> fontBatchService,
             IObservable<bool> glInitObservable)
         {
-            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
+            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
 
-            this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), $"The '{nameof(IGLInvokerExtensions)}' must not be null.");
-            this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), $"The '{nameof(textureShader)}' must not be null.");
-            this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), $"The '{nameof(fontShader)}' must not be null.");
+            this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+            this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), "The parameter must not be null.");
+            this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), "The parameter must not be null.");
+            this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), "The parameter must not be null.");
+            this.fontBuffer = fontBuffer ?? throw new ArgumentNullException(nameof(fontBuffer), "The parameter must not be null.");
 
-            this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), $"The '{nameof(textureBuffer)}' must not be null.");
-            this.fontBuffer = fontBuffer ?? throw new ArgumentNullException(nameof(fontBuffer), $"The '{nameof(fontBuffer)}' must not be null.");
-
-            this.textureBatchService = textureBatchService;
+            this.textureBatchService = textureBatchService ?? throw new ArgumentNullException(nameof(textureBatchService), "The parameter must not be null.");
             this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.textureBatchService.BatchFilled += TextureBatchService_BatchFilled;
 
-            this.fontBatchService = fontBatchService;
+            this.fontBatchService = fontBatchService ?? throw new ArgumentNullException(nameof(fontBatchService), "The parameter must not be null.");
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
