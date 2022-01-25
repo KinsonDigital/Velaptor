@@ -14,6 +14,8 @@ namespace Velaptor.Content.Fonts
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
+    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -39,12 +41,14 @@ namespace Velaptor.Content.Fonts
         private readonly IFileStreamFactory fileStream;
         private readonly IFile file;
         private readonly IPath path;
+        private readonly IDisposable shutDownObservableUnsubscriber;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public FontLoader()
         {
             this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
@@ -57,6 +61,9 @@ namespace Velaptor.Content.Fonts
             this.file = IoC.Container.GetInstance<IFile>();
             this.fileStream = IoC.Container.GetInstance<IFileStreamFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
+
+            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
 
             SetupDefaultFonts();
         }
@@ -74,6 +81,7 @@ namespace Velaptor.Content.Fonts
         /// <param name="file">Performs file related operations.</param>
         /// <param name="fileStream">Provides a stream to a file for file operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         internal FontLoader(
             IFontAtlasService fontAtlasService,
             IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
@@ -84,7 +92,8 @@ namespace Velaptor.Content.Fonts
             IDirectory directory,
             IFile file,
             IFileStreamFactory fileStream,
-            IPath path)
+            IPath path,
+            IObservable<bool> shutDownObservable)
         {
             this.fontAtlasService = fontAtlasService;
             this.embeddedFontResourceService = embeddedFontResourceService;
@@ -96,6 +105,7 @@ namespace Velaptor.Content.Fonts
             this.file = file;
             this.fileStream = fileStream;
             this.path = path;
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
 
             SetupDefaultFonts();
         }
@@ -237,31 +247,26 @@ namespace Velaptor.Content.Fonts
             }
         }
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Shuts down the application by unloading all of the font atlas textures.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to dispose of managed resources.</param>
-        private void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                var fontAtlasTextureKeys = (from k in this.textureCache.CacheKeys
-                                                where this.fontMetaDataParser.Parse(k).ContainsMetaData
-                                                select k).ToArray();
+            var fontAtlasTextureKeys = (from k in this.textureCache.CacheKeys
+                                            where this.fontMetaDataParser.Parse(k).ContainsMetaData
+                                            select k).ToArray();
 
-                foreach (var key in fontAtlasTextureKeys)
-                {
-                    this.textureCache.Unload(key);
-                }
+            foreach (var key in fontAtlasTextureKeys)
+            {
+                this.textureCache.Unload(key);
             }
+
+            this.shutDownObservableUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }

@@ -48,6 +48,8 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IFileStreamFactory> mockFileStream;
         private readonly Mock<IFont> mockFont;
+        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoaderTests"/> class.
@@ -126,6 +128,9 @@ namespace VelaptorTests.Content.Fonts
                 .Returns(FontContentName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.fontFilePath))
                 .Returns(FontContentName);
+
+            this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+            this.mockShutDownObservable = new Mock<IObservable<bool>>();
         }
 
         #region Constructor Tests
@@ -451,9 +456,22 @@ namespace VelaptorTests.Content.Fonts
         }
 
         [Fact]
-        public void Dispose_WhenInvoked_DisposesOfTextures()
+        public void WithShutDownNotification_DisposesOfLoader()
         {
             // Arrange
+            IObserver<bool>? shutDownObserver = null;
+            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(this.mockShutDownUnsubscriber.Object)
+                .Callback<IObserver<bool>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
+                    }
+
+                    shutDownObserver = observer;
+                });
+
             const string texturePath = @"C:\Textures\test-texture.png";
             const string fontPath = @"C:\Fonts\test-font.ttf";
             var fontPathWithMetaData = $"{fontPath}|{this.metaData}";
@@ -481,17 +499,18 @@ namespace VelaptorTests.Content.Fonts
                     this.metaData,
                     0));
 
-            var loader = CreateLoader();
+            CreateLoader();
 
             // Act
-            loader.Dispose();
-            loader.Dispose();
+            shutDownObserver?.OnNext(true);
+            shutDownObserver?.OnNext(true);
 
             // Assert
             this.mockFontMetaDataParser.Verify(m => m.Parse(texturePath), Times.Once);
             this.mockFontMetaDataParser.Verify(m => m.Parse(fontPathWithMetaData), Times.Once);
             this.mockTextureCache.Verify(m => m.Unload(texturePath), Times.Never);
             this.mockTextureCache.Verify(m => m.Unload(fontPathWithMetaData), Times.Once);
+            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 
@@ -538,7 +557,8 @@ namespace VelaptorTests.Content.Fonts
             this.mockDirectory.Object,
             this.mockFile.Object,
             this.mockFileStream.Object,
-            this.mockPath.Object);
+            this.mockPath.Object,
+            this.mockShutDownObservable.Object);
 
         /// <summary>
         /// Mocks the loading of an embedded font resource file using the given name for the purpose of testing.
