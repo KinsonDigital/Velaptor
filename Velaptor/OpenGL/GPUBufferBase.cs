@@ -1,4 +1,4 @@
-﻿// <copyright file="GPUBufferBase.cs" company="KinsonDigital">
+// <copyright file="GPUBufferBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,7 +20,8 @@ namespace Velaptor.OpenGL
     internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         where TData : struct
     {
-        private readonly IDisposable glObservableUnsubscriber;
+        private readonly IDisposable glInitUnsubscriber;
+        private readonly IDisposable shutDownUnsubscriber;
         private uint vao; // Vertex Array Object
         private uint vbo; // Vertex Buffer Object
         private uint ebo; // Element Buffer Object
@@ -33,10 +34,15 @@ namespace Velaptor.OpenGL
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
-        internal GPUBufferBase(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
+        internal GPUBufferBase(
+            IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
+            IObservable<bool> glInitObservable,
+            IObservable<bool> shutDownObservable)
         {
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
@@ -46,7 +52,14 @@ namespace Velaptor.OpenGL
                 throw new ArgumentNullException(nameof(glInitObservable), "The parameter must not be null.");
             }
 
-            this.glObservableUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
+            this.glInitUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
+
+            if (shutDownObservable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+            }
+
+            this.shutDownUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
 
             ProcessCustomAttributes();
         }
@@ -92,25 +105,6 @@ namespace Velaptor.OpenGL
         {
             PrepareForUpload();
             UploadVertexData(data, batchIndex);
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            this.glObservableUnsubscriber.Dispose();
-
-            GL.DeleteVertexArray(this.vao);
-            GL.DeleteBuffer(this.vbo);
-            GL.DeleteBuffer(this.ebo);
-
-            this.isDisposed = true;
-
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -270,6 +264,26 @@ namespace Velaptor.OpenGL
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Shuts down the application by disposing of resources.
+        /// </summary>
+        private void ShutDown()
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            GL.DeleteVertexArray(this.vao);
+            GL.DeleteBuffer(this.vbo);
+            GL.DeleteBuffer(this.ebo);
+
+            this.glInitUnsubscriber.Dispose();
+            this.shutDownUnsubscriber.Dispose();
+
+            this.isDisposed = true;
         }
     }
 }
