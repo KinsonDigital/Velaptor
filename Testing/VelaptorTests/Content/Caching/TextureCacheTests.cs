@@ -399,7 +399,7 @@ namespace VelaptorTests.Content.Caching
             });
 
             Assert.Equal(0, cache.TotalCachedItems);
-            mockTexture.Verify(m => m.Dispose(), Times.Once);
+            Assert.True(false, "Get this test working again.");
         }
 
         [Fact]
@@ -432,8 +432,7 @@ namespace VelaptorTests.Content.Caching
             cache.Dispose();
 
             // Assert
-            mockTextureA.Verify(m => m.Dispose(), Times.Once);
-            mockTextureB.Verify(m => m.Dispose(), Times.Once);
+            Assert.True(false, "Get this test working again.");
         }
         #endregion
 

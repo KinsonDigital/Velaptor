@@ -40,7 +40,7 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
         private readonly Mock<IEmbeddedResourceLoaderService<Stream?>> mockEmbeddedFontResourceService;
         private readonly Mock<IPathResolver> mockFontPathResolver;
-        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IFontFactory> mockFontFactory;
         private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
         private readonly Mock<IPath> mockPath;
@@ -85,7 +85,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontPathResolver.Setup(m => m.ResolveFilePath(FontContentName)).Returns(this.fontFilePath);
 
             // Mock for both full file paths and content names with metadata
-            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+            this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
             this.mockTextureCache.Setup(m => m.GetItem(this.filePathWithMetaData))
                 .Returns(this.mockFontAtlasTexture.Object);
 

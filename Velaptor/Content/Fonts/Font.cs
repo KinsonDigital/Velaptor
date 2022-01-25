@@ -28,7 +28,7 @@ namespace Velaptor.Content.Fonts
         private readonly IFontService fontService;
         private readonly IFontStatsService fontStatsService;
         private readonly IFontAtlasService fontAtlasService;
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
         private readonly IntPtr facePtr;
         private readonly GlyphMetrics invalidGlyph;
         private readonly char[] availableGlyphCharacters =
@@ -61,7 +61,7 @@ namespace Velaptor.Content.Fonts
             IFontService fontService,
             IFontStatsService fontStatsService,
             IFontAtlasService fontAtlasService,
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             string name,
             string fontFilePath,
             uint size,

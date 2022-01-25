@@ -35,7 +35,7 @@ namespace Velaptor.Content.Fonts
         private readonly IFontAtlasService fontAtlasService;
         private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
         private readonly IPathResolver fontPathResolver;
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
         private readonly IFontFactory fontFactory;
         private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IDirectory directory;
@@ -55,7 +55,7 @@ namespace Velaptor.Content.Fonts
             this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
             this.embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
             this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
-            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             this.fontFactory = IoC.Container.GetInstance<IFontFactory>();
             this.fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
             this.directory = IoC.Container.GetInstance<IDirectory>();
@@ -90,7 +90,7 @@ namespace Velaptor.Content.Fonts
             IFontAtlasService fontAtlasService,
             IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
             IPathResolver fontPathResolver,
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             IFontFactory fontFactory,
             IFontMetaDataParser fontMetaDataParser,
             IDirectory directory,

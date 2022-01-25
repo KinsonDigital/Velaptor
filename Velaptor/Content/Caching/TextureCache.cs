@@ -21,7 +21,7 @@ namespace Velaptor.Content.Caching
     /// <summary>
     /// Caches <see cref="ITexture"/> objects for retrieval at a later time.
     /// </summary>
-    internal sealed class TextureCache : IDisposableItemCache<string, ITexture>
+    internal sealed class TextureCache : IItemCache<string, ITexture>
     {
         private const string DefaultTag = "[DEFAULT]";
         private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
@@ -237,7 +237,9 @@ namespace Velaptor.Content.Caching
         public void Unload(string cacheKey)
         {
             this.textures.TryRemove(cacheKey, out var texture);
-            texture?.Dispose();
+
+            // TODO: Need to invoke the DisposeTexturesObservable here
+            //texture?.Dispose();
         }
 
         /// <inheritdoc/>
@@ -266,7 +268,10 @@ namespace Velaptor.Content.Caching
                 foreach (var cacheKey in cacheKeys)
                 {
                     this.textures.TryRemove(cacheKey, out var texture);
-                    texture?.Dispose();
+
+                    // TODO: Need to implement ShutDownObservable in here
+                    // TODO: Need to invoke the DisposeTexturesObservable here
+                    //texture?.Dispose();
                 }
             }
 

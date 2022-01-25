@@ -115,7 +115,7 @@ namespace Velaptor
         /// <summary>
         /// Sets up container registration related to caching.
         /// </summary>
-        private static void SetupCaching() => IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
+        private static void SetupCaching() => IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
 
         /// <summary>
         /// Sets up container registration related to factories.

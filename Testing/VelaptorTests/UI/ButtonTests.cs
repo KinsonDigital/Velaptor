@@ -315,7 +315,7 @@ namespace VelaptorTests.UI
                 button.Dispose();
             });
 
-            this.mockTexture.Verify(m => m.Dispose(), Times.Never);
+            Assert.True(false, "Get this test working again.");
         }
 
         [Fact]
@@ -329,7 +329,7 @@ namespace VelaptorTests.UI
             button.Dispose();
             button.Dispose();
 
-            this.mockTexture.Verify(m => m.Dispose(), Times.Once);
+            Assert.True(false, "Get this test working again.");
         }
         #endregion
 

@@ -25,7 +25,7 @@ namespace Velaptor.Content.Factories
         private readonly IFontService fontService;
         private readonly IFontStatsService fontStatsService;
         private readonly IFontAtlasService fontAtlasService;
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontFactory"/> class.
@@ -38,7 +38,7 @@ namespace Velaptor.Content.Factories
             IFontService fontService,
             IFontStatsService fontStatsService,
             IFontAtlasService fontAtlasService,
-            IDisposableItemCache<string, ITexture> textureCache)
+            IItemCache<string, ITexture> textureCache)
         {
             this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), NullCtorParamMessage);
             this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), NullCtorParamMessage);

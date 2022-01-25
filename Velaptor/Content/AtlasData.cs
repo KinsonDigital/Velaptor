@@ -23,7 +23,7 @@ namespace Velaptor.Content
     {
         private const string AtlasDataExtension = ".json";
         private const string TextureExtension = ".png";
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
         private readonly AtlasSubTextureData[] subTexturesData;
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Velaptor.Content
         ///     Thrown if any of the constructor parameters are null.
         /// </exception>
         public AtlasData(
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             IPath path,
             IEnumerable<AtlasSubTextureData> atlasSubTextureData,
             string dirPath,

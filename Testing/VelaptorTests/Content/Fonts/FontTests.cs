@@ -36,7 +36,7 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFontStatsService> mockFontStatsService;
         private readonly Mock<ITexture> mockTexture;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
-        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\SampleTestData\";
         private Dictionary<char, GlyphMetrics> glyphMetrics = new ();
 
@@ -67,7 +67,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontStatsService = new Mock<IFontStatsService>();
 
             this.mockFontAtlasService = new Mock<IFontAtlasService>();
-            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+            this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
 
             this.mockTexture = new Mock<ITexture>();
         }

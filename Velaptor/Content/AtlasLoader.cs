@@ -28,7 +28,7 @@ namespace Velaptor.Content
     {
         private const string TextureExtension = ".png";
         private const string AtlasDataExtension = ".json";
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
         private readonly IAtlasDataFactory atlasDataFactory;
         private readonly IPathResolver atlasDataPathResolver;
         private readonly IJSONService jsonService;
@@ -44,7 +44,7 @@ namespace Velaptor.Content
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public AtlasLoader()
         {
-            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             this.atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
             this.atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
             this.jsonService = IoC.Container.GetInstance<IJSONService>();
@@ -69,7 +69,7 @@ namespace Velaptor.Content
         ///     Invoked when any of the parameters are null.
         /// </exception>
         internal AtlasLoader(
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             IAtlasDataFactory atlasDataFactory,
             IPathResolver atlasDataPathResolver,
             IJSONService jsonService,
@@ -218,7 +218,6 @@ namespace Velaptor.Content
                 return;
             }
 
-            this.textureCache.Dispose();
             this.shutDownObservableUnsubscriber.Dispose();
 
             this.isDisposed = true;

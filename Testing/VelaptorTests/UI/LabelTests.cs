@@ -261,7 +261,7 @@ namespace VelaptorTests.UI
             label.UnloadContent();
 
             // Assert
-            this.mockFont.Verify(m => m.Dispose(), Times.Once);
+            Assert.True(false, "Get this test working again.");
         }
 
         [Fact]
@@ -274,7 +274,7 @@ namespace VelaptorTests.UI
             label.UnloadContent();
 
             // Assert
-            this.mockFont.Verify(m => m.Dispose(), Times.Never);
+            Assert.True(false, "Get this test working again.");
         }
 
         [Fact]
@@ -289,7 +289,7 @@ namespace VelaptorTests.UI
             label.UnloadContent();
 
             // Assert
-            this.mockFont.Verify(m => m.Dispose(), Times.Once);
+            Assert.True(false, "Get this test working again.");
         }
 
         [Fact]
@@ -398,7 +398,7 @@ namespace VelaptorTests.UI
             label.Dispose();
 
             // Assert
-            this.mockFont.Verify(m => m.Dispose(), Times.Once);
+            Assert.True(false, "Get this test working again.");
         }
         #endregion
 

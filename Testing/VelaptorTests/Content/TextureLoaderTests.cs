@@ -24,7 +24,7 @@ namespace VelaptorTests.Content
         private const string TextureDirPath = @"C:\textures\";
         private const string TextureFileName = "test-texture";
         private readonly string textureFilePath = $"{TextureDirPath}{TextureFileName}{TextureExtension}";
-        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IFile> mockFile;
         private readonly Mock<IPath> mockPath;
@@ -40,7 +40,7 @@ namespace VelaptorTests.Content
             this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName))
                 .Returns(this.textureFilePath);
 
-            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+            this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
 
             this.mockFile = new Mock<IFile>();
             this.mockFile.Setup(m => m.Exists(this.textureFilePath)).Returns(true);
@@ -243,7 +243,7 @@ namespace VelaptorTests.Content
             shutDownObserver?.OnNext(true);
 
             // Assert
-            this.mockTextureCache.Verify(m => m.Dispose(), Times.Once);
+            Assert.True(false, "Get this test working again.");
             this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion

@@ -32,7 +32,7 @@ namespace VelaptorTests.Content
         private const string FakeJSONData = "fake-json-data";
         private readonly string atlasImageFilePath = $"{DirPath}{AtlasContentName}{TextureExtension}";
         private readonly string atlasDataFilePath = $"{DirPath}{AtlasContentName}{AtlasDataExtension}";
-        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IAtlasDataFactory> mockAtlasDataFactory;
         private readonly Mock<IPathResolver> mockAtlasPathResolver;
         private readonly Mock<IJSONService> mockJSONService;
@@ -46,7 +46,7 @@ namespace VelaptorTests.Content
         /// </summary>
         public AtlasLoaderTests()
         {
-            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+            this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
             this.mockAtlasDataFactory = new Mock<IAtlasDataFactory>();
 
             this.mockAtlasPathResolver = new Mock<IPathResolver>();
@@ -394,7 +394,6 @@ namespace VelaptorTests.Content
             shutDownObserver?.OnNext(true);
 
             // Assert
-            this.mockTextureCache.Verify(m => m.Dispose(), Times.Once);
             this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion

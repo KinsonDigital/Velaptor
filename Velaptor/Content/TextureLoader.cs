@@ -24,7 +24,7 @@ namespace Velaptor.Content
     public sealed class TextureLoader : ILoader<ITexture>
     {
         private const string TextureFileExtension = ".png";
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
         private readonly IPathResolver texturePathResolver;
         private readonly IFile file;
         private readonly IPath path;
@@ -38,7 +38,7 @@ namespace Velaptor.Content
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public TextureLoader()
         {
-            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             this.texturePathResolver = PathResolverFactory.CreateTexturePathResolver();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
@@ -59,7 +59,7 @@ namespace Velaptor.Content
         ///     Invoked when any of the parameters are null.
         /// </exception>
         internal TextureLoader(
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             IPathResolver texturePathResolver,
             IFile file,
             IPath path,
@@ -132,7 +132,6 @@ namespace Velaptor.Content
                 return;
             }
 
-            this.textureCache.Dispose();
             this.shutDownObservableUnsubscriber.Dispose();
 
             this.isDisposed = true;
