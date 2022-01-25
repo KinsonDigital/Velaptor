@@ -4,8 +4,8 @@
 
 namespace VelaptorTests.Fakes
 {
+    using System;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
 
     /// <summary>
@@ -16,10 +16,10 @@ namespace VelaptorTests.Fakes
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBufferFake"/> class for the purpose of testing.
         /// </summary>
-        /// <param name="gl">Mocked <see cref="IGLInvoker"/>.</param>
-        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/>.</param>
-        /// <param name="glInitObservable">Invokes initialization.</param>
-        public GPUBufferFake(IGLInvoker gl, IGLInvokerExtensions glExtensions, OpenGLInitObservable glInitObservable)
+        /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
+        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/> for OpenGL function calls.</param>
+        /// <param name="glInitObservable">Mocked <see cref="IObservable{T}"/> for OpenGL initialization.</param>
+        public GPUBufferFake(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
             : base(gl, glExtensions, glInitObservable)
         {
         }

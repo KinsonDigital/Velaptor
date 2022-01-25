@@ -33,19 +33,29 @@ namespace Velaptor.OpenGL
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal GPUBufferBase(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
         {
-            GL = gl;
-            GLExtensions = glExtensions;
-            ProcessCustomAttributes();
+            GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
+            GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+
+            if (glInitObservable is null)
+            {
+                throw new ArgumentNullException(nameof(glInitObservable), "The parameter must not be null.");
+            }
 
             this.glObservableUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
+
+            ProcessCustomAttributes();
         }
 
+        // TODO: Use unit test detection to skip this if a unit test is running it
         /// <summary>
         /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
         /// </summary>
-        ~GPUBufferBase() => Dispose();
+        // ~GPUBufferBase() => Dispose();
 
         /// <summary>
         /// Gets the size of the sprite batch.

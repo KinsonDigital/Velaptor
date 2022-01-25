@@ -7,15 +7,15 @@ namespace VelaptorTests.OpenGL
     using System;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
     using VelaptorTests.Fakes;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
     /// Initializes a new instance of <see cref="GPUBufferBaseTests"/>.
     /// </summary>
-    public class GPUBufferBaseTests : IDisposable
+    public class GPUBufferBaseTests
     {
         private const string BufferName = "UNKNOWN BUFFER";
         private const uint VertexArrayId = 1256;
@@ -23,9 +23,11 @@ namespace VelaptorTests.OpenGL
         private const uint IndexBufferId = 5678;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly OpenGLInitObservable glInitObservable;
+        private readonly Mock<IObservable<bool>> mockGLInitObservable;
+        private readonly Mock<IDisposable> mockGLInitUnsubscriber;
         private bool vertexBufferCreated;
         private bool indexBufferCreated;
+        private IObserver<bool>? glInitObserver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBufferBaseTests"/> class.
@@ -53,8 +55,62 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Setup(m => m.GenVertexArray()).Returns(VertexArrayId);
 
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
-            this.glInitObservable = new OpenGLInitObservable();
+
+            this.mockGLInitUnsubscriber = new Mock<IDisposable>();
+            this.mockGLInitObservable = new Mock<IObservable<bool>>();
+            this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(this.mockGLInitUnsubscriber.Object)
+                .Callback<IObserver<bool>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "GL initialization observable subscription failed.  Observer is null.");
+                    }
+
+                    this.glInitObserver = observer;
+                });
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullGLInvokerParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new GPUBufferFake(
+                    null,
+                    this.mockGLExtensions.Object,
+                    this.mockGLInitObservable.Object);
+            }, "The parameter must not be null. (Parameter 'gl')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullGLExtensionsParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new GPUBufferFake(
+                    this.mockGL.Object,
+                    null,
+                    this.mockGLInitObservable.Object);
+            }, "The parameter must not be null. (Parameter 'glExtensions')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullGLInitObservableParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new GPUBufferFake(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'glInitObservable')");
+        }
+        #endregion
 
         #region Props Tests
         [Fact]
@@ -77,7 +133,7 @@ namespace VelaptorTests.OpenGL
             var buffer = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             Assert.True(buffer.IsInitialized);
@@ -92,7 +148,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             this.mockGL.Verify(m => m.GenVertexArray(), Times.Once);
@@ -108,7 +164,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             // These are all invoked once per quad
@@ -125,7 +181,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             // First invoke is done creating the Vertex Buffer, the second is the index buffer
@@ -142,7 +198,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             Assert.True(unused.GenerateDataInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.GenerateData)}'() has not been invoked.");
@@ -155,7 +211,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             Assert.True(unused.GenerateIndicesInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.GenerateData)}'() has not been invoked.");
@@ -168,7 +224,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             this.mockGL.Verify(m => m.BufferData(GLBufferTarget.ArrayBuffer,
@@ -184,7 +240,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             this.mockGL.Verify(m => m.BufferData(GLBufferTarget.ElementArrayBuffer,
@@ -200,7 +256,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             Assert.True(unused.SetupVAOInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.SetupVAO)}'() has not been invoked.");
@@ -239,7 +295,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             this.mockGLExtensions.Verify(m => m.BeginGroup(It.IsAny<string>()), Times.Exactly(3));
@@ -287,7 +343,7 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             var buffer = CreateBuffer();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Act
             buffer.Dispose();
@@ -300,14 +356,14 @@ namespace VelaptorTests.OpenGL
         }
         #endregion
 
-        /// <inheritdoc />
-        public void Dispose() => this.glInitObservable.Dispose();
-
         /// <summary>
         /// Creates an instance of the type <see cref="GPUBufferFake"/> for the purpose of
         /// testing the abstract class <see cref="GPUBufferBase{TData}"/>.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private GPUBufferFake CreateBuffer() => new (this.mockGL.Object, this.mockGLExtensions.Object, this.glInitObservable);
+        private GPUBufferFake CreateBuffer() => new (
+            this.mockGL.Object,
+            this.mockGLExtensions.Object,
+            this.mockGLInitObservable.Object);
     }
 }

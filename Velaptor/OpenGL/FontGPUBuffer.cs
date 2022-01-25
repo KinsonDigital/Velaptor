@@ -31,6 +31,9 @@ namespace Velaptor.OpenGL
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         public FontGPUBuffer(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
             : base(gl, glExtensions, glInitObservable)
         {
