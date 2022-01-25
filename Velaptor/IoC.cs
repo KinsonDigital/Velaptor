@@ -109,6 +109,7 @@ namespace Velaptor
             IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
             IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
             IoCContainer.Register<RemoveBatchItemObservable>(Lifestyle.Singleton);
+            IoCContainer.Register<ShutDownObservable>(Lifestyle.Singleton);
         }
 
         /// <summary>
