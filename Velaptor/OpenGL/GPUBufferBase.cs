@@ -1,4 +1,4 @@
-// <copyright file="GPUBufferBase.cs" company="KinsonDigital">
+﻿// <copyright file="GPUBufferBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -64,11 +64,19 @@ namespace Velaptor.OpenGL
             ProcessCustomAttributes();
         }
 
-        // TODO: Use unit test detection to skip this if a unit test is running it
         /// <summary>
         /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
         /// </summary>
-        // ~GPUBufferBase() => Dispose();
+        [ExcludeFromCodeCoverage]
+        ~GPUBufferBase()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            ShutDown();
+        }
 
         /// <summary>
         /// Gets the size of the sprite batch.

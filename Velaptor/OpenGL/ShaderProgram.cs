@@ -65,11 +65,19 @@ namespace Velaptor.OpenGL
             ProcessCustomAttributes();
         }
 
-        // TODO: Use unit test detection to skip this if a unit test is running it
         /// <summary>
         /// Finalizes an instance of the <see cref="ShaderProgram"/> class.
         /// </summary>
-        // ~ShaderProgram() => ShutDown();
+        [ExcludeFromCodeCoverage]
+        ~ShaderProgram()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            ShutDown();
+        }
 
         /// <inheritdoc/>
         public uint ShaderId { get; private set; }

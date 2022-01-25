@@ -115,6 +115,20 @@ namespace Velaptor.Graphics
             SetupPropertyCaches();
         }
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="SpriteBatch"/> class.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        ~SpriteBatch()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            ShutDown();
+        }
+
         /// <inheritdoc/>
         public uint RenderSurfaceWidth
         {

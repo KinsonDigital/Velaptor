@@ -10,7 +10,6 @@ namespace Velaptor.UI
     using System.Numerics;
     using System.Threading.Tasks;
     using Velaptor.Content;
-    using Velaptor.Factories;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -43,7 +42,15 @@ namespace Velaptor.UI
         /// <summary>
         /// Finalizes an instance of the <see cref="Window"/> class.
         /// </summary>
-        ~Window() => Dispose(false);
+        ~Window()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            Dispose(false);
+        }
 
         /// <inheritdoc/>
         public string Title

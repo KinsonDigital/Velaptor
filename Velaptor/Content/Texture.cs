@@ -57,7 +57,15 @@ namespace Velaptor.Content
         /// Finalizes an instance of the <see cref="Texture"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        ~Texture() => Dispose();
+        ~Texture()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            Dispose();
+        }
 
         /// <inheritdoc/>
         public uint Id { get; private set; }
