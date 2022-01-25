@@ -12,6 +12,8 @@ namespace Velaptor.Content
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Factories;
+    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -25,6 +27,7 @@ namespace Velaptor.Content
         private readonly IPathResolver pathResolver;
         private readonly IFile file;
         private readonly IPath path;
+        private readonly IDisposable shutDownObservableUnsubscriber;
         private bool isDisposed;
 
         /// <summary>
@@ -38,6 +41,9 @@ namespace Velaptor.Content
             this.pathResolver = PathResolverFactory.CreateTexturePathResolver();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
+
+            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -47,16 +53,20 @@ namespace Velaptor.Content
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         internal TextureLoader(
             IDisposableItemCache<string, ITexture> textureCache,
             IPathResolver texturePathResolver,
             IFile file,
-            IPath path)
+            IPath path,
+            IObservable<bool> shutDownObservable)
         {
             this.textureCache = textureCache;
             this.pathResolver = texturePathResolver;
             this.file = file;
             this.path = path;
+
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -101,27 +111,20 @@ namespace Velaptor.Content
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
         public void Unload(string nameOrPath) => this.textureCache.Unload(nameOrPath);
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Shuts down the application by unloading all of the textures.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                this.textureCache.Dispose();
-            }
+            this.textureCache.Dispose();
+            this.shutDownObservableUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }

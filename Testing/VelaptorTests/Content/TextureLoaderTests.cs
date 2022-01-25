@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Content
 {
+    using System;
     using System.IO;
     using System.IO.Abstractions;
     using Moq;
@@ -24,8 +25,10 @@ namespace VelaptorTests.Content
         private readonly string textureFilePath = $"{TextureDirPath}{TextureFileName}{TextureExtension}";
         private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
-        private readonly Mock<IPath> mockPath;
         private readonly Mock<IFile> mockFile;
+        private readonly Mock<IPath> mockPath;
+        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
@@ -45,6 +48,9 @@ namespace VelaptorTests.Content
             this.mockPath.Setup(m => m.GetExtension(this.textureFilePath)).Returns(TextureExtension);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}")).Returns(TextureFileName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}{TextureExtension}")).Returns(TextureFileName);
+
+            this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+            this.mockShutDownObservable = new Mock<IObservable<bool>>();
         }
 
         #region Method Tests
@@ -136,17 +142,31 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Dispose_WhenInvoked_DisposesOfCachedTextures()
+        public void WithShutDownNotification_DisposesOfLoader()
         {
             // Arrange
-            var loader = CreateLoader();
+            IObserver<bool>? shutDownObserver = null;
+            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(this.mockShutDownUnsubscriber.Object)
+                .Callback<IObserver<bool>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
+                    }
+
+                    shutDownObserver = observer;
+                });
+
+            CreateLoader();
 
             // Act
-            loader.Dispose();
-            loader.Dispose();
+            shutDownObserver?.OnNext(true);
+            shutDownObserver?.OnNext(true);
 
             // Assert
             this.mockTextureCache.Verify(m => m.Dispose(), Times.Once);
+            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 
@@ -158,6 +178,7 @@ namespace VelaptorTests.Content
             => new (this.mockTextureCache.Object,
              this.mockTexturePathResolver.Object,
              this.mockFile.Object,
-             this.mockPath.Object);
+             this.mockPath.Object,
+             this.mockShutDownObservable.Object);
     }
 }

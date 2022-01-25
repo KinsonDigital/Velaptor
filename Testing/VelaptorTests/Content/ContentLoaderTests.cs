@@ -173,13 +173,9 @@ namespace VelaptorTests.Content
             var loader = CreateContentLoader();
 
             // Act
-            loader.Dispose();
-            loader.Dispose();
 
             // Assert
-            this.mockTextureLoader.Verify(m => m.Dispose(), Times.Once());
-            this.mockAtlasLoader.Verify(m => m.Dispose(), Times.Once());
-            this.mockSoundLoader.Verify(m => m.Dispose(), Times.Once());
+            Assert.True(false, "TEST NOT IMPLEMENTED FOR SHUTDOWN OBSERVABLE");
         }
         #endregion
 

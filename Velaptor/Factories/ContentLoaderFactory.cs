@@ -12,6 +12,7 @@ namespace Velaptor.Factories
     using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
+    using Velaptor.Observables;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 
@@ -56,12 +57,14 @@ namespace Velaptor.Factories
             var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
             var file = IoC.Container.GetInstance<IFile>();
             var path = IoC.Container.GetInstance<IPath>();
+            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
 
             textureLoader = new TextureLoader(
                 textureCache,
                 texturePathResolver,
                 file,
-                path);
+                path,
+                shutDownObservable);
 
             return textureLoader;
         }

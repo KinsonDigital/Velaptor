@@ -74,6 +74,8 @@ namespace Velaptor.Content
         /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         private void Dispose(bool disposing)
         {
+            throw new NotImplementedException();
+
             if (this.isDisposed)
             {
                 return;
@@ -81,10 +83,6 @@ namespace Velaptor.Content
 
             if (disposing)
             {
-                this.textureLoader.Dispose();
-                this.soundLoader.Dispose();
-                this.atlasLoader.Dispose();
-                this.fontLoader.Dispose();
             }
 
             this.isDisposed = true;

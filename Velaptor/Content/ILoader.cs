@@ -4,13 +4,11 @@
 
 namespace Velaptor.Content
 {
-    using System;
-
     /// <summary>
     /// Loads data of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The type of data to load.</typeparam>
-    public interface ILoader<out T> : IDisposable
+    public interface ILoader<out T>
         where T : IContent
     {
         /// <summary>
