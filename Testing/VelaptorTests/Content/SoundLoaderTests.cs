@@ -9,6 +9,7 @@ namespace VelaptorTests.Content
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Factories;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -48,6 +49,64 @@ namespace VelaptorTests.Content
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
             this.mockShutDownObservable = new Mock<IObservable<bool>>();
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullSoundPathResolverParam_ThrowsException()
+        {
+            // Arrange, Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SoundLoader(
+                    null,
+                    this.soundFactory.Object,
+                    this.mockPath.Object,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'soundPathResolver')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullSoundFactoryParam_ThrowsException()
+        {
+            // Arrange, Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SoundLoader(
+                    this.mockSoundPathResolver.Object,
+                    null,
+                    this.mockPath.Object,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'soundFactory')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullNullParam_ThrowsException()
+        {
+            // Arrange, Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SoundLoader(
+                    this.mockSoundPathResolver.Object,
+                    this.soundFactory.Object,
+                    null,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'path')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
+        {
+            // Arrange, Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SoundLoader(
+                    this.mockSoundPathResolver.Object,
+                    this.soundFactory.Object,
+                    this.mockPath.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+        }
+        #endregion
 
         #region Method Tests
         [Theory]

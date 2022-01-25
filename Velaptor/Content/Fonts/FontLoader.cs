@@ -82,6 +82,9 @@ namespace Velaptor.Content.Fonts
         /// <param name="fileStream">Provides a stream to a file for file operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal FontLoader(
             IFontAtlasService fontAtlasService,
             IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,

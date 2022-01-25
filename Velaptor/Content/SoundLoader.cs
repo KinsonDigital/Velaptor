@@ -50,15 +50,24 @@ namespace Velaptor.Content
         /// <param name="soundFactory">Creates sound instances.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal SoundLoader(
             IPathResolver soundPathResolver,
             ISoundFactory soundFactory,
             IPath path,
             IObservable<bool> shutDownObservable)
         {
-            this.soundPathResolver = soundPathResolver;
-            this.soundFactory = soundFactory;
-            this.path = path;
+            this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), "The parameter must not be null.");
+            this.soundFactory = soundFactory ?? throw new ArgumentNullException(nameof(soundFactory), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+
+            if (shutDownObservable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+            }
+
             this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
