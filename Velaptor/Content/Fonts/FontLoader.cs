@@ -95,16 +95,22 @@ namespace Velaptor.Content.Fonts
             IPath path,
             IObservable<bool> shutDownObservable)
         {
-            this.fontAtlasService = fontAtlasService;
-            this.embeddedFontResourceService = embeddedFontResourceService;
-            this.fontPathResolver = fontPathResolver;
-            this.textureCache = textureCache;
-            this.fontFactory = fontFactory;
-            this.fontMetaDataParser = fontMetaDataParser;
-            this.directory = directory;
-            this.file = file;
-            this.fileStream = fileStream;
-            this.path = path;
+            this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
+            this.embeddedFontResourceService = embeddedFontResourceService ?? throw new ArgumentNullException(nameof(embeddedFontResourceService), "The parameter must not be null.");
+            this.fontPathResolver = fontPathResolver ?? throw new ArgumentNullException(nameof(fontPathResolver), "The parameter must not be null.");
+            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
+            this.fontFactory = fontFactory ?? throw new ArgumentNullException(nameof(fontFactory), "The parameter must not be null.");
+            this.fontMetaDataParser = fontMetaDataParser ?? throw new ArgumentNullException(nameof(fontMetaDataParser), "The parameter must not be null.");
+            this.directory = directory ?? throw new ArgumentNullException(nameof(directory), "The parameter must not be null.");
+            this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
+            this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+
+            if (shutDownObservable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+            }
+
             this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
 
             SetupDefaultFonts();
