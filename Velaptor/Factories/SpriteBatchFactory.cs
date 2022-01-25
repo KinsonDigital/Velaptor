@@ -41,6 +41,7 @@ namespace Velaptor.Factories
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
             var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
             var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
+            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
 
             spriteBatch = new SpriteBatch(
                 glInvoker,
@@ -51,17 +52,13 @@ namespace Velaptor.Factories
                 fontBuffer,
                 new TextureBatchService(),
                 new TextureBatchService(),
-                glInitObservable);
+                glInitObservable,
+                shutDownObservable);
 
             spriteBatch.RenderSurfaceWidth = renderSurfaceWidth;
             spriteBatch.RenderSurfaceHeight = renderSurfaceHeight;
 
             return spriteBatch;
         }
-
-        /// <summary>
-        /// Disposes of the sprite batch.
-        /// </summary>
-        public static void Dispose() => spriteBatch?.Dispose();
     }
 }

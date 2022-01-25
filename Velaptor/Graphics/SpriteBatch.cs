@@ -15,7 +15,6 @@ namespace Velaptor.Graphics
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.Observables.Core;
     using Velaptor.OpenGL;
     using Velaptor.Services;
@@ -37,6 +36,7 @@ namespace Velaptor.Graphics
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
         private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
         private readonly IDisposable glInitUnsubscriber;
+        private readonly IDisposable shutDownUnsubscriber;
 
         // ReSharper disable once MemberInitializerValueIgnored
         private CachedValue<Color> cachedClearColor = null!;
@@ -56,6 +56,7 @@ namespace Velaptor.Graphics
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
         /// <param name="glInitObservable">Provides push notifications to OpenGL related events.</param>
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
         ///     <paramref name="glInitObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
@@ -69,7 +70,8 @@ namespace Velaptor.Graphics
             IGPUBuffer<SpriteBatchItem> fontBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
-            IObservable<bool> glInitObservable)
+            IObservable<bool> glInitObservable,
+            IObservable<bool> shutDownObservable)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
 
@@ -87,6 +89,11 @@ namespace Velaptor.Graphics
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
+            if (glInitObservable is null)
+            {
+                throw new ArgumentNullException(nameof(glInitObservable), "The parameter must not be null.");
+            }
+
             // Receive a push notification that OpenGL has initialized
             this.glInitUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(
                 _ =>
@@ -98,14 +105,15 @@ namespace Velaptor.Graphics
                     Init();
                 }));
 
+            if (shutDownObservable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+            }
+
+            this.shutDownUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
+
             SetupPropertyCaches();
         }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="SpriteBatch"/> class.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        ~SpriteBatch() => Dispose(false);
 
         /// <inheritdoc/>
         public uint RenderSurfaceWidth
@@ -340,33 +348,23 @@ namespace Velaptor.Graphics
             this.hasBegun = false;
         }
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Shuts down the application by disposing of resources.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
-                this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
-                this.cachedUIntProps.Clear();
-                this.textureBuffer.Dispose();
-                this.fontBuffer.Dispose();
-                this.glInitUnsubscriber.Dispose();
-            }
+            this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
+            this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
+            this.cachedUIntProps.Clear();
+            this.textureBuffer.Dispose();
+            this.fontBuffer.Dispose();
+            this.glInitUnsubscriber.Dispose();
+            this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }

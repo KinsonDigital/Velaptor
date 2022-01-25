@@ -164,8 +164,7 @@ namespace Velaptor.UI
         [ExcludeFromCodeCoverage]
         public virtual void OnUnload()
         {
-            // TODO: Have every static factory dispose method called in here
-            SpriteBatchFactory.Dispose();
+            // TODO: Send out shutdown observable notification here
             GPUBufferFactory.Dispose();
         }
 
