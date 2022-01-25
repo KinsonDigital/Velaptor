@@ -85,14 +85,18 @@ namespace Velaptor.Factories
             var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
             var atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
             var jsonService = IoC.Container.GetInstance<IJSONService>();
+            var file = IoC.Container.GetInstance<IFile>();
+            var path = IoC.Container.GetInstance<IPath>();
+            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
 
             atlasLoader = new AtlasLoader(
                 textureCache,
                 atlasDataFactory,
                 atlasDataPathResolver,
                 jsonService,
-                IoC.Container.GetInstance<IFile>(),
-                IoC.Container.GetInstance<IPath>());
+                file,
+                path,
+                shutDownObservable);
 
             return atlasLoader;
         }

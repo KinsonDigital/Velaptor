@@ -14,6 +14,8 @@ namespace Velaptor.Content
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -31,12 +33,14 @@ namespace Velaptor.Content
         private readonly IJSONService jsonService;
         private readonly IFile file;
         private readonly IPath path;
+        private readonly IDisposable shutDownObservableUnsubscriber;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public AtlasLoader()
         {
             this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
@@ -45,6 +49,9 @@ namespace Velaptor.Content
             this.jsonService = IoC.Container.GetInstance<IJSONService>();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
+
+            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -56,13 +63,18 @@ namespace Velaptor.Content
         /// <param name="jsonService">Provides JSON related services.</param>
         /// <param name="file">Used to load the texture atlas.</param>
         /// <param name="path">Processes directory and file paths.</param>
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal AtlasLoader(
             IDisposableItemCache<string, ITexture> textureCache,
             IAtlasDataFactory atlasDataFactory,
             IPathResolver atlasDataPathResolver,
             IJSONService jsonService,
             IFile file,
-            IPath path)
+            IPath path,
+            IObservable<bool> shutDownObservable)
         {
             this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
             this.atlasDataFactory = atlasDataFactory ?? throw new ArgumentNullException(nameof(atlasDataFactory), "The parameter must not be null.");
@@ -70,6 +82,13 @@ namespace Velaptor.Content
             this.jsonService = jsonService ?? throw new ArgumentNullException(nameof(jsonService), "The parameter must not be null.");
             this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
             this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+
+            if (shutDownObservable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+            }
+
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -188,24 +207,18 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public void Unload(string contentPathOrName) => this.textureCache.Unload(contentPathOrName);
 
-        /// <inheritdoc/>
-        public void Dispose() => Dispose(true);
-
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Shuts down the application by unloading all of the textures.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                this.textureCache.Dispose();
-            }
+            this.textureCache.Dispose();
+            this.shutDownObservableUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }
