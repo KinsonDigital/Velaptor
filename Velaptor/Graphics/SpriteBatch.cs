@@ -36,6 +36,7 @@ namespace Velaptor.Graphics
         private readonly IGPUBuffer<SpriteBatchItem> fontBuffer;
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
         private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
+        private readonly IDisposable glInitUnsubscriber;
 
         // ReSharper disable once MemberInitializerValueIgnored
         private CachedValue<Color> cachedClearColor = null!;
@@ -54,9 +55,9 @@ namespace Velaptor.Graphics
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
-        /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
+        /// <param name="glInitObservable">Provides push notifications to OpenGL related events.</param>
         /// <remarks>
-        ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+        ///     <paramref name="glInitObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
         public SpriteBatch(
@@ -68,7 +69,7 @@ namespace Velaptor.Graphics
             IGPUBuffer<SpriteBatchItem> fontBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
-            IObservable<bool> glObservable)
+            IObservable<bool> glInitObservable)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
 
@@ -88,7 +89,7 @@ namespace Velaptor.Graphics
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
             // Receive a push notification that OpenGL has initialized
-            GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
+            this.glInitUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(
                 _ =>
                 {
                     this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -127,12 +128,6 @@ namespace Velaptor.Graphics
             get => this.cachedClearColor.GetValue();
             set => this.cachedClearColor.SetValue(value);
         }
-
-        /// <summary>
-        /// Gets the unsubscriber for the subscription
-        /// to the <see cref="OpenGLInitObservable"/>.
-        /// </summary>
-        private IDisposable GLObservableUnsubscriber { get; }
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
@@ -371,7 +366,7 @@ namespace Velaptor.Graphics
                 this.cachedUIntProps.Clear();
                 this.textureBuffer.Dispose();
                 this.fontBuffer.Dispose();
-                GLObservableUnsubscriber.Dispose();
+                this.glInitUnsubscriber.Dispose();
             }
 
             this.isDisposed = true;

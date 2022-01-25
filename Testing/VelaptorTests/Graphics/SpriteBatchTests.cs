@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
+// <copyright file="SpriteBatchTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -42,7 +42,8 @@ namespace VelaptorTests.Graphics
         private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockFontBuffer;
         private readonly Mock<IBatchManagerService<SpriteBatchItem>> mockFontBatchService;
         private readonly Mock<IFont> mockFont;
-        private readonly OpenGLInitObservable glInitObservable;
+        private readonly Mock<IObservable<bool>> mockGLInitObservable;
+        private readonly Mock<IDisposable> mockGLInitUnsubscriber;
         private readonly char[] glyphChars =
         {
             'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -52,6 +53,7 @@ namespace VelaptorTests.Graphics
         };
 
         private List<GlyphMetrics> allGlyphMetrics = new ();
+        private IObserver<bool>? glInitObserver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatchTests"/> class.
@@ -83,7 +85,20 @@ namespace VelaptorTests.Graphics
             this.mockFontBatchService.Object.BatchItems =
                 new ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)>(new Dictionary<uint, (bool shouldRender, SpriteBatchItem item)>());
 
-            this.glInitObservable = new OpenGLInitObservable();
+            this.mockGLInitUnsubscriber = new Mock<IDisposable>();
+            this.mockGLInitObservable = new Mock<IObservable<bool>>();
+            this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(this.mockGLInitUnsubscriber.Object)
+                .Callback<IObserver<bool>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
+                    }
+
+                    this.glInitObserver = observer;
+                });
+
 
             var mockFontTextureAtlas = new Mock<ITexture>();
             mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -122,7 +137,7 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.glInitObservable);
+                    this.mockGLInitObservable.Object);
             }, $"The '{nameof(IGLInvoker)}' must not be null. (Parameter 'gl')");
         }
 
@@ -141,7 +156,7 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.glInitObservable);
+                    this.mockGLInitObservable.Object);
             }, $"The 'textureShader' must not be null. (Parameter 'textureShader')");
         }
 
@@ -160,7 +175,7 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.glInitObservable);
+                    this.mockGLInitObservable.Object);
             }, $"The 'fontShader' must not be null. (Parameter 'fontShader')");
         }
 
@@ -179,7 +194,7 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.glInitObservable);
+                    this.mockGLInitObservable.Object);
             }, $"The 'textureBuffer' must not be null. (Parameter 'textureBuffer')");
         }
 
@@ -198,7 +213,7 @@ namespace VelaptorTests.Graphics
                     null,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.glInitObservable);
+                    this.mockGLInitObservable.Object);
             }, $"The 'fontBuffer' must not be null. (Parameter 'fontBuffer')");
         }
         #endregion
@@ -210,7 +225,7 @@ namespace VelaptorTests.Graphics
             // Arrange
             this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
             var batch = CreateSpriteBatch();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Act
             batch.RenderSurfaceWidth = 100;
@@ -227,7 +242,7 @@ namespace VelaptorTests.Graphics
             // Arrange
             this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
             var batch = CreateSpriteBatch();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Act
             batch.RenderSurfaceHeight = 100;
@@ -258,7 +273,7 @@ namespace VelaptorTests.Graphics
                 });
 
             var batch = CreateSpriteBatch();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Act
             var actual = batch.ClearColor;
@@ -273,7 +288,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             var batch = CreateSpriteBatch();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Act
             batch.ClearColor = Color.FromArgb(11, 22, 33, 44);
@@ -410,7 +425,7 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
             batch.BeginBatch();
 
             // Act
@@ -443,7 +458,7 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
             batch.BeginBatch();
 
             // Act
@@ -476,7 +491,7 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
             batch.BeginBatch();
 
             // Act
@@ -510,7 +525,7 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
             batch.BeginBatch();
 
             // Act
@@ -543,7 +558,7 @@ namespace VelaptorTests.Graphics
                     MockTextureBatchItems(items);
                     this.mockTextureBatchService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
                 });
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Act
             batch.BeginBatch();
@@ -1079,7 +1094,7 @@ namespace VelaptorTests.Graphics
                     this.mockFontBatchService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
                 });
 
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Act
             batch.BeginBatch();
@@ -1120,7 +1135,7 @@ namespace VelaptorTests.Graphics
                     MockTextureBatchItems(items);
                 });
 
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
             batch.BeginBatch();
 
             batch.Render(
@@ -1247,7 +1262,7 @@ namespace VelaptorTests.Graphics
                 this.mockFontBuffer.Object,
                 this.mockTextureBatchService.Object,
                 this.mockFontBatchService.Object,
-                openGLInitObservable ?? this.glInitObservable);
+                this.mockGLInitObservable.Object);
 
             return result;
         }
