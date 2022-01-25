@@ -8,7 +8,6 @@ namespace VelaptorTests.OpenGL
     using System.Collections.Generic;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.OpenGL.Services;
@@ -32,7 +31,11 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IShaderLoaderService<uint>> mockLoader;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly OpenGLInitObservable glInitObservable;
+        private readonly Mock<IObservable<bool>> mockGLInitObservable;
+        private readonly Mock<IDisposable> mockGLInitObservableUnsubscriber;
+        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<IDisposable> mockShutDownObservableUnsubscriber;
+        private IObserver<bool>? glInitObserver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
@@ -67,8 +70,100 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus, out getProgramStatusCode));
             this.mockGL.Setup(m => m.CreateProgram()).Returns(ShaderProgramId);
 
-            this.glInitObservable = new OpenGLInitObservable();
+            this.mockGLInitObservable = new Mock<IObservable<bool>>();
+            this.mockGLInitObservableUnsubscriber = new Mock<IDisposable>();
+            this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(this.mockGLInitObservableUnsubscriber.Object)
+                .Callback<IObserver<bool>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
+                    }
+
+                    this.glInitObserver = observer;
+                });
+
+            this.mockShutDownObservable = new Mock<IObservable<bool>>();
+            this.mockShutDownObservableUnsubscriber = new Mock<IDisposable>();
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullGLParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new ShaderProgramFake(
+                    null,
+                    this.mockGLExtensions.Object,
+                    this.mockShaderLoader.Object,
+                    this.mockGLInitObservable.Object,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'gl')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullGLExtensionsParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new ShaderProgramFake(
+                    this.mockGL.Object,
+                    null,
+                    this.mockShaderLoader.Object,
+                    this.mockGLInitObservable.Object,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'glExtensions')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullShaderLoaderServiceParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new ShaderProgramFake(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    null,
+                    this.mockGLInitObservable.Object,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'shaderLoaderService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullInitObservableParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new ShaderProgramFake(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockShaderLoader.Object,
+                    null,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'glInitObservable')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new ShaderProgramFake(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockShaderLoader.Object,
+                    this.mockGLInitObservable.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+        }
+        #endregion
 
         #region Prop Tests
         [Fact]
@@ -95,10 +190,10 @@ namespace VelaptorTests.OpenGL
                 (BatchSizeVarName, 0u),
             };
 
-            var unused = CreateShaderProgram();
+            CreateShaderProgram();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             this.mockLoader.Verify(m
@@ -111,11 +206,11 @@ namespace VelaptorTests.OpenGL
         public void ObservableInit_WhenInvokedSecondTime_DoesNotCreateShaderProgram()
         {
             // Arrange
-            var unused = CreateShaderProgram();
-            this.glInitObservable.OnOpenGLInitialized();
+            CreateShaderProgram();
+            this.glInitObserver.OnNext(true);
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             this.mockLoader.Verify(m
@@ -134,10 +229,10 @@ namespace VelaptorTests.OpenGL
         public void ObservableInit_WhenInvoked_SuccessfullyCreatesVertexShader()
         {
             // Arrange
-            var unused = CreateShaderProgram();
+            CreateShaderProgram();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             // Verify the creation of the vertex shader
@@ -155,10 +250,10 @@ namespace VelaptorTests.OpenGL
         public void ObservableInit_WhenInvoked_SuccessfullyCreatesProgram()
         {
             // Arrange
-            var unused = CreateShaderProgram();
+            CreateShaderProgram();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
@@ -171,10 +266,10 @@ namespace VelaptorTests.OpenGL
         public void ObservableInit_WhenInvoked_DestroysVertexAndFragmentShader()
         {
             // Arrange
-            var unused = CreateShaderProgram();
+            CreateShaderProgram();
 
             // Act
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Assert
             this.mockGL.Verify(m => m.DetachShader(ShaderProgramId, VertexShaderId), Times.Once());
@@ -191,12 +286,12 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Setup(m => m.GetShader(VertexShaderId, GLShaderParameter.CompileStatus, out statusCode));
             this.mockGL.Setup(m => m.GetShaderInfoLog(VertexShaderId)).Returns("Vertex Shader Compile Error");
 
-            var unused = CreateShaderProgram();
+            CreateShaderProgram();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                this.glInitObservable.OnOpenGLInitialized();
+                this.glInitObserver.OnNext(true);
             }, $"Error compiling vertex shader '{ShaderName}' with shader ID '{VertexShaderId}'.\nVertex Shader Compile Error");
         }
 
@@ -208,12 +303,12 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Setup(m => m.GetShader(FragShaderId, GLShaderParameter.CompileStatus, out statusCode));
             this.mockGL.Setup(m => m.GetShaderInfoLog(FragShaderId)).Returns("Fragment Shader Compile Error");
 
-            var unused = CreateShaderProgram();
+            CreateShaderProgram();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                this.glInitObservable.OnOpenGLInitialized();
+                this.glInitObserver.OnNext(true);
             }, $"Error compiling fragment shader '{ShaderName}' with shader ID '{FragShaderId}'.\nFragment Shader Compile Error");
         }
 
@@ -224,12 +319,13 @@ namespace VelaptorTests.OpenGL
             var statusCode = 0;
             this.mockGL.Setup(m => m.GetProgram(ShaderProgramId, GLProgramParameterName.LinkStatus, out statusCode));
             this.mockGL.Setup(m => m.GetProgramInfoLog(ShaderProgramId)).Returns("Program Linking Error");
-            var unused = CreateShaderProgram();
+
+            CreateShaderProgram();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                this.glInitObservable.OnOpenGLInitialized();
+                this.glInitObserver.OnNext(true);
             }, $"Error linking shader with ID '{ShaderProgramId}'\nProgram Linking Error");
         }
 
@@ -251,7 +347,7 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             var program = CreateShaderProgram();
-            this.glInitObservable.OnOpenGLInitialized();
+            this.glInitObserver.OnNext(true);
 
             // Act
             program.Use();
@@ -261,18 +357,34 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Dispose_WithUnmanagedResourcesToDispose_DeletesProgram()
+        public void WithShutDownNotification_DisposesOfShaderProgram()
         {
             // Arrange
-            var program = CreateShaderProgram();
-            this.glInitObservable.OnOpenGLInitialized();
+            IObserver<bool>? shutDownObserver = null;
+
+            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(this.mockShutDownObservableUnsubscriber.Object)
+                .Callback<IObserver<bool>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
+                    }
+
+                    shutDownObserver = observer;
+                });
+
+            CreateShaderProgram();
+            this.glInitObserver.OnNext(true);
 
             // Act
-            program.Dispose();
-            program.Dispose();
+            shutDownObserver?.OnNext(true);
+            shutDownObserver?.OnNext(true);
 
             // Assert
-            this.mockGL.Verify(m => m.DeleteProgram(ShaderProgramId), Times.Once());
+            this.mockGL.Verify(m => m.DeleteProgram(ShaderProgramId), Times.Once);
+            this.mockGLInitObservableUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+            this.mockShutDownObservableUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 
@@ -281,6 +393,11 @@ namespace VelaptorTests.OpenGL
         /// </summary>
         /// <returns>The instance to test with.</returns>
         private ShaderProgramFake CreateShaderProgram()
-            => new (this.mockGL.Object, this.mockGLExtensions.Object, this.mockLoader.Object, this.glInitObservable);
+            => new (
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
+                this.mockShaderLoader.Object,
+                this.mockGLInitObservable.Object,
+                this.mockShutDownObservable.Object);
     }
 }

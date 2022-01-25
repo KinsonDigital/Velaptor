@@ -26,12 +26,14 @@ namespace Velaptor.OpenGL
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         public TextureShader(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
-            IObservable<bool> glInitObservable)
-            : base(gl, glExtensions, shaderLoaderService, glInitObservable)
+            IObservable<bool> glInitObservable,
+            IObservable<bool> shutDownObservable)
+            : base(gl, glExtensions, shaderLoaderService, glInitObservable, shutDownObservable)
         {
         }
 

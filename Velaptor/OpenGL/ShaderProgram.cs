@@ -20,7 +20,8 @@ namespace Velaptor.OpenGL
     internal abstract class ShaderProgram : IShaderProgram
     {
         private readonly IShaderLoaderService<uint> shaderLoaderService;
-        private readonly IDisposable glObservableUnsubscriber;
+        private readonly IDisposable glInitObservableUnsubscriber;
+        private readonly IDisposable shutDownObservableUnsubscriber;
         private bool isDisposed;
         private bool isInitialized;
         private uint batchSize;
@@ -32,11 +33,13 @@ namespace Velaptor.OpenGL
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
         /// <param name="glInitObservable">Initializes the shader once it receives a notification.</param>
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
         internal ShaderProgram(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
-            IObservable<bool> glInitObservable)
+            IObservable<bool> glInitObservable,
+            IObservable<bool> shutDownObservable)
         {
             GL = gl;
             GLExtensions = glExtensions;
@@ -44,8 +47,16 @@ namespace Velaptor.OpenGL
             this.shaderLoaderService = shaderLoaderService;
             ProcessCustomAttributes();
 
-            this.glObservableUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
+            this.glInitObservableUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
+
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
+
+        // TODO: Use unit test detection to skip this if a unit test is running it
+        /// <summary>
+        /// Finalizes an instance of the <see cref="ShaderProgram"/> class.
+        /// </summary>
+        // ~ShaderProgram() => ShutDown();
 
         /// <inheritdoc/>
         public uint ShaderId { get; private set; }
@@ -80,28 +91,18 @@ namespace Velaptor.OpenGL
             GL.UseProgram(ShaderId);
         }
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Shuts down the application by disposing of any resources.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        protected virtual void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                this.glObservableUnsubscriber.Dispose();
-            }
+            this.glInitObservableUnsubscriber.Dispose();
+            this.shutDownObservableUnsubscriber.Dispose();
 
             GL.DeleteProgram(ShaderId);
 

@@ -17,12 +17,18 @@ namespace VelaptorTests.Fakes
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgramFake"/> class for the purpose of testing.
         /// </summary>
-        /// <param name="gl">Mocked <see cref="IGLInvoker"/>.</param>
-        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/>.</param>
-        /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService{TValue}"/>.</param>
-        /// <param name="glInitObservable">Mocked <see cref="IObservable{T}"/>.</param>
-        public ShaderProgramFake(IGLInvoker gl, IGLInvokerExtensions glExtensions, IShaderLoaderService<uint> shaderLoaderService, IObservable<bool> glInitObservable)
-            : base(gl, glExtensions, shaderLoaderService, glInitObservable)
+        /// <param name="gl">Mocked <see cref="IGLInvoker"/> for calling OpenGL functions.</param>
+        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/> for calling OpenGL functions.</param>
+        /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService{TValue}"/> for loading shader code.</param>
+        /// <param name="glInitObservable">Mocked <see cref="IObservable{T}"/> for OpenGL initialization..</param>
+        /// <param name="shutDownObservable">Mocks <see cref="IObservable{T}"/> for shutting down the application.</param>
+        public ShaderProgramFake(
+            IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
+            IShaderLoaderService<uint> shaderLoaderService,
+            IObservable<bool> glInitObservable,
+            IObservable<bool> shutDownObservable)
+            : base(gl, glExtensions, shaderLoaderService, glInitObservable, shutDownObservable)
         {
         }
     }
