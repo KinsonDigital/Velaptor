@@ -34,6 +34,9 @@ namespace Velaptor.OpenGL
         /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
         /// <param name="glInitObservable">Initializes the shader once it receives a notification.</param>
         /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal ShaderProgram(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
@@ -41,15 +44,25 @@ namespace Velaptor.OpenGL
             IObservable<bool> glInitObservable,
             IObservable<bool> shutDownObservable)
         {
-            GL = gl;
-            GLExtensions = glExtensions;
+            GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
+            GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+            this.shaderLoaderService = shaderLoaderService ?? throw new ArgumentNullException(nameof(shaderLoaderService), "The parameter must not be null.");
 
-            this.shaderLoaderService = shaderLoaderService;
-            ProcessCustomAttributes();
+            if (glInitObservable is null)
+            {
+                throw new ArgumentNullException(nameof(glInitObservable), "The parameter must not be null.");
+            }
 
             this.glInitObservableUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
 
+            if (shutDownObservable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+            }
+
             this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
+
+            ProcessCustomAttributes();
         }
 
         // TODO: Use unit test detection to skip this if a unit test is running it

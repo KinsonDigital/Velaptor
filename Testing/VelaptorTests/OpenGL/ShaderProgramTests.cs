@@ -28,7 +28,7 @@ namespace VelaptorTests.OpenGL
         private const uint FragShaderId = 5678u;
         private const uint ShaderProgramId = 1928u;
         private const uint DefaultBatchSize = 0u;
-        private readonly Mock<IShaderLoaderService<uint>> mockLoader;
+        private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IObservable<bool>> mockGLInitObservable;
@@ -42,7 +42,7 @@ namespace VelaptorTests.OpenGL
         /// </summary>
         public ShaderProgramTests()
         {
-            this.mockLoader = new Mock<IShaderLoaderService<uint>>();
+            this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
 
             IEnumerable<(string, uint)> vertTemplateVars = new[]
             {
@@ -50,12 +50,12 @@ namespace VelaptorTests.OpenGL
             };
 
             // Sets up the vertex shader file mock.
-            this.mockLoader.Setup(m
+            this.mockShaderLoader.Setup(m
                     => m.LoadVertSource(ShaderName, vertTemplateVars))
                         .Returns(() => VertShaderSrc);
 
             // Sets up the fragment shader file mock.
-            this.mockLoader.Setup(m
+            this.mockShaderLoader.Setup(m
                     => m.LoadFragSource(ShaderName, vertTemplateVars))
                         .Returns(() => FragShaderSrc);
 
@@ -196,9 +196,9 @@ namespace VelaptorTests.OpenGL
             this.glInitObserver.OnNext(true);
 
             // Assert
-            this.mockLoader.Verify(m
+            this.mockShaderLoader.Verify(m
                 => m.LoadVertSource(ShaderName, vertTemplateVars), Times.Once);
-            this.mockLoader.Verify(m
+            this.mockShaderLoader.Verify(m
                 => m.LoadFragSource(ShaderName, vertTemplateVars), Times.Once);
         }
 
@@ -213,9 +213,9 @@ namespace VelaptorTests.OpenGL
             this.glInitObserver.OnNext(true);
 
             // Assert
-            this.mockLoader.Verify(m
+            this.mockShaderLoader.Verify(m
                 => m.LoadVertSource(It.IsAny<string>(), It.IsAny<(string, uint)[]>()), Times.Once);
-            this.mockLoader.Verify(m
+            this.mockShaderLoader.Verify(m
                 => m.LoadFragSource(It.IsAny<string>(), It.IsAny<(string, uint)[]>()), Times.Once);
             this.mockGL.Verify(m => m.CreateShader(It.IsAny<GLShaderType>()), Times.Exactly(2));
             this.mockGL.Verify(m => m.CreateProgram(), Times.Once());

@@ -27,6 +27,9 @@ namespace Velaptor.OpenGL
         /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
         /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
         /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         public FontShader(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
