@@ -53,6 +53,83 @@ namespace VelaptorTests.Content
             this.mockShutDownObservable = new Mock<IObservable<bool>>();
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullTextureCacheParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    null,
+                    this.mockTexturePathResolver.Object,
+                    this.mockFile.Object,
+                    this.mockPath.Object,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'textureCache')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullTexturePathResolverParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    this.mockTextureCache.Object,
+                    null,
+                    this.mockFile.Object,
+                    this.mockPath.Object,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'texturePathResolver')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFileParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    this.mockTextureCache.Object,
+                    this.mockTexturePathResolver.Object,
+                    null,
+                    this.mockPath.Object,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'file')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPathParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    this.mockTextureCache.Object,
+                    this.mockTexturePathResolver.Object,
+                    this.mockFile.Object,
+                    null,
+                    this.mockShutDownObservable.Object);
+            }, "The parameter must not be null. (Parameter 'path')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    this.mockTextureCache.Object,
+                    this.mockTexturePathResolver.Object,
+                    this.mockFile.Object,
+                    this.mockPath.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+        }
+        #endregion
+
         #region Method Tests
         [Fact]
         public void Load_WhenLoadingContentWithFullPath_LoadsTexture()

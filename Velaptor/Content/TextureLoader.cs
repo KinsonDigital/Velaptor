@@ -24,7 +24,7 @@ namespace Velaptor.Content
     {
         private const string TextureFileExtension = ".png";
         private readonly IDisposableItemCache<string, ITexture> textureCache;
-        private readonly IPathResolver pathResolver;
+        private readonly IPathResolver texturePathResolver;
         private readonly IFile file;
         private readonly IPath path;
         private readonly IDisposable shutDownObservableUnsubscriber;
@@ -38,7 +38,7 @@ namespace Velaptor.Content
         public TextureLoader()
         {
             this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
-            this.pathResolver = PathResolverFactory.CreateTexturePathResolver();
+            this.texturePathResolver = PathResolverFactory.CreateTexturePathResolver();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
 
@@ -54,6 +54,9 @@ namespace Velaptor.Content
         /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal TextureLoader(
             IDisposableItemCache<string, ITexture> textureCache,
             IPathResolver texturePathResolver,
@@ -61,10 +64,15 @@ namespace Velaptor.Content
             IPath path,
             IObservable<bool> shutDownObservable)
         {
-            this.textureCache = textureCache;
-            this.pathResolver = texturePathResolver;
-            this.file = file;
-            this.path = path;
+            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
+            this.texturePathResolver = texturePathResolver ?? throw new ArgumentNullException(nameof(texturePathResolver), "The parameter must not be null.");
+            this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+
+            if (shutDownObservable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+            }
 
             this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
@@ -90,7 +98,7 @@ namespace Velaptor.Content
             else
             {
                 contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
-                filePath = this.pathResolver.ResolveFilePath(contentPathOrName);
+                filePath = this.texturePathResolver.ResolveFilePath(contentPathOrName);
                 cacheKey = filePath;
             }
 
