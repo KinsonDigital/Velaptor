@@ -10,7 +10,10 @@ namespace Velaptor.Content
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
     using Velaptor.OpenGL;
+    using VelObservable = Velaptor.Observables.Core.IObservable<uint>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -21,19 +24,25 @@ namespace Velaptor.Content
     {
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
+        private readonly IDisposable disposeUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
         /// </summary>
         /// <param name="name">The name of the texture.</param>
-        /// <param name="path">The path to the image file.</param>
+        /// <param name="filePath">The file path to the image file.</param>
         /// <param name="imageData">The image data of the texture.</param>
         [ExcludeFromCodeCoverage]
-        public Texture(string name, string path, ImageData imageData)
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+        public Texture(string name, string filePath, ImageData imageData)
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            FilePath = path;
+
+            var disposeObservable = IoC.Container.GetInstance<DisposeTexturesObservable>();
+            this.disposeUnsubscriber = disposeObservable.Subscribe(new Observer<uint>(_ => Dispose(Id)));
+
+            FilePath = filePath;
             Init(name, imageData);
         }
 
@@ -42,14 +51,35 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
+        /// <param name="disposeTexturesObservable">Sends a push notification to dispose of a texture.</param>
         /// <param name="name">The name of the texture.</param>
-        /// <param name="path">The path to the image file.</param>
+        /// <param name="filePath">The file path to the image file.</param>
         /// <param name="imageData">The image data of the texture.</param>
-        internal Texture(IGLInvoker gl, IGLInvokerExtensions glExtensions, string name, string path, ImageData imageData)
+        internal Texture(
+            IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
+            VelObservable disposeTexturesObservable,
+            string name,
+            string filePath,
+            ImageData imageData)
         {
-            this.gl = gl;
-            this.glExtensions = glExtensions;
-            FilePath = path;
+            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
+            this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+
+            if (disposeTexturesObservable is null)
+            {
+                throw new ArgumentNullException(nameof(disposeTexturesObservable), "The parameter must not be null.");
+            }
+
+            this.disposeUnsubscriber =
+                disposeTexturesObservable.Subscribe(new Observer<uint>(Dispose));
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                throw new ArgumentNullException(nameof(filePath), "The parameter must not be null or empty.");
+            }
+
+            FilePath = filePath;
             Init(name, imageData);
         }
 
@@ -64,7 +94,7 @@ namespace Velaptor.Content
                 return;
             }
 
-            Dispose();
+            Dispose(Id);
         }
 
         /// <inheritdoc/>
@@ -85,21 +115,21 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public bool IsDisposed { get; private set; }
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
+        /// <summary>
+        /// Disposes of the texture if this textures <see cref="Id"/> matches the given <paramref name="textureId"/>.
+        /// </summary>
+        /// <param name="textureId">The ID of the texture to dispose.</param>
+        private void Dispose(uint textureId)
         {
-            // TODO: Make sure once you improve this control, that the lower level IContent items
-            // are checked to see if they are not being pooled before disposing them
-            if (IsDisposed)
+            if (IsDisposed || Id != textureId)
             {
                 return;
             }
 
             this.gl.DeleteTexture(Id);
+            this.disposeUnsubscriber.Dispose();
 
             IsDisposed = true;
-
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>

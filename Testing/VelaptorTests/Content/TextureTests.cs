@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureTests.cs" company="KinsonDigital">
+// <copyright file="TextureTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -14,6 +14,7 @@ namespace VelaptorTests.Content
     using Velaptor.OpenGL;
     using VelaptorTests.Helpers;
     using Xunit;
+    using VelObservable = Velaptor.Observables.Core.IObservable<uint>;
 
     /// <summary>
     /// Tests the <see cref="Texture"/> class.
@@ -25,6 +26,8 @@ namespace VelaptorTests.Content
         private const uint TextureId = 1234;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<VelObservable> mockDisposeObservable;
+        private readonly Mock<IDisposable> mockDisposeUnsubscriber;
         private readonly ImageData imageData;
 
         /// <summary>
@@ -71,9 +74,77 @@ namespace VelaptorTests.Content
             this.mockGL.Setup(m => m.GenTexture()).Returns(TextureId);
 
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockDisposeObservable = new Mock<VelObservable>();
+            this.mockDisposeUnsubscriber = new Mock<IDisposable>();
         }
 
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullGLParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    null,
+                    this.mockGLExtensions.Object,
+                    this.mockDisposeObservable.Object,
+                    TextureName,
+                    TexturePath,
+                    this.imageData);
+            }, "The parameter must not be null. (Parameter 'gl')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullGLExtensionsParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    this.mockGL.Object,
+                    null,
+                    this.mockDisposeObservable.Object,
+                    TextureName,
+                    TexturePath,
+                    this.imageData);
+            }, "The parameter must not be null. (Parameter 'glExtensions')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullDisposeTexturesObservableParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    null,
+                    TextureName,
+                    TexturePath,
+                    this.imageData);
+            }, "The parameter must not be null. (Parameter 'disposeTexturesObservable')");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Ctor_WithEmptyOrNullFilePath_ThrowsException(string filePath)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockDisposeObservable.Object,
+                    TextureName,
+                    filePath,
+                    this.imageData);
+            }, "The parameter must not be null or empty. (Parameter 'filePath')");
+        }
+
         [Fact]
         public void Ctor_WithEmptyImageData_ThrowsException()
         {
@@ -108,7 +179,13 @@ namespace VelaptorTests.Content
             }
 
             // Act
-            var unused = new Texture(this.mockGL.Object, this.mockGLExtensions.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
+            var unused = new Texture(
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
+                this.mockDisposeObservable.Object,
+                "test-texture.png",
+                $@"C:\temp\test-texture.png",
+                this.imageData);
 
             // Assert
             this.mockGLExtensions.Verify(m => m.LabelTexture(TextureId, "test-texture.png"), Times.Once());
@@ -216,17 +293,59 @@ namespace VelaptorTests.Content
 
         #region Method Tests
         [Fact]
-        public void Dispose_WhenUnmanagedResourcesIsNotDisposed_DisposesOfUnmanagedResources()
+        public void DisposePushNotification_WithDifferentTextureID_DoesNotDisposeOfTexture()
         {
             // Arrange
-            var texture = CreateTexture();
+            IObserver<uint>? disposeObserver = null;
+
+            this.mockDisposeObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<uint>>()))
+                .Returns(this.mockDisposeUnsubscriber.Object)
+                .Callback<IObserver<uint>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "Dispose textures observable subscription failed.  Observer is null.");
+                    }
+
+                    disposeObserver = observer;
+                });
+
+            CreateTexture();
 
             // Act
-            texture.Dispose();
-            texture.Dispose();
+            disposeObserver?.OnNext(456u);
+
+            // Assert
+            this.mockGL.Verify(m => m.DeleteTexture(456u), Times.Never);
+            this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Never);
+        }
+
+        [Fact]
+        public void WithDisposePushNotification_DisposesOfTexture()
+        {
+            // Arrange
+            IObserver<uint>? disposeObserver = null;
+
+            this.mockDisposeObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<uint>>()))
+                .Returns(this.mockDisposeUnsubscriber.Object)
+                .Callback<IObserver<uint>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "Dispose textures observable subscription failed.  Observer is null.");
+                    }
+
+                    disposeObserver = observer;
+                });
+
+            CreateTexture();
+
+            // Act
+            disposeObserver?.OnNext(TextureId);
 
             // Assert
             this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
+            this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 
@@ -238,6 +357,7 @@ namespace VelaptorTests.Content
             => new (
                 this.mockGL.Object,
                 this.mockGLExtensions.Object,
+                this.mockDisposeObservable.Object,
                 TextureName,
                 TexturePath,
                 useEmptyData ? default : this.imageData);
