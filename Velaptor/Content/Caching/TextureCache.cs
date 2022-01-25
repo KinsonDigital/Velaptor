@@ -14,7 +14,10 @@ namespace Velaptor.Content.Caching
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Observables.Core;
     using Velaptor.Services;
+    using VelShutDownObservable = Velaptor.Observables.Core.IObservable<bool>;
+    using VelDisposeObservable = Velaptor.Observables.Core.IObservable<uint>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -36,6 +39,8 @@ namespace Velaptor.Content.Caching
         private readonly IFontAtlasService fontAtlasService;
         private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IPath path;
+        private readonly IDisposable shutDownUnsubscriber;
+        private readonly VelDisposeObservable disposeTexturesObservable;
         private readonly string[] defaultFontNames =
         {
             DefaultRegularFont, DefaultBoldFont,
@@ -51,25 +56,48 @@ namespace Velaptor.Content.Caching
         /// <param name="fontAtlasService">Provides font atlas services.</param>
         /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
         /// <param name="path">Provides path related services.</param>
+        /// <param name="shutDownObservable">Sends push notifications that the application is shutting down.</param>
+        /// <param name="disposeTexturesObservable">Sends a notifications to dispose of textures.</param>
         public TextureCache(
             IImageService imageService,
             ITextureFactory textureFactory,
             IFontAtlasService fontAtlasService,
             IFontMetaDataParser fontMetaDataParser,
-            IPath path)
+            IPath path,
+            VelShutDownObservable shutDownObservable,
+            VelDisposeObservable disposeTexturesObservable)
         {
-            this.imageService = imageService;
-            this.textureFactory = textureFactory;
-            this.fontAtlasService = fontAtlasService;
-            this.fontMetaDataParser = fontMetaDataParser;
-            this.path = path;
+            this.imageService = imageService ?? throw new ArgumentNullException(nameof(imageService), "The parameter must not be null.");
+            this.textureFactory = textureFactory ?? throw new ArgumentNullException(nameof(textureFactory), "The parameter must not be null.");
+            this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
+            this.fontMetaDataParser = fontMetaDataParser ?? throw new ArgumentNullException(nameof(fontMetaDataParser), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+
+            if (shutDownObservable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+            }
+
+            this.shutDownUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
+
+            this.disposeTexturesObservable =
+                disposeTexturesObservable ??
+                throw new ArgumentNullException(nameof(disposeTexturesObservable), "The parameter must not be null.");
         }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="TextureCache"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        ~TextureCache() => Dispose(false);
+        ~TextureCache()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            ShutDown();
+        }
 
         /// <inheritdoc/>
         public int TotalCachedItems => this.textures.Count;
@@ -238,42 +266,36 @@ namespace Velaptor.Content.Caching
         {
             this.textures.TryRemove(cacheKey, out var texture);
 
-            // TODO: Need to invoke the DisposeTexturesObservable here
-            //texture?.Dispose();
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (texture is not null)
+            {
+                this.disposeTexturesObservable.PushNotification(texture.Id);
+            }
         }
 
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Disposes of all textures.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
+            var cacheKeys = this.textures.Keys.ToArray();
+
+            // Dispose of all default and non default textures
+            foreach (var cacheKey in cacheKeys)
             {
-                var cacheKeys = this.textures.Keys.ToArray();
+                this.textures.TryRemove(cacheKey, out var texture);
 
-                // Dispose of all default and non default textures
-                foreach (var cacheKey in cacheKeys)
+                if (texture is not null)
                 {
-                    this.textures.TryRemove(cacheKey, out var texture);
-
-                    // TODO: Need to implement ShutDownObservable in here
-                    // TODO: Need to invoke the DisposeTexturesObservable here
-                    //texture?.Dispose();
+                    this.disposeTexturesObservable.PushNotification(texture.Id);
                 }
             }
+
+            this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }
