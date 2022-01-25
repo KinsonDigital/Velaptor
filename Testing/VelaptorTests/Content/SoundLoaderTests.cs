@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Content
 {
+    using System;
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
@@ -22,6 +23,8 @@ namespace VelaptorTests.Content
         private readonly Mock<ISound> mockSound;
         private readonly Mock<ISoundFactory> soundFactory;
         private readonly Mock<IPath> mockPath;
+        private readonly Mock<IObservable<bool>> mockShutDownObservable;
+        private readonly Mock<IDisposable> mockShutDownUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoaderTests"/> class.
@@ -41,6 +44,9 @@ namespace VelaptorTests.Content
 
             this.mockPath = new Mock<IPath>();
             this.mockPath.Setup(m => m.HasExtension(SoundName)).Returns(false);
+
+            this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+            this.mockShutDownObservable = new Mock<IObservable<bool>>();
         }
 
         #region Method Tests
@@ -79,18 +85,32 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Dispose_WhenInvoked_ProperlyDisposesOfSounds()
+        public void WithShutDownNotification_DisposesOfLoader()
         {
             // Arrange
+            IObserver<bool>? shutDownObserver = null;
+            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+                .Returns(this.mockShutDownUnsubscriber.Object)
+                .Callback<IObserver<bool>>(observer =>
+                {
+                    if (observer is null)
+                    {
+                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
+                    }
+
+                    shutDownObserver = observer;
+                });
+
             var loader = CreateSoundLoader();
             loader.Load(SoundName);
 
             // Act
-            loader.Dispose();
-            loader.Dispose();
+            shutDownObserver?.OnNext(true);
+            shutDownObserver?.OnNext(true);
 
             // Assert
             this.mockSound.Verify(m => m.Dispose(), Times.Once());
+            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 
@@ -98,6 +118,10 @@ namespace VelaptorTests.Content
         /// Creates a new instance of a <see cref="SoundLoader"/> for testing purposes.
         /// </summary>
         /// <returns>The mockSound loader instance used for testing.</returns>
-        private SoundLoader CreateSoundLoader() => new (this.mockSoundPathResolver.Object, this.soundFactory.Object, this.mockPath.Object);
+        private SoundLoader CreateSoundLoader() => new (
+            this.mockSoundPathResolver.Object,
+            this.soundFactory.Object,
+            this.mockPath.Object,
+            this.mockShutDownObservable.Object);
     }
 }

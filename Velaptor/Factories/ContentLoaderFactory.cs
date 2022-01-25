@@ -116,11 +116,13 @@ namespace Velaptor.Factories
             var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
             var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             var path = IoC.Container.GetInstance<IPath>();
+            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
 
             soundLoader = new SoundLoader(
                 soundPathResolver,
                 soundFactory,
-                path);
+                path,
+                shutDownObservable);
 
             return soundLoader;
         }

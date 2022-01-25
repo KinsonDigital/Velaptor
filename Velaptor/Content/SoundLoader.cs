@@ -11,6 +11,8 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
+    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -23,17 +25,22 @@ namespace Velaptor.Content
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundFactory soundFactory;
         private readonly IPath path;
+        private readonly IDisposable shutDownObservableUnsubscriber;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public SoundLoader()
         {
             this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
             this.soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
+
+            var shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -42,11 +49,17 @@ namespace Velaptor.Content
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="soundFactory">Creates sound instances.</param>
         /// <param name="path">Processes directory and fle paths.</param>
-        internal SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory, IPath path)
+        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        internal SoundLoader(
+            IPathResolver soundPathResolver,
+            ISoundFactory soundFactory,
+            IPath path,
+            IObservable<bool> shutDownObservable)
         {
             this.soundPathResolver = soundPathResolver;
             this.soundFactory = soundFactory;
             this.path = path;
+            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -103,27 +116,22 @@ namespace Velaptor.Content
             }
         }
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Shuts down the application by unloading all of the sounds.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
+            foreach (var sound in this.sounds.Values)
             {
-                foreach (var sound in this.sounds.Values)
-                {
-                    sound.Dispose();
-                }
+                sound.Dispose();
             }
+
+            this.shutDownObservableUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }
