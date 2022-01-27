@@ -205,7 +205,7 @@ namespace Velaptor.Graphics
         {
             if (texture is null)
             {
-                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
+                throw new ArgumentNullException(nameof(texture), $"Cannot render a null '{nameof(ITexture)}'.");
             }
 
             if (!this.hasBegun)
@@ -268,8 +268,17 @@ namespace Velaptor.Graphics
         /// <exception cref="InvalidOperationException">
         ///     Thrown if the <see cref="BeginBatch"/>() method is not called before calling this method.
         /// </exception>
+        /// <remarks>
+        ///     If <paramref name="font"/> is null, nothing will be rendered.
+        ///     <para>A null reference exception will not be thrown.</para>
+        /// </remarks>
         public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
         {
+            if (font is null)
+            {
+                throw new ArgumentNullException(nameof(font), $"Cannot render a null '{nameof(IFont)}'.");
+            }
+
             if (string.IsNullOrEmpty(text))
             {
                 return;

@@ -466,7 +466,7 @@ namespace VelaptorTests.Graphics
                     It.IsAny<float>(),
                     It.IsAny<Color>(),
                     It.IsAny<RenderEffects>());
-            }, "The texture must not be null. (Parameter 'texture')");
+            }, $"Cannot render a null '{nameof(ITexture)}'. (Parameter 'texture')");
         }
 
         [Fact]
@@ -647,6 +647,19 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Verify(m => m.EmptyBatch(), Times.Once);
         }
 
+        [Fact]
+        public void RenderFont_WithNullFont_ThrowsException()
+        {
+            // Arrange
+            var batch = CreateSpriteBatch();
+
+            // Act & Asset
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                batch.Render(null, "test", 10, 20, 1f, 0f, Color.White);
+            }, $"Cannot render a null '{nameof(IFont)}'. (Parameter 'font')");
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -658,7 +671,7 @@ namespace VelaptorTests.Graphics
 
             // Act
             batch.Render(
-                It.IsAny<IFont>(),
+                new Mock<IFont>().Object,
                 renderText,
                 It.IsAny<int>(),
                 It.IsAny<int>(),
