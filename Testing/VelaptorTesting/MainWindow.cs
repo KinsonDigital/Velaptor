@@ -45,7 +45,7 @@ namespace VelaptorTesting
                 spriteBatch.RenderSurfaceHeight = size.Height;
             };
 
-            this.sceneManager = new SceneManager(contentLoader, spriteBatch);
+            this.sceneManager = new SceneManager(spriteBatch);
 
             var testRenderTextScene = new TestRenderTextScene(contentLoader)
             {

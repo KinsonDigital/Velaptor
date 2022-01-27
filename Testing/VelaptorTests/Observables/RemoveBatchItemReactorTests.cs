@@ -1,4 +1,4 @@
-﻿// <copyright file="RemoveBatchItemObservableTests.cs" company="KinsonDigital">
+﻿// <copyright file="RemoveBatchItemReactorTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ namespace VelaptorTests.Observables
     /// <summary>
     /// Tests the <see cref="RemoveBatchItemReactor"/> class.
     /// </summary>
-    public class RemoveBatchItemObservableTests
+    public class RemoveBatchItemReactorTests
     {
         #region Method Tests
         [Fact]

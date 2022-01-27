@@ -112,9 +112,9 @@ namespace Velaptor
             IoCContainer.Register<IReactor<GLInitData>, OpenGLInitReactor>(Lifestyle.Singleton);
             IoCContainer.Register<IReactor<ShutDownData>, ShutDownReactor>(Lifestyle.Singleton);
             IoCContainer.Register<IReactor<GLContextData>, OpenGLContextReactor>(Lifestyle.Singleton);
-            IoCContainer.Register<RemoveBatchItemReactor>(Lifestyle.Singleton);
             IoCContainer.Register<IReactor<DisposeTextureData>, DisposeTexturesReactor>(Lifestyle.Singleton);
             IoCContainer.Register<IReactor<DisposeSoundData>, DisposeSoundsReactor>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactor<RemoveBatchItemData>, RemoveBatchItemReactor>(Lifestyle.Singleton);
         }
 
         /// <summary>
@@ -147,6 +147,7 @@ namespace Velaptor
             IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
+            IoCContainer.Register<IBatchManagerService<SpriteBatchItem>, TextureBatchService>();
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(

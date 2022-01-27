@@ -14,7 +14,8 @@ namespace Velaptor.Factories
     /// Generates UI controls.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class UIControlFactory
+    // TODO: Left as internal to prevent user from using this clas until it is finished
+    internal static class UIControlFactory
     {
         /// <summary>
         /// Creates a new <see cref="Label"/> control to display text.
@@ -23,9 +24,7 @@ namespace Velaptor.Factories
         /// <returns>The label to render.</returns>
         public static Label CreateLabel(string labelText)
         {
-            var contentLoader = ContentLoaderFactory.CreateContentLoader();
-            var label = new Label(contentLoader);
-            label.Text = labelText;
+            var label = new Label(ContentLoaderFactory.CreateContentLoader()) { Text = labelText };
 
             return label;
         }

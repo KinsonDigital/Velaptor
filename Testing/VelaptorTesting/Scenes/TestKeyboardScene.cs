@@ -39,7 +39,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.lblInstructions = new Label(ContentLoader)
+            this.lblInstructions = new Label()
             {
                 Name = "Instructions",
                 Color = Color.White,
@@ -49,7 +49,7 @@ namespace VelaptorTesting.Scenes
             this.lblInstructions.Left = (int)(MainWindow.WindowWidth / 2) - (int)(this.lblInstructions.Width / 2);
             this.lblInstructions.Top = (int)(this.lblInstructions.Height / 2) + TopMargin;
 
-            this.downKeys = new Label(ContentLoader)
+            this.downKeys = new Label()
             {
                 Name = "DownKeys",
                 Color = Color.White,

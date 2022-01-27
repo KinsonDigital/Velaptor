@@ -10,6 +10,7 @@ namespace Velaptor.Factories
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables.Core;
     using Velaptor.Observables.ObservableData;
+    using Velaptor.OpenGL;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -43,6 +44,8 @@ namespace Velaptor.Factories
             var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
             var glInitReactor = IoC.Container.GetInstance<IReactor<GLInitData>>();
             var shutDownReactor = IoC.Container.GetInstance<IReactor<ShutDownData>>();
+            var textureBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
+            var fontBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
 
             spriteBatch = new SpriteBatch(
                 glInvoker,
@@ -51,8 +54,8 @@ namespace Velaptor.Factories
                 fontShader,
                 textureBuffer,
                 fontBuffer,
-                new TextureBatchService(),
-                new TextureBatchService(),
+                textureBatchService,
+                fontBatchService,
                 glInitReactor,
                 shutDownReactor);
 

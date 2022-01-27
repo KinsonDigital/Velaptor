@@ -36,7 +36,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.mouseInfoLabel = new Label(ContentLoader) { Color = Color.White };
+            this.mouseInfoLabel = new Label() { Color = Color.White };
 
             this.mouseInfoLabel.LoadContent();
             this.mouseInfoLabel.Position = new Point((int)MainWindow.WindowWidth / 2, (int)MainWindow.WindowHeight / 2);

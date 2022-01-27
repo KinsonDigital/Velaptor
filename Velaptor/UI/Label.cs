@@ -6,9 +6,11 @@ namespace Velaptor.UI
 {
     // ReSharper disable RedundantNameQualifier
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier
@@ -27,8 +29,20 @@ namespace Velaptor.UI
         /// <summary>
         /// Initializes a new instance of the <see cref="Label"/> class.
         /// </summary>
-        /// <param name="contentLoader">Loads content for rendering the label.</param>
-        public Label(IContentLoader contentLoader) =>
+        [ExcludeFromCodeCoverage]
+        public Label() => this.contentLoader = ContentLoaderFactory.CreateContentLoader();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Label"/> class.
+        /// </summary>
+        /// <param name="contentLoader">Loads various kinds of content.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown if the any of the parameters below are null:
+        ///     <list type="bullet">
+        ///         <item><paramref name="contentLoader"/></item>
+        ///     </list>
+        /// </exception>
+        internal Label(IContentLoader contentLoader) =>
             this.contentLoader =
                 contentLoader ??
                 throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");

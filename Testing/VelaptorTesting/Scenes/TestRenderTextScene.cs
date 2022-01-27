@@ -63,7 +63,7 @@ namespace VelaptorTesting.Scenes
             this.textFont = ContentLoader.LoadFont(DefaultRegularFont, 12);
 
             // Rotate CW Button
-            this.btnRotateCW = new Button(ContentLoader) { Text = "CW" };
+            this.btnRotateCW = new Button { Text = "CW" };
             this.btnRotateCW.MouseDown += (_, _) =>
             {
                 this.cwButtonDown = true;
@@ -77,7 +77,7 @@ namespace VelaptorTesting.Scenes
             };
 
             // Rotate CCW Button
-            this.btnRotateCCW = new Button(ContentLoader) { Text = "CCW" };
+            this.btnRotateCCW = new Button { Text = "CCW" };
 
             this.btnRotateCCW.MouseDown += (_, _) =>
             {
@@ -92,11 +92,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Increase Render Size Button
-            this.btnIncreaseRenderSize = new Button(ContentLoader)
-                {
+            this.btnIncreaseRenderSize = new Button
+            {
                     Text = $"Render Size({Math.Round(this.renderSize, 2)}) +",
                     FaceTextureName = "button-face-extra-large",
-                };
+            };
 
             this.btnIncreaseRenderSize.MouseDown += (_, _) =>
             {
@@ -113,11 +113,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Decrease Render Size Button
-            this.btnDecreaseRenderSize = new Button(ContentLoader)
-                {
+            this.btnDecreaseRenderSize = new Button
+            {
                     Text = $"Render Size({Math.Round(this.renderSize, 2)}) -",
                     FaceTextureName = "button-face-extra-large",
-                };
+            };
 
             this.btnDecreaseRenderSize.MouseDown += (_, _) =>
             {
@@ -134,11 +134,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Set Multi-Line
-            this.btnSetMultiLine = new Button(ContentLoader)
-                {
+            this.btnSetMultiLine = new Button
+            {
                     Text = $"Multi-Line: {this.isMultiLine}",
                     FaceTextureName = "button-face-large",
-                };
+            };
 
             this.btnSetMultiLine.MouseUp += (_, _) =>
             {
@@ -148,11 +148,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Set Color
-            this.btnSetColor = new Button(ContentLoader)
-                {
+            this.btnSetColor = new Button
+            {
                     Text = $"Set Color: {(this.isClrSet ? "On" : "Off")}",
                     FaceTextureName = "button-face-large",
-                };
+            };
 
             this.btnSetColor.MouseUp += (_, _) =>
             {
@@ -161,11 +161,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Set the font style to bold
-            this.btnSetStyle = new Button(ContentLoader)
-                {
+            this.btnSetStyle = new Button
+            {
                     Text = $"Style: {this.textFont.Style}",
                     FaceTextureName = "button-face-large",
-                };
+            };
 
             this.btnSetStyle.MouseUp += (_, _) =>
             {
@@ -182,11 +182,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Increase font size
-            this.btnIncreaseFontSize = new Button(ContentLoader)
-                {
+            this.btnIncreaseFontSize = new Button
+            {
                     Text = $"Font Size({this.textFont.Size}) +",
                     FaceTextureName = "button-face-large",
-                };
+            };
             this.btnIncreaseFontSize.MouseUp += (_, _) =>
             {
                 this.textFont.Size += 1;
@@ -195,11 +195,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Decrease font size
-            this.btnDecreaseFontSize = new Button(ContentLoader)
-                {
+            this.btnDecreaseFontSize = new Button
+            {
                     Text = $"Font Size({this.textFont.Size}) -",
                     FaceTextureName = "button-face-large",
-                };
+            };
             this.btnDecreaseFontSize.MouseUp += (_, _) =>
             {
                 this.textFont.Size -= this.textFont.Size == 0u ? 0u : 1u;
@@ -284,13 +284,6 @@ namespace VelaptorTesting.Scenes
                 this.renderSize,
                 this.angle,
                 this.isClrSet ? Color.CornflowerBlue : Color.White);
-
-            this.btnRotateCW.Render(spriteBatch);
-            this.btnRotateCCW.Render(spriteBatch);
-            this.btnIncreaseRenderSize.Render(spriteBatch);
-            this.btnDecreaseRenderSize.Render(spriteBatch);
-            this.btnSetMultiLine.Render(spriteBatch);
-            this.btnSetColor.Render(spriteBatch);
 
             base.Render(spriteBatch);
         }
