@@ -10,9 +10,9 @@ namespace Velaptor.OpenGL
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.OpenGL.Services;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -21,9 +21,8 @@ namespace Velaptor.OpenGL
     internal abstract class ShaderProgram : IShaderProgram
     {
         private readonly IShaderLoaderService<uint> shaderLoaderService;
-        private readonly IDisposable glInitObservableUnsubscriber;
-        private readonly IDisposable shutDownObservableUnsubscriber;
-        private bool isDisposed;
+        private readonly IDisposable glInitReactorUnsubscriber;
+        private readonly IDisposable shutDownReactorUnsubscriber;
         private bool isInitialized;
         private uint batchSize;
 
@@ -33,8 +32,8 @@ namespace Velaptor.OpenGL
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
-        /// <param name="glInitObservable">Initializes the shader once it receives a notification.</param>
-        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        /// <param name="glInitReactor">Initializes the shader once it receives a notification.</param>
+        /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
@@ -42,26 +41,27 @@ namespace Velaptor.OpenGL
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
-            VelObservable glInitObservable,
-            VelObservable shutDownObservable)
+            IReactor<GLInitData> glInitReactor,
+            IReactor<ShutDownData> shutDownReactor)
         {
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
             this.shaderLoaderService = shaderLoaderService ?? throw new ArgumentNullException(nameof(shaderLoaderService), "The parameter must not be null.");
 
-            if (glInitObservable is null)
+            if (glInitReactor is null)
             {
-                throw new ArgumentNullException(nameof(glInitObservable), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(glInitReactor), "The parameter must not be null.");
             }
 
-            this.glInitObservableUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
+            this.glInitReactorUnsubscriber = glInitReactor.Subscribe(new Observer<GLInitData>(_ => Init()));
 
-            if (shutDownObservable is null)
+            if (shutDownReactor is null)
             {
-                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(shutDownReactor), "The parameter must not be null.");
             }
 
-            this.shutDownObservableUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
+            this.shutDownReactorUnsubscriber =
+                shutDownReactor.Subscribe(new Observer<ShutDownData>(_ => Dispose()));
 
             ProcessCustomAttributes();
         }
@@ -77,7 +77,7 @@ namespace Velaptor.OpenGL
                 return;
             }
 
-            ShutDown();
+            Dispose();
         }
 
         /// <inheritdoc/>
@@ -85,6 +85,15 @@ namespace Velaptor.OpenGL
 
         /// <inheritdoc/>
         public string Name { get; private set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether or not a value if the <see cref="ShaderProgram"/> is disposed.
+        /// </summary>
+        [SuppressMessage(
+            "ReSharper",
+            "MemberCanBePrivate.Global",
+            Justification = "Left of inheriting members to use.")]
+        protected bool IsDisposed { get; set; }
 
         /// <summary>
         /// Gets invokes OpenGL functions.
@@ -116,19 +125,23 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Shuts down the application by disposing of any resources.
         /// </summary>
-        private void ShutDown()
+        [SuppressMessage(
+            "ReSharper",
+            "VirtualMemberNeverOverridden.Global",
+            Justification = "Will be used in the future.")]
+        protected virtual void Dispose()
         {
-            if (this.isDisposed)
+            if (IsDisposed)
             {
                 return;
             }
 
-            this.glInitObservableUnsubscriber.Dispose();
-            this.shutDownObservableUnsubscriber.Dispose();
-
             GL.DeleteProgram(ShaderId);
 
-            this.isDisposed = true;
+            this.glInitReactorUnsubscriber.Dispose();
+            this.shutDownReactorUnsubscriber.Dispose();
+
+            IsDisposed = true;
         }
 
         private void Init()

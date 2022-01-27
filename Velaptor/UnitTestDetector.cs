@@ -5,10 +5,12 @@
 namespace Velaptor
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Detects if the code ahs been executed from a unit test vs the rest of the application.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static class UnitTestDetector
     {
         /// <summary>

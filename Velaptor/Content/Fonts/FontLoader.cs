@@ -9,12 +9,12 @@ namespace Velaptor.Content.Fonts
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.IO.Abstractions;
+    using System.Linq;
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
     using Velaptor.Services;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -24,11 +24,11 @@ namespace Velaptor.Content.Fonts
     public sealed class FontLoader : ILoader<IFont>
     {
         private const string ExpectedMetaDataSyntax = "size:<font-size>";
-        private const string FontExtension = ".ttf";
-        private readonly string defaultRegularFontName = $"TimesNewRoman-Regular{FontExtension}";
-        private readonly string defaultBoldFontName = $"TimesNewRoman-Bold{FontExtension}";
-        private readonly string defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
-        private readonly string defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
+        private const string FontFileExtension = ".ttf";
+        private static readonly string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
+        private static readonly string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
+        private static readonly string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
+        private static readonly string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
         private readonly IFontAtlasService fontAtlasService;
         private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
         private readonly IPathResolver fontPathResolver;
@@ -39,6 +39,11 @@ namespace Velaptor.Content.Fonts
         private readonly IFileStreamFactory fileStream;
         private readonly IFile file;
         private readonly IPath path;
+        private readonly string[] defaultFontNames =
+        {
+            DefaultRegularFontName, DefaultBoldFontName,
+            DefaultItalicFontName, DefaultBoldItalicFontName,
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
@@ -199,9 +204,18 @@ namespace Velaptor.Content.Fonts
             var (_, glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fullFontFilePath, parseResult.FontSize);
 
             var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
+            var fileName = this.path.GetFileName(fullFontFilePath);
             var fontAtlasTexture = this.textureCache.GetItem(cacheKey);
 
-            return this.fontFactory.Create(fontAtlasTexture, contentName, fullFontFilePath, parseResult.FontSize, glyphMetrics);
+            var isDefaultFont = this.defaultFontNames.Contains(fileName);
+
+            return this.fontFactory.Create(
+                fontAtlasTexture,
+                contentName,
+                fullFontFilePath,
+                parseResult.FontSize,
+                isDefaultFont,
+                glyphMetrics);
         }
 
         /// <inheritdoc/>
@@ -249,14 +263,6 @@ namespace Velaptor.Content.Fonts
             var contentDirName = this.fontPathResolver.ContentDirectoryName;
             var fontContentDirPath = $"{rootDirPath}{contentDirName}{this.path.AltDirectorySeparatorChar}";
 
-            var fontNames = new[]
-            {
-                this.defaultRegularFontName,
-                this.defaultBoldFontName,
-                this.defaultItalicFontName,
-                this.defaultBoldItalicFontName,
-            };
-
             // Create the content directory if it does not exist
             if (this.directory.Exists(rootDirPath) is false)
             {
@@ -269,7 +275,7 @@ namespace Velaptor.Content.Fonts
                 this.directory.CreateDirectory(fontContentDirPath);
             }
 
-            foreach (var fontName in fontNames)
+            foreach (var fontName in this.defaultFontNames)
             {
                 var filePath = $"{fontContentDirPath}{fontName}";
 

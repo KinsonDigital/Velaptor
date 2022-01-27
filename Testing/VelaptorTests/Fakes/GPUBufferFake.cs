@@ -4,10 +4,11 @@
 
 namespace VelaptorTests.Fakes
 {
-    using System;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
+    using NETSizeF = System.Drawing.SizeF;
 
     /// <summary>
     /// Used to test the abstract class <see cref="GPUBufferBase{TData}"/>.
@@ -19,13 +20,13 @@ namespace VelaptorTests.Fakes
         /// </summary>
         /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
         /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/> for OpenGL function calls.</param>
-        /// <param name="glInitObservable">Mocked <see cref="IObservable{T}"/> for OpenGL initialization.</param>
-        /// <param name="shutDownObservable">Mocked <see cref="IObservable{T}"/> for application shutdown..</param>
+        /// <param name="glInitReactor">Mocked <see cref="IReactor{T}"/> for OpenGL initialization.</param>
+        /// <param name="shutDownReactor">Mocked <see cref="IReactor{T}"/> for application shutdown..</param>
         public GPUBufferFake(IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            VelObservable glInitObservable,
-            VelObservable shutDownObservable)
-            : base(gl, glExtensions, glInitObservable, shutDownObservable)
+            IReactor<GLInitData> glInitReactor,
+            IReactor<ShutDownData> shutDownReactor)
+            : base(gl, glExtensions, glInitReactor, shutDownReactor)
         {
         }
 

@@ -10,11 +10,12 @@ namespace VelaptorTests.UI
     using Moq;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.UI;
     using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
     using Xunit;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="Window"/> class.
@@ -23,7 +24,7 @@ namespace VelaptorTests.UI
     {
         private readonly Mock<IWindow> mockWindow;
         private readonly Mock<IContentLoader> mockContentLoader;
-        private readonly Mock<VelObservable> mockShutDownObservable;
+        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowTests"/> class.
@@ -34,7 +35,7 @@ namespace VelaptorTests.UI
 
             this.mockWindow = new Mock<IWindow>();
             this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
-            this.mockShutDownObservable = new Mock<VelObservable>();
+            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
         }
 
         #region Prop Tests
@@ -210,7 +211,7 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new WindowFake(null, this.mockShutDownObservable.Object);
+                var unused = new WindowFake(null, this.mockShutDownReactor.Object);
             }, "Window must not be null. (Parameter 'window')");
         }
 
@@ -262,6 +263,6 @@ namespace VelaptorTests.UI
         /// of testing the abstract <see cref="Window"/> class.
         /// </summary>
         /// <returns>The instance used for testing.</returns>
-        private WindowFake CreateWindow() => new (this.mockWindow.Object, this.mockShutDownObservable.Object);
+        private WindowFake CreateWindow() => new (this.mockWindow.Object, this.mockShutDownReactor.Object);
     }
 }

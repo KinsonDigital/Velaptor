@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// #pragma warning disable IDE0001 // Name can be simplified
-// #pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.OpenGL
 {
     using System;
@@ -14,7 +12,8 @@ namespace VelaptorTests.OpenGL
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
@@ -36,7 +35,7 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IPlatform> mockPlatform;
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITaskService> mockTaskService;
-        private readonly Mock<OpenGLInitObservable> mockGLObservable;
+        private readonly Mock<IReactor<GLInitData>> mockGLInitReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -50,7 +49,7 @@ namespace VelaptorTests.OpenGL
             this.mockPlatform = new Mock<IPlatform>();
             this.mockContentLoader = new Mock<IContentLoader>();
             this.mockTaskService = new Mock<ITaskService>();
-            this.mockGLObservable = new Mock<OpenGLInitObservable>();
+            this.mockGLInitReactor = new Mock<IReactor<GLInitData>>();
         }
 
         #region Contructor Tests
@@ -70,7 +69,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactor.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
         }
 
@@ -90,7 +89,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactor.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
         }
 
@@ -110,7 +109,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactor.Object);
             }, "The parameter must not be null. (Parameter 'windowFacade')");
         }
 
@@ -130,7 +129,7 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactor.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
         }
 
@@ -150,7 +149,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     null,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactor.Object);
             }, "The parameter must not be null. (Parameter 'taskService')");
         }
 
@@ -170,8 +169,28 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     null,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactor.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullGlInitReactor_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new GLWindow(
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
+                    this.mockMonitorService.Object,
+                    this.mockWindowFacade.Object,
+                    this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockContentLoader.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'glInitReactor')");
         }
         #endregion
 
@@ -364,6 +383,21 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             Assert.Equal(30, actual);
+        }
+
+        [Fact]
+        public void ContentLoader_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var mockOtherContentLoader = new Mock<IContentLoader>();
+            var window = CreateWindow();
+
+            // Act
+            window.ContentLoader = mockOtherContentLoader.Object;
+            var actual = window.ContentLoader;
+
+            // Assert
+            Assert.Same(mockOtherContentLoader.Object, actual);
         }
 
         [Fact]
@@ -684,7 +718,6 @@ namespace VelaptorTests.OpenGL
             window.Dispose();
 
             // Assert
-            this.mockGLObservable.Verify(m => m.Dispose(), Times.Once());
             this.mockWindowFacade.VerifyRemove(s => s.Load -= It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Load)}' event did not occur.");
             this.mockWindowFacade.VerifyRemove(s => s.Unload -= It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Unload)}' event did not occur.");
             this.mockWindowFacade.VerifyRemove(s => s.UpdateFrame -= It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' event did not occur.");
@@ -796,6 +829,6 @@ namespace VelaptorTests.OpenGL
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockGLObservable.Object);
+                this.mockGLInitReactor.Object);
     }
 }

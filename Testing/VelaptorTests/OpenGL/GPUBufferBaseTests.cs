@@ -7,11 +7,12 @@ namespace VelaptorTests.OpenGL
     using System;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
     using Xunit;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Initializes a new instance of <see cref="GPUBufferBaseTests"/>.
@@ -24,13 +25,13 @@ namespace VelaptorTests.OpenGL
         private const uint IndexBufferId = 5678;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<VelObservable> mockGLInitObservable;
+        private readonly Mock<IReactor<GLInitData>> mockGLInitReactor;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-        private readonly Mock<VelObservable> mockShutDownObservable;
+        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
         private bool vertexBufferCreated;
         private bool indexBufferCreated;
-        private IObserver<bool>? glInitObserver;
+        private IObserver<GLInitData>? glInitObserver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBufferBaseTests"/> class.
@@ -60,10 +61,10 @@ namespace VelaptorTests.OpenGL
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
 
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
-            this.mockGLInitObservable = new Mock<VelObservable>();
-            this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+            this.mockGLInitReactor = new Mock<IReactor<GLInitData>>();
+            this.mockGLInitReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<GLInitData>>()))
                 .Returns(this.mockGLInitUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
+                .Callback<IObserver<GLInitData>>(observer =>
                 {
                     if (observer is null)
                     {
@@ -73,7 +74,7 @@ namespace VelaptorTests.OpenGL
                     this.glInitObserver = observer;
                 });
 
-            this.mockShutDownObservable = new Mock<VelObservable>();
+            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
         }
 
@@ -87,8 +88,8 @@ namespace VelaptorTests.OpenGL
                 var unused = new GPUBufferFake(
                     null,
                     this.mockGLExtensions.Object,
-                    this.mockGLInitObservable.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockGLInitReactor.Object,
+                    this.mockShutDownReactor.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
         }
 
@@ -101,13 +102,13 @@ namespace VelaptorTests.OpenGL
                 var unused = new GPUBufferFake(
                     this.mockGL.Object,
                     null,
-                    this.mockGLInitObservable.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockGLInitReactor.Object,
+                    this.mockShutDownReactor.Object);
             }, "The parameter must not be null. (Parameter 'glExtensions')");
         }
 
         [Fact]
-        public void Ctor_WithNullGLInitObservableParam_ThrowsException()
+        public void Ctor_WithNullGLInitReactorParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -116,12 +117,12 @@ namespace VelaptorTests.OpenGL
                     this.mockGL.Object,
                     this.mockGLExtensions.Object,
                     null,
-                    this.mockShutDownObservable.Object);
-            }, "The parameter must not be null. (Parameter 'glInitObservable')");
+                    this.mockShutDownReactor.Object);
+            }, "The parameter must not be null. (Parameter 'glInitReactor')");
         }
 
         [Fact]
-        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
+        public void Ctor_WithNullShutDownReactorParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -129,9 +130,9 @@ namespace VelaptorTests.OpenGL
                 var unused = new GPUBufferFake(
                     this.mockGL.Object,
                     this.mockGLExtensions.Object,
-                    this.mockGLInitObservable.Object,
+                    this.mockGLInitReactor.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+            }, "The parameter must not be null. (Parameter 'shutDownReactor')");
         }
         #endregion
 
@@ -156,7 +157,7 @@ namespace VelaptorTests.OpenGL
             var buffer = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             Assert.True(buffer.IsInitialized);
@@ -171,7 +172,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.GenVertexArray(), Times.Once);
@@ -187,7 +188,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             // These are all invoked once per quad
@@ -204,7 +205,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             // First invoke is done creating the Vertex Buffer, the second is the index buffer
@@ -221,7 +222,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             Assert.True(unused.GenerateDataInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.GenerateData)}'() has not been invoked.");
@@ -234,7 +235,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             Assert.True(unused.GenerateIndicesInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.GenerateData)}'() has not been invoked.");
@@ -247,7 +248,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.BufferData(GLBufferTarget.ArrayBuffer,
@@ -263,7 +264,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.BufferData(GLBufferTarget.ElementArrayBuffer,
@@ -279,7 +280,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             Assert.True(unused.SetupVAOInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.SetupVAO)}'() has not been invoked.");
@@ -318,7 +319,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockGLExtensions.Verify(m => m.BeginGroup(It.IsAny<string>()), Times.Exactly(3));
@@ -365,11 +366,11 @@ namespace VelaptorTests.OpenGL
         public void WithShutDownNotification_DisposesOfBuffer()
         {
             // Arrange
-            IObserver<bool>? shutDownObserver = null;
+            IObserver<ShutDownData>? shutDownObserver = null;
 
-            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+            this.mockShutDownReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<ShutDownData>>()))
                 .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IObserver<bool>>((observer) =>
+                .Callback<IObserver<ShutDownData>>((observer) =>
                 {
                     if (observer is null)
                     {
@@ -381,11 +382,11 @@ namespace VelaptorTests.OpenGL
 
             CreateBuffer();
 
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act
-            shutDownObserver?.OnNext(true);
-            shutDownObserver?.OnNext(true);
+            shutDownObserver?.OnNext(default);
+            shutDownObserver?.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.DeleteVertexArray(VertexArrayId), Times.Once());
@@ -404,7 +405,7 @@ namespace VelaptorTests.OpenGL
         private GPUBufferFake CreateBuffer() => new (
             this.mockGL.Object,
             this.mockGLExtensions.Object,
-            this.mockGLInitObservable.Object,
-            this.mockShutDownObservable.Object);
+            this.mockGLInitReactor.Object,
+            this.mockShutDownReactor.Object);
     }
 }

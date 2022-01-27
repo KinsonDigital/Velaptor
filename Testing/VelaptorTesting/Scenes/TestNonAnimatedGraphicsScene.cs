@@ -46,8 +46,6 @@ namespace VelaptorTesting.Scenes
         /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
         {
-            ThrowExceptionIfLoadingWhenDisposed();
-
             if (IsLoaded)
             {
                 return;
@@ -80,8 +78,10 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
+            ContentLoader.UnloadAtlas(this.mainAtlas);
+            ContentLoader.UnloadFont(this.font);
+
             this.mainAtlas = null;
-            this.font?.Dispose();
 
             base.UnloadContent();
         }

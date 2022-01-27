@@ -12,7 +12,6 @@ namespace Velaptor.Content
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Factories;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 

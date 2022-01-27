@@ -8,7 +8,8 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.Services;
     using Velaptor.UI;
@@ -38,6 +39,6 @@ namespace Velaptor.Factories
                 IoC.Container.GetInstance<IPlatform>(),
                 IoC.Container.GetInstance<ITaskService>(),
                 ContentLoaderFactory.CreateContentLoader(),
-                IoC.Container.GetInstance<OpenGLInitObservable>());
+                IoC.Container.GetInstance<IReactor<GLInitData>>());
     }
 }

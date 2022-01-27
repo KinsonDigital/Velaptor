@@ -264,8 +264,8 @@ namespace VelaptorTesting.Core
             this.scenes.Clear();
 
             this.spriteBatch = null;
-            this.previousButton.Dispose();
-            this.nextButton.Dispose();
+            this.previousButton.UnloadContent();
+            this.nextButton.UnloadContent();
         }
     }
 }

@@ -6,6 +6,8 @@ namespace Velaptor.Content.Caching
 {
     using System;
 
+    // TODO: Remove this
+
     /// <summary>
     /// Caches disposable items for retrieval at a later time.
     /// </summary>

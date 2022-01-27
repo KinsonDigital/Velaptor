@@ -13,7 +13,6 @@ namespace VelaptorTests.Content
     using Velaptor.Content.Exceptions;
     using VelaptorTests.Helpers;
     using Xunit;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="TextureLoader"/> class.

@@ -8,13 +8,14 @@ namespace VelaptorTests.OpenGL
     using System.Collections.Generic;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.OpenGL.Services;
     using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
     using Xunit;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Initializes a new instance of <see cref="ShaderProgramTests"/>.
@@ -32,11 +33,11 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<VelObservable> mockGLInitObservable;
-        private readonly Mock<IDisposable> mockGLInitObservableUnsubscriber;
-        private readonly Mock<VelObservable> mockShutDownObservable;
-        private readonly Mock<IDisposable> mockShutDownObservableUnsubscriber;
-        private IObserver<bool>? glInitObserver;
+        private readonly Mock<IReactor<GLInitData>> mockGLInitReactor;
+        private readonly Mock<IDisposable> mockGLInitReactorUnsubscriber;
+        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
+        private readonly Mock<IDisposable> mockShutDownUnsubscriber;
+        private IObserver<GLInitData>? glInitObserver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgramTests"/> class.
@@ -71,11 +72,11 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus, out getProgramStatusCode));
             this.mockGL.Setup(m => m.CreateProgram()).Returns(ShaderProgramId);
 
-            this.mockGLInitObservable = new Mock<VelObservable>();
-            this.mockGLInitObservableUnsubscriber = new Mock<IDisposable>();
-            this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
-                .Returns(this.mockGLInitObservableUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
+            this.mockGLInitReactor = new Mock<IReactor<GLInitData>>();
+            this.mockGLInitReactorUnsubscriber = new Mock<IDisposable>();
+            this.mockGLInitReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<GLInitData>>()))
+                .Returns(this.mockGLInitReactorUnsubscriber.Object)
+                .Callback<IObserver<GLInitData>>(observer =>
                 {
                     if (observer is null)
                     {
@@ -85,8 +86,8 @@ namespace VelaptorTests.OpenGL
                     this.glInitObserver = observer;
                 });
 
-            this.mockShutDownObservable = new Mock<VelObservable>();
-            this.mockShutDownObservableUnsubscriber = new Mock<IDisposable>();
+            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
+            this.mockShutDownUnsubscriber = new Mock<IDisposable>();
         }
 
         #region Constructor Tests
@@ -100,8 +101,8 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockGLExtensions.Object,
                     this.mockShaderLoader.Object,
-                    this.mockGLInitObservable.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockGLInitReactor.Object,
+                    this.mockShutDownReactor.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
         }
 
@@ -115,8 +116,8 @@ namespace VelaptorTests.OpenGL
                     this.mockGL.Object,
                     null,
                     this.mockShaderLoader.Object,
-                    this.mockGLInitObservable.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockGLInitReactor.Object,
+                    this.mockShutDownReactor.Object);
             }, "The parameter must not be null. (Parameter 'glExtensions')");
         }
 
@@ -130,13 +131,13 @@ namespace VelaptorTests.OpenGL
                     this.mockGL.Object,
                     this.mockGLExtensions.Object,
                     null,
-                    this.mockGLInitObservable.Object,
-                    this.mockShutDownObservable.Object);
+                    this.mockGLInitReactor.Object,
+                    this.mockShutDownReactor.Object);
             }, "The parameter must not be null. (Parameter 'shaderLoaderService')");
         }
 
         [Fact]
-        public void Ctor_WithNullInitObservableParam_ThrowsException()
+        public void Ctor_WithNullInitReactorParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -146,12 +147,12 @@ namespace VelaptorTests.OpenGL
                     this.mockGLExtensions.Object,
                     this.mockShaderLoader.Object,
                     null,
-                    this.mockShutDownObservable.Object);
-            }, "The parameter must not be null. (Parameter 'glInitObservable')");
+                    this.mockShutDownReactor.Object);
+            }, "The parameter must not be null. (Parameter 'glInitReactor')");
         }
 
         [Fact]
-        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
+        public void Ctor_WithNullShutDownReactorParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -160,9 +161,9 @@ namespace VelaptorTests.OpenGL
                     this.mockGL.Object,
                     this.mockGLExtensions.Object,
                     this.mockShaderLoader.Object,
-                    this.mockGLInitObservable.Object,
+                    this.mockGLInitReactor.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+            }, "The parameter must not be null. (Parameter 'shutDownReactor')");
         }
         #endregion
 
@@ -183,7 +184,7 @@ namespace VelaptorTests.OpenGL
 
         #region Method Tests
         [Fact]
-        public void ObservableInit_WhenInvoked_LoadsShaderSourceCode()
+        public void ReactorInit_WhenInvoked_LoadsShaderSourceCode()
         {
             // Arrange
             IEnumerable<(string, uint)> vertTemplateVars = new[]
@@ -194,7 +195,7 @@ namespace VelaptorTests.OpenGL
             CreateShaderProgram();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockShaderLoader.Verify(m
@@ -204,14 +205,14 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void ObservableInit_WhenInvokedSecondTime_DoesNotCreateShaderProgram()
+        public void ReactorInit_WhenInvokedSecondTime_DoesNotCreateShaderProgram()
         {
             // Arrange
             CreateShaderProgram();
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockShaderLoader.Verify(m
@@ -227,13 +228,13 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void ObservableInit_WhenInvoked_SuccessfullyCreatesVertexShader()
+        public void ReactorInit_WhenInvoked_SuccessfullyCreatesVertexShader()
         {
             // Arrange
             CreateShaderProgram();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             // Verify the creation of the vertex shader
@@ -248,13 +249,13 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void ObservableInit_WhenInvoked_SuccessfullyCreatesProgram()
+        public void ReactorInit_WhenInvoked_SuccessfullyCreatesProgram()
         {
             // Arrange
             CreateShaderProgram();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.CreateProgram(), Times.Once());
@@ -264,13 +265,13 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void ObservableInit_WhenInvoked_DestroysVertexAndFragmentShader()
+        public void ReactorInit_WhenInvoked_DestroysVertexAndFragmentShader()
         {
             // Arrange
             CreateShaderProgram();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.DetachShader(ShaderProgramId, VertexShaderId), Times.Once());
@@ -280,7 +281,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void ObservableInit_WithVertexShaderCompileIssue_ThrowsException()
+        public void ReactorInit_WithVertexShaderCompileIssue_ThrowsException()
         {
             // Arrange
             var statusCode = 0;
@@ -292,12 +293,12 @@ namespace VelaptorTests.OpenGL
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                this.glInitObserver.OnNext(true);
+                this.glInitObserver.OnNext(default);
             }, $"Error compiling vertex shader '{ShaderName}' with shader ID '{VertexShaderId}'.\nVertex Shader Compile Error");
         }
 
         [Fact]
-        public void ObservableInit_WithFragmentShaderCompileIssue_ThrowsException()
+        public void ReactorInit_WithFragmentShaderCompileIssue_ThrowsException()
         {
             // Arrange
             var statusCode = 0;
@@ -309,12 +310,12 @@ namespace VelaptorTests.OpenGL
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                this.glInitObserver.OnNext(true);
+                this.glInitObserver.OnNext(default);
             }, $"Error compiling fragment shader '{ShaderName}' with shader ID '{FragShaderId}'.\nFragment Shader Compile Error");
         }
 
         [Fact]
-        public void ObservableInit_WithProgramLinkingIssue_ThrowsException()
+        public void ReactorInit_WithProgramLinkingIssue_ThrowsException()
         {
             // Arrange
             var statusCode = 0;
@@ -326,7 +327,7 @@ namespace VelaptorTests.OpenGL
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
-                this.glInitObserver.OnNext(true);
+                this.glInitObserver.OnNext(default);
             }, $"Error linking shader with ID '{ShaderProgramId}'\nProgram Linking Error");
         }
 
@@ -348,7 +349,7 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             var program = CreateShaderProgram();
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act
             program.Use();
@@ -361,11 +362,11 @@ namespace VelaptorTests.OpenGL
         public void WithShutDownNotification_DisposesOfShaderProgram()
         {
             // Arrange
-            IObserver<bool>? shutDownObserver = null;
+            IObserver<ShutDownData>? shutDownObserver = null;
 
-            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
-                .Returns(this.mockShutDownObservableUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
+            this.mockShutDownReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<ShutDownData>>()))
+                .Returns(this.mockShutDownUnsubscriber.Object)
+                .Callback<IObserver<ShutDownData>>(observer =>
                 {
                     if (observer is null)
                     {
@@ -376,16 +377,15 @@ namespace VelaptorTests.OpenGL
                 });
 
             CreateShaderProgram();
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act
-            shutDownObserver?.OnNext(true);
-            shutDownObserver?.OnNext(true);
+            shutDownObserver?.OnNext(default);
+            shutDownObserver?.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.DeleteProgram(ShaderProgramId), Times.Once);
-            this.mockGLInitObservableUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-            this.mockShutDownObservableUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+            this.mockGLInitReactorUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 
@@ -398,7 +398,7 @@ namespace VelaptorTests.OpenGL
                 this.mockGL.Object,
                 this.mockGLExtensions.Object,
                 this.mockShaderLoader.Object,
-                this.mockGLInitObservable.Object,
-                this.mockShutDownObservable.Object);
+                this.mockGLInitReactor.Object,
+                this.mockShutDownReactor.Object);
     }
 }

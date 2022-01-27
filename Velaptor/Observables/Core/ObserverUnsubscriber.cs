@@ -8,7 +8,7 @@ namespace Velaptor.Observables.Core
     using System.Collections.Generic;
 
     /// <summary>
-    /// An observer unsubscriber for unsubscribing from an <see cref="Observable{T}"/>.
+    /// An observer unsubscriber for unsubscribing from an <see cref="Reactor{TData}"/>.
     /// </summary>
     /// <typeparam name="T">
     ///     The type of data that is pushed to all of the subscribed <see cref="Observer{T}"/>s.
@@ -35,7 +35,7 @@ namespace Velaptor.Observables.Core
         public IObserver<T> Observer { get; }
 
         /// <summary>
-        /// Gets the total number of current subscriptions that an <see cref="Observable{T}"/> has.
+        /// Gets the total number of current subscriptions that an <see cref="Reactor{TData}"/> has.
         /// </summary>
         public int TotalObservers => this.observers.Count;
 

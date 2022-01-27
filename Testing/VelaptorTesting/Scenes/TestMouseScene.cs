@@ -31,8 +31,6 @@ namespace VelaptorTesting.Scenes
         /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
         {
-            ThrowExceptionIfLoadingWhenDisposed();
-
             if (IsLoaded)
             {
                 return;
@@ -71,8 +69,6 @@ namespace VelaptorTesting.Scenes
             {
                 return;
             }
-
-            RemoveControl(this.mouseInfoLabel);
 
             base.UnloadContent();
         }

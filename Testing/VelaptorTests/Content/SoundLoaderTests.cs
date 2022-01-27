@@ -9,9 +9,10 @@ namespace VelaptorTests.Content
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Factories;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using VelaptorTests.Helpers;
     using Xunit;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="SoundLoader"/> class.
@@ -20,11 +21,12 @@ namespace VelaptorTests.Content
     {
         private const string SoundName = "test-sound";
         private const string OggSoundDirPath = @"C:\temp\Content\Sounds\";
+        private const uint SoundId = 1234u;
         private readonly string oggSoundFilepath;
         private readonly Mock<IPathResolver> mockSoundPathResolver;
-        private readonly Mock<ISound> mockSound;
         private readonly Mock<ISoundFactory> soundFactory;
         private readonly Mock<IPath> mockPath;
+        private readonly Mock<IReactor<DisposeSoundData>> mockDisposeSoundReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoaderTests"/> class.
@@ -36,14 +38,17 @@ namespace VelaptorTests.Content
             this.mockSoundPathResolver = new Mock<IPathResolver>();
             this.mockSoundPathResolver.Setup(m => m.ResolveFilePath(SoundName)).Returns(this.oggSoundFilepath);
 
-            this.mockSound = new Mock<ISound>();
-            this.mockSound.SetupGet(p => p.FilePath).Returns(this.oggSoundFilepath);
+            var mockSound = new Mock<ISound>();
+            mockSound.SetupGet(p => p.FilePath).Returns(this.oggSoundFilepath);
+            mockSound.SetupGet(p => p.Id).Returns(SoundId);
 
             this.soundFactory = new Mock<ISoundFactory>();
-            this.soundFactory.Setup(m => m.Create(this.oggSoundFilepath)).Returns(this.mockSound.Object);
+            this.soundFactory.Setup(m => m.Create(this.oggSoundFilepath)).Returns(mockSound.Object);
 
             this.mockPath = new Mock<IPath>();
             this.mockPath.Setup(m => m.HasExtension(SoundName)).Returns(false);
+
+            this.mockDisposeSoundReactor = new Mock<IReactor<DisposeSoundData>>();
         }
 
         #region Constructor Tests
@@ -56,7 +61,8 @@ namespace VelaptorTests.Content
                 var unused = new SoundLoader(
                     null,
                     this.soundFactory.Object,
-                    this.mockPath.Object);
+                    this.mockPath.Object,
+                    this.mockDisposeSoundReactor.Object);
             }, "The parameter must not be null. (Parameter 'soundPathResolver')");
         }
 
@@ -69,12 +75,13 @@ namespace VelaptorTests.Content
                 var unused = new SoundLoader(
                     this.mockSoundPathResolver.Object,
                     null,
-                    this.mockPath.Object);
+                    this.mockPath.Object,
+                    this.mockDisposeSoundReactor.Object);
             }, "The parameter must not be null. (Parameter 'soundFactory')");
         }
 
         [Fact]
-        public void Ctor_WithNullNullParam_ThrowsException()
+        public void Ctor_WithNullPathParam_ThrowsException()
         {
             // Arrange, Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -82,8 +89,23 @@ namespace VelaptorTests.Content
                 var unused = new SoundLoader(
                     this.mockSoundPathResolver.Object,
                     this.soundFactory.Object,
-                    null);
+                    null,
+                    this.mockDisposeSoundReactor.Object);
             }, "The parameter must not be null. (Parameter 'path')");
+        }
+
+        [Fact]
+        public void Ctor_WithDisposeSoundReactorParam_ThrowsException()
+        {
+            // Arrange, Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SoundLoader(
+                    this.mockSoundPathResolver.Object,
+                    this.soundFactory.Object,
+                    this.mockPath.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'disposeSoundReactor')");
         }
         #endregion
 
@@ -116,10 +138,10 @@ namespace VelaptorTests.Content
 
             // Act
             loader.Unload(SoundName);
-            loader.Unload(SoundName);
 
             // Assert
-            Assert.True(false, "Gets this test working again");
+            var disposeData = new DisposeSoundData(SoundId);
+            this.mockDisposeSoundReactor.Verify(m => m.PushNotification(disposeData));
         }
         #endregion
 
@@ -130,6 +152,7 @@ namespace VelaptorTests.Content
         private SoundLoader CreateSoundLoader() => new (
             this.mockSoundPathResolver.Object,
             this.soundFactory.Object,
-            this.mockPath.Object);
+            this.mockPath.Object,
+            this.mockDisposeSoundReactor.Object);
     }
 }

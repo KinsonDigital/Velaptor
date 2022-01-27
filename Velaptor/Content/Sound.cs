@@ -8,6 +8,9 @@ namespace Velaptor.Content
     using System;
     using System.Diagnostics.CodeAnalysis;
     using CASL;
+    using Velaptor.Content.Factories;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using CASLSound = CASL.Sound;
 
     // ReSharper restore RedundantNameQualifier
@@ -19,12 +22,38 @@ namespace Velaptor.Content
     public sealed class Sound : ISound
     {
         private readonly CASLSound sound;
+        private readonly IDisposable disposeUnsubscriber;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
         /// </summary>
         /// <param name="filePath">The path to the sound file.</param>
-        public Sound(string filePath) => this.sound = new CASLSound(filePath);
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
+        public Sound(string filePath)
+        {
+            var disposeReactor = IoC.Container.GetInstance<IReactor<DisposeSoundData>>();
+            Id = SoundFactory.GetNewId(filePath);
+            this.sound = new CASLSound(filePath);
+            this.disposeUnsubscriber =
+                disposeReactor.Subscribe(new Observer<DisposeSoundData>(Dispose));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sound"/> class.
+        /// </summary>
+        /// <param name="disposeReactor">Sends push notifications to dispose of sounds.</param>
+        /// <param name="filePath">The path to the sound file.</param>
+        /// <param name="soundId">The unique ID of the sound.</param>
+        internal Sound(IReactor<DisposeSoundData> disposeReactor, string filePath, uint soundId)
+        {
+            this.disposeUnsubscriber =
+                disposeReactor.Subscribe(new Observer<DisposeSoundData>(Dispose));
+            this.sound = new CASLSound(filePath);
+            Id = soundId;
+        }
+
+        /// <inheritdoc/>
+        public uint Id { get; }
 
         /// <summary>
         /// Gets or sets the volume of the sound.
@@ -84,13 +113,7 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public string FilePath => this.sound.Path;
 
-        /// <inheritdoc/>
-        public bool IsDisposed { get; private set; }
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
-        /// <summary>
+         /// <summary>
         /// Fast forwards the sound by the given amount of <paramref name="seconds"/>.
         /// </summary>
         /// <param name="seconds">The amount of seconds to fast forward the sound.</param>
@@ -133,22 +156,18 @@ namespace Velaptor.Content
         public void Stop() => this.sound.Stop();
 
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Disposes of this <see cref="Sound"/> if the ID to dispose matches this sound's <see cref="Id"/>.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-        private void Dispose(bool disposing)
+        /// <param name="data">The data to use to dispose of the sound.</param>
+        private void Dispose(DisposeSoundData data)
         {
-            if (IsDisposed)
+            if (Id != data.SoundId)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                this.sound.Dispose();
-                IsDisposed = true;
-            }
+            this.sound.Dispose();
+            this.disposeUnsubscriber.Dispose();
         }
     }
 }

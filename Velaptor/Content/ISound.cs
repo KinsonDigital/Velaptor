@@ -11,5 +11,9 @@ namespace Velaptor.Content
     /// </summary>
     public interface ISound : ICASLSound, IContent
     {
+        /// <summary>
+        /// Gets the unique ID of the sound.
+        /// </summary>
+        uint Id { get; }
     }
 }

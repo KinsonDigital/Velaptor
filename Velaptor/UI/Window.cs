@@ -10,8 +10,8 @@ namespace Velaptor.UI
     using System.Numerics;
     using System.Threading.Tasks;
     using Velaptor.Content;
-    using Velaptor.Observables;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -21,18 +21,18 @@ namespace Velaptor.UI
     public abstract class Window : IWindowProps, IDisposable
     {
         private readonly IWindow window;
-        private readonly VelObservable shutDownObservable;
+        private readonly IReactor<ShutDownData> shutDownReactor;
         private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="window">The window implementation that contains the window functionality.</param>
-        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
-        internal Window(IWindow window, VelObservable shutDownObservable)
+        /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
+        internal Window(IWindow window, IReactor<ShutDownData> shutDownReactor)
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
-            this.shutDownObservable = shutDownObservable;
+            this.shutDownReactor = shutDownReactor;
 
             this.window.Initialize = OnLoad;
             this.window.Uninitialize = OnUnload;
@@ -53,7 +53,7 @@ namespace Velaptor.UI
         protected Window(IWindow window)
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
-            this.shutDownObservable = IoC.Container.GetInstance<ShutDownObservable>();
+            this.shutDownReactor = IoC.Container.GetInstance<IReactor<ShutDownData>>();
 
             this.window.Initialize = OnLoad;
             this.window.Uninitialize = OnUnload;
@@ -206,7 +206,11 @@ namespace Velaptor.UI
         /// Invoked when the window is unloaded.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        protected virtual void OnUnload() => this.shutDownObservable.PushNotification(true);
+        protected virtual void OnUnload()
+        {
+            this.shutDownReactor.PushNotification(default);
+            this.shutDownReactor.Dispose();
+        }
 
         /// <summary>
         /// Invoked when the window size changes.

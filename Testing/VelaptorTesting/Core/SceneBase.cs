@@ -77,7 +77,7 @@ namespace VelaptorTesting.Core
 
             foreach (var control in this.controls)
             {
-                control.Dispose();
+                control.UnloadContent();
             }
 
             this.controls.Clear();
@@ -139,25 +139,13 @@ namespace VelaptorTesting.Core
             {
                 foreach (var control in this.controls)
                 {
-                    control.Dispose();
+                    control.UnloadContent();
                 }
 
                 this.controls.Clear();
             }
 
             IsDisposed = true;
-        }
-
-        /// <summary>
-        /// Throws an exception if the control is being loaded when it has already been disposed.
-        /// </summary>
-        /// <exception cref="Exception">Thrown when the control has been disposed.</exception>
-        protected void ThrowExceptionIfLoadingWhenDisposed()
-        {
-            if (IsDisposed)
-            {
-                throw new Exception("Cannot load a scene that has been disposed.");
-            }
         }
     }
 }

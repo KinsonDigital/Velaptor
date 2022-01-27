@@ -40,6 +40,18 @@ namespace VelaptorTests.UI
                 .Returns(this.mockFont.Object);
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullContentLoaderParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Label(null);
+            }, "The parameter must not be null. (Parameter 'contentLoader')");
+        }
+        #endregion
+
         #region Prop Tests
         [Fact]
         public void Text_WhenSettingValue_ReturnsCorrectResult()
@@ -261,7 +273,7 @@ namespace VelaptorTests.UI
             label.UnloadContent();
 
             // Assert
-            Assert.True(false, "Get this test working again.");
+            this.mockContentLoader.Verify(m => m.UnloadFont(this.mockFont.Object), Times.Once);
         }
 
         [Fact]
@@ -274,22 +286,7 @@ namespace VelaptorTests.UI
             label.UnloadContent();
 
             // Assert
-            Assert.True(false, "Get this test working again.");
-        }
-
-        [Fact]
-        public void UnloadContent_WhenLoadedAndDisposed_DoesNotUnloadContent()
-        {
-            // Arrange
-            var label = CreateLabel();
-            label.LoadContent();
-            label.Dispose();
-
-            // Act
-            label.UnloadContent();
-
-            // Assert
-            Assert.True(false, "Get this test working again.");
+            this.mockContentLoader.Verify(m => m.UnloadFont(this.mockFont.Object), Times.Never);
         }
 
         [Fact]
@@ -371,34 +368,6 @@ namespace VelaptorTests.UI
                     123f,
                     0f,
                     Color.FromArgb(11, 22, 33, 44)), Times.Once());
-        }
-
-        [Fact]
-        public void Dispose_WhenInvokedWithoutLoadingContent_DoesNotThrowException()
-        {
-            // Arrange
-            var label = CreateLabel();
-
-            // Act & Assert
-            AssertExtensions.DoesNotThrow<NullReferenceException>(() =>
-            {
-                label.Dispose();
-            });
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_DisposesOfFont()
-        {
-            // Arrange
-            var label = CreateLabel();
-            label.LoadContent();
-
-            // Act
-            label.Dispose();
-            label.Dispose();
-
-            // Assert
-            Assert.True(false, "Get this test working again.");
         }
         #endregion
 

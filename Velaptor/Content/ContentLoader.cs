@@ -5,7 +5,6 @@
 namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
-    using System;
     using System.IO;
     using Velaptor.Content.Fonts;
 
@@ -20,7 +19,6 @@ namespace Velaptor.Content
         private readonly ILoader<ISound> soundLoader;
         private readonly ILoader<IAtlasData> atlasLoader;
         private readonly ILoader<IFont> fontLoader;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentLoader"/> class.
@@ -64,28 +62,5 @@ namespace Velaptor.Content
 
         /// <inheritdoc/>
         public void UnloadFont(IFont content) => this.fontLoader.Unload($"{content.FilePath}|size:{content.Size}");
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
-        {
-            throw new NotImplementedException();
-
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-            }
-
-            this.isDisposed = true;
-        }
     }
 }

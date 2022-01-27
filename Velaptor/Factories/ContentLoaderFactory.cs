@@ -12,6 +12,8 @@ namespace Velaptor.Factories
     using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 
@@ -111,11 +113,13 @@ namespace Velaptor.Factories
             var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
             var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             var path = IoC.Container.GetInstance<IPath>();
+            var disposeSoundReactor = IoC.Container.GetInstance<IReactor<DisposeSoundData>>();
 
             soundLoader = new SoundLoader(
                 soundPathResolver,
                 soundFactory,
-                path);
+                path,
+                disposeSoundReactor);
 
             return soundLoader;
         }

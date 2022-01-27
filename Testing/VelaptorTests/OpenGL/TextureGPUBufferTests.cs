@@ -11,11 +11,12 @@ namespace VelaptorTests.OpenGL
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Exceptions;
     using VelaptorTests.Helpers;
     using Xunit;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="TextureGPUBuffer"/> class.
@@ -27,10 +28,9 @@ namespace VelaptorTests.OpenGL
         private const uint IndexBufferId = 333;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<VelObservable> mockGLInitObservable;
-        private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-        private readonly Mock<VelObservable> mockShutDownObservable;
-        private IObserver<bool>? glInitObserver;
+        private readonly Mock<IReactor<GLInitData>> mockGLInitReactor;
+        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
+        private IObserver<GLInitData>? glInitObserver;
         private bool vertexBufferCreated;
         private bool indexBufferCreated;
 
@@ -60,11 +60,9 @@ namespace VelaptorTests.OpenGL
 
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
 
-            this.mockGLInitUnsubscriber = new Mock<IDisposable>();
-            this.mockGLInitObservable = new Mock<VelObservable>();
-            this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
-                .Returns(this.mockGLInitUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
+            this.mockGLInitReactor = new Mock<IReactor<GLInitData>>();
+            this.mockGLInitReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<GLInitData>>()))
+                .Callback<IObserver<GLInitData>>(observer =>
                 {
                     if (observer is null)
                     {
@@ -74,7 +72,7 @@ namespace VelaptorTests.OpenGL
                     this.glInitObserver = observer;
                 });
 
-            this.mockShutDownObservable = new Mock<VelObservable>();
+            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
         }
 
         /// <summary>
@@ -149,7 +147,7 @@ namespace VelaptorTests.OpenGL
             // Arrange
             var textureQuad = new SpriteBatchItem() { Effects = (RenderEffects)1234, };
             var buffer = CreateBuffer();
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
@@ -167,7 +165,7 @@ namespace VelaptorTests.OpenGL
 
             var buffer = CreateBuffer();
 
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act
             buffer.UploadVertexData(batchItem, 0u);
@@ -194,7 +192,7 @@ namespace VelaptorTests.OpenGL
 
             var buffer = CreateBuffer();
 
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act
             buffer.UploadVertexData(batchItem, 0u);
@@ -222,7 +220,7 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             var buffer = CreateBuffer();
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act
             buffer.PrepareForUpload();
@@ -249,7 +247,7 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             var buffer = CreateBuffer();
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Act
             var actual = buffer.GenerateData();
@@ -278,7 +276,7 @@ namespace VelaptorTests.OpenGL
             var unused = CreateBuffer();
 
             // Act
-            this.glInitObserver.OnNext(true);
+            this.glInitObserver.OnNext(default);
 
             // Assert
             this.mockGLExtensions.Verify(m => m.BeginGroup("Setup Texture Buffer Vertex Attributes"), Times.Once);
@@ -322,7 +320,7 @@ namespace VelaptorTests.OpenGL
         private TextureGPUBuffer CreateBuffer() => new (
             this.mockGL.Object,
             this.mockGLExtensions.Object,
-            this.mockGLInitObservable.Object,
-            this.mockShutDownObservable.Object);
+            this.mockGLInitReactor.Object,
+            this.mockShutDownReactor.Object);
     }
 }

@@ -16,11 +16,11 @@ namespace Velaptor.Graphics
     using Velaptor.Content.Fonts;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.Services;
     using NETRect = System.Drawing.Rectangle;
     using NETSizeF = System.Drawing.SizeF;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -56,10 +56,10 @@ namespace Velaptor.Graphics
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
-        /// <param name="glInitObservable">Provides push notifications to OpenGL related events.</param>
-        /// <param name="shutDownObservable">Sends out a notification that the application is shutting down.</param>
+        /// <param name="glInitReactor">Provides push notifications to OpenGL related events.</param>
+        /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
-        ///     <paramref name="glInitObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+        ///     <paramref name="glInitReactor"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
         public SpriteBatch(
@@ -71,8 +71,8 @@ namespace Velaptor.Graphics
             IGPUBuffer<SpriteBatchItem> fontBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
-            VelObservable glInitObservable,
-            VelObservable shutDownObservable)
+            IReactor<GLInitData> glInitReactor,
+            IReactor<ShutDownData> shutDownReactor)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
 
@@ -90,13 +90,13 @@ namespace Velaptor.Graphics
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
-            if (glInitObservable is null)
+            if (glInitReactor is null)
             {
-                throw new ArgumentNullException(nameof(glInitObservable), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(glInitReactor), "The parameter must not be null.");
             }
 
             // Receive a push notification that OpenGL has initialized
-            this.glInitUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(
+            this.glInitUnsubscriber = glInitReactor.Subscribe(new Observer<GLInitData>(
                 _ =>
                 {
                     this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -106,12 +106,12 @@ namespace Velaptor.Graphics
                     Init();
                 }));
 
-            if (shutDownObservable is null)
+            if (shutDownReactor is null)
             {
-                throw new ArgumentNullException(nameof(shutDownObservable), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(shutDownReactor), "The parameter must not be null.");
             }
 
-            this.shutDownUnsubscriber = shutDownObservable.Subscribe(new Observer<bool>(_ => ShutDown()));
+            this.shutDownUnsubscriber = shutDownReactor.Subscribe(new Observer<ShutDownData>(_ => ShutDown()));
 
             SetupPropertyCaches();
         }
@@ -208,11 +208,6 @@ namespace Velaptor.Graphics
                 throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
             }
 
-            if (texture.IsDisposed)
-            {
-                throw new InvalidOperationException($"Cannot render texture.  The texture '{texture.Name}' has been disposed.");
-            }
-
             if (!this.hasBegun)
             {
                 throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
@@ -278,11 +273,6 @@ namespace Velaptor.Graphics
             if (string.IsNullOrEmpty(text))
             {
                 return;
-            }
-
-            if (font.IsDisposed)
-            {
-                throw new InvalidOperationException($"Cannot render font.  The font '{font.Name}' has been disposed.");
             }
 
             size = size < 0f ? 0f : size;

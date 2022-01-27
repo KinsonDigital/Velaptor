@@ -13,7 +13,8 @@ namespace Velaptor.OpenGL
     using Silk.NET.Windowing;
     using Velaptor.Input;
     using Velaptor.Input.Exceptions;
-    using Velaptor.Observables;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
     using VelaptorMouseButton = Velaptor.Input.MouseButton;
     using VelaptorWindowBorder = Velaptor.WindowBorder;
@@ -28,7 +29,7 @@ namespace Velaptor.OpenGL
     internal class GLWindowFacade : IGameWindowFacade
     {
         private readonly string nullWindowExceptionMsg;
-        private readonly OpenGLContextObservable glContextObservable;
+        private readonly IReactor<GLContextData> glContextReactor;
         private readonly IKeyboardInput<KeyCode, KeyboardState> keyboardInput;
         private readonly IMouseInput<VelaptorMouseButton, MouseState> mouseInput;
         private IWindow? glWindow;
@@ -38,15 +39,21 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowFacade"/> class.
         /// </summary>
-        /// <param name="glObservable">
+        /// <param name="glReactor">
         ///     Receives push notifications when the OpenGL context has been created.
         /// </param>
         /// <param name="keyboardInput">The system keyboardInput for handling keyboardInput events.</param>
         /// <param name="mouseInput">The system mouseInput for handling mouseInput events.</param>
-        public GLWindowFacade(OpenGLContextObservable glObservable, IKeyboardInput<KeyCode, KeyboardState> keyboardInput, IMouseInput<VelaptorMouseButton, MouseState> mouseInput)
+        public GLWindowFacade(
+            IReactor<GLContextData> glReactor,
+            IKeyboardInput<KeyCode,
+            KeyboardState> keyboardInput,
+            IMouseInput<VelaptorMouseButton,
+            MouseState> mouseInput)
         {
+            // TODO: Null check all of these params
             this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
-            this.glContextObservable = glObservable;
+            this.glContextReactor = glReactor;
             this.keyboardInput = keyboardInput;
             this.mouseInput = mouseInput;
         }
@@ -327,7 +334,7 @@ namespace Velaptor.OpenGL
                 throw new InvalidOperationException(this.nullWindowExceptionMsg);
             }
 
-            this.glContextObservable.PushNotification(this.glWindow);
+            this.glContextReactor.PushNotification(new GLContextData(this.glWindow));
 
             this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
             this.glInputContext = this.glWindow.CreateInput();

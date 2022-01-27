@@ -15,7 +15,6 @@ namespace Velaptor.Content
     using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Services;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     // ReSharper restore RedundantNameQualifier
 

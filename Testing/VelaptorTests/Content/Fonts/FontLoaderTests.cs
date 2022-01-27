@@ -18,7 +18,6 @@ namespace VelaptorTests.Content.Fonts
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="FontLoader"/> class.
@@ -89,7 +88,12 @@ namespace VelaptorTests.Content.Fonts
             // Mock for both full file paths and content names with metadata
             this.mockFontFactory = new Mock<IFontFactory>();
             this.mockFontFactory.Setup(m =>
-                    m.Create(this.mockFontAtlasTexture.Object, FontContentName, this.fontFilePath, FontSize, this.glyphMetricData))
+                    m.Create(this.mockFontAtlasTexture.Object,
+                        FontContentName,
+                        this.fontFilePath,
+                        FontSize,
+                        It.IsAny<bool>(),
+                        this.glyphMetricData))
                 .Returns(this.mockFont.Object);
 
             this.mockFontMetaDataParser = new Mock<IFontMetaDataParser>();
@@ -517,7 +521,13 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
             this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
             this.mockFontFactory.Verify(m =>
-                    m.Create(this.mockFontAtlasTexture.Object, FontContentName, this.fontFilePath, FontSize, this.glyphMetricData),
+                    m.Create(
+                        this.mockFontAtlasTexture.Object,
+                        FontContentName,
+                        this.fontFilePath,
+                        FontSize,
+                        It.IsAny<bool>(),
+                        this.glyphMetricData),
                 Times.Once);
 
             Assert.Same(this.mockFont.Object, actual);
@@ -538,7 +548,13 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontAtlasService.Verify(m => m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
             this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
             this.mockFontFactory.Verify(m =>
-                    m.Create(this.mockFontAtlasTexture.Object, FontContentName, this.fontFilePath, FontSize, this.glyphMetricData),
+                    m.Create(
+                        this.mockFontAtlasTexture.Object,
+                        FontContentName,
+                        this.fontFilePath,
+                        FontSize,
+                        It.IsAny<bool>(),
+                        this.glyphMetricData),
                 Times.Once);
 
             Assert.Same(this.mockFont.Object, actual);
@@ -561,7 +577,13 @@ namespace VelaptorTests.Content.Fonts
             this.mockTextureCache.Verify(m => m.GetItem(this.filePathWithMetaData), Times.Once);
 
             this.mockFontFactory.Verify(m =>
-                    m.Create(this.mockFontAtlasTexture.Object, FontContentName, this.fontFilePath, FontSize, this.glyphMetricData),
+                    m.Create(
+                        this.mockFontAtlasTexture.Object,
+                        FontContentName,
+                        this.fontFilePath,
+                        FontSize,
+                        It.IsAny<bool>(),
+                        this.glyphMetricData),
                 Times.Once);
 
             Assert.Same(this.mockFont.Object, actual);

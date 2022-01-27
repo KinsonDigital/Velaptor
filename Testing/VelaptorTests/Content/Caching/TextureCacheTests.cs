@@ -13,11 +13,11 @@ namespace VelaptorTests.Content.Caching
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
-    using VelDisposeObservable = Velaptor.Observables.Core.IObservable<uint>;
-    using VelShutDownObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     public class TextureCacheTests
     {
@@ -38,9 +38,9 @@ namespace VelaptorTests.Content.Caching
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
         private readonly Mock<IFontMetaDataParser> mockFontMetaDataParser;
         private readonly Mock<IPath> mockPath;
-        private readonly Mock<VelShutDownObservable> mockShutDownObservable;
+        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
-        private readonly Mock<VelDisposeObservable> mockDisposeTextureObservable;
+        private readonly Mock<IReactor<DisposeTextureData>> mockDisposeTextureReactor;
         private readonly ImageData textureImageData;
         private readonly ImageData fontImageData;
 
@@ -96,10 +96,10 @@ namespace VelaptorTests.Content.Caching
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.fontFilePath))
                 .Returns(FontName);
 
-            this.mockShutDownObservable = new Mock<VelShutDownObservable>();
+            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
 
-            this.mockDisposeTextureObservable = new Mock<VelDisposeObservable>();
+            this.mockDisposeTextureReactor = new Mock<IReactor<DisposeTextureData>>();
         }
 
         #region Constructor Tests
@@ -115,8 +115,8 @@ namespace VelaptorTests.Content.Caching
                     this.mockFontAtlasService.Object,
                     this.mockFontMetaDataParser.Object,
                     this.mockPath.Object,
-                    this.mockShutDownObservable.Object,
-                    this.mockDisposeTextureObservable.Object);
+                    this.mockShutDownReactor.Object,
+                    this.mockDisposeTextureReactor.Object);
             }, "The parameter must not be null. (Parameter 'imageService')");
         }
 
@@ -132,8 +132,8 @@ namespace VelaptorTests.Content.Caching
                     this.mockFontAtlasService.Object,
                     this.mockFontMetaDataParser.Object,
                     this.mockPath.Object,
-                    this.mockShutDownObservable.Object,
-                    this.mockDisposeTextureObservable.Object);
+                    this.mockShutDownReactor.Object,
+                    this.mockDisposeTextureReactor.Object);
             }, "The parameter must not be null. (Parameter 'textureFactory')");
         }
 
@@ -149,8 +149,8 @@ namespace VelaptorTests.Content.Caching
                     null,
                     this.mockFontMetaDataParser.Object,
                     this.mockPath.Object,
-                    this.mockShutDownObservable.Object,
-                    this.mockDisposeTextureObservable.Object);
+                    this.mockShutDownReactor.Object,
+                    this.mockDisposeTextureReactor.Object);
             }, "The parameter must not be null. (Parameter 'fontAtlasService')");
         }
 
@@ -166,8 +166,8 @@ namespace VelaptorTests.Content.Caching
                     this.mockFontAtlasService.Object,
                     null,
                     this.mockPath.Object,
-                    this.mockShutDownObservable.Object,
-                    this.mockDisposeTextureObservable.Object);
+                    this.mockShutDownReactor.Object,
+                    this.mockDisposeTextureReactor.Object);
             }, "The parameter must not be null. (Parameter 'fontMetaDataParser')");
         }
 
@@ -183,13 +183,13 @@ namespace VelaptorTests.Content.Caching
                     this.mockFontAtlasService.Object,
                     this.mockFontMetaDataParser.Object,
                     null,
-                    this.mockShutDownObservable.Object,
-                    this.mockDisposeTextureObservable.Object);
+                    this.mockShutDownReactor.Object,
+                    this.mockDisposeTextureReactor.Object);
             }, "The parameter must not be null. (Parameter 'path')");
         }
 
         [Fact]
-        public void Ctor_WithNullShutDownObservableParam_ThrowsException()
+        public void Ctor_WithNullShutDownReactorParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -201,12 +201,12 @@ namespace VelaptorTests.Content.Caching
                     this.mockFontMetaDataParser.Object,
                     this.mockPath.Object,
                     null,
-                    this.mockDisposeTextureObservable.Object);
-            }, "The parameter must not be null. (Parameter 'shutDownObservable')");
+                    this.mockDisposeTextureReactor.Object);
+            }, "The parameter must not be null. (Parameter 'shutDownReactor')");
         }
 
         [Fact]
-        public void Ctor_WithNullDisposeTexturesObservableParam_ThrowsException()
+        public void Ctor_WithNullDisposeTexturesReactorParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -217,9 +217,9 @@ namespace VelaptorTests.Content.Caching
                     this.mockFontAtlasService.Object,
                     this.mockFontMetaDataParser.Object,
                     this.mockPath.Object,
-                    this.mockShutDownObservable.Object,
+                    this.mockShutDownReactor.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'disposeTexturesObservable')");
+            }, "The parameter must not be null. (Parameter 'disposeTexturesReactor')");
         }
         #endregion
 
@@ -409,60 +409,6 @@ namespace VelaptorTests.Content.Caching
         }
 
         [Fact]
-        public void GetItem_WhenGettingDisposedTexture_RemovesTextureAndRecreatesIt()
-        {
-            // Arrange
-            const string textureDirPath = @"C:\Textures\";
-            const string textureName = "dispose-texture";
-            var textureFileName = $"{textureName}{TextureExtension}";
-            var fullTextureFilePath = $"{textureDirPath}{textureFileName}";
-            var firstCreateInvoked = false;
-
-            MockTextureParseResult();
-            var cache = CreateCache();
-            var mockFirstTexture = new Mock<ITexture>();
-            var mockSecondTexture = new Mock<ITexture>();
-
-            this.mockFontMetaDataParser.Setup(m => m.Parse(fullTextureFilePath))
-                .Returns(() => new FontMetaDataParseResult(
-                    false,
-                    true,
-                    string.Empty,
-                    string.Empty,
-                    0));
-
-            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(fullTextureFilePath))
-                .Returns(textureName);
-            this.mockPath.Setup(m => m.GetExtension(fullTextureFilePath)).Returns(TextureExtension);
-            this.mockTextureFactory.Setup(m =>
-                    m.Create(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<ImageData>()))
-                .Returns(() => firstCreateInvoked ? mockSecondTexture.Object : mockFirstTexture.Object)
-                .Callback<string, string, ImageData>((_, _, _) =>
-                {
-                    if (firstCreateInvoked)
-                    {
-                        return;
-                    }
-
-                    mockFirstTexture.SetupGet(p => p.IsDisposed).Returns(true);
-                    firstCreateInvoked = true;
-                });
-
-            var textureBeforeDisposal = cache.GetItem(fullTextureFilePath);
-
-            // Act
-            var textureAfterDisposal = cache.GetItem(fullTextureFilePath);
-
-            // Assert
-            Assert.NotSame(textureBeforeDisposal, textureAfterDisposal);
-            Assert.True(textureBeforeDisposal.IsDisposed);
-            Assert.False(textureAfterDisposal.IsDisposed);
-        }
-
-        [Fact]
         public void GetItem_WhenGettingFontAtlasTexture_CachesAndReturnsSameAtlasTexture()
         {
             // Arrange
@@ -531,7 +477,9 @@ namespace VelaptorTests.Content.Caching
             });
 
             Assert.Equal(0, cache.TotalCachedItems);
-            this.mockDisposeTextureObservable.Verify(m => m.PushNotification(123u), Times.Once);
+            this.mockDisposeTextureReactor
+                .Verify(m
+                    => m.PushNotification(new DisposeTextureData(123u)), Times.Once);
         }
 
         [Fact]
@@ -551,14 +499,16 @@ namespace VelaptorTests.Content.Caching
             cache.Unload("non-existing-texture");
 
             // Assert
-            this.mockDisposeTextureObservable.Verify(m => m.PushNotification(123u), Times.Never);
+            this.mockDisposeTextureReactor
+                .Verify(m
+                    => m.PushNotification(new DisposeTextureData(123u)), Times.Never);
         }
 
         [Fact]
         public void ShutDownNotification_WhenReceived_DisposesOfTextures()
         {
             // Arrange
-            IObserver<bool>? shutDownObserver = null;
+            IObserver<ShutDownData>? shutDownObserver = null;
 
             var mockTextureA = new Mock<ITexture>();
             mockTextureA.SetupGet(p => p.Id).Returns(11u);
@@ -580,9 +530,9 @@ namespace VelaptorTests.Content.Caching
             MockTextureCreation(mockTextureA.Object, "textureA", texturePathA);
             MockTextureCreation(mockTextureB.Object, "textureB", texturePathB);
 
-            this.mockShutDownObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+            this.mockShutDownReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<ShutDownData>>()))
                 .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
+                .Callback<IObserver<ShutDownData>>(observer =>
                 {
                     if (observer is null)
                     {
@@ -597,12 +547,16 @@ namespace VelaptorTests.Content.Caching
             cache.GetItem(texturePathB);
 
             // Act
-            shutDownObserver?.OnNext(true);
-            shutDownObserver?.OnNext(true);
+            shutDownObserver?.OnNext(default);
+            shutDownObserver?.OnNext(default);
 
             // Assert
-            this.mockDisposeTextureObservable.Verify(m => m.PushNotification(11u), Times.Once);
-            this.mockDisposeTextureObservable.Verify(m => m.PushNotification(22u), Times.Once);
+            this.mockDisposeTextureReactor
+                .Verify(m =>
+                    m.PushNotification(new DisposeTextureData(11u)), Times.Once);
+            this.mockDisposeTextureReactor
+                .Verify(m =>
+                    m.PushNotification(new DisposeTextureData(22u)), Times.Once);
             this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
@@ -617,8 +571,8 @@ namespace VelaptorTests.Content.Caching
                 this.mockFontAtlasService.Object,
                 this.mockFontMetaDataParser.Object,
                 this.mockPath.Object,
-                this.mockShutDownObservable.Object,
-                this.mockDisposeTextureObservable.Object);
+                this.mockShutDownReactor.Object,
+                this.mockDisposeTextureReactor.Object);
 
         /// <summary>
         /// Mocks parse result when caching texture file paths.

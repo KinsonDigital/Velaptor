@@ -14,6 +14,7 @@ namespace Velaptor.NativeInterop.OpenGL
     using Silk.NET.Windowing;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
 
     // ReSharper restore RedundantNameQualifier
@@ -35,15 +36,15 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="GLInvoker"/> class.
         /// </summary>
-        /// <param name="glContextObservable">
+        /// <param name="glContextReactor">
         ///     The OpenGL context observable to subscribe to get a push notification
         ///     that the OpenGL context has been created.
         /// </param>
-        public GLInvoker(OpenGLContextObservable glContextObservable)
-            => this.glContextUnsubscriber = glContextObservable.Subscribe(new Observer<object>(
+        public GLInvoker(IReactor<GLContextData> glContextReactor)
+            => this.glContextUnsubscriber = glContextReactor.Subscribe(new Observer<GLContextData>(
                 onNext: data =>
                 {
-                    if (data is IWindow window)
+                    if (data.Data is IWindow window)
                     {
                         this.gl = window.CreateOpenGL();
                     }
@@ -52,7 +53,7 @@ namespace Velaptor.NativeInterop.OpenGL
                         var exceptionMessage =
                             $"The parameter '{nameof(data)}' of the '{nameof(Observer<object>.OnNext)}()' action delegate must be of type '{nameof(IWindow)}'.";
                         exceptionMessage +=
-                            $"\n\t{nameof(OpenGLContextObservable)} subscription location: {nameof(GLInvoker)}.Ctor()";
+                            $"\n\t{nameof(OpenGLContextReactor)} subscription location: {nameof(GLInvoker)}.Ctor()";
 
                         throw new Exception(exceptionMessage);
                     }

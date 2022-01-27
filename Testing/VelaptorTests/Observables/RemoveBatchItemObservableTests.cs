@@ -7,10 +7,11 @@ namespace VelaptorTests.Observables
     using System;
     using Moq;
     using Velaptor.Observables;
+    using Velaptor.Observables.ObservableData;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="RemoveBatchItemObservable"/> class.
+    /// Tests the <see cref="RemoveBatchItemReactor"/> class.
     /// </summary>
     public class RemoveBatchItemObservableTests
     {
@@ -19,16 +20,17 @@ namespace VelaptorTests.Observables
         public void OnRemoveBatchItem_WhenInvoked_SendsPushNotification()
         {
             // Arrange
-            var observer = new Mock<IObserver<uint>>();
+            var observer = new Mock<IObserver<RemoveBatchItemData>>();
 
-            var observable = new RemoveBatchItemObservable();
+            var observable = new RemoveBatchItemReactor();
             observable.Subscribe(observer.Object);
 
             // Act
-            observable.PushNotification(123u);
+            var data = new RemoveBatchItemData(123u);
+            observable.PushNotification(data);
 
             // Assert
-            observer.Verify(m => m.OnNext(123u), Times.Once());
+            observer.Verify(m => m.OnNext(data), Times.Once());
         }
         #endregion
     }

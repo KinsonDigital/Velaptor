@@ -350,20 +350,6 @@ namespace VelaptorTests.Content
             Assert.Equal(expected.FrameIndex, actual.FrameIndex);
             Assert.Equal(expected.Bounds, actual.Bounds);
         }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnloadsTexture()
-        {
-            // Arrange
-            var data = CreateAtlasData();
-
-            // Act
-            data.Dispose();
-            data.Dispose();
-
-            // Assert
-            this.mockTextureCache.Verify(m => m.Unload(this.atlasImagePath), Times.Once());
-        }
         #endregion
 
         /// <summary>

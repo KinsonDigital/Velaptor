@@ -55,8 +55,6 @@ namespace VelaptorTesting.Scenes
         /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
         {
-            ThrowExceptionIfLoadingWhenDisposed();
-
             if (IsLoaded)
             {
                 return;
@@ -65,8 +63,7 @@ namespace VelaptorTesting.Scenes
             this.textFont = ContentLoader.LoadFont(DefaultRegularFont, 12);
 
             // Rotate CW Button
-            this.btnRotateCW = new Button(ContentLoader);
-            this.btnRotateCW.Text = "CW";
+            this.btnRotateCW = new Button(ContentLoader) { Text = "CW" };
             this.btnRotateCW.MouseDown += (_, _) =>
             {
                 this.cwButtonDown = true;
@@ -80,8 +77,7 @@ namespace VelaptorTesting.Scenes
             };
 
             // Rotate CCW Button
-            this.btnRotateCCW = new Button(ContentLoader);
-            this.btnRotateCCW.Text = "CCW";
+            this.btnRotateCCW = new Button(ContentLoader) { Text = "CCW" };
 
             this.btnRotateCCW.MouseDown += (_, _) =>
             {
@@ -96,9 +92,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Increase Render Size Button
-            this.btnIncreaseRenderSize = new Button(ContentLoader);
-            this.btnIncreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) +";
-            this.btnIncreaseRenderSize.FaceTextureName = "button-face-extra-large";
+            this.btnIncreaseRenderSize = new Button(ContentLoader)
+                {
+                    Text = $"Render Size({Math.Round(this.renderSize, 2)}) +",
+                    FaceTextureName = "button-face-extra-large",
+                };
 
             this.btnIncreaseRenderSize.MouseDown += (_, _) =>
             {
@@ -115,9 +113,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Decrease Render Size Button
-            this.btnDecreaseRenderSize = new Button(ContentLoader);
-            this.btnDecreaseRenderSize.Text = $"Render Size({Math.Round(this.renderSize, 2)}) -";
-            this.btnDecreaseRenderSize.FaceTextureName = "button-face-extra-large";
+            this.btnDecreaseRenderSize = new Button(ContentLoader)
+                {
+                    Text = $"Render Size({Math.Round(this.renderSize, 2)}) -",
+                    FaceTextureName = "button-face-extra-large",
+                };
 
             this.btnDecreaseRenderSize.MouseDown += (_, _) =>
             {
@@ -134,9 +134,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Set Multi-Line
-            this.btnSetMultiLine = new Button(ContentLoader);
-            this.btnSetMultiLine.Text = $"Multi-Line: {this.isMultiLine}";
-            this.btnSetMultiLine.FaceTextureName = "button-face-large";
+            this.btnSetMultiLine = new Button(ContentLoader)
+                {
+                    Text = $"Multi-Line: {this.isMultiLine}",
+                    FaceTextureName = "button-face-large",
+                };
 
             this.btnSetMultiLine.MouseUp += (_, _) =>
             {
@@ -146,9 +148,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Set Color
-            this.btnSetColor = new Button(ContentLoader);
-            this.btnSetColor.Text = $"Set Color: {(this.isClrSet ? "On" : "Off")}";
-            this.btnSetColor.FaceTextureName = "button-face-large";
+            this.btnSetColor = new Button(ContentLoader)
+                {
+                    Text = $"Set Color: {(this.isClrSet ? "On" : "Off")}",
+                    FaceTextureName = "button-face-large",
+                };
 
             this.btnSetColor.MouseUp += (_, _) =>
             {
@@ -157,9 +161,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Set the font style to bold
-            this.btnSetStyle = new Button(ContentLoader);
-            this.btnSetStyle.Text = $"Style: {this.textFont.Style}";
-            this.btnSetStyle.FaceTextureName = "button-face-large";
+            this.btnSetStyle = new Button(ContentLoader)
+                {
+                    Text = $"Style: {this.textFont.Style}",
+                    FaceTextureName = "button-face-large",
+                };
 
             this.btnSetStyle.MouseUp += (_, _) =>
             {
@@ -176,9 +182,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Increase font size
-            this.btnIncreaseFontSize = new Button(ContentLoader);
-            this.btnIncreaseFontSize.Text = $"Font Size({this.textFont.Size}) +";
-            this.btnIncreaseFontSize.FaceTextureName = "button-face-large";
+            this.btnIncreaseFontSize = new Button(ContentLoader)
+                {
+                    Text = $"Font Size({this.textFont.Size}) +",
+                    FaceTextureName = "button-face-large",
+                };
             this.btnIncreaseFontSize.MouseUp += (_, _) =>
             {
                 this.textFont.Size += 1;
@@ -187,9 +195,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Decrease font size
-            this.btnDecreaseFontSize = new Button(ContentLoader);
-            this.btnDecreaseFontSize.Text = $"Font Size({this.textFont.Size}) -";
-            this.btnDecreaseFontSize.FaceTextureName = "button-face-large";
+            this.btnDecreaseFontSize = new Button(ContentLoader)
+                {
+                    Text = $"Font Size({this.textFont.Size}) -",
+                    FaceTextureName = "button-face-large",
+                };
             this.btnDecreaseFontSize.MouseUp += (_, _) =>
             {
                 this.textFont.Size -= this.textFont.Size == 0u ? 0u : 1u;

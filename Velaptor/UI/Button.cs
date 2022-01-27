@@ -97,8 +97,6 @@ namespace Velaptor.UI
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
         {
-            ThrowExceptionIfLoadingWhenDisposed();
-
             if (IsLoaded)
             {
                 return;
@@ -121,10 +119,17 @@ namespace Velaptor.UI
         /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
         public override void UnloadContent()
         {
-            if (!IsLoaded || IsDisposed)
+            if (!IsLoaded)
             {
                 return;
             }
+
+            if (this.texture is not null)
+            {
+                this.contentLoader.UnloadTexture(this.texture);
+            }
+
+            this.label?.UnloadContent();
 
             base.UnloadContent();
         }
@@ -145,25 +150,6 @@ namespace Velaptor.UI
             }
 
             base.Render(spriteBatch);
-        }
-
-        /// <inheritdoc cref="ControlBase.Dispose(bool)"/>
-        protected override void Dispose(bool disposing)
-        {
-            if (IsDisposed || !IsLoaded)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.texture?.Dispose();
-
-                this.label?.Dispose();
-                IsLoaded = false;
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

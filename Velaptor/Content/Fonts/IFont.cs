@@ -7,6 +7,7 @@ namespace Velaptor.Content.Fonts
     // ReSharper disable RedundantNameQualifier
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Graphics;
     using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
@@ -21,6 +22,7 @@ namespace Velaptor.Content.Fonts
         /// <summary>
         /// Gets the source of where the font was loaded.
         /// </summary>
+        [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
         FontSource Source { get; }
 
         /// <summary>
@@ -39,6 +41,12 @@ namespace Velaptor.Content.Fonts
         VelFontStyle Style { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether or not font is a default font.
+        /// </summary>
+        [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
+        bool IsDefaultFont { get; }
+
+        /// <summary>
         /// Gets a list of all the available font styles for the current font <see cref="FamilyName"/>.
         /// </summary>
         IEnumerable<FontStyle> AvailableStylesForFamily { get; }
@@ -46,11 +54,13 @@ namespace Velaptor.Content.Fonts
         /// <summary>
         /// Gets the name of the font family.
         /// </summary>
+        [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
         string FamilyName { get; }
 
         /// <summary>
         /// Gets a value indicating whether or not the font has kerning for text rendering layout.
         /// </summary>
+        [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
         bool HasKerning { get; }
 
         /// <summary>

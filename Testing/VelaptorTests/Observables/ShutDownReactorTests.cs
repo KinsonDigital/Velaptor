@@ -1,4 +1,4 @@
-﻿// <copyright file="ShutDownObservableTests.cs" company="KinsonDigital">
+﻿// <copyright file="ShutDownReactorTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,28 +7,29 @@ namespace VelaptorTests.Observables
     using System;
     using Moq;
     using Velaptor.Observables;
+    using Velaptor.Observables.ObservableData;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="ShutDownObservable"/> class.
+    /// Tests the <see cref="ShutDownReactor"/> class.
     /// </summary>
-    public class ShutDownObservableTests
+    public class ShutDownReactorTests
     {
         #region Method Tests
         [Fact]
         public void PushNotification_WhenInvoked_SendsPushNotification()
         {
             // Arrange
-            var observer = new Mock<IObserver<bool>>();
+            var observer = new Mock<IObserver<ShutDownData>>();
 
-            var observable = new ShutDownObservable();
+            var observable = new ShutDownReactor();
             observable.Subscribe(observer.Object);
 
             // Act
-            observable.PushNotification(true);
+            observable.PushNotification(default);
 
             // Assert
-            observer.Verify(m => m.OnNext(true), Times.Once());
+            observer.Verify(m => m.OnNext(default), Times.Once());
         }
         #endregion
     }

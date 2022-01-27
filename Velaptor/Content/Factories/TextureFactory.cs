@@ -10,8 +10,8 @@ namespace Velaptor.Content.Factories
     using Velaptor;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
-    using VelObservable = Velaptor.Observables.Core.IObservable<uint>;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -22,7 +22,7 @@ namespace Velaptor.Content.Factories
     {
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
-        private readonly VelObservable disposeTexturesObservable;
+        private readonly IReactor<DisposeTextureData> disposeTexturesReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureFactory"/> class.
@@ -32,7 +32,7 @@ namespace Velaptor.Content.Factories
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            this.disposeTexturesObservable = IoC.Container.GetInstance<DisposeTexturesObservable>();
+            this.disposeTexturesReactor = IoC.Container.GetInstance<IReactor<DisposeTextureData>>();
         }
 
         /// <summary>
@@ -40,12 +40,16 @@ namespace Velaptor.Content.Factories
         /// </summary>
         /// <param name="gl">Provides access to OpenGL functions.</param>
         /// <param name="glExtensions">Provides extensions/helper methods for OpenGL related operations.</param>
-        /// <param name="disposeTexturesObservable">Sends push notifications to dispose of textures.</param>
-        internal TextureFactory(IGLInvoker gl, IGLInvokerExtensions glExtensions, VelObservable disposeTexturesObservable)
+        /// <param name="disposeTexturesReactor">Sends push notifications to dispose of textures.</param>
+        internal TextureFactory(IGLInvoker gl, IGLInvokerExtensions glExtensions, IReactor<DisposeTextureData> disposeTexturesReactor)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-            this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
-            this.disposeTexturesObservable = disposeTexturesObservable ?? throw new ArgumentNullException(nameof(disposeTexturesObservable), "The parameter must not be null.");;
+            this.glExtensions =
+                glExtensions ??
+                throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+            this.disposeTexturesReactor =
+                disposeTexturesReactor ??
+                throw new ArgumentNullException(nameof(disposeTexturesReactor), "The parameter must not be null.");
         }
 
         /// <inheritdoc/>
@@ -61,7 +65,7 @@ namespace Velaptor.Content.Factories
                 throw new ArgumentNullException(nameof(filePath), "The parameter must not be null or empty.");
             }
 
-            return new Texture(this.gl, this.glExtensions, this.disposeTexturesObservable, name, filePath, imageData);
+            return new Texture(this.gl, this.glExtensions, this.disposeTexturesReactor, name, filePath, imageData);
         }
     }
 }

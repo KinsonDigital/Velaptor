@@ -1,4 +1,4 @@
-﻿// <copyright file="ObservableTests.cs" company="KinsonDigital">
+﻿// <copyright file="ReactorTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,16 +9,16 @@ namespace VelaptorTests.Observables.Core
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="Observable{T}"/> class.
+    /// Tests the <see cref="Reactor{TData}"/> class.
     /// </summary>
-    public class ObservableTests
+    public class ReactorTests
     {
         #region Method Tests
         [Fact]
-        public void Subscribe_WhenAddingNewObserver_ObserverAddedToObservable()
+        public void Subscribe_WhenAddingNewObserver_ObserverAddedToReactor()
         {
             // Arrange
-            var observable = CreateObservable<bool>();
+            var observable = CreateReactor<bool>();
 
             // Act
             observable.Subscribe(new Observer<bool>());
@@ -31,7 +31,7 @@ namespace VelaptorTests.Observables.Core
         public void Subscribe_WhenAddingNewObserver_ReturnsUnsubscriber()
         {
             // Arrange
-            var observable = CreateObservable<bool>();
+            var observable = CreateReactor<bool>();
             var observer = new Observer<bool>();
 
             // Act
@@ -47,7 +47,7 @@ namespace VelaptorTests.Observables.Core
         public void Dispose_WhenInvokedWithObservers_RemovesObservers()
         {
             // Arrange
-            var observable = CreateObservable<bool>();
+            var observable = CreateReactor<bool>();
 
             observable.Subscribe(new Observer<bool>());
 
@@ -61,11 +61,11 @@ namespace VelaptorTests.Observables.Core
         #endregion
 
         /// <summary>
-        /// Creates a new instance of the abstract <see cref="Observable{T}"/> for the purpose of testing.
+        /// Creates a new instance of the abstract <see cref="Reactor{TData}"/> for the purpose of testing.
         /// </summary>
         /// <typeparam name="T">The type of data that the observable will deal with.</typeparam>
         /// <returns>The instance to test.</returns>
-        private static ObservableFake<T> CreateObservable<T>()
+        private static ReactorFake<T> CreateReactor<T>()
             => new ();
     }
 }

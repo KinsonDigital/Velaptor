@@ -3,6 +3,8 @@
 // </copyright>
 
 using System.Runtime.CompilerServices;
+using Velaptor.Observables.ObservableData;
+
 [assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
 namespace Velaptor
@@ -22,6 +24,7 @@ namespace Velaptor
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
+    using Velaptor.Observables.Core;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
     using Velaptor.Services;
@@ -62,7 +65,7 @@ namespace Velaptor
         {
             SetupNativeInterop();
 
-            SetupObservables();
+            SetupReactors();
 
             SetupCaching();
 
@@ -104,13 +107,14 @@ namespace Velaptor
         /// <summary>
         /// Sets up container registration related to observables.
         /// </summary>
-        private static void SetupObservables()
+        private static void SetupReactors()
         {
-            IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
-            IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
-            IoCContainer.Register<RemoveBatchItemObservable>(Lifestyle.Singleton);
-            IoCContainer.Register<ShutDownObservable>(Lifestyle.Singleton);
-            IoCContainer.Register<DisposeTexturesObservable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactor<GLInitData>, OpenGLInitReactor>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactor<ShutDownData>, ShutDownReactor>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactor<GLContextData>, OpenGLContextReactor>(Lifestyle.Singleton);
+            IoCContainer.Register<RemoveBatchItemReactor>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactor<DisposeTextureData>, DisposeTexturesReactor>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactor<DisposeSoundData>, DisposeSoundsReactor>(Lifestyle.Singleton);
         }
 
         /// <summary>

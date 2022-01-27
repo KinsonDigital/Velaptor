@@ -11,7 +11,8 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -24,6 +25,7 @@ namespace Velaptor.Content
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundFactory soundFactory;
         private readonly IPath path;
+        private readonly IReactor<DisposeSoundData> disposeSoundReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
@@ -35,6 +37,7 @@ namespace Velaptor.Content
             this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
             this.soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
+            this.disposeSoundReactor = IoC.Container.GetInstance<IReactor<DisposeSoundData>>();
         }
 
         /// <summary>
@@ -43,17 +46,20 @@ namespace Velaptor.Content
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="soundFactory">Creates sound instances.</param>
         /// <param name="path">Processes directory and fle paths.</param>
+        /// <param name="disposeSoundReactor">Sends push notifications to dispose of sounds.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
         internal SoundLoader(
             IPathResolver soundPathResolver,
             ISoundFactory soundFactory,
-            IPath path)
+            IPath path,
+            IReactor<DisposeSoundData> disposeSoundReactor)
         {
             this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), "The parameter must not be null.");
             this.soundFactory = soundFactory ?? throw new ArgumentNullException(nameof(soundFactory), "The parameter must not be null.");
             this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+            this.disposeSoundReactor = disposeSoundReactor ?? throw new ArgumentNullException(nameof(disposeSoundReactor), "The parameter must not be null.");
         }
 
         /// <summary>
@@ -77,22 +83,9 @@ namespace Velaptor.Content
 
             var filePath = this.soundPathResolver.ResolveFilePath(name);
 
-            // If the requested font is already loaded into the pool
-            // and has been disposed, remove it.
-            foreach (var sound in this.sounds)
+            return this.sounds.GetOrAdd(filePath, (filePathCacheKey) =>
             {
-                if (sound.Key != filePath || !sound.Value.IsDisposed)
-                {
-                    continue;
-                }
-
-                this.sounds.TryRemove(sound);
-                break;
-            }
-
-            return this.sounds.GetOrAdd(filePath, (key) =>
-            {
-                var sound = this.soundFactory.Create(key);
+                var sound = this.soundFactory.Create(filePathCacheKey);
 
                 return sound;
             });
@@ -106,8 +99,7 @@ namespace Velaptor.Content
 
             if (this.sounds.TryRemove(filePath, out var sound))
             {
-                // TODO: Use the DisposeSoundsObservable here
-                // sound.Dispose();
+                this.disposeSoundReactor.PushNotification(new DisposeSoundData(sound.Id));
             }
         }
     }

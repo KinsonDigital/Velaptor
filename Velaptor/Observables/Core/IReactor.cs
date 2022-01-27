@@ -1,4 +1,4 @@
-﻿// <copyright file="IObservable.cs" company="KinsonDigital">
+﻿// <copyright file="IReactor.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,7 +10,7 @@ namespace Velaptor.Observables.Core
     /// Defines a provider for push-based notification.
     /// </summary>
     /// <typeparam name="T">The information sent with the push notification.</typeparam>
-    public interface IObservable<T> : System.IObservable<T>
+    public interface IReactor<T> : IObservable<T>, IDisposable
     {
         /// <inheritdoc cref="System.IObservable{T}.Subscribe"/>
         new IDisposable Subscribe(IObserver<T> observer);

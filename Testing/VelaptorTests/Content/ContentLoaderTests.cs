@@ -165,18 +165,6 @@ namespace VelaptorTests.Content
             // Assert
             this.mockFontLoader.Verify(m => m.Unload($"{FontContentName}|size:{fontSize}"), Times.Once());
         }
-
-        [Fact]
-        public void Dispose_WhenInvoked_DisposesOfLoaders()
-        {
-            // Arrange
-            var loader = CreateContentLoader();
-
-            // Act
-
-            // Assert
-            Assert.True(false, "TEST NOT IMPLEMENTED FOR SHUTDOWN OBSERVABLE");
-        }
         #endregion
 
         /// <summary>

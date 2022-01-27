@@ -10,10 +10,9 @@ namespace Velaptor.Content
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
-    using VelObservable = Velaptor.Observables.Core.IObservable<uint>;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -25,6 +24,7 @@ namespace Velaptor.Content
         private readonly IGLInvoker gl;
         private readonly IGLInvokerExtensions glExtensions;
         private readonly IDisposable disposeUnsubscriber;
+        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Texture"/> class.
@@ -39,8 +39,14 @@ namespace Velaptor.Content
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
 
-            var disposeObservable = IoC.Container.GetInstance<DisposeTexturesObservable>();
-            this.disposeUnsubscriber = disposeObservable.Subscribe(new Observer<uint>(_ => Dispose(Id)));
+            var disposeReactor = IoC.Container.GetInstance<IReactor<DisposeTextureData>>();
+
+            this.disposeUnsubscriber =
+                disposeReactor.Subscribe(new Observer<DisposeTextureData>(_ =>
+                {
+                    var disposeData = new DisposeTextureData(Id);
+                    Dispose(disposeData);
+                }));
 
             FilePath = filePath;
             Init(name, imageData);
@@ -51,14 +57,14 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="disposeTexturesObservable">Sends a push notification to dispose of a texture.</param>
+        /// <param name="disposeTexturesReactor">Sends a push notification to dispose of a texture.</param>
         /// <param name="name">The name of the texture.</param>
         /// <param name="filePath">The file path to the image file.</param>
         /// <param name="imageData">The image data of the texture.</param>
         internal Texture(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            VelObservable disposeTexturesObservable,
+            IReactor<DisposeTextureData> disposeTexturesReactor,
             string name,
             string filePath,
             ImageData imageData)
@@ -66,13 +72,13 @@ namespace Velaptor.Content
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
 
-            if (disposeTexturesObservable is null)
+            if (disposeTexturesReactor is null)
             {
-                throw new ArgumentNullException(nameof(disposeTexturesObservable), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(disposeTexturesReactor), "The parameter must not be null.");
             }
 
             this.disposeUnsubscriber =
-                disposeTexturesObservable.Subscribe(new Observer<uint>(Dispose));
+                disposeTexturesReactor.Subscribe(new Observer<DisposeTextureData>(Dispose));
 
             if (string.IsNullOrEmpty(filePath))
             {
@@ -94,7 +100,7 @@ namespace Velaptor.Content
                 return;
             }
 
-            Dispose(Id);
+            Dispose(new DisposeTextureData(Id));
         }
 
         /// <inheritdoc/>
@@ -112,16 +118,13 @@ namespace Velaptor.Content
         /// <inheritdoc/>
         public uint Height { get; private set; }
 
-        /// <inheritdoc/>
-        public bool IsDisposed { get; private set; }
-
         /// <summary>
-        /// Disposes of the texture if this textures <see cref="Id"/> matches the given <paramref name="textureId"/>.
+        /// Disposes of the texture if this textures <see cref="Id"/> matches the given <paramref name="data"/>.
         /// </summary>
-        /// <param name="textureId">The ID of the texture to dispose.</param>
-        private void Dispose(uint textureId)
+        /// <param name="data">The ID of the texture to dispose.</param>
+        private void Dispose(DisposeTextureData data)
         {
-            if (IsDisposed || Id != textureId)
+            if (this.isDisposed || Id != data.TextureId)
             {
                 return;
             }
@@ -129,7 +132,7 @@ namespace Velaptor.Content
             this.gl.DeleteTexture(Id);
             this.disposeUnsubscriber.Dispose();
 
-            IsDisposed = true;
+            this.isDisposed = true;
         }
 
         /// <summary>

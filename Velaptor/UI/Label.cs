@@ -19,18 +19,19 @@ namespace Velaptor.UI
     public sealed class Label : ControlBase
     {
         private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
-        private const string DefaultBoldFont = "TimesNewRoman-Bold.ttf";
-        private const string DefaultItalicFont = "TimesNewRoman-Italic.ttf";
-        private const string DefaultBoldItalicFont = "TimesNewRoman-BoldItalic.ttf";
-        private readonly IContentLoader? contentLoader;
+        private readonly IContentLoader contentLoader;
         private IFont? font;
         private string labelText = string.Empty;
+        private FontStyle cachedStyle;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Label"/> class.
         /// </summary>
         /// <param name="contentLoader">Loads content for rendering the label.</param>
-        public Label(IContentLoader contentLoader) => this.contentLoader = contentLoader;
+        public Label(IContentLoader contentLoader) =>
+            this.contentLoader =
+                contentLoader ??
+                throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
 
         /// <summary>
         /// Gets or sets the labelText of the label.
@@ -79,9 +80,19 @@ namespace Velaptor.UI
         /// </summary>
         public FontStyle Style
         {
-            // TODO: Need to do style caching and use proper style in LoadContent if cached item has been used
-            get => this.font.Style;
-            set => this.font.Style = value;
+            get => this.font?.Style ?? this.cachedStyle;
+            set
+            {
+                if (this.font is null)
+                {
+                    this.cachedStyle = value;
+                }
+                else
+                {
+                    this.font.Style = this.cachedStyle;
+                    this.cachedStyle = value;
+                }
+            }
         }
 
         /// <summary>
@@ -98,14 +109,12 @@ namespace Velaptor.UI
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
         {
-            ThrowExceptionIfLoadingWhenDisposed();
-
             if (IsLoaded)
             {
                 return;
             }
 
-            this.font = this.contentLoader?.LoadFont(DefaultRegularFont, 12);
+            this.font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
 
             UpdateLabelSize();
 
@@ -115,12 +124,15 @@ namespace Velaptor.UI
         /// <inheritdoc cref="ControlBase.UnloadContent"/>
         public override void UnloadContent()
         {
-            if (!IsLoaded || IsDisposed)
+            if (!IsLoaded)
             {
                 return;
             }
 
-            this.font?.Dispose();
+            if (this.font is not null)
+            {
+                this.contentLoader.UnloadFont(this.font);
+            }
 
             base.UnloadContent();
         }
@@ -145,23 +157,6 @@ namespace Velaptor.UI
             }
 
             base.Render(spriteBatch);
-        }
-
-        /// <inheritdoc cref="ControlBase.Dispose(bool)"/>
-        protected override void Dispose(bool disposing)
-        {
-            if (IsDisposed || !IsLoaded)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.font?.Dispose();
-                IsLoaded = false;
-            }
-
-            base.Dispose(true);
         }
 
         /// <summary>

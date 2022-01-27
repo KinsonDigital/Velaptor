@@ -58,22 +58,19 @@ namespace VelaptorTests.Observables.Core
         public void Dispose_WhenInvoked_RemovesObserverFromObserversList()
         {
             // Arrange
-            var observer = new Mock<IObserver<It.IsAnyType>>();
-
-            var observers = new Mock<List<IObserver<It.IsAnyType>>>();
-            observers.Object.Add(It.IsAny<IObserver<It.IsAnyType>>());
-            observers.Object.Add(observer.Object);
+            var observerA = new Observer<int>();
+            var observerB = new Observer<int>();
+            var observers = new List<IObserver<int>> { observerA, observerB };
 
             /* NOTE: The observer is added to the list of observers
-             * via the Observable<T> class and then both the list and the single
+             * via the Reactor<T> class and then both the list and the single
              * observer are passed to the ObserverUnsubscriber.  The single
              * observer is added to the observers list above to simulate
              * this process for the purpose of testing.
              */
-
-            var unsubscriber = new ObserverUnsubscriber<It.IsAnyType>(
-                observers.Object,
-                observer.Object);
+            var unsubscriber = new ObserverUnsubscriber<int>(
+                observers,
+                observerB);
 
             // Act
             unsubscriber.Dispose();

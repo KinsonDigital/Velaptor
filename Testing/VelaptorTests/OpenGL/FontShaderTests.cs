@@ -7,10 +7,12 @@ namespace VelaptorTests.OpenGL
     using System;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
-    using VelObservable = Velaptor.Observables.Core.IObservable<bool>;
 
     /// <summary>
     /// Tests the <see cref="FontShader"/> class.
@@ -19,10 +21,10 @@ namespace VelaptorTests.OpenGL
     {
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<IShaderLoaderService<uint>> mockShaderLoaderService;
-        private readonly Mock<VelObservable> mockGLInitObservable;
+        private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
+        private readonly Mock<IReactor<GLInitData>> mockGLInitReactor;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-        private readonly Mock<VelObservable> mockShutDownObservable;
+        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontShaderTests"/> class.
@@ -31,18 +33,50 @@ namespace VelaptorTests.OpenGL
         {
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
-            this.mockShaderLoaderService = new Mock<IShaderLoaderService<uint>>();
-            this.mockShutDownObservable = new Mock<VelObservable>();
-            this.mockGLInitObservable = new Mock<VelObservable>();
+            this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
+            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
+            this.mockGLInitReactor = new Mock<IReactor<GLInitData>>();
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullInitReactorParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new FontShader(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockShaderLoader.Object,
+                    null,
+                    this.mockShutDownReactor.Object);
+            }, "The parameter must not be null. (Parameter 'glInitReactor')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullShutDownReactorParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new FontShader(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockShaderLoader.Object,
+                    this.mockGLInitReactor.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'shutDownReactor')");
+        }
+        #endregion
 
         #region Method Tests
         [Fact]
         public void Use_WhenInvoked_SetsShaderAsUsed()
         {
             // Arrange
-            IObserver<bool>? glInitObserver = null;
+            IObserver<GLInitData>? glInitObserver = null;
 
             const uint shaderId = 78;
             const int uniformLocation = 1234;
@@ -52,9 +86,9 @@ namespace VelaptorTests.OpenGL
             var status = 1;
             this.mockGL.Setup(m
                 => m.GetProgram(shaderId, GLProgramParameterName.LinkStatus, out status));
-            this.mockGLInitObservable.Setup(m => m.Subscribe(It.IsAny<IObserver<bool>>()))
+            this.mockGLInitReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<GLInitData>>()))
                 .Returns(this.mockGLInitUnsubscriber.Object)
-                .Callback<IObserver<bool>>(observer =>
+                .Callback<IObserver<GLInitData>>(observer =>
                 {
                     if (observer is null)
                     {
@@ -67,11 +101,11 @@ namespace VelaptorTests.OpenGL
             var shader = new FontShader(
                 this.mockGL.Object,
                 this.mockGLExtensions.Object,
-                this.mockShaderLoaderService.Object,
-                this.mockGLInitObservable.Object,
-                this.mockShutDownObservable.Object);
+                this.mockShaderLoader.Object,
+                this.mockGLInitReactor.Object,
+                this.mockShutDownReactor.Object);
 
-            glInitObserver?.OnNext(true);
+            glInitObserver?.OnNext(default);
 
             // Act
             shader.Use();
