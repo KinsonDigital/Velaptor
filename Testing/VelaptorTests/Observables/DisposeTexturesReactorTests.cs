@@ -16,20 +16,23 @@ namespace VelaptorTests.Observables
     public class DisposeTexturesReactorTests
     {
         #region Method Tests
-        [Fact]
-        public void PushNotification_WhenInvoked_SendsPushNotification()
+        [Theory]
+        [InlineData(false, 1)]
+        [InlineData(true, 0)]
+        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
             var observer = new Mock<IObserver<DisposeTextureData>>();
 
-            var observable = new DisposeTexturesReactor();
-            observable.Subscribe(observer.Object);
+            var reactor = new DisposeTexturesReactor();
+            reactor.Subscribe(observer.Object);
 
             // Act
-            observable.PushNotification(new DisposeTextureData(123u));
+            reactor.PushNotification(new DisposeTextureData(123u), unsubscribe);
 
             // Assert
             observer.Verify(m => m.OnNext(new DisposeTextureData(123u)), Times.Once());
+            Assert.Equal(expected, reactor.Observers.Count);
         }
         #endregion
     }

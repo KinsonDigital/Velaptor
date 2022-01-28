@@ -1,9 +1,8 @@
 <h2 style="font-weight:bold" align="center">Contributing</h2>
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+To contribute to this repository, please create a GitHub issue.
 
-Please note we have a code of conduct, please follow it in all your interactions with the project.
+Note that we have a code of conduct.  Please follow it in all of your interactions with the project.
 Before contributing, please review all coding standards and development practices put in place for the project.
 
 ---
@@ -16,13 +15,15 @@ Before contributing, please review all coding standards and development practice
 2. Create a feature branch following the feature branch section in the documentation [here](./Documentation/Branching.md)
 3. Add an empty commit to the new feature branch to start your work off.
    * Use this git command: `git commit --allow-empty -m "start of [thing you're working on]"`
-4. Once you've pushed a commit, open a [**draft pull request**](https://github.blog/2019-02-14-introducing-draft-pull-requests/). Do this **before** you actually start working.
-5. Make your commits in small, incremental steps with clear descriptions.
-6. All unit tests must pass before a PR will be completed.
-7. Make sure that the code follows the the coding standards.
+4. Push the commit to the remote.
+5. Open a [**draft pull request**](https://github.blog/2019-02-14-introducing-draft-pull-requests/).
+6. Perform steps 1-5 **before** you starting work on the feature.
+7. Make your commits in small, incremental steps with clear descriptions.
+8. All unit tests must pass before a PR will be completed.
+9. Make sure that your code follows the the coding standards.
    * Pay attention to the warnings in **Visual Studio**!!
-   * Refer to the *.editorconfig* files in the code base for rules
-8. Tag a maintainer when you're done and ask for a review!
+   * Refer to the *.editorconfig* files in the code base for rules.
+10. Tag a maintainer when you're done and ask for a review!
 
 If you have any questions, contact a project maintainer.
 

@@ -16,21 +16,24 @@ namespace VelaptorTests.Observables
     public class DisposeSoundsReactorTests
     {
         #region Method Tests
-        [Fact]
-        public void PushNotification_WhenInvoked_SendsPushNotification()
+        [Theory]
+        [InlineData(false, 1)]
+        [InlineData(true, 0)]
+        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
             var observer = new Mock<IObserver<DisposeSoundData>>();
 
-            var observable = new DisposeSoundsReactor();
-            observable.Subscribe(observer.Object);
+            var reactor = new DisposeSoundsReactor();
+            reactor.Subscribe(observer.Object);
 
             // Act
             var soundData = new DisposeSoundData(123u);
-            observable.PushNotification(soundData);
+            reactor.PushNotification(soundData, unsubscribe);
 
             // Assert
             observer.Verify(m => m.OnNext(soundData), Times.Once());
+            Assert.Equal(expected, reactor.Observers.Count);
         }
         #endregion
     }

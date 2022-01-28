@@ -29,7 +29,7 @@ namespace Velaptor.Content.Factories
         /// Initializes a new instance of the <see cref="SoundFactory"/> class.
         /// </summary>
         /// <param name="disposeSoundReactor">Sends push notifications to dispose of sounds.</param>
-        /// <param name="shutDownReactor">Sends push notifications that the application is shutting down.</param>
+        /// <param name="shutDownReactor">Sends a push notifications that the application is shutting down.</param>
         public SoundFactory(
             IReactor<DisposeSoundData> disposeSoundReactor,
             IReactor<ShutDownData> shutDownReactor)

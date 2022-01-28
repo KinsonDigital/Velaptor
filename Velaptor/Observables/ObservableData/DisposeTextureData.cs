@@ -11,7 +11,7 @@ namespace Velaptor.Observables.ObservableData
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Holds da ta for the <see cref="IReactor{T}"/>.
+    /// Holds data for the <see cref="IReactor{T}"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal readonly struct DisposeTextureData
@@ -20,10 +20,10 @@ namespace Velaptor.Observables.ObservableData
         /// Initializes a new instance of the <see cref="DisposeTextureData"/> struct.
         /// </summary>
         /// <param name="textureId">The texture ID of the texture to dispose.</param>
-        public DisposeTextureData(uint textureId) => this.TextureId = textureId;
+        public DisposeTextureData(uint textureId) => TextureId = textureId;
 
         /// <summary>
-        /// Gets the texture ID
+        /// Gets the texture ID.
         /// </summary>
         public uint TextureId { get; }
     }

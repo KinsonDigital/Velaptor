@@ -6,7 +6,7 @@
 <h1 style="font-weight:bold" align="center">Preview Feature Pull Request</h1>
 
 <details><summary>📄Description📄</summary>
-<!-- Provide a short general summary of your changes in the Title above -->
+<!-- Provide a short, general summary of your changes in the Title above -->
 
 This pull request is for preview release **_[add version here]_**
 </details>
@@ -16,24 +16,24 @@ This pull request is for preview release **_[add version here]_**
 
 <details open><summary>🌳Branching🌳</summary>
 
-The name of the preview feature branch for this pull request has the following syntax.
+Does the name of the head(source) branch for this pull request have the correct **_preview feature branch_** syntax?
 
 Syntax: _preview/feature/&lt;issue-id&gt;-&lt;description&gt;_  
 Example: _preview/feature/123-my-preview-change_
 - [ ] Yes
 - [ ] No
-
-The name of the branch for this pull request is merging into a preview branch with the following syntax.
+ 
+Does the name of the base(target) branch for this pull request have the correct **_preview branch_** syntax?
 
 Syntax: _preview/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;-preview.&lt;prev-number&gt;_  
 Example: _preview/v1.2.3-preview.4_
 - [ ] Yes
 - [ ] No
 
-The preview feature branch for this pull request was created from a preview branch with the following syntax.
+Is this pull request branch created from a **_preview branch_** with the correct syntax?  
 
-Syntax: _preview/feature/&lt;issue-id&gt;-&lt;description&gt;_  
-Example: _preview/feature/123-my-preview-change_
+Syntax: _preview/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;-preview.&lt;prev-number&gt;_  
+Example: _preview/v1.2.3-preview.4_
 - [ ] Yes
 - [ ] No
 </details>
@@ -50,8 +50,7 @@ Contains Bug Fix(es)
 
 <details open><summary>💣Breaking Change(s)💣</summary>
 
-Any changes, including behavioral, that prevent a library user's application from compiling or behaving correctly.
-Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract) for more information.
+Contains [breaking change(s)](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract)
 - [ ] Yes
 - [ ] No
 </details>
@@ -59,7 +58,7 @@ Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/
 
 <details open><summary>✨Enhancements✨</summary>
 
-Contains enhancements that add a feature or behavior.
+Contains enhancement(s) that add a feature or behavior.
 - [ ] Yes
     - [ ] An ![enhancement-label](https://user-images.githubusercontent.com/85414302/150804213-bd043c7b-54d2-4562-ad3f-69a07723a5ef.png) label has been added to the pull request.
 - [ ]  No
@@ -68,7 +67,7 @@ Contains enhancements that add a feature or behavior.
 
 <details open><summary>⚙️Workflow (CI/CD) Changes⚙️</summary>
 
-These kinds of changes are only done by the project owner and maintainers.
+Contains changes to workflow files. These changes can only done by the project maintainers.
 - [ ] Yes
     - [ ] A ![workflow-label](https://user-images.githubusercontent.com/85414302/150814606-314933ca-86c7-4edb-99cb-62d2198b20d9.png) label has been added to the pull request.
 - [ ] No
@@ -96,8 +95,7 @@ My change requires unit tests to be written.
 
 <details open><summary>🧪Manual Testing🧪</summary>
 
-I have manually tested my changes to the best of my ability.
-This can be done by using the included testing application.
+I have manually tested my changes. (This can be done by using project named **_VelaptorTesting_**).
 - [ ] Yes
 - [ ] No
 </details>
@@ -105,14 +103,14 @@ This can be done by using the included testing application.
 
 <h2 style="font-weight:bold" align="center">✅Code Review Checklist✅</h2>
 
-<!-- Go over all the following points, and put an `x` in all the boxes that apply. -->
+<!-- Go over all of the following points, and put an `x` in all the boxes that apply. -->
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] Pull request title matches the title of the linked issue.
-- [ ] The **_[add version here]_** text in the pull request description replaced with the version.
+- [ ] The **_[add version here]_** text in the pull request description was replaced with the version.
 - [ ] Associated issue exists and is linked to this pull request.
     - One issue per pull request.
 - [ ] My code follows the coding style of this project.
-    - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and lets discuss it.
+    - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and let's discuss it.
 - [ ] All tests passed locally.
     - Status checks are put in place to run unit tests every single time a change is pushed to a pull request.  This does not mean that the tests pass in both the local and CI environment.
 - [ ] A ![preview-label](https://user-images.githubusercontent.com/85414302/150838564-33f6044b-55f9-4dd9-8783-1d739de9d92f.png) label has been added to the pull request.

@@ -55,8 +55,8 @@ namespace Velaptor.Content.Caching
         /// <param name="fontAtlasService">Provides font atlas services.</param>
         /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
         /// <param name="path">Provides path related services.</param>
-        /// <param name="shutDownReactor">Sends push notifications that the application is shutting down.</param>
-        /// <param name="disposeTexturesReactor">Sends a notifications to dispose of textures.</param>
+        /// <param name="shutDownReactor">Sends a push notifications that the application is shutting down.</param>
+        /// <param name="disposeTexturesReactor">Sends push notifications to dispose of textures.</param>
         public TextureCache(
             IImageService imageService,
             ITextureFactory textureFactory,

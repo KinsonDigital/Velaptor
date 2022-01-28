@@ -19,6 +19,12 @@ namespace Velaptor.Observables.Core
         /// Pushes a single notification with the given <paramref name="data"/>.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        void PushNotification(T data);
+        /// <param name="unsubscribeAfterProcessing">Unsubscribes all of the observers after the notification has been pushed.</param>
+        void PushNotification(T data, bool unsubscribeAfterProcessing = false);
+
+        /// <summary>
+        /// Unsubscribes all of the currently subscribed observers.
+        /// </summary>
+        void UnsubscribeAll();
     }
 }

@@ -41,7 +41,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
         /// </summary>
-        /// <param name="disposeReactor">Sends push notifications to dispose of sounds.</param>
+        /// <param name="disposeReactor">Sends a push notifications to dispose of sounds.</param>
         /// <param name="filePath">The path to the sound file.</param>
         /// <param name="soundId">The unique ID of the sound.</param>
         internal Sound(IReactor<DisposeSoundData> disposeReactor, string filePath, uint soundId)
@@ -114,7 +114,7 @@ namespace Velaptor.Content
         public string FilePath => this.sound.Path;
 
          /// <summary>
-        /// Fast forwards the sound by the given amount of <paramref name="seconds"/>.
+        /// Advances the sound forward by the given amount of <paramref name="seconds"/>.
         /// </summary>
         /// <param name="seconds">The amount of seconds to fast forward the sound.</param>
         public void FastForward(float seconds) => this.sound.FastForward(seconds);

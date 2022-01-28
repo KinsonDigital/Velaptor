@@ -18,8 +18,12 @@ namespace Velaptor.Observables
         /// <summary>
         /// Sends a push notification that the OpenGL context has been created.
         /// </summary>
-        /// <param name="data">The data to send with the notification.</param>
-        public override void PushNotification(GLContextData data)
+        /// <param name="data">The data to send with the push notification.</param>
+        /// <param name="unsubscribeAfterProcessing">Unsubscribes all of the observers after the notification has been pushed.</param>
+        /// <remarks>
+        ///     This <see cref="OpenGLContextReactor"/>
+        /// </remarks>
+        public override void PushNotification(GLContextData data, bool unsubscribeAfterProcessing = false)
         {
             /* Work from the end to the beginning of the list
                just in case the observable is disposed(removed)
@@ -28,6 +32,11 @@ namespace Velaptor.Observables
             for (var i = Observers.Count - 1; i >= 0; i--)
             {
                 Observers[i].OnNext(data);
+            }
+
+            if (unsubscribeAfterProcessing)
+            {
+                UnsubscribeAll();
             }
         }
     }

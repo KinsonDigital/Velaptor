@@ -16,8 +16,10 @@ namespace VelaptorTests.Observables
     public class OpenGLContextReactorTests
     {
         #region Method Tests
-        [Fact]
-        public void PushNotification_WhenInvoked_SendsPushNotification()
+        [Theory]
+        [InlineData(false, 1)]
+        [InlineData(true, 0)]
+        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
             var observer = new Mock<IObserver<GLContextData>>();
@@ -26,10 +28,11 @@ namespace VelaptorTests.Observables
             reactor.Subscribe(observer.Object);
 
             // Act
-            reactor.PushNotification(default);
+            reactor.PushNotification(default, unsubscribe);
 
             // Assert
             observer.Verify(m => m.OnNext(default), Times.Once());
+            Assert.Equal(expected, reactor.Observers.Count);
         }
         #endregion
     }

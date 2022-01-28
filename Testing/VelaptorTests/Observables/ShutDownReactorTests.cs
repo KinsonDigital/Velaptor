@@ -16,20 +16,23 @@ namespace VelaptorTests.Observables
     public class ShutDownReactorTests
     {
         #region Method Tests
-        [Fact]
-        public void PushNotification_WhenInvoked_SendsPushNotification()
+        [Theory]
+        [InlineData(false, 1)]
+        [InlineData(true, 0)]
+        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
             var observer = new Mock<IObserver<ShutDownData>>();
 
-            var observable = new ShutDownReactor();
-            observable.Subscribe(observer.Object);
+            var reactor = new ShutDownReactor();
+            reactor.Subscribe(observer.Object);
 
             // Act
-            observable.PushNotification(default);
+            reactor.PushNotification(default, unsubscribe);
 
             // Assert
             observer.Verify(m => m.OnNext(default), Times.Once());
+            Assert.Equal(expected, reactor.Observers.Count);
         }
         #endregion
     }

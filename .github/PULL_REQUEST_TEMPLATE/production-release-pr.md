@@ -6,7 +6,7 @@
 <h1 style="font-weight:bold" align="center">Production Release Pull Request</h1>
 
 <details open><summary>📄Description📄</summary>
-<!-- Provide a short general summary of your changes in the Title above -->
+<!-- Provide a short, general summary of your changes in the Title above -->
 
 This pull request is for production release **_[add version here]_**
 </details>
@@ -64,7 +64,7 @@ Contains enhancements that add a feature or behavior.
 
 <details open><summary>⚙️Workflow (CI/CD) Changes⚙️</summary>
 
-These kinds of changes are only done by the project owner and maintainers.
+These changes can only done by the project maintainers.
 - [ ] Yes
     - [ ] A ![workflow-label](https://user-images.githubusercontent.com/85414302/150814606-314933ca-86c7-4edb-99cb-62d2198b20d9.png) label has been added to the pull request.
 - [ ] No
@@ -92,7 +92,7 @@ My change requires unit tests to be written.
 
 <details open><summary>🧪Manual Testing🧪</summary>
 
-I have manually tested my changes to the best of my ability.
+I have manually tested my changes.
 This can be done by using the included testing application.
 - [ ] Yes
 - [ ] No
@@ -101,14 +101,14 @@ This can be done by using the included testing application.
 
 <h2 style="font-weight:bold" align="center">✅Code Review Checklist✅</h2>
 
-<!-- Go over all the following points, and put an `x` in all the boxes that apply. -->
+<!-- Go over all of the following points, and put an `x` in all the boxes that apply. -->
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] Pull request title matches the example below with the correct version.
     - **Example:** 🚀Release To Production - v1.2.3
-- [ ] The **_[add version here]_** text in the pull request description replaced with the version.
+- [ ] The **_[add version here]_** text in the pull request description was replaced with the version.
 - [ ] Issues exist and are linked to this pull request.
 - [ ] My code follows the coding style of this project.
-    - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and lets discuss it.
+    - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and let's discuss it.
 - [ ] All tests passed locally.
     - Status checks are put in place to run unit tests every single time a change is pushed to a pull request.  This does not mean that the tests pass in both the local and CI environment.
 - [ ] Update library version by updating the **_\<Version/\>_** and **_\<FileVersion/\>_** tags in the **_Velaptor_** **_.csproj_** file.

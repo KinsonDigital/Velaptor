@@ -19,12 +19,13 @@ namespace Velaptor.Observables
         /// <summary>
         /// Sends a push notification to signal application shutdown.
         /// </summary>
-        /// <param name="data">The data to send with the notification.</param>
+        /// <param name="data">The data to send with the push notification.</param>
+        /// <param name="unsubscribeAfterProcessing">Unsubscribes all of the observers after the notification has been pushed.</param>
         [SuppressMessage(
             "ReSharper",
             "ForCanBeConvertedToForeach",
             Justification = "Required for proper observable operation.")]
-        public override void PushNotification(ShutDownData data)
+        public override void PushNotification(ShutDownData data, bool unsubscribeAfterProcessing = false)
         {
             /* Work from the end to the beginning of the list
                just in case the observable is disposed(removed)
@@ -33,6 +34,11 @@ namespace Velaptor.Observables
             for (var i = Observers.Count - 1; i >= 0; i--)
             {
                 Observers[i].OnNext(data);
+            }
+
+            if (unsubscribeAfterProcessing)
+            {
+                UnsubscribeAll();
             }
         }
     }

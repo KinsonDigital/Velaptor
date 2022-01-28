@@ -16,21 +16,25 @@ namespace VelaptorTests.Observables
     public class RemoveBatchItemReactorTests
     {
         #region Method Tests
-        [Fact]
-        public void OnRemoveBatchItem_WhenInvoked_SendsPushNotification()
+        [Theory]
+        [InlineData(false, 1)]
+        [InlineData(true, 0)]
+        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
             var observer = new Mock<IObserver<RemoveBatchItemData>>();
 
-            var observable = new RemoveBatchItemReactor();
-            observable.Subscribe(observer.Object);
+            var reactor = new RemoveBatchItemReactor();
+            reactor.Subscribe(observer.Object);
 
             // Act
             var data = new RemoveBatchItemData(123u);
-            observable.PushNotification(data);
+            reactor.PushNotification(data, unsubscribe);
 
             // Assert
             observer.Verify(m => m.OnNext(data), Times.Once());
+
+            Assert.Equal(expected, reactor.Observers.Count);
         }
         #endregion
     }

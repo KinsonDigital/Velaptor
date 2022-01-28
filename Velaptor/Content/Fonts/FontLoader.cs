@@ -78,7 +78,7 @@ namespace Velaptor.Content.Fonts
         /// <param name="directory">Manages and deals with directories.</param>
         /// <param name="file">Performs file related operations.</param>
         /// <param name="fileStream">Provides a stream to a file for file operations.</param>
-        /// <param name="path">Processes directory and fle paths.</param>
+        /// <param name="path">Processes directory and file paths.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>

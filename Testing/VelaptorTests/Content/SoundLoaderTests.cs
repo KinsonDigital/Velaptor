@@ -141,7 +141,8 @@ namespace VelaptorTests.Content
 
             // Assert
             var disposeData = new DisposeSoundData(SoundId);
-            this.mockDisposeSoundReactor.Verify(m => m.PushNotification(disposeData));
+            this.mockDisposeSoundReactor.Verify(m =>
+                m.PushNotification(disposeData, false), Times.Once);
         }
         #endregion
 

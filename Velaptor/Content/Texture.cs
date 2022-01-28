@@ -119,9 +119,9 @@ namespace Velaptor.Content
         public uint Height { get; private set; }
 
         /// <summary>
-        /// Disposes of the texture if this textures <see cref="Id"/> matches the given <paramref name="data"/>.
+        /// Disposes of the texture if this textures <see cref="Id"/> matches the texture ID  in given <paramref name="data"/>.
         /// </summary>
-        /// <param name="data">The ID of the texture to dispose.</param>
+        /// <param name="data">The data of the texture to dispose.</param>
         private void Dispose(DisposeTextureData data)
         {
             if (this.isDisposed || Id != data.TextureId)

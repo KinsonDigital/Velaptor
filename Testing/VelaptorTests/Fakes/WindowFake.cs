@@ -4,8 +4,6 @@
 
 namespace VelaptorTests.Fakes
 {
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.UI;
 
     /// <summary>
@@ -17,10 +15,9 @@ namespace VelaptorTests.Fakes
         /// Initializes a new instance of the <see cref="WindowFake"/> class.
         /// </summary>
         /// <param name="window">Window implementation.</param>
-        /// <param name="shutDownReactor">Mocked <see cref="IReactor{T}"/> for application shutdown.</param>
         /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
-        internal WindowFake(IWindow window, IReactor<ShutDownData> shutDownReactor)
-            : base(window, shutDownReactor)
+        internal WindowFake(IWindow window)
+            : base(window)
         {
         }
     }

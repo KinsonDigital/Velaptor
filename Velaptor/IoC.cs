@@ -3,8 +3,6 @@
 // </copyright>
 
 using System.Runtime.CompilerServices;
-using Velaptor.Observables.ObservableData;
-
 [assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
 namespace Velaptor
@@ -25,6 +23,7 @@ namespace Velaptor
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Observables;
     using Velaptor.Observables.Core;
+    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
     using Velaptor.Services;

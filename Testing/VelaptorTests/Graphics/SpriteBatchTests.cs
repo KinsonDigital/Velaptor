@@ -49,9 +49,9 @@ namespace VelaptorTests.Graphics
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
         private readonly char[] glyphChars =
         {
-            'a', 'b', 'c', 'd', 'e',  'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-            'A', 'B', 'C', 'D', 'E',  'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-            '0', '1', '2', '3', '4',  '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
             '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
         };
 
@@ -115,7 +115,7 @@ namespace VelaptorTests.Graphics
 
         #region Constructor Tests
         [Fact]
-        public void CtorWithNullGLInvokerParam_ThrowsException()
+        public void Ctor_WithNullGLInvokerParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -135,7 +135,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void CtorWithNullTextureShaderParam_ThrowsException()
+        public void Ctor_WithNullTextureShaderParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -155,7 +155,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void CtorWithNullFontShaderParam_ThrowsException()
+        public void Ctor_WithNullFontShaderParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -175,7 +175,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void CtorWithNullTextureGPUBufferParam_ThrowsException()
+        public void Ctor_WithNullTextureGPUBufferParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -195,7 +195,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void CtorWithNullFontGPUBufferParam_ThrowsException()
+        public void Ctor_WithNullFontGPUBufferParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -215,7 +215,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void CtorWithNullTextureBatchServiceParam_ThrowsException()
+        public void Ctor_WithNullTextureBatchServiceParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -235,7 +235,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void CtorWithNullFontBatchServiceParam_ThrowsException()
+        public void Ctor_WithNullFontBatchServiceParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>

@@ -11,7 +11,7 @@ namespace Velaptor.Observables.ObservableData
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Holds da ta for the <see cref="IReactor{T}"/>.
+    /// Holds data for the <see cref="IReactor{T}"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal readonly struct RemoveBatchItemData

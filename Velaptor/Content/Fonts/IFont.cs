@@ -41,7 +41,7 @@ namespace Velaptor.Content.Fonts
         VelFontStyle Style { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether or not font is a default font.
+        /// Gets a value indicating whether or not the font is a default font.
         /// </summary>
         [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Used by library users.")]
         bool IsDefaultFont { get; }

@@ -45,8 +45,8 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="soundFactory">Creates sound instances.</param>
-        /// <param name="path">Processes directory and fle paths.</param>
-        /// <param name="disposeSoundReactor">Sends push notifications to dispose of sounds.</param>
+        /// <param name="path">Processes directory and file paths.</param>
+        /// <param name="disposeSoundReactor">Sends a push notifications to dispose of sounds.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>

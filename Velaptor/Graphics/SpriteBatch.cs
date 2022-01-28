@@ -56,7 +56,7 @@ namespace Velaptor.Graphics
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
-        /// <param name="glInitReactor">Provides push notifications to OpenGL related events.</param>
+        /// <param name="glInitReactor">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
         ///     <paramref name="glInitReactor"/> is subscribed to in this class.  <see cref="GLWindow"/>

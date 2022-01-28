@@ -6,7 +6,7 @@
 <h1 style="font-weight:bold" align="center">Feature Pull Request</h1>
 
 <details><summary>📄Description📄</summary>
-<!-- Provide a short general summary of your changes in the Title above -->
+<!-- Provide a short, general summary of your changes in the Title above -->
 
 </details>
 
@@ -15,20 +15,18 @@
 
 <details open><summary>🌳Branching🌳</summary>
 
-The name of the feature branch for this pull request has the following syntax.
+Does the name of the head(source) branch for this pull request have the correct **_feature branch_** syntax?
 
 Syntax: _feature/&lt;issue-id&gt;-&lt;description&gt;_  
 Example: _feature/123-my-changes_
 - [ ] Yes
 - [ ] No
 
-This name of the branch for this pull request is merging into the development branch with the name **_develop_**.
-
+The pull request is merging into a branch with the name **_develop_**.
 - [ ] Yes
 - [ ] No
 
-This feature branch was created from a branch with the name **_develop_**.
-
+The head(source) branch for the pull request was created from a branch with the name **_develop_**.
 - [ ] Yes
 - [ ] No
 </details>
@@ -45,8 +43,7 @@ Contains Bug Fix(es)
 
 <details open><summary>💣Breaking Change(s)💣</summary>
 
-Any changes, including behavioral, that prevent a library user's application from compiling or behaving correctly.
-Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract) for more information.
+Contains [breaking change(s)](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract)
 - [ ] Yes
 - [ ] No
 </details>
@@ -54,7 +51,7 @@ Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/
 
 <details open><summary>✨Enhancements✨</summary>
 
-Contains enhancements that add a feature or behavior.
+Contains enhancement(s) that add a feature or behavior.
 - [ ] Yes
     - [ ] An ![enhancement-label](https://user-images.githubusercontent.com/85414302/150804213-bd043c7b-54d2-4562-ad3f-69a07723a5ef.png) label has been added to the pull request.
 - [ ]  No
@@ -63,7 +60,7 @@ Contains enhancements that add a feature or behavior.
 
 <details open><summary>📃Documentation Updates📃</summary>
 
-Contains changes that require documentation updates to code docs or **Velaptor** documentation.
+Contains changes to workflow files. These changes can only done by the project maintainers.
 - [ ] Yes
     - [ ] I have updated the documentation accordingly.
     - [ ] A ![documentation-label](https://user-images.githubusercontent.com/85414302/150810133-939e985d-2246-4c77-8c9c-815855da3664.png) label has been added to the pull request.
@@ -82,8 +79,7 @@ My change requires unit tests to be written.
 
 <details open><summary>🧪Manual Testing🧪</summary>
 
-I have manually tested my changes to the best of my ability.
-This can be done by using the included testing application.
+I have manually tested my changes. (This can be done by using project named **_VelaptorTesting_**).
 - [ ] Yes
 - [ ] No
 </details>
@@ -91,14 +87,14 @@ This can be done by using the included testing application.
 
 <h2 style="font-weight:bold" align="center">✅Code Review Checklist✅</h2>
 
-<!-- Go over all the following points, and put an `x` in all the boxes that apply. -->
+<!-- Go over all of the following points, and put an `x` in all the boxes that apply. -->
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] Pull request title matches the example below with the correct version.
     - **Example:** 🚀Release To Preview - v1.2.3-preview.4
-- [ ] The **_[add version here]_** text in the pull request description replaced with the version.
+- [ ] The **_[add version here]_** text in the pull request description was replaced with the version.
 - [ ] Issues exist and are linked to this pull request.
 - [ ] My code follows the coding style of this project.
-    - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and lets discuss it.
+    - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and let's discuss it.
 - [ ] All tests passed locally.
     - Status checks are put in place to run unit tests every single time a change is pushed to a pull request.  This does not mean that the tests pass in both the local and CI environment.
 - [ ] Update library version by updating the **_\<Version/\>_** and **_\<FileVersion/\>_** tags in the **_Velaptor_** **_.csproj_** file.

@@ -10,8 +10,6 @@ namespace Velaptor.UI
     using System.Numerics;
     using System.Threading.Tasks;
     using Velaptor.Content;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -21,29 +19,7 @@ namespace Velaptor.UI
     public abstract class Window : IWindowProps, IDisposable
     {
         private readonly IWindow window;
-        private readonly IReactor<ShutDownData> shutDownReactor;
         private bool isDisposed;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Window"/> class.
-        /// </summary>
-        /// <param name="window">The window implementation that contains the window functionality.</param>
-        /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
-        internal Window(IWindow window, IReactor<ShutDownData> shutDownReactor)
-        {
-            this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
-            this.shutDownReactor = shutDownReactor;
-
-            this.window.Initialize = OnLoad;
-            this.window.Uninitialize = OnUnload;
-            this.window.Update = OnUpdate;
-            this.window.Draw = OnDraw;
-            this.window.WinResize = OnResize;
-
-            // Set the update frequency to default value of 60
-            // just in case the IWindow implementation is not
-            this.window.UpdateFrequency = 60;
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
@@ -53,7 +29,6 @@ namespace Velaptor.UI
         protected Window(IWindow window)
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
-            this.shutDownReactor = IoC.Container.GetInstance<IReactor<ShutDownData>>();
 
             this.window.Initialize = OnLoad;
             this.window.Uninitialize = OnUnload;
@@ -208,8 +183,6 @@ namespace Velaptor.UI
         [ExcludeFromCodeCoverage]
         protected virtual void OnUnload()
         {
-            this.shutDownReactor.PushNotification(default);
-            this.shutDownReactor.Dispose();
         }
 
         /// <summary>
