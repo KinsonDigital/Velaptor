@@ -198,10 +198,12 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public void GetProgram(uint program, GLProgramParameterName pname, out int programParams)
+        public int GetProgram(uint program, GLProgramParameterName pname)
         {
             AddToGLCallStack(nameof(GetProgram));
-            this.gl.GetProgram(program, (ProgramPropertyARB)pname, out programParams);
+            this.gl.GetProgram(program, (ProgramPropertyARB)pname, out var programParams);
+
+            return programParams;
         }
 
         /// <inheritdoc/>
@@ -296,10 +298,12 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public void GetShader(uint shader, GLShaderParameter pname, out int shaderParams)
+        public int GetShader(uint shader, GLShaderParameter pname)
         {
             AddToGLCallStack(nameof(GetShader));
-            this.gl.GetShader(shader, (ShaderParameterName)pname, out shaderParams);
+            this.gl.GetShader(shader, (ShaderParameterName)pname, out var shaderParams);
+
+            return shaderParams;
         }
 
         /// <inheritdoc/>

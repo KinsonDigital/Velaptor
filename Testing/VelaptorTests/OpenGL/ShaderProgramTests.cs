@@ -64,12 +64,14 @@ namespace VelaptorTests.OpenGL
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGLService = new Mock<IOpenGLService>();
 
-            var getShaderStatusCode = 1;
-            var getProgramStatusCode = 1;
+            const int getShaderStatusCode = 1;
+            const int getProgramStatusCode = 1;
             this.mockGL.Setup(m => m.CreateShader(GLShaderType.VertexShader)).Returns(VertexShaderId);
             this.mockGL.Setup(m => m.CreateShader(GLShaderType.FragmentShader)).Returns(FragShaderId);
-            this.mockGL.Setup(m => m.GetShader(It.IsAny<uint>(), GLShaderParameter.CompileStatus, out getShaderStatusCode));
-            this.mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus, out getProgramStatusCode));
+            this.mockGL.Setup(m => m.GetShader(It.IsAny<uint>(), GLShaderParameter.CompileStatus))
+                .Returns(getShaderStatusCode);
+            this.mockGL.Setup(m => m.GetProgram(It.IsAny<uint>(), GLProgramParameterName.LinkStatus))
+                .Returns(getProgramStatusCode);
             this.mockGL.Setup(m => m.CreateProgram()).Returns(ShaderProgramId);
 
             this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
@@ -284,8 +286,9 @@ namespace VelaptorTests.OpenGL
         public void ReactorInit_WithVertexShaderCompileIssue_ThrowsException()
         {
             // Arrange
-            var statusCode = 0;
-            this.mockGL.Setup(m => m.GetShader(VertexShaderId, GLShaderParameter.CompileStatus, out statusCode));
+            const int statusCode = 0;
+            this.mockGL.Setup(m => m.GetShader(VertexShaderId, GLShaderParameter.CompileStatus))
+                .Returns(statusCode);
             this.mockGL.Setup(m => m.GetShaderInfoLog(VertexShaderId)).Returns("Vertex Shader Compile Error");
 
             CreateShaderProgram();
@@ -301,8 +304,9 @@ namespace VelaptorTests.OpenGL
         public void ReactorInit_WithFragmentShaderCompileIssue_ThrowsException()
         {
             // Arrange
-            var statusCode = 0;
-            this.mockGL.Setup(m => m.GetShader(FragShaderId, GLShaderParameter.CompileStatus, out statusCode));
+            const int statusCode = 0;
+            this.mockGL.Setup(m => m.GetShader(FragShaderId, GLShaderParameter.CompileStatus))
+                .Returns(statusCode);
             this.mockGL.Setup(m => m.GetShaderInfoLog(FragShaderId)).Returns("Fragment Shader Compile Error");
 
             CreateShaderProgram();
@@ -318,8 +322,9 @@ namespace VelaptorTests.OpenGL
         public void ReactorInit_WithProgramLinkingIssue_ThrowsException()
         {
             // Arrange
-            var statusCode = 0;
-            this.mockGL.Setup(m => m.GetProgram(ShaderProgramId, GLProgramParameterName.LinkStatus, out statusCode));
+            const int statusCode = 0;
+            this.mockGL.Setup(m => m.GetProgram(ShaderProgramId, GLProgramParameterName.LinkStatus))
+                .Returns(statusCode);
             this.mockGL.Setup(m => m.GetProgramInfoLog(ShaderProgramId)).Returns("Program Linking Error");
 
             CreateShaderProgram();

@@ -212,7 +212,7 @@ namespace VelaptorTests.OpenGL
             buffer.PrepareForUpload();
 
             // Assert
-            this.mockGL.Verify(m => m.BindVertexArray(VertexArrayId), Times.AtLeastOnce);
+            this.mockGLService.Verify(m => m.BindVAO(VertexArrayId), Times.AtLeastOnce);
         }
 
         [Fact]

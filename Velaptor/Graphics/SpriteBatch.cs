@@ -29,7 +29,7 @@ namespace Velaptor.Graphics
     {
         private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
         private readonly IGLInvoker gl;
-        private readonly IOpenGLService mockGLService;
+        private readonly IOpenGLService openGLService;
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
@@ -76,7 +76,7 @@ namespace Velaptor.Graphics
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
 
-            this.mockGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
+            this.openGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
             this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), "The parameter must not be null.");
             this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), "The parameter must not be null.");
             this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), "The parameter must not be null.");
@@ -415,7 +415,7 @@ namespace Velaptor.Graphics
                 if (!textureIsBound)
                 {
                     this.gl.ActiveTexture(GLTextureUnit.Texture0);
-                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
+                    this.openGLService.BindTexture2D(batchItem.TextureId);
                     textureIsBound = true;
                 }
 
@@ -429,9 +429,9 @@ namespace Velaptor.Graphics
             {
                 var totalElements = 6u * totalItemsToRender;
 
-                this.mockGLService.BeginGroup($"Render {totalElements} Texture Elements");
+                this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
                 this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                this.mockGLService.EndGroup();
+                this.openGLService.EndGroup();
             }
 
             // Empty the batch items
@@ -445,7 +445,7 @@ namespace Velaptor.Graphics
         {
             var fontTextureIsBound = false;
 
-            this.mockGLService.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
+            this.openGLService.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
 
             this.fontShader.Use();
 
@@ -460,12 +460,12 @@ namespace Velaptor.Graphics
                     continue;
                 }
 
-                this.mockGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+                this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
 
                 if (!fontTextureIsBound)
                 {
                     this.gl.ActiveTexture(GLTextureUnit.Texture1);
-                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
+                    this.openGLService.BindTexture2D(batchItem.TextureId);
                     fontTextureIsBound = true;
                 }
 
@@ -473,7 +473,7 @@ namespace Velaptor.Graphics
 
                 totalItemsToRender += 1;
 
-                this.mockGLService.EndGroup();
+                this.openGLService.EndGroup();
             }
 
             // Only render the amount of elements for the amount of batch items to render.
@@ -482,15 +482,15 @@ namespace Velaptor.Graphics
             {
                 var totalElements = 6u * totalItemsToRender;
 
-                this.mockGLService.BeginGroup($"Render {totalElements} Font Elements");
+                this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
                 this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                this.mockGLService.EndGroup();
+                this.openGLService.EndGroup();
             }
 
             // Empty the batch items
             this.fontBatchService.EmptyBatch();
 
-            this.mockGLService.EndGroup();
+            this.openGLService.EndGroup();
         }
 
         /// <summary>
@@ -590,24 +590,24 @@ namespace Velaptor.Graphics
                 nameof(RenderSurfaceWidth),
                 new CachedValue<uint>(
                     0,
-                    () => (uint)this.mockGLService.GetViewPortSize().Width,
+                    () => (uint)this.openGLService.GetViewPortSize().Width,
                     (value) =>
                     {
-                        var viewPortSize = this.mockGLService.GetViewPortSize();
+                        var viewPortSize = this.openGLService.GetViewPortSize();
 
-                        this.mockGLService.SetViewPortSize(new Size((int)value, viewPortSize.Height));
+                        this.openGLService.SetViewPortSize(new Size((int)value, viewPortSize.Height));
                     }));
 
             this.cachedUIntProps.Add(
                 nameof(RenderSurfaceHeight),
                 new CachedValue<uint>(
                     0,
-                    () => (uint)this.mockGLService.GetViewPortSize().Height,
+                    () => (uint)this.openGLService.GetViewPortSize().Height,
                     (value) =>
                     {
-                        var viewPortSize = this.mockGLService.GetViewPortSize();
+                        var viewPortSize = this.openGLService.GetViewPortSize();
 
-                        this.mockGLService.SetViewPortSize(new Size(viewPortSize.Width, (int)value));
+                        this.openGLService.SetViewPortSize(new Size(viewPortSize.Width, (int)value));
                     }));
 
             this.cachedClearColor = new CachedValue<Color>(

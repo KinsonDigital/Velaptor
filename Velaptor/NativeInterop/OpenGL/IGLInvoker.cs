@@ -169,8 +169,10 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     TransformFeedbackVaryings, TransformFeedbackVaryingMaxLength, GeometryVerticesOut,
         ///     GeometryInputType, and GeometryOutputType.
         /// </param>
-        /// <param name="programParams">[length: COMPSIZE(pname)] Returns the requested object parameter.</param>
-        void GetProgram(uint program, GLProgramParameterName pname, out int programParams);
+        /// <returns>
+        ///     [length: COMPSIZE(pname)] Returns the requested object parameter.
+        /// </returns>
+        int GetProgram(uint program, GLProgramParameterName pname);
 
         /// <summary>
         /// Returns parameter values of type integer.
@@ -286,8 +288,10 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     Specifies the object parameter. Accepted symbolic names are ShaderType, DeleteStatus,
         ///     CompileStatus, InfoLogLength, ShaderSourceLength.
         /// </param>
-        /// <param name="shaderParams">[length: COMPSIZE(pname)] Returns the requested object parameter.</param>
-        void GetShader(uint shader, GLShaderParameter pname, out int shaderParams);
+        /// <returns>
+        ///     [length: COMPSIZE(pname)] Returns the requested object parameter.
+        /// </returns>
+        int GetShader(uint shader, GLShaderParameter pname);
 
         /// <summary>
         /// [requires: v2.0] Returns the information log for a shader object.

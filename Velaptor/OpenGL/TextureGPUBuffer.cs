@@ -144,11 +144,11 @@ namespace Velaptor.OpenGL
             var data = quadDataItem.ToArray();
             var offset = totalBytes * batchIndex;
 
-            BindVBO();
+            OpenGLService.BindVBO(VBO);
 
             GL.BufferSubData(GLBufferTarget.ArrayBuffer, (nint)offset, totalBytes, data);
 
-            UnbindVBO();
+            OpenGLService.UnbindVBO();
 
             OpenGLService.EndGroup();
         }
@@ -161,7 +161,7 @@ namespace Velaptor.OpenGL
                 throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            BindVAO();
+            OpenGLService.BindVAO(VAO);
         }
 
         /// <inheritdoc/>

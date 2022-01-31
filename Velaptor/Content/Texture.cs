@@ -1,4 +1,4 @@
-﻿// <copyright file="Texture.cs" company="KinsonDigital">
+// <copyright file="Texture.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -150,6 +150,7 @@ namespace Velaptor.Content
             Id = this.gl.GenTexture();
 
             this.gl.BindTexture(GLTextureTarget.Texture2D, Id);
+            this.openGLService.BindTexture2D(Id);
 
             Width = imageData.Width;
             Height = imageData.Height;
@@ -158,8 +159,7 @@ namespace Velaptor.Content
 
             UploadDataToGPU(name, imageData);
 
-            // Unbind
-            this.gl.BindTexture(GLTextureTarget.Texture2D, 0);
+            this.openGLService.UnbindTexture2D();
         }
 
         /// <summary>
