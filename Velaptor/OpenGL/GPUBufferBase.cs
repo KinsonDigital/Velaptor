@@ -23,8 +23,6 @@ namespace Velaptor.OpenGL
     {
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
-        private uint vao; // Vertex Array Object
-        private uint vbo; // Vertex Buffer Object
         private uint ebo; // Element Buffer Object
         private uint[] indices = Array.Empty<uint>();
         private bool isDisposed;
@@ -106,6 +104,16 @@ namespace Velaptor.OpenGL
         private protected IOpenGLService OpenGLService { get; }
 
         /// <summary>
+        /// Gets the ID of the vertex array object.
+        /// </summary>
+        private protected uint VAO { get; private set; }
+
+        /// <summary>
+        /// Gets the ID of the vertex buffer object.
+        /// </summary>
+        private protected uint VBO { get; private set; }
+
+        /// <summary>
         /// Updates GPU buffer with the given <paramref name="data"/> at the given <paramref name="batchIndex"/>.
         /// </summary>
         /// <param name="data">The data to send to the GPU.</param>
@@ -150,62 +158,21 @@ namespace Velaptor.OpenGL
         protected internal abstract uint[] GenerateIndices();
 
         /// <summary>
-        /// Binds a vertex buffer object for updating buffer data in OpenGL.
-        /// </summary>
-        protected void BindVBO() => GL.BindBuffer(GLBufferTarget.ArrayBuffer, this.vbo);
-
-        /// <summary>
-        /// Unbinds the current vertex buffer object if one is currently bound.
-        /// </summary>
-        protected void UnbindVBO() => GL.BindBuffer(GLBufferTarget.ArrayBuffer, 0);
-
-        /// <summary>
-        /// Binds an element buffer object for updating element data in OpenGL.
-        /// </summary>
-        /// <summary>
-        ///     This is also called an IBO (Index Buffer Object).
-        /// </summary>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        protected void BindEBO() => GL.BindBuffer(GLBufferTarget.ElementArrayBuffer, this.ebo);
-
-        /// <summary>
-        /// Unbinds the element array buffer object if one is currently bound.
-        /// </summary>
-        /// <remarks>
-        /// NOTE: Make sure to unbind AFTER you unbind the VAO.  This is because the EBO is stored
-        /// inside of the VAO.  Unbinding the EBO before unbinding, (or without unbinding the VAO),
-        /// you are telling OpenGL that you don't want your VAO to use the EBO.
-        /// </remarks>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        protected void UnbindEBO() => GL.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
-
-        /// <summary>
-        /// Binds the element array buffer object for updating vertex buffer data in OpenGL.
-        /// </summary>
-        protected void BindVAO() => GL.BindVertexArray(this.vao);
-
-        /// <summary>
-        /// Unbinds the current element array buffer that is currently bound if one is currently bound.
-        /// </summary>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        protected void UnbindVAO() => GL.BindVertexArray(0); // Unbind the VAO
-
-        /// <summary>
         /// Initializes the GPU buffer.
         /// </summary>
         private void Init()
         {
             // Generate the VAO and VBO with only 1 object each
-            this.vao = GL.GenVertexArray();
-            BindVAO();
-            OpenGLService.LabelVertexArray(this.vao, Name);
+            VAO = GL.GenVertexArray();
+            OpenGLService.BindVAO(VAO);
+            OpenGLService.LabelVertexArray(VAO, Name);
 
-            this.vbo = GL.GenBuffer();
-            BindVBO();
-            OpenGLService.LabelBuffer(this.vbo, Name, BufferType.VertexBufferObject);
+            VBO = GL.GenBuffer();
+            OpenGLService.BindVBO(VBO);
+            OpenGLService.LabelBuffer(VBO, Name, BufferType.VertexBufferObject);
 
             this.ebo = GL.GenBuffer();
-            BindEBO();
+            OpenGLService.BindEBO(this.ebo);
             OpenGLService.LabelBuffer(this.ebo, Name, BufferType.IndexArrayObject);
 
             OpenGLService.BeginGroup($"Setup {Name} Data");
@@ -229,9 +196,9 @@ namespace Velaptor.OpenGL
 
             SetupVAO();
 
-            UnbindVBO();
-            UnbindVAO();
-            UnbindEBO();
+            OpenGLService.UnbindVBO();
+            OpenGLService.UnbindVAO();
+            OpenGLService.UnbindEBO();
             OpenGLService.EndGroup();
         }
 
@@ -285,8 +252,8 @@ namespace Velaptor.OpenGL
                 return;
             }
 
-            GL.DeleteVertexArray(this.vao);
-            GL.DeleteBuffer(this.vbo);
+            GL.DeleteVertexArray(VAO);
+            GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(this.ebo);
 
             this.glInitUnsubscriber.Dispose();

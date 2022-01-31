@@ -49,9 +49,10 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Setup(m => m.CreateProgram()).Returns(shaderId);
             this.mockGL.Setup(m => m.GetUniformLocation(shaderId, "mainTexture"))
                 .Returns(uniformLocation);
-            var status = 1;
+            const int status = 1;
             this.mockGL.Setup(m
-                => m.GetProgram(shaderId, GLProgramParameterName.LinkStatus, out status));
+                    => m.GetProgram(shaderId, GLProgramParameterName.LinkStatus))
+                .Returns(status);
 
             this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
                 .Returns(this.mockGLInitUnsubscriber.Object)

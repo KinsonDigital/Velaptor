@@ -176,8 +176,8 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockGL.Verify(m => m.GenVertexArray(), Times.Once);
-            this.mockGL.Verify(m => m.BindVertexArray(VertexArrayId), Times.Once);
-            this.mockGL.Verify(m => m.BindVertexArray(0), Times.Once);
+            this.mockGLService.Verify(m => m.BindVAO(VertexArrayId), Times.Once);
+            this.mockGLService.Verify(m => m.UnbindVAO(), Times.Once);
             this.mockGLService.Verify(m => m.LabelVertexArray(VertexArrayId, BufferName));
         }
 
@@ -193,8 +193,8 @@ namespace VelaptorTests.OpenGL
             // Assert
             // These are all invoked once per quad
             this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
-            this.mockGL.Verify(m => m.BindBuffer(GLBufferTarget.ArrayBuffer, VertexBufferId), Times.Once);
-            this.mockGL.Verify(m => m.BindBuffer(GLBufferTarget.ArrayBuffer, 0), Times.Once);
+            this.mockGLService.Verify(m => m.BindVBO(VertexBufferId), Times.Once);
+            this.mockGLService.Verify(m => m.UnbindVBO(), Times.Once);
             this.mockGLService.Verify(m => m.LabelBuffer(VertexBufferId, BufferName, BufferType.VertexBufferObject));
         }
 
@@ -210,8 +210,8 @@ namespace VelaptorTests.OpenGL
             // Assert
             // First invoke is done creating the Vertex Buffer, the second is the index buffer
             this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
-            this.mockGL.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, IndexBufferId), Times.Once);
-            this.mockGL.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0), Times.Once);
+            this.mockGLService.Verify(m => m.BindEBO(IndexBufferId), Times.Once);
+            this.mockGLService.Verify(m => m.UnbindEBO(), Times.Once);
             this.mockGLService.Verify(m => m.LabelBuffer(IndexBufferId, BufferName, BufferType.IndexArrayObject));
         }
 

@@ -5,7 +5,6 @@
 namespace Velaptor.NativeInterop.OpenGL
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
     using Velaptor.OpenGL;
@@ -13,7 +12,6 @@ namespace Velaptor.NativeInterop.OpenGL
     /// <summary>
     /// Provides OpenGL helper methods to improve OpenGL related operations.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     internal class OpenGLService : IOpenGLService
     {
         private readonly IGLInvoker glInvoker;
@@ -73,17 +71,41 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public bool LinkProgramSuccess(uint program)
+        public void BindVBO(uint vbo) => this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, vbo);
+
+        /// <inheritdoc/>
+        public void UnbindVBO() => this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, 0u);
+
+        /// <inheritdoc/>
+        public void BindEBO(uint ebo) => this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, ebo);
+
+        /// <inheritdoc/>
+        public void UnbindEBO() => this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
+
+        /// <inheritdoc/>
+        public void BindVAO(uint vao) => this.glInvoker.BindVertexArray(vao);
+
+        /// <inheritdoc/>
+        public void UnbindVAO() => this.glInvoker.BindVertexArray(0);
+
+        /// <inheritdoc/>
+        public void BindTexture2D(uint textureId) => this.glInvoker.BindTexture(GLTextureTarget.Texture2D, textureId);
+
+        /// <inheritdoc/>
+        public void UnbindTexture2D() => this.glInvoker.BindTexture(GLTextureTarget.Texture2D, 0u);
+
+        /// <inheritdoc/>
+        public bool ProgramLinkedSuccessfully(uint programId)
         {
-            this.glInvoker.GetProgram(program, GLProgramParameterName.LinkStatus, out var programParams);
+            var programParams = this.glInvoker.GetProgram(programId, GLProgramParameterName.LinkStatus);
 
             return programParams >= 1;
         }
 
         /// <inheritdoc/>
-        public bool ShaderCompileSuccess(uint shaderId)
+        public bool ShaderCompiledSuccessfully(uint shaderId)
         {
-            this.glInvoker.GetShader(shaderId, GLShaderParameter.CompileStatus, out var shaderParams);
+            var shaderParams = this.glInvoker.GetShader(shaderId, GLShaderParameter.CompileStatus);
 
             return shaderParams >= 1;
         }

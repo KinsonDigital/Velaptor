@@ -223,6 +223,9 @@ namespace VelaptorTests.Content
                 GLPixelFormat.Rgba,
                 GLPixelType.UnsignedByte,
                 expectedPixelArray), Times.Once());
+
+            this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
+            this.mockGLService.Verify(m => m.UnbindTexture2D(), Times.Once);
         }
         #endregion
 
