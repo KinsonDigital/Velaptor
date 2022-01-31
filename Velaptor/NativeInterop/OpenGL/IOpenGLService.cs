@@ -13,6 +13,39 @@ namespace Velaptor.NativeInterop.OpenGL
     /// </summary>
     internal interface IOpenGLService
     {
+        // ReSharper disable CommentTypo
+
+        /// <summary>
+        /// Gets a value indicating whether or not a VBO is bound.
+        /// </summary>
+        /// <remarks>
+        ///     VBO stands for (V)ertex (B)uffer (O)bject.
+        /// </remarks>
+        // ReSharper restore CommentTypo
+        bool IsVBOBound { get; }
+
+        // ReSharper disable CommentTypo
+
+        /// <summary>
+        /// Gets a value indicating whether or not an EBO is bound.
+        /// </summary>
+        /// <remarks>
+        ///     EBO stands for (E)lement (B)uffer (O)bject.
+        /// </remarks>
+        // ReSharper restore CommentTypo
+        bool IsEBOBound { get; }
+
+        // ReSharper disable CommentTypo
+
+        /// <summary>
+        /// Gets a value indicating whether or not a VAO is bound.
+        /// </summary>
+        /// <remarks>
+        ///     VAO stands for (V)ertex (A)rray (O)object
+        /// </remarks>
+        // ReSharper restore CommentTypo
+        bool IsVAOBound { get; }
+
         /// <summary>
         /// Gets the size of the viewport.
         /// </summary>
