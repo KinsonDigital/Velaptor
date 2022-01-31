@@ -15,9 +15,9 @@ namespace Velaptor.Graphics
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using NETRect = System.Drawing.Rectangle;
     using NETSizeF = System.Drawing.SizeF;

@@ -14,8 +14,8 @@ namespace Velaptor.OpenGL
     using Velaptor.Content;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using Velaptor.UI;
     using VelaptorMouseButton = Velaptor.Input.MouseButton; // TODO: Need to normalize these 2 enums and figure out which one to use if any at all

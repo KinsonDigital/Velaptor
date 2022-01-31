@@ -13,8 +13,8 @@ namespace VelaptorTests.Content.Caching
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Graphics;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;

@@ -5,9 +5,9 @@
 namespace VelaptorTests.Observables
 {
     using Moq;
-    using Velaptor.Observables;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Xunit;
 
     /// <summary>

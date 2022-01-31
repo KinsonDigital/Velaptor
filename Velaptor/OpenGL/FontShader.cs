@@ -7,9 +7,9 @@ namespace Velaptor.OpenGL
     // ReSharper disable RedundantNameQualifier
     using System;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL.Services;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 

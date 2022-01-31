@@ -13,8 +13,8 @@ namespace Velaptor.OpenGL
     using Silk.NET.Windowing;
     using Velaptor.Input;
     using Velaptor.Input.Exceptions;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
     using VelaptorMouseButton = Velaptor.Input.MouseButton;
     using VelaptorWindowBorder = Velaptor.WindowBorder;

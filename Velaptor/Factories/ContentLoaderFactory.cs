@@ -12,8 +12,8 @@ namespace Velaptor.Factories
     using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 

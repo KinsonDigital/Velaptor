@@ -13,9 +13,9 @@ namespace Velaptor.OpenGL
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL.Exceptions;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using NETRect = System.Drawing.Rectangle;
 
     // ReSharper restore RedundantNameQualifier

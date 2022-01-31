@@ -8,11 +8,11 @@ namespace VelaptorTests.OpenGL
     using System.Collections.Generic;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.OpenGL.Services;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
     using Xunit;

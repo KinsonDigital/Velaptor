@@ -5,7 +5,7 @@
 namespace VelaptorTests.Fakes
 {
     using System;
-    using Velaptor.Observables.Core;
+    using Velaptor.Reactables.Core;
 
     /// <summary>
     /// Used for testing the abstract <see cref="Reactable{TData}"/> class.

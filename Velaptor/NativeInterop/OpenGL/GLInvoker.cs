@@ -12,10 +12,10 @@ namespace Velaptor.NativeInterop.OpenGL
     using System.Runtime.InteropServices;
     using Silk.NET.OpenGL;
     using Silk.NET.Windowing;
-    using Velaptor.Observables;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 

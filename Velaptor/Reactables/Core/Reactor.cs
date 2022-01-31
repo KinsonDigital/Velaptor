@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Observables.Core
+namespace Velaptor.Reactables.Core
 {
     using System;
 

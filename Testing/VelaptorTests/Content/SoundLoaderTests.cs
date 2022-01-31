@@ -9,8 +9,8 @@ namespace VelaptorTests.Content
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Factories;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using VelaptorTests.Helpers;
     using Xunit;
 

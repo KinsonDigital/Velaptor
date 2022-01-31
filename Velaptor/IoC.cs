@@ -21,11 +21,11 @@ namespace Velaptor
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using Velaptor.Reactables;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier

@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Observables
+namespace Velaptor.Reactables
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 

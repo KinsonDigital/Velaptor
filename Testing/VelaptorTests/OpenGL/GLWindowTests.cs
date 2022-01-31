@@ -12,9 +12,9 @@ namespace VelaptorTests.OpenGL
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;

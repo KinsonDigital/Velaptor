@@ -1,26 +1,31 @@
-﻿// <copyright file="OpenGLContextReactable.cs" company="KinsonDigital">
+﻿// <copyright file="RemoveBatchItemReactable.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Observables
+namespace Velaptor.Reactables
 {
     // ReSharper disable RedundantNameQualifier
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using System.Diagnostics.CodeAnalysis;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Creates a reactable to send push notifications of OpenGL events.
+    /// Creates a reactable to send push notifications to remove items from a batching service.
     /// </summary>
-    internal class OpenGLContextReactable : Reactable<GLContextData>
+    internal class RemoveBatchItemReactable : Reactable<RemoveBatchItemData>
     {
         /// <summary>
-        /// Sends a push notification that the OpenGL context has been created.
+        /// Sends a push notification to remove a batch item.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
         /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the reactors after the notification has been pushed.</param>
-        public override void PushNotification(GLContextData data, bool unsubscribeAfterProcessing = false)
+        [SuppressMessage(
+            "ReSharper",
+            "ForCanBeConvertedToForeach",
+            Justification = "Required for proper reactable operation.")]
+        public override void PushNotification(RemoveBatchItemData data, bool unsubscribeAfterProcessing = false)
         {
             /* Work from the end to the beginning of the list
                just in case the reactable is disposed(removed)

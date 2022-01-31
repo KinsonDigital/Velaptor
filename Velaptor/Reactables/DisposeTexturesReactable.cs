@@ -1,23 +1,23 @@
-﻿// <copyright file="RemoveBatchItemReactable.cs" company="KinsonDigital">
+﻿// <copyright file="DisposeTexturesReactable.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Observables
+namespace Velaptor.Reactables
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Creates a reactable to send push notifications to remove items from a batching service.
+    /// Creates a reactable to send push notifications to signal a texture needs to be disposed.
     /// </summary>
-    internal class RemoveBatchItemReactable : Reactable<RemoveBatchItemData>
+    internal class DisposeTexturesReactable : Reactable<DisposeTextureData>
     {
         /// <summary>
-        /// Sends a push notification to remove a batch item.
+        /// Sends a push notification to dispose of a texture.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
         /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the reactors after the notification has been pushed.</param>
@@ -25,7 +25,7 @@ namespace Velaptor.Observables
             "ReSharper",
             "ForCanBeConvertedToForeach",
             Justification = "Required for proper reactable operation.")]
-        public override void PushNotification(RemoveBatchItemData data, bool unsubscribeAfterProcessing = false)
+        public override void PushNotification(DisposeTextureData data, bool unsubscribeAfterProcessing = false)
         {
             /* Work from the end to the beginning of the list
                just in case the reactable is disposed(removed)

@@ -4,7 +4,7 @@
 
 namespace VelaptorTests.Observables.Core
 {
-    using Velaptor.Observables.Core;
+    using Velaptor.Reactables.Core;
     using VelaptorTests.Fakes;
     using Xunit;
 

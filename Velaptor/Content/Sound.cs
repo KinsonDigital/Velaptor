@@ -9,8 +9,8 @@ namespace Velaptor.Content
     using System.Diagnostics.CodeAnalysis;
     using CASL;
     using Velaptor.Content.Factories;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using CASLSound = CASL.Sound;
 
     // ReSharper restore RedundantNameQualifier

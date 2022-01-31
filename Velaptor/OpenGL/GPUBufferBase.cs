@@ -8,8 +8,8 @@ namespace Velaptor.OpenGL
     using System;
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using NETSizeF = System.Drawing.SizeF;
 
     // ReSharper restore RedundantNameQualifier

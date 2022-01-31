@@ -11,8 +11,8 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 

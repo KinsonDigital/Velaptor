@@ -5,10 +5,10 @@
 namespace VelaptorTests.Fakes
 {
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
-    using Velaptor.Observables.ObservableData;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     /// <summary>
     /// Used to test the abstract class <see cref="ShaderProgram"/>.

@@ -6,7 +6,7 @@ namespace VelaptorTests.Observables.Core
 {
     using System;
     using Moq;
-    using Velaptor.Observables.Core;
+    using Velaptor.Reactables.Core;
     using VelaptorTests.Helpers;
     using Xunit;
 
