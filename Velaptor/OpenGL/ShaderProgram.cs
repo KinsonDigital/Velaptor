@@ -101,7 +101,7 @@ namespace Velaptor.OpenGL
         private protected IGLInvoker GL { get; }
 
         /// <summary>
-        /// Gets the invoker that contains helper methods for simplified OpenGL function calls.
+        /// Gets the OpenGL service that provides helper methods for OpenGL related operations.
         /// </summary>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Intended to be available in classes inheriting this class.")]
         private protected IOpenGLService OpenGLService { get; }
