@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLService.cs" company="KinsonDigital">
+// <copyright file="OpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -75,7 +75,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc/>
         public bool LinkProgramSuccess(uint program)
         {
-            this.glInvoker.GetProgram(program, GLProgramParameterName.LinkStatus, out var programParams);
+            var programParams = this.glInvoker.GetProgram(programId, GLProgramParameterName.LinkStatus);
 
             return programParams >= 1;
         }
@@ -83,7 +83,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc/>
         public bool ShaderCompileSuccess(uint shaderId)
         {
-            this.glInvoker.GetShader(shaderId, GLShaderParameter.CompileStatus, out var shaderParams);
+            var shaderParams = this.glInvoker.GetShader(shaderId, GLShaderParameter.CompileStatus);
 
             return shaderParams >= 1;
         }

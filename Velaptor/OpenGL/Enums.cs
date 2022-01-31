@@ -29,7 +29,7 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// Specifies the program parameter.
     /// <para>
-    ///     Used for the OpenGL function <see cref="IGLInvoker.GetProgram(uint, GLProgramParameterName, out int)"/>.
+    ///     Used for the OpenGL function <see cref="IGLInvoker.GetProgram(uint, GLProgramParameterName)"/>.
     /// </para>
     /// </summary>
     internal enum GLProgramParameterName
@@ -43,7 +43,7 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// Specifies the shader parameter.
     /// <para>
-    ///     Used for the OpenGL function <see cref="IGLInvoker.GetShader(uint, GLShaderParameter, out int)"/>.
+    ///     Used for the OpenGL function <see cref="IGLInvoker.GetShader(uint, GLShaderParameter)"/>.
     /// </para>
     /// </summary>
     internal enum GLShaderParameter

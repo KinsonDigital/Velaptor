@@ -211,7 +211,7 @@ namespace Velaptor.OpenGL
 
             // Link and check for for errors.
             GL.LinkProgram(ShaderId);
-            GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus, out var status);
+            var status = GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus);
             if (status == 0)
             {
                 throw new Exception($"Error linking shader with ID '{ShaderId}'\n{GL.GetProgramInfoLog(ShaderId)}");
