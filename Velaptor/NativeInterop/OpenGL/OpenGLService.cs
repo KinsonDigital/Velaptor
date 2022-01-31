@@ -1,11 +1,10 @@
-// <copyright file="OpenGLService.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.NativeInterop.OpenGL
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
     using Velaptor.OpenGL;
@@ -13,7 +12,6 @@ namespace Velaptor.NativeInterop.OpenGL
     /// <summary>
     /// Provides OpenGL helper methods to improve OpenGL related operations.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     internal class OpenGLService : IOpenGLService
     {
         private readonly IGLInvoker glInvoker;

@@ -288,9 +288,9 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     Specifies the object parameter. Accepted symbolic names are ShaderType, DeleteStatus,
         ///     CompileStatus, InfoLogLength, ShaderSourceLength.
         /// </param>
-        /// <summary>
+        /// <returns>
         ///     [length: COMPSIZE(pname)] Returns the requested object parameter.
-        /// </summary>
+        /// </returns>
         int GetShader(uint shader, GLShaderParameter pname);
 
         /// <summary>
