@@ -32,7 +32,7 @@ namespace VelaptorTests.OpenGL
         private const uint DefaultBatchSize = 0u;
         private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IDisposable> mockGLInitReactorUnsubscriber;
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
@@ -62,7 +62,7 @@ namespace VelaptorTests.OpenGL
                         .Returns(() => FragShaderSrc);
 
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLService = new Mock<IOpenGLService>();
 
             var getShaderStatusCode = 1;
             var getProgramStatusCode = 1;
@@ -99,7 +99,7 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new ShaderProgramFake(
                     null,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockShaderLoader.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
@@ -107,7 +107,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Ctor_WithNullGLExtensionsParam_ThrowsException()
+        public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -118,7 +118,7 @@ namespace VelaptorTests.OpenGL
                     this.mockShaderLoader.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'glExtensions')");
+            }, "The parameter must not be null. (Parameter 'openGLService')");
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new ShaderProgramFake(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     null,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
@@ -144,7 +144,7 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new ShaderProgramFake(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockShaderLoader.Object,
                     null,
                     this.mockShutDownReactable.Object);
@@ -159,7 +159,7 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new ShaderProgramFake(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockShaderLoader.Object,
                     this.mockGLInitReactable.Object,
                     null);
@@ -396,7 +396,7 @@ namespace VelaptorTests.OpenGL
         private ShaderProgramFake CreateShaderProgram()
             => new (
                 this.mockGL.Object,
-                this.mockGLExtensions.Object,
+                this.mockGLService.Object,
                 this.mockShaderLoader.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object);

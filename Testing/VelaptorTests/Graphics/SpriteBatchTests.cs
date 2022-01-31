@@ -35,7 +35,7 @@ namespace VelaptorTests.Graphics
         private const char InvalidCharacter = '□';
         private readonly string batchTestDataDirPath = @$"{RootRelativeTestDataDirPath}BatchItemTestData\";
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IShaderProgram> mockTextureShader;
         private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockTextureBuffer;
         private readonly Mock<IBatchManagerService<SpriteBatchItem>> mockTextureBatchService;
@@ -65,10 +65,10 @@ namespace VelaptorTests.Graphics
         {
             this.mockGL = new Mock<IGLInvoker>();
 
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
-            this.mockGLExtensions.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLExtensions.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
+            this.mockGLService = new Mock<IOpenGLService>();
+            this.mockGLService.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLService.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
 
             this.mockTextureShader = new Mock<IShaderProgram>();
             this.mockTextureShader.SetupGet(p => p.ShaderId).Returns(TextureShaderId);
@@ -122,7 +122,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     null,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -142,7 +142,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     null,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -162,7 +162,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockTextureShader.Object,
                     null,
                     this.mockTextureBuffer.Object,
@@ -182,7 +182,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     null,
@@ -202,7 +202,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -222,7 +222,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -242,7 +242,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -262,7 +262,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -282,7 +282,7 @@ namespace VelaptorTests.Graphics
             {
                 var unused = new SpriteBatch(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockTextureShader.Object,
                     this.mockFontShader.Object,
                     this.mockTextureBuffer.Object,
@@ -313,7 +313,7 @@ namespace VelaptorTests.Graphics
         public void Width_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
+            this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
 
@@ -322,15 +322,15 @@ namespace VelaptorTests.Graphics
             _ = batch.RenderSurfaceWidth;
 
             // Assert
-            this.mockGLExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
-            this.mockGLExtensions.Verify(m => m.SetViewPortSize(new Size(100, 22)), Times.Once());
+            this.mockGLService.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGLService.Verify(m => m.SetViewPortSize(new Size(100, 22)), Times.Once());
         }
 
         [Fact]
         public void Height_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
         {
             // Arrange
-            this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
+            this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
 
@@ -339,8 +339,8 @@ namespace VelaptorTests.Graphics
             _ = batch.RenderSurfaceHeight;
 
             // Assert
-            this.mockGLExtensions.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
-            this.mockGLExtensions.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
+            this.mockGLService.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
+            this.mockGLService.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
         }
 
         [Fact]
@@ -638,7 +638,7 @@ namespace VelaptorTests.Graphics
                 It.IsAny<RenderEffects>());
 
             // Assert
-            this.mockGLExtensions.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
+            this.mockGLService.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
             this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
@@ -1307,7 +1307,7 @@ namespace VelaptorTests.Graphics
         {
             var result = new SpriteBatch(
                 this.mockGL.Object,
-                this.mockGLExtensions.Object,
+                this.mockGLService.Object,
                 this.mockTextureShader.Object,
                 this.mockFontShader.Object,
                 this.mockTextureBuffer.Object,

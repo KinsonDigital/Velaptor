@@ -22,7 +22,7 @@ namespace VelaptorTests.OpenGL
         private const uint VertexBufferId = 222;
         private const uint IndexBufferId = 333;
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
         private IReactor<GLInitData>? glInitReactor;
@@ -53,7 +53,7 @@ namespace VelaptorTests.OpenGL
                 return IndexBufferId;
             });
 
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLService = new Mock<IOpenGLService>();
 
             this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
             this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
@@ -151,8 +151,8 @@ namespace VelaptorTests.OpenGL
             buffer.UploadVertexData(batchItem, 0u);
 
             // Assert
-            this.mockGLExtensions.Verify(m => m.BeginGroup("Update Font Quad - BatchItem(0)"), Times.Once);
-            this.mockGLExtensions.Verify(m => m.EndGroup(), Times.Exactly(5));
+            this.mockGLService.Verify(m => m.BeginGroup("Update Font Quad - BatchItem(0)"), Times.Once);
+            this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(5));
         }
 
         [Fact]
@@ -265,7 +265,7 @@ namespace VelaptorTests.OpenGL
             this.glInitReactor.OnNext(default);
 
             // Assert
-            this.mockGLExtensions.Verify(m => m.BeginGroup("Setup Font Buffer Vertex Attributes"), Times.Once);
+            this.mockGLService.Verify(m => m.BeginGroup("Setup Font Buffer Vertex Attributes"), Times.Once);
 
             // Assert Vertex Position Attribute
             this.mockGL.Verify(m
@@ -282,7 +282,7 @@ namespace VelaptorTests.OpenGL
                 => m.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, 32, 16), Times.Once);
             this.mockGL.Verify(m => m.EnableVertexAttribArray(2));
 
-            this.mockGLExtensions.Verify(m => m.EndGroup(), Times.Exactly(4));
+            this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(4));
         }
 
         [Fact]
@@ -305,7 +305,7 @@ namespace VelaptorTests.OpenGL
         /// <returns>The instance to test.</returns>
         private FontGPUBuffer CreateBuffer() => new (
             this.mockGL.Object,
-            this.mockGLExtensions.Object,
+            this.mockGLService.Object,
             this.mockGLInitReactable.Object,
             this.mockShutDownReactable.Object);
     }

@@ -26,7 +26,7 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="TextureShader"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
+        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="shaderLoaderService">Loads GLSL shader source code.</param>
         /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
@@ -35,11 +35,11 @@ namespace Velaptor.OpenGL
         /// </exception>
         public TextureShader(
             IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
+            IOpenGLService openGLService,
             IShaderLoaderService<uint> shaderLoaderService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
-            : base(gl, glExtensions, shaderLoaderService, glInitReactable, shutDownReactable)
+            : base(gl, openGLService, shaderLoaderService, glInitReactable, shutDownReactable)
         {
         }
 

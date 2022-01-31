@@ -93,7 +93,7 @@ namespace Velaptor
             IoCContainer.Register<IPlatform, Platform>(Lifestyle.Singleton);
 
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IGLInvokerExtensions, GLInvokerExtensions>(Lifestyle.Singleton);
+            IoCContainer.Register<IOpenGLService, OpenGLService>(Lifestyle.Singleton);
 
             IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
 

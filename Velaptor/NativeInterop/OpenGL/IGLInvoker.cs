@@ -8,7 +8,7 @@ namespace Velaptor.NativeInterop.OpenGL
     using System.Numerics;
     using Velaptor.OpenGL;
 
-    // TODO: Create an OpenGL extension methods for binding and unbinding various buffers
+    // TODO: Create an OpenGLService method for binding and unbinding various buffers
     // Example: BindVBO() - This would call the raw GL function with the proper parameters to bind the buffer.
     // Once these are created, the bind and unbind calls in the GPUBufferBase class can be removed and just used directly.
 

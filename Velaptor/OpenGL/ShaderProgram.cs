@@ -30,7 +30,7 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
+        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
         /// <param name="glInitReactable">Initializes the shader once it receives a notification.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
@@ -39,13 +39,13 @@ namespace Velaptor.OpenGL
         /// </exception>
         internal ShaderProgram(
             IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
+            IOpenGLService openGLService,
             IShaderLoaderService<uint> shaderLoaderService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-            GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+            OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
             this.shaderLoaderService = shaderLoaderService ?? throw new ArgumentNullException(nameof(shaderLoaderService), "The parameter must not be null.");
 
             if (glInitReactable is null)
@@ -104,7 +104,7 @@ namespace Velaptor.OpenGL
         /// Gets the invoker that contains helper methods for simplified OpenGL function calls.
         /// </summary>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Intended to be available in classes inheriting this class.")]
-        private protected IGLInvokerExtensions GLExtensions { get; }
+        private protected IOpenGLService OpenGLService { get; }
 
         /// <summary>
         /// <inheritdoc cref="IShaderProgram.Use"/>
@@ -151,12 +151,12 @@ namespace Velaptor.OpenGL
                 return;
             }
 
-            GLExtensions.BeginGroup($"Load {Name} Vertex Shader");
+            OpenGLService.BeginGroup($"Load {Name} Vertex Shader");
 
             var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
             var vertShaderId = GL.CreateShader(GLShaderType.VertexShader);
 
-            GLExtensions.LabelShader(vertShaderId, $"{Name} Vertex Shader");
+            OpenGLService.LabelShader(vertShaderId, $"{Name} Vertex Shader");
 
             GL.ShaderSource(vertShaderId, vertShaderSrc);
             GL.CompileShader(vertShaderId);
@@ -169,14 +169,14 @@ namespace Velaptor.OpenGL
                 throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.\n{infoLog}");
             }
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
 
-            GLExtensions.BeginGroup($"Load {Name} Fragment Shader");
+            OpenGLService.BeginGroup($"Load {Name} Fragment Shader");
 
             var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
             var fragShaderId = GL.CreateShader(GLShaderType.FragmentShader);
 
-            GLExtensions.LabelShader(fragShaderId, $"{Name} Fragment Shader");
+            OpenGLService.LabelShader(fragShaderId, $"{Name} Fragment Shader");
 
             GL.ShaderSource(fragShaderId, fragShaderSrc);
             GL.CompileShader(fragShaderId);
@@ -189,7 +189,7 @@ namespace Velaptor.OpenGL
                 throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.\n{infoLog}");
             }
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
 
             CreateProgram(Name, vertShaderId, fragShaderId);
             CleanShadersIfReady(Name, vertShaderId, fragShaderId);
@@ -199,12 +199,12 @@ namespace Velaptor.OpenGL
 
         private void CreateProgram(string shaderName, uint vertShaderId, uint fragShaderId)
         {
-            GLExtensions.BeginGroup($"Create {shaderName} Shader Program");
+            OpenGLService.BeginGroup($"Create {shaderName} Shader Program");
 
             // Combining the shaders under one shader program.
             ShaderId = GL.CreateProgram();
 
-            GLExtensions.LabelShaderProgram(ShaderId, $"{shaderName} Shader Program");
+            OpenGLService.LabelShaderProgram(ShaderId, $"{shaderName} Shader Program");
 
             GL.AttachShader(ShaderId, vertShaderId);
             GL.AttachShader(ShaderId, fragShaderId);
@@ -217,25 +217,25 @@ namespace Velaptor.OpenGL
                 throw new Exception($"Error linking shader with ID '{ShaderId}'\n{GL.GetProgramInfoLog(ShaderId)}");
             }
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
         }
 
         private void CleanShadersIfReady(string name, uint vertShaderId, uint fragShaderId)
         {
-            GLExtensions.BeginGroup($"Clean Up {name} Vertex Shader");
+            OpenGLService.BeginGroup($"Clean Up {name} Vertex Shader");
 
             GL.DetachShader(ShaderId, vertShaderId);
             GL.DeleteShader(vertShaderId);
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
 
-            GLExtensions.BeginGroup($"Clean Up {name} Fragment Shader");
+            OpenGLService.BeginGroup($"Clean Up {name} Fragment Shader");
 
             // Delete the no longer useful individual shaders
             GL.DetachShader(ShaderId, fragShaderId);
             GL.DeleteShader(fragShaderId);
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
         }
 
         private void ProcessCustomAttributes()

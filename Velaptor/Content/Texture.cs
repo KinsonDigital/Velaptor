@@ -22,7 +22,7 @@ namespace Velaptor.Content
     public sealed class Texture : ITexture
     {
         private readonly IGLInvoker gl;
-        private readonly IGLInvokerExtensions glExtensions;
+        private readonly IOpenGLService openGLService;
         private readonly IDisposable disposeUnsubscriber;
         private bool isDisposed;
 
@@ -37,7 +37,7 @@ namespace Velaptor.Content
         public Texture(string name, string filePath, ImageData imageData)
         {
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
-            this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            this.openGLService = IoC.Container.GetInstance<IOpenGLService>();
 
             var disposeReactor = IoC.Container.GetInstance<IReactable<DisposeTextureData>>();
 
@@ -56,21 +56,21 @@ namespace Velaptor.Content
         /// Initializes a new instance of the <see cref="Texture"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
+        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="disposeTexturesReactable">Sends a push notification to dispose of a texture.</param>
         /// <param name="name">The name of the texture.</param>
         /// <param name="filePath">The file path to the image file.</param>
         /// <param name="imageData">The image data of the texture.</param>
         internal Texture(
             IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
+            IOpenGLService openGLService,
             IReactable<DisposeTextureData> disposeTexturesReactable,
             string name,
             string filePath,
             ImageData imageData)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-            this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+            this.openGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
 
             if (disposeTexturesReactable is null)
             {
@@ -191,7 +191,7 @@ namespace Velaptor.Content
                 rowBytes.Clear();
             }
 
-            this.glExtensions.LabelTexture(Id, name);
+            this.openGLService.LabelTexture(Id, name);
 
             // Set the min and mag filters to linear
             this.gl.TexParameter(

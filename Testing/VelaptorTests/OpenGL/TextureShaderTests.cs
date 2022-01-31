@@ -19,7 +19,7 @@ namespace VelaptorTests.OpenGL
     public class TextureShaderTests
     {
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
@@ -31,7 +31,7 @@ namespace VelaptorTests.OpenGL
         public TextureShaderTests()
         {
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLService = new Mock<IOpenGLService>();
             this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
             this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
@@ -67,7 +67,7 @@ namespace VelaptorTests.OpenGL
 
             var shader = new TextureShader(
                 this.mockGL.Object,
-                this.mockGLExtensions.Object,
+                this.mockGLService.Object,
                 this.mockShaderLoader.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object);

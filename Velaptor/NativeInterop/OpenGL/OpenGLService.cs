@@ -1,4 +1,4 @@
-﻿// <copyright file="GLInvokerExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,18 +11,18 @@ namespace Velaptor.NativeInterop.OpenGL
     using Velaptor.OpenGL;
 
     /// <summary>
-    /// Provides extensions/helper methods to improve OpenGL related functionality.
+    /// Provides OpenGL helper methods to improve OpenGL related operations.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class GLInvokerExtensions : IGLInvokerExtensions
+    internal class OpenGLService : IOpenGLService
     {
         private readonly IGLInvoker glInvoker;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GLInvokerExtensions"/> class.
+        /// Initializes a new instance of the <see cref="OpenGLService"/> class.
         /// </summary>
         /// <param name="glInvoker">Invokes OpenGL functions.</param>
-        public GLInvokerExtensions(IGLInvoker glInvoker) => this.glInvoker = glInvoker;
+        public OpenGLService(IGLInvoker glInvoker) => this.glInvoker = glInvoker;
 
         /// <inheritdoc/>
         public Size GetViewPortSize()

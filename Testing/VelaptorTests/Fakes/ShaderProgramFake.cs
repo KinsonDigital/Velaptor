@@ -19,17 +19,17 @@ namespace VelaptorTests.Fakes
         /// Initializes a new instance of the <see cref="ShaderProgramFake"/> class for the purpose of testing.
         /// </summary>
         /// <param name="gl">Mocked <see cref="IGLInvoker"/> for calling OpenGL functions.</param>
-        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/> for calling OpenGL functions.</param>
+        /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for calling OpenGL functions.</param>
         /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService{TValue}"/> for loading shader code.</param>
         /// <param name="glInitReactable">Mocked <see cref="IReactable{T}"/> for OpenGL initialization..</param>
         /// <param name="shutDownReactable">Mocked <see cref="IReactable{T}"/> for shutdown notifications.</param>
         public ShaderProgramFake(
             IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
+            IOpenGLService openGLService,
             IShaderLoaderService<uint> shaderLoaderService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
-            : base(gl, glExtensions, shaderLoaderService, glInitReactable, shutDownReactable)
+            : base(gl, openGLService, shaderLoaderService, glInitReactable, shutDownReactable)
         {
         }
     }

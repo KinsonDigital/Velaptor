@@ -1,4 +1,4 @@
-﻿// <copyright file="IGLInvokerExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="IOpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,9 +9,9 @@ namespace Velaptor.NativeInterop.OpenGL
     using Velaptor.OpenGL;
 
     /// <summary>
-    /// Provides OpenGL extensions/helper methods to improve OpenGL related functionality.
+    /// Provides OpenGL helper methods to improve OpenGL related operations.
     /// </summary>
-    internal interface IGLInvokerExtensions
+    internal interface IOpenGLService
     {
         /// <summary>
         /// Gets the size of the viewport.

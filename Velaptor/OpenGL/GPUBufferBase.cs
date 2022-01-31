@@ -33,7 +33,7 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="GPUBufferBase{TData}"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
+        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
@@ -41,12 +41,12 @@ namespace Velaptor.OpenGL
         /// </exception>
         internal GPUBufferBase(
             IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
+            IOpenGLService openGLService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-            GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+            OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
 
             if (glInitReactable is null)
             {
@@ -103,7 +103,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Gets the invoker that contains helper methods for simplified OpenGL function calls.
         /// </summary>
-        private protected IGLInvokerExtensions GLExtensions { get; }
+        private protected IOpenGLService OpenGLService { get; }
 
         /// <summary>
         /// Updates GPU buffer with the given <paramref name="data"/> at the given <paramref name="batchIndex"/>.
@@ -198,18 +198,18 @@ namespace Velaptor.OpenGL
             // Generate the VAO and VBO with only 1 object each
             this.vao = GL.GenVertexArray();
             BindVAO();
-            GLExtensions.LabelVertexArray(this.vao, Name);
+            OpenGLService.LabelVertexArray(this.vao, Name);
 
             this.vbo = GL.GenBuffer();
             BindVBO();
-            GLExtensions.LabelBuffer(this.vbo, Name, BufferType.VertexBufferObject);
+            OpenGLService.LabelBuffer(this.vbo, Name, BufferType.VertexBufferObject);
 
             this.ebo = GL.GenBuffer();
             BindEBO();
-            GLExtensions.LabelBuffer(this.ebo, Name, BufferType.IndexArrayObject);
+            OpenGLService.LabelBuffer(this.ebo, Name, BufferType.IndexArrayObject);
 
-            GLExtensions.BeginGroup($"Setup {Name} Data");
-            GLExtensions.BeginGroup($"Upload {Name} Vertex Data");
+            OpenGLService.BeginGroup($"Setup {Name} Data");
+            OpenGLService.BeginGroup($"Upload {Name} Vertex Data");
 
             IsInitialized = true;
 
@@ -217,22 +217,22 @@ namespace Velaptor.OpenGL
 
             GL.BufferData(GLBufferTarget.ArrayBuffer, vertBufferData, GLBufferUsageHint.DynamicDraw);
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
 
-            GLExtensions.BeginGroup($"Upload {Name} Indices Data");
+            OpenGLService.BeginGroup($"Upload {Name} Indices Data");
 
             this.indices = GenerateIndices();
 
             // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
             GL.BufferData(GLBufferTarget.ElementArrayBuffer, this.indices, GLBufferUsageHint.StaticDraw);
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
 
             SetupVAO();
 
             UnbindVBO();
             UnbindVAO();
             UnbindEBO();
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
         }
 
         /// <summary>

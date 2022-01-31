@@ -37,7 +37,7 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
             var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
             var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
@@ -61,7 +61,7 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
             var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
             var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 

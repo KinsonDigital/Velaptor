@@ -29,7 +29,7 @@ namespace Velaptor.Graphics
     {
         private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
         private readonly IGLInvoker gl;
-        private readonly IGLInvokerExtensions glExtensions;
+        private readonly IOpenGLService mockGLService;
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
@@ -49,7 +49,7 @@ namespace Velaptor.Graphics
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes OpenGL extensions methods.</param>
+        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="textureShader">The shader used for rendering textures.</param>
         /// <param name="fontShader">The shader used for rendering text.</param>
         /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
@@ -64,7 +64,7 @@ namespace Velaptor.Graphics
         /// </remarks>
         public SpriteBatch(
             IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
+            IOpenGLService openGLService,
             IShaderProgram textureShader,
             IShaderProgram fontShader,
             IGPUBuffer<SpriteBatchItem> textureBuffer,
@@ -76,7 +76,7 @@ namespace Velaptor.Graphics
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
 
-            this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
+            this.mockGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
             this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), "The parameter must not be null.");
             this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), "The parameter must not be null.");
             this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), "The parameter must not be null.");
@@ -429,9 +429,9 @@ namespace Velaptor.Graphics
             {
                 var totalElements = 6u * totalItemsToRender;
 
-                this.glExtensions.BeginGroup($"Render {totalElements} Texture Elements");
+                this.mockGLService.BeginGroup($"Render {totalElements} Texture Elements");
                 this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                this.glExtensions.EndGroup();
+                this.mockGLService.EndGroup();
             }
 
             // Empty the batch items
@@ -445,7 +445,7 @@ namespace Velaptor.Graphics
         {
             var fontTextureIsBound = false;
 
-            this.glExtensions.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
+            this.mockGLService.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
 
             this.fontShader.Use();
 
@@ -460,7 +460,7 @@ namespace Velaptor.Graphics
                     continue;
                 }
 
-                this.glExtensions.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+                this.mockGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
 
                 if (!fontTextureIsBound)
                 {
@@ -473,7 +473,7 @@ namespace Velaptor.Graphics
 
                 totalItemsToRender += 1;
 
-                this.glExtensions.EndGroup();
+                this.mockGLService.EndGroup();
             }
 
             // Only render the amount of elements for the amount of batch items to render.
@@ -482,15 +482,15 @@ namespace Velaptor.Graphics
             {
                 var totalElements = 6u * totalItemsToRender;
 
-                this.glExtensions.BeginGroup($"Render {totalElements} Font Elements");
+                this.mockGLService.BeginGroup($"Render {totalElements} Font Elements");
                 this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                this.glExtensions.EndGroup();
+                this.mockGLService.EndGroup();
             }
 
             // Empty the batch items
             this.fontBatchService.EmptyBatch();
 
-            this.glExtensions.EndGroup();
+            this.mockGLService.EndGroup();
         }
 
         /// <summary>
@@ -590,24 +590,24 @@ namespace Velaptor.Graphics
                 nameof(RenderSurfaceWidth),
                 new CachedValue<uint>(
                     0,
-                    () => (uint)this.glExtensions.GetViewPortSize().Width,
+                    () => (uint)this.mockGLService.GetViewPortSize().Width,
                     (value) =>
                     {
-                        var viewPortSize = this.glExtensions.GetViewPortSize();
+                        var viewPortSize = this.mockGLService.GetViewPortSize();
 
-                        this.glExtensions.SetViewPortSize(new Size((int)value, viewPortSize.Height));
+                        this.mockGLService.SetViewPortSize(new Size((int)value, viewPortSize.Height));
                     }));
 
             this.cachedUIntProps.Add(
                 nameof(RenderSurfaceHeight),
                 new CachedValue<uint>(
                     0,
-                    () => (uint)this.glExtensions.GetViewPortSize().Height,
+                    () => (uint)this.mockGLService.GetViewPortSize().Height,
                     (value) =>
                     {
-                        var viewPortSize = this.glExtensions.GetViewPortSize();
+                        var viewPortSize = this.mockGLService.GetViewPortSize();
 
-                        this.glExtensions.SetViewPortSize(new Size(viewPortSize.Width, (int)value));
+                        this.mockGLService.SetViewPortSize(new Size(viewPortSize.Width, (int)value));
                     }));
 
             this.cachedClearColor = new CachedValue<Color>(

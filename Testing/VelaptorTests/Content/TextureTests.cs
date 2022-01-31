@@ -26,7 +26,7 @@ namespace VelaptorTests.Content
         private const string TexturePath = @"C:\temp\test-texture.png";
         private const uint TextureId = 1234;
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IReactable<DisposeTextureData>> mockDisposeReactable;
         private readonly Mock<IDisposable> mockDisposeUnsubscriber;
         private readonly ImageData imageData;
@@ -74,7 +74,7 @@ namespace VelaptorTests.Content
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGL.Setup(m => m.GenTexture()).Returns(TextureId);
 
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLService = new Mock<IOpenGLService>();
             this.mockDisposeReactable = new Mock<IReactable<DisposeTextureData>>();
             this.mockDisposeUnsubscriber = new Mock<IDisposable>();
         }
@@ -88,7 +88,7 @@ namespace VelaptorTests.Content
             {
                 var unused = new Texture(
                     null,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockDisposeReactable.Object,
                     TextureName,
                     TexturePath,
@@ -97,7 +97,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Ctor_WithNullGLExtensionsParam_ThrowsException()
+        public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -109,7 +109,7 @@ namespace VelaptorTests.Content
                     TextureName,
                     TexturePath,
                     this.imageData);
-            }, "The parameter must not be null. (Parameter 'glExtensions')");
+            }, "The parameter must not be null. (Parameter 'openGLService')");
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace VelaptorTests.Content
             {
                 var unused = new Texture(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     null,
                     TextureName,
                     TexturePath,
@@ -138,7 +138,7 @@ namespace VelaptorTests.Content
             {
                 var unused = new Texture(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockDisposeReactable.Object,
                     TextureName,
                     filePath,
@@ -182,14 +182,14 @@ namespace VelaptorTests.Content
             // Act
             var unused = new Texture(
                 this.mockGL.Object,
-                this.mockGLExtensions.Object,
+                this.mockGLService.Object,
                 this.mockDisposeReactable.Object,
                 "test-texture.png",
                 $@"C:\temp\test-texture.png",
                 this.imageData);
 
             // Assert
-            this.mockGLExtensions.Verify(m => m.LabelTexture(TextureId, "test-texture.png"),
+            this.mockGLService.Verify(m => m.LabelTexture(TextureId, "test-texture.png"),
                 Times.Once());
             this.mockGL.Verify(m => m.TexParameter(
                 GLTextureTarget.Texture2D,
@@ -362,7 +362,7 @@ namespace VelaptorTests.Content
         private Texture CreateTexture(bool useEmptyData = false)
             => new (
                 this.mockGL.Object,
-                this.mockGLExtensions.Object,
+                this.mockGLService.Object,
                 this.mockDisposeReactable.Object,
                 TextureName,
                 TexturePath,
