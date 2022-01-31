@@ -20,13 +20,13 @@ namespace VelaptorTests.Fakes
         /// </summary>
         /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
         /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/> for OpenGL function calls.</param>
-        /// <param name="glInitReactor">Mocked <see cref="IReactor{T}"/> for OpenGL initialization.</param>
-        /// <param name="shutDownReactor">Mocked <see cref="IReactor{T}"/> for application shutdown..</param>
+        /// <param name="glInitReactable">Mocked <see cref="IReactable{T}"/> for OpenGL initialization.</param>
+        /// <param name="shutDownReactable">Mocked <see cref="IReactable{T}"/> for application shutdown..</param>
         public GPUBufferFake(IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IReactor<GLInitData> glInitReactor,
-            IReactor<ShutDownData> shutDownReactor)
-            : base(gl, glExtensions, glInitReactor, shutDownReactor)
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
+            : base(gl, glExtensions, glInitReactable, shutDownReactable)
         {
         }
 

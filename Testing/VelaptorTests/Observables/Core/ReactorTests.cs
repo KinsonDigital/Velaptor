@@ -4,68 +4,101 @@
 
 namespace VelaptorTests.Observables.Core
 {
+    using System;
+    using Moq;
     using Velaptor.Observables.Core;
-    using VelaptorTests.Fakes;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="Reactor{TData}"/> class.
+    /// Tests the <see cref="Reactor{T}"/> class.
     /// </summary>
     public class ReactorTests
     {
         #region Method Tests
         [Fact]
-        public void Subscribe_WhenAddingNewObserver_ObserverAddedToReactor()
+        public void OnNext_WithNullOnNextDelegate_DoesNotThrowException()
         {
             // Arrange
-            var observable = CreateReactor<bool>();
+            var reactor = new Reactor<bool>();
 
-            // Act
-            observable.Subscribe(new Observer<bool>());
-
-            // Assert
-            Assert.Single(observable.Observers);
+            // Act & Assert
+            AssertExtensions.DoesNotThrowNullReference(() =>
+            {
+                reactor.OnNext(It.IsAny<bool>());
+            });
         }
 
         [Fact]
-        public void Subscribe_WhenAddingNewObserver_ReturnsUnsubscriber()
+        public void OnNext_WhenInvoked_ExecutesOnNext()
         {
             // Arrange
-            var observable = CreateReactor<bool>();
-            var observer = new Observer<bool>();
+            var onNextInvoked = false;
+
+            var reactor = new Reactor<bool>(onNext: _ => onNextInvoked = true);
 
             // Act
-            var actual = (ObserverUnsubscriber<bool>)observable.Subscribe(observer);
+            reactor.OnNext(It.IsAny<bool>());
 
             // Assert
-            Assert.NotNull(actual);
-            Assert.IsType<ObserverUnsubscriber<bool>>(actual);
-            Assert.Same(observer, actual.Observer);
+            Assert.True(onNextInvoked);
         }
 
         [Fact]
-        public void Dispose_WhenInvokedWithObservers_RemovesObservers()
+        public void OnCompleted_WithNullOnCompletedDelegate_DoesNotThrowException()
         {
             // Arrange
-            var observable = CreateReactor<bool>();
+            var reactor = new Reactor<bool>();
 
-            observable.Subscribe(new Observer<bool>());
+            // Act & Assert
+            AssertExtensions.DoesNotThrowNullReference(() =>
+            {
+                reactor.OnCompleted();
+            });
+        }
+
+        [Fact]
+        public void OnCompleted_WhenInvoked_ExecutesOnCompleted()
+        {
+            // Arrange
+            var onCompletedInvoked = false;
+
+            var reactor = new Reactor<bool>(onCompleted: () => onCompletedInvoked = true);
 
             // Act
-            observable.Dispose();
-            observable.Dispose();
+            reactor.OnCompleted();
 
             // Assert
-            Assert.Empty(observable.Observers);
+            Assert.True(onCompletedInvoked);
+        }
+
+        [Fact]
+        public void OnError_WithNullOnErrorDelegate_DoesNotThrowException()
+        {
+            // Arrange
+            var reactor = new Reactor<bool>();
+
+            // Act & Assert
+            AssertExtensions.DoesNotThrowNullReference(() =>
+            {
+                reactor.OnError(It.IsAny<Exception>());
+            });
+        }
+
+        [Fact]
+        public void OnError_WhenInvoked_ExecutesOnError()
+        {
+            // Arrange
+            var onErrorInvoked = false;
+
+            var reactor = new Reactor<bool>(onError: _ => onErrorInvoked = true);
+
+            // Act
+            reactor.OnError(It.IsAny<Exception>());
+
+            // Assert
+            Assert.True(onErrorInvoked);
         }
         #endregion
-
-        /// <summary>
-        /// Creates a new instance of the abstract <see cref="Reactor{TData}"/> for the purpose of testing.
-        /// </summary>
-        /// <typeparam name="T">The type of data that the observable will deal with.</typeparam>
-        /// <returns>The instance to test.</returns>
-        private static ReactorFake<T> CreateReactor<T>()
-            => new ();
     }
 }

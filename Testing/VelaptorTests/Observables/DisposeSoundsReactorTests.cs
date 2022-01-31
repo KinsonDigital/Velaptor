@@ -4,14 +4,14 @@
 
 namespace VelaptorTests.Observables
 {
-    using System;
     using Moq;
     using Velaptor.Observables;
+    using Velaptor.Observables.Core;
     using Velaptor.Observables.ObservableData;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="DisposeSoundsReactor"/> class.
+    /// Tests the <see cref="DisposeSoundsReactable"/> class.
     /// </summary>
     public class DisposeSoundsReactorTests
     {
@@ -22,18 +22,18 @@ namespace VelaptorTests.Observables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var observer = new Mock<IObserver<DisposeSoundData>>();
+            var reactor = new Mock<IReactor<DisposeSoundData>>();
 
-            var reactor = new DisposeSoundsReactor();
-            reactor.Subscribe(observer.Object);
+            var reactable = new DisposeSoundsReactable();
+            reactable.Subscribe(reactor.Object);
 
             // Act
             var soundData = new DisposeSoundData(123u);
-            reactor.PushNotification(soundData, unsubscribe);
+            reactable.PushNotification(soundData, unsubscribe);
 
             // Assert
-            observer.Verify(m => m.OnNext(soundData), Times.Once());
-            Assert.Equal(expected, reactor.Observers.Count);
+            reactor.Verify(m => m.OnNext(soundData), Times.Once());
+            Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion
     }

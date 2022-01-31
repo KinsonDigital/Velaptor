@@ -32,17 +32,17 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="glInitReactor">Receives a notification when OpenGL has been initialized.</param>
-        /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
+        /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
         public FontGPUBuffer(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IReactor<GLInitData> glInitReactor,
-            IReactor<ShutDownData> shutDownReactor)
-            : base(gl, glExtensions, glInitReactor, shutDownReactor)
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
+            : base(gl, glExtensions, glInitReactable, shutDownReactable)
         {
         }
 

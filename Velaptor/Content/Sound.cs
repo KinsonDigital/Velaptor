@@ -31,23 +31,23 @@ namespace Velaptor.Content
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public Sound(string filePath)
         {
-            var disposeReactor = IoC.Container.GetInstance<IReactor<DisposeSoundData>>();
+            var disposeReactor = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
             Id = SoundFactory.GetNewId(filePath);
             this.sound = new CASLSound(filePath);
             this.disposeUnsubscriber =
-                disposeReactor.Subscribe(new Observer<DisposeSoundData>(Dispose));
+                disposeReactor.Subscribe(new Reactor<DisposeSoundData>(Dispose));
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sound"/> class.
         /// </summary>
-        /// <param name="disposeReactor">Sends a push notifications to dispose of sounds.</param>
+        /// <param name="disposeReactable">Sends a push notifications to dispose of sounds.</param>
         /// <param name="filePath">The path to the sound file.</param>
         /// <param name="soundId">The unique ID of the sound.</param>
-        internal Sound(IReactor<DisposeSoundData> disposeReactor, string filePath, uint soundId)
+        internal Sound(IReactable<DisposeSoundData> disposeReactable, string filePath, uint soundId)
         {
             this.disposeUnsubscriber =
-                disposeReactor.Subscribe(new Observer<DisposeSoundData>(Dispose));
+                disposeReactable.Subscribe(new Reactor<DisposeSoundData>(Dispose));
             this.sound = new CASLSound(filePath);
             Id = soundId;
         }

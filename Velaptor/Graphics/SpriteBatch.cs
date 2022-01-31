@@ -56,10 +56,10 @@ namespace Velaptor.Graphics
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
-        /// <param name="glInitReactor">Provides push notifications that OpenGL has been initialized.</param>
-        /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
+        /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
-        ///     <paramref name="glInitReactor"/> is subscribed to in this class.  <see cref="GLWindow"/>
+        ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
         public SpriteBatch(
@@ -71,8 +71,8 @@ namespace Velaptor.Graphics
             IGPUBuffer<SpriteBatchItem> fontBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
-            IReactor<GLInitData> glInitReactor,
-            IReactor<ShutDownData> shutDownReactor)
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
         {
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
 
@@ -90,13 +90,13 @@ namespace Velaptor.Graphics
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
-            if (glInitReactor is null)
+            if (glInitReactable is null)
             {
-                throw new ArgumentNullException(nameof(glInitReactor), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
             }
 
             // Receive a push notification that OpenGL has initialized
-            this.glInitUnsubscriber = glInitReactor.Subscribe(new Observer<GLInitData>(
+            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
                 _ =>
                 {
                     this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -106,12 +106,12 @@ namespace Velaptor.Graphics
                     Init();
                 }));
 
-            if (shutDownReactor is null)
+            if (shutDownReactable is null)
             {
-                throw new ArgumentNullException(nameof(shutDownReactor), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
             }
 
-            this.shutDownUnsubscriber = shutDownReactor.Subscribe(new Observer<ShutDownData>(_ => ShutDown()));
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
 
             SetupPropertyCaches();
         }

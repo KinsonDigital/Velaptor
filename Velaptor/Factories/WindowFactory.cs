@@ -39,7 +39,7 @@ namespace Velaptor.Factories
                 IoC.Container.GetInstance<IPlatform>(),
                 IoC.Container.GetInstance<ITaskService>(),
                 ContentLoaderFactory.CreateContentLoader(),
-                IoC.Container.GetInstance<IReactor<GLInitData>>(),
-                IoC.Container.GetInstance<IReactor<ShutDownData>>());
+                IoC.Container.GetInstance<IReactable<GLInitData>>(),
+                IoC.Container.GetInstance<IReactable<ShutDownData>>());
     }
 }

@@ -25,7 +25,7 @@ namespace Velaptor.Content
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundFactory soundFactory;
         private readonly IPath path;
-        private readonly IReactor<DisposeSoundData> disposeSoundReactor;
+        private readonly IReactable<DisposeSoundData> disposeSoundReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
@@ -37,7 +37,7 @@ namespace Velaptor.Content
             this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
             this.soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
-            this.disposeSoundReactor = IoC.Container.GetInstance<IReactor<DisposeSoundData>>();
+            this.disposeSoundReactable = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Velaptor.Content
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="soundFactory">Creates sound instances.</param>
         /// <param name="path">Processes directory and file paths.</param>
-        /// <param name="disposeSoundReactor">Sends a push notifications to dispose of sounds.</param>
+        /// <param name="disposeSoundReactable">Sends a push notifications to dispose of sounds.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
@@ -54,12 +54,12 @@ namespace Velaptor.Content
             IPathResolver soundPathResolver,
             ISoundFactory soundFactory,
             IPath path,
-            IReactor<DisposeSoundData> disposeSoundReactor)
+            IReactable<DisposeSoundData> disposeSoundReactable)
         {
             this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), "The parameter must not be null.");
             this.soundFactory = soundFactory ?? throw new ArgumentNullException(nameof(soundFactory), "The parameter must not be null.");
             this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
-            this.disposeSoundReactor = disposeSoundReactor ?? throw new ArgumentNullException(nameof(disposeSoundReactor), "The parameter must not be null.");
+            this.disposeSoundReactable = disposeSoundReactable ?? throw new ArgumentNullException(nameof(disposeSoundReactable), "The parameter must not be null.");
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Velaptor.Content
 
             if (this.sounds.TryRemove(filePath, out var sound))
             {
-                this.disposeSoundReactor.PushNotification(new DisposeSoundData(sound.Id));
+                this.disposeSoundReactable.PushNotification(new DisposeSoundData(sound.Id));
             }
         }
     }

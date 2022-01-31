@@ -34,33 +34,33 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="glInitReactor">Receives a notification when OpenGL has been initialized.</param>
-        /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
+        /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
         internal GPUBufferBase(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IReactor<GLInitData> glInitReactor,
-            IReactor<ShutDownData> shutDownReactor)
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
         {
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
 
-            if (glInitReactor is null)
+            if (glInitReactable is null)
             {
-                throw new ArgumentNullException(nameof(glInitReactor), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
             }
 
-            this.glInitUnsubscriber = glInitReactor.Subscribe(new Observer<GLInitData>(_ => Init()));
+            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
 
-            if (shutDownReactor is null)
+            if (shutDownReactable is null)
             {
-                throw new ArgumentNullException(nameof(shutDownReactor), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
             }
 
-            this.shutDownUnsubscriber = shutDownReactor.Subscribe(new Observer<ShutDownData>(_ => ShutDown()));
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
 
             ProcessCustomAttributes();
         }

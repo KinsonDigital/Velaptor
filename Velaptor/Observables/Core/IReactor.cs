@@ -7,31 +7,26 @@ namespace Velaptor.Observables.Core
     using System;
 
     /// <summary>
-    /// Defines a provider for push-based notification.
+    /// Provides a mechanism for receiving push-based notifications.
     /// </summary>
-    /// <typeparam name="T">The information sent with the push notification.</typeparam>
-    public interface IReactor<T> : IDisposable
+    /// <typeparam name="T">The information related to the notification.</typeparam>
+    public interface IReactor<in T>
     {
         /// <summary>
-        /// Notifies the provider that an observer is to receive notifications.
+        /// Provides the reactor with new data.
         /// </summary>
-        /// <param name="observer">The object that is to receive notifications.</param>
-        /// <returns>
-        ///     A reference to an interface that allows observers to stop receiving
-        ///     notifications before the provider has finished sending them.
-        /// </returns>
-        IDisposable Subscribe(IObserver<T> observer);
+        /// <param name="value">The current notification information.</param>
+        public void OnNext(T value);
 
         /// <summary>
-        /// Pushes a single notification with the given <paramref name="data"/>.
+        /// Notifies the reactor that the provider has finished sending push-based notifications.
         /// </summary>
-        /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">Unsubscribes all of the observers after the notification has been pushed.</param>
-        void PushNotification(T data, bool unsubscribeAfterProcessing = false);
+        public void OnCompleted();
 
         /// <summary>
-        /// Unsubscribes all of the currently subscribed observers.
+        /// Notifies the reactor that the provider has experiences an error condition.
         /// </summary>
-        void UnsubscribeAll();
+        /// <param name="error">An object that provides additional information about the error.</param>
+        public void OnError(Exception error);
     }
 }

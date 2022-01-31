@@ -37,8 +37,8 @@ namespace Velaptor.Factories
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-            var glInitReactor = IoC.Container.GetInstance<IReactor<GLInitData>>();
-            var shutDownReactor = IoC.Container.GetInstance<IReactor<ShutDownData>>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
             textureShader = new TextureShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
 
@@ -59,8 +59,8 @@ namespace Velaptor.Factories
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
             var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-            var glInitReactor = IoC.Container.GetInstance<IReactor<GLInitData>>();
-            var shutDownReactor = IoC.Container.GetInstance<IReactor<ShutDownData>>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
             fontShader = new FontShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
 

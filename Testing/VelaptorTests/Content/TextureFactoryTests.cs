@@ -21,7 +21,7 @@ namespace VelaptorTests.Content
     {
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<IReactor<DisposeTextureData>> mockDisposeTexturesReactor;
+        private readonly Mock<IReactable<DisposeTextureData>> mockDisposeTexturesReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureFactoryTests"/> class.
@@ -30,7 +30,7 @@ namespace VelaptorTests.Content
         {
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
-            this.mockDisposeTexturesReactor = new Mock<IReactor<DisposeTextureData>>();
+            this.mockDisposeTexturesReactable = new Mock<IReactable<DisposeTextureData>>();
         }
 
         #region Constructor Tests
@@ -40,7 +40,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new TextureFactory(null, this.mockGLExtensions.Object, this.mockDisposeTexturesReactor.Object);
+                var unused = new TextureFactory(null, this.mockGLExtensions.Object, this.mockDisposeTexturesReactable.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
         }
 
@@ -50,7 +50,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new TextureFactory(this.mockGL.Object, null, this.mockDisposeTexturesReactor.Object);
+                var unused = new TextureFactory(this.mockGL.Object, null, this.mockDisposeTexturesReactable.Object);
             }, "The parameter must not be null. (Parameter 'glExtensions')");
         }
         #endregion
@@ -109,6 +109,6 @@ namespace VelaptorTests.Content
         private TextureFactory CreateFactory() => new (
             this.mockGL.Object,
             this.mockGLExtensions.Object,
-            this.mockDisposeTexturesReactor.Object);
+            this.mockDisposeTexturesReactable.Object);
     }
 }

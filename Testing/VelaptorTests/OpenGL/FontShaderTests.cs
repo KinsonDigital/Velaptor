@@ -22,9 +22,9 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
         private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
-        private readonly Mock<IReactor<GLInitData>> mockGLInitReactor;
+        private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
+        private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontShaderTests"/> class.
@@ -34,8 +34,8 @@ namespace VelaptorTests.OpenGL
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
             this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
-            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
-            this.mockGLInitReactor = new Mock<IReactor<GLInitData>>();
+            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
+            this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         }
 
@@ -51,8 +51,8 @@ namespace VelaptorTests.OpenGL
                     this.mockGLExtensions.Object,
                     this.mockShaderLoader.Object,
                     null,
-                    this.mockShutDownReactor.Object);
-            }, "The parameter must not be null. (Parameter 'glInitReactor')");
+                    this.mockShutDownReactable.Object);
+            }, "The parameter must not be null. (Parameter 'glInitReactable')");
         }
 
         [Fact]
@@ -65,9 +65,9 @@ namespace VelaptorTests.OpenGL
                     this.mockGL.Object,
                     this.mockGLExtensions.Object,
                     this.mockShaderLoader.Object,
-                    this.mockGLInitReactor.Object,
+                    this.mockGLInitReactable.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownReactor')");
+            }, "The parameter must not be null. (Parameter 'shutDownReactable')");
         }
         #endregion
 
@@ -76,7 +76,7 @@ namespace VelaptorTests.OpenGL
         public void Use_WhenInvoked_SetsShaderAsUsed()
         {
             // Arrange
-            IObserver<GLInitData>? glInitObserver = null;
+            IReactor<GLInitData>? glInitReactor = null;
 
             const uint shaderId = 78;
             const int uniformLocation = 1234;
@@ -86,26 +86,26 @@ namespace VelaptorTests.OpenGL
             var status = 1;
             this.mockGL.Setup(m
                 => m.GetProgram(shaderId, GLProgramParameterName.LinkStatus, out status));
-            this.mockGLInitReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<GLInitData>>()))
+            this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
                 .Returns(this.mockGLInitUnsubscriber.Object)
-                .Callback<IObserver<GLInitData>>(observer =>
+                .Callback<IReactor<GLInitData>>(reactor =>
                 {
-                    if (observer is null)
+                    if (reactor is null)
                     {
-                        Assert.True(false, "GL initialization observable subscription failed.  Observer is null.");
+                        Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
                     }
 
-                    glInitObserver = observer;
+                    glInitReactor = reactor;
                 });
 
             var shader = new FontShader(
                 this.mockGL.Object,
                 this.mockGLExtensions.Object,
                 this.mockShaderLoader.Object,
-                this.mockGLInitReactor.Object,
-                this.mockShutDownReactor.Object);
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object);
 
-            glInitObserver?.OnNext(default);
+            glInitReactor?.OnNext(default);
 
             // Act
             shader.Use();

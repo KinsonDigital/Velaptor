@@ -11,7 +11,7 @@ namespace Velaptor.Observables.ObservableData
     // ReSharper restore RedundantNameQualifier//
 
     /// <summary>
-    /// Holds data for the <see cref="IReactor{T}"/> observable.
+    /// Holds data for the <see cref="IReactable{T}"/> reactable.
     /// </summary>
     [ExcludeFromCodeCoverage]
     internal readonly struct GLContextData

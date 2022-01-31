@@ -104,16 +104,16 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Sets up container registration related to observables.
+        /// Sets up container registration related to reactables.
         /// </summary>
         private static void SetupReactors()
         {
-            IoCContainer.Register<IReactor<GLInitData>, OpenGLInitReactor>(Lifestyle.Singleton);
-            IoCContainer.Register<IReactor<ShutDownData>, ShutDownReactor>(Lifestyle.Singleton);
-            IoCContainer.Register<IReactor<GLContextData>, OpenGLContextReactor>(Lifestyle.Singleton);
-            IoCContainer.Register<IReactor<DisposeTextureData>, DisposeTexturesReactor>(Lifestyle.Singleton);
-            IoCContainer.Register<IReactor<DisposeSoundData>, DisposeSoundsReactor>(Lifestyle.Singleton);
-            IoCContainer.Register<IReactor<RemoveBatchItemData>, RemoveBatchItemReactor>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<GLInitData>, OpenGLInitReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<ShutDownData>, ShutDownReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<GLContextData>, OpenGLContextReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<DisposeTextureData>, DisposeTexturesReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<RemoveBatchItemData>, RemoveBatchItemReactable>(Lifestyle.Singleton);
         }
 
         /// <summary>

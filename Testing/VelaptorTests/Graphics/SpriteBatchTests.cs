@@ -43,9 +43,9 @@ namespace VelaptorTests.Graphics
         private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockFontBuffer;
         private readonly Mock<IBatchManagerService<SpriteBatchItem>> mockFontBatchService;
         private readonly Mock<IFont> mockFont;
-        private readonly Mock<IReactor<GLInitData>> mockGLInitReactor;
+        private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
-        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
+        private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
         private readonly char[] glyphChars =
         {
@@ -56,7 +56,7 @@ namespace VelaptorTests.Graphics
         };
 
         private List<GlyphMetrics> allGlyphMetrics = new ();
-        private IObserver<GLInitData>? glInitObserver;
+        private IReactor<GLInitData>? glInitReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteBatchTests"/> class.
@@ -89,21 +89,21 @@ namespace VelaptorTests.Graphics
                 new ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)>(new Dictionary<uint, (bool shouldRender, SpriteBatchItem item)>());
 
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
-            this.mockGLInitReactor = new Mock<IReactor<GLInitData>>();
-            this.mockGLInitReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<GLInitData>>()))
+            this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
+            this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
                 .Returns(this.mockGLInitUnsubscriber.Object)
-                .Callback<IObserver<GLInitData>>(observer =>
+                .Callback<IReactor<GLInitData>>(reactor =>
                 {
-                    if (observer is null)
+                    if (reactor is null)
                     {
-                        Assert.True(false, "Shutdown observable subscription failed.  Observer is null.");
+                        Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
                     }
 
-                    this.glInitObserver = observer;
+                    this.glInitReactor = reactor;
                 });
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
-            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
+            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
 
             var mockFontTextureAtlas = new Mock<ITexture>();
             mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -129,8 +129,8 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
         }
 
@@ -149,8 +149,8 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'textureShader')");
         }
 
@@ -169,8 +169,8 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'fontShader')");
         }
 
@@ -189,8 +189,8 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'textureBuffer')");
         }
 
@@ -209,8 +209,8 @@ namespace VelaptorTests.Graphics
                     null,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'fontBuffer')");
         }
 
@@ -229,8 +229,8 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     null,
                     this.mockFontBatchService.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'textureBatchService')");
         }
 
@@ -249,8 +249,8 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     null,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'fontBatchService')");
         }
 
@@ -270,8 +270,8 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
                     null,
-                    this.mockShutDownReactor.Object);
-            }, "The parameter must not be null. (Parameter 'glInitReactor')");
+                    this.mockShutDownReactable.Object);
+            }, "The parameter must not be null. (Parameter 'glInitReactable')");
         }
 
         [Fact]
@@ -289,9 +289,9 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockTextureBatchService.Object,
                     this.mockFontBatchService.Object,
-                    this.mockGLInitReactor.Object,
+                    this.mockGLInitReactable.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownReactor')");
+            }, "The parameter must not be null. (Parameter 'shutDownReactable')");
         }
 
         [Fact]
@@ -315,7 +315,7 @@ namespace VelaptorTests.Graphics
             // Arrange
             this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
             var batch = CreateSpriteBatch();
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
 
             // Act
             batch.RenderSurfaceWidth = 100;
@@ -332,7 +332,7 @@ namespace VelaptorTests.Graphics
             // Arrange
             this.mockGLExtensions.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
             var batch = CreateSpriteBatch();
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
 
             // Act
             batch.RenderSurfaceHeight = 100;
@@ -363,7 +363,7 @@ namespace VelaptorTests.Graphics
                 });
 
             var batch = CreateSpriteBatch();
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
 
             // Act
             var actual = batch.ClearColor;
@@ -378,7 +378,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             var batch = CreateSpriteBatch();
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
 
             // Act
             batch.ClearColor = Color.FromArgb(11, 22, 33, 44);
@@ -490,7 +490,7 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
             batch.BeginBatch();
 
             // Act
@@ -523,7 +523,7 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
             batch.BeginBatch();
 
             // Act
@@ -556,7 +556,7 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
             batch.BeginBatch();
 
             // Act
@@ -590,7 +590,7 @@ namespace VelaptorTests.Graphics
             this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
             batch.BeginBatch();
 
             // Act
@@ -623,7 +623,7 @@ namespace VelaptorTests.Graphics
                     MockTextureBatchItems(items);
                     this.mockTextureBatchService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
                 });
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
 
             // Act
             batch.BeginBatch();
@@ -1149,7 +1149,7 @@ namespace VelaptorTests.Graphics
                     this.mockFontBatchService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
                 });
 
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
 
             // Act
             batch.BeginBatch();
@@ -1190,7 +1190,7 @@ namespace VelaptorTests.Graphics
                     MockTextureBatchItems(items);
                 });
 
-            this.glInitObserver.OnNext(default);
+            this.glInitReactor.OnNext(default);
             batch.BeginBatch();
 
             batch.Render(
@@ -1217,17 +1217,17 @@ namespace VelaptorTests.Graphics
         public void WithShutDownNotification_DisposesOfSpriteBatch()
         {
             // Arrange
-            IObserver<ShutDownData>? shutDownObserver = null;
+            IReactor<ShutDownData>? shutDownReactor = null;
 
-            this.mockShutDownReactor.Setup(m => m.Subscribe(It.IsAny<IObserver<ShutDownData>>()))
+            this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
                 .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IObserver<ShutDownData>>(observer => shutDownObserver = observer);
+                .Callback<IReactor<ShutDownData>>(reactor => shutDownReactor = reactor);
 
             CreateSpriteBatch();
 
             // Act
-            shutDownObserver?.OnNext(default);
-            shutDownObserver?.OnNext(default);
+            shutDownReactor?.OnNext(default);
+            shutDownReactor?.OnNext(default);
 
             // Assert
             this.mockTextureBatchService
@@ -1314,8 +1314,8 @@ namespace VelaptorTests.Graphics
                 this.mockFontBuffer.Object,
                 this.mockTextureBatchService.Object,
                 this.mockFontBatchService.Object,
-                this.mockGLInitReactor.Object,
-                this.mockShutDownReactor.Object);
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object);
 
             return result;
         }

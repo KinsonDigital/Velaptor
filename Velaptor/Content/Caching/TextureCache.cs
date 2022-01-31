@@ -39,7 +39,7 @@ namespace Velaptor.Content.Caching
         private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IPath path;
         private readonly IDisposable shutDownUnsubscriber;
-        private readonly IReactor<DisposeTextureData> disposeTexturesReactor;
+        private readonly IReactable<DisposeTextureData> disposeTexturesReactable;
         private readonly string[] defaultFontNames =
         {
             DefaultRegularFontName, DefaultBoldFontName,
@@ -55,16 +55,16 @@ namespace Velaptor.Content.Caching
         /// <param name="fontAtlasService">Provides font atlas services.</param>
         /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
         /// <param name="path">Provides path related services.</param>
-        /// <param name="shutDownReactor">Sends a push notifications that the application is shutting down.</param>
-        /// <param name="disposeTexturesReactor">Sends push notifications to dispose of textures.</param>
+        /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
+        /// <param name="disposeTexturesReactable">Sends push notifications to dispose of textures.</param>
         public TextureCache(
             IImageService imageService,
             ITextureFactory textureFactory,
             IFontAtlasService fontAtlasService,
             IFontMetaDataParser fontMetaDataParser,
             IPath path,
-            IReactor<ShutDownData> shutDownReactor,
-            IReactor<DisposeTextureData> disposeTexturesReactor)
+            IReactable<ShutDownData> shutDownReactable,
+            IReactable<DisposeTextureData> disposeTexturesReactable)
         {
             this.imageService = imageService ?? throw new ArgumentNullException(nameof(imageService), "The parameter must not be null.");
             this.textureFactory = textureFactory ?? throw new ArgumentNullException(nameof(textureFactory), "The parameter must not be null.");
@@ -72,16 +72,16 @@ namespace Velaptor.Content.Caching
             this.fontMetaDataParser = fontMetaDataParser ?? throw new ArgumentNullException(nameof(fontMetaDataParser), "The parameter must not be null.");
             this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
 
-            if (shutDownReactor is null)
+            if (shutDownReactable is null)
             {
-                throw new ArgumentNullException(nameof(shutDownReactor), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
             }
 
-            this.shutDownUnsubscriber = shutDownReactor.Subscribe(new Observer<ShutDownData>(_ => ShutDown()));
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
 
-            this.disposeTexturesReactor =
-                disposeTexturesReactor ??
-                throw new ArgumentNullException(nameof(disposeTexturesReactor), "The parameter must not be null.");
+            this.disposeTexturesReactable =
+                disposeTexturesReactable ??
+                throw new ArgumentNullException(nameof(disposeTexturesReactable), "The parameter must not be null.");
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Velaptor.Content.Caching
 
             if (texture is not null)
             {
-                this.disposeTexturesReactor.PushNotification(new DisposeTextureData(texture.Id));
+                this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
             }
         }
 
@@ -277,7 +277,7 @@ namespace Velaptor.Content.Caching
 
                 if (texture is not null)
                 {
-                    this.disposeTexturesReactor.PushNotification(new DisposeTextureData(texture.Id));
+                    this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
                 }
             }
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLContextReactor.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLContextReactable.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,27 +11,24 @@ namespace Velaptor.Observables
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Creates an observable to send push notifications of OpenGL events.
+    /// Creates a reactable to send push notifications of OpenGL events.
     /// </summary>
-    internal class OpenGLContextReactor : Reactor<GLContextData>
+    internal class OpenGLContextReactable : Reactable<GLContextData>
     {
         /// <summary>
         /// Sends a push notification that the OpenGL context has been created.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the observers after the notification has been pushed.</param>
-        /// <remarks>
-        ///     This <see cref="OpenGLContextReactor"/>
-        /// </remarks>
+        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the reactors after the notification has been pushed.</param>
         public override void PushNotification(GLContextData data, bool unsubscribeAfterProcessing = false)
         {
             /* Work from the end to the beginning of the list
-               just in case the observable is disposed(removed)
+               just in case the reactable is disposed(removed)
                in the OnNext() method.
              */
-            for (var i = Observers.Count - 1; i >= 0; i--)
+            for (var i = Reactors.Count - 1; i >= 0; i--)
             {
-                Observers[i].OnNext(data);
+                Reactors[i].OnNext(data);
             }
 
             if (unsubscribeAfterProcessing)

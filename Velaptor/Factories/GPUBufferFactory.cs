@@ -38,8 +38,8 @@ namespace Velaptor.Factories
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var glInitReactor = IoC.Container.GetInstance<IReactor<GLInitData>>();
-            var shutDownReactor = IoC.Container.GetInstance<IReactor<ShutDownData>>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
             textureBuffer = new TextureGPUBuffer(glInvoker, glInvokerExtensions, glInitReactor, shutDownReactor);
 
@@ -62,8 +62,8 @@ namespace Velaptor.Factories
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var glInitReactor = IoC.Container.GetInstance<IReactor<GLInitData>>();
-            var shutDownReactor = IoC.Container.GetInstance<IReactor<ShutDownData>>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
             fontBuffer = new FontGPUBuffer(glInvoker, glInvokerExtensions, glInitReactor, shutDownReactor);
 

@@ -32,8 +32,8 @@ namespace Velaptor.OpenGL
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
         /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
-        /// <param name="glInitReactor">Initializes the shader once it receives a notification.</param>
-        /// <param name="shutDownReactor">Sends out a notification that the application is shutting down.</param>
+        /// <param name="glInitReactable">Initializes the shader once it receives a notification.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
@@ -41,27 +41,27 @@ namespace Velaptor.OpenGL
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
             IShaderLoaderService<uint> shaderLoaderService,
-            IReactor<GLInitData> glInitReactor,
-            IReactor<ShutDownData> shutDownReactor)
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
         {
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
             this.shaderLoaderService = shaderLoaderService ?? throw new ArgumentNullException(nameof(shaderLoaderService), "The parameter must not be null.");
 
-            if (glInitReactor is null)
+            if (glInitReactable is null)
             {
-                throw new ArgumentNullException(nameof(glInitReactor), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
             }
 
-            this.glInitReactorUnsubscriber = glInitReactor.Subscribe(new Observer<GLInitData>(_ => Init()));
+            this.glInitReactorUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
 
-            if (shutDownReactor is null)
+            if (shutDownReactable is null)
             {
-                throw new ArgumentNullException(nameof(shutDownReactor), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
             }
 
             this.shutDownReactorUnsubscriber =
-                shutDownReactor.Subscribe(new Observer<ShutDownData>(_ => Dispose()));
+                shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
 
             ProcessCustomAttributes();
         }

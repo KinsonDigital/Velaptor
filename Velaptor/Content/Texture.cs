@@ -39,10 +39,10 @@ namespace Velaptor.Content
             this.gl = IoC.Container.GetInstance<IGLInvoker>();
             this.glExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
 
-            var disposeReactor = IoC.Container.GetInstance<IReactor<DisposeTextureData>>();
+            var disposeReactor = IoC.Container.GetInstance<IReactable<DisposeTextureData>>();
 
             this.disposeUnsubscriber =
-                disposeReactor.Subscribe(new Observer<DisposeTextureData>(_ =>
+                disposeReactor.Subscribe(new Reactor<DisposeTextureData>(_ =>
                 {
                     var disposeData = new DisposeTextureData(Id);
                     Dispose(disposeData);
@@ -57,14 +57,14 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="disposeTexturesReactor">Sends a push notification to dispose of a texture.</param>
+        /// <param name="disposeTexturesReactable">Sends a push notification to dispose of a texture.</param>
         /// <param name="name">The name of the texture.</param>
         /// <param name="filePath">The file path to the image file.</param>
         /// <param name="imageData">The image data of the texture.</param>
         internal Texture(
             IGLInvoker gl,
             IGLInvokerExtensions glExtensions,
-            IReactor<DisposeTextureData> disposeTexturesReactor,
+            IReactable<DisposeTextureData> disposeTexturesReactable,
             string name,
             string filePath,
             ImageData imageData)
@@ -72,13 +72,13 @@ namespace Velaptor.Content
             this.gl = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
 
-            if (disposeTexturesReactor is null)
+            if (disposeTexturesReactable is null)
             {
-                throw new ArgumentNullException(nameof(disposeTexturesReactor), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(disposeTexturesReactable), "The parameter must not be null.");
             }
 
             this.disposeUnsubscriber =
-                disposeTexturesReactor.Subscribe(new Observer<DisposeTextureData>(Dispose));
+                disposeTexturesReactable.Subscribe(new Reactor<DisposeTextureData>(Dispose));
 
             if (string.IsNullOrEmpty(filePath))
             {

@@ -28,17 +28,17 @@ namespace Velaptor.Content.Factories
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundFactory"/> class.
         /// </summary>
-        /// <param name="disposeSoundReactor">Sends push notifications to dispose of sounds.</param>
-        /// <param name="shutDownReactor">Sends a push notifications that the application is shutting down.</param>
+        /// <param name="disposeSoundReactable">Sends push notifications to dispose of sounds.</param>
+        /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
         public SoundFactory(
-            IReactor<DisposeSoundData> disposeSoundReactor,
-            IReactor<ShutDownData> shutDownReactor)
+            IReactable<DisposeSoundData> disposeSoundReactable,
+            IReactable<ShutDownData> shutDownReactable)
         {
             this.disposeSoundUnsubscriber =
-                disposeSoundReactor.Subscribe(new Observer<DisposeSoundData>(RemoveSoundId));
+                disposeSoundReactable.Subscribe(new Reactor<DisposeSoundData>(RemoveSoundId));
 
             this.shutDownUnsubscriber =
-                shutDownReactor.Subscribe(new Observer<ShutDownData>(_ => ShutDown()));
+                shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Velaptor.Content.Factories
         /// <inheritdoc/>
         public ISound Create(string filePath)
         {
-            var disposeReactor = IoC.Container.GetInstance<IReactor<DisposeSoundData>>();
+            var disposeReactor = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
 
             var newId = Sounds.Count <= 0
                 ? 1
@@ -84,7 +84,7 @@ namespace Velaptor.Content.Factories
         }
 
         /// <summary>
-        /// Unsubscribes from the <see cref="IReactor{T}"/> reactors.
+        /// Unsubscribes from the <see cref="IReactable{T}"/> reactors.
         /// </summary>
         private void ShutDown()
         {

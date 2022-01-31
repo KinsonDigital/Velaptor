@@ -42,8 +42,8 @@ namespace Velaptor.Factories
             var fontShader = ShaderFactory.CreateFontShader();
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
             var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
-            var glInitReactor = IoC.Container.GetInstance<IReactor<GLInitData>>();
-            var shutDownReactor = IoC.Container.GetInstance<IReactor<ShutDownData>>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
             var textureBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
             var fontBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
 

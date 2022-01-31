@@ -35,8 +35,8 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IPlatform> mockPlatform;
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITaskService> mockTaskService;
-        private readonly Mock<IReactor<GLInitData>> mockGLInitReactor;
-        private readonly Mock<IReactor<ShutDownData>> mockShutDownReactor;
+        private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
+        private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -50,8 +50,8 @@ namespace VelaptorTests.OpenGL
             this.mockPlatform = new Mock<IPlatform>();
             this.mockContentLoader = new Mock<IContentLoader>();
             this.mockTaskService = new Mock<ITaskService>();
-            this.mockGLInitReactor = new Mock<IReactor<GLInitData>>();
-            this.mockShutDownReactor = new Mock<IReactor<ShutDownData>>();
+            this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
+            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         }
 
         #region Contructor Tests
@@ -71,8 +71,8 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
         }
 
@@ -92,8 +92,8 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
         }
 
@@ -113,8 +113,8 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'windowFacade')");
         }
 
@@ -134,8 +134,8 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
         }
 
@@ -155,8 +155,8 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     null,
                     this.mockContentLoader.Object,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'taskService')");
         }
 
@@ -176,8 +176,8 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     null,
-                    this.mockGLInitReactor.Object,
-                    this.mockShutDownReactor.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
         }
 
@@ -198,8 +198,8 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     null,
-                    this.mockShutDownReactor.Object);
-            }, "The parameter must not be null. (Parameter 'glInitReactor')");
+                    this.mockShutDownReactable.Object);
+            }, "The parameter must not be null. (Parameter 'glInitReactable')");
         }
 
         [Fact]
@@ -218,9 +218,9 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLInitReactor.Object,
+                    this.mockGLInitReactable.Object,
                     null);
-            }, "The parameter must not be null. (Parameter 'shutDownReactor')");
+            }, "The parameter must not be null. (Parameter 'shutDownReactable')");
         }
         #endregion
 
@@ -840,8 +840,8 @@ namespace VelaptorTests.OpenGL
             this.mockWindowFacade.Raise(m => m.Unload += null, EventArgs.Empty);
 
             // Assert
-            this.mockShutDownReactor.Verify(m => m.PushNotification(default, true), Times.Once);
-            this.mockShutDownReactor.Verify(m => m.Dispose(), Times.Once);
+            this.mockShutDownReactable.Verify(m => m.PushNotification(default, true), Times.Once);
+            this.mockShutDownReactable.Verify(m => m.Dispose(), Times.Once);
         }
 
         [Fact]
@@ -875,7 +875,7 @@ namespace VelaptorTests.OpenGL
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockGLInitReactor.Object,
-                this.mockShutDownReactor.Object);
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object);
     }
 }

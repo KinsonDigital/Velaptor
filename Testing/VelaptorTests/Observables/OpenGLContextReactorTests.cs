@@ -4,14 +4,14 @@
 
 namespace VelaptorTests.Observables
 {
-    using System;
     using Moq;
     using Velaptor.Observables;
+    using Velaptor.Observables.Core;
     using Velaptor.Observables.ObservableData;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="OpenGLContextReactor"/> class.
+    /// Tests the <see cref="OpenGLContextReactable"/> class.
     /// </summary>
     public class OpenGLContextReactorTests
     {
@@ -22,17 +22,17 @@ namespace VelaptorTests.Observables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var observer = new Mock<IObserver<GLContextData>>();
+            var reactor = new Mock<IReactor<GLContextData>>();
 
-            var reactor = new OpenGLContextReactor();
-            reactor.Subscribe(observer.Object);
+            var reactable = new OpenGLContextReactable();
+            reactable.Subscribe(reactor.Object);
 
             // Act
-            reactor.PushNotification(default, unsubscribe);
+            reactable.PushNotification(default, unsubscribe);
 
             // Assert
-            observer.Verify(m => m.OnNext(default), Times.Once());
-            Assert.Equal(expected, reactor.Observers.Count);
+            reactor.Verify(m => m.OnNext(default), Times.Once());
+            Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion
     }

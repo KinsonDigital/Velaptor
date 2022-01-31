@@ -29,7 +29,7 @@ namespace Velaptor.OpenGL
     internal class GLWindowFacade : IGameWindowFacade
     {
         private readonly string nullWindowExceptionMsg;
-        private readonly IReactor<GLContextData> glContextReactor;
+        private readonly IReactable<GLContextData> glContextReactable;
         private readonly IKeyboardInput<KeyCode, KeyboardState> keyboardInput;
         private readonly IMouseInput<VelaptorMouseButton, MouseState> mouseInput;
         private IWindow? glWindow;
@@ -39,13 +39,13 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowFacade"/> class.
         /// </summary>
-        /// <param name="glReactor">
+        /// <param name="glReactable">
         ///     Receives push notifications when the OpenGL context has been created.
         /// </param>
         /// <param name="keyboardInput">The system keyboardInput for handling keyboardInput events.</param>
         /// <param name="mouseInput">The system mouseInput for handling mouseInput events.</param>
         public GLWindowFacade(
-            IReactor<GLContextData> glReactor,
+            IReactable<GLContextData> glReactable,
             IKeyboardInput<KeyCode,
             KeyboardState> keyboardInput,
             IMouseInput<VelaptorMouseButton,
@@ -53,7 +53,7 @@ namespace Velaptor.OpenGL
         {
             // TODO: Null check all of these params
             this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
-            this.glContextReactor = glReactor;
+            this.glContextReactable = glReactable;
             this.keyboardInput = keyboardInput;
             this.mouseInput = mouseInput;
         }
@@ -334,7 +334,7 @@ namespace Velaptor.OpenGL
                 throw new InvalidOperationException(this.nullWindowExceptionMsg);
             }
 
-            this.glContextReactor.PushNotification(new GLContextData(this.glWindow));
+            this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
 
             this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
             this.glInputContext = this.glWindow.CreateInput();

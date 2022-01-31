@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLInitReactor.cs" company="KinsonDigital">
+﻿// <copyright file="RemoveBatchItemReactable.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,28 +12,28 @@ namespace Velaptor.Observables
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Creates an observable to send push notification that OpenGL is initialized.
+    /// Creates a reactable to send push notifications to remove items from a batching service.
     /// </summary>
-    internal class OpenGLInitReactor : Reactor<GLInitData>
+    internal class RemoveBatchItemReactable : Reactable<RemoveBatchItemData>
     {
         /// <summary>
-        /// Sends a push notification that OpenGL has been initialized.
+        /// Sends a push notification to remove a batch item.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the observers after the notification has been pushed.</param>
+        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the reactors after the notification has been pushed.</param>
         [SuppressMessage(
             "ReSharper",
             "ForCanBeConvertedToForeach",
-            Justification = "Required for proper observable operation.")]
-        public override void PushNotification(GLInitData data, bool unsubscribeAfterProcessing = false)
+            Justification = "Required for proper reactable operation.")]
+        public override void PushNotification(RemoveBatchItemData data, bool unsubscribeAfterProcessing = false)
         {
             /* Work from the end to the beginning of the list
-               just in case the observable is disposed(removed)
+               just in case the reactable is disposed(removed)
                in the OnNext() method.
              */
-            for (var i = Observers.Count - 1; i >= 0; i--)
+            for (var i = Reactors.Count - 1; i >= 0; i--)
             {
-                Observers[i].OnNext(data);
+                Reactors[i].OnNext(data);
             }
 
             if (unsubscribeAfterProcessing)
