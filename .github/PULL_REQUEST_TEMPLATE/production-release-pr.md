@@ -24,12 +24,10 @@ Example: _release/v1.2.3_
 - [ ] No
 
 The name of the branch for this pull request is merging into the production branch with the name **_master_**.
-
 - [ ] Yes
 - [ ] No
 
-This release branch was created from the development branch with the name **_develop_**.
-
+Is the head(source) branch for this pull request created from a branch with the name **_develop_**?
 - [ ] Yes
 - [ ] No
 </details>

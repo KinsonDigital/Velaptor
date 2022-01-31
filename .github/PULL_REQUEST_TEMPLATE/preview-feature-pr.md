@@ -30,7 +30,7 @@ Example: _preview/v1.2.3-preview.4_
 - [ ] Yes
 - [ ] No
 
-Is this pull request branch created from a **_preview branch_** with the correct syntax?  
+Is the head(source) branch for this pull request created from a branch with the correct **_preview branch_** syntax?
 
 Syntax: _preview/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;-preview.&lt;prev-number&gt;_  
 Example: _preview/v1.2.3-preview.4_

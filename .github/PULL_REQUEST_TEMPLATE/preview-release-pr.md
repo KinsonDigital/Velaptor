@@ -29,7 +29,7 @@ Example: _release/v1.2.3_
 - [ ] Yes
 - [ ] No
 
-Is this pull request branch created from a **_release branch_** with the correct syntax?
+Is the head(source) branch for this pull request created from a branch with the correct **_release branch_** syntax?
 
 Syntax: _release/v&lt;major-number&gt;.&lt;minor-number&gt;.&lt;patch-number&gt;_  
 Example: _release/v1.2.3_

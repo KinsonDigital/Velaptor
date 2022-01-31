@@ -26,7 +26,7 @@ The pull request is merging into a branch with the name **_develop_**.
 - [ ] Yes
 - [ ] No
 
-The head(source) branch for the pull request was created from a branch with the name **_develop_**.
+Is the head(source) branch for this pull request created from a branch with the name **_develop_**?
 - [ ] Yes
 - [ ] No
 </details>
