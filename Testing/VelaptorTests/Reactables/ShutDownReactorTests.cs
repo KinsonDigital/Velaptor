@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Observables
+namespace VelaptorTests.Reactables
 {
     using Moq;
     using Velaptor.Reactables;

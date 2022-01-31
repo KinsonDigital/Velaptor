@@ -1,8 +1,8 @@
-﻿// <copyright file="OpenGLContextReactorTests.cs" company="KinsonDigital">
+﻿// <copyright file="DisposeTexturesReactorTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Observables
+namespace VelaptorTests.Reactables
 {
     using Moq;
     using Velaptor.Reactables;
@@ -11,9 +11,9 @@ namespace VelaptorTests.Observables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="OpenGLContextReactable"/> class.
+    /// Tests the <see cref="DisposeTexturesReactable"/> class.
     /// </summary>
-    public class OpenGLContextReactorTests
+    public class DisposeTexturesReactorTests
     {
         #region Method Tests
         [Theory]
@@ -22,16 +22,16 @@ namespace VelaptorTests.Observables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<GLContextData>>();
+            var reactor = new Mock<IReactor<DisposeTextureData>>();
 
-            var reactable = new OpenGLContextReactable();
+            var reactable = new DisposeTexturesReactable();
             reactable.Subscribe(reactor.Object);
 
             // Act
-            reactable.PushNotification(default, unsubscribe);
+            reactable.PushNotification(new DisposeTextureData(123u), unsubscribe);
 
             // Assert
-            reactor.Verify(m => m.OnNext(default), Times.Once());
+            reactor.Verify(m => m.OnNext(new DisposeTextureData(123u)), Times.Once());
             Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion

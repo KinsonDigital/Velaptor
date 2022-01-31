@@ -1,8 +1,8 @@
-﻿// <copyright file="OpenGLInitReactorTests.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLContextReactorTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Observables
+namespace VelaptorTests.Reactables
 {
     using Moq;
     using Velaptor.Reactables;
@@ -11,9 +11,9 @@ namespace VelaptorTests.Observables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="OpenGLInitReactable"/> class.
+    /// Tests the <see cref="OpenGLContextReactable"/> class.
     /// </summary>
-    public class OpenGLInitReactorTests
+    public class OpenGLContextReactorTests
     {
         #region Method Tests
         [Theory]
@@ -22,9 +22,9 @@ namespace VelaptorTests.Observables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<GLInitData>>();
+            var reactor = new Mock<IReactor<GLContextData>>();
 
-            var reactable = new OpenGLInitReactable();
+            var reactable = new OpenGLContextReactable();
             reactable.Subscribe(reactor.Object);
 
             // Act

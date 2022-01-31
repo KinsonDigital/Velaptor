@@ -1,8 +1,8 @@
-﻿// <copyright file="DisposeTexturesReactorTests.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLInitReactorTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Observables
+namespace VelaptorTests.Reactables
 {
     using Moq;
     using Velaptor.Reactables;
@@ -11,9 +11,9 @@ namespace VelaptorTests.Observables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="DisposeTexturesReactable"/> class.
+    /// Tests the <see cref="OpenGLInitReactable"/> class.
     /// </summary>
-    public class DisposeTexturesReactorTests
+    public class OpenGLInitReactorTests
     {
         #region Method Tests
         [Theory]
@@ -22,16 +22,16 @@ namespace VelaptorTests.Observables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<DisposeTextureData>>();
+            var reactor = new Mock<IReactor<GLInitData>>();
 
-            var reactable = new DisposeTexturesReactable();
+            var reactable = new OpenGLInitReactable();
             reactable.Subscribe(reactor.Object);
 
             // Act
-            reactable.PushNotification(new DisposeTextureData(123u), unsubscribe);
+            reactable.PushNotification(default, unsubscribe);
 
             // Assert
-            reactor.Verify(m => m.OnNext(new DisposeTextureData(123u)), Times.Once());
+            reactor.Verify(m => m.OnNext(default), Times.Once());
             Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Observables.Core
+namespace VelaptorTests.Reactables.Core
 {
     using Velaptor.Reactables.Core;
     using VelaptorTests.Fakes;

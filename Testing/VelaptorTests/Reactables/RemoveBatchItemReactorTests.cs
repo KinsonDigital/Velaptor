@@ -1,8 +1,8 @@
-﻿// <copyright file="DisposeSoundsReactorTests.cs" company="KinsonDigital">
+﻿// <copyright file="RemoveBatchItemReactorTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Observables
+namespace VelaptorTests.Reactables
 {
     using Moq;
     using Velaptor.Reactables;
@@ -11,9 +11,9 @@ namespace VelaptorTests.Observables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="DisposeSoundsReactable"/> class.
+    /// Tests the <see cref="RemoveBatchItemReactable"/> class.
     /// </summary>
-    public class DisposeSoundsReactorTests
+    public class RemoveBatchItemReactorTests
     {
         #region Method Tests
         [Theory]
@@ -22,17 +22,18 @@ namespace VelaptorTests.Observables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<DisposeSoundData>>();
+            var reactor = new Mock<IReactor<RemoveBatchItemData>>();
 
-            var reactable = new DisposeSoundsReactable();
+            var reactable = new RemoveBatchItemReactable();
             reactable.Subscribe(reactor.Object);
 
             // Act
-            var soundData = new DisposeSoundData(123u);
-            reactable.PushNotification(soundData, unsubscribe);
+            var data = new RemoveBatchItemData(123u);
+            reactable.PushNotification(data, unsubscribe);
 
             // Assert
-            reactor.Verify(m => m.OnNext(soundData), Times.Once());
+            reactor.Verify(m => m.OnNext(data), Times.Once());
+
             Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion
