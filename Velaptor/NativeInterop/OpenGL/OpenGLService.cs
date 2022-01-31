@@ -103,6 +103,11 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc/>
         public void UnbindEBO()
         {
+            if (IsVAOBound)
+            {
+                throw new InvalidOperationException("The VAO object must be unbound before unbinding an EBO object.");
+            }
+
             this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
             IsEBOBound = false;
         }

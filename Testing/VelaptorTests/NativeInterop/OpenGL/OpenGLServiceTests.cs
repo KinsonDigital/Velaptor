@@ -176,6 +176,20 @@ namespace VelaptorTests.NativeInterop.OpenGL
         }
 
         [Fact]
+        public void UnbindEBO_WithBoundVAO_ThrowsException()
+        {
+            // Arrange
+            var service = CreateService();
+            service.BindVAO(123u);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
+            {
+                service.UnbindEBO();
+            }, "The VAO object must be unbound before unbinding an EBO object.");
+        }
+
+        [Fact]
         public void UnbindEBO_WhenInvoked_UnbindsElementBufferObject()
         {
             // Arrange
