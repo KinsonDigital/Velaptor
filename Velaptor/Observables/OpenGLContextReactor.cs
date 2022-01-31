@@ -19,7 +19,7 @@ namespace Velaptor.Observables
         /// Sends a push notification that the OpenGL context has been created.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">Unsubscribes all of the observers after the notification has been pushed.</param>
+        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the observers after the notification has been pushed.</param>
         /// <remarks>
         ///     This <see cref="OpenGLContextReactor"/>
         /// </remarks>

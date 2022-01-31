@@ -22,11 +22,7 @@ namespace Velaptor.Observables.Core
         /// </summary>
         public ReadOnlyCollection<IObserver<TData>> Observers => new (this.observers);
 
-        /// <summary>
-        /// Subscribes the given <paramref name="observer"/> to get push notifications from this <see cref="Reactor{TData}"/>.
-        /// </summary>
-        /// <param name="observer">The observer to subscribe.</param>
-        /// <returns>The unsubscriber to use to unsubscribe the <see cref="IObserver{T}"/> from this <see cref="Reactor{TData}"/>.</returns>
+        /// <inheritdoc/>
         public virtual IDisposable Subscribe(IObserver<TData> observer)
         {
             if (!this.observers.Contains(observer))

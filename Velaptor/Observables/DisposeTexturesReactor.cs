@@ -17,10 +17,10 @@ namespace Velaptor.Observables
     internal class DisposeTexturesReactor : Reactor<DisposeTextureData>
     {
         /// <summary>
-        /// Sends a push notification dispose of a texture.
+        /// Sends a push notification to dispose of a texture.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">Unsubscribes all of the observers after the notification has been pushed.</param>
+        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the observers after the notification has been pushed.</param>
         [SuppressMessage(
             "ReSharper",
             "ForCanBeConvertedToForeach",

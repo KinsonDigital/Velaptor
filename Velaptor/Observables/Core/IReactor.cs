@@ -10,10 +10,17 @@ namespace Velaptor.Observables.Core
     /// Defines a provider for push-based notification.
     /// </summary>
     /// <typeparam name="T">The information sent with the push notification.</typeparam>
-    public interface IReactor<T> : IObservable<T>, IDisposable
+    public interface IReactor<T> : IDisposable
     {
-        /// <inheritdoc cref="System.IObservable{T}.Subscribe"/>
-        new IDisposable Subscribe(IObserver<T> observer);
+        /// <summary>
+        /// Notifies the provider that an observer is to receive notifications.
+        /// </summary>
+        /// <param name="observer">The object that is to receive notifications.</param>
+        /// <returns>
+        ///     A reference to an interface that allows observers to stop receiving
+        ///     notifications before the provider has finished sending them.
+        /// </returns>
+        IDisposable Subscribe(IObserver<T> observer);
 
         /// <summary>
         /// Pushes a single notification with the given <paramref name="data"/>.

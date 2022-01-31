@@ -20,7 +20,7 @@ namespace Velaptor.Observables
         /// Sends a push notification that OpenGL has been initialized.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">Unsubscribes all of the observers after the notification has been pushed.</param>
+        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the observers after the notification has been pushed.</param>
         [SuppressMessage(
             "ReSharper",
             "ForCanBeConvertedToForeach",
