@@ -66,8 +66,8 @@ namespace VelaptorTests.Graphics
             this.mockGL = new Mock<IGLInvoker>();
 
             this.mockGLService = new Mock<IOpenGLService>();
-            this.mockGLService.Setup(m => m.LinkProgramSuccess(It.IsAny<uint>())).Returns(true);
-            this.mockGLService.Setup(m => m.ShaderCompileSuccess(It.IsAny<uint>())).Returns(true);
+            this.mockGLService.Setup(m => m.ProgramLinkedSuccessfully(It.IsAny<uint>())).Returns(true);
+            this.mockGLService.Setup(m => m.ShaderCompiledSuccessfully(It.IsAny<uint>())).Returns(true);
             this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
 
             this.mockTextureShader = new Mock<IShaderProgram>();

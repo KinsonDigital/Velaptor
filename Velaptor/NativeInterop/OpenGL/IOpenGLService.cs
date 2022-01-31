@@ -34,16 +34,16 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <summary>
         /// Returns a value indicating if the program linking process was successful.
         /// </summary>
-        /// <param name="program">The ID of the program to check.</param>
+        /// <param name="programId">The ID of the program to check.</param>
         /// <returns><see langword="true"/> if the linking was successful.</returns>
-        bool LinkProgramSuccess(uint program);
+        bool ProgramLinkedSuccessfully(uint programId);
 
         /// <summary>
         /// Returns a value indicating if the shader was compiled successfully.
         /// </summary>
         /// <param name="shaderId">The ID of the shader to check.</param>
         /// <returns><see langword="true"/> if the shader compiled successfully.</returns>
-        bool ShaderCompileSuccess(uint shaderId);
+        bool ShaderCompiledSuccessfully(uint shaderId);
 
         /// <summary>
         /// Creates a debug group into the command stream.

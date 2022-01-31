@@ -73,7 +73,7 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public bool LinkProgramSuccess(uint program)
+        public bool ProgramLinkedSuccessfully(uint programId)
         {
             var programParams = this.glInvoker.GetProgram(programId, GLProgramParameterName.LinkStatus);
 
@@ -81,7 +81,7 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public bool ShaderCompileSuccess(uint shaderId)
+        public bool ShaderCompiledSuccessfully(uint shaderId)
         {
             var shaderParams = this.glInvoker.GetShader(shaderId, GLShaderParameter.CompileStatus);
 
