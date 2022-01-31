@@ -32,6 +32,47 @@ namespace Velaptor.NativeInterop.OpenGL
         Vector2 GetViewPortPosition();
 
         /// <summary>
+        /// Binds a vertex buffer object for updating buffer data in OpenGL.
+        /// </summary>
+        /// <param name="vbo">The vertex buffer object ID.</param>
+        void BindVBO(uint vbo);
+
+        /// <summary>
+        /// Unbinds the current vertex buffer object if one is currently bound.
+        /// </summary>
+        void UnbindVBO();
+
+        /// <summary>
+        /// Binds an element buffer object for updating element data in OpenGL.
+        /// </summary>
+        /// <param name="ebo">The element buffer object ID.</param>
+        /// <remarks>
+        ///     This is also called an IBO (Index Buffer Object).
+        /// </remarks>
+        void BindEBO(uint ebo);
+
+        /// <summary>
+        /// Unbinds the element array buffer object if one is currently bound.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: Make sure to unbind AFTER you unbind the VAO.  This is because the EBO is stored
+        /// inside of the VAO.  Unbinding the EBO before unbinding, (or without unbinding the VAO),
+        /// you are telling OpenGL that you don't want your VAO to use the EBO.
+        /// </remarks>
+        void UnbindEBO();
+
+        /// <summary>
+        /// Binds the element array object for updating vertex buffer data in OpenGL.
+        /// </summary>
+        /// <param name="vao">The vertex array buffer object ID.</param>
+        void BindVAO(uint vao);
+
+        /// <summary>
+        /// Unbinds the current element array object that is currently bound if one is currently bound.
+        /// </summary>
+        void UnbindVAO();
+
+        /// <summary>
         /// Returns a value indicating if the program linking process was successful.
         /// </summary>
         /// <param name="programId">The ID of the program to check.</param>

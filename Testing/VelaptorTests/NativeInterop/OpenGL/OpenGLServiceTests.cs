@@ -83,6 +83,84 @@ namespace VelaptorTests.NativeInterop.OpenGL
             Assert.Equal(new Vector2(11, 22), actual);
         }
 
+        [Fact]
+        public void BindVBO_WhenInvoked_BindsVertexBufferObject()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.BindVBO(123u);
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ArrayBuffer, 123u), Times.Once);
+        }
+
+        [Fact]
+        public void UnbindVBO_WhenInvoked_UnbindsVertexBufferObject()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.UnbindVBO();
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ArrayBuffer, 0u), Times.Once);
+        }
+
+        [Fact]
+        public void BindEBO_WhenInvoked_BindsElementBufferObject()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.BindEBO(123u);
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, 123u), Times.Once);
+        }
+
+        [Fact]
+        public void UnbindEBO_WhenInvoked_UnbindsElementBufferObject()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.UnbindEBO();
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0u), Times.Once);
+        }
+
+        [Fact]
+        public void BindVAO_WhenInvoked_BindsVertexArrayObject()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.BindVAO(123u);
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindVertexArray(123u), Times.Once);
+        }
+
+        [Fact]
+        public void UnbindVAO_WhenInvoked_UnbindsVertexArrayObject()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.UnbindVAO();
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindVertexArray(0u), Times.Once);
+        }
+
         [Theory]
         [InlineData(1, true)]
         [InlineData(100, true)]

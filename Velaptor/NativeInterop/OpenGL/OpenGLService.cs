@@ -71,6 +71,24 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
+        public void BindVBO(uint vbo) => this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, vbo);
+
+        /// <inheritdoc/>
+        public void UnbindVBO() => this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, 0u);
+
+        /// <inheritdoc/>
+        public void BindEBO(uint ebo) => this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, ebo);
+
+        /// <inheritdoc/>
+        public void UnbindEBO() => this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
+
+        /// <inheritdoc/>
+        public void BindVAO(uint vao) => this.glInvoker.BindVertexArray(vao);
+
+        /// <inheritdoc/>
+        public void UnbindVAO() => this.glInvoker.BindVertexArray(0);
+
+        /// <inheritdoc/>
         public bool ProgramLinkedSuccessfully(uint programId)
         {
             var programParams = this.glInvoker.GetProgram(programId, GLProgramParameterName.LinkStatus);
