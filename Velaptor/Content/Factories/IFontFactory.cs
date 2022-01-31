@@ -22,8 +22,12 @@ namespace Velaptor.Content.Factories
         /// <param name="name">The name of the font content item.</param>
         /// <param name="fontFilePath">The file path to the font file.</param>
         /// <param name="size">The size of the font.</param>
+        /// <param name="isDefaultFont">True if the font loaded is the default font.</param>
         /// <param name="glyphMetrics">The metrics of all the font glyphs.</param>
         /// <returns>The <see cref="IFont"/> instance.</returns>
-        IFont Create(ITexture textureAtlas, string name, string fontFilePath, uint size, GlyphMetrics[] glyphMetrics);
+        /// <remarks>
+        ///     The default font is Times New Roman with all included styles.
+        /// </remarks>
+        IFont Create(ITexture textureAtlas, string name, string fontFilePath, uint size, bool isDefaultFont, GlyphMetrics[] glyphMetrics);
     }
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureTests.cs" company="KinsonDigital">
+// <copyright file="TextureTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,6 +12,8 @@ namespace VelaptorTests.Content
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using VelaptorTests.Helpers;
     using Xunit;
 
@@ -25,6 +27,8 @@ namespace VelaptorTests.Content
         private const uint TextureId = 1234;
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IReactable<DisposeTextureData>> mockDisposeReactable;
+        private readonly Mock<IDisposable> mockDisposeUnsubscriber;
         private readonly ImageData imageData;
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace VelaptorTests.Content
                     this.imageData.Pixels[x, y] = y switch
                     {
                         0 => this.imageData.Pixels[x, y] = Color.FromArgb(255, 255, 0, 0), // Row 1
-                        1 =>  this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 255, 0), // Row 2
+                        1 => this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 255, 0), // Row 2
                         2 => this.imageData.Pixels[x, y] = Color.FromArgb(255, 0, 0, 255), // Row 3
                         _ => throw new Exception($"Row '{y}' does not exist when setting up image data for test."),
                     };
@@ -71,9 +75,77 @@ namespace VelaptorTests.Content
             this.mockGL.Setup(m => m.GenTexture()).Returns(TextureId);
 
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockDisposeReactable = new Mock<IReactable<DisposeTextureData>>();
+            this.mockDisposeUnsubscriber = new Mock<IDisposable>();
         }
 
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullGLParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    null,
+                    this.mockGLExtensions.Object,
+                    this.mockDisposeReactable.Object,
+                    TextureName,
+                    TexturePath,
+                    this.imageData);
+            }, "The parameter must not be null. (Parameter 'gl')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullGLExtensionsParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    this.mockGL.Object,
+                    null,
+                    this.mockDisposeReactable.Object,
+                    TextureName,
+                    TexturePath,
+                    this.imageData);
+            }, "The parameter must not be null. (Parameter 'glExtensions')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullDisposeTexturesReactorParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    null,
+                    TextureName,
+                    TexturePath,
+                    this.imageData);
+            }, "The parameter must not be null. (Parameter 'disposeTexturesReactable')");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Ctor_WithEmptyOrNullFilePath_ThrowsException(string filePath)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    this.mockGL.Object,
+                    this.mockGLExtensions.Object,
+                    this.mockDisposeReactable.Object,
+                    TextureName,
+                    filePath,
+                    this.imageData);
+            }, "The parameter must not be null or empty. (Parameter 'filePath')");
+        }
+
         [Fact]
         public void Ctor_WithEmptyImageData_ThrowsException()
         {
@@ -108,10 +180,17 @@ namespace VelaptorTests.Content
             }
 
             // Act
-            var unused = new Texture(this.mockGL.Object, this.mockGLExtensions.Object, "test-texture.png", $@"C:\temp\test-texture.png", this.imageData);
+            var unused = new Texture(
+                this.mockGL.Object,
+                this.mockGLExtensions.Object,
+                this.mockDisposeReactable.Object,
+                "test-texture.png",
+                $@"C:\temp\test-texture.png",
+                this.imageData);
 
             // Assert
-            this.mockGLExtensions.Verify(m => m.LabelTexture(TextureId, "test-texture.png"), Times.Once());
+            this.mockGLExtensions.Verify(m => m.LabelTexture(TextureId, "test-texture.png"),
+                Times.Once());
             this.mockGL.Verify(m => m.TexParameter(
                 GLTextureTarget.Texture2D,
                 GLTextureParameterName.TextureMinFilter,
@@ -216,17 +295,63 @@ namespace VelaptorTests.Content
 
         #region Method Tests
         [Fact]
-        public void Dispose_WhenUnmanagedResourcesIsNotDisposed_DisposesOfUnmanagedResources()
+        public void DisposePushNotification_WithDifferentTextureID_DoesNotDisposeOfTexture()
         {
             // Arrange
-            var texture = CreateTexture();
+            IReactor<DisposeTextureData>? disposeReactor = null;
+
+            this.mockDisposeReactable.Setup(m =>
+                    m.Subscribe(It.IsAny<IReactor<DisposeTextureData>>()))
+                .Returns(this.mockDisposeUnsubscriber.Object)
+                .Callback<IReactor<DisposeTextureData>>(reactor =>
+                {
+                    if (reactor is null)
+                    {
+                        const string assertMsg = "Dispose textures reactable subscription failed.  Reactor is null.";
+                        Assert.True(false, assertMsg);
+                    }
+
+                    disposeReactor = reactor;
+                });
+
+            CreateTexture();
 
             // Act
-            texture.Dispose();
-            texture.Dispose();
+            disposeReactor?.OnNext(new DisposeTextureData(456u));
+
+            // Assert
+            this.mockGL.Verify(m => m.DeleteTexture(It.IsAny<uint>()), Times.Never);
+            this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Never);
+        }
+
+        [Fact]
+        public void WithDisposePushNotification_DisposesOfTexture()
+        {
+            // Arrange
+            IReactor<DisposeTextureData>? disposeReactor = null;
+
+            this.mockDisposeReactable.Setup(m =>
+                    m.Subscribe(It.IsAny<IReactor<DisposeTextureData>>()))
+                .Returns(this.mockDisposeUnsubscriber.Object)
+                .Callback<IReactor<DisposeTextureData>>(reactor =>
+                {
+                    if (reactor is null)
+                    {
+                        const string assertMsg = "Dispose textures reactable subscription failed.  Reactor is null.";
+                        Assert.True(false, assertMsg);
+                    }
+
+                    disposeReactor = reactor;
+                });
+
+            CreateTexture();
+
+            // Act
+            disposeReactor?.OnNext(new DisposeTextureData(TextureId));
 
             // Assert
             this.mockGL.Verify(m => m.DeleteTexture(TextureId), Times.Once());
+            this.mockDisposeUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 
@@ -238,6 +363,7 @@ namespace VelaptorTests.Content
             => new (
                 this.mockGL.Object,
                 this.mockGLExtensions.Object,
+                this.mockDisposeReactable.Object,
                 TextureName,
                 TexturePath,
                 useEmptyData ? default : this.imageData);

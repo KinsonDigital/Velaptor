@@ -4,12 +4,10 @@
 
 namespace Velaptor.OpenGL
 {
-    using System;
-
     /// <summary>
     /// A shader program consisting of a vertex and fragment shader.
     /// </summary>
-    internal interface IShaderProgram : IDisposable
+    internal interface IShaderProgram
     {
         /// <summary>
         /// Gets the shader program ID on the GPU.

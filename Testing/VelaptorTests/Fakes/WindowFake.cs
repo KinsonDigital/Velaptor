@@ -16,7 +16,7 @@ namespace VelaptorTests.Fakes
         /// </summary>
         /// <param name="window">Window implementation.</param>
         /// <remarks>This is used to help test the abstract <see cref="Window"/> class.</remarks>
-        public WindowFake(IWindow window)
+        internal WindowFake(IWindow window)
             : base(window)
         {
         }

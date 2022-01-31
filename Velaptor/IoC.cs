@@ -21,9 +21,11 @@ namespace Velaptor
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using Velaptor.Reactables;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -62,6 +64,8 @@ namespace Velaptor
         {
             SetupNativeInterop();
 
+            SetupReactors();
+
             SetupCaching();
 
             SetupFactories();
@@ -72,10 +76,7 @@ namespace Velaptor
 
             IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
             IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
-
             IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
-            IoCContainer.Register<OpenGLInitObservable>(Lifestyle.Singleton);
-            IoCContainer.Register<OpenGLContextObservable>(Lifestyle.Singleton);
 
             isInitialized = true;
         }
@@ -103,9 +104,22 @@ namespace Velaptor
         }
 
         /// <summary>
+        /// Sets up container registration related to reactables.
+        /// </summary>
+        private static void SetupReactors()
+        {
+            IoCContainer.Register<IReactable<GLInitData>, OpenGLInitReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<ShutDownData>, ShutDownReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<GLContextData>, OpenGLContextReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<DisposeTextureData>, DisposeTexturesReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<RemoveBatchItemData>, RemoveBatchItemReactable>(Lifestyle.Singleton);
+        }
+
+        /// <summary>
         /// Sets up container registration related to caching.
         /// </summary>
-        private static void SetupCaching() => IoCContainer.Register<IDisposableItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
+        private static void SetupCaching() => IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
 
         /// <summary>
         /// Sets up container registration related to factories.
@@ -132,6 +146,7 @@ namespace Velaptor
             IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
+            IoCContainer.Register<IBatchManagerService<SpriteBatchItem>, TextureBatchService>();
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(

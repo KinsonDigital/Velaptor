@@ -4,7 +4,6 @@
 
 namespace VelaptorTests.UI
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Drawing;
@@ -14,7 +13,6 @@ namespace VelaptorTests.UI
     using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.UI;
-    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -196,6 +194,7 @@ namespace VelaptorTests.UI
 
             // Assert
             Assert.False(button.IsLoaded);
+            this.mockContentLoader.Verify(m => m.UnloadTexture(this.mockTexture.Object), Times.Once);
         }
 
         [Fact]
@@ -203,14 +202,13 @@ namespace VelaptorTests.UI
         {
             // Arrange
             var button = CreateButton();
-            button.LoadContent();
-            button.Dispose();
 
             // Act
             button.UnloadContent();
 
             // Assert
             Assert.False(button.IsLoaded);
+            this.mockContentLoader.Verify(m => m.UnloadTexture(this.mockTexture.Object), Times.Never);
         }
 
         [Fact]
@@ -301,35 +299,6 @@ namespace VelaptorTests.UI
                     10,
                     20,
                     Color.White), Times.Once);
-        }
-
-        [Fact]
-        public void Dispose_WithNoLoadedContent_DoesNotThrowException()
-        {
-            // Arrange
-            var button = CreateButton();
-
-            // Act & Assert
-            AssertExtensions.DoesNotThrow<NullReferenceException>(() =>
-            {
-                button.Dispose();
-            });
-
-            this.mockTexture.Verify(m => m.Dispose(), Times.Never);
-        }
-
-        [Fact]
-        public void Dispose_WithLoadedContent_DisposesOfButton()
-        {
-            // Arrange
-            var button = CreateButton();
-            button.LoadContent();
-
-            // Act & Assert
-            button.Dispose();
-            button.Dispose();
-
-            this.mockTexture.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
 

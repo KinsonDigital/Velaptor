@@ -22,7 +22,7 @@ namespace Velaptor.Content.Factories
         /// <inheritdoc/>
         public IAtlasData Create(IEnumerable<AtlasSubTextureData> atlasSubTextureData, string dirPath, string atlasName)
         {
-            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             var path = IoC.Container.GetInstance<IPath>();
 
             return new AtlasData(textureCache, path, atlasSubTextureData, dirPath, atlasName);

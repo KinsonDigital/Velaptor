@@ -25,21 +25,21 @@ namespace Velaptor.Content
     {
         private const string TextureExtension = ".png";
         private const string AtlasDataExtension = ".json";
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
         private readonly IAtlasDataFactory atlasDataFactory;
         private readonly IPathResolver atlasDataPathResolver;
         private readonly IJSONService jsonService;
         private readonly IFile file;
         private readonly IPath path;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasLoader"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public AtlasLoader()
         {
-            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             this.atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
             this.atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
             this.jsonService = IoC.Container.GetInstance<IJSONService>();
@@ -56,8 +56,11 @@ namespace Velaptor.Content
         /// <param name="jsonService">Provides JSON related services.</param>
         /// <param name="file">Used to load the texture atlas.</param>
         /// <param name="path">Processes directory and file paths.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal AtlasLoader(
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             IAtlasDataFactory atlasDataFactory,
             IPathResolver atlasDataPathResolver,
             IJSONService jsonService,
@@ -187,27 +190,5 @@ namespace Velaptor.Content
 
         /// <inheritdoc/>
         public void Unload(string contentPathOrName) => this.textureCache.Unload(contentPathOrName);
-
-        /// <inheritdoc/>
-        public void Dispose() => Dispose(true);
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.textureCache.Dispose();
-            }
-
-            this.isDisposed = true;
-        }
     }
 }

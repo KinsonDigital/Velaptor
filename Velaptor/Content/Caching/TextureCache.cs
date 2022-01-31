@@ -14,6 +14,8 @@ namespace Velaptor.Content.Caching
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -21,25 +23,27 @@ namespace Velaptor.Content.Caching
     /// <summary>
     /// Caches <see cref="ITexture"/> objects for retrieval at a later time.
     /// </summary>
-    internal sealed class TextureCache : IDisposableItemCache<string, ITexture>
+    internal sealed class TextureCache : IItemCache<string, ITexture>
     {
         private const string DefaultTag = "[DEFAULT]";
-        private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
-        private const string DefaultBoldFont = "TimesNewRoman-Bold.ttf";
-        private const string DefaultItalicFont = "TimesNewRoman-Italic.ttf";
-        private const string DefaultBoldItalicFont = "TimesNewRoman-BoldItalic.ttf";
         private const string TextureFileExtension = ".png";
         private const string FontFileExtension = ".ttf";
+        private static readonly string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
+        private static readonly string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
+        private static readonly string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
+        private static readonly string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IImageService imageService;
         private readonly ITextureFactory textureFactory;
         private readonly IFontAtlasService fontAtlasService;
         private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IPath path;
+        private readonly IDisposable shutDownUnsubscriber;
+        private readonly IReactable<DisposeTextureData> disposeTexturesReactable;
         private readonly string[] defaultFontNames =
         {
-            DefaultRegularFont, DefaultBoldFont,
-            DefaultItalicFont, DefaultBoldItalicFont,
+            DefaultRegularFontName, DefaultBoldFontName,
+            DefaultItalicFontName, DefaultBoldItalicFontName,
         };
         private bool isDisposed;
 
@@ -51,25 +55,48 @@ namespace Velaptor.Content.Caching
         /// <param name="fontAtlasService">Provides font atlas services.</param>
         /// <param name="fontMetaDataParser">Parses metadata that might be attached to the file path.</param>
         /// <param name="path">Provides path related services.</param>
+        /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
+        /// <param name="disposeTexturesReactable">Sends push notifications to dispose of textures.</param>
         public TextureCache(
             IImageService imageService,
             ITextureFactory textureFactory,
             IFontAtlasService fontAtlasService,
             IFontMetaDataParser fontMetaDataParser,
-            IPath path)
+            IPath path,
+            IReactable<ShutDownData> shutDownReactable,
+            IReactable<DisposeTextureData> disposeTexturesReactable)
         {
-            this.imageService = imageService;
-            this.textureFactory = textureFactory;
-            this.fontAtlasService = fontAtlasService;
-            this.fontMetaDataParser = fontMetaDataParser;
-            this.path = path;
+            this.imageService = imageService ?? throw new ArgumentNullException(nameof(imageService), "The parameter must not be null.");
+            this.textureFactory = textureFactory ?? throw new ArgumentNullException(nameof(textureFactory), "The parameter must not be null.");
+            this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
+            this.fontMetaDataParser = fontMetaDataParser ?? throw new ArgumentNullException(nameof(fontMetaDataParser), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+
+            if (shutDownReactable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
+            }
+
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+
+            this.disposeTexturesReactable =
+                disposeTexturesReactable ??
+                throw new ArgumentNullException(nameof(disposeTexturesReactable), "The parameter must not be null.");
         }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="TextureCache"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        ~TextureCache() => Dispose(false);
+        ~TextureCache()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            ShutDown();
+        }
 
         /// <inheritdoc/>
         public int TotalCachedItems => this.textures.Count;
@@ -193,19 +220,6 @@ namespace Velaptor.Content.Caching
                 }
             }
 
-            // If the requested texture is already loaded into the pool
-            // and has been disposed, remove it.
-            foreach (var texture in this.textures)
-            {
-                if (texture.Key != cacheKey || !texture.Value.IsDisposed)
-                {
-                    continue;
-                }
-
-                this.textures.TryRemove(texture);
-                break;
-            }
-
             return this.textures.GetOrAdd(cacheKey, _ =>
             {
                 ImageData imageData;
@@ -229,7 +243,7 @@ namespace Velaptor.Content.Caching
                     contentName = $"FontAtlasTexture|{contentName}|{parseResult.MetaData}";
                 }
 
-                return this.textureFactory.Create(contentName, fullFilePath, imageData, false);
+                return this.textureFactory.Create(contentName, fullFilePath, imageData);
             });
         }
 
@@ -237,38 +251,37 @@ namespace Velaptor.Content.Caching
         public void Unload(string cacheKey)
         {
             this.textures.TryRemove(cacheKey, out var texture);
-            texture?.Dispose();
-        }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (texture is not null)
+            {
+                this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
+            }
         }
 
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Disposes of all textures.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                var cacheKeys = this.textures.Keys.ToArray();
+            var cacheKeys = this.textures.Keys.ToArray();
 
-                // Dispose of all default and non default textures
-                foreach (var cacheKey in cacheKeys)
+            // Dispose of all default and non default textures
+            foreach (var cacheKey in cacheKeys)
+            {
+                this.textures.TryRemove(cacheKey, out var texture);
+
+                if (texture is not null)
                 {
-                    this.textures.TryRemove(cacheKey, out var texture);
-                    texture?.Dispose();
+                    this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
                 }
             }
+
+            this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }

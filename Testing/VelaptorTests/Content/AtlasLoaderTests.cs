@@ -31,7 +31,7 @@ namespace VelaptorTests.Content
         private const string FakeJSONData = "fake-json-data";
         private readonly string atlasImageFilePath = $"{DirPath}{AtlasContentName}{TextureExtension}";
         private readonly string atlasDataFilePath = $"{DirPath}{AtlasContentName}{AtlasDataExtension}";
-        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IAtlasDataFactory> mockAtlasDataFactory;
         private readonly Mock<IPathResolver> mockAtlasPathResolver;
         private readonly Mock<IJSONService> mockJSONService;
@@ -43,7 +43,7 @@ namespace VelaptorTests.Content
         /// </summary>
         public AtlasLoaderTests()
         {
-            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+            this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
             this.mockAtlasDataFactory = new Mock<IAtlasDataFactory>();
 
             this.mockAtlasPathResolver = new Mock<IPathResolver>();
@@ -340,21 +340,6 @@ namespace VelaptorTests.Content
             // Assert
             this.mockTextureCache.Verify(m => m.Unload(AtlasContentName));
         }
-
-        [Fact]
-        public void Dispose_WhenInvoked_DisposesOfTextures()
-        {
-            // Arrange
-            var loader = CreateLoader();
-            loader.Load(AtlasContentName);
-
-            // Act
-            loader.Dispose();
-            loader.Dispose();
-
-            // Assert
-            this.mockTextureCache.Verify(m => m.Dispose(), Times.Once);
-        }
         #endregion
 
         /// <summary>
@@ -391,6 +376,13 @@ namespace VelaptorTests.Content
                 this.mockFile.Object,
                 this.mockPath.Object);
 
+        /// <summary>
+        /// Mocks the atlas data factory for the purpose of testing.
+        /// </summary>
+        /// <param name="dataIfInvokedCorrectly">The mock data to return if the mock is invoked correctly.</param>
+        /// <param name="subTextureData">The sub texture data to return if the mock is invoked correctly.</param>
+        /// <param name="dirPath">The test directory path.</param>
+        /// <param name="atlasName">The test atlas name.</param>
         private void MockAtlasDataFactory(
             IAtlasData dataIfInvokedCorrectly,
             AtlasSubTextureData[] subTextureData,
@@ -404,6 +396,10 @@ namespace VelaptorTests.Content
                 .Returns(dataIfInvokedCorrectly);
         }
 
+        /// <summary>
+        /// Mocks the JSON data deserialization process.
+        /// </summary>
+        /// <returns>The test data to use if the mock is invoked correctly.</returns>
         private IEnumerable<AtlasSubTextureData> MockAtlasJSONData()
         {
             var data = CreateAtlasSubTextureData();

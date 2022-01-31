@@ -12,6 +12,8 @@ namespace Velaptor.Factories
     using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 
@@ -52,7 +54,7 @@ namespace Velaptor.Factories
                 return textureLoader;
             }
 
-            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             var texturePathResolver = new TexturePathResolver(IoC.Container.GetInstance<IDirectory>());
             var file = IoC.Container.GetInstance<IFile>();
             var path = IoC.Container.GetInstance<IPath>();
@@ -78,18 +80,20 @@ namespace Velaptor.Factories
                 return atlasLoader;
             }
 
-            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             var atlasDataFactory = IoC.Container.GetInstance<IAtlasDataFactory>();
             var atlasDataPathResolver = PathResolverFactory.CreateTextureAtlasPathResolver();
             var jsonService = IoC.Container.GetInstance<IJSONService>();
+            var file = IoC.Container.GetInstance<IFile>();
+            var path = IoC.Container.GetInstance<IPath>();
 
             atlasLoader = new AtlasLoader(
                 textureCache,
                 atlasDataFactory,
                 atlasDataPathResolver,
                 jsonService,
-                IoC.Container.GetInstance<IFile>(),
-                IoC.Container.GetInstance<IPath>());
+                file,
+                path);
 
             return atlasLoader;
         }
@@ -109,11 +113,13 @@ namespace Velaptor.Factories
             var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
             var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             var path = IoC.Container.GetInstance<IPath>();
+            var disposeSoundReactor = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
 
             soundLoader = new SoundLoader(
                 soundPathResolver,
                 soundFactory,
-                path);
+                path,
+                disposeSoundReactor);
 
             return soundLoader;
         }
@@ -133,7 +139,7 @@ namespace Velaptor.Factories
             var fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
             var embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
             var fontPathResolver = PathResolverFactory.CreateFontPathResolver();
-            var textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            var textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             var fontFactory = IoC.Container.GetInstance<IFontFactory>();
             var fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
             var directory = IoC.Container.GetInstance<IDirectory>();

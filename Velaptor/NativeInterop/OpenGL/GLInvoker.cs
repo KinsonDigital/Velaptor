@@ -12,9 +12,10 @@ namespace Velaptor.NativeInterop.OpenGL
     using System.Runtime.InteropServices;
     using Silk.NET.OpenGL;
     using Silk.NET.Windowing;
-    using Velaptor.Observables;
-    using Velaptor.Observables.Core;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -35,24 +36,24 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <summary>
         /// Initializes a new instance of the <see cref="GLInvoker"/> class.
         /// </summary>
-        /// <param name="glContextObservable">
-        ///     The OpenGL context observable to subscribe to get a push notification
+        /// <param name="glContextReactable">
+        ///     The OpenGL context reactable to subscribe to get a push notification
         ///     that the OpenGL context has been created.
         /// </param>
-        public GLInvoker(OpenGLContextObservable glContextObservable)
-            => this.glContextUnsubscriber = glContextObservable.Subscribe(new Observer<object>(
+        public GLInvoker(IReactable<GLContextData> glContextReactable)
+            => this.glContextUnsubscriber = glContextReactable.Subscribe(new Reactor<GLContextData>(
                 onNext: data =>
                 {
-                    if (data is IWindow window)
+                    if (data.Data is IWindow window)
                     {
                         this.gl = window.CreateOpenGL();
                     }
                     else
                     {
                         var exceptionMessage =
-                            $"The parameter '{nameof(data)}' of the '{nameof(Observer<object>.OnNext)}()' action delegate must be of type '{nameof(IWindow)}'.";
+                            $"The parameter '{nameof(data)}' of the '{nameof(Reactor<object>.OnNext)}()' action delegate must be of type '{nameof(IWindow)}'.";
                         exceptionMessage +=
-                            $"\n\t{nameof(OpenGLContextObservable)} subscription location: {nameof(GLInvoker)}.Ctor()";
+                            $"\n\t{nameof(OpenGLContextReactable)} subscription location: {nameof(GLInvoker)}.Ctor()";
 
                         throw new Exception(exceptionMessage);
                     }

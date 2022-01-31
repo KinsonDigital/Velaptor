@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Content
 {
+    using System;
     using System.IO;
     using System.IO.Abstractions;
     using Moq;
@@ -22,10 +23,10 @@ namespace VelaptorTests.Content
         private const string TextureDirPath = @"C:\textures\";
         private const string TextureFileName = "test-texture";
         private readonly string textureFilePath = $"{TextureDirPath}{TextureFileName}{TextureExtension}";
-        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
-        private readonly Mock<IPath> mockPath;
         private readonly Mock<IFile> mockFile;
+        private readonly Mock<IPath> mockPath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoaderTests"/> class.
@@ -36,7 +37,7 @@ namespace VelaptorTests.Content
             this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName))
                 .Returns(this.textureFilePath);
 
-            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+            this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
 
             this.mockFile = new Mock<IFile>();
             this.mockFile.Setup(m => m.Exists(this.textureFilePath)).Returns(true);
@@ -46,6 +47,64 @@ namespace VelaptorTests.Content
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}")).Returns(TextureFileName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}{TextureExtension}")).Returns(TextureFileName);
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullTextureCacheParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    null,
+                    this.mockTexturePathResolver.Object,
+                    this.mockFile.Object,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'textureCache')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullTexturePathResolverParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    this.mockTextureCache.Object,
+                    null,
+                    this.mockFile.Object,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'texturePathResolver')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFileParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    this.mockTextureCache.Object,
+                    this.mockTexturePathResolver.Object,
+                    null,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'file')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPathParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new TextureLoader(
+                    this.mockTextureCache.Object,
+                    this.mockTexturePathResolver.Object,
+                    this.mockFile.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'path')");
+        }
+        #endregion
 
         #region Method Tests
         [Fact]
@@ -134,20 +193,6 @@ namespace VelaptorTests.Content
             // Assert
             this.mockTextureCache.Verify(m => m.Unload(this.textureFilePath), Times.Once);
         }
-
-        [Fact]
-        public void Dispose_WhenInvoked_DisposesOfCachedTextures()
-        {
-            // Arrange
-            var loader = CreateLoader();
-
-            // Act
-            loader.Dispose();
-            loader.Dispose();
-
-            // Assert
-            this.mockTextureCache.Verify(m => m.Dispose(), Times.Once);
-        }
         #endregion
 
         /// <summary>
@@ -156,8 +201,8 @@ namespace VelaptorTests.Content
         /// <returns>The instance to test.</returns>
         private TextureLoader CreateLoader()
             => new (this.mockTextureCache.Object,
-             this.mockTexturePathResolver.Object,
-             this.mockFile.Object,
-             this.mockPath.Object);
+                this.mockTexturePathResolver.Object,
+                this.mockFile.Object,
+                this.mockPath.Object);
     }
 }

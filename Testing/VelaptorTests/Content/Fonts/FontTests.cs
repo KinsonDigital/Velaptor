@@ -36,7 +36,7 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFontStatsService> mockFontStatsService;
         private readonly Mock<ITexture> mockTexture;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
-        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\SampleTestData\";
         private Dictionary<char, GlyphMetrics> glyphMetrics = new ();
 
@@ -67,7 +67,7 @@ namespace VelaptorTests.Content.Fonts
             this.mockFontStatsService = new Mock<IFontStatsService>();
 
             this.mockFontAtlasService = new Mock<IFontAtlasService>();
-            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+            this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
 
             this.mockTexture = new Mock<ITexture>();
         }
@@ -165,6 +165,23 @@ namespace VelaptorTests.Content.Fonts
 
             // Assert
             Assert.Equal(FontSource.Unknown, font.Source);
+        }
+
+        [Fact]
+        public void Ctor_WhenInvoked_SetsPropertiesToCorrectValues()
+        {
+            // Arrange
+            var font = CreateFont();
+
+            // Actual
+            var actualName = font.Name;
+            var actualFilePath = font.FilePath;
+            var actualIsDefaultFont = font.IsDefaultFont;
+
+            // Assert
+            Assert.Equal(FontName, actualName);
+            Assert.Equal(this.fontFilePath, actualFilePath);
+            Assert.True(actualIsDefaultFont);
         }
         #endregion
 
@@ -319,6 +336,7 @@ namespace VelaptorTests.Content.Fonts
                 "test-name",
                 DirPath,
                 It.IsAny<uint>(),
+                It.IsAny<bool>(),
                 this.glyphMetrics.Values.ToArray());
 
             // Act
@@ -347,20 +365,6 @@ namespace VelaptorTests.Content.Fonts
             Assert.Equal('t', actual[3].Glyph);
             Assert.Equal(InvalidCharacter, actual[4].Glyph);
         }
-
-        [Fact]
-        public void Dispose_WhenInvoked_DisposesFont()
-        {
-            // Arrange
-            var font = CreateFont();
-
-            // Act
-            font.Dispose();
-            font.Dispose();
-
-            // Assert
-            this.mockTextureCache.Verify(m => m.Unload(this.fontFilePath), Times.Once);
-        }
         #endregion
 
         /// <inheritdoc/>
@@ -380,6 +384,7 @@ namespace VelaptorTests.Content.Fonts
                 FontName,
                 this.fontFilePath,
                 size,
+                true,
                 this.glyphMetrics.Values.ToArray());
 
         /// <summary>

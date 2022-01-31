@@ -17,7 +17,8 @@ namespace Velaptor.UI
     /// Provides the ability to enter text into a box.
     /// </summary>
     [ExcludeFromCodeCoverage] // TODO: Remove this once implementation is being worked on
-    public class TextBox : ControlBase
+    // TODO: Left as internal to prevent library users from using the control until it is ready
+    internal class TextBox : ControlBase
     {
         private const int LEFTMARGIN = 5;
         private const int RIGHTMARGIN = 5;
@@ -41,7 +42,6 @@ namespace Velaptor.UI
         {
             this.contentLoader = contentLoader;
 
-            // TODO: Load glyph to assist in render and cursor positioning
             // TODO: Setup textbox border rect
 
             this.text = new Label(contentLoader)

@@ -10,7 +10,6 @@ namespace Velaptor.UI
     using System.Numerics;
     using System.Threading.Tasks;
     using Velaptor.Content;
-    using Velaptor.Factories;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -26,9 +25,11 @@ namespace Velaptor.UI
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         /// <param name="window">The window implementation that contains the window functionality.</param>
+        [ExcludeFromCodeCoverage]
         protected Window(IWindow window)
         {
             this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
+
             this.window.Initialize = OnLoad;
             this.window.Uninitialize = OnUnload;
             this.window.Update = OnUpdate;
@@ -43,7 +44,16 @@ namespace Velaptor.UI
         /// <summary>
         /// Finalizes an instance of the <see cref="Window"/> class.
         /// </summary>
-        ~Window() => Dispose(false);
+        [ExcludeFromCodeCoverage]
+        ~Window()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            Dispose(false);
+        }
 
         /// <inheritdoc/>
         public string Title
@@ -133,10 +143,19 @@ namespace Velaptor.UI
         public async Task ShowAsync() => await this.window.ShowAsync().ConfigureAwait(true);
 
         /// <summary>
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
         /// Invoked when the window is loaded.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public virtual void OnLoad()
+        protected virtual void OnLoad()
         {
         }
 
@@ -145,7 +164,7 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void OnUpdate(FrameTime frameTime)
+        protected virtual void OnUpdate(FrameTime frameTime)
         {
         }
 
@@ -154,7 +173,7 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void OnDraw(FrameTime frameTime)
+        protected virtual void OnDraw(FrameTime frameTime)
         {
         }
 
@@ -162,11 +181,8 @@ namespace Velaptor.UI
         /// Invoked when the window is unloaded.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public virtual void OnUnload()
+        protected virtual void OnUnload()
         {
-            // TODO: Have every static factory dispose method called in here
-            SpriteBatchFactory.Dispose();
-            GPUBufferFactory.Dispose();
         }
 
         /// <summary>
@@ -174,17 +190,8 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="size">The new size.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void OnResize(SizeU size)
+        protected virtual void OnResize(SizeU size)
         {
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>

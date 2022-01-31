@@ -4,11 +4,13 @@
 
 namespace VelaptorTests.OpenGL
 {
+    using System;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Xunit;
 
     /// <summary>
@@ -18,8 +20,10 @@ namespace VelaptorTests.OpenGL
     {
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
-        private readonly Mock<IShaderLoaderService<uint>> mockShaderLoaderService;
-        private readonly OpenGLInitObservable glInitObservable;
+        private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
+        private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
+        private readonly Mock<IDisposable> mockGLInitUnsubscriber;
+        private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureShaderTests"/> class.
@@ -28,8 +32,10 @@ namespace VelaptorTests.OpenGL
         {
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
-            this.mockShaderLoaderService = new Mock<IShaderLoaderService<uint>>();
-            this.glInitObservable = new OpenGLInitObservable();
+            this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
+            this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
+            this.mockGLInitUnsubscriber = new Mock<IDisposable>();
+            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         }
 
         #region Method Tests
@@ -37,6 +43,7 @@ namespace VelaptorTests.OpenGL
         public void Use_WhenInvoked_SetsShaderAsUsed()
         {
             // Arrange
+            IReactor<GLInitData>? glInitReactor = null;
             const uint shaderId = 78;
             const int uniformLocation = 1234;
             this.mockGL.Setup(m => m.CreateProgram()).Returns(shaderId);
@@ -46,13 +53,26 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Setup(m
                 => m.GetProgram(shaderId, GLProgramParameterName.LinkStatus, out status));
 
+            this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
+                .Returns(this.mockGLInitUnsubscriber.Object)
+                .Callback<IReactor<GLInitData>>(reactor =>
+                {
+                    if (reactor is null)
+                    {
+                        Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                    }
+
+                    glInitReactor = reactor;
+                });
+
             var shader = new TextureShader(
                 this.mockGL.Object,
                 this.mockGLExtensions.Object,
-                this.mockShaderLoaderService.Object,
-                this.glInitObservable);
+                this.mockShaderLoader.Object,
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object);
 
-            this.glInitObservable.OnOpenGLInitialized();
+            glInitReactor.OnNext(default);
 
             // Act
             shader.Use();

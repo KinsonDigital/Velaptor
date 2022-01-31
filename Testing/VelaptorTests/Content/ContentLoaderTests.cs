@@ -165,22 +165,6 @@ namespace VelaptorTests.Content
             // Assert
             this.mockFontLoader.Verify(m => m.Unload($"{FontContentName}|size:{fontSize}"), Times.Once());
         }
-
-        [Fact]
-        public void Dispose_WhenInvoked_DisposesOfLoaders()
-        {
-            // Arrange
-            var loader = CreateContentLoader();
-
-            // Act
-            loader.Dispose();
-            loader.Dispose();
-
-            // Assert
-            this.mockTextureLoader.Verify(m => m.Dispose(), Times.Once());
-            this.mockAtlasLoader.Verify(m => m.Dispose(), Times.Once());
-            this.mockSoundLoader.Verify(m => m.Dispose(), Times.Once());
-        }
         #endregion
 
         /// <summary>

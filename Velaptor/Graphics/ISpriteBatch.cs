@@ -18,7 +18,7 @@ namespace Velaptor.Graphics
     /// Renders a single or batch of textures.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public facing API required for library users.")]
-    public interface ISpriteBatch : IDisposable
+    public interface ISpriteBatch
     {
         /// <summary>
         /// Gets the total number of sprites rendered for each batch.

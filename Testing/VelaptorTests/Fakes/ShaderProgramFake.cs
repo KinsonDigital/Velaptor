@@ -4,10 +4,11 @@
 
 namespace VelaptorTests.Fakes
 {
-    using System;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     /// <summary>
     /// Used to test the abstract class <see cref="ShaderProgram"/>.
@@ -17,12 +18,18 @@ namespace VelaptorTests.Fakes
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgramFake"/> class for the purpose of testing.
         /// </summary>
-        /// <param name="gl">Mocked <see cref="IGLInvoker"/>.</param>
-        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/>.</param>
-        /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService{TValue}"/>.</param>
-        /// <param name="glInitObservable">Mocked <see cref="IObservable{T}"/>.</param>
-        public ShaderProgramFake(IGLInvoker gl, IGLInvokerExtensions glExtensions, IShaderLoaderService<uint> shaderLoaderService, IObservable<bool> glInitObservable)
-            : base(gl, glExtensions, shaderLoaderService, glInitObservable)
+        /// <param name="gl">Mocked <see cref="IGLInvoker"/> for calling OpenGL functions.</param>
+        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/> for calling OpenGL functions.</param>
+        /// <param name="shaderLoaderService">Mocked <see cref="IShaderLoaderService{TValue}"/> for loading shader code.</param>
+        /// <param name="glInitReactable">Mocked <see cref="IReactable{T}"/> for OpenGL initialization..</param>
+        /// <param name="shutDownReactable">Mocked <see cref="IReactable{T}"/> for shutdown notifications.</param>
+        public ShaderProgramFake(
+            IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
+            IShaderLoaderService<uint> shaderLoaderService,
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
+            : base(gl, glExtensions, shaderLoaderService, glInitReactable, shutDownReactable)
         {
         }
     }

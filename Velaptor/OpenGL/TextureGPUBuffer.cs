@@ -14,6 +14,8 @@ namespace Velaptor.OpenGL
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Exceptions;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using NETRect = System.Drawing.Rectangle;
 
     // ReSharper restore RedundantNameQualifier
@@ -32,9 +34,17 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
-        public TextureGPUBuffer(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
-            : base(gl, glExtensions, glInitObservable)
+        /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
+        public TextureGPUBuffer(
+            IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
+            : base(gl, glExtensions, glInitReactable, shutDownReactable)
         {
         }
 

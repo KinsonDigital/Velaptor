@@ -1,4 +1,4 @@
-﻿// <copyright file="SoundLoader.cs" company="KinsonDigital">
+// <copyright file="SoundLoader.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,6 +11,8 @@ namespace Velaptor.Content
     using System.IO.Abstractions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -23,17 +25,19 @@ namespace Velaptor.Content
         private readonly IPathResolver soundPathResolver;
         private readonly ISoundFactory soundFactory;
         private readonly IPath path;
-        private bool isDisposed;
+        private readonly IReactable<DisposeSoundData> disposeSoundReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public SoundLoader()
         {
             this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
             this.soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             this.path = IoC.Container.GetInstance<IPath>();
+            this.disposeSoundReactable = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
         }
 
         /// <summary>
@@ -41,12 +45,21 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="soundFactory">Creates sound instances.</param>
-        /// <param name="path">Processes directory and fle paths.</param>
-        internal SoundLoader(IPathResolver soundPathResolver, ISoundFactory soundFactory, IPath path)
+        /// <param name="path">Processes directory and file paths.</param>
+        /// <param name="disposeSoundReactable">Sends a push notifications to dispose of sounds.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
+        internal SoundLoader(
+            IPathResolver soundPathResolver,
+            ISoundFactory soundFactory,
+            IPath path,
+            IReactable<DisposeSoundData> disposeSoundReactable)
         {
-            this.soundPathResolver = soundPathResolver;
-            this.soundFactory = soundFactory;
-            this.path = path;
+            this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), "The parameter must not be null.");
+            this.soundFactory = soundFactory ?? throw new ArgumentNullException(nameof(soundFactory), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+            this.disposeSoundReactable = disposeSoundReactable ?? throw new ArgumentNullException(nameof(disposeSoundReactable), "The parameter must not be null.");
         }
 
         /// <summary>
@@ -70,22 +83,9 @@ namespace Velaptor.Content
 
             var filePath = this.soundPathResolver.ResolveFilePath(name);
 
-            // If the requested font is already loaded into the pool
-            // and has been disposed, remove it.
-            foreach (var sound in this.sounds)
+            return this.sounds.GetOrAdd(filePath, (filePathCacheKey) =>
             {
-                if (sound.Key != filePath || !sound.Value.IsDisposed)
-                {
-                    continue;
-                }
-
-                this.sounds.TryRemove(sound);
-                break;
-            }
-
-            return this.sounds.GetOrAdd(filePath, (key) =>
-            {
-                var sound = this.soundFactory.Create(key);
+                var sound = this.soundFactory.Create(filePathCacheKey);
 
                 return sound;
             });
@@ -99,33 +99,8 @@ namespace Velaptor.Content
 
             if (this.sounds.TryRemove(filePath, out var sound))
             {
-                sound.Dispose();
+                this.disposeSoundReactable.PushNotification(new DisposeSoundData(sound.Id));
             }
-        }
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                foreach (var sound in this.sounds.Values)
-                {
-                    sound.Dispose();
-                }
-            }
-
-            this.isDisposed = true;
         }
     }
 }

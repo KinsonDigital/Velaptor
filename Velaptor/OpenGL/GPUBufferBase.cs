@@ -8,7 +8,8 @@ namespace Velaptor.OpenGL
     using System;
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using NETSizeF = System.Drawing.SizeF;
 
     // ReSharper restore RedundantNameQualifier
@@ -20,7 +21,8 @@ namespace Velaptor.OpenGL
     internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         where TData : struct
     {
-        private readonly IDisposable glObservableUnsubscriber;
+        private readonly IDisposable glInitUnsubscriber;
+        private readonly IDisposable shutDownUnsubscriber;
         private uint vao; // Vertex Array Object
         private uint vbo; // Vertex Buffer Object
         private uint ebo; // Element Buffer Object
@@ -32,20 +34,50 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
-        internal GPUBufferBase(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
+        /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
+        internal GPUBufferBase(
+            IGLInvoker gl,
+            IGLInvokerExtensions glExtensions,
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
         {
-            GL = gl;
-            GLExtensions = glExtensions;
-            ProcessCustomAttributes();
+            GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
+            GLExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), "The parameter must not be null.");
 
-            this.glObservableUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
+            if (glInitReactable is null)
+            {
+                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
+            }
+
+            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
+
+            if (shutDownReactable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
+            }
+
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+
+            ProcessCustomAttributes();
         }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
         /// </summary>
-        ~GPUBufferBase() => Dispose();
+        [ExcludeFromCodeCoverage]
+        ~GPUBufferBase()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            ShutDown();
+        }
 
         /// <summary>
         /// Gets the size of the sprite batch.
@@ -82,25 +114,6 @@ namespace Velaptor.OpenGL
         {
             PrepareForUpload();
             UploadVertexData(data, batchIndex);
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            this.glObservableUnsubscriber.Dispose();
-
-            GL.DeleteVertexArray(this.vao);
-            GL.DeleteBuffer(this.vbo);
-            GL.DeleteBuffer(this.ebo);
-
-            this.isDisposed = true;
-
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -260,6 +273,26 @@ namespace Velaptor.OpenGL
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Shuts down the application by disposing of resources.
+        /// </summary>
+        private void ShutDown()
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            GL.DeleteVertexArray(this.vao);
+            GL.DeleteBuffer(this.vbo);
+            GL.DeleteBuffer(this.ebo);
+
+            this.glInitUnsubscriber.Dispose();
+            this.shutDownUnsubscriber.Dispose();
+
+            this.isDisposed = true;
         }
     }
 }
