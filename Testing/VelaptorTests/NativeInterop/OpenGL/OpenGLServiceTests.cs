@@ -43,6 +43,59 @@ namespace VelaptorTests.NativeInterop.OpenGL
             }
         }
 
+        #region Prop Tests
+        [Fact]
+        public void IsVBOBound_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.BindVBO(123u);
+            var isBound = service.IsVBOBound;
+            service.UnbindVBO();
+            var isUnbound = service.IsVBOBound;
+
+            // Assert
+            Assert.True(isBound);
+            Assert.False(isUnbound);
+        }
+
+        [Fact]
+        public void IsEBOBound_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.BindEBO(123u);
+            var isBound = service.IsEBOBound;
+            service.UnbindEBO();
+            var isUnbound = service.IsEBOBound;
+
+            // Assert
+            Assert.True(isBound);
+            Assert.False(isUnbound);
+        }
+
+        [Fact]
+        public void IsVAOBound_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.BindVAO(123u);
+            var isBound = service.IsVAOBound;
+            service.UnbindVAO();
+            var isUnbound = service.IsVAOBound;
+
+            // Assert
+            Assert.True(isBound);
+            Assert.False(isUnbound);
+        }
+        #endregion
+
         #region Method Tests
         [Fact]
         public void GetViewPortSize_WhenInvoked_ReturnsCorrectResult()
@@ -120,6 +173,20 @@ namespace VelaptorTests.NativeInterop.OpenGL
 
             // Assert
             this.mockGLInvoker.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, 123u), Times.Once);
+        }
+
+        [Fact]
+        public void UnbindEBO_WithBoundVAO_ThrowsException()
+        {
+            // Arrange
+            var service = CreateService();
+            service.BindVAO(123u);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
+            {
+                service.UnbindEBO();
+            }, "The VAO object must be unbound before unbinding an EBO object.");
         }
 
         [Fact]

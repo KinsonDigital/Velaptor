@@ -23,6 +23,15 @@ namespace Velaptor.NativeInterop.OpenGL
         public OpenGLService(IGLInvoker glInvoker) => this.glInvoker = glInvoker;
 
         /// <inheritdoc/>
+        public bool IsVBOBound { get; private set; }
+
+        /// <inheritdoc/>
+        public bool IsEBOBound { get; private set; }
+
+        /// <inheritdoc/>
+        public bool IsVAOBound { get; private set; }
+
+        /// <inheritdoc/>
         public Size GetViewPortSize()
         {
             /*
@@ -71,22 +80,51 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public void BindVBO(uint vbo) => this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, vbo);
+        public void BindVBO(uint vbo)
+        {
+            this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, vbo);
+            IsVBOBound = true;
+        }
 
         /// <inheritdoc/>
-        public void UnbindVBO() => this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, 0u);
+        public void UnbindVBO()
+        {
+            this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, 0u);
+            IsVBOBound = false;
+        }
 
         /// <inheritdoc/>
-        public void BindEBO(uint ebo) => this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, ebo);
+        public void BindEBO(uint ebo)
+        {
+            this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, ebo);
+            IsEBOBound = true;
+        }
 
         /// <inheritdoc/>
-        public void UnbindEBO() => this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
+        public void UnbindEBO()
+        {
+            if (IsVAOBound)
+            {
+                throw new InvalidOperationException("The VAO object must be unbound before unbinding an EBO object.");
+            }
+
+            this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
+            IsEBOBound = false;
+        }
 
         /// <inheritdoc/>
-        public void BindVAO(uint vao) => this.glInvoker.BindVertexArray(vao);
+        public void BindVAO(uint vao)
+        {
+            this.glInvoker.BindVertexArray(vao);
+            IsVAOBound = true;
+        }
 
         /// <inheritdoc/>
-        public void UnbindVAO() => this.glInvoker.BindVertexArray(0);
+        public void UnbindVAO()
+        {
+            this.glInvoker.BindVertexArray(0);
+            IsVAOBound = false;
+        }
 
         /// <inheritdoc/>
         public void BindTexture2D(uint textureId) => this.glInvoker.BindTexture(GLTextureTarget.Texture2D, textureId);
