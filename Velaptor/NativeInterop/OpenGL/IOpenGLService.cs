@@ -52,7 +52,7 @@ namespace Velaptor.NativeInterop.OpenGL
         void BindEBO(uint ebo);
 
         /// <summary>
-        /// Unbinds the element array buffer object if one is currently bound.
+        /// Unbinds the element buffer object if one is currently bound.
         /// </summary>
         /// <remarks>
         /// NOTE: Make sure to unbind AFTER you unbind the VAO.  This is because the EBO is stored
@@ -68,7 +68,7 @@ namespace Velaptor.NativeInterop.OpenGL
         void BindVAO(uint vao);
 
         /// <summary>
-        /// Unbinds the current element array object that is currently bound if one is currently bound.
+        /// Unbinds the current vertex array object that is currently bound if one is currently bound.
         /// </summary>
         void UnbindVAO();
 
