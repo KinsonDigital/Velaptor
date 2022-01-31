@@ -89,6 +89,12 @@ namespace Velaptor.NativeInterop.OpenGL
         public void UnbindVAO() => this.glInvoker.BindVertexArray(0);
 
         /// <inheritdoc/>
+        public void BindTexture2D(uint textureId) => this.glInvoker.BindTexture(GLTextureTarget.Texture2D, textureId);
+
+        /// <inheritdoc/>
+        public void UnbindTexture2D() => this.glInvoker.BindTexture(GLTextureTarget.Texture2D, 0u);
+
+        /// <inheritdoc/>
         public bool ProgramLinkedSuccessfully(uint programId)
         {
             var programParams = this.glInvoker.GetProgram(programId, GLProgramParameterName.LinkStatus);

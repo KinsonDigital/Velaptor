@@ -161,6 +161,32 @@ namespace VelaptorTests.NativeInterop.OpenGL
             this.mockGLInvoker.Verify(m => m.BindVertexArray(0u), Times.Once);
         }
 
+        [Fact]
+        public void BindTexture2D_WhenInvoked_BindsTexture()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.BindTexture2D(123u);
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, 123u), Times.Once);
+        }
+
+        [Fact]
+        public void UnbindTexture2D_WhenInvoked_UnbindsTexture()
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act
+            service.UnbindTexture2D();
+
+            // Assert
+            this.mockGLInvoker.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, 0u), Times.Once);
+        }
+
         [Theory]
         [InlineData(1, true)]
         [InlineData(100, true)]
