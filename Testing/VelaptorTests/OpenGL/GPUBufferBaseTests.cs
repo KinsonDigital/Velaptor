@@ -24,7 +24,7 @@ namespace VelaptorTests.OpenGL
         private const uint VertexBufferId = 1234;
         private const uint IndexBufferId = 5678;
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
@@ -58,7 +58,7 @@ namespace VelaptorTests.OpenGL
 
             this.mockGL.Setup(m => m.GenVertexArray()).Returns(VertexArrayId);
 
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLService = new Mock<IOpenGLService>();
 
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
             this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
@@ -87,14 +87,14 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new GPUBufferFake(
                     null,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
         }
 
         [Fact]
-        public void Ctor_WithNullGLExtensionsParam_ThrowsException()
+        public void Ctor_WithNullOpenGLServiceParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -104,7 +104,7 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'glExtensions')");
+            }, "The parameter must not be null. (Parameter 'openGLService')");
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new GPUBufferFake(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     null,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glInitReactable')");
@@ -129,7 +129,7 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new GPUBufferFake(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockGLInitReactable.Object,
                     null);
             }, "The parameter must not be null. (Parameter 'shutDownReactable')");
@@ -178,7 +178,7 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Verify(m => m.GenVertexArray(), Times.Once);
             this.mockGL.Verify(m => m.BindVertexArray(VertexArrayId), Times.Once);
             this.mockGL.Verify(m => m.BindVertexArray(0), Times.Once);
-            this.mockGLExtensions.Verify(m => m.LabelVertexArray(VertexArrayId, BufferName));
+            this.mockGLService.Verify(m => m.LabelVertexArray(VertexArrayId, BufferName));
         }
 
         [Fact]
@@ -195,7 +195,7 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
             this.mockGL.Verify(m => m.BindBuffer(GLBufferTarget.ArrayBuffer, VertexBufferId), Times.Once);
             this.mockGL.Verify(m => m.BindBuffer(GLBufferTarget.ArrayBuffer, 0), Times.Once);
-            this.mockGLExtensions.Verify(m => m.LabelBuffer(VertexBufferId, BufferName, BufferType.VertexBufferObject));
+            this.mockGLService.Verify(m => m.LabelBuffer(VertexBufferId, BufferName, BufferType.VertexBufferObject));
         }
 
         [Fact]
@@ -212,7 +212,7 @@ namespace VelaptorTests.OpenGL
             this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
             this.mockGL.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, IndexBufferId), Times.Once);
             this.mockGL.Verify(m => m.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0), Times.Once);
-            this.mockGLExtensions.Verify(m => m.LabelBuffer(IndexBufferId, BufferName, BufferType.IndexArrayObject));
+            this.mockGLService.Verify(m => m.LabelBuffer(IndexBufferId, BufferName, BufferType.IndexArrayObject));
         }
 
         [Fact]
@@ -297,19 +297,19 @@ namespace VelaptorTests.OpenGL
             var uploadVertexDataGroupSequence = 0;
             var uploadIndicesDataGroupName = $"Upload {BufferName} Indices Data";
             var uploadIndicesDataGroupSequence = 0;
-            this.mockGLExtensions.Setup(m => m.BeginGroup(setupDataGroupName))
+            this.mockGLService.Setup(m => m.BeginGroup(setupDataGroupName))
                 .Callback(() =>
                 {
                     totalInvokes += 1;
                     setupDataGroupSequence = totalInvokes;
                 });
-            this.mockGLExtensions.Setup(m => m.BeginGroup(uploadVertexDataGroupName))
+            this.mockGLService.Setup(m => m.BeginGroup(uploadVertexDataGroupName))
                 .Callback(() =>
                 {
                     totalInvokes += 1;
                     uploadVertexDataGroupSequence = totalInvokes;
                 });
-            this.mockGLExtensions.Setup(m => m.BeginGroup(uploadIndicesDataGroupName))
+            this.mockGLService.Setup(m => m.BeginGroup(uploadIndicesDataGroupName))
                 .Callback(() =>
                 {
                     totalInvokes += 1;
@@ -322,11 +322,11 @@ namespace VelaptorTests.OpenGL
             this.glInitReactor.OnNext(default);
 
             // Assert
-            this.mockGLExtensions.Verify(m => m.BeginGroup(It.IsAny<string>()), Times.Exactly(3));
-            this.mockGLExtensions.Verify(m => m.BeginGroup(setupDataGroupName), Times.Once);
-            this.mockGLExtensions.Verify(m => m.BeginGroup(uploadVertexDataGroupName), Times.Once);
-            this.mockGLExtensions.Verify(m => m.BeginGroup(uploadIndicesDataGroupName), Times.Once);
-            this.mockGLExtensions.Verify(m => m.EndGroup(), Times.Exactly(3));
+            this.mockGLService.Verify(m => m.BeginGroup(It.IsAny<string>()), Times.Exactly(3));
+            this.mockGLService.Verify(m => m.BeginGroup(setupDataGroupName), Times.Once);
+            this.mockGLService.Verify(m => m.BeginGroup(uploadVertexDataGroupName), Times.Once);
+            this.mockGLService.Verify(m => m.BeginGroup(uploadIndicesDataGroupName), Times.Once);
+            this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
 
             // Check that the setup data group was called first
             Assert.Equal(1, setupDataGroupSequence);
@@ -404,7 +404,7 @@ namespace VelaptorTests.OpenGL
         /// <returns>The instance to test.</returns>
         private GPUBufferFake CreateBuffer() => new (
             this.mockGL.Object,
-            this.mockGLExtensions.Object,
+            this.mockGLService.Object,
             this.mockGLInitReactable.Object,
             this.mockShutDownReactable.Object);
     }

@@ -19,14 +19,14 @@ namespace VelaptorTests.Fakes
         /// Initializes a new instance of the <see cref="GPUBufferFake"/> class for the purpose of testing.
         /// </summary>
         /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
-        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/> for OpenGL function calls.</param>
+        /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for OpenGL function calls.</param>
         /// <param name="glInitReactable">Mocked <see cref="IReactable{T}"/> for OpenGL initialization.</param>
         /// <param name="shutDownReactable">Mocked <see cref="IReactable{T}"/> for application shutdown..</param>
         public GPUBufferFake(IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
+            IOpenGLService openGLService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
-            : base(gl, glExtensions, glInitReactable, shutDownReactable)
+            : base(gl, openGLService, glInitReactable, shutDownReactable)
         {
         }
 

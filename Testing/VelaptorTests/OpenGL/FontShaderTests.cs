@@ -20,7 +20,7 @@ namespace VelaptorTests.OpenGL
     public class FontShaderTests
     {
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
@@ -32,7 +32,7 @@ namespace VelaptorTests.OpenGL
         public FontShaderTests()
         {
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLService = new Mock<IOpenGLService>();
             this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
             this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
             this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
@@ -48,7 +48,7 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new FontShader(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockShaderLoader.Object,
                     null,
                     this.mockShutDownReactable.Object);
@@ -63,7 +63,7 @@ namespace VelaptorTests.OpenGL
             {
                 var unused = new FontShader(
                     this.mockGL.Object,
-                    this.mockGLExtensions.Object,
+                    this.mockGLService.Object,
                     this.mockShaderLoader.Object,
                     this.mockGLInitReactable.Object,
                     null);
@@ -100,7 +100,7 @@ namespace VelaptorTests.OpenGL
 
             var shader = new FontShader(
                 this.mockGL.Object,
-                this.mockGLExtensions.Object,
+                this.mockGLService.Object,
                 this.mockShaderLoader.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object);

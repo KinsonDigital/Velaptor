@@ -20,7 +20,7 @@ namespace VelaptorTests.Content
     public class TextureFactoryTests
     {
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IReactable<DisposeTextureData>> mockDisposeTexturesReactable;
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace VelaptorTests.Content
         public TextureFactoryTests()
         {
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLService = new Mock<IOpenGLService>();
             this.mockDisposeTexturesReactable = new Mock<IReactable<DisposeTextureData>>();
         }
 
@@ -40,7 +40,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new TextureFactory(null, this.mockGLExtensions.Object, this.mockDisposeTexturesReactable.Object);
+                var unused = new TextureFactory(null, this.mockGLService.Object, this.mockDisposeTexturesReactable.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
         }
 
@@ -51,7 +51,7 @@ namespace VelaptorTests.Content
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var unused = new TextureFactory(this.mockGL.Object, null, this.mockDisposeTexturesReactable.Object);
-            }, "The parameter must not be null. (Parameter 'glExtensions')");
+            }, "The parameter must not be null. (Parameter 'openGLService')");
         }
         #endregion
 
@@ -98,7 +98,7 @@ namespace VelaptorTests.Content
             // Assert
             // NOTE: These are only here to prove that the same injected objects are the ones being used.
             this.mockGL.Verify(m => m.GenTexture(), Times.Once);
-            this.mockGLExtensions.Verify(m => m.LabelTexture(It.IsAny<uint>(), It.IsAny<string>()), Times.Once);
+            this.mockGLService.Verify(m => m.LabelTexture(It.IsAny<uint>(), It.IsAny<string>()), Times.Once);
         }
         #endregion
 
@@ -108,7 +108,7 @@ namespace VelaptorTests.Content
         /// <returns>The instance to test.</returns>
         private TextureFactory CreateFactory() => new (
             this.mockGL.Object,
-            this.mockGLExtensions.Object,
+            this.mockGLService.Object,
             this.mockDisposeTexturesReactable.Object);
     }
 }

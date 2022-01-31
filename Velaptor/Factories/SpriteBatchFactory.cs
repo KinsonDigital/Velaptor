@@ -37,7 +37,7 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            var openGLService = IoC.Container.GetInstance<IOpenGLService>();
             var textureShader = ShaderFactory.CreateTextureShader();
             var fontShader = ShaderFactory.CreateFontShader();
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
@@ -49,7 +49,7 @@ namespace Velaptor.Factories
 
             spriteBatch = new SpriteBatch(
                 glInvoker,
-                glInvokerExtensions,
+                openGLService,
                 textureShader,
                 fontShader,
                 textureBuffer,
