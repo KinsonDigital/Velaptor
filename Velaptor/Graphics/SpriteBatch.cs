@@ -415,7 +415,7 @@ namespace Velaptor.Graphics
                 if (!textureIsBound)
                 {
                     this.gl.ActiveTexture(GLTextureUnit.Texture0);
-                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
+                    this.openGLService.BindTexture2D(batchItem.TextureId);
                     textureIsBound = true;
                 }
 
@@ -465,7 +465,7 @@ namespace Velaptor.Graphics
                 if (!fontTextureIsBound)
                 {
                     this.gl.ActiveTexture(GLTextureUnit.Texture1);
-                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
+                    this.openGLService.BindTexture2D(batchItem.TextureId);
                     fontTextureIsBound = true;
                 }
 

@@ -641,7 +641,7 @@ namespace VelaptorTests.Graphics
             this.mockGLService.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
-            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
+            this.mockGLService.Verify(m => m.BindTexture2D(textureId), Times.Once);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, batchIndex), Times.Once);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, batchIndex), Times.Never);
             this.mockTextureBatchService.Verify(m => m.EmptyBatch(), Times.Once);
@@ -1167,7 +1167,7 @@ namespace VelaptorTests.Graphics
                     IntPtr.Zero),
                 Times.Once());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture1), Times.Once);
-            this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, textureId), Times.Once);
+            this.mockGLService.Verify(m => m.BindTexture2D(textureId), Times.Once);
             this.mockFontBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(),
                     It.IsAny<uint>()),
                 Times.Exactly(textBeingRendered.Length));
