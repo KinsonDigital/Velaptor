@@ -83,7 +83,6 @@ Contains changes that require documentation updates to code docs or **Velaptor**
 
 My change requires unit tests to be written.
 - [ ] Yes
-    - [ ] I have added tests to cover my changes.
 - [ ] No
 </details>
 

@@ -72,7 +72,6 @@ Contains changes to workflow files. These changes can only done by the project m
 
 My change requires unit tests to be written.
 - [ ] Yes
-    - [ ] I have added tests to cover my changes.
 - [ ] No
 </details>
 
