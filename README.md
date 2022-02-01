@@ -17,6 +17,7 @@
 
 ![](https://img.shields.io/nuget/v/KinsonDigital.Velaptor?logo=nuget&style=plastic)
 ![Twitter URL](https://img.shields.io/twitter/url?label=Follow%20@KDCoder&logo=twitter&style=plastic&url=https%3A%2F%2Ftwitter.com%2FKDCoder)
+[![Join our Discord](https://img.shields.io/badge/chat%20on-discord-7289DA?style=plastic)](https://discord.gg/qewu6fNgv7)
 
 </div>
 
