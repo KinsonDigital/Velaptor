@@ -75,7 +75,7 @@ If you have any questions, contact a project maintainer.
 
 <h2 style="font-weight:bold" align="center">Practices</h2>
 
-- The code base is highly tested using unit testing while maintaining a high level of code coverage.  Manual testing is performed using the included testing application built specifically for manually testing the library.  When contributing, make sure to add or adjust the unit tests appropriately regarding your changes, and perform manual testing.
+- The code base is highly tested using unit testing while maintaining a high level of code coverage.  Manual testing is performed using the included testing application built specifically for manually testing the library.  When contributing, make sure to add or adjust the unit tests appropriately regarding your changes and perform manual testing.
 - We use a combination of [StyleCop](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) and [Microsoft.CodeAnalysis.NetAnalyzers](https://github.com/dotnet/roslyn-analyzers) libraries for maintaining coding standards.
    - We understand that there are some exceptions to the rule and not all coding standards fit every situation.  In these scenarios, contact a maintainer and lets discuss it!!  Warnings can always be suppressed if need be.
 - We use [semantic versioning 2.0](https://semver.org/) for versioning.
