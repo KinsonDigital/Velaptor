@@ -9,6 +9,8 @@ namespace VelaptorTests.Content
     using Velaptor.Content.Factories;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using VelaptorTests.Helpers;
     using Xunit;
 
@@ -18,7 +20,8 @@ namespace VelaptorTests.Content
     public class TextureFactoryTests
     {
         private readonly Mock<IGLInvoker> mockGL;
-        private readonly Mock<IGLInvokerExtensions> mockGLExtensions;
+        private readonly Mock<IOpenGLService> mockGLService;
+        private readonly Mock<IReactable<DisposeTextureData>> mockDisposeTexturesReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureFactoryTests"/> class.
@@ -26,7 +29,8 @@ namespace VelaptorTests.Content
         public TextureFactoryTests()
         {
             this.mockGL = new Mock<IGLInvoker>();
-            this.mockGLExtensions = new Mock<IGLInvokerExtensions>();
+            this.mockGLService = new Mock<IOpenGLService>();
+            this.mockDisposeTexturesReactable = new Mock<IReactable<DisposeTextureData>>();
         }
 
         #region Constructor Tests
@@ -36,7 +40,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new TextureFactory(null, this.mockGLExtensions.Object);
+                var unused = new TextureFactory(null, this.mockGLService.Object, this.mockDisposeTexturesReactable.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
         }
 
@@ -46,8 +50,8 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new TextureFactory(this.mockGL.Object, null);
-            }, "The parameter must not be null. (Parameter 'glExtensions')");
+                var unused = new TextureFactory(this.mockGL.Object, null, this.mockDisposeTexturesReactable.Object);
+            }, "The parameter must not be null. (Parameter 'openGLService')");
         }
         #endregion
 
@@ -63,7 +67,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                factory.Create(name, "test-path", new ImageData(null, 1, 2), true);
+                factory.Create(name, "test-path", new ImageData(null, 1, 2));
             }, "The parameter must not be null or empty. (Parameter 'name')");
         }
 
@@ -78,7 +82,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                factory.Create("test-name", filePath, new ImageData(null, 1, 2), true);
+                factory.Create("test-name", filePath, new ImageData(null, 1, 2));
             }, "The parameter must not be null or empty. (Parameter 'filePath')");
         }
 
@@ -89,12 +93,12 @@ namespace VelaptorTests.Content
             var factory = CreateFactory();
 
             // Act
-            factory.Create("test-name", "test-path", new ImageData(null, 1, 2), true);
+            factory.Create("test-name", "test-path", new ImageData(null, 1, 2));
 
             // Assert
             // NOTE: These are only here to prove that the same injected objects are the ones being used.
             this.mockGL.Verify(m => m.GenTexture(), Times.Once);
-            this.mockGLExtensions.Verify(m => m.LabelTexture(It.IsAny<uint>(), It.IsAny<string>()), Times.Once);
+            this.mockGLService.Verify(m => m.LabelTexture(It.IsAny<uint>(), It.IsAny<string>()), Times.Once);
         }
         #endregion
 
@@ -102,6 +106,9 @@ namespace VelaptorTests.Content
         /// Creates a new instance of <see cref="TextureFactory"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private TextureFactory CreateFactory() => new (this.mockGL.Object, this.mockGLExtensions.Object);
+        private TextureFactory CreateFactory() => new (
+            this.mockGL.Object,
+            this.mockGLService.Object,
+            this.mockDisposeTexturesReactable.Object);
     }
 }

@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// #pragma warning disable IDE0001 // Name can be simplified
-// #pragma warning disable IDE0002 // Name can be simplified
 namespace VelaptorTests.OpenGL
 {
     using System;
@@ -14,8 +12,9 @@ namespace VelaptorTests.OpenGL
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -36,7 +35,8 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IPlatform> mockPlatform;
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITaskService> mockTaskService;
-        private readonly Mock<OpenGLInitObservable> mockGLObservable;
+        private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
+        private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindowTests"/> class.
@@ -50,12 +50,13 @@ namespace VelaptorTests.OpenGL
             this.mockPlatform = new Mock<IPlatform>();
             this.mockContentLoader = new Mock<IContentLoader>();
             this.mockTaskService = new Mock<ITaskService>();
-            this.mockGLObservable = new Mock<OpenGLInitObservable>();
+            this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
+            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         }
 
         #region Contructor Tests
         [Fact]
-        public void Ctor_WithNullGLInvoker_ThrowsException()
+        public void Ctor_WithNullGLInvokerParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -70,12 +71,13 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
         }
 
         [Fact]
-        public void Ctor_WithNullSystemMonitorService_ThrowsException()
+        public void Ctor_WithNullSystemMonitorServiceParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -90,12 +92,13 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
         }
 
         [Fact]
-        public void Ctor_WithNullWindowFacade_ThrowsException()
+        public void Ctor_WithNullWindowFacadeParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -110,12 +113,13 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'windowFacade')");
         }
 
         [Fact]
-        public void Ctor_WithNullPlatform_ThrowsException()
+        public void Ctor_WithNullPlatformParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -130,12 +134,13 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
         }
 
         [Fact]
-        public void Ctor_WithNullTaskService_ThrowsException()
+        public void Ctor_WithNullTaskServiceParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -150,12 +155,13 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     null,
                     this.mockContentLoader.Object,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'taskService')");
         }
 
         [Fact]
-        public void Ctor_WithNullContentLoader_ThrowsException()
+        public void Ctor_WithNullContentLoaderParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -170,8 +176,51 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     null,
-                    this.mockGLObservable.Object);
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullGLInitReactorParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new GLWindow(
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
+                    this.mockMonitorService.Object,
+                    this.mockWindowFacade.Object,
+                    this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockContentLoader.Object,
+                    null,
+                    this.mockShutDownReactable.Object);
+            }, "The parameter must not be null. (Parameter 'glInitReactable')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullShutDownReactorParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new GLWindow(
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
+                    this.mockMonitorService.Object,
+                    this.mockWindowFacade.Object,
+                    this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockContentLoader.Object,
+                    this.mockGLInitReactable.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'shutDownReactable')");
         }
         #endregion
 
@@ -364,6 +413,21 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             Assert.Equal(30, actual);
+        }
+
+        [Fact]
+        public void ContentLoader_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var mockOtherContentLoader = new Mock<IContentLoader>();
+            var window = CreateWindow();
+
+            // Act
+            window.ContentLoader = mockOtherContentLoader.Object;
+            var actual = window.ContentLoader;
+
+            // Assert
+            Assert.Same(mockOtherContentLoader.Object, actual);
         }
 
         [Fact]
@@ -684,12 +748,12 @@ namespace VelaptorTests.OpenGL
             window.Dispose();
 
             // Assert
-            this.mockGLObservable.Verify(m => m.Dispose(), Times.Once());
             this.mockWindowFacade.VerifyRemove(s => s.Load -= It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Load)}' event did not occur.");
             this.mockWindowFacade.VerifyRemove(s => s.Unload -= It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Unload)}' event did not occur.");
             this.mockWindowFacade.VerifyRemove(s => s.UpdateFrame -= It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' event did not occur.");
             this.mockWindowFacade.VerifyRemove(s => s.RenderFrame -= It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.RenderFrame)}' event did not occur.");
             this.mockWindowFacade.VerifyRemove(s => s.Resize -= It.IsAny<EventHandler<WindowSizeEventArgs>>(), Times.Once(), $"Unsubscription of the '{nameof(IGameWindowFacade.Resize)}' event did not occur.");
+            this.mockGL.VerifyRemove(e => e.GLError -= It.IsAny<EventHandler<GLErrorEventArgs>>(), Times.Once, $"Unsubscription of the '{nameof(IGLInvoker.GLError)}' event did not occur.");
             this.mockWindowFacade.Verify(m => m.Dispose(), Times.Once());
             this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
             this.mockGL.Verify(m => m.Dispose(), Times.Once());
@@ -766,6 +830,21 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
+        public void GLWindow_WhenUnloadingWindow_PushesShutDownNotification()
+        {
+            // Arrange
+            var window = CreateWindow();
+            window.Show();
+
+            // Act
+            this.mockWindowFacade.Raise(m => m.Unload += null, EventArgs.Empty);
+
+            // Assert
+            this.mockShutDownReactable.Verify(m => m.PushNotification(default, true), Times.Once);
+            this.mockShutDownReactable.Verify(m => m.Dispose(), Times.Once);
+        }
+
+        [Fact]
         public void Close_WhenInvoked_ClosesInternalWindowFacade()
         {
             // Arrange
@@ -796,6 +875,7 @@ namespace VelaptorTests.OpenGL
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockGLObservable.Object);
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object);
     }
 }

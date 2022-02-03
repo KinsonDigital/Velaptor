@@ -28,7 +28,7 @@ namespace Velaptor.Content.Fonts
         private readonly IFontService fontService;
         private readonly IFontStatsService fontStatsService;
         private readonly IFontAtlasService fontAtlasService;
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
         private readonly IntPtr facePtr;
         private readonly GlyphMetrics invalidGlyph;
         private readonly char[] availableGlyphCharacters =
@@ -55,16 +55,18 @@ namespace Velaptor.Content.Fonts
         /// <param name="name">The name of the font content.</param>
         /// <param name="fontFilePath">The path to the font content.</param>
         /// <param name="size">The size to set the font.</param>
+        /// <param name="isDefaultFont">True if the font is a default font.</param>
         /// <param name="glyphMetrics">The glyph metric data including the atlas location of all glyphs in the atlas.</param>
         internal Font(
             ITexture texture,
             IFontService fontService,
             IFontStatsService fontStatsService,
             IFontAtlasService fontAtlasService,
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             string name,
             string fontFilePath,
             uint size,
+            bool isDefaultFont,
             GlyphMetrics[] glyphMetrics)
         {
             FontTextureAtlas = texture;
@@ -82,6 +84,7 @@ namespace Velaptor.Content.Fonts
             Name = name;
             FilePath = fontFilePath;
             FamilyName = this.fontService.GetFamilyName(fontFilePath);
+            IsDefaultFont = isDefaultFont;
 
             GetFontStatData(FilePath);
 
@@ -136,6 +139,9 @@ namespace Velaptor.Content.Fonts
         }
 
         /// <inheritdoc/>
+        public bool IsDefaultFont { get; }
+
+        /// <inheritdoc/>
         public IEnumerable<FontStyle> AvailableStylesForFamily
             => this.fontStats is null
                 ? Array.Empty<VelFontStyle>().ToReadOnlyCollection()
@@ -149,9 +155,6 @@ namespace Velaptor.Content.Fonts
 
         /// <inheritdoc/>
         public float LineSpacing { get; private set; }
-
-        /// <inheritdoc/>
-        public bool IsDisposed { get; private set; }
 
         /// <inheritdoc/>
         public ReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.ToReadOnlyCollection();
@@ -270,9 +273,6 @@ namespace Velaptor.Content.Fonts
         public float GetKerning(uint leftGlyphIndex, uint rightGlyphIndex)
             => this.fontService.GetKerning(this.facePtr, leftGlyphIndex, rightGlyphIndex);
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
         /// <summary>
         /// Gets all of the stats for a font at the given <paramref name="filePath"/>.
         /// </summary>
@@ -344,25 +344,6 @@ namespace Velaptor.Content.Fonts
             LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
 
             this.metrics = glyphMetrics;
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> to dispose of managed resources.</param>
-        private void Dispose(bool disposing)
-        {
-            if (IsDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.textureCache.Unload(FilePath);
-            }
-
-            IsDisposed = true;
         }
     }
 }

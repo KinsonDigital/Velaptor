@@ -121,12 +121,6 @@ namespace Velaptor.UI
         /// </remarks>
         protected Color TintColor { get; private set; } = Color.White;
 
-        /// <summary>
-        /// Gets a value indicating whether or not the control has been disposed.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        protected bool IsDisposed { get; private set; }
-
         /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
         public virtual void LoadContent() => IsLoaded = true;
 
@@ -195,33 +189,6 @@ namespace Velaptor.UI
         [ExcludeFromCodeCoverage]
         public virtual void Render(ISpriteBatch spriteBatch)
         {
-        }
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        [ExcludeFromCodeCoverage]
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        [ExcludeFromCodeCoverage]
-        protected virtual void Dispose(bool disposing) => IsDisposed = true;
-
-        /// <summary>
-        /// Throws an exception if the control is being loaded when it has already been disposed.
-        /// </summary>
-        /// <exception cref="Exception">Thrown when the control has been disposed.</exception>
-        protected void ThrowExceptionIfLoadingWhenDisposed()
-        {
-            if (IsDisposed)
-            {
-                throw new Exception("Cannot load a control that has been disposed.");
-            }
         }
     }
 }

@@ -4,7 +4,6 @@
 
 namespace Velaptor.OpenGL
 {
-#pragma warning disable IDE0001 // Name can be simplified
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
@@ -15,13 +14,13 @@ namespace Velaptor.OpenGL
     using Velaptor.Content;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using Velaptor.UI;
     using VelaptorMouseButton = Velaptor.Input.MouseButton; // TODO: Need to normalize these 2 enums and figure out which one to use if any at all
 
     // ReSharper restore RedundantNameQualifier
-#pragma warning restore IDE0001 // Name can be simplified
 
     /// <summary>
     /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
@@ -35,7 +34,8 @@ namespace Velaptor.OpenGL
         private readonly IGameWindowFacade windowFacade;
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
-        private readonly OpenGLInitObservable glObservable;
+        private readonly IReactable<GLInitData> glInitReactable;
+        private readonly IReactable<ShutDownData> shutDownReactable;
         private bool isShuttingDown;
         private bool firstRenderInvoked;
         private bool isDisposed;
@@ -52,7 +52,8 @@ namespace Velaptor.OpenGL
         /// <param name="platform">Information about the platform that is running the application.</param>
         /// <param name="taskService">Runs asynchronous tasks.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
-        /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
+        /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         public GLWindow(
             uint width,
             uint height,
@@ -63,7 +64,8 @@ namespace Velaptor.OpenGL
             IPlatform platform,
             ITaskService taskService,
             IContentLoader contentLoader,
-            OpenGLInitObservable glObservable)
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
         {
             this.gl = glInvoker ?? throw new ArgumentNullException(nameof(glInvoker), NullParamExceptionMessage);
             this.glfw = glfwInvoker ?? throw new ArgumentNullException(nameof(glfwInvoker), NullParamExceptionMessage);
@@ -71,8 +73,8 @@ namespace Velaptor.OpenGL
             this.windowFacade = windowFacade ?? throw new ArgumentNullException(nameof(windowFacade), NullParamExceptionMessage);
             this.platform = platform ?? throw new ArgumentNullException(nameof(platform), NullParamExceptionMessage);
             this.taskService = taskService ?? throw new ArgumentNullException(nameof(taskService), NullParamExceptionMessage);
-            this.glObservable = glObservable;
-
+            this.glInitReactable = glInitReactable ?? throw new ArgumentNullException(nameof(glInitReactable), NullParamExceptionMessage);
+            this.shutDownReactable = shutDownReactable ?? throw new ArgumentNullException(nameof(shutDownReactable), NullParamExceptionMessage);
             ContentLoader = contentLoader ?? throw new ArgumentNullException(nameof(contentLoader), NullParamExceptionMessage);
 
             SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
@@ -238,7 +240,6 @@ namespace Velaptor.OpenGL
         private void GameWindow_Load(object? sender, EventArgs e)
         {
             // OpenGL is ready to take function calls after this Init() call has ran
-            // TODO: Verify that this Init() is being called in unit tests
             this.windowFacade.Init(Width, Height);
 
             this.gl.SetupErrorCallback();
@@ -260,7 +261,7 @@ namespace Velaptor.OpenGL
              * The context of initialized here is that the OpenGL context is set
              *and the related GLFW window has been created and is ready to go.
              */
-            this.glObservable.OnOpenGLInitialized();
+            this.glInitReactable.PushNotification(default, true);
 
             Initialized = true;
 
@@ -274,8 +275,9 @@ namespace Velaptor.OpenGL
         {
             this.isShuttingDown = true;
 
-            ContentLoader.Dispose();
             Uninitialize?.Invoke();
+            this.shutDownReactable.PushNotification(default, true);
+            this.shutDownReactable.Dispose();
         }
 
         /// <summary>
@@ -365,13 +367,10 @@ namespace Velaptor.OpenGL
 
             if (disposing)
             {
-                this.glObservable.Dispose();
-
                 CachedStringProps.Clear();
                 CachedIntProps.Clear();
                 CachedBoolProps.Clear();
 
-                // TODO: Unit test for this unsubscription
                 this.gl.GLError -= GL_GLError;
 
                 this.windowFacade.Load -= GameWindow_Load;

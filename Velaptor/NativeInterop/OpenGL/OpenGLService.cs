@@ -1,28 +1,35 @@
-﻿// <copyright file="GLInvokerExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.NativeInterop.OpenGL
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
     using Velaptor.OpenGL;
 
     /// <summary>
-    /// Provides extensions/helper methods to improve OpenGL related functionality.
+    /// Provides OpenGL helper methods to improve OpenGL related operations.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    internal class GLInvokerExtensions : IGLInvokerExtensions
+    internal class OpenGLService : IOpenGLService
     {
         private readonly IGLInvoker glInvoker;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GLInvokerExtensions"/> class.
+        /// Initializes a new instance of the <see cref="OpenGLService"/> class.
         /// </summary>
         /// <param name="glInvoker">Invokes OpenGL functions.</param>
-        public GLInvokerExtensions(IGLInvoker glInvoker) => this.glInvoker = glInvoker;
+        public OpenGLService(IGLInvoker glInvoker) => this.glInvoker = glInvoker;
+
+        /// <inheritdoc/>
+        public bool IsVBOBound { get; private set; }
+
+        /// <inheritdoc/>
+        public bool IsEBOBound { get; private set; }
+
+        /// <inheritdoc/>
+        public bool IsVAOBound { get; private set; }
 
         /// <inheritdoc/>
         public Size GetViewPortSize()
@@ -73,17 +80,70 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public bool LinkProgramSuccess(uint program)
+        public void BindVBO(uint vbo)
         {
-            this.glInvoker.GetProgram(program, GLProgramParameterName.LinkStatus, out var programParams);
+            this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, vbo);
+            IsVBOBound = true;
+        }
+
+        /// <inheritdoc/>
+        public void UnbindVBO()
+        {
+            this.glInvoker.BindBuffer(GLBufferTarget.ArrayBuffer, 0u);
+            IsVBOBound = false;
+        }
+
+        /// <inheritdoc/>
+        public void BindEBO(uint ebo)
+        {
+            this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, ebo);
+            IsEBOBound = true;
+        }
+
+        /// <inheritdoc/>
+        public void UnbindEBO()
+        {
+            if (IsVAOBound)
+            {
+                throw new InvalidOperationException("The VAO object must be unbound before unbinding an EBO object.");
+            }
+
+            this.glInvoker.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
+            IsEBOBound = false;
+        }
+
+        /// <inheritdoc/>
+        public void BindVAO(uint vao)
+        {
+            this.glInvoker.BindVertexArray(vao);
+            IsVAOBound = true;
+        }
+
+        /// <inheritdoc/>
+        public void UnbindVAO()
+        {
+            this.glInvoker.BindVertexArray(0);
+            IsVAOBound = false;
+        }
+
+        /// <inheritdoc/>
+        public void BindTexture2D(uint textureId) => this.glInvoker.BindTexture(GLTextureTarget.Texture2D, textureId);
+
+        /// <inheritdoc/>
+        public void UnbindTexture2D() => this.glInvoker.BindTexture(GLTextureTarget.Texture2D, 0u);
+
+        /// <inheritdoc/>
+        public bool ProgramLinkedSuccessfully(uint programId)
+        {
+            var programParams = this.glInvoker.GetProgram(programId, GLProgramParameterName.LinkStatus);
 
             return programParams >= 1;
         }
 
         /// <inheritdoc/>
-        public bool ShaderCompileSuccess(uint shaderId)
+        public bool ShaderCompiledSuccessfully(uint shaderId)
         {
-            this.glInvoker.GetShader(shaderId, GLShaderParameter.CompileStatus, out var shaderParams);
+            var shaderParams = this.glInvoker.GetShader(shaderId, GLShaderParameter.CompileStatus);
 
             return shaderParams >= 1;
         }

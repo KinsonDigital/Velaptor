@@ -8,7 +8,8 @@ namespace Velaptor.OpenGL
     using System;
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables.Core;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using NETSizeF = System.Drawing.SizeF;
 
     // ReSharper restore RedundantNameQualifier
@@ -20,9 +21,8 @@ namespace Velaptor.OpenGL
     internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         where TData : struct
     {
-        private readonly IDisposable glObservableUnsubscriber;
-        private uint vao; // Vertex Array Object
-        private uint vbo; // Vertex Buffer Object
+        private readonly IDisposable glInitUnsubscriber;
+        private readonly IDisposable shutDownUnsubscriber;
         private uint ebo; // Element Buffer Object
         private uint[] indices = Array.Empty<uint>();
         private bool isDisposed;
@@ -31,21 +31,51 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="GPUBufferBase{TData}"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
-        internal GPUBufferBase(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
+        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
+        /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
+        internal GPUBufferBase(
+            IGLInvoker gl,
+            IOpenGLService openGLService,
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
         {
-            GL = gl;
-            GLExtensions = glExtensions;
-            ProcessCustomAttributes();
+            GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
+            OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
 
-            this.glObservableUnsubscriber = glInitObservable.Subscribe(new Observer<bool>(_ => Init()));
+            if (glInitReactable is null)
+            {
+                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
+            }
+
+            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
+
+            if (shutDownReactable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
+            }
+
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+
+            ProcessCustomAttributes();
         }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="GPUBufferBase{TData}"/> class.
         /// </summary>
-        ~GPUBufferBase() => Dispose();
+        [ExcludeFromCodeCoverage]
+        ~GPUBufferBase()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            ShutDown();
+        }
 
         /// <summary>
         /// Gets the size of the sprite batch.
@@ -69,9 +99,19 @@ namespace Velaptor.OpenGL
         private protected IGLInvoker GL { get; }
 
         /// <summary>
-        /// Gets the invoker that contains helper methods for simplified OpenGL function calls.
+        /// Gets the OpenGL service that provides helper methods for OpenGL related operations.
         /// </summary>
-        private protected IGLInvokerExtensions GLExtensions { get; }
+        private protected IOpenGLService OpenGLService { get; }
+
+        /// <summary>
+        /// Gets the ID of the vertex array object.
+        /// </summary>
+        private protected uint VAO { get; private set; }
+
+        /// <summary>
+        /// Gets the ID of the vertex buffer object.
+        /// </summary>
+        private protected uint VBO { get; private set; }
 
         /// <summary>
         /// Updates GPU buffer with the given <paramref name="data"/> at the given <paramref name="batchIndex"/>.
@@ -82,25 +122,6 @@ namespace Velaptor.OpenGL
         {
             PrepareForUpload();
             UploadVertexData(data, batchIndex);
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            this.glObservableUnsubscriber.Dispose();
-
-            GL.DeleteVertexArray(this.vao);
-            GL.DeleteBuffer(this.vbo);
-            GL.DeleteBuffer(this.ebo);
-
-            this.isDisposed = true;
-
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -137,66 +158,25 @@ namespace Velaptor.OpenGL
         protected internal abstract uint[] GenerateIndices();
 
         /// <summary>
-        /// Binds a vertex buffer object for updating buffer data in OpenGL.
-        /// </summary>
-        protected void BindVBO() => GL.BindBuffer(GLBufferTarget.ArrayBuffer, this.vbo);
-
-        /// <summary>
-        /// Unbinds the current vertex buffer object if one is currently bound.
-        /// </summary>
-        protected void UnbindVBO() => GL.BindBuffer(GLBufferTarget.ArrayBuffer, 0);
-
-        /// <summary>
-        /// Binds an element buffer object for updating element data in OpenGL.
-        /// </summary>
-        /// <summary>
-        ///     This is also called an IBO (Index Buffer Object).
-        /// </summary>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        protected void BindEBO() => GL.BindBuffer(GLBufferTarget.ElementArrayBuffer, this.ebo);
-
-        /// <summary>
-        /// Unbinds the element array buffer object if one is currently bound.
-        /// </summary>
-        /// <remarks>
-        /// NOTE: Make sure to unbind AFTER you unbind the VAO.  This is because the EBO is stored
-        /// inside of the VAO.  Unbinding the EBO before unbinding, (or without unbinding the VAO),
-        /// you are telling OpenGL that you don't want your VAO to use the EBO.
-        /// </remarks>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        protected void UnbindEBO() => GL.BindBuffer(GLBufferTarget.ElementArrayBuffer, 0);
-
-        /// <summary>
-        /// Binds the element array buffer object for updating vertex buffer data in OpenGL.
-        /// </summary>
-        protected void BindVAO() => GL.BindVertexArray(this.vao);
-
-        /// <summary>
-        /// Unbinds the current element array buffer that is currently bound if one is currently bound.
-        /// </summary>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        protected void UnbindVAO() => GL.BindVertexArray(0); // Unbind the VAO
-
-        /// <summary>
         /// Initializes the GPU buffer.
         /// </summary>
         private void Init()
         {
             // Generate the VAO and VBO with only 1 object each
-            this.vao = GL.GenVertexArray();
-            BindVAO();
-            GLExtensions.LabelVertexArray(this.vao, Name);
+            VAO = GL.GenVertexArray();
+            OpenGLService.BindVAO(VAO);
+            OpenGLService.LabelVertexArray(VAO, Name);
 
-            this.vbo = GL.GenBuffer();
-            BindVBO();
-            GLExtensions.LabelBuffer(this.vbo, Name, BufferType.VertexBufferObject);
+            VBO = GL.GenBuffer();
+            OpenGLService.BindVBO(VBO);
+            OpenGLService.LabelBuffer(VBO, Name, BufferType.VertexBufferObject);
 
             this.ebo = GL.GenBuffer();
-            BindEBO();
-            GLExtensions.LabelBuffer(this.ebo, Name, BufferType.IndexArrayObject);
+            OpenGLService.BindEBO(this.ebo);
+            OpenGLService.LabelBuffer(this.ebo, Name, BufferType.IndexArrayObject);
 
-            GLExtensions.BeginGroup($"Setup {Name} Data");
-            GLExtensions.BeginGroup($"Upload {Name} Vertex Data");
+            OpenGLService.BeginGroup($"Setup {Name} Data");
+            OpenGLService.BeginGroup($"Upload {Name} Vertex Data");
 
             IsInitialized = true;
 
@@ -204,22 +184,22 @@ namespace Velaptor.OpenGL
 
             GL.BufferData(GLBufferTarget.ArrayBuffer, vertBufferData, GLBufferUsageHint.DynamicDraw);
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
 
-            GLExtensions.BeginGroup($"Upload {Name} Indices Data");
+            OpenGLService.BeginGroup($"Upload {Name} Indices Data");
 
             this.indices = GenerateIndices();
 
             // Configure the Vertex Attribute so that OpenGL knows how to read the VBO
             GL.BufferData(GLBufferTarget.ElementArrayBuffer, this.indices, GLBufferUsageHint.StaticDraw);
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
 
             SetupVAO();
 
-            UnbindVBO();
-            UnbindVAO();
-            UnbindEBO();
-            GLExtensions.EndGroup();
+            OpenGLService.UnbindVBO();
+            OpenGLService.UnbindVAO();
+            OpenGLService.UnbindEBO();
+            OpenGLService.EndGroup();
         }
 
         /// <summary>
@@ -260,6 +240,26 @@ namespace Velaptor.OpenGL
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Shuts down the application by disposing of resources.
+        /// </summary>
+        private void ShutDown()
+        {
+            if (this.isDisposed)
+            {
+                return;
+            }
+
+            GL.DeleteVertexArray(VAO);
+            GL.DeleteBuffer(VBO);
+            GL.DeleteBuffer(this.ebo);
+
+            this.glInitUnsubscriber.Dispose();
+            this.shutDownUnsubscriber.Dispose();
+
+            this.isDisposed = true;
         }
     }
 }

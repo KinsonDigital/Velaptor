@@ -4,26 +4,25 @@
 
 namespace Velaptor.Content
 {
-    using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// Represents loadable content data.
     /// </summary>
-    public interface IContent : IDisposable
+    public interface IContent
     {
         /// <summary>
         /// Gets the name of the content.
         /// </summary>
+        [SuppressMessage(
+            "ReSharper",
+            "UnusedMemberInSuper.Global",
+            Justification = "Used by library users.")]
         string Name { get; }
 
         /// <summary>
         /// Gets the path to the content.
         /// </summary>
         string FilePath { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether or not the content item has been disposed.
-        /// </summary>
-        bool IsDisposed { get; }
     }
 }

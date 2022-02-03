@@ -15,9 +15,9 @@ namespace Velaptor.Graphics
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
-    using Velaptor.Observables.Core;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using NETRect = System.Drawing.Rectangle;
     using NETSizeF = System.Drawing.SizeF;
@@ -29,13 +29,15 @@ namespace Velaptor.Graphics
     {
         private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
         private readonly IGLInvoker gl;
-        private readonly IGLInvokerExtensions glExtensions;
+        private readonly IOpenGLService openGLService;
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
         private readonly IGPUBuffer<SpriteBatchItem> fontBuffer;
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
         private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
+        private readonly IDisposable glInitUnsubscriber;
+        private readonly IDisposable shutDownUnsubscriber;
 
         // ReSharper disable once MemberInitializerValueIgnored
         private CachedValue<Color> cachedClearColor = null!;
@@ -47,48 +49,54 @@ namespace Velaptor.Graphics
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes OpenGL extensions methods.</param>
+        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="textureShader">The shader used for rendering textures.</param>
         /// <param name="fontShader">The shader used for rendering text.</param>
         /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
-        /// <param name="glObservable">Provides push notifications to OpenGL related events.</param>
+        /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
-        ///     <paramref name="glObservable"/> is subscribed to in this class.  <see cref="GLWindow"/>
+        ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
         public SpriteBatch(
             IGLInvoker gl,
-            IGLInvokerExtensions glExtensions,
+            IOpenGLService openGLService,
             IShaderProgram textureShader,
             IShaderProgram fontShader,
             IGPUBuffer<SpriteBatchItem> textureBuffer,
             IGPUBuffer<SpriteBatchItem> fontBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
-            IObservable<bool> glObservable)
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
         {
-            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The '{nameof(IGLInvoker)}' must not be null.");
+            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
 
-            this.glExtensions = glExtensions ?? throw new ArgumentNullException(nameof(glExtensions), $"The '{nameof(IGLInvokerExtensions)}' must not be null.");
-            this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), $"The '{nameof(textureShader)}' must not be null.");
-            this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), $"The '{nameof(fontShader)}' must not be null.");
+            this.openGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
+            this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), "The parameter must not be null.");
+            this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), "The parameter must not be null.");
+            this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), "The parameter must not be null.");
+            this.fontBuffer = fontBuffer ?? throw new ArgumentNullException(nameof(fontBuffer), "The parameter must not be null.");
 
-            this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), $"The '{nameof(textureBuffer)}' must not be null.");
-            this.fontBuffer = fontBuffer ?? throw new ArgumentNullException(nameof(fontBuffer), $"The '{nameof(fontBuffer)}' must not be null.");
-
-            this.textureBatchService = textureBatchService;
+            this.textureBatchService = textureBatchService ?? throw new ArgumentNullException(nameof(textureBatchService), "The parameter must not be null.");
             this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.textureBatchService.BatchFilled += TextureBatchService_BatchFilled;
 
-            this.fontBatchService = fontBatchService;
+            this.fontBatchService = fontBatchService ?? throw new ArgumentNullException(nameof(fontBatchService), "The parameter must not be null.");
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
+            if (glInitReactable is null)
+            {
+                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
+            }
+
             // Receive a push notification that OpenGL has initialized
-            GLObservableUnsubscriber = glObservable.Subscribe(new Observer<bool>(
+            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
                 _ =>
                 {
                     this.cachedUIntProps.Values.ToList().ForEach(i => i.IsCaching = false);
@@ -98,6 +106,13 @@ namespace Velaptor.Graphics
                     Init();
                 }));
 
+            if (shutDownReactable is null)
+            {
+                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
+            }
+
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+
             SetupPropertyCaches();
         }
 
@@ -105,7 +120,15 @@ namespace Velaptor.Graphics
         /// Finalizes an instance of the <see cref="SpriteBatch"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        ~SpriteBatch() => Dispose(false);
+        ~SpriteBatch()
+        {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            ShutDown();
+        }
 
         /// <inheritdoc/>
         public uint RenderSurfaceWidth
@@ -127,12 +150,6 @@ namespace Velaptor.Graphics
             get => this.cachedClearColor.GetValue();
             set => this.cachedClearColor.SetValue(value);
         }
-
-        /// <summary>
-        /// Gets the unsubscriber for the subscription
-        /// to the <see cref="OpenGLInitObservable"/>.
-        /// </summary>
-        private IDisposable GLObservableUnsubscriber { get; }
 
         /// <inheritdoc/>
         public void BeginBatch() => this.hasBegun = true;
@@ -188,12 +205,7 @@ namespace Velaptor.Graphics
         {
             if (texture is null)
             {
-                throw new ArgumentNullException(nameof(texture), "The texture must not be null.");
-            }
-
-            if (texture.IsDisposed)
-            {
-                throw new InvalidOperationException($"Cannot render texture.  The texture '{texture.Name}' has been disposed.");
+                throw new ArgumentNullException(nameof(texture), $"Cannot render a null '{nameof(ITexture)}'.");
             }
 
             if (!this.hasBegun)
@@ -256,16 +268,20 @@ namespace Velaptor.Graphics
         /// <exception cref="InvalidOperationException">
         ///     Thrown if the <see cref="BeginBatch"/>() method is not called before calling this method.
         /// </exception>
+        /// <remarks>
+        ///     If <paramref name="font"/> is null, nothing will be rendered.
+        ///     <para>A null reference exception will not be thrown.</para>
+        /// </remarks>
         public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
         {
+            if (font is null)
+            {
+                throw new ArgumentNullException(nameof(font), $"Cannot render a null '{nameof(IFont)}'.");
+            }
+
             if (string.IsNullOrEmpty(text))
             {
                 return;
-            }
-
-            if (font.IsDisposed)
-            {
-                throw new InvalidOperationException($"Cannot render font.  The font '{font.Name}' has been disposed.");
             }
 
             size = size < 0f ? 0f : size;
@@ -346,35 +362,21 @@ namespace Velaptor.Graphics
             this.hasBegun = false;
         }
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
+        /// Shuts down the application by disposing of resources.
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
+        private void ShutDown()
         {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
-                this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
-                this.cachedUIntProps.Clear();
-                this.textureShader.Dispose();
-                this.textureBuffer.Dispose();
-                this.fontShader.Dispose();
-                this.fontBuffer.Dispose();
-                GLObservableUnsubscriber.Dispose();
-            }
+            this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
+            this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
+            this.cachedUIntProps.Clear();
+            this.glInitUnsubscriber.Dispose();
+            this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }
@@ -413,7 +415,7 @@ namespace Velaptor.Graphics
                 if (!textureIsBound)
                 {
                     this.gl.ActiveTexture(GLTextureUnit.Texture0);
-                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
+                    this.openGLService.BindTexture2D(batchItem.TextureId);
                     textureIsBound = true;
                 }
 
@@ -427,9 +429,9 @@ namespace Velaptor.Graphics
             {
                 var totalElements = 6u * totalItemsToRender;
 
-                this.glExtensions.BeginGroup($"Render {totalElements} Texture Elements");
+                this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
                 this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                this.glExtensions.EndGroup();
+                this.openGLService.EndGroup();
             }
 
             // Empty the batch items
@@ -443,7 +445,7 @@ namespace Velaptor.Graphics
         {
             var fontTextureIsBound = false;
 
-            this.glExtensions.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
+            this.openGLService.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
 
             this.fontShader.Use();
 
@@ -458,12 +460,12 @@ namespace Velaptor.Graphics
                     continue;
                 }
 
-                this.glExtensions.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+                this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
 
                 if (!fontTextureIsBound)
                 {
                     this.gl.ActiveTexture(GLTextureUnit.Texture1);
-                    this.gl.BindTexture(GLTextureTarget.Texture2D, batchItem.TextureId);
+                    this.openGLService.BindTexture2D(batchItem.TextureId);
                     fontTextureIsBound = true;
                 }
 
@@ -471,7 +473,7 @@ namespace Velaptor.Graphics
 
                 totalItemsToRender += 1;
 
-                this.glExtensions.EndGroup();
+                this.openGLService.EndGroup();
             }
 
             // Only render the amount of elements for the amount of batch items to render.
@@ -480,15 +482,15 @@ namespace Velaptor.Graphics
             {
                 var totalElements = 6u * totalItemsToRender;
 
-                this.glExtensions.BeginGroup($"Render {totalElements} Font Elements");
+                this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
                 this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                this.glExtensions.EndGroup();
+                this.openGLService.EndGroup();
             }
 
             // Empty the batch items
             this.fontBatchService.EmptyBatch();
 
-            this.glExtensions.EndGroup();
+            this.openGLService.EndGroup();
         }
 
         /// <summary>
@@ -588,24 +590,24 @@ namespace Velaptor.Graphics
                 nameof(RenderSurfaceWidth),
                 new CachedValue<uint>(
                     0,
-                    () => (uint)this.glExtensions.GetViewPortSize().Width,
+                    () => (uint)this.openGLService.GetViewPortSize().Width,
                     (value) =>
                     {
-                        var viewPortSize = this.glExtensions.GetViewPortSize();
+                        var viewPortSize = this.openGLService.GetViewPortSize();
 
-                        this.glExtensions.SetViewPortSize(new Size((int)value, viewPortSize.Height));
+                        this.openGLService.SetViewPortSize(new Size((int)value, viewPortSize.Height));
                     }));
 
             this.cachedUIntProps.Add(
                 nameof(RenderSurfaceHeight),
                 new CachedValue<uint>(
                     0,
-                    () => (uint)this.glExtensions.GetViewPortSize().Height,
+                    () => (uint)this.openGLService.GetViewPortSize().Height,
                     (value) =>
                     {
-                        var viewPortSize = this.glExtensions.GetViewPortSize();
+                        var viewPortSize = this.openGLService.GetViewPortSize();
 
-                        this.glExtensions.SetViewPortSize(new Size(viewPortSize.Width, (int)value));
+                        this.openGLService.SetViewPortSize(new Size(viewPortSize.Width, (int)value));
                     }));
 
             this.cachedClearColor = new CachedValue<Color>(

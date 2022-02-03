@@ -90,7 +90,9 @@ Holds minimal changes for the purpose of making the upcoming release more stable
    <div>
       <span style="font-weight:bold">Branching Diagram</span>
    </div>
-   <a href="#"><img style="width: 75%" align="center" src="./Images/git-branching-diagram.jpg"></a>
+
+![BranchingDiagram](./Images/BranchingDiagram-DarkMode.png#gh-dark-mode-only)
+![BranchingDiagram](./Images/BranchingDiagram-LightMode.png#gh-light-mode-only)
 </h2>
 
 <div align="right">

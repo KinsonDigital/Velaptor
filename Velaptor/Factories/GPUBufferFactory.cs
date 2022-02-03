@@ -7,8 +7,9 @@ namespace Velaptor.Factories
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -36,9 +37,11 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
-            textureBuffer = new TextureGPUBuffer(glInvoker, glInvokerExtensions, glInitObservable);
+            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+
+            textureBuffer = new TextureGPUBuffer(glInvoker, glInvokerExtensions, glInitReactor, shutDownReactor);
 
             return textureBuffer;
         }
@@ -58,24 +61,13 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
-            var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
-            fontBuffer = new FontGPUBuffer(glInvoker, glInvokerExtensions, glInitObservable);
+            fontBuffer = new FontGPUBuffer(glInvoker, glInvokerExtensions, glInitReactor, shutDownReactor);
 
             return fontBuffer;
-        }
-
-        /// <summary>
-        /// Disposes of the GPU buffer instances.
-        /// </summary>
-        public static void Dispose()
-        {
-            textureBuffer?.Dispose();
-            textureBuffer = null;
-
-            fontBuffer?.Dispose();
-            fontBuffer = null;
         }
     }
 }

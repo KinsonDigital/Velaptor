@@ -34,24 +34,22 @@ namespace VelaptorTesting.Scenes
         /// <inheritdoc cref="IScene.LoadContent"/>.
         public override void LoadContent()
         {
-            ThrowExceptionIfLoadingWhenDisposed();
-
             if (IsLoaded)
             {
                 return;
             }
 
-            this.lblInstructions = new Label(ContentLoader)
+            this.lblInstructions = new Label()
             {
                 Name = "Instructions",
                 Color = Color.White,
+                Text = "Hit a key on the keyboard to see if it is correct.",
             };
 
-            this.lblInstructions.Text = "Hit a key on the keyboard to see if it is correct.";
             this.lblInstructions.Left = (int)(MainWindow.WindowWidth / 2) - (int)(this.lblInstructions.Width / 2);
             this.lblInstructions.Top = (int)(this.lblInstructions.Height / 2) + TopMargin;
 
-            this.downKeys = new Label(ContentLoader)
+            this.downKeys = new Label()
             {
                 Name = "DownKeys",
                 Color = Color.White,
@@ -70,8 +68,6 @@ namespace VelaptorTesting.Scenes
             {
                 return;
             }
-
-            UnloadSceneContent();
 
             base.UnloadContent();
         }
@@ -114,24 +110,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            if (disposing)
-            {
-                UnloadSceneContent();
-            }
-
             base.Dispose(disposing);
-        }
-
-        /// <summary>
-        /// Unloads the scenes content.
-        /// </summary>
-        private void UnloadSceneContent()
-        {
-            RemoveControl(this.lblInstructions);
-            RemoveControl(this.downKeys);
-
-            this.lblInstructions = null;
-            this.downKeys = null;
         }
     }
 }

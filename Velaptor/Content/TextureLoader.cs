@@ -21,11 +21,10 @@ namespace Velaptor.Content
     public sealed class TextureLoader : ILoader<ITexture>
     {
         private const string TextureFileExtension = ".png";
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
-        private readonly IPathResolver pathResolver;
+        private readonly IItemCache<string, ITexture> textureCache;
+        private readonly IPathResolver texturePathResolver;
         private readonly IFile file;
         private readonly IPath path;
-        private bool isDisposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureLoader"/> class.
@@ -34,8 +33,8 @@ namespace Velaptor.Content
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public TextureLoader()
         {
-            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
-            this.pathResolver = PathResolverFactory.CreateTexturePathResolver();
+            this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
+            this.texturePathResolver = PathResolverFactory.CreateTexturePathResolver();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
         }
@@ -47,16 +46,19 @@ namespace Velaptor.Content
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
         /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and fle paths.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal TextureLoader(
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             IPathResolver texturePathResolver,
             IFile file,
             IPath path)
         {
-            this.textureCache = textureCache;
-            this.pathResolver = texturePathResolver;
-            this.file = file;
-            this.path = path;
+            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
+            this.texturePathResolver = texturePathResolver ?? throw new ArgumentNullException(nameof(texturePathResolver), "The parameter must not be null.");
+            this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
         }
 
         /// <summary>
@@ -80,7 +82,7 @@ namespace Velaptor.Content
             else
             {
                 contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
-                filePath = this.pathResolver.ResolveFilePath(contentPathOrName);
+                filePath = this.texturePathResolver.ResolveFilePath(contentPathOrName);
                 cacheKey = filePath;
             }
 
@@ -101,29 +103,6 @@ namespace Velaptor.Content
         }
 
         /// <inheritdoc/>
-        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
         public void Unload(string nameOrPath) => this.textureCache.Unload(nameOrPath);
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.textureCache.Dispose();
-            }
-
-            this.isDisposed = true;
-        }
     }
 }

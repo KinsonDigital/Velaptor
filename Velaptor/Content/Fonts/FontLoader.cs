@@ -24,33 +24,38 @@ namespace Velaptor.Content.Fonts
     public sealed class FontLoader : ILoader<IFont>
     {
         private const string ExpectedMetaDataSyntax = "size:<font-size>";
-        private const string FontExtension = ".ttf";
-        private readonly string defaultRegularFontName = $"TimesNewRoman-Regular{FontExtension}";
-        private readonly string defaultBoldFontName = $"TimesNewRoman-Bold{FontExtension}";
-        private readonly string defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
-        private readonly string defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
+        private const string FontFileExtension = ".ttf";
+        private static readonly string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
+        private static readonly string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
+        private static readonly string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
+        private static readonly string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
         private readonly IFontAtlasService fontAtlasService;
         private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
         private readonly IPathResolver fontPathResolver;
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
+        private readonly IItemCache<string, ITexture> textureCache;
         private readonly IFontFactory fontFactory;
         private readonly IFontMetaDataParser fontMetaDataParser;
         private readonly IDirectory directory;
         private readonly IFileStreamFactory fileStream;
         private readonly IFile file;
         private readonly IPath path;
-        private bool isDisposed;
+        private readonly string[] defaultFontNames =
+        {
+            DefaultRegularFontName, DefaultBoldFontName,
+            DefaultItalicFontName, DefaultBoldItalicFontName,
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontLoader"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public FontLoader()
         {
             this.fontAtlasService = IoC.Container.GetInstance<IFontAtlasService>();
             this.embeddedFontResourceService = IoC.Container.GetInstance<IEmbeddedResourceLoaderService<Stream?>>();
             this.fontPathResolver = PathResolverFactory.CreateFontPathResolver();
-            this.textureCache = IoC.Container.GetInstance<IDisposableItemCache<string, ITexture>>();
+            this.textureCache = IoC.Container.GetInstance<IItemCache<string, ITexture>>();
             this.fontFactory = IoC.Container.GetInstance<IFontFactory>();
             this.fontMetaDataParser = IoC.Container.GetInstance<IFontMetaDataParser>();
             this.directory = IoC.Container.GetInstance<IDirectory>();
@@ -73,12 +78,15 @@ namespace Velaptor.Content.Fonts
         /// <param name="directory">Manages and deals with directories.</param>
         /// <param name="file">Performs file related operations.</param>
         /// <param name="fileStream">Provides a stream to a file for file operations.</param>
-        /// <param name="path">Processes directory and fle paths.</param>
+        /// <param name="path">Processes directory and file paths.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
         internal FontLoader(
             IFontAtlasService fontAtlasService,
             IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService,
             IPathResolver fontPathResolver,
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             IFontFactory fontFactory,
             IFontMetaDataParser fontMetaDataParser,
             IDirectory directory,
@@ -86,16 +94,16 @@ namespace Velaptor.Content.Fonts
             IFileStreamFactory fileStream,
             IPath path)
         {
-            this.fontAtlasService = fontAtlasService;
-            this.embeddedFontResourceService = embeddedFontResourceService;
-            this.fontPathResolver = fontPathResolver;
-            this.textureCache = textureCache;
-            this.fontFactory = fontFactory;
-            this.fontMetaDataParser = fontMetaDataParser;
-            this.directory = directory;
-            this.file = file;
-            this.fileStream = fileStream;
-            this.path = path;
+            this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
+            this.embeddedFontResourceService = embeddedFontResourceService ?? throw new ArgumentNullException(nameof(embeddedFontResourceService), "The parameter must not be null.");
+            this.fontPathResolver = fontPathResolver ?? throw new ArgumentNullException(nameof(fontPathResolver), "The parameter must not be null.");
+            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
+            this.fontFactory = fontFactory ?? throw new ArgumentNullException(nameof(fontFactory), "The parameter must not be null.");
+            this.fontMetaDataParser = fontMetaDataParser ?? throw new ArgumentNullException(nameof(fontMetaDataParser), "The parameter must not be null.");
+            this.directory = directory ?? throw new ArgumentNullException(nameof(directory), "The parameter must not be null.");
+            this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
+            this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream), "The parameter must not be null.");
+            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
 
             SetupDefaultFonts();
         }
@@ -196,9 +204,18 @@ namespace Velaptor.Content.Fonts
             var (_, glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fullFontFilePath, parseResult.FontSize);
 
             var cacheKey = $"{fullFontFilePath}|{parseResult.MetaData}";
+            var fileName = this.path.GetFileName(fullFontFilePath);
             var fontAtlasTexture = this.textureCache.GetItem(cacheKey);
 
-            return this.fontFactory.Create(fontAtlasTexture, contentName, fullFontFilePath, parseResult.FontSize, glyphMetrics);
+            var isDefaultFont = this.defaultFontNames.Contains(fileName);
+
+            return this.fontFactory.Create(
+                fontAtlasTexture,
+                contentName,
+                fullFontFilePath,
+                parseResult.FontSize,
+                isDefaultFont,
+                glyphMetrics);
         }
 
         /// <inheritdoc/>
@@ -237,35 +254,6 @@ namespace Velaptor.Content.Fonts
             }
         }
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to dispose of managed resources.</param>
-        private void Dispose(bool disposing)
-        {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                var fontAtlasTextureKeys = (from k in this.textureCache.CacheKeys
-                                                where this.fontMetaDataParser.Parse(k).ContainsMetaData
-                                                select k).ToArray();
-
-                foreach (var key in fontAtlasTextureKeys)
-                {
-                    this.textureCache.Unload(key);
-                }
-            }
-
-            this.isDisposed = true;
-        }
-
         /// <summary>
         /// Checks for and sets up the default fonts.
         /// </summary>
@@ -274,14 +262,6 @@ namespace Velaptor.Content.Fonts
             var rootDirPath = $"{this.fontPathResolver.RootDirectoryPath.TrimEnd('\\').TrimEnd('/')}{this.path.AltDirectorySeparatorChar}";
             var contentDirName = this.fontPathResolver.ContentDirectoryName;
             var fontContentDirPath = $"{rootDirPath}{contentDirName}{this.path.AltDirectorySeparatorChar}";
-
-            var fontNames = new[]
-            {
-                this.defaultRegularFontName,
-                this.defaultBoldFontName,
-                this.defaultItalicFontName,
-                this.defaultBoldItalicFontName,
-            };
 
             // Create the content directory if it does not exist
             if (this.directory.Exists(rootDirPath) is false)
@@ -295,7 +275,7 @@ namespace Velaptor.Content.Fonts
                 this.directory.CreateDirectory(fontContentDirPath);
             }
 
-            foreach (var fontName in fontNames)
+            foreach (var fontName in this.defaultFontNames)
             {
                 var filePath = $"{fontContentDirPath}{fontName}";
 

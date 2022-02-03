@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureBatchService.cs" company="KinsonDigital">
+// <copyright file="TextureBatchService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 

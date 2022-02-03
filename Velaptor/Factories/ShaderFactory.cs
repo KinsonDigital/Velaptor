@@ -7,9 +7,10 @@ namespace Velaptor.Factories
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -34,11 +35,12 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
             var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-            var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
-            textureShader = new TextureShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitObservable);
+            textureShader = new TextureShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
 
             return textureShader;
         }
@@ -55,11 +57,12 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
             var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-            var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
-            fontShader = new FontShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitObservable);
+            fontShader = new FontShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
 
             return fontShader;
         }

@@ -9,6 +9,7 @@ namespace Velaptor.UI
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Content;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
 
     // ReSharper restore RedundantNameQualifier
@@ -26,9 +27,22 @@ namespace Velaptor.UI
         /// <summary>
         /// Initializes a new instance of the <see cref="Button"/> class.
         /// </summary>
-        /// <param name="contentLoader">Loads the button content for rendering.</param>
-        public Button(IContentLoader contentLoader)
-            => this.contentLoader = contentLoader ?? throw new ArgumentNullException(nameof(contentLoader));
+        public Button() => this.contentLoader = ContentLoaderFactory.CreateContentLoader();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Button"/> class.
+        /// </summary>
+        /// <param name="contentLoader">Loads various kinds of content.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown if the any of the parameters below are null:
+        ///     <list type="bullet">
+        ///         <item><paramref name="contentLoader"/></item>
+        ///     </list>
+        /// </exception>
+        internal Button(IContentLoader contentLoader) =>
+            this.contentLoader =
+                contentLoader ??
+                throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
 
         /// <inheritdoc cref="IControl"/>
         public override Point Position
@@ -52,10 +66,10 @@ namespace Velaptor.UI
         public override uint Height => this.texture?.Height ?? 0;
 
         /// <summary>
-        /// Gets or sets the name of the texture to be displayed on the face of the button.
+        /// Gets the name of the texture to be displayed on the face of the button.
         /// </summary>
         /// <summary>This is the name of the texture that is rendered.</summary>
-        public string FaceTextureName { get; set; } = "button-face-small";
+        public string FaceTextureName { get; init; } = "button-face-small";
 
         /// <summary>
         /// Gets or sets the text of the button.
@@ -97,8 +111,6 @@ namespace Velaptor.UI
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
         public override void LoadContent()
         {
-            ThrowExceptionIfLoadingWhenDisposed();
-
             if (IsLoaded)
             {
                 return;
@@ -121,10 +133,17 @@ namespace Velaptor.UI
         /// <inheritdoc cref="IContentLoadable.UnloadContent"/>
         public override void UnloadContent()
         {
-            if (!IsLoaded || IsDisposed)
+            if (!IsLoaded)
             {
                 return;
             }
+
+            if (this.texture is not null)
+            {
+                this.contentLoader.UnloadTexture(this.texture);
+            }
+
+            this.label?.UnloadContent();
 
             base.UnloadContent();
         }
@@ -145,25 +164,6 @@ namespace Velaptor.UI
             }
 
             base.Render(spriteBatch);
-        }
-
-        /// <inheritdoc cref="ControlBase.Dispose(bool)"/>
-        protected override void Dispose(bool disposing)
-        {
-            if (IsDisposed || !IsLoaded)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.texture?.Dispose();
-
-                this.label?.Dispose();
-                IsLoaded = false;
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

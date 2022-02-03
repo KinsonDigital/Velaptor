@@ -10,7 +10,6 @@ namespace VelaptorTesting.Core
     using System.Drawing;
     using System.Linq;
     using Velaptor;
-    using Velaptor.Content;
     using Velaptor.Graphics;
     using Velaptor.UI;
 
@@ -30,20 +29,15 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneManager"/> class.
         /// </summary>
-        /// <param name="contentLoader">Loads all of the content for the scenes.</param>
         /// <param name="spriteBatch">Renders all of the scenes.</param>
-        public SceneManager(IContentLoader contentLoader, ISpriteBatch spriteBatch)
+        public SceneManager(ISpriteBatch spriteBatch)
         {
             this.spriteBatch = spriteBatch;
 
-            this.nextButton = new Button(contentLoader);
-            this.nextButton.Text = "-->";
-            this.nextButton.FaceTextureName = "button-next-prev-scene";
+            this.nextButton = new Button { Text = "-->", FaceTextureName = "button-next-prev-scene" };
             this.nextButton.Click += (_, _) => NextScene();
 
-            this.previousButton = new Button(contentLoader);
-            this.previousButton.Text = "<--";
-            this.previousButton.FaceTextureName = "button-next-prev-scene";
+            this.previousButton = new Button { Text = "<--", FaceTextureName = "button-next-prev-scene" };
             this.previousButton.Click += (_, _) => PreviousScene();
         }
 
@@ -264,8 +258,8 @@ namespace VelaptorTesting.Core
             this.scenes.Clear();
 
             this.spriteBatch = null;
-            this.previousButton.Dispose();
-            this.nextButton.Dispose();
+            this.previousButton.UnloadContent();
+            this.nextButton.UnloadContent();
         }
     }
 }

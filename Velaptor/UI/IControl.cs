@@ -14,7 +14,7 @@ namespace Velaptor.UI
     /// <summary>
     /// A user interface object that can be updated and rendered to the screen.
     /// </summary>
-    public interface IControl : IUpdatable, IDrawable, IContentLoadable, ISizable, IDisposable
+    public interface IControl : IUpdatable, IDrawable, IContentLoadable, ISizable
     {
         /// <summary>
         /// Occurs when the button has been clicked.

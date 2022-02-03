@@ -5,8 +5,10 @@
 namespace VelaptorTests.Fakes
 {
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
     using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
+    using NETSizeF = System.Drawing.SizeF;
 
     /// <summary>
     /// Used to test the abstract class <see cref="GPUBufferBase{TData}"/>.
@@ -16,11 +18,15 @@ namespace VelaptorTests.Fakes
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBufferFake"/> class for the purpose of testing.
         /// </summary>
-        /// <param name="gl">Mocked <see cref="IGLInvoker"/>.</param>
-        /// <param name="glExtensions">Mocked <see cref="IGLInvokerExtensions"/>.</param>
-        /// <param name="glInitObservable">Invokes initialization.</param>
-        public GPUBufferFake(IGLInvoker gl, IGLInvokerExtensions glExtensions, OpenGLInitObservable glInitObservable)
-            : base(gl, glExtensions, glInitObservable)
+        /// <param name="gl">Mocked <see cref="IGLInvoker"/> for OpenGL function calls.</param>
+        /// <param name="openGLService">Mocked <see cref="IOpenGLService"/> for OpenGL function calls.</param>
+        /// <param name="glInitReactable">Mocked <see cref="IReactable{T}"/> for OpenGL initialization.</param>
+        /// <param name="shutDownReactable">Mocked <see cref="IReactable{T}"/> for application shutdown..</param>
+        public GPUBufferFake(IGLInvoker gl,
+            IOpenGLService openGLService,
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
+            : base(gl, openGLService, glInitReactable, shutDownReactable)
         {
         }
 

@@ -5,7 +5,6 @@
 namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
-    using System;
     using Velaptor.Content.Fonts;
 
     // ReSharper restore RedundantNameQualifier
@@ -13,7 +12,7 @@ namespace Velaptor.Content
     /// <summary>
     /// Loads various kinds of content.
     /// </summary>
-    public interface IContentLoader : IDisposable
+    public interface IContentLoader
     {
         /// <summary>
         /// Loads texture content using the given <paramref name="nameOrFilePath"/>.

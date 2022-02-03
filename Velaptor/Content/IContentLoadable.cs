@@ -4,6 +4,8 @@
 
 namespace Velaptor.Content
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     /// Provides the ability to load content.
     /// </summary>
@@ -12,6 +14,10 @@ namespace Velaptor.Content
         /// <summary>
         /// Gets a value indicating whether or not the content for an object is loaded.
         /// </summary>
+        [SuppressMessage(
+            "ReSharper",
+            "UnusedMemberInSuper.Global",
+            Justification = "Used by library users.")]
         bool IsLoaded { get; }
 
         /// <summary>
@@ -22,6 +28,10 @@ namespace Velaptor.Content
         /// <summary>
         /// Unloads the content for an object.
         /// </summary>
+        [SuppressMessage(
+            "ReSharper",
+            "UnusedMemberInSuper.Global",
+            Justification = "Used by library users.")]
         void UnloadContent();
     }
 }

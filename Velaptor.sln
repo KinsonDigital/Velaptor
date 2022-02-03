@@ -43,9 +43,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PullRequestTemplates", "PullRequestTemplates", "{6653D425-BD0A-42A4-A06C-715674139E0F}"
 	ProjectSection(SolutionItems) = preProject
-		.github\PULL_REQUEST_TEMPLATE\feature-to-develop.md = .github\PULL_REQUEST_TEMPLATE\feature-to-develop.md
-		.github\PULL_REQUEST_TEMPLATE\release-to-master.md = .github\PULL_REQUEST_TEMPLATE\release-to-master.md
-		.github\PULL_REQUEST_TEMPLATE\preview-to-release.md = .github\PULL_REQUEST_TEMPLATE\preview-to-release.md
+		.github\PULL_REQUEST_TEMPLATE\feature-pr.md = .github\PULL_REQUEST_TEMPLATE\feature-pr.md
+		.github\PULL_REQUEST_TEMPLATE\preview-feature-pr.md = .github\PULL_REQUEST_TEMPLATE\preview-feature-pr.md
+		.github\PULL_REQUEST_TEMPLATE\preview-release-pr.md = .github\PULL_REQUEST_TEMPLATE\preview-release-pr.md
+		.github\PULL_REQUEST_TEMPLATE\production-release-pr.md = .github\PULL_REQUEST_TEMPLATE\production-release-pr.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IssueTemplates", "IssueTemplates", "{369B0299-64E9-4C42-937B-501E599C1210}"
@@ -53,6 +54,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IssueTemplates", "IssueTemp
 		.github\ISSUE_TEMPLATE\bug-issue-template.yml = .github\ISSUE_TEMPLATE\bug-issue-template.yml
 		.github\ISSUE_TEMPLATE\feature-request-issue-template.yml = .github\ISSUE_TEMPLATE\feature-request-issue-template.yml
 		.github\ISSUE_TEMPLATE\project-item-issue-template.yml = .github\ISSUE_TEMPLATE\project-item-issue-template.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{15894CC9-D3C9-4B03-9F44-61D34AEDEEB0}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Branching.md = Documentation\Branching.md
+		Documentation\TableOfContents.md = Documentation\TableOfContents.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EnvironmentalSetup", "EnvironmentalSetup", "{386C07F0-D74D-4750-BB8B-E222611D5068}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\EnvironmentSetup\LinuxDevEnvSetup.md = Documentation\EnvironmentSetup\LinuxDevEnvSetup.md
+		Documentation\EnvironmentSetup\WindowsDevEnvSetup.md = Documentation\EnvironmentSetup\WindowsDevEnvSetup.md
 	EndProjectSection
 EndProject
 Global
@@ -84,6 +97,8 @@ Global
 		{CE2DE8AE-0037-4159-AE95-14D261BF9122} = {E248AD89-D6AB-4183-88F1-133875647706}
 		{6653D425-BD0A-42A4-A06C-715674139E0F} = {E248AD89-D6AB-4183-88F1-133875647706}
 		{369B0299-64E9-4C42-937B-501E599C1210} = {E248AD89-D6AB-4183-88F1-133875647706}
+		{15894CC9-D3C9-4B03-9F44-61D34AEDEEB0} = {1F9812D7-4FF5-4B46-B702-59A0B2A7DBB5}
+		{386C07F0-D74D-4750-BB8B-E222611D5068} = {15894CC9-D3C9-4B03-9F44-61D34AEDEEB0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7C170FA-8E94-4712-932B-1D6B7B4C9DA8}

@@ -8,7 +8,6 @@ namespace Velaptor.Content
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO.Abstractions;
     using System.Linq;
     using Velaptor.Content.Caching;
@@ -23,7 +22,6 @@ namespace Velaptor.Content
     {
         private const string AtlasDataExtension = ".json";
         private const string TextureExtension = ".png";
-        private readonly IDisposableItemCache<string, ITexture> textureCache;
         private readonly AtlasSubTextureData[] subTexturesData;
 
         /// <summary>
@@ -38,7 +36,7 @@ namespace Velaptor.Content
         ///     Thrown if any of the constructor parameters are null.
         /// </exception>
         public AtlasData(
-            IDisposableItemCache<string, ITexture> textureCache,
+            IItemCache<string, ITexture> textureCache,
             IPath path,
             IEnumerable<AtlasSubTextureData> atlasSubTextureData,
             string dirPath,
@@ -56,7 +54,10 @@ namespace Velaptor.Content
                 throw new ArgumentNullException(nameof(atlasName), "The parameters must not be null or empty.");
             }
 
-            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameters must not be null or empty.");
+            if (textureCache is null)
+            {
+                throw new ArgumentNullException(nameof(textureCache), "The parameters must not be null or empty.");
+            }
 
             if (path is null)
             {
@@ -75,7 +76,7 @@ namespace Velaptor.Content
             Name = atlasName;
             FilePath = $"{dirPath}{atlasName}{TextureExtension}";
             AtlasDataFilePath = $"{dirPath}{atlasName}{AtlasDataExtension}";
-            Texture = this.textureCache.GetItem(FilePath);
+            Texture = textureCache.GetItem(FilePath);
         }
 
         /// <summary>
@@ -127,9 +128,6 @@ namespace Velaptor.Content
         public uint Height => Texture.Height;
 
         /// <inheritdoc/>
-        public bool IsDisposed { get; private set; }
-
-        /// <inheritdoc/>
         public AtlasSubTextureData this[int index] => this.subTexturesData[index];
 
         /// <inheritdoc/>
@@ -153,28 +151,5 @@ namespace Velaptor.Content
             => (from s in this.subTexturesData
                 where s.Name == subTextureId
                 select s).ToArray();
-
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => Dispose(true);
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        [SuppressMessage("ReSharper", "InvertIf", Justification = "Readability")]
-        private void Dispose(bool disposing)
-        {
-            if (IsDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                this.textureCache.Unload(FilePath);
-            }
-
-            IsDisposed = true;
-        }
     }
 }

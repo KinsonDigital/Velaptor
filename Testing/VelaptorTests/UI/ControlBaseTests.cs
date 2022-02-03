@@ -508,33 +508,6 @@ namespace VelaptorTests.UI
             // Assert
             Assert.False(actual);
         }
-
-        [Fact]
-        public void ThrowExceptionIfLoadingWhenDisposed_WhenInvokedWhileDisposed_ThrowsException()
-        {
-            // Arrange
-            var control = new ControlBaseFake();
-            control.Dispose();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<Exception>(() =>
-            {
-                control.Invoke_Exception_In_Method_ThrowsExceptionIfLoadingWhenDisposed();
-            }, "Cannot load a control that has been disposed.");
-        }
-
-        [Fact]
-        public void ThrowExceptionIfLoadingWhenDisposed_WhenInvokedWhileNotDisposed_ThrowsException()
-        {
-            // Arrange
-            var control = new ControlBaseFake();
-
-            // Act & Assert
-            AssertExtensions.DoesNotThrow<Exception>(() =>
-            {
-                control.Invoke_Exception_In_Method_ThrowsExceptionIfLoadingWhenDisposed();
-            });
-        }
         #endregion
 
         /// <summary>

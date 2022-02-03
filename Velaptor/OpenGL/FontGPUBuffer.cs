@@ -13,6 +13,8 @@ namespace Velaptor.OpenGL
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Exceptions;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -29,10 +31,18 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="FontGPUBuffer"/> class.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="glExtensions">Invokes helper methods for OpenGL function calls.</param>
-        /// <param name="glInitObservable">Receives a notification when OpenGL has been initialized.</param>
-        public FontGPUBuffer(IGLInvoker gl, IGLInvokerExtensions glExtensions, IObservable<bool> glInitObservable)
-            : base(gl, glExtensions, glInitObservable)
+        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
+        /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     Invoked when any of the parameters are null.
+        /// </exception>
+        public FontGPUBuffer(
+            IGLInvoker gl,
+            IOpenGLService openGLService,
+            IReactable<GLInitData> glInitReactable,
+            IReactable<ShutDownData> shutDownReactable)
+            : base(gl, openGLService, glInitReactable, shutDownReactable)
         {
         }
 
@@ -99,7 +109,7 @@ namespace Velaptor.OpenGL
                 throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            BindVAO();
+            OpenGLService.BindVAO(VAO);
         }
 
         /// <inheritdoc/>
@@ -110,7 +120,7 @@ namespace Velaptor.OpenGL
                 throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            GLExtensions.BeginGroup("Setup Font Buffer Vertex Attributes");
+            OpenGLService.BeginGroup("Setup Font Buffer Vertex Attributes");
 
             var stride = TextureVertexData.Stride();
 
@@ -128,7 +138,7 @@ namespace Velaptor.OpenGL
             GL.VertexAttribPointer(2, 4, GLVertexAttribPointerType.Float, false, stride, tintClrOffset);
             GL.EnableVertexAttribArray(2);
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
         }
 
         /// <inheritdoc/>
@@ -139,7 +149,7 @@ namespace Velaptor.OpenGL
                 throw new BufferNotInitializedException(BufferNotInitMsg);
             }
 
-            GLExtensions.BeginGroup($"Update Font Quad - BatchItem({batchIndex})");
+            OpenGLService.BeginGroup($"Update Font Quad - BatchItem({batchIndex})");
 
             // Construct the quad rect to determine the vertex positions sent to the GPU
             var quadRect = new RectangleF(textureQuad.DestRect.X, textureQuad.DestRect.Y, textureQuad.SrcRect.Width, textureQuad.SrcRect.Height);
@@ -198,13 +208,13 @@ namespace Velaptor.OpenGL
             var data = quadDataItem.ToArray();
             var offset = totalBytes * batchIndex;
 
-            BindVBO();
+            OpenGLService.BindVBO(VBO);
 
             GL.BufferSubData(GLBufferTarget.ArrayBuffer, (nint)offset, totalBytes, data);
 
-            UnbindVBO();
+            OpenGLService.UnbindVBO();
 
-            GLExtensions.EndGroup();
+            OpenGLService.EndGroup();
         }
     }
 }

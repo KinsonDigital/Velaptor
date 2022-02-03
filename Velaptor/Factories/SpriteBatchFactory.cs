@@ -8,7 +8,9 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.Observables;
+    using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -35,33 +37,32 @@ namespace Velaptor.Factories
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IGLInvokerExtensions>();
+            var openGLService = IoC.Container.GetInstance<IOpenGLService>();
             var textureShader = ShaderFactory.CreateTextureShader();
             var fontShader = ShaderFactory.CreateFontShader();
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
             var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
-            var glInitObservable = IoC.Container.GetInstance<OpenGLInitObservable>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+            var textureBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
+            var fontBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
 
             spriteBatch = new SpriteBatch(
                 glInvoker,
-                glInvokerExtensions,
+                openGLService,
                 textureShader,
                 fontShader,
                 textureBuffer,
                 fontBuffer,
-                new TextureBatchService(),
-                new TextureBatchService(),
-                glInitObservable);
+                textureBatchService,
+                fontBatchService,
+                glInitReactor,
+                shutDownReactor);
 
             spriteBatch.RenderSurfaceWidth = renderSurfaceWidth;
             spriteBatch.RenderSurfaceHeight = renderSurfaceHeight;
 
             return spriteBatch;
         }
-
-        /// <summary>
-        /// Disposes of the sprite batch.
-        /// </summary>
-        public static void Dispose() => spriteBatch?.Dispose();
     }
 }

@@ -26,7 +26,7 @@ namespace VelaptorTests.Services
         public void BatchSize_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var service = new TextureBatchService();
+            var service = CreateService();
 
             // Act
             service.BatchSize = 123u;
@@ -65,7 +65,7 @@ namespace VelaptorTests.Services
 
             var batchItems = new List<(bool, SpriteBatchItem)> { batchItem1, batchItem2 };
             var expected = new ReadOnlyDictionary<uint, (bool, SpriteBatchItem)>(batchItems.ToDictionary());
-            var service = new TextureBatchService();
+            var service = CreateService();
 
             // Act
             service.BatchItems = batchItems.ToReadOnlyDictionary();
@@ -87,7 +87,7 @@ namespace VelaptorTests.Services
             var batchItem2 = default(SpriteBatchItem);
             batchItem2.TextureId = 20;
 
-            var service = new TextureBatchService();
+            var service = CreateService();
             service.BatchSize = 100;
             service.Add(batchItem1);
 
@@ -102,8 +102,6 @@ namespace VelaptorTests.Services
             {
                 service.Add(batchItem2);
             });
-
-            // Assert.Equal(1, service.BatchItems.Count);
         }
 
         [Fact]
@@ -115,7 +113,7 @@ namespace VelaptorTests.Services
             var batchItem2 = default(SpriteBatchItem);
             batchItem2.TextureId = 10;
 
-            var service = new TextureBatchService();
+            var service = CreateService();
             service.BatchSize = 1;
             service.Add(batchItem1);
 
@@ -143,7 +141,7 @@ namespace VelaptorTests.Services
             var batchItem2 = default(SpriteBatchItem);
             batchItem2.TextureId = 10;
 
-            var service = new TextureBatchService();
+            var service = CreateService();
             service.BatchSize = 1;
 
             // Act & Assert
@@ -170,7 +168,7 @@ namespace VelaptorTests.Services
             var batchItem2 = default(SpriteBatchItem);
             batchItem2.TextureId = 10;
 
-            var service = new TextureBatchService();
+            var service = CreateService();
             service.BatchSize = 2;
             service.AddRange(new[] { batchItem1, batchItem2 });
 
@@ -190,7 +188,7 @@ namespace VelaptorTests.Services
             var batchItem2 = default(SpriteBatchItem);
             batchItem2.TextureId = 10;
 
-            var service = new TextureBatchService();
+            var service = CreateService();
             service.BatchSize = 2;
             service.BatchItems = new List<(bool, SpriteBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
 
@@ -202,5 +200,11 @@ namespace VelaptorTests.Services
             Assert.Equal(batchItem2, service.BatchItems[1].item);
         }
         #endregion
+
+        /// <summary>
+        /// Creates a new instance of <see cref="TextureBatchService"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test.</returns>
+        private static TextureBatchService CreateService() => new ();
     }
 }

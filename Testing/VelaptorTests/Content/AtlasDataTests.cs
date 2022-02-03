@@ -24,7 +24,7 @@ namespace VelaptorTests.Content
         private const string TextureExtension = ".png";
         private const string JSONFileExtension = ".json";
         private readonly string atlasImagePath = $"{DirPath}{AtlasName}{TextureExtension}";
-        private readonly Mock<IDisposableItemCache<string, ITexture>> mockTextureCache;
+        private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPath> mockPath;
         private readonly AtlasSubTextureData[] spriteData;
 
@@ -33,7 +33,7 @@ namespace VelaptorTests.Content
         /// </summary>
         public AtlasDataTests()
         {
-            this.mockTextureCache = new Mock<IDisposableItemCache<string, ITexture>>();
+            this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
 
             this.mockPath = new Mock<IPath>();
             this.mockPath.Setup(m => m.GetDirectoryName(DirPath)).Returns(DirPath);
@@ -349,20 +349,6 @@ namespace VelaptorTests.Content
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.FrameIndex, actual.FrameIndex);
             Assert.Equal(expected.Bounds, actual.Bounds);
-        }
-
-        [Fact]
-        public void Dispose_WhenInvoked_UnloadsTexture()
-        {
-            // Arrange
-            var data = CreateAtlasData();
-
-            // Act
-            data.Dispose();
-            data.Dispose();
-
-            // Assert
-            this.mockTextureCache.Verify(m => m.Unload(this.atlasImagePath), Times.Once());
         }
         #endregion
 

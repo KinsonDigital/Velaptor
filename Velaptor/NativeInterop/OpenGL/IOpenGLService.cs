@@ -1,4 +1,4 @@
-﻿// <copyright file="IGLInvokerExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="IOpenGLService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,10 +9,43 @@ namespace Velaptor.NativeInterop.OpenGL
     using Velaptor.OpenGL;
 
     /// <summary>
-    /// Provides OpenGL extensions/helper methods to improve OpenGL related functionality.
+    /// Provides OpenGL helper methods to improve OpenGL related operations.
     /// </summary>
-    internal interface IGLInvokerExtensions
+    internal interface IOpenGLService
     {
+        // ReSharper disable CommentTypo
+
+        /// <summary>
+        /// Gets a value indicating whether or not a VBO is bound.
+        /// </summary>
+        /// <remarks>
+        ///     VBO stands for (V)ertex (B)uffer (O)bject.
+        /// </remarks>
+        // ReSharper restore CommentTypo
+        bool IsVBOBound { get; }
+
+        // ReSharper disable CommentTypo
+
+        /// <summary>
+        /// Gets a value indicating whether or not an EBO is bound.
+        /// </summary>
+        /// <remarks>
+        ///     EBO stands for (E)lement (B)uffer (O)bject.
+        /// </remarks>
+        // ReSharper restore CommentTypo
+        bool IsEBOBound { get; }
+
+        // ReSharper disable CommentTypo
+
+        /// <summary>
+        /// Gets a value indicating whether or not a VAO is bound.
+        /// </summary>
+        /// <remarks>
+        ///     VAO stands for (V)ertex (A)rray (O)object
+        /// </remarks>
+        // ReSharper restore CommentTypo
+        bool IsVAOBound { get; }
+
         /// <summary>
         /// Gets the size of the viewport.
         /// </summary>
@@ -32,18 +65,70 @@ namespace Velaptor.NativeInterop.OpenGL
         Vector2 GetViewPortPosition();
 
         /// <summary>
+        /// Binds a vertex buffer object for updating buffer data in OpenGL.
+        /// </summary>
+        /// <param name="vbo">The vertex buffer object ID.</param>
+        void BindVBO(uint vbo);
+
+        /// <summary>
+        /// Unbinds the current vertex buffer object if one is currently bound.
+        /// </summary>
+        void UnbindVBO();
+
+        /// <summary>
+        /// Binds an element buffer object for updating element data in OpenGL.
+        /// </summary>
+        /// <param name="ebo">The element buffer object ID.</param>
+        /// <remarks>
+        ///     This is also called an IBO (Index Buffer Object).
+        /// </remarks>
+        void BindEBO(uint ebo);
+
+        /// <summary>
+        /// Unbinds the element buffer object if one is currently bound.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: Make sure to unbind AFTER you unbind the VAO.  This is because the EBO is stored
+        /// inside of the VAO.  Unbinding the EBO before unbinding, (or without unbinding the VAO),
+        /// you are telling OpenGL that you don't want your VAO to use the EBO.
+        /// </remarks>
+        void UnbindEBO();
+
+        /// <summary>
+        /// Binds the element array object for updating vertex buffer data in OpenGL.
+        /// </summary>
+        /// <param name="vao">The vertex array buffer object ID.</param>
+        void BindVAO(uint vao);
+
+        /// <summary>
+        /// Unbinds the current vertex array object that is currently bound if one is currently bound.
+        /// </summary>
+        void UnbindVAO();
+
+        /// <summary>
+        /// Binds a two dimensional texture using the given <paramref name="textureId"/>.
+        /// </summary>
+        /// <param name="textureId">The ID of the texture to bind.</param>
+        void BindTexture2D(uint textureId);
+
+        /// <summary>
+        /// Binds the currently bound two dimensional texture.
+        /// </summary>
+        void UnbindTexture2D();
+
+        /// <summary>
         /// Returns a value indicating if the program linking process was successful.
         /// </summary>
-        /// <param name="program">The ID of the program to check.</param>
+        /// <param name="programId">The ID of the program to check.</param>
         /// <returns><see langword="true"/> if the linking was successful.</returns>
-        bool LinkProgramSuccess(uint program);
+        bool ProgramLinkedSuccessfully(uint programId);
 
         /// <summary>
         /// Returns a value indicating if the shader was compiled successfully.
         /// </summary>
         /// <param name="shaderId">The ID of the shader to check.</param>
         /// <returns><see langword="true"/> if the shader compiled successfully.</returns>
-        bool ShaderCompileSuccess(uint shaderId);
+        bool ShaderCompiledSuccessfully(uint shaderId);
 
         /// <summary>
         /// Creates a debug group into the command stream.

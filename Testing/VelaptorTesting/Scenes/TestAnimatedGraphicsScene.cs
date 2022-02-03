@@ -35,8 +35,6 @@ namespace VelaptorTesting.Scenes
         /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
         {
-            ThrowExceptionIfLoadingWhenDisposed();
-
             if (IsLoaded)
             {
                 return;
@@ -45,7 +43,7 @@ namespace VelaptorTesting.Scenes
             this.mainAtlas = ContentLoader.LoadAtlas("Main-Atlas");
             this.frames = this.mainAtlas.GetFrames("circle");
 
-            this.lblInstructions = new Label(ContentLoader);
+            this.lblInstructions = new Label();
             this.lblInstructions.Text = "Verify that the Kinson Digital logo is rotating clockwise.";
             this.lblInstructions.Color = Color.White;
 
@@ -65,8 +63,7 @@ namespace VelaptorTesting.Scenes
                 return;
             }
 
-            this.mainAtlas = null;
-            this.frames = null;
+            ContentLoader.UnloadAtlas(this.mainAtlas);
 
             base.UnloadContent();
         }
