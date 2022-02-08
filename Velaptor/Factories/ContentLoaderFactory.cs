@@ -12,8 +12,6 @@ namespace Velaptor.Factories
     using Velaptor.Content.Caching;
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts;
-    using Velaptor.Reactables.Core;
-    using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using IVelaptorSound = Velaptor.Content.ISound;
 
@@ -110,18 +108,16 @@ namespace Velaptor.Factories
                 return soundLoader;
             }
 
+            var soundCache = IoC.Container.GetInstance<IItemCache<string, ISound>>();
             var soundPathResolver = new SoundPathResolver(IoC.Container.GetInstance<IDirectory>());
-            var soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             var file = IoC.Container.GetInstance<IFile>();
             var path = IoC.Container.GetInstance<IPath>();
-            var disposeSoundReactor = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
 
             soundLoader = new SoundLoader(
+                soundCache,
                 soundPathResolver,
-                soundFactory,
                 file,
-                path,
-                disposeSoundReactor);
+                path);
 
             return soundLoader;
         }

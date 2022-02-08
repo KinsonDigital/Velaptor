@@ -6,16 +6,13 @@ namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
     using System;
-    using System.Collections.Concurrent;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
-    using Velaptor.Content.Factories;
     using Velaptor.Factories;
-    using Velaptor.Reactables.Core;
-    using Velaptor.Reactables.ReactableData;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -24,14 +21,13 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class SoundLoader : ILoader<ISound>
     {
+        private const string NullParamExceptionMsg = "The parameter must not be null.";
         private const string OggFileExtension = ".ogg";
         private const string Mp3FileExtension = ".mp3";
-        private readonly ConcurrentDictionary<string, ISound> sounds = new ();
+        private readonly IItemCache<string, ISound> soundCache;
         private readonly IPathResolver soundPathResolver;
-        private readonly ISoundFactory soundFactory;
         private readonly IFile file;
         private readonly IPath path;
-        private readonly IReactable<DisposeSoundData> disposeSoundReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
@@ -40,36 +36,32 @@ namespace Velaptor.Content
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
         public SoundLoader()
         {
+            this.soundCache = IoC.Container.GetInstance<IItemCache<string, ISound>>();
             this.soundPathResolver = PathResolverFactory.CreateSoundPathResolver();
-            this.soundFactory = IoC.Container.GetInstance<ISoundFactory>();
             this.file = IoC.Container.GetInstance<IFile>();
             this.path = IoC.Container.GetInstance<IPath>();
-            this.disposeSoundReactable = IoC.Container.GetInstance<IReactable<DisposeSoundData>>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
+        /// <param name="soundCache">Caches textures for later use to improve performance.</param>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
-        /// <param name="soundFactory">Creates sound instances.</param>
         /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and file paths.</param>
-        /// <param name="disposeSoundReactable">Sends a push notifications to dispose of sounds.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.
         /// </exception>
         internal SoundLoader(
+            IItemCache<string, ISound> soundCache,
             IPathResolver soundPathResolver,
-            ISoundFactory soundFactory,
             IFile file,
-            IPath path,
-            IReactable<DisposeSoundData> disposeSoundReactable)
+            IPath path)
         {
-            this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), "The parameter must not be null.");
-            this.soundFactory = soundFactory ?? throw new ArgumentNullException(nameof(soundFactory), "The parameter must not be null.");
-            this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
-            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
-            this.disposeSoundReactable = disposeSoundReactable ?? throw new ArgumentNullException(nameof(disposeSoundReactable), "The parameter must not be null.");
+            this.soundCache = soundCache ?? throw new ArgumentNullException(nameof(soundCache), NullParamExceptionMsg);
+            this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), NullParamExceptionMsg);
+            this.file = file ?? throw new ArgumentNullException(nameof(file), NullParamExceptionMsg);
+            this.path = path ?? throw new ArgumentNullException(nameof(path), NullParamExceptionMsg);
         }
 
         /// <summary>
@@ -81,15 +73,18 @@ namespace Velaptor.Content
         {
             var isFullFilePath = contentPathOrName.HasValidFullFilePathSyntax();
             string filePath;
+            string cacheKey;
 
             if (isFullFilePath)
             {
                 filePath = contentPathOrName;
+                cacheKey = filePath;
             }
             else
             {
                 contentPathOrName = this.path.GetFileNameWithoutExtension(contentPathOrName);
                 filePath = this.soundPathResolver.ResolveFilePath(contentPathOrName);
+                cacheKey = filePath;
             }
 
             if (this.file.Exists(filePath))
@@ -111,12 +106,7 @@ namespace Velaptor.Content
                 throw new FileNotFoundException($"The sound file does not exist.", filePath);
             }
 
-            return this.sounds.GetOrAdd(filePath, (filePathCacheKey) =>
-            {
-                var sound = this.soundFactory.Create(filePathCacheKey);
-
-                return sound;
-            });
+            return this.soundCache.GetItem(cacheKey);
         }
 
         /// <inheritdoc/>
@@ -136,10 +126,7 @@ namespace Velaptor.Content
                 filePath = contentNameOrPath;
             }
 
-            if (this.sounds.TryRemove(filePath, out var sound))
-            {
-                this.disposeSoundReactable.PushNotification(new DisposeSoundData(sound.Id));
-            }
+            this.soundCache.Unload(filePath);
         }
     }
 }
