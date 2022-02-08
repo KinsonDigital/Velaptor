@@ -12,7 +12,6 @@ namespace VelaptorTests
     using SixLabors.ImageSharp.PixelFormats;
     using Velaptor;
     using Velaptor.Graphics;
-    using Velaptor.OpenGL;
     using Velaptor.OpenGL.GPUData;
     using Xunit;
     using NETColor = System.Drawing.Color;
