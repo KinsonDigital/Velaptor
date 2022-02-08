@@ -64,7 +64,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Loads a texture with the given <paramref name="contentPathOrName"/>.
         /// </summary>
-        /// <param name="contentPathOrName">The name of the texture to load.</param>
+        /// <param name="contentPathOrName">The full file path or name of the texture to load.</param>
         /// <returns>The loaded texture.</returns>
         /// <exception cref="LoadTextureException">Thrown if the resulting texture content file path is invalid.</exception>
         /// <exception cref="FileNotFoundException">Thrown if the texture file does not exist.</exception>
@@ -103,6 +103,6 @@ namespace Velaptor.Content
         }
 
         /// <inheritdoc/>
-        public void Unload(string nameOrPath) => this.textureCache.Unload(nameOrPath);
+        public void Unload(string contentNameOrPath) => this.textureCache.Unload(contentNameOrPath);
     }
 }

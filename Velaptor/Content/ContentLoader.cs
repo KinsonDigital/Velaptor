@@ -5,7 +5,6 @@
 namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
-    using System.IO;
     using Velaptor.Content.Fonts;
 
     // ReSharper restore RedundantNameQualifier
@@ -43,7 +42,7 @@ namespace Velaptor.Content
         public ITexture LoadTexture(string nameOrFilePath) => this.textureLoader.Load(nameOrFilePath);
 
         /// <inheritdoc/>
-        public ISound LoadSound(string nameOrFilePath) => this.soundLoader.Load(Path.GetFileNameWithoutExtension(nameOrFilePath));
+        public ISound LoadSound(string nameOrFilePath) => this.soundLoader.Load(nameOrFilePath);
 
         /// <inheritdoc/>
         public IAtlasData LoadAtlas(string nameOrFilePath) => this.atlasLoader.Load(nameOrFilePath);

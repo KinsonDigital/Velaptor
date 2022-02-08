@@ -11,6 +11,7 @@ namespace VelaptorTesting.Core
     using System.Linq;
     using Velaptor;
     using Velaptor.Graphics;
+    using Velaptor.Input;
     using Velaptor.UI;
 
     /// <summary>
@@ -21,10 +22,13 @@ namespace VelaptorTesting.Core
         private readonly List<IScene> scenes = new ();
         private readonly Button nextButton;
         private readonly Button previousButton;
+        private readonly Keyboard keyboard;
         private ISpriteBatch spriteBatch;
         private int currentSceneIndex;
         private bool isDisposed;
         private bool isLoaded;
+        private KeyboardState currentKeyState;
+        private KeyboardState prevKeyState;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneManager"/> class.
@@ -39,6 +43,8 @@ namespace VelaptorTesting.Core
 
             this.previousButton = new Button { Text = "<--", FaceTextureName = "button-next-prev-scene" };
             this.previousButton.Click += (_, _) => PreviousScene();
+
+            this.keyboard = new Keyboard();
         }
 
         /// <summary>
@@ -197,10 +203,24 @@ namespace VelaptorTesting.Core
                 return;
             }
 
+            this.currentKeyState = this.keyboard.GetState();
+
+            if (this.currentKeyState.IsKeyUp(KeyCode.PageDown) && this.prevKeyState.IsKeyDown(KeyCode.PageDown))
+            {
+                NextScene();
+            }
+
+            if (this.currentKeyState.IsKeyUp(KeyCode.PageUp) && this.prevKeyState.IsKeyDown(KeyCode.PageUp))
+            {
+                PreviousScene();
+            }
+
             this.nextButton.Update(frameTime);
             this.previousButton.Update(frameTime);
 
             this.scenes[this.currentSceneIndex].Update(frameTime);
+
+            this.prevKeyState = this.currentKeyState;
         }
 
         /// <summary>
