@@ -110,15 +110,15 @@ namespace Velaptor.Content.Caching
         ///     If the given <paramref name="textureFilePath"/> is a <c>.ttf</c> font file, then the texture will be
         ///     a font atlas texture created from the font.  Font file paths must include metadata.
         /// </para>
-        /// <para>
-        ///     If the item has not been previously created, the <see cref="TextureCache"/> class will retrieve it,
-        ///     and then cache it for fast retrieval.
-        /// </para>
         /// </summary>
         /// <param name="textureFilePath">
         ///     The full file path to a <c>Texture(.png)</c> or <c>Font(.ttf)</c> file.
         /// </param>
         /// <returns>A standard texture or font atlas texture created from a font.</returns>
+        /// <remarks>
+        ///     If the item has not been previously created, the <see cref="TextureCache"/> class
+        ///     will retrieve it, and then cache it for fast retrieval.
+        /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///     Thrown if the <paramref name="textureFilePath"/> is null or empty.
         /// </exception>
