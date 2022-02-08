@@ -6,6 +6,7 @@ namespace VelaptorTests.Fakes
 {
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.Buffers;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using NETSizeF = System.Drawing.SizeF;
