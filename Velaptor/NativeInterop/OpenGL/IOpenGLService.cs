@@ -41,7 +41,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// Gets a value indicating whether or not a VAO is bound.
         /// </summary>
         /// <remarks>
-        ///     VAO stands for (V)ertex (A)rray (O)object
+        ///     VAO stands for (V)ertex (A)rray (O)object.
         /// </remarks>
         // ReSharper restore CommentTypo
         bool IsVAOBound { get; }

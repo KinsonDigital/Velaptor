@@ -5,7 +5,6 @@
 namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
-    using System.IO;
     using Velaptor.Content.Fonts;
 
     // ReSharper restore RedundantNameQualifier
