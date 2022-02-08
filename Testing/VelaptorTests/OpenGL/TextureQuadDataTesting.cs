@@ -6,6 +6,7 @@ namespace VelaptorTests.OpenGL
 {
     using System.Numerics;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.GPUData;
     using Xunit;
 
     /// <summary>

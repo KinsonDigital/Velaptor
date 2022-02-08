@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using Velaptor.OpenGL.GPUData;
 
     /// <summary>
     /// Holds data for a single quad in the GPU vertex buffer.

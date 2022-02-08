@@ -4,9 +4,13 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Collections.Generic;
     using System.Drawing;
     using System.Numerics;
+    using Velaptor.OpenGL.GPUData;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides various helper methods for OpenGL related operations.

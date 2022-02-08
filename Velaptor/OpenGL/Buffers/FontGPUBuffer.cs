@@ -13,6 +13,7 @@ namespace Velaptor.OpenGL.Buffers
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Exceptions;
+    using Velaptor.OpenGL.GPUData;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
 

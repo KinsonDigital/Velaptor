@@ -13,6 +13,7 @@ namespace VelaptorTests
     using Velaptor;
     using Velaptor.Graphics;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.GPUData;
     using Xunit;
     using NETColor = System.Drawing.Color;
     using NETRectF = System.Drawing.RectangleF;

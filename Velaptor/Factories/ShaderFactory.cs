@@ -7,7 +7,6 @@ namespace Velaptor.Factories
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
     using Velaptor.OpenGL.Shaders;
     using Velaptor.Reactables.Core;

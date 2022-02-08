@@ -18,6 +18,7 @@ namespace Velaptor
     using SixLabors.ImageSharp.PixelFormats;
     using Velaptor.Graphics;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.GPUData;
     using NETColor = System.Drawing.Color;
     using NETRectF = System.Drawing.RectangleF;
     using NETSizeF = System.Drawing.SizeF;
