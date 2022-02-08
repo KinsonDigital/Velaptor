@@ -45,7 +45,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundLoader"/> class.
         /// </summary>
-        /// <param name="soundCache">Caches textures for later use to improve performance.</param>
+        /// <param name="soundCache">Caches textures for later use.</param>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
         /// <param name="file">Performs file related operations.</param>
         /// <param name="path">Processes directory and file paths.</param>

@@ -201,9 +201,6 @@ namespace VelaptorTests.Content
 
             // Assert
             this.mockSoundCache.Verify(m => m.Unload(this.oggSoundFilePath), Times.Once);
-            // var disposeData = new DisposeSoundData(OggSoundId);
-            // this.mockDisposeSoundReactable.Verify(m =>
-            //     m.PushNotification(disposeData, false), Times.Once);
         }
 
         [Fact]
@@ -222,9 +219,6 @@ namespace VelaptorTests.Content
 
             // Assert
             this.mockSoundCache.Verify(m => m.Unload(this.oggSoundFilePath), Times.Once);
-            // var disposeData = new DisposeSoundData(OggSoundId);
-            // this.mockDisposeSoundReactable.Verify(m =>
-            //     m.PushNotification(disposeData, false), Times.Once);
         }
         #endregion
 

@@ -92,7 +92,7 @@ namespace Velaptor.Content.Caching
         /// <param name="soundFilePath">
         ///     The full file path to a <c>Sound</c> file.
         /// </param>
-        /// <returns>A sound loaded from either a <c>'.ogg'</c> or <c>'.mp3'</c> file.</returns>
+        /// <returns>A sound loaded from either an <c>'.ogg'</c> or <c>'.mp3'</c> file.</returns>
         /// <remarks>
         /// <para>
         ///     If the item has not been previously created, the <see cref="TextureCache"/> class
@@ -124,7 +124,8 @@ namespace Velaptor.Content.Caching
 
             var extension = this.path.GetExtension(soundFilePath);
 
-            if (new[] { OggFileExtension, Mp3FileExtension }.Contains(extension) is false)
+            // if (new[] { OggFileExtension, Mp3FileExtension }.Contains(extension) is false)
+            if (extension != OggFileExtension && extension != Mp3FileExtension)
             {
                 var exceptionMsg = $"Sound file type '{extension}' is not supported.";
                 exceptionMsg += $"\nSupported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
@@ -139,7 +140,7 @@ namespace Velaptor.Content.Caching
                 return this.sounds.GetOrAdd(cacheKey, filePath => this.soundFactory.Create(filePath));
             }
 
-            throw new FileNotFoundException($"The '{extension}' sound file does not exist.");
+            throw new FileNotFoundException($"The '{extension}' sound file does not exist.", soundFilePath);
         }
 
         /// <inheritdoc/>

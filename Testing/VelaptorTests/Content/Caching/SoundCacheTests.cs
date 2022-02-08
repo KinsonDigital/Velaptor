@@ -17,12 +17,15 @@ namespace VelaptorTests.Content.Caching
     using VelaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="SoundCache"/> class.
+    /// </summary>
     public class SoundCacheTests
     {
         private const string OggFileExtension = ".ogg";
         private const string Mp3FileExtension = ".mp3";
         private const string SoundDirPath = @"C:\sounds\";
-        private const string SoundName = "text-sound";
+        private const string SoundName = "test-sound";
         private readonly string oggSoundFilePath = $"{SoundDirPath}{SoundName}{OggFileExtension}";
         private readonly string mp3SoundFilePath = $"{SoundDirPath}{SoundName}{Mp3FileExtension}";
         private readonly Mock<IDisposable> mockShutDownUnsubscriber;
@@ -40,9 +43,11 @@ namespace VelaptorTests.Content.Caching
             this.mockSoundFactory = new Mock<ISoundFactory>();
             this.mockFile = new Mock<IFile>();
             this.mockFile.Setup(m => m.Exists(this.oggSoundFilePath)).Returns(true);
+            this.mockFile.Setup(m => m.Exists(this.mp3SoundFilePath)).Returns(true);
 
             this.mockPath = new Mock<IPath>();
             this.mockPath.Setup(m => m.GetExtension(this.oggSoundFilePath)).Returns(OggFileExtension);
+            this.mockPath.Setup(m => m.GetExtension(this.mp3SoundFilePath)).Returns(Mp3FileExtension);
 
             this.mockShutDownReactable = new Mock<IReactable<ShutDownData>> { Name = nameof(this.mockDisposeSoundReactable) };
 
@@ -115,7 +120,7 @@ namespace VelaptorTests.Content.Caching
         }
 
         [Fact]
-        public void Ctor_WithNullShutDownReactorParam_ThrowsException()
+        public void Ctor_WithNullShutDownReactableParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -233,21 +238,42 @@ namespace VelaptorTests.Content.Caching
         public void GetItem_WhenGettingSound_ReturnsSound()
         {
             // Arrange
-            var mockSound = new Mock<ISound>();
+            var mockMp3Sound = new Mock<ISound>();
+            mockMp3Sound.Name = nameof(mockMp3Sound);
+            mockMp3Sound.SetupGet(p => p.FilePath).Returns(this.mp3SoundFilePath);
+            mockMp3Sound.SetupGet(p => p.Id).Returns(123u);
+
+            var mockOggSound = new Mock<ISound>();
+            mockOggSound.Name = nameof(mockOggSound);
+            mockOggSound.SetupGet(p => p.FilePath).Returns(this.oggSoundFilePath);
+            mockOggSound.SetupGet(p => p.Id).Returns(456u);
+
+            this.mockSoundFactory.Setup(m => m.Create(this.mp3SoundFilePath))
+                .Returns(mockMp3Sound.Object);
             this.mockSoundFactory.Setup(m => m.Create(this.oggSoundFilePath))
-                .Returns(mockSound.Object);
+                .Returns(mockOggSound.Object);
 
             var cache = CreateCache();
 
             // Act
-            var sound = cache.GetItem(this.oggSoundFilePath);
+            var mp3Sound = cache.GetItem(this.mp3SoundFilePath);
+            var oggSound = cache.GetItem(this.oggSoundFilePath);
 
             // Assert
-            Assert.NotNull(sound);
+            Assert.NotNull(mp3Sound);
+            Assert.NotNull(oggSound);
+
+            Assert.NotSame(mp3Sound, oggSound);
+
+            Assert.Equal(123u, mp3Sound.Id);
+            Assert.Equal(456u, oggSound.Id);
+
+            Assert.Equal(this.mp3SoundFilePath, mp3Sound.FilePath);
+            Assert.Equal(this.oggSoundFilePath, oggSound.FilePath);
         }
 
         [Fact]
-        public void Unload_WhenSoundToUnloadExists_RemovesAndDisposesOfTexture()
+        public void Unload_WhenSoundToUnloadExists_RemovesAndDisposesOfSound()
         {
             // Arrange
             var mockSound = new Mock<ISound>();
@@ -277,8 +303,8 @@ namespace VelaptorTests.Content.Caching
         public void Unload_WhenSoundToUnloadDoesNotExist_DoesNotAttemptToDispose()
         {
             // Arrange
-            var mockTexture = new Mock<ITexture>();
-            mockTexture.SetupGet(p => p.Id).Returns(123u);
+            var mockSound = new Mock<ISound>();
+            mockSound.SetupGet(p => p.Id).Returns(123u);
 
             var cache = CreateCache();
             cache.GetItem(this.oggSoundFilePath);
