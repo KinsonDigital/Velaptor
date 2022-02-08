@@ -119,14 +119,18 @@ namespace Velaptor
         /// <summary>
         /// Sets up container registration related to caching.
         /// </summary>
-        private static void SetupCaching() => IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
+        private static void SetupCaching()
+        {
+            IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
+            IoCContainer.Register<IItemCache<string, ISound>, SoundCache>(Lifestyle.Singleton);
+        }
 
         /// <summary>
         /// Sets up container registration related to factories.
         /// </summary>
         private static void SetupFactories()
         {
-            IoCContainer.Register<ISoundFactory, SoundFactory>();
+            IoCContainer.Register<ISoundFactory, SoundFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IFontFactory, FontFactory>();
