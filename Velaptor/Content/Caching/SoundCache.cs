@@ -124,7 +124,6 @@ namespace Velaptor.Content.Caching
 
             var extension = this.path.GetExtension(soundFilePath);
 
-            // if (new[] { OggFileExtension, Mp3FileExtension }.Contains(extension) is false)
             if (extension != OggFileExtension && extension != Mp3FileExtension)
             {
                 var exceptionMsg = $"Sound file type '{extension}' is not supported.";
