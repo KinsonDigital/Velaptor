@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL
+namespace VelaptorTests.OpenGL.Shaders
 {
     using System;
     using System.Collections.Generic;
