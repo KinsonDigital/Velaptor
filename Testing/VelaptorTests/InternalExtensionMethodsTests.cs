@@ -285,6 +285,23 @@ namespace VelaptorTests
             // Assert
             Assert.All(actual, i => Assert.Equal("item", i));
         }
+
+        [Fact]
+        public void ToArray_WithVector4Param_ReturnsCorrectResult()
+        {
+            // Arrange
+            var vector = new Vector4(11, 22, 33, 44);
+
+            // Act
+            var actual = vector.ToArray();
+
+            // Assert
+            Assert.Equal(4, actual.Length);
+            Assert.Equal(11, actual[0]);
+            Assert.Equal(22, actual[1]);
+            Assert.Equal(33, actual[2]);
+            Assert.Equal(44, actual[3]);
+        }
         #endregion
 
         /// <summary>
