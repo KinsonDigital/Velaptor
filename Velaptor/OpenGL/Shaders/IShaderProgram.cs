@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.OpenGL.Shaders
 {
     /// <summary>
     /// A shader program consisting of a vertex and fragment shader.
