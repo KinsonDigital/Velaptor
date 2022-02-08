@@ -8,6 +8,7 @@ namespace Velaptor.OpenGL
     using System;
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.OpenGL.Buffers;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using NETSizeF = System.Drawing.SizeF;
