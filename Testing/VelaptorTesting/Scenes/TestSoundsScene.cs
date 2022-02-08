@@ -78,10 +78,13 @@ namespace VelaptorTesting.Scenes
 
         public override void UnloadContent()
         {
-            this.sound.Stop();
-
             this.buttons.Clear();
-            ContentLoader.UnloadSound(this.sound);
+
+            if (this.sound is not null)
+            {
+                this.sound.Stop();
+                ContentLoader.UnloadSound(this.sound);
+            }
 
             base.UnloadContent();
         }
