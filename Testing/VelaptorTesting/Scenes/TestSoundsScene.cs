@@ -7,6 +7,7 @@ namespace VelaptorTesting.Scenes
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using System.Globalization;
     using System.Linq;
     using Velaptor;
     using Velaptor.Content;
@@ -58,19 +59,18 @@ namespace VelaptorTesting.Scenes
             PerformButtonLayout();
             PerformLabelLayout();
 
-            this.lblSoundLength.Text =
-                $"Sound Length: {Math.Round(this.sound.Length.Minutes, 0)}:{Math.Round(this.sound.Length.Seconds, 0)}";
+            var soundLength = GetFormattedSoundTime(this.sound.Length.Minutes, this.sound.Length.Seconds);
+            this.lblSoundLength.Text = $"Sound Length: {soundLength}";
         }
 
         public override void Update(FrameTime frameTime)
         {
-            var minutes = Math.Round(this.sound.Position.Minutes, 0);
-            var seconds = Math.Round(this.sound.Position.Seconds, 0);
+            var currentSoundTime = GetFormattedSoundTime(this.sound.Position.Minutes, this.sound.Position.Seconds);
 
             this.lblState.Text = $"Sound State: {this.sound.State.ToString()}";
             this.lblRepeat.Text = $"Enable Repeat: {(this.sound.IsLooping ? "yes" : "no")}";
             this.btnRepeat.Text = this.sound.IsLooping ? "Disable Repeat" : "Enable Repeat";
-            this.lblCurrentTime.Text = $"Current Time: {minutes}:{seconds}";
+            this.lblCurrentTime.Text = $"Current Time: {currentSoundTime}";
 
             PerformLabelLayout();
             base.Update(frameTime);
@@ -87,6 +87,22 @@ namespace VelaptorTesting.Scenes
             }
 
             base.UnloadContent();
+        }
+
+        private static string GetFormattedSoundTime(float minutes, float seconds)
+        {
+            var minuteStr = Math.Round(minutes, 0).ToString(CultureInfo.InvariantCulture);
+            var secondStr = Math.Round(seconds, 0).ToString(CultureInfo.InvariantCulture);
+
+            minuteStr = minuteStr.Length <= 1
+                ? $"0{minuteStr}"
+                : minuteStr;
+
+            secondStr = secondStr.Length <= 1
+                ? $"0{secondStr}"
+                : secondStr;
+
+            return $"{minuteStr}:{secondStr}";
         }
 
         private void LoadLabels()
