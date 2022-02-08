@@ -11,6 +11,7 @@ namespace Velaptor.OpenGL
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.OpenGL.Services;
+    using Velaptor.OpenGL.Shaders;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
 
