@@ -9,7 +9,7 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// Represents the type of GPU buffer.
     /// </summary>
-    public enum BufferType
+    internal enum BufferType
     {
         /// <summary>
         ///  A vertex buffer object.
