@@ -30,12 +30,12 @@ namespace VelaptorTests.Graphics
     /// </summary>
     public class SpriteBatchTests
     {
-        private const string RootRelativeTestDataDirPath = @"SampleTestData\";
+        // private const string RootRelativeTestDataDirPath = @"SampleTestData\";
         private const string GlyphTestDataFileName = "glyph-test-data.json";
         private const uint TextureShaderId = 1111;
         private const uint FontShaderId = 2222;
         private const char InvalidCharacter = '□';
-        private readonly string batchTestDataDirPath = @$"{RootRelativeTestDataDirPath}BatchItemTestData\";
+        private readonly string batchTestDataDirPath = @"BatchItemTestData\";
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IShaderProgram> mockTextureShader;
@@ -1282,7 +1282,7 @@ namespace VelaptorTests.Graphics
 
         private void MockFontMetrics()
         {
-            this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics>(RootRelativeTestDataDirPath, GlyphTestDataFileName).ToList();
+            this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics>("", GlyphTestDataFileName).ToList();
             this.mockFont.SetupGet(p => p.Metrics).Returns(() => this.allGlyphMetrics.ToArray().ToReadOnlyCollection());
         }
 
