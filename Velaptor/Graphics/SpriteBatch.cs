@@ -34,10 +34,13 @@ namespace Velaptor.Graphics
         private readonly IOpenGLService openGLService;
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
+        private readonly IShaderProgram rectShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
         private readonly IGPUBuffer<SpriteBatchItem> fontBuffer;
+        private readonly IGPUBuffer<RectShape> rectBuffer;
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
         private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
+        private readonly IBatchManagerService<RectShape> rectBatchService;
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
 
@@ -54,10 +57,13 @@ namespace Velaptor.Graphics
         /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="textureShader">The shader used for rendering textures.</param>
         /// <param name="fontShader">The shader used for rendering text.</param>
+        /// <param name="rectShader">The shader used for rendering rectangles.</param>
         /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
+        /// <param name="rectBuffer">Updates the data in the GPU related to rendering rectangles.</param>
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
+        /// <param name="rectBatchService">Manages the batch of rectangles. to render.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
@@ -69,10 +75,13 @@ namespace Velaptor.Graphics
             IOpenGLService openGLService,
             IShaderProgram textureShader,
             IShaderProgram fontShader,
+            IShaderProgram rectShader,
             IGPUBuffer<SpriteBatchItem> textureBuffer,
             IGPUBuffer<SpriteBatchItem> fontBuffer,
+            IGPUBuffer<RectShape> rectBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
+            IBatchManagerService<RectShape> rectBatchService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
@@ -81,8 +90,10 @@ namespace Velaptor.Graphics
             this.openGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
             this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), "The parameter must not be null.");
             this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), "The parameter must not be null.");
+            this.rectShader = rectShader ?? throw new ArgumentNullException(nameof(rectShader), "The parameter must not be null.");
             this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), "The parameter must not be null.");
             this.fontBuffer = fontBuffer ?? throw new ArgumentNullException(nameof(fontBuffer), "The parameter must not be null.");
+            this.rectBuffer = rectBuffer ?? throw new ArgumentNullException(nameof(rectBuffer), "The parameter must not be null.");
 
             this.textureBatchService = textureBatchService ?? throw new ArgumentNullException(nameof(textureBatchService), "The parameter must not be null.");
             this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;
@@ -91,6 +102,10 @@ namespace Velaptor.Graphics
             this.fontBatchService = fontBatchService ?? throw new ArgumentNullException(nameof(fontBatchService), "The parameter must not be null.");
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
+
+            this.rectBatchService = rectBatchService ?? throw new ArgumentNullException(nameof(rectBatchService), "The parameter must not be null.");
+            this.rectBatchService.BatchSize = ISpriteBatch.BatchSize;
+            this.rectBatchService.BatchFilled += RectBatchService_BatchFilled;
 
             if (glInitReactable is null)
             {
@@ -368,6 +383,7 @@ namespace Velaptor.Graphics
         {
             TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
             FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
+            RectBatchService_BatchFilled(this.rectBatchService, EventArgs.Empty);
 
             this.hasBegun = false;
         }
@@ -384,6 +400,7 @@ namespace Velaptor.Graphics
 
             this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
             this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
+            this.rectBatchService.BatchFilled -= RectBatchService_BatchFilled;
             this.cachedUIntProps.Clear();
             this.glInitUnsubscriber.Dispose();
             this.shutDownUnsubscriber.Dispose();
@@ -501,6 +518,13 @@ namespace Velaptor.Graphics
             this.fontBatchService.EmptyBatch();
 
             this.openGLService.EndGroup();
+        }
+
+        /// <summary>
+        /// Invoked every time the batch of rectangles is ready to be rendered.
+        /// </summary>
+        private void RectBatchService_BatchFilled(object? sender, EventArgs e)
+        {
         }
 
         /// <summary>

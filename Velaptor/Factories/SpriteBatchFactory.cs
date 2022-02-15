@@ -40,22 +40,28 @@ namespace Velaptor.Factories
             var openGLService = IoC.Container.GetInstance<IOpenGLService>();
             var textureShader = ShaderFactory.CreateTextureShader();
             var fontShader = ShaderFactory.CreateFontShader();
+            var rectShader = ShaderFactory.CreateRectShader();
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
             var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
+            var rectBuffer = GPUBufferFactory.CreateRectGPUBuffer();
             var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
             var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
             var textureBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
             var fontBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
+            var rectBatchService = IoC.Container.GetInstance<IBatchManagerService<RectShape>>();
 
             spriteBatch = new SpriteBatch(
                 glInvoker,
                 openGLService,
                 textureShader,
                 fontShader,
+                rectShader,
                 textureBuffer,
                 fontBuffer,
+                rectBuffer,
                 textureBatchService,
                 fontBatchService,
+                rectBatchService,
                 glInitReactor,
                 shutDownReactor);
 
