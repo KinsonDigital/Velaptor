@@ -53,6 +53,9 @@
     <None Update="SampleTestData\BatchItemTestData\RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="SampleTestData\RectGPUDataTestData.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
