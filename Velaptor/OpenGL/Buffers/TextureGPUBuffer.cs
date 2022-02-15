@@ -189,7 +189,7 @@ namespace Velaptor.OpenGL.Buffers
                 });
             }
 
-            return result.ToVertexArray();
+            return OpenGLExtensionMethods.ToArray(result);
         }
 
         /// <inheritdoc/>

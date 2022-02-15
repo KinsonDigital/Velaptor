@@ -17,6 +17,7 @@ namespace Velaptor
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using Velaptor.Graphics;
+    using Velaptor.OpenGL;
     using Velaptor.OpenGL.GPUData;
     using NETColor = System.Drawing.Color;
     using NETRectF = System.Drawing.RectangleF;
@@ -387,78 +388,6 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Converts the given <paramref name="vector"/> components to an array of floats.
-        /// </summary>
-        /// <param name="vector">The vector to convert.</param>
-        /// <returns>An array of float values.</returns>
-        public static IEnumerable<float> ToVertexArray(this Vector2 vector) => new[] { vector.X, vector.Y };
-
-        /// <summary>
-        /// Converts the given <paramref name="clr"/> components to an array of floats.
-        /// </summary>
-        /// <param name="clr">The color to convert.</param>
-        /// <returns>An array of float values.</returns>
-        /// <remarks>
-        ///     The order of the color components are changed to meet OpenGL requirements.
-        ///     Component order is Red, Green, Blue, Alpha.
-        /// </remarks>
-        public static IEnumerable<float> ToVertexArray(this NETColor clr) => new float[] { clr.R, clr.G, clr.B, clr.A };
-
-        /// <summary>
-        /// Converts the given <paramref name="vertexData"/> components to an array of floats.
-        /// </summary>
-        /// <param name="vertexData">The data to convert.</param>
-        /// <returns>An array of float values.</returns>
-        public static IEnumerable<float> ToVertexArray(this TextureVertexData vertexData)
-        {
-            // NOTE: The order of the array elements are extremely important.
-            // They determine the layout of each stride of vertex data and the layout
-            // here has to match the layout told to OpenGL using the VertexAttribLocation() calls
-            var result = new List<float>();
-
-            result.AddRange(vertexData.VertexPos.ToVertexArray());
-            result.AddRange(vertexData.TextureCoord.ToVertexArray());
-            result.AddRange(vertexData.TintColor.ToVertexArray());
-
-            return result.ToArray();
-        }
-
-        /// <summary>
-        /// Converts the given <paramref name="quad"/> components to an array of floats.
-        /// </summary>
-        /// <param name="quad">The quad to convert.</param>
-        /// <returns>An array of float values.</returns>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left here for future development.")]
-        public static IEnumerable<float> ToVertexArray(this TextureQuadData quad)
-        {
-            var result = new List<float>();
-
-            result.AddRange(quad.Vertex1.ToVertexArray());
-            result.AddRange(quad.Vertex2.ToVertexArray());
-            result.AddRange(quad.Vertex3.ToVertexArray());
-            result.AddRange(quad.Vertex4.ToVertexArray());
-
-            return result.ToArray();
-        }
-
-        /// <summary>
-        /// Converts the given list of <paramref name="quads"/> components to an array of floats.
-        /// </summary>
-        /// <param name="quads">The quads to convert.</param>
-        /// <returns>An array of float values.</returns>
-        public static float[] ToVertexArray(this IEnumerable<TextureQuadData> quads)
-        {
-            var result = new List<float>();
-
-            foreach (var quad in quads)
-            {
-                result.AddRange(quad.ToVertexArray());
-            }
-
-            return result.ToArray();
-        }
-
-        /// <summary>
         /// Removes the given <paramref name="trimChar"/> from the end of all of the given string <paramref name="items"/>.
         /// </summary>
         /// <param name="items">The string items to trim.</param>
@@ -481,10 +410,498 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Returns all of the <see cref="Vector4"/> components as a <see cref="float"/> array.
+        /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
         /// </summary>
-        /// <param name="vector">The vector to convert.</param>
-        /// <returns>The components in a <c>X</c> <c>Y</c> <c>Z</c> <c>W</c> order.</returns>
-        public static float[] ToArray(this Vector4 vector) => new[] { vector.X, vector.Y, vector.Z, vector.W };
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="pos">The position to apply to a vertex.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetVertexPos(this RectGPUData gpuData, Vector2 pos, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                pos,
+                oldVertex.Rectangle,
+                oldVertex.Color,
+                oldVertex.IsFilled,
+                oldVertex.BorderThickness,
+                oldVertex.TopLeftCornerRadius,
+                oldVertex.BottomLeftCornerRadius,
+                oldVertex.BottomRightCornerRadius,
+                oldVertex.TopRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.Rectangle"/> of a vertex using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="rect">The rectangle to apply to a vertex.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetRectangle(this RectGPUData gpuData, Vector4 rect, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                oldVertex.VertexPos,
+                rect,
+                oldVertex.Color,
+                oldVertex.IsFilled,
+                oldVertex.BorderThickness,
+                oldVertex.TopLeftCornerRadius,
+                oldVertex.BottomLeftCornerRadius,
+                oldVertex.BottomRightCornerRadius,
+                oldVertex.TopRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.Rectangle"/> for all of the vertex data in the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="rectangle">The rectangle to apply to all vertex data.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetRectangle(this RectGPUData gpuData, Vector4 rectangle)
+        {
+            gpuData = gpuData.SetRectangle(rectangle, VertexNumber.One);
+            gpuData = gpuData.SetRectangle(rectangle, VertexNumber.Two);
+            gpuData = gpuData.SetRectangle(rectangle, VertexNumber.Three);
+            gpuData = gpuData.SetRectangle(rectangle, VertexNumber.Four);
+
+            return gpuData;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.IsFilled"/> setting of a vertex using the given <paramref name="vertexNumber"/>
+        /// for the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="isFilled">The the is filled setting to apply to a vertex.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetIsFilled(this RectGPUData gpuData, bool isFilled, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                oldVertex.VertexPos,
+                oldVertex.Rectangle,
+                oldVertex.Color,
+                isFilled,
+                oldVertex.BorderThickness,
+                oldVertex.TopLeftCornerRadius,
+                oldVertex.BottomLeftCornerRadius,
+                oldVertex.BottomRightCornerRadius,
+                oldVertex.TopRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.IsFilled"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="isFilled">The setting to apply to all vertex data.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetIsFilled(this RectGPUData gpuData, bool isFilled)
+        {
+            gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.One);
+            gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Two);
+            gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Three);
+            gpuData = gpuData.SetIsFilled(isFilled, VertexNumber.Four);
+
+            return gpuData;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.BorderThickness"/> setting of a vertex using the given <paramref name="vertexNumber"/>
+        /// for the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="borderThickness">The the is filled setting to apply to a vertex.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetBorderThickness(this RectGPUData gpuData, float borderThickness, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                oldVertex.VertexPos,
+                oldVertex.Rectangle,
+                oldVertex.Color,
+                oldVertex.IsFilled,
+                borderThickness,
+                oldVertex.TopLeftCornerRadius,
+                oldVertex.BottomLeftCornerRadius,
+                oldVertex.BottomRightCornerRadius,
+                oldVertex.TopRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.BorderThickness"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="borderThickness">The setting to apply to all vertex data.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetBorderThickness(this RectGPUData gpuData, float borderThickness)
+        {
+            gpuData = gpuData.SetBorderThickness(borderThickness, VertexNumber.One);
+            gpuData = gpuData.SetBorderThickness(borderThickness, VertexNumber.Two);
+            gpuData = gpuData.SetBorderThickness(borderThickness, VertexNumber.Three);
+            gpuData = gpuData.SetBorderThickness(borderThickness, VertexNumber.Four);
+
+            return gpuData;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.TopLeftCornerRadius"/> setting of a vertex using the given <paramref name="vertexNumber"/>
+        /// for the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="topLeftCornerRadius">The top left corner radius to apply to a vertex.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetTopLeftCornerRadius(this RectGPUData gpuData, float topLeftCornerRadius, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                oldVertex.VertexPos,
+                oldVertex.Rectangle,
+                oldVertex.Color,
+                oldVertex.IsFilled,
+                oldVertex.BorderThickness,
+                topLeftCornerRadius,
+                oldVertex.BottomLeftCornerRadius,
+                oldVertex.BottomRightCornerRadius,
+                oldVertex.TopRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.TopLeftCornerRadius"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="topLeftCornerRadius">The setting to apply to all vertex data.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetTopLeftCornerRadius(this RectGPUData gpuData, float topLeftCornerRadius)
+        {
+            gpuData = gpuData.SetTopLeftCornerRadius(topLeftCornerRadius, VertexNumber.One);
+            gpuData = gpuData.SetTopLeftCornerRadius(topLeftCornerRadius, VertexNumber.Two);
+            gpuData = gpuData.SetTopLeftCornerRadius(topLeftCornerRadius, VertexNumber.Three);
+            gpuData = gpuData.SetTopLeftCornerRadius(topLeftCornerRadius, VertexNumber.Four);
+
+            return gpuData;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.BottomLeftCornerRadius"/> setting of a vertex using the given <paramref name="vertexNumber"/>
+        /// for the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="bottomLeftCornerRadius">The bottom left corner radius to apply to a vertex.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetBottomLeftCornerRadius(this RectGPUData gpuData, float bottomLeftCornerRadius, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                oldVertex.VertexPos,
+                oldVertex.Rectangle,
+                oldVertex.Color,
+                oldVertex.IsFilled,
+                oldVertex.BorderThickness,
+                oldVertex.TopLeftCornerRadius,
+                bottomLeftCornerRadius,
+                oldVertex.BottomRightCornerRadius,
+                oldVertex.TopRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.BottomLeftCornerRadius"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="bottomLeftCornerRadius">The setting to apply to all vertex data.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetBottomLeftCornerRadius(this RectGPUData gpuData, float bottomLeftCornerRadius)
+        {
+            gpuData = gpuData.SetBottomLeftCornerRadius(bottomLeftCornerRadius, VertexNumber.One);
+            gpuData = gpuData.SetBottomLeftCornerRadius(bottomLeftCornerRadius, VertexNumber.Two);
+            gpuData = gpuData.SetBottomLeftCornerRadius(bottomLeftCornerRadius, VertexNumber.Three);
+            gpuData = gpuData.SetBottomLeftCornerRadius(bottomLeftCornerRadius, VertexNumber.Four);
+
+            return gpuData;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.BottomRightCornerRadius"/> setting of a vertex using the given <paramref name="vertexNumber"/>
+        /// for the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="bottomRightCornerRadius">The bottom right corner radius to apply to a vertex.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetBottomRightCornerRadius(this RectGPUData gpuData, float bottomRightCornerRadius, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                oldVertex.VertexPos,
+                oldVertex.Rectangle,
+                oldVertex.Color,
+                oldVertex.IsFilled,
+                oldVertex.BorderThickness,
+                oldVertex.TopLeftCornerRadius,
+                oldVertex.BottomLeftCornerRadius,
+                bottomRightCornerRadius,
+                oldVertex.TopRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.BottomRightCornerRadius"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="bottomRightCornerRadius">The setting to apply to all vertex data.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetBottomRightCornerRadius(this RectGPUData gpuData, float bottomRightCornerRadius)
+        {
+            gpuData = gpuData.SetBottomRightCornerRadius(bottomRightCornerRadius, VertexNumber.One);
+            gpuData = gpuData.SetBottomRightCornerRadius(bottomRightCornerRadius, VertexNumber.Two);
+            gpuData = gpuData.SetBottomRightCornerRadius(bottomRightCornerRadius, VertexNumber.Three);
+            gpuData = gpuData.SetBottomRightCornerRadius(bottomRightCornerRadius, VertexNumber.Four);
+
+            return gpuData;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.TopRightCornerRadius"/> setting of a vertex using the given <paramref name="vertexNumber"/>
+        /// for the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="topRightCornerRadius">The top right corner radius to apply to a vertex.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetTopRightCornerRadius(this RectGPUData gpuData, float topRightCornerRadius, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                oldVertex.VertexPos,
+                oldVertex.Rectangle,
+                oldVertex.Color,
+                oldVertex.IsFilled,
+                oldVertex.BorderThickness,
+                oldVertex.TopLeftCornerRadius,
+                oldVertex.BottomLeftCornerRadius,
+                oldVertex.BottomRightCornerRadius,
+                topRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.TopRightCornerRadius"/> setting for all of the vertex data in the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="topRightCornerRadius">The setting to apply to all vertex data.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetTopRightCornerRadius(this RectGPUData gpuData, float topRightCornerRadius)
+        {
+            gpuData = gpuData.SetTopRightCornerRadius(topRightCornerRadius, VertexNumber.One);
+            gpuData = gpuData.SetTopRightCornerRadius(topRightCornerRadius, VertexNumber.Two);
+            gpuData = gpuData.SetTopRightCornerRadius(topRightCornerRadius, VertexNumber.Three);
+            gpuData = gpuData.SetTopRightCornerRadius(topRightCornerRadius, VertexNumber.Four);
+
+            return gpuData;
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.Color"/> of a vertex using the given <paramref name="vertexNumber"/>
+        /// for the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="color">The color to set vertex 1 to.</param>
+        /// <param name="vertexNumber">The vertex to update.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetColor(this RectGPUData gpuData, NETColor color, VertexNumber vertexNumber)
+        {
+            var oldVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+                _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
+            };
+
+            var newVertexData = new RectVertexData(
+                oldVertex.VertexPos,
+                oldVertex.Rectangle,
+                color,
+                oldVertex.IsFilled,
+                oldVertex.BorderThickness,
+                oldVertex.TopLeftCornerRadius,
+                oldVertex.BottomLeftCornerRadius,
+                oldVertex.BottomRightCornerRadius,
+                oldVertex.TopRightCornerRadius);
+
+#pragma warning disable CS8524 No need to have default switch case.  This is taken care of by the first switch expression in the method
+            return vertexNumber switch
+#pragma warning restore CS8524
+            {
+                VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
+                VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
+                VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
+            };
+        }
+
+        /// <summary>
+        /// Updates the <see cref="RectVertexData.Color"/> for all of the vertex data in the given <paramref name="gpuData"/>.
+        /// </summary>
+        /// <param name="gpuData">The GPU data to update.</param>
+        /// <param name="color">The color to apply to all vertex data.</param>
+        /// <returns>The updated GPU data.</returns>
+        public static RectGPUData SetColor(this RectGPUData gpuData, NETColor color)
+        {
+            gpuData = gpuData.SetColor(color, VertexNumber.One);
+            gpuData = gpuData.SetColor(color, VertexNumber.Two);
+            gpuData = gpuData.SetColor(color, VertexNumber.Three);
+            gpuData = gpuData.SetColor(color, VertexNumber.Four);
+
+            return gpuData;
+        }
     }
 }

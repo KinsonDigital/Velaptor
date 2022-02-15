@@ -2,17 +2,22 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+#pragma warning disable CS8524
 namespace VelaptorTests
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Numerics;
+    using Moq;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using Velaptor;
     using Velaptor.Graphics;
+    using Velaptor.OpenGL;
     using Velaptor.OpenGL.GPUData;
+    using VelaptorTests.Helpers;
     using Xunit;
     using NETColor = System.Drawing.Color;
     using NETRectF = System.Drawing.RectangleF;
@@ -149,101 +154,613 @@ namespace VelaptorTests
             var expectedPixels = CreateImageDataPixels(2, 3, rowColors);
 
             // Act
-            var actual = sixLaborsImage.ToImageData();
+            var actual = ToImageData(sixLaborsImage);
 
             // Assert
             Assert.Equal(expectedPixels, actual.Pixels);
         }
 
         [Fact]
-        public void ToVertexArray_WithVector2ParamOverload_ReturnsCorrectResult()
+        public void SetVertexPos_WithInvalidVertexValue_ThrowsException()
         {
             // Arrange
-            var expected = new[] { 11f, 22f };
-            var vector = new Vector2(11, 22);
+            var gpuData = GenerateGPUDataInSequence(0);
 
-            // Act
-            var actual = vector.ToVertexArray();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void ToVertexArray_WithColorParamOverload_ReturnsCorrectResult()
-        {
-            // Arrange
-            var expected = new[] { 22f, 33f, 44f, 11f };
-            var clr = NETColor.FromArgb(11, 22, 33, 44);
-
-            // Act
-            var actual = clr.ToVertexArray();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void ToVertexArray_WithTextureVertexDataParamOverload_ReturnsCorrectResult()
-        {
-            // Arrange
-            var expected = new[] { 11f, 22f, 33f, 44f, 66, 77, 88, 55 };
-            var vertexData = default(TextureVertexData);
-            vertexData.VertexPos = new Vector2(11, 22);
-            vertexData.TextureCoord = new Vector2(33, 44);
-            vertexData.TintColor = NETColor.FromArgb(55, 66, 77, 88);
-
-            // Act
-            var actual = vertexData.ToVertexArray();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void ToVertexArray_WithTextureQuadDataParamOverload_ReturnsCorrectResult()
-        {
-            // Arrange
-            var expected = new[]
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
-                1f,   2f,  3f,  4f,  6f,  7f,  8f,  5f, // Vertex 1
-                9f,  10f, 11f, 12f, 14f, 15f, 16f, 13f, // Vertex 2
-                17f, 18f, 19f, 20f, 22f, 23f, 24f, 21f, // Vertex 3
-                25f, 26f, 27f, 28f, 30f, 31f, 32f, 29f, // Vertex 4
+                gpuData.SetVertexPos(It.IsAny<Vector2>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetVertexPos_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
             };
 
-            var quad = CreateNewQuad(1);
-
             // Act
-            var actual = quad.ToVertexArray();
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetVertexPos(new Vector2(1111f, 2222f), vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetVertexPos(new Vector2(1111f, 2222f), vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetVertexPos(new Vector2(1111f, 2222f), vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetVertexPos(new Vector2(1111f, 2222f), vertexNumber).Vertex4,
+            };
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(new Vector2(1111f, 2222f), actual.VertexPos);
+            Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
+            Assert.Equal(expectedVertex.Color, actual.Color);
+            Assert.False(expectedVertex.IsFilled);
+            Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
+            Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
+            Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
         }
 
         [Fact]
-        public void ToVertexArray_WithTextureQuadDataListParamOverload_ReturnsCorrectResult()
+        public void SetRectangle_WithInvalidVertexValue_ThrowsException()
         {
             // Arrange
-            var expected = new[]
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
-                1f,   2f,  3f,  4f,  6f,  7f,  8f,  5f, // Quad 1 Vertex 1
-                9f,  10f, 11f, 12f, 14f, 15f, 16f, 13f, // Quad 1 Vertex 2
-                17f, 18f, 19f, 20f, 22f, 23f, 24f, 21f, // Quad 1 Vertex 3
-                25f, 26f, 27f, 28f, 30f, 31f, 32f, 29f, // Quad 1 Vertex 4
-                33f, 34f, 35f, 36f, 38f, 39f, 40f, 37f, // Quad 2 Vertex 1
-                41f, 42f, 43f, 44f, 46f, 47f, 48f, 45f, // Quad 2 Vertex 2
-                49f, 50f, 51f, 52f, 54f, 55f, 56f, 53f, // Quad 2 Vertex 3
-                57f, 58f, 59f, 60f, 62f, 63f, 64f, 61f, // Quad 2 Vertex 4
+                gpuData.SetRectangle(It.IsAny<Vector4>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetRectangle_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
             };
 
-            var quads = new List<TextureQuadData> { CreateNewQuad(1), CreateNewQuad(33) };
-
             // Act
-            var actual = quads.ToVertexArray();
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetRectangle(new Vector4(1111f, 2222f, 3333f, 4444f), vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetRectangle(new Vector4(1111f, 2222f, 3333f, 4444f), vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetRectangle(new Vector4(1111f, 2222f, 3333f, 4444f), vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetRectangle(new Vector4(1111f, 2222f, 3333f, 4444f), vertexNumber).Vertex4,
+            };
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
+            Assert.Equal(new Vector4(1111f, 2222f, 3333f, 4444f), actual.Rectangle);
+            Assert.Equal(expectedVertex.Color, actual.Color);
+            Assert.False(expectedVertex.IsFilled);
+            Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
+            Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
+            Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetRectangle_WhenUpdatingAll_ReturnsCorrectResult()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expected = new Vector4(111, 222, 333, 444);
+
+            // Act
+            var actual = gpuData.SetRectangle(new Vector4(111, 222, 333, 444));
+
+            // Assert
+            Assert.Equal(expected, actual.Vertex1.Rectangle);
+            Assert.Equal(expected, actual.Vertex2.Rectangle);
+            Assert.Equal(expected, actual.Vertex3.Rectangle);
+            Assert.Equal(expected, actual.Vertex4.Rectangle);
+        }
+
+        [Fact]
+        public void SetIsFilled_WithInvalidVertexValue_ThrowsException()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
+            {
+                gpuData.SetIsFilled(It.IsAny<bool>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetIsFilled_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+            };
+
+            // Act
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetIsFilled(true, vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetIsFilled(true, vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetIsFilled(true, vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetIsFilled(true, vertexNumber).Vertex4,
+            };
+
+            // Assert
+            Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
+            Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
+            Assert.Equal(expectedVertex.Color, actual.Color);
+            Assert.True(actual.IsFilled);
+            Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
+            Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
+            Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetIsFilled_WhenUpdatingAll_ReturnsCorrectResult()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act
+            var actual = gpuData.SetIsFilled(true);
+
+            // Assert
+            Assert.True(actual.Vertex1.IsFilled);
+            Assert.True(actual.Vertex2.IsFilled);
+            Assert.True(actual.Vertex3.IsFilled);
+            Assert.True(actual.Vertex4.IsFilled);
+        }
+
+        [Fact]
+        public void SetBorderThickness_WithInvalidVertexValue_ThrowsException()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
+            {
+                gpuData.SetBorderThickness(It.IsAny<float>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetBorderThickness_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+            };
+
+            // Act
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetBorderThickness(123f, vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetBorderThickness(123f, vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetBorderThickness(123f, vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetBorderThickness(123f, vertexNumber).Vertex4,
+            };
+
+            // Assert
+            Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
+            Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
+            Assert.Equal(expectedVertex.Color, actual.Color);
+            Assert.Equal(expectedVertex.IsFilled, actual.IsFilled);
+            Assert.Equal(123f, actual.BorderThickness);
+            Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
+            Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetBorderThickness_WhenUpdatingAll_ReturnsCorrectResult()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+            const float expected = 123f;
+
+            // Act
+            var actual = gpuData.SetBorderThickness(123f);
+
+            // Assert
+            Assert.Equal(expected, actual.Vertex1.BorderThickness);
+            Assert.Equal(expected, actual.Vertex2.BorderThickness);
+            Assert.Equal(expected, actual.Vertex3.BorderThickness);
+            Assert.Equal(expected, actual.Vertex4.BorderThickness);
+        }
+
+        [Fact]
+        public void SetTopLeftCornerRadius_WithInvalidVertexValue_ThrowsException()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
+            {
+                gpuData.SetTopLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetTopLeftCornerRadius_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+            };
+
+            // Act
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetTopLeftCornerRadius(1234f, vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetTopLeftCornerRadius(1234f, vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetTopLeftCornerRadius(1234f, vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetTopLeftCornerRadius(1234f, vertexNumber).Vertex4,
+            };
+
+            // Assert
+            Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
+            Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
+            Assert.Equal(expectedVertex.Color, actual.Color);
+            Assert.False(expectedVertex.IsFilled);
+            Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
+            Assert.Equal(1234f, actual.TopLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
+            Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetTopLeftCornerRadius_WhenUpdatingAll_ReturnsCorrectResult()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+            const float expected = 123f;
+
+            // Act
+            var actual = gpuData.SetTopLeftCornerRadius(123f);
+
+            // Assert
+            Assert.Equal(expected, actual.Vertex1.TopLeftCornerRadius);
+            Assert.Equal(expected, actual.Vertex2.TopLeftCornerRadius);
+            Assert.Equal(expected, actual.Vertex3.TopLeftCornerRadius);
+            Assert.Equal(expected, actual.Vertex4.TopLeftCornerRadius);
+        }
+
+        [Fact]
+        public void SetBottomLeftCornerRadius_WithInvalidVertexValue_ThrowsException()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
+            {
+                gpuData.SetBottomLeftCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetBottomLeftCornerRadius_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+            };
+
+            // Act
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetBottomLeftCornerRadius(1234f, vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetBottomLeftCornerRadius(1234f, vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetBottomLeftCornerRadius(1234f, vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetBottomLeftCornerRadius(1234f, vertexNumber).Vertex4,
+            };
+
+            // Assert
+            Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
+            Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
+            Assert.Equal(expectedVertex.Color, actual.Color);
+            Assert.False(expectedVertex.IsFilled);
+            Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
+            Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
+            Assert.Equal(1234f, actual.BottomLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
+            Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetBottomLeftCornerRadius_WhenUpdatingAll_ReturnsCorrectResult()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+            const float expected = 123f;
+
+            // Act
+            var actual = gpuData.SetBottomLeftCornerRadius(123f);
+
+            // Assert
+            Assert.Equal(expected, actual.Vertex1.BottomLeftCornerRadius);
+            Assert.Equal(expected, actual.Vertex2.BottomLeftCornerRadius);
+            Assert.Equal(expected, actual.Vertex3.BottomLeftCornerRadius);
+            Assert.Equal(expected, actual.Vertex4.BottomLeftCornerRadius);
+        }
+
+        [Fact]
+        public void SetBottomRightCornerRadius_WithInvalidVertexValue_ThrowsException()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
+            {
+                gpuData.SetBottomRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetBottomRightCornerRadius_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+            };
+
+            // Act
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetBottomRightCornerRadius(1234f, vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetBottomRightCornerRadius(1234f, vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetBottomRightCornerRadius(1234f, vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetBottomRightCornerRadius(1234f, vertexNumber).Vertex4,
+            };
+
+            // Assert
+            Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
+            Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
+            Assert.Equal(expectedVertex.Color, actual.Color);
+            Assert.False(expectedVertex.IsFilled);
+            Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
+            Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
+            Assert.Equal(1234f, actual.BottomRightCornerRadius);
+            Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetBottomRightCornerRadius_WhenUpdatingAll_ReturnsCorrectResult()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+            const float expected = 123f;
+
+            // Act
+            var actual = gpuData.SetBottomRightCornerRadius(123f);
+
+            // Assert
+            Assert.Equal(expected, actual.Vertex1.BottomRightCornerRadius);
+            Assert.Equal(expected, actual.Vertex2.BottomRightCornerRadius);
+            Assert.Equal(expected, actual.Vertex3.BottomRightCornerRadius);
+            Assert.Equal(expected, actual.Vertex4.BottomRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetTopRightCornerRadius_WithInvalidVertexValue_ThrowsException()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
+            {
+                gpuData.SetTopRightCornerRadius(It.IsAny<float>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetTopRightCornerRadius_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+            };
+
+            // Act
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetTopRightCornerRadius(1234f, vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetTopRightCornerRadius(1234f, vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetTopRightCornerRadius(1234f, vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetTopRightCornerRadius(1234f, vertexNumber).Vertex4,
+            };
+
+            // Assert
+            Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
+            Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
+            Assert.Equal(expectedVertex.Color, actual.Color);
+            Assert.False(expectedVertex.IsFilled);
+            Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
+            Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
+            Assert.Equal(1234f, actual.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetTopRightCornerRadius_WhenUpdatingAll_ReturnsCorrectResult()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+            const float expected = 123f;
+
+            // Act
+            var actual = gpuData.SetTopRightCornerRadius(123f);
+
+            // Assert
+            Assert.Equal(expected, actual.Vertex1.TopRightCornerRadius);
+            Assert.Equal(expected, actual.Vertex2.TopRightCornerRadius);
+            Assert.Equal(expected, actual.Vertex3.TopRightCornerRadius);
+            Assert.Equal(expected, actual.Vertex4.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetColor_WithInvalidVertexValue_ThrowsException()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
+            {
+                gpuData.SetColor(It.IsAny<NETColor>(), (VertexNumber)1234);
+            }, "The vertex number is invalid. (Parameter 'vertexNumber')");
+        }
+
+        [Theory]
+        [InlineData((int)VertexNumber.One)]
+        [InlineData((int)VertexNumber.Two)]
+        [InlineData((int)VertexNumber.Three)]
+        [InlineData((int)VertexNumber.Four)]
+        public void SetColor_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+        {
+            // Arrange
+            var vertexNumber = (VertexNumber)vertexNumberNumericalValue;
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expectedVertex = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.Vertex1,
+                VertexNumber.Two => gpuData.Vertex2,
+                VertexNumber.Three => gpuData.Vertex3,
+                VertexNumber.Four => gpuData.Vertex4,
+            };
+
+            // Act
+            var actual = vertexNumber switch
+            {
+                VertexNumber.One => gpuData.SetColor(NETColor.Blue, vertexNumber).Vertex1,
+                VertexNumber.Two => gpuData.SetColor(NETColor.Blue, vertexNumber).Vertex2,
+                VertexNumber.Three => gpuData.SetColor(NETColor.Blue, vertexNumber).Vertex3,
+                VertexNumber.Four => gpuData.SetColor(NETColor.Blue, vertexNumber).Vertex4,
+            };
+
+            // Assert
+            Assert.Equal(expectedVertex.VertexPos, actual.VertexPos);
+            Assert.Equal(expectedVertex.Rectangle, actual.Rectangle);
+            Assert.Equal(NETColor.Blue, actual.Color);
+            Assert.False(expectedVertex.IsFilled);
+            Assert.Equal(expectedVertex.BorderThickness, actual.BorderThickness);
+            Assert.Equal(expectedVertex.TopLeftCornerRadius, actual.TopLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
+            Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
+            Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+        }
+
+        [Fact]
+        public void SetColor_WhenUpdatingAll_ReturnsCorrectResult()
+        {
+            // Arrange
+            var gpuData = GenerateGPUDataInSequence(0);
+            var expected = NETColor.FromArgb(220, 230, 240, 250);
+
+            // Act
+            var actual = gpuData.SetColor(NETColor.FromArgb(220, 230, 240, 250));
+
+            // Assert
+            Assert.Equal(expected, actual.Vertex1.Color);
+            Assert.Equal(expected, actual.Vertex2.Color);
+            Assert.Equal(expected, actual.Vertex3.Color);
+            Assert.Equal(expected, actual.Vertex4.Color);
         }
 
         [Fact]
@@ -285,64 +802,7 @@ namespace VelaptorTests
             // Assert
             Assert.All(actual, i => Assert.Equal("item", i));
         }
-
-        [Fact]
-        public void ToArray_WithVector4Param_ReturnsCorrectResult()
-        {
-            // Arrange
-            var vector = new Vector4(11, 22, 33, 44);
-
-            // Act
-            var actual = vector.ToArray();
-
-            // Assert
-            Assert.Equal(4, actual.Length);
-            Assert.Equal(11, actual[0]);
-            Assert.Equal(22, actual[1]);
-            Assert.Equal(33, actual[2]);
-            Assert.Equal(44, actual[3]);
-        }
         #endregion
-
-        /// <summary>
-        /// Creates a quad with vertex values that are in sequence using the given <paramref name="start"/> value.
-        /// </summary>
-        /// <param name="start">The starting value to base the values from.</param>
-        /// <returns>The texture quad data to test.</returns>
-        private static TextureQuadData CreateNewQuad(int start)
-        {
-            var result = default(TextureQuadData);
-
-            result.Vertex1 = new TextureVertexData()
-            {
-                VertexPos = new Vector2(start, start + 1),
-                TextureCoord = new Vector2(start + 2, start + 3),
-                TintColor = NETColor.FromArgb(start + 4, start + 5, start + 6, start + 7),
-            };
-
-            result.Vertex2 = new TextureVertexData()
-            {
-                VertexPos = new Vector2(start + 8, start + 9),
-                TextureCoord = new Vector2(start + 10, start + 11),
-                TintColor = NETColor.FromArgb(start + 12, start + 13, start + 14, start + 15),
-            };
-
-            result.Vertex3 = new TextureVertexData()
-            {
-                VertexPos = new Vector2(start + 16, start + 17),
-                TextureCoord = new Vector2(start + 18, start + 19),
-                TintColor = NETColor.FromArgb(start + 20, start + 21, start + 22, start + 23),
-            };
-
-            result.Vertex4 = new TextureVertexData()
-            {
-                VertexPos = new Vector2(start + 24, start + 25),
-                TextureCoord = new Vector2(start + 26, start + 27),
-                TintColor = NETColor.FromArgb(start + 28, start + 29, start + 30, start + 31),
-            };
-
-            return result;
-        }
 
         /// <summary>
         /// Creates a Six Labors image type of <see cref="Image{Rgba32}"/> with the given <paramref name="width"/>
@@ -425,6 +885,72 @@ namespace VelaptorTests
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        private static ImageData ToImageData(Image<Rgba32> image)
+        {
+            var pixelData = new NETColor[image.Width, image.Height];
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    pixelData[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
+            }
+
+            return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+        }
+
+        /// <summary>
+        /// Generates GPU data with numerical values sequentially throughout
+        /// the struct starting with the given <paramref name="startValue"/> for the purpose of testing.
+        /// </summary>
+        /// <param name="startValue">The value to start the sequential assigment from.</param>
+        /// <returns>The GPU data to test.</returns>
+        private static RectGPUData GenerateGPUDataInSequence(int startValue)
+        {
+            var vertex1 = GenerateVertexDataInSequence(startValue);
+            startValue += 11;
+            var vertex2 = GenerateVertexDataInSequence(startValue);
+            startValue += 11;
+            var vertex3 = GenerateVertexDataInSequence(startValue);
+            startValue += 11;
+            var vertex4 = GenerateVertexDataInSequence(startValue);
+
+            return new RectGPUData(vertex1, vertex2, vertex3, vertex4);
+        }
+
+        /// <summary>
+        /// Generates vertex data with numerical values sequentially throughout
+        /// the struct starting with the given <paramref name="startValue"/> for the purpose of testing.
+        /// </summary>
+        /// <param name="startValue">The value to start the sequential assigment from.</param>
+        /// <returns>The vertex data to test.</returns>
+        private static RectVertexData GenerateVertexDataInSequence(int startValue)
+        {
+            return new RectVertexData(
+                new Vector2(startValue + 1f, startValue + 2f),
+                new Vector4(startValue + 3, startValue + 4, startValue + 5, startValue + 6),
+                NETColor.FromArgb(startValue + 7, startValue + 8, startValue + 9, startValue + 10),
+                false,
+                startValue + 7f,
+                startValue + 8f,
+                startValue + 9f,
+                startValue + 10f,
+                startValue + 11f);
         }
     }
 }
