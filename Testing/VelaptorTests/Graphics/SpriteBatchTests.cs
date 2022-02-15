@@ -597,6 +597,38 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
+        public void RenderTexture_WithNoTextureItemsToRender_SetsUpCorrectDebugGroupAndExits()
+        {
+            // Arrange
+            const string shaderName = "TestTextureShader";
+            this.mockTextureShader.SetupGet(p => p.Name).Returns(shaderName);
+            var unused = CreateSpriteBatch();
+
+            // Act
+            this.mockTextureBatchService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
+
+            // Assert
+            this.mockGLService.Verify(m => m.BeginGroup("Render Texture Process - Nothing To Render"), Times.Once);
+            this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
+            this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Texture Process With {shaderName} Shader"));
+            this.mockTextureShader.VerifyNever(m => m.Use());
+            this.mockGLService.VerifyNever(m =>
+                m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Texture Data - TextureID"))));
+            this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
+            this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
+            this.mockTextureBuffer.VerifyNever(m =>
+                m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()));
+            this.mockGLService.VerifyNever(m =>
+                m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
+            this.mockGL.VerifyNever(m => m.DrawElements(
+                It.IsAny<GLPrimitiveType>(),
+                It.IsAny<uint>(),
+                It.IsAny<GLDrawElementsType>(),
+                It.IsAny<IntPtr>()));
+            this.mockFontBatchService.VerifyNever(m => m.EmptyBatch());
+        }
+
+        [Fact]
         public void RenderTexture_WhenInvoking3ParamOverload_AddsCorrectItemToBatch()
         {
             // Arrange
@@ -785,6 +817,38 @@ namespace VelaptorTests.Graphics
             {
                 batch.Render(null, "test", 10, 20, 1f, 0f, Color.White);
             }, $"Cannot render a null '{nameof(IFont)}'. (Parameter 'font')");
+        }
+
+        [Fact]
+        public void RenderFont_WithNoFontItemsToRender_SetsUpCorrectDebugGroupAndExits()
+        {
+            // Arrange
+            const string shaderName = "TestFontShader";
+            this.mockFontShader.SetupGet(p => p.Name).Returns(shaderName);
+            var unused = CreateSpriteBatch();
+
+            // Act
+            this.mockFontBatchService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
+
+            // Assert
+            this.mockGLService.Verify(m => m.BeginGroup("Render Text Process - Nothing To Render"), Times.Once);
+            this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
+            this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Text Process With {shaderName} Shader"));
+            this.mockFontShader.VerifyNever(m => m.Use());
+            this.mockGLService.VerifyNever(m =>
+                m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Character Data - TextureID"))));
+            this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
+            this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
+            this.mockFontBuffer.VerifyNever(m =>
+                m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()));
+            this.mockGLService.VerifyNever(m =>
+                m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Font Elements"))));
+            this.mockGL.VerifyNever(m => m.DrawElements(
+                It.IsAny<GLPrimitiveType>(),
+                It.IsAny<uint>(),
+                It.IsAny<GLDrawElementsType>(),
+                It.IsAny<IntPtr>()));
+            this.mockFontBatchService.VerifyNever(m => m.EmptyBatch());
         }
 
         [Theory]
@@ -1302,7 +1366,39 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void RenderFilledRectangle_WhenInvoked_AddsRectToBatch()
+        public void RenderRectangle_WithNoRectItemsToRender_SetsUpCorrectDebugGroupAndExits()
+        {
+            // Arrange
+            const string shaderName = "TestRectShader";
+            this.mockFontShader.SetupGet(p => p.Name).Returns(shaderName);
+            var unused = CreateSpriteBatch();
+
+            // Act
+            this.mockRectBatchService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
+
+            // Assert
+            this.mockGLService.Verify(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"), Times.Once);
+            this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
+            this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Rectangle Process With {shaderName} Shader"));
+            this.mockRectShader.VerifyNever(m => m.Use());
+            this.mockGLService.VerifyNever(m =>
+                m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID"))));
+            this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
+            this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
+            this.mockRectBuffer.VerifyNever(m =>
+                m.UploadData(It.IsAny<RectShape>(), It.IsAny<uint>()));
+            this.mockGLService.VerifyNever(m =>
+                m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
+            this.mockGL.VerifyNever(m => m.DrawElements(
+                It.IsAny<GLPrimitiveType>(),
+                It.IsAny<uint>(),
+                It.IsAny<GLDrawElementsType>(),
+                It.IsAny<IntPtr>()));
+            this.mockRectBatchService.VerifyNever(m => m.EmptyBatch());
+        }
+
+        [Fact]
+        public void RenderRectangle_WhenInvoked_AddsRectToBatch()
         {
             // Arrange
             var expected = new RectShape

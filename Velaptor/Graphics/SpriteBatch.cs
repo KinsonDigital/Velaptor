@@ -429,6 +429,16 @@ namespace Velaptor.Graphics
         {
             var textureIsBound = false;
 
+            if (this.textureBatchService.BatchItems.Count <= 0)
+            {
+                this.openGLService.BeginGroup("Render Texture Process - Nothing To Render");
+                this.openGLService.EndGroup();
+
+                return;
+            }
+
+            this.openGLService.BeginGroup($"Render Texture Process With {this.textureShader.Name} Shader");
+
             this.textureShader.Use();
 
             var totalItemsToRender = 0u;
@@ -442,6 +452,8 @@ namespace Velaptor.Graphics
                     continue;
                 }
 
+                this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+
                 if (!textureIsBound)
                 {
                     this.gl.ActiveTexture(GLTextureUnit.Texture0);
@@ -451,6 +463,8 @@ namespace Velaptor.Graphics
 
                 this.textureBuffer.UploadData(batchItem, i);
                 totalItemsToRender += 1;
+
+                this.openGLService.EndGroup();
             }
 
             // Only render the amount of elements for the amount of batch items to render.
@@ -466,6 +480,8 @@ namespace Velaptor.Graphics
 
             // Empty the batch items
             this.textureBatchService.EmptyBatch();
+
+            this.openGLService.EndGroup();
         }
 
         /// <summary>
@@ -474,6 +490,14 @@ namespace Velaptor.Graphics
         private void FontBatchService_BatchFilled(object? sender, EventArgs e)
         {
             var fontTextureIsBound = false;
+
+            if (this.fontBatchService.BatchItems.Count <= 0)
+            {
+                this.openGLService.BeginGroup("Render Text Process - Nothing To Render");
+                this.openGLService.EndGroup();
+
+                return;
+            }
 
             this.openGLService.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
 
@@ -552,10 +576,11 @@ namespace Velaptor.Graphics
                 }
 
                 this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
-                this.openGLService.EndGroup();
 
                 this.rectBuffer.UploadData(batchItem, i);
                 totalItemsToRender += 1;
+
+                this.openGLService.EndGroup();
             }
 
             // Only render the amount of elements for the amount of batch items to render.
