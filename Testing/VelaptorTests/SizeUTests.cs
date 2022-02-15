@@ -12,6 +12,19 @@ namespace VelaptorTests
     /// </summary>
     public class SizeUTests
     {
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WhenInvoked_SetsPropsToCorrectValues()
+        {
+            // Arrange & Act
+            var size = new SizeU(11u, 22u);
+
+            // Assert
+            Assert.Equal(11u, size.Width);
+            Assert.Equal(22u, size.Height);
+        }
+        #endregion
+
         #region Prop Tests
         [Fact]
         public void Width_WhenSettingValue_ReturnsCorrectResult()
