@@ -251,6 +251,10 @@ namespace Velaptor.OpenGL.Shaders
             {
                 attributes = Attribute.GetCustomAttributes(typeof(FontShader));
             }
+            else if (currentType == typeof(RectangleShader))
+            {
+                attributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
+            }
             else
             {
                 Name = "UNKNOWN";

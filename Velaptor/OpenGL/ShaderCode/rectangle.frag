@@ -149,7 +149,7 @@ bool containedByEllipse(Ellipse ellipse, uint cornerType)
             {
                 return true;
             }
-            break;
+        break;
     }
 
     // Refer to link for more info
@@ -177,19 +177,19 @@ bool inCorrectEllipseQuadrant(Ellipse cornerEllipse, uint cornerType)
     {
         case TOP_LEFT_CORNER:
             result = pass_topLeftCornerRadius < 0.0 ||
-            gl_FragCoord.x < cornerEllipse.Position.x && gl_FragCoord.y < cornerEllipse.Position.y;
+                gl_FragCoord.x < cornerEllipse.Position.x && gl_FragCoord.y < cornerEllipse.Position.y;
             break;
         case BOTTOM_LEFT_CORNER:
             result = pass_bottomLeftCornerRadius < 0.0 ||
-            gl_FragCoord.x < cornerEllipse.Position.x && gl_FragCoord.y > cornerEllipse.Position.y;
+                gl_FragCoord.x < cornerEllipse.Position.x && gl_FragCoord.y > cornerEllipse.Position.y;
             break;
         case BOTTOM_RIGHT_CORNER:
             result = pass_bottomRightCornerRadius < 0.0 ||
-            gl_FragCoord.x > cornerEllipse.Position.x && gl_FragCoord.y > cornerEllipse.Position.y;
+                gl_FragCoord.x > cornerEllipse.Position.x && gl_FragCoord.y > cornerEllipse.Position.y;
             break;
         case TOP_RIGHT_CORNER:
             result = pass_topRightCornerRadius < 0.0 ||
-            gl_FragCoord.x > cornerEllipse.Position.x && gl_FragCoord.y < cornerEllipse.Position.y;
+                gl_FragCoord.x > cornerEllipse.Position.x && gl_FragCoord.y < cornerEllipse.Position.y;
             break;
     }
 

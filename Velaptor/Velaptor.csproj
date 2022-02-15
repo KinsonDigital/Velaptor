@@ -67,9 +67,11 @@
     <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
     <None Remove="OpenGL\ShaderCode\rect.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\rect.vert" />
     <None Remove="OpenGL\ShaderCode\rect.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\rect.frag" />
+    <None Remove="OpenGL\ShaderCode\rectangle.frag" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.frag" />
+    <None Remove="OpenGL\ShaderCode\rectangle.vert" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.vert" />
   </ItemGroup>
 
   <ItemGroup>
