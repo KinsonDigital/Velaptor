@@ -77,6 +77,9 @@ namespace Velaptor.OpenGL.Buffers
             ShutDown();
         }
 
+        /// <inheritdoc/>
+        public SizeU ViewPortSize { get; set; }
+
         /// <summary>
         /// Gets the size of the sprite batch.
         /// </summary>

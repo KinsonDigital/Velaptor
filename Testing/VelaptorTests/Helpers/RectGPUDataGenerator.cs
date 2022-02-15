@@ -1,4 +1,4 @@
-// <copyright file="RectVertexDataGenerator.cs" company="KinsonDigital">
+// <copyright file="RectGPUDataGenerator.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
