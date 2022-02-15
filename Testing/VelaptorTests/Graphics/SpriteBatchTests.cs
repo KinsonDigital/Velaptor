@@ -1302,7 +1302,34 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void EndBatch_WithEntireBatchEmpty_DoesNotRenderBatch()
+        public void RenderFilledRectangle_WhenInvoked_AddsRectToBatch()
+        {
+            // Arrange
+            var expected = new RectShape
+            {
+                Position = new Vector2(11, 22),
+                Width = 33u,
+                Height = 44u,
+                IsFilled = true,
+                BorderThickness = 0,
+                CornerRadius = CornerRadius.Empty(),
+                Color = Color.White,
+                GradientType = ColorGradient.None,
+                GradientStart = Color.Magenta,
+                GradientStop = Color.Magenta,
+            };
+
+            this.mockRectBatchService.Setup(m => m.Add(It.IsAny<RectShape>()));
+
+            var batch = CreateSpriteBatch();
+
+            // Act
+            batch.Render(expected);
+
+            // Assert
+            this.mockRectBatchService.Verify(m => m.Add(expected), Times.Once);
+        }
+
         [Fact]
         public void EndBatch_WithEmptyTextureBatch_DoesNotAttemptRender()
         {
@@ -1376,31 +1403,53 @@ namespace VelaptorTests.Graphics
             this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
         }
 
+        [Fact]
+        public void EndBatch_WithBatchOfRectangles_SetsUpOpenGLDebugGroups()
         {
             // Arrange
-            var shouldRenderItem = default(SpriteBatchItem);
-            var shouldNotRenderItem = default(SpriteBatchItem);
-            var items = new[] { (false, shouldRenderItem), (false, shouldNotRenderItem) };
+            const string rectShaderName = "rect-test-shader";
+            this.mockRectShader.SetupGet(p => p.Name).Returns(rectShaderName);
+            this.mockGLService.Setup(m => m.BeginGroup($"Render Rectangle Process With {rectShaderName} Shader"))
+                .CallbackInOrder(nameof(IOpenGLService.BeginGroup), 10, 1);
+            this.mockGLService.Setup(m => m.BeginGroup("Update Rectangle Data - BatchItem(0)"))
+                .CallbackInOrder(nameof(IOpenGLService.BeginGroup), 20, 2);
+
+            var rectBatchItems = new[] { (true, GenerateRectShape(0)) };
+            var batch = CreateSpriteBatch();
+
+            this.mockRectBatchService.SetupGet(p => p.BatchItems)
+                .Returns(rectBatchItems.ToReadOnlyDictionary());
+
+            // Act
+            batch.EndBatch();
+
+            // Assert
+            this.mockGLService.Verify(m => m.BeginGroup("Update Rectangle Data - BatchItem(0)"), Times.Once);
+            this.mockGLService.Verify(m => m.EndGroup(), Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public void EndBatch_WithEmptyRectBatch_DoesNotAttemptRender()
+        {
+            // Arrange
+            var rectBatchItems = new[] { (false, default(RectShape)) };
+
+            this.mockRectBatchService.SetupGet(p => p.BatchItems)
+                .Returns(rectBatchItems.ToReadOnlyDictionary());
 
             var batch = CreateSpriteBatch();
-            // TODO: Take care of this mock of the Add method by converting it to a mock of the AddRange method
-            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
-                .Callback<SpriteBatchItem>(_ =>
-                {
-                    MockTextureBatchItems(items);
-                });
 
             this.glInitReactor.OnNext(default);
             batch.BeginBatch();
 
-            batch.Render(
-                new Mock<ITexture>().Object,
-                new Rectangle(0, 0, 1, 2),
-                It.IsAny<Rectangle>(),
-                It.IsAny<float>(),
-                It.IsAny<float>(),
-                It.IsAny<Color>(),
-                It.IsAny<RenderEffects>());
+            var rect = new RectShape
+            {
+                Position = new Vector2(11, 22),
+                Width = 33,
+                Height = 44,
+            };
+
+            batch.Render(rect);
 
             // Act
             batch.EndBatch();
@@ -1409,8 +1458,8 @@ namespace VelaptorTests.Graphics
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Never());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Never);
             this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Never);
-            this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, It.IsAny<uint>()), Times.Never);
-            this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
         }
 
         [Fact]
@@ -1478,9 +1527,31 @@ namespace VelaptorTests.Graphics
             return result;
         }
 
+        /// <summary>
+        /// Generates a <see cref="RectShape"/> with unique sequential data for its values for the purpose of testing.
+        /// </summary>
+        /// <param name="start">The start of the data sequence.</param>
+        /// <returns>The instance to use for testing.</returns>
+        private static RectShape GenerateRectShape(float start)
+        {
+            return new RectShape
+            {
+                Position = new Vector2(start + 1f, start + 2f),
+                Width = start + 3f,
+                Height = start + 4f,
+                Color = Color.FromArgb((byte)start + 5, (byte)start + 6, (byte)start + 7, (byte)start + 8),
+                IsFilled = true,
+                BorderThickness = start + 9,
+                CornerRadius = new CornerRadius(10, start + 11, start + 12, start + 13),
+                GradientType = ColorGradient.None,
+                GradientStart = Color.FromArgb((byte)start + 14, (byte)start + 15, (byte)start + 16, (byte)start + 17),
+                GradientStop = Color.FromArgb((byte)start + 18, (byte)start + 19, (byte)start + 20, (byte)start + 21),
+            };
+        }
+
         private void MockFontMetrics()
         {
-            this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics>("", GlyphTestDataFileName).ToList();
+            this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics>(string.Empty, GlyphTestDataFileName).ToList();
             this.mockFont.SetupGet(p => p.Metrics).Returns(() => this.allGlyphMetrics.ToArray().ToReadOnlyCollection());
         }
 

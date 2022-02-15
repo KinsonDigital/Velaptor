@@ -379,6 +379,9 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc/>
+        public void Render(RectShape rectangle) => this.rectBatchService.Add(rectangle);
+
+        /// <inheritdoc/>
         public void EndBatch()
         {
             TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
@@ -525,6 +528,51 @@ namespace Velaptor.Graphics
         /// </summary>
         private void RectBatchService_BatchFilled(object? sender, EventArgs e)
         {
+            if (this.rectBatchService.BatchItems.Count <= 0)
+            {
+                this.openGLService.BeginGroup("Render Rectangle Process - Nothing To Render");
+                this.openGLService.EndGroup();
+
+                return;
+            }
+
+            this.openGLService.BeginGroup($"Render Rectangle Process With {this.rectShader.Name} Shader");
+
+            this.rectShader.Use();
+
+            var totalItemsToRender = 0u;
+
+            for (var i = 0u; i < this.rectBatchService.BatchItems.Count; i++)
+            {
+                var (shouldRender, batchItem) = this.rectBatchService.BatchItems[i];
+
+                if (shouldRender is false || batchItem.IsEmpty())
+                {
+                    continue;
+                }
+
+                this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
+                this.openGLService.EndGroup();
+
+                this.rectBuffer.UploadData(batchItem, i);
+                totalItemsToRender += 1;
+            }
+
+            // Only render the amount of elements for the amount of batch items to render.
+            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
+            if (totalItemsToRender > 0)
+            {
+                var totalElements = 6u * totalItemsToRender;
+
+                this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.openGLService.EndGroup();
+            }
+
+            // Empty the batch items
+            this.rectBatchService.EmptyBatch();
+
+            this.openGLService.EndGroup();
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-// <copyright file="ISpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="ISpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -291,5 +291,14 @@ namespace Velaptor.Graphics
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, int x, int y, float size, float angle, Color color);
+
+        /// <summary>
+        /// Renders the given <paramref name="rectangle"/>.
+        /// </summary>
+        /// <param name="rectangle">The rectangle to render.</param>
+        /// <remarks>
+        ///     The <see cref="RectShape.Position"/> is the center of the rectangle.
+        /// </remarks>
+        void Render(RectShape rectangle);
     }
 }
