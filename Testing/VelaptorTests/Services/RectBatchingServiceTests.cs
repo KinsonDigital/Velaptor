@@ -175,6 +175,5 @@ namespace VelaptorTests.Services
         /// </summary>
         /// <returns>The instance to test.</returns>
         private static RectBatchService CreateService() => new ();
-
     }
 }

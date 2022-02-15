@@ -128,34 +128,7 @@ namespace VelaptorTests.Helpers
 
             srcImage.Dispose();
 
-            return destImage.ToImageData();
-        }
-
-        /// <summary>
-        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
-        /// to the type of <see cref="ImageData"/>.
-        /// </summary>
-        /// <param name="image">The image to convert.</param>
-        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-        public static ImageData ToImageData(this Image<Rgba32> image)
-        {
-            var pixelData = new NETColor[image.Width, image.Height];
-
-            for (var y = 0; y < image.Height; y++)
-            {
-                var pixelRowSpan = image.GetPixelRowSpan(y);
-
-                for (var x = 0; x < image.Width; x++)
-                {
-                    pixelData[x, y] = NETColor.FromArgb(
-                        pixelRowSpan[x].A,
-                        pixelRowSpan[x].R,
-                        pixelRowSpan[x].G,
-                        pixelRowSpan[x].B);
-                }
-            }
-
-            return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+            return ToImageData(destImage);
         }
 
         /// <summary>
@@ -269,6 +242,33 @@ namespace VelaptorTests.Helpers
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        private static ImageData ToImageData(Image<Rgba32> image)
+        {
+            var pixelData = new NETColor[image.Width, image.Height];
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    pixelData[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
+            }
+
+            return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
         }
     }
 }

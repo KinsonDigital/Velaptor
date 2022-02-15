@@ -112,7 +112,7 @@ namespace VelaptorTests.Services
         {
             // Arrange
             var service = new ImageService();
-            var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
+            var comparisonSample = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
 
             // Act
             var flippedImage = service.FlipVertically(comparisonSample);
@@ -158,7 +158,7 @@ namespace VelaptorTests.Services
         {
             // Arrange
             var service = new ImageService();
-            var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
+            var comparisonSample = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
 
             // Act
             var flippedImage = service.FlipHorizontally(comparisonSample);
@@ -294,7 +294,7 @@ namespace VelaptorTests.Services
         /// </summary>
         /// <returns>The pixel data from the test comparison image.</returns>
         [ExcludeFromCodeCoverage]
-        private NETColor[,] LoadSaveResultImage(string filePath)
+        private static NETColor[,] LoadSaveResultImage(string filePath)
         {
             if (File.Exists(filePath) is false)
             {
@@ -316,6 +316,33 @@ namespace VelaptorTests.Services
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        private static ImageData ToImageData(Image<Rgba32> image)
+        {
+            var pixelData = new NETColor[image.Width, image.Height];
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    pixelData[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
+            }
+
+            return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
         }
     }
 }

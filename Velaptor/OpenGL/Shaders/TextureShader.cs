@@ -19,7 +19,6 @@ namespace Velaptor.OpenGL.Shaders
     [ShaderName("Texture")]
     internal class TextureShader : ShaderProgram
     {
-        // private readonly IDisposable shutDownReactorUnsubscriber;
         private int mainTextureUniformLocation = -1;
 
         /// <summary>
