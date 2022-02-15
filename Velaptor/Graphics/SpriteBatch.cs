@@ -160,6 +160,14 @@ namespace Velaptor.Graphics
         public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
 
         /// <inheritdoc/>
+        public void OnResize(SizeU size)
+        {
+            this.textureBuffer.ViewPortSize = size;
+            this.fontBuffer.ViewPortSize = size;
+            this.rectBuffer.ViewPortSize = size;
+        }
+
+        /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
 
         /// <inheritdoc/>

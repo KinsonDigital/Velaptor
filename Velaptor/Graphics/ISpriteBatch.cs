@@ -1,4 +1,4 @@
-﻿// <copyright file="ISpriteBatch.cs" company="KinsonDigital">
+// <copyright file="ISpriteBatch.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -62,6 +62,12 @@ namespace Velaptor.Graphics
         /// still in the batch.
         /// </summary>
         void EndBatch();
+
+        /// <summary>
+        /// Updates the view port size.
+        /// </summary>
+        /// <param name="size">The size to update the view port to.</param>
+        void OnResize(SizeU size);
 
         /// <summary>
         /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
