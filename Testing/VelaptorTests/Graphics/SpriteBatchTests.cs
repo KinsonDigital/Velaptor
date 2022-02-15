@@ -518,6 +518,21 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
+        public void OnResize_WhenInvoked_SetsBufferViewPortSizes()
+        {
+            // Arrange
+            var batch = CreateSpriteBatch();
+
+            // Act
+            batch.OnResize(new SizeU(11u, 22u));
+
+            // Assert
+            this.mockTextureBuffer.VerifySet(p => p.ViewPortSize = new SizeU(11u, 22u));
+            this.mockFontBuffer.VerifySet(p => p.ViewPortSize = new SizeU(11u, 22u));
+            this.mockRectBuffer.VerifySet(p => p.ViewPortSize = new SizeU(11u, 22u));
+        }
+
+        [Fact]
         public void RenderTexture_WhenNotCallingBeginFirst_ThrowsException()
         {
             // Arrange
