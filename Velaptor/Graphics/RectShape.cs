@@ -41,9 +41,6 @@ namespace Velaptor.Graphics
                 value = value < 0f ? 0f : value;
 
                 this.width = value;
-
-                var currentRadius = CornerRadius;
-                CornerRadius = currentRadius;
             }
         }
 
@@ -62,9 +59,6 @@ namespace Velaptor.Graphics
                 value = value < 0f ? 0f : value;
 
                 this.height = value;
-
-                var currentRadius = CornerRadius;
-                CornerRadius = currentRadius;
             }
         }
 

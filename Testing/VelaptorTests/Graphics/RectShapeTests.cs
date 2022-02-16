@@ -84,23 +84,6 @@ namespace VelaptorTests.Graphics
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Width_WhenSettingValue_UpdatesCornerRadius()
-        {
-            // Arrange
-            var expected = new CornerRadius(25f, 25f, 25f, 25f);
-            var rect = new RectShape();
-            rect.Width = 100;
-            rect.Height = 200;
-            rect.CornerRadius = new CornerRadius(40f, 40f, 40f, 40f);
-
-            // Act
-            rect.Width = 50;
-
-            // Assert
-            Assert.Equal(expected, rect.CornerRadius);
-        }
-
         [Theory]
         [InlineData(0, 0)]
         [InlineData(-10f, 0)]
@@ -116,23 +99,6 @@ namespace VelaptorTests.Graphics
 
             // Assert
             Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Height_WhenSettingValue_UpdatesCornerRadius()
-        {
-            // Arrange
-            var expected = new CornerRadius(25f, 25f, 25f, 25f);
-            var rect = new RectShape();
-            rect.Width = 200;
-            rect.Height = 100;
-            rect.CornerRadius = new CornerRadius(40f, 40f, 40f, 40f);
-
-            // Act
-            rect.Height = 50;
-
-            // Assert
-            Assert.Equal(expected, rect.CornerRadius);
         }
 
         [Theory]
