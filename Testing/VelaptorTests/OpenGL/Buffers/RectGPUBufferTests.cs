@@ -513,7 +513,7 @@ namespace VelaptorTests.OpenGL.Buffers
         #endregion
 
         /// <summary>
-        /// Creates a list of items that describes the different regions of an array of data.
+        /// Creates a list of items that describe the different regions of an array of data.
         /// </summary>
         /// <param name="dataStride">The stride of a single section of data.</param>
         /// <param name="totalSections">The total number of sections.</param>

@@ -5,7 +5,7 @@
 namespace Velaptor.OpenGL.Shaders
 {
     /// <summary>
-    /// A shader program consisting of a vertex and fragment shader.
+    /// A shader program consisting of a vertex and a fragment shader.
     /// </summary>
     internal interface IShaderProgram
     {

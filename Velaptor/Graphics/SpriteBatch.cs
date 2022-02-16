@@ -63,7 +63,7 @@ namespace Velaptor.Graphics
         /// <param name="rectBuffer">Updates the data in the GPU related to rendering rectangles.</param>
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
-        /// <param name="rectBatchService">Manages the batch of rectangles. to render.</param>
+        /// <param name="rectBatchService">Manages the batch of rectangles to render.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
@@ -423,7 +423,7 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Invoked every time the batch of textures is ready to be rendered.
+        /// Invoked every time a batch of textures is ready to be rendered.
         /// </summary>
         private void TextureBatchService_BatchFilled(object? sender, EventArgs e)
         {
@@ -478,14 +478,14 @@ namespace Velaptor.Graphics
                 this.openGLService.EndGroup();
             }
 
-            // Empty the batch items
+            // Empty the batch
             this.textureBatchService.EmptyBatch();
 
             this.openGLService.EndGroup();
         }
 
         /// <summary>
-        /// Invoked every time the batch of fonts is ready to be rendered.
+        /// Invoked every time a batch of fonts is ready to be rendered.
         /// </summary>
         private void FontBatchService_BatchFilled(object? sender, EventArgs e)
         {
@@ -531,7 +531,7 @@ namespace Velaptor.Graphics
             }
 
             // Only render the amount of elements for the amount of batch items to render.
-            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
+            // 6 = the number of vertices per quad and each batch is a quad. totalItemsToRender is the total quads to render
             if (totalItemsToRender > 0)
             {
                 var totalElements = 6u * totalItemsToRender;
@@ -541,14 +541,14 @@ namespace Velaptor.Graphics
                 this.openGLService.EndGroup();
             }
 
-            // Empty the batch items
+            // Empty the batch
             this.fontBatchService.EmptyBatch();
 
             this.openGLService.EndGroup();
         }
 
         /// <summary>
-        /// Invoked every time the batch of rectangles is ready to be rendered.
+        /// Invoked every time a batch of rectangles is ready to be rendered.
         /// </summary>
         private void RectBatchService_BatchFilled(object? sender, EventArgs e)
         {
@@ -584,7 +584,7 @@ namespace Velaptor.Graphics
             }
 
             // Only render the amount of elements for the amount of batch items to render.
-            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
+            // 6 = the number of vertices per quad and each batch is a quad. totalItemsToRender is the total number of  quads to render
             if (totalItemsToRender > 0)
             {
                 var totalElements = 6u * totalItemsToRender;
@@ -594,7 +594,7 @@ namespace Velaptor.Graphics
                 this.openGLService.EndGroup();
             }
 
-            // Empty the batch items
+            // Empty the batch
             this.rectBatchService.EmptyBatch();
 
             this.openGLService.EndGroup();

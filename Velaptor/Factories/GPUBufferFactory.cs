@@ -28,7 +28,7 @@ namespace Velaptor.Factories
         /// <summary>
         /// Creates an instance of the <see cref="TextureGPUBuffer"/> class.
         /// </summary>
-        /// <returns>A gpu buffer class.</returns>
+        /// <returns>A GPU buffer class.</returns>
         /// <remarks>
         ///     The instance is a singleton.  Every call to this method will return the same instance.
         /// </remarks>
@@ -52,7 +52,7 @@ namespace Velaptor.Factories
         /// <summary>
         /// Creates an instance of the <see cref="FontGPUBuffer"/> class.
         /// </summary>
-        /// <returns>A gpu buffer class.</returns>
+        /// <returns>A GPU buffer class.</returns>
         /// <remarks>
         ///     The instance is a singleton.  Every call to this method will return the same instance.
         /// </remarks>
@@ -76,7 +76,7 @@ namespace Velaptor.Factories
         /// <summary>
         /// Creates an instance of the <see cref="RectGPUBuffer"/> class.
         /// </summary>
-        /// <returns>A gpu buffer class.</returns>
+        /// <returns>A GPU buffer class.</returns>
         /// <remarks>
         ///     The instance is a singleton.  Every call to this method will return the same instance.
         /// </remarks>

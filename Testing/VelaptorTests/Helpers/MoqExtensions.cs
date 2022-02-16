@@ -43,8 +43,8 @@ namespace VelaptorTests.Helpers
         /// <param name="setup">The mock setup to extend.</param>
         /// <param name="methodName">The name of the method expected to be invoked.</param>
         /// <param name="id">
-        ///     The ID to assign to the callback to help distinguish between multiple calls to the same method
-        ///     but with different parameter data.
+        ///     The ID to assign to the callback to help distinguish between
+        ///     multiple calls to the same method with different parameter data.
         /// </param>
         /// <param name="expectedOrder">The order sequence that the method should be invoked.</param>
         /// <typeparam name="T">The type that the setup is mocking.</typeparam>
@@ -61,8 +61,8 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        ///   Verifies that a specific invocation matching the given expression was never performed on the mock.
-        ///   Use in conjunction with the default <see cref="MockBehavior.Loose"/>.
+        /// Verifies that a specific invocation matching the given expression was never performed on the mock.
+        /// Use in conjunction with the default <see cref="MockBehavior.Loose"/>.
         /// </summary>
         /// <param name="mock">The mock object to extend.</param>
         /// <param name="expression">Expression to verify.</param>

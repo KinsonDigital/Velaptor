@@ -32,7 +32,9 @@ namespace VelaptorTests.OpenGL.GPUData
             Assert.Equal(vertex3, data.Vertex3);
             Assert.Equal(vertex4, data.Vertex4);
         }
+        #endregion
 
+        #region Method Tests
         [Fact]
         public void ToArray_WhenInvoked_ReturnsCorrectResult()
         {

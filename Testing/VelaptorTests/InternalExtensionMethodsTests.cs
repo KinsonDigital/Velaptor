@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CS8524
+//#pragma warning disable CS8524 The switch expression does not handle some values of its input type.
 namespace VelaptorTests
 {
     using System;
@@ -918,7 +918,7 @@ namespace VelaptorTests
         /// Generates GPU data with numerical values sequentially throughout
         /// the struct starting with the given <paramref name="startValue"/> for the purpose of testing.
         /// </summary>
-        /// <param name="startValue">The value to start the sequential assigment from.</param>
+        /// <param name="startValue">The value to start the sequential assignment from.</param>
         /// <returns>The GPU data to test.</returns>
         private static RectGPUData GenerateGPUDataInSequence(int startValue)
         {
@@ -937,7 +937,7 @@ namespace VelaptorTests
         /// Generates vertex data with numerical values sequentially throughout
         /// the struct starting with the given <paramref name="startValue"/> for the purpose of testing.
         /// </summary>
-        /// <param name="startValue">The value to start the sequential assigment from.</param>
+        /// <param name="startValue">The value to start the sequential assignment from.</param>
         /// <returns>The vertex data to test.</returns>
         private static RectVertexData GenerateVertexDataInSequence(int startValue)
         {

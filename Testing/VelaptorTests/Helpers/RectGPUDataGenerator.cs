@@ -14,8 +14,8 @@ namespace VelaptorTests.Helpers
     internal static class RectGPUDataGenerator
     {
         /// <summary>
-        /// Generates a <see cref="RectGPUData"/> instance with the component values starting at <paramref name="start"/>
-        /// with each component getting larger sequentially.
+        /// Generates a <see cref="RectGPUData"/> instance with the component values beginning at <paramref name="start"/> value
+        /// with each component getting larger by 1.
         /// </summary>
         /// <param name="start">The start value of the component values.</param>
         /// <returns>The instance used for testing.</returns>
@@ -30,11 +30,11 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Generates a <see cref="RectVertexData"/> instance with the component values starting at <paramref name="start"/>
+        /// Generates a <see cref="RectVertexData"/> instance with the component values beginning at the given <paramref name="start"/> value
         /// with each component getting larger by 1.
         /// </summary>
         /// <param name="start">The start value of the component values.</param>
-        /// <param name="next">The next value after the components used the next 4 values from the <paramref name="start"/> value.</param>
+        /// <param name="next">The next value available after all values have been used relative to the given <paramref name="start"/> value.</param>
         /// <returns>The instance used for testing.</returns>
         public static RectVertexData GenerateVertexData(float start, out float next)
         {
@@ -70,16 +70,16 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Generates a <see cref="Vector2"/> instance with the component values starting at <paramref name="start"/>
+        /// Generates a <see cref="Vector2"/> instance with the component values beginning at the given <paramref name="start"/> value
         /// with each component getting larger by 1.
         /// </summary>
         /// <param name="start">The start value of the component values.</param>
-        /// <param name="next">The next value after the components used the next 4 values from the <paramref name="start"/> value.</param>
+        /// <param name="next">The next value available after all values have been used relative to the given <paramref name="start"/> value.</param>
         /// <returns>A <see cref="Vector2"/> instance for testing.</returns>
         /// <remarks>
         ///     Example:
         ///     <para>
-        ///         If the <paramref name="start"/> value is 4, than the the vector components would be the values below:
+        ///         If the given <paramref name="start"/> value is four, then the the vector components would be the values below:
         ///         <list type="number">
         ///             <item>
         ///                 <see cref="Vector2"/>.<see cref="Vector2.X"/> = 4
@@ -97,16 +97,16 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Generates a <see cref="Vector4"/> instance with the component values starting at <paramref name="start"/>
-        /// with each component getting larger by 1.
+        /// Generates a <see cref="Vector4"/> instance with the component values beginning at the
+        /// <paramref name="start"/> value with each component getting larger by 1.
         /// </summary>
         /// <param name="start">The start value of the component values.</param>
-        /// <param name="next">The next value after the components used the next 4 values from the <paramref name="start"/> value.</param>
+        /// <param name="next">The next value available after all values have been used relative to the given <paramref name="start"/> value.</param>
         /// <returns>A <see cref="Vector4"/> instance for testing.</returns>
         /// <remarks>
         ///     Example:
         ///     <para>
-        ///         If the <paramref name="start"/> value is 4, than the the vector components would be the values below:
+        ///         If the given <paramref name="start"/> value is four, then the the vector components would be the values below:
         ///         <list type="number">
         ///             <item>
         ///                 <see cref="Vector4"/>.<see cref="Vector4.X"/> = 4
@@ -130,16 +130,16 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Generates a color instance with the component values starting at <paramref name="start"/>
+        /// Generates a color instance with the component values beginning at the given <paramref name="start"/> value
         /// with each component getting larger by 1.
         /// </summary>
         /// <param name="start">The start value of the component values.</param>
-        /// <param name="next">The next value after the components used the next 4 values from the <paramref name="start"/> value.</param>
+        /// <param name="next">The next value available after all values have been used relative to the given <paramref name="start"/> value.</param>
         /// <returns>A <see cref="Color"/> instance for testing.</returns>
         /// <remarks>
         ///     Example:
         ///     <para>
-        ///         If the <paramref name="start"/> value is 4, than the the color components would be the values below:
+        ///         If the given <paramref name="start"/> value is four, than the the color components would be the values below:
         ///         <list type="number">
         ///             <item>
         ///                 <see cref="Color"/>.<see cref="Color.A"/> = 4

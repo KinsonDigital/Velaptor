@@ -388,13 +388,13 @@ namespace Velaptor
         }
 
         /// <summary>
-        /// Removes the given <paramref name="trimChar"/> from the end of all of the given string <paramref name="items"/>.
+        /// Removes the given <paramref name="trimChar"/> from the end of all the given string <paramref name="items"/>.
         /// </summary>
         /// <param name="items">The string items to trim.</param>
         /// <param name="trimChar">The character to trim.</param>
         /// <returns>
         /// The string that remains for each item after all characters are removed from the end of each string.
-        /// If no characters can be trimmed from an item, the method leaves the item unchanged.
+        /// If no characters can be trimmed from an item, the item is unchanged.
         /// </returns>
         /// <remarks>
         ///     If no <paramref name="trimChar"/> value is provided, then the spaces will be trimmed.
@@ -510,7 +510,7 @@ namespace Velaptor
         /// for the given <paramref name="gpuData"/>.
         /// </summary>
         /// <param name="gpuData">The GPU data to update.</param>
-        /// <param name="isFilled">The the is filled setting to apply to a vertex.</param>
+        /// <param name="isFilled">The is filled setting to apply to a vertex.</param>
         /// <param name="vertexNumber">The vertex to update.</param>
         /// <returns>The updated GPU data.</returns>
         public static RectGPUData SetIsFilled(this RectGPUData gpuData, bool isFilled, VertexNumber vertexNumber)
@@ -567,7 +567,7 @@ namespace Velaptor
         /// for the given <paramref name="gpuData"/>.
         /// </summary>
         /// <param name="gpuData">The GPU data to update.</param>
-        /// <param name="borderThickness">The the is filled setting to apply to a vertex.</param>
+        /// <param name="borderThickness">The is filled setting to apply to a vertex.</param>
         /// <param name="vertexNumber">The vertex to update.</param>
         /// <returns>The updated GPU data.</returns>
         public static RectGPUData SetBorderThickness(this RectGPUData gpuData, float borderThickness, VertexNumber vertexNumber)
@@ -852,7 +852,7 @@ namespace Velaptor
         /// for the given <paramref name="gpuData"/>.
         /// </summary>
         /// <param name="gpuData">The GPU data to update.</param>
-        /// <param name="color">The color to set vertex 1 to.</param>
+        /// <param name="color">The color to set the vertex to.</param>
         /// <param name="vertexNumber">The vertex to update.</param>
         /// <returns>The updated GPU data.</returns>
         public static RectGPUData SetColor(this RectGPUData gpuData, NETColor color, VertexNumber vertexNumber)

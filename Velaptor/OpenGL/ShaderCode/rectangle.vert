@@ -2,7 +2,7 @@
 
 layout(location = 0) in vec2 a_vertexPos;
 /*
-    pass_shape can represent either a rectangle or an ellipse.
+    pass_shape represents a rectangle or an ellipse.
     The center of either shape is the position represented by
     vec4.x and vec4.y.  The width is represented by vec4.z
     and the height is represented by vec4.w

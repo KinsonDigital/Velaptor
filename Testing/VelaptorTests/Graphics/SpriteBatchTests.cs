@@ -29,7 +29,6 @@ namespace VelaptorTests.Graphics
     /// </summary>
     public class SpriteBatchTests
     {
-        // private const string RootRelativeTestDataDirPath = @"SampleTestData\";
         private const string GlyphTestDataFileName = "glyph-test-data.json";
         private const string BatchTestDataDirPath = @"BatchItemTestData\";
         private const uint TextureShaderId = 1111;

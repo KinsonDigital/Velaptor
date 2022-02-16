@@ -66,7 +66,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Updates the view port size.
         /// </summary>
-        /// <param name="size">The size to update the view port to.</param>
+        /// <param name="size">The size to set the view port to.</param>
         void OnResize(SizeU size);
 
         /// <summary>

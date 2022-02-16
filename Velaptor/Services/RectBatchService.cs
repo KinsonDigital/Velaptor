@@ -13,7 +13,7 @@ namespace Velaptor.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Manages the process of batching up the rendering of rectangles.
+    /// Manages the process of batching the rendering of rectangles.
     /// </summary>
     internal class RectBatchService : IBatchManagerService<RectShape>
     {
@@ -85,7 +85,7 @@ namespace Velaptor.Services
         /// Empties the entire batch.
         /// </summary>
         /// <remarks>
-        /// An empty batch are items that are set NOT to render and have all values set to default.
+        /// An empty batch are items that are set NOT set to render and have all values set to default.
         /// </remarks>
         public void EmptyBatch()
         {

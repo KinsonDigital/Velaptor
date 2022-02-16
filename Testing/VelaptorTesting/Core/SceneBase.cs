@@ -67,7 +67,7 @@ namespace VelaptorTesting.Core
         /// Gets all of the controls that match the given type <typeparamref name="TControlType"/>.
         /// </summary>
         /// <typeparam name="TControlType">The type of control to return.</typeparam>
-        /// <returns>A list of controls that who's type matches the type <typeparamref name="TControlType"/>.</returns>
+        /// <returns>A list of controls whose type that matches the type <typeparamref name="TControlType"/>.</returns>
         public IControl[] GetControls<TControlType>()
             where TControlType : IControl
         {

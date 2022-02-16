@@ -419,7 +419,7 @@ namespace Velaptor.OpenGL
     }
 
     /// <summary>
-    /// Represents the first four vertex items out of a arbitrary number of vertex data values.
+    /// Represents the first four vertex items out of an arbitrary number of vertex data values.
     /// </summary>
     internal enum VertexNumber
     {

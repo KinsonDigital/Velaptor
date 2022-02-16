@@ -49,7 +49,6 @@ namespace Velaptor.OpenGL.Buffers
         {
             OpenGLService.BeginGroup($"Update Rectangle - BatchItem({batchIndex})");
 
-            // var data = this.rectData[batchIndex];
             var data = RectGPUData.Empty();
             var halfWidth = rectShape.Width / 2f;
             var halfHeight = rectShape.Height / 2f;
@@ -201,6 +200,10 @@ namespace Velaptor.OpenGL.Buffers
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Generates default <see cref="RectVertexData"/> for all 4 vertices that make up a rectangle.
+        /// </summary>
+        /// <returns>The four vertex data items.</returns>
         private static RectVertexData[] GenerateVertexData()
         {
             var vertex1 = new RectVertexData(
@@ -254,7 +257,7 @@ namespace Velaptor.OpenGL.Buffers
         /// Applies the color of the given <paramref name="rect"/> shape to the rectangle
         /// data being sent to the GPU.
         /// </summary>
-        /// <param name="data">The data to apply to color to.</param>
+        /// <param name="data">The data to apply the color to.</param>
         /// <param name="rect">The rect that holds the color to apply to the data.</param>
         /// <returns>The original GPU <paramref name="data"/> with the color applied.</returns>
         /// <exception cref="ArgumentOutOfRangeException">

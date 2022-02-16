@@ -60,7 +60,7 @@ namespace Velaptor.OpenGL.GPUData
         /// </summary>
         /// <remarks>
         /// <para>
-        ///     This is third vertex of the top right triangle that makes up the rectangle.
+        ///     This is third vertex of the top left triangle that makes up the rectangle.
         /// </para>
         /// <para>
         ///     This vertex is shared with the first vertex of the bottom right triangle of the rectangle.
@@ -83,13 +83,13 @@ namespace Velaptor.OpenGL.GPUData
         public static RectGPUData Empty() => new (RectVertexData.Empty(), RectVertexData.Empty(), RectVertexData.Empty(), RectVertexData.Empty());
 
         /// <summary>
-        /// The total number of bytes that the GPU data contains.
+        /// The total number of bytes that the <see cref="RectGPUData"/> data contains.
         /// </summary>
         /// <returns>The total number of bytes.</returns>
         public static uint GetTotalBytes() => Stride;
 
         /// <summary>
-        /// Returns all of the vertex data in an array of <see cref="float"/>s.
+        /// Returns all of the vertex data in an array of <see cref="float"/> values.
         /// </summary>
         /// <returns>The array of vertex data.</returns>
         public float[] ToArray()

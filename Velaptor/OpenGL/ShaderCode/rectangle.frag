@@ -35,12 +35,12 @@ in float pass_bottomLeftCornerRadius;
 in float pass_bottomRightCornerRadius;
 in float pass_topRightCornerRadius;
 
-// NOTE: The frag coord is in pixel units.
-// The line below sets the frag coordinate to be relative
+// NOTE: The fragment coordinate is in pixel units.
+// The line below sets the fragment coordinate to be relative
 // to the origin being at the upper left corner of the window
 layout(origin_upper_left) in vec4 gl_FragCoord;
 
-// The final color of the current pixel depending on where in the shape it is at
+// The final color of the current pixel depending on where in the shape it is located.
 out vec4 finalColor;
 
 /*
@@ -120,7 +120,7 @@ Ellipse createCornerCircle(Rectangle rect, uint cornerType)
 }
 
 /*
-    Returns a value indicating if the given ellipse contains the current pixel/fragment.
+    Returns a value indicating whether or not the given ellipse contains the current pixel/fragment.
 */
 bool containedByEllipse(Ellipse ellipse, uint cornerType)
 {
@@ -152,7 +152,7 @@ bool containedByEllipse(Ellipse ellipse, uint cornerType)
         break;
     }
 
-    // Refer to link for more info
+    // Refer to link below for more information
     // https://www.geeksforgeeks.org/check-if-a-point-is-inside-outside-or-on-the-ellipse/
     return squared(gl_FragCoord.x - ellipse.Position.x) /
         squared(ellipse.RadiusX) +
@@ -161,14 +161,14 @@ bool containedByEllipse(Ellipse ellipse, uint cornerType)
 }
 
 /*
-    Returns a value indicating if the current pixel/fragment is
+    Returns a value indicating whether or not the current pixel/fragment is
     in the given corner ellipse based on the type of corner.
 */
 bool inCorrectEllipseQuadrant(Ellipse cornerEllipse, uint cornerType)
 {
     /* NOTE:
-        No need to check for containment if radius is 0
-        This improves performance if there are many rectangles with no corners
+        No need to check for containment if the radius is zero
+        This improves performance if there are many rectangles with no corners.
     */
 
     bool result;
@@ -197,7 +197,7 @@ bool inCorrectEllipseQuadrant(Ellipse cornerEllipse, uint cornerType)
 }
 
 /*
-    Returns a value indicating if the current pixel/fragment is
+    Returns a value indicating whether or not the current pixel/fragment is
     in the corner ellipse based on the type of corner.
 */
 bool inRectCorner(Ellipse cornerEllipse, uint cornerType)
@@ -206,7 +206,7 @@ bool inRectCorner(Ellipse cornerEllipse, uint cornerType)
 }
 
 /*
-    Returns a value indicating if the current pixel/fragment is
+    Returns a value indicating whether or not the current pixel/fragment is
     in the tip of the rectangle's corner outside of the given
     corner ellipse based on the type of corner.
 */
@@ -216,7 +216,7 @@ bool inRectCornerTip(Ellipse cornerEllipse, uint cornerType)
 }
 
 /*
-    Returns value indicating if the given point is contained
+    Returns value indicating whether or not the given point is contained
     by the given shape.
 */
 bool containedByRect(Rectangle rect)
@@ -304,7 +304,7 @@ vec4 toNDCColor(vec4 pixelColor)
 
 void main()
 {
-    // Set the width and height with a limit of 0.0
+    // Sets the width and height with a limit of 0.0
     vec4 shape = pass_shape;
     shape.z = pass_shape.z < 0.0 ? 0.0 : pass_shape.z;
     shape.w = pass_shape.w < 0.0 ? 0.0 : pass_shape.w;

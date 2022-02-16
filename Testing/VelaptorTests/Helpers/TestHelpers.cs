@@ -246,7 +246,7 @@ namespace VelaptorTests.Helpers
 
         /// <summary>
         /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
-        /// to the type of <see cref="ImageData"/>.
+        /// to the type <see cref="ImageData"/>.
         /// </summary>
         /// <param name="image">The image to convert.</param>
         /// <returns>The image data of type <see cref="ImageData"/>.</returns>

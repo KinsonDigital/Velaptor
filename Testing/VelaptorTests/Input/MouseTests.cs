@@ -179,7 +179,7 @@ namespace VelaptorTests.Input
         }
 
         /// <summary>
-        /// Clears the state for the mouse for testing purposes.
+        /// Clears the state of the mouse for testing purposes.
         /// </summary>
         private static void ClearMouseState()
         {

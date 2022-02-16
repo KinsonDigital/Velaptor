@@ -9,7 +9,7 @@ namespace Velaptor.OpenGL.GPUData
     using System.Numerics;
 
     /// <summary>
-    /// Represents the data for a simple GPU vertex for a rectangle.
+    /// Represents the data of a GPU vertex for a rectangle.
     /// </summary>
     internal readonly struct RectVertexData
     {
@@ -24,7 +24,7 @@ namespace Velaptor.OpenGL.GPUData
         /// <summary>
         /// Initializes a new instance of the <see cref="RectVertexData"/> struct.
         /// </summary>
-        /// <param name="vertexPos">The position of this single vertex.</param>
+        /// <param name="vertexPos">The position of the vertex.</param>
         /// <param name="rectangle">The rectangle components.</param>
         /// <param name="color">The fill or border color.</param>
         /// <param name="isFilled">True if the rectangle is filled.</param>
@@ -84,7 +84,7 @@ namespace Velaptor.OpenGL.GPUData
         public Color Color { get; }
 
         /// <summary>
-        /// Gets a value indicating whether if <c>true</c>, then the rectangle will be rendered as a filled rectangle and an empty rectangle if <c>false</c>.
+        /// Gets a value indicating whether or not the rectangle will be rendered as a filled rectangle.
         /// </summary>
         public bool IsFilled { get; }
 

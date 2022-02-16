@@ -131,7 +131,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
                 if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
@@ -139,7 +139,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
 
                 if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
@@ -147,7 +147,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"The expected and actual item at index '{i}' are not equal.");
+                        $"The expected and actual items at index '{i}' are not equal.");
                 }
             }
 
@@ -156,7 +156,7 @@ namespace VelaptorTests.Helpers
 
         /// <summary>
         /// Asserts that all of the individual <paramref name="expectedItems"/> and <paramref name="actualItems"/>
-        /// are equal on a per item basis.
+        /// are equal on an item to item basis that are at the same index between the arrays.
         /// </summary>
         /// <typeparam name="T">The type of item in the lists.</typeparam>
         /// <param name="expectedItems">The list of expected items.</param>
@@ -208,7 +208,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
                 if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
@@ -216,7 +216,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
 
                 if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
@@ -228,7 +228,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"The expected and actual item at index '{i}' are not equal in the '{sectionName}' of the array.");
+                        $"The expected and actual items at index '{i}' are not equal in the '{sectionName}' of the array.");
                 }
             }
 

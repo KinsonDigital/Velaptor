@@ -185,7 +185,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Converts the given list of <paramref name="quads"/> components to an array of floats.
+        /// Converts the given list of <paramref name="quads"/> to an array of floats.
         /// </summary>
         /// <param name="quads">The quads to convert.</param>
         /// <returns>An array of float values.</returns>

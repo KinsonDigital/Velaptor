@@ -27,8 +27,8 @@ namespace VelaptorTests.Helpers
         /// <returns>The list of data items of type <typeparamref name="T"/> to return.</returns>
         /// <remarks>
         /// <para>
-        ///     The <paramref name="relativeDirPath"/> is the directory path relative to the root directory
-        ///     path which is the same directory as the test assembly.
+        ///     The <paramref name="relativeDirPath"/> is the directory path relative to the root directory.
+        ///     This directory is the same as the directory location as the test assembly.
         /// </para>
         ///
         /// <para>
