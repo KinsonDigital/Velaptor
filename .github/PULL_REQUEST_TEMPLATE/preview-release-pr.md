@@ -79,14 +79,6 @@ Contains changes that require documentation updates to code docs or **Velaptor**
 </details>
 
 
-<details open><summary>🧪Unit Testing🧪</summary>
-
-My change requires unit tests to be written.
-- [ ] Yes
-- [ ] No
-</details>
-
-
 <details open><summary>🧪Manual Testing🧪</summary>
 
 I have manually tested my changes. (This can be done by using project named **_VelaptorTesting_**).
