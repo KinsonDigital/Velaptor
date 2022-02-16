@@ -42,11 +42,6 @@ namespace Velaptor.Graphics
 
                 this.width = value;
 
-                // This will force the prop setter to re-evaluate itself
-                // to make sure that it is within limits
-                var currentBorderThickness = BorderThickness;
-                BorderThickness = currentBorderThickness;
-
                 var currentRadius = CornerRadius;
                 CornerRadius = currentRadius;
             }
@@ -67,11 +62,6 @@ namespace Velaptor.Graphics
                 value = value < 0f ? 0f : value;
 
                 this.height = value;
-
-                // This will force the prop setter to re-evaluate itself
-                // to make sure that it is within limits
-                var currentBorderThickness = BorderThickness;
-                BorderThickness = currentBorderThickness;
 
                 var currentRadius = CornerRadius;
                 CornerRadius = currentRadius;

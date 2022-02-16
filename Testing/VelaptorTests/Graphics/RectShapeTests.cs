@@ -85,22 +85,6 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void Width_WhenSettingValue_UpdatesBorderThickness()
-        {
-            // Arrange
-            var rect = new RectShape();
-            rect.Width = 100;
-            rect.Height = 200;
-            rect.BorderThickness = 40;
-
-            // Act
-            rect.Width = 50;
-
-            // Assert
-            Assert.Equal(25f, rect.BorderThickness);
-        }
-
-        [Fact]
         public void Width_WhenSettingValue_UpdatesCornerRadius()
         {
             // Arrange
@@ -132,22 +116,6 @@ namespace VelaptorTests.Graphics
 
             // Assert
             Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Height_WhenSettingValue_UpdatesBorderThickness()
-        {
-            // Arrange
-            var rect = new RectShape();
-            rect.Width = 200;
-            rect.Height = 100;
-            rect.BorderThickness = 40;
-
-            // Act
-            rect.Height = 50;
-
-            // Assert
-            Assert.Equal(25f, rect.BorderThickness);
         }
 
         [Fact]
