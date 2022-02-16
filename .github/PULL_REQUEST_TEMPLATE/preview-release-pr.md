@@ -5,11 +5,6 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <h1 style="font-weight:bold" align="center">Preview Release Pull Request</h1>
 
-<details><summary>📄Description📄</summary>
-<!-- Provide a short, general summary of your changes in the Title above -->
-
-This pull request is for preview release **_[add version here]_**
-</details>
 
 <h2 style="font-weight:bold" align="center">✅Development Checklist✅</h2>
 
