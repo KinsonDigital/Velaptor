@@ -52,6 +52,7 @@ Contains Bug Fix(es)
 
 Contains [breaking change(s)](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract)
 - [ ] Yes
+    - [ ] A ![breaking-changes-label](../images/breaking-changes-label.png) label has been added to the pull request.
 - [ ] No
 </details>
 
