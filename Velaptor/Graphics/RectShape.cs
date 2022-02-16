@@ -179,7 +179,7 @@ namespace Velaptor.Graphics
         /// </remarks>
         public Color GradientStop { get; set; } = Color.White;
 
-                /// <summary>
+        /// <summary>
         /// Sets the <see cref="CornerRadius"/> top left value.
         /// </summary>
         /// <param name="radius">The struct with the value to set.</param>

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-//#pragma warning disable CS8524 The switch expression does not handle some values of its input type.
+#pragma warning disable CS8524 The switch expression does not handle some values of its input type.
 namespace VelaptorTests
 {
     using System;
