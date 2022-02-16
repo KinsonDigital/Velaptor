@@ -5,11 +5,6 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <h1 style="font-weight:bold" align="center">Preview Release Pull Request</h1>
 
-<details><summary>📄Description📄</summary>
-<!-- Provide a short, general summary of your changes in the Title above -->
-
-This pull request is for preview release **_[add version here]_**
-</details>
 
 <h2 style="font-weight:bold" align="center">✅Development Checklist✅</h2>
 
@@ -42,7 +37,7 @@ Example: _release/v1.2.3_
 
 Contains Bug Fix(es)
 - [ ] Yes
-    - [ ] A ![bug-label](https://user-images.githubusercontent.com/85414302/150812958-10b202a8-84ae-45fb-b7cb-7f4fb68e0e8c.png) label has been added to the pull request.
+    - [ ] A ![bug-label](../images/bug-label.png) label has been added to the pull request.
 - [ ] No
 </details>
 
@@ -51,6 +46,7 @@ Contains Bug Fix(es)
 
 Contains [breaking change(s)](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract)
 - [ ] Yes
+    - [ ] A ![breaking-changes-label](../images/breaking-changes-label.png) label has been added to the pull request.
 - [ ] No
 </details>
 
@@ -59,7 +55,7 @@ Contains [breaking change(s)](https://docs.microsoft.com/en-us/dotnet/core/compa
 
 Contains enhancement(s) that add a feature or behavior.
 - [ ] Yes
-    - [ ] An ![enhancement-label](https://user-images.githubusercontent.com/85414302/150804213-bd043c7b-54d2-4562-ad3f-69a07723a5ef.png) label has been added to the pull request.
+    - [ ] An ![enhancement-label](../images/enhancement-label.png) label has been added to the pull request.
 - [ ]  No
 </details>
 
@@ -68,7 +64,7 @@ Contains enhancement(s) that add a feature or behavior.
 
 Contains changes to workflow files. These changes can only done by the project maintainers.
 - [ ] Yes
-    - [ ] A ![workflow-label](https://user-images.githubusercontent.com/85414302/150814606-314933ca-86c7-4edb-99cb-62d2198b20d9.png) label has been added to the pull request.
+    - [ ] A ![workflow-label](../images/workflow-label.png) label has been added to the pull request.
 - [ ] No
 </details>
 
@@ -78,15 +74,7 @@ Contains changes to workflow files. These changes can only done by the project m
 Contains changes that require documentation updates to code docs or **Velaptor** documentation.
 - [ ] Yes
     - [ ] I have updated the documentation accordingly.
-    - [ ] A ![documentation-label](https://user-images.githubusercontent.com/85414302/150810133-939e985d-2246-4c77-8c9c-815855da3664.png) label has been added to the pull request.
-- [ ] No
-</details>
-
-
-<details open><summary>🧪Unit Testing🧪</summary>
-
-My change requires unit tests to be written.
-- [ ] Yes
+    - [ ] A ![documentation-label](../images/documentation-label.png) label has been added to the pull request.
 - [ ] No
 </details>
 
