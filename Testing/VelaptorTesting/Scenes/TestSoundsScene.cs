@@ -20,7 +20,6 @@ namespace VelaptorTesting.Scenes
         private const int BottomMargin = 50;
         private const int HorBtnSpacing = 10;
         private const int VertLabelSpacing = 15;
-        private const int LeftMargin = 50;
         private readonly Point windowCenter;
         private readonly int windowBottom;
         private readonly List<IControl> buttons = new ();
@@ -269,16 +268,9 @@ namespace VelaptorTesting.Scenes
 
             foreach (var label in this.labels)
             {
-                if (prevLabel is null)
-                {
-                    label.Left = LeftMargin;
-                    label.Top = this.windowCenter.Y - totalHalfHeight;
-                }
-                else
-                {
-                    label.Top = prevLabel.Bottom + VertLabelSpacing;
-                    label.Left = LeftMargin;
-                }
+                label.Top = prevLabel is null
+                    ? label.Top = this.windowCenter.Y - totalHalfHeight
+                    : label.Top = prevLabel.Bottom + VertLabelSpacing;
 
                 prevLabel = label;
             }
