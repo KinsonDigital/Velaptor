@@ -31,6 +31,7 @@ namespace VelaptorTesting.Scenes
         private Button? btnIncreaseHeight;
         private Button? btnDecreaseHeight;
         private Button? btnIsFilled;
+        private Button? btnSolidFillClr;
         private Button? btnIncreaseBorderThickness;
         private Button? btnDecreaseBorderThickness;
         private Button? btnIncreaseTopLeftRadius;
@@ -58,8 +59,8 @@ namespace VelaptorTesting.Scenes
                 Height = 100,
                 Color = Color.CornflowerBlue,
                 GradientType = ColorGradient.None,
-                GradientStart = Color.Red,
-                GradientStop = Color.Red,
+                GradientStart = Color.IndianRed,
+                GradientStop = Color.IndianRed,
                 IsFilled = true,
             };
 
@@ -156,6 +157,34 @@ namespace VelaptorTesting.Scenes
                 this.btnIsFilled.Text = this.rectangle.IsFilled ? "Is Filled: true" : "Is Filled: false";
                 this.btnIncreaseBorderThickness.Enabled = !this.rectangle.IsFilled;
                 this.btnDecreaseBorderThickness.Enabled = !this.rectangle.IsFilled;
+            };
+
+            this.btnSolidFillClr = new Button
+            {
+                Text = "Solid Fill Clr: Red",
+                Name = nameof(this.btnSolidFillClr),
+                FaceTextureName = "button-face-extra-large",
+            };
+            this.btnSolidFillClr.Click += (_, _) =>
+            {
+                var clrStr = "ERROR";
+                if (this.rectangle.Color == Color.IndianRed)
+                {
+                    this.rectangle.Color = Color.SeaGreen;
+                    clrStr = "Green";
+                }
+                else if (this.rectangle.Color == Color.SeaGreen)
+                {
+                    this.rectangle.Color = Color.CornflowerBlue;
+                    clrStr = "Blue";
+                }
+                else if (this.rectangle.Color == Color.CornflowerBlue)
+                {
+                    this.rectangle.Color = Color.IndianRed;
+                    clrStr = "Red";
+                }
+
+                this.btnSolidFillClr.Text = $"Solid Fill Clr: {clrStr}";
             };
 
             this.btnIncreaseBorderThickness = new Button
@@ -278,19 +307,19 @@ namespace VelaptorTesting.Scenes
             this.btnGradClrStart.Click += (_, _) =>
             {
                 var clrStr = "ERROR";
-                if (this.rectangle.GradientStart == Color.Red)
+                if (this.rectangle.GradientStart == Color.IndianRed)
                 {
-                    this.rectangle.GradientStart = Color.Green;
+                    this.rectangle.GradientStart = Color.SeaGreen;
                     clrStr = "Green";
                 }
-                else if (this.rectangle.GradientStart == Color.Green)
+                else if (this.rectangle.GradientStart == Color.SeaGreen)
                 {
-                    this.rectangle.GradientStart = Color.Blue;
+                    this.rectangle.GradientStart = Color.CornflowerBlue;
                     clrStr = "Blue";
                 }
-                else if (this.rectangle.GradientStart == Color.Blue)
+                else if (this.rectangle.GradientStart == Color.CornflowerBlue)
                 {
-                    this.rectangle.GradientStart = Color.Red;
+                    this.rectangle.GradientStart = Color.IndianRed;
                     clrStr = "Red";
                 }
 
@@ -307,19 +336,19 @@ namespace VelaptorTesting.Scenes
             {
                 var clrStr = "ERROR";
 
-                if (this.rectangle.GradientStop == Color.Red)
+                if (this.rectangle.GradientStop == Color.IndianRed)
                 {
-                    this.rectangle.GradientStop = Color.Green;
+                    this.rectangle.GradientStop = Color.SeaGreen;
                     clrStr = "Green";
                 }
-                else if (this.rectangle.GradientStop == Color.Green)
+                else if (this.rectangle.GradientStop == Color.SeaGreen)
                 {
-                    this.rectangle.GradientStop = Color.Blue;
+                    this.rectangle.GradientStop = Color.CornflowerBlue;
                     clrStr = "Blue";
                 }
-                else if (this.rectangle.GradientStop == Color.Blue)
+                else if (this.rectangle.GradientStop == Color.CornflowerBlue)
                 {
-                    this.rectangle.GradientStop = Color.Red;
+                    this.rectangle.GradientStop = Color.IndianRed;
                     clrStr = "Red";
                 }
 
@@ -335,6 +364,7 @@ namespace VelaptorTesting.Scenes
             AddControl(this.btnIncreaseHeight);
             AddControl(this.btnDecreaseHeight);
             AddControl(this.btnIsFilled);
+            AddControl(this.btnSolidFillClr);
             AddControl(this.btnIncreaseBorderThickness);
             AddControl(this.btnDecreaseBorderThickness);
             AddControl(this.btnIncreaseTopLeftRadius);
@@ -363,6 +393,7 @@ namespace VelaptorTesting.Scenes
                 nameof(this.btnIncreaseHeight),
                 nameof(this.btnDecreaseHeight),
                 nameof(this.btnIsFilled),
+                nameof(this.btnSolidFillClr),
                 nameof(this.btnIncreaseBorderThickness),
                 nameof(this.btnDecreaseBorderThickness),
             };
