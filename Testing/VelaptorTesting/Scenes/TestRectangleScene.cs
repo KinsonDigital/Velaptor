@@ -352,8 +352,22 @@ namespace VelaptorTesting.Scenes
 
         private void LayoutButtonsLeftSide()
         {
-            var buttons = (from c in Controls
-                where c is Button && c.Name.ToLower().Contains("radius") is false
+            var excludeList = new[]
+            {
+                nameof(this.btnLeft),
+                nameof(this.btnRight),
+                nameof(this.btnUp),
+                nameof(this.btnDown),
+                nameof(this.btnIncreaseWidth),
+                nameof(this.btnDecreaseWidth),
+                nameof(this.btnIncreaseHeight),
+                nameof(this.btnDecreaseHeight),
+                nameof(this.btnIsFilled),
+                nameof(this.btnIncreaseBorderThickness),
+                nameof(this.btnDecreaseBorderThickness),
+            };
+            var buttons = (from c in GetControls<Button>()
+                where excludeList.Contains(c.Name)
                 select c).ToArray();
 
             var totalHeight = (from b in buttons
@@ -373,12 +387,34 @@ namespace VelaptorTesting.Scenes
 
                 prevButton = button;
             }
+
+            // Center all of the buttons horizontally relative to each other
+            var largestBtnWidth = buttons.Max(b => b.Width);
+            var desiredPosition = (from b in buttons
+                where b.Width == largestBtnWidth
+                select b.Position).FirstOrDefault();
+
+            foreach (var button in buttons)
+            {
+                button.Position = new Point(desiredPosition.X, button.Position.Y);
+            }
         }
 
         private void LayoutButtonsRightSide()
         {
-            var buttons = (from c in Controls
-                where c is Button && c.Name.ToLower().Contains("radius")
+            var includeList = new[]
+            {
+                nameof(this.btnIncreaseTopLeftRadius),
+                nameof(this.btnDecreaseTopLeftRadius),
+                nameof(this.btnIncreaseBottomLeftRadius),
+                nameof(this.btnDecreaseBottomLeftRadius),
+                nameof(this.btnIncreaseBottomRightRadius),
+                nameof(this.btnDecreaseBottomRightRadius),
+                nameof(this.btnIncreaseTopRightRadius),
+                nameof(this.btnDecreaseTopRightRadius),
+            };
+            var buttons = (from c in GetControls<Button>()
+                where includeList.Contains(c.Name)
                 select c).ToArray();
 
             var totalHeight = (from b in buttons
@@ -402,8 +438,14 @@ namespace VelaptorTesting.Scenes
 
         private void LayoutButtonsBottom()
         {
-            var buttons = (from c in Controls
-                where c is Button && c.Name.ToLower().Contains("grad")
+            var includeList = new[]
+            {
+                nameof(this.btnGradientType),
+                nameof(this.btnGradClrStart),
+                nameof(this.btnGradClrStop),
+            };
+            var buttons = (from c in GetControls<Button>()
+                where includeList.Contains(c.Name)
                 select c).ToArray();
 
             var totalWidth = (from b in buttons

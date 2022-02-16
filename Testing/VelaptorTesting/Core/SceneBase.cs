@@ -7,6 +7,7 @@ namespace VelaptorTesting.Core
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Graphics;
@@ -61,6 +62,19 @@ namespace VelaptorTesting.Core
 
         /// <inheritdoc cref="IScene.RemoveControl"/>
         public void RemoveControl(IControl control) => this.controls.Remove(control);
+
+        /// <summary>
+        /// Gets all of the controls that match the given type <typeparamref name="TControlType"/>.
+        /// </summary>
+        /// <typeparam name="TControlType">The type of control to return.</typeparam>
+        /// <returns>A list of controls that who's type matches the type <typeparamref name="TControlType"/>.</returns>
+        public IControl[] GetControls<TControlType>()
+            where TControlType : IControl
+        {
+            return (from c in this.controls
+                where c is TControlType
+                select c).ToArray();
+        }
 
         /// <inheritdoc cref="IScene.LoadContent"/>
         public virtual void LoadContent()
