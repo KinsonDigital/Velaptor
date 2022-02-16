@@ -3,7 +3,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Velaptor</RootNamespace>
     <AssemblyName>Velaptor</AssemblyName>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
 
     <!--Update this for production and preview releases-->
     <Version>1.0.0-preview.6</Version>
@@ -48,16 +48,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="OpenGL\Shaders\texture.frag">
+    <EmbeddedResource Include="OpenGL\ShaderCode\texture.frag">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="OpenGL\Shaders\texture.vert">
+    <EmbeddedResource Include="OpenGL\ShaderCode\texture.vert">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
     <None Remove="OpenGL\Shaders\font.frag" />
-    <EmbeddedResource Include="OpenGL\Shaders\font.frag" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\font.frag" />
     <None Remove="OpenGL\Shaders\font.vert" />
-    <EmbeddedResource Include="OpenGL\Shaders\font.vert" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\font.vert" />
     <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
     <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
@@ -66,6 +66,12 @@
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
     <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
+    <None Remove="OpenGL\ShaderCode\rect.vert" />
+    <None Remove="OpenGL\ShaderCode\rect.frag" />
+    <None Remove="OpenGL\ShaderCode\rectangle.frag" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.frag" />
+    <None Remove="OpenGL\ShaderCode\rectangle.vert" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.vert" />
   </ItemGroup>
 
   <ItemGroup>

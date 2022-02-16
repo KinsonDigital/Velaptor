@@ -382,15 +382,16 @@ namespace VelaptorTests.NativeInterop.OpenGL
         }
 
         [Theory]
-        [InlineData("", BufferType.VertexBufferObject, "NOT SET VBO")]
-        [InlineData(null, BufferType.VertexBufferObject, "NOT SET VBO")]
-        [InlineData("test-label", BufferType.VertexBufferObject, "test-label VBO")]
-        [InlineData("", BufferType.IndexArrayObject, "NOT SET EBO")]
-        [InlineData(null, BufferType.IndexArrayObject, "NOT SET EBO")]
-        [InlineData("test-label", BufferType.IndexArrayObject, "test-label EBO")]
-        public void LabelBuffer_WhenInvoked_LabelsVertexArray(string label, BufferType bufferType, string expected)
+        [InlineData("", (int)BufferType.VertexBufferObject, "NOT SET VBO")]
+        [InlineData(null, (int)BufferType.VertexBufferObject, "NOT SET VBO")]
+        [InlineData("test-label", (int)BufferType.VertexBufferObject, "test-label VBO")]
+        [InlineData("", (int)BufferType.IndexArrayObject, "NOT SET EBO")]
+        [InlineData(null, (int)BufferType.IndexArrayObject, "NOT SET EBO")]
+        [InlineData("test-label", (int)BufferType.IndexArrayObject, "test-label EBO")]
+        public void LabelBuffer_WhenInvoked_LabelsVertexArray(string label, int bufferTypeNumericalValue, string expected)
         {
             // Arrange
+            var bufferType = (BufferType)bufferTypeNumericalValue;
             var service = CreateService();
 
             // Act

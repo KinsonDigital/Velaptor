@@ -20,6 +20,7 @@ namespace Velaptor.UI
     public sealed class Button : ControlBase
     {
         private readonly IContentLoader contentLoader;
+        private readonly Color disabledColor = Color.FromArgb(255, 100, 100, 100);
         private Label? label;
         private ITexture? texture;
         private string cachedText = string.Empty;
@@ -158,8 +159,7 @@ namespace Velaptor.UI
 
             if (this.texture is not null)
             {
-                spriteBatch.Render(this.texture, Position.X, Position.Y, TintColor);
-
+                spriteBatch.Render(this.texture, Position.X, Position.Y, Enabled ? TintColor : this.disabledColor);
                 this.label?.Render(spriteBatch);
             }
 

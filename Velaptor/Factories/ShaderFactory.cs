@@ -7,8 +7,8 @@ namespace Velaptor.Factories
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using Velaptor.OpenGL.Shaders;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
 
@@ -22,6 +22,7 @@ namespace Velaptor.Factories
     {
         private static IShaderProgram? textureShader;
         private static IShaderProgram? fontShader;
+        private static IShaderProgram? rectShader;
 
         /// <summary>
         /// Creates a shader for rendering textures.
@@ -65,6 +66,28 @@ namespace Velaptor.Factories
             fontShader = new FontShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
 
             return fontShader;
+        }
+
+        /// <summary>
+        /// Creates a shader for rendering rectangles.
+        /// </summary>
+        /// <returns>The shader program.</returns>
+        public static IShaderProgram CreateRectShader()
+        {
+            if (rectShader is not null)
+            {
+                return rectShader;
+            }
+
+            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
+            var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
+            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+
+            rectShader = new RectangleShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
+
+            return rectShader;
         }
     }
 }

@@ -1,23 +1,23 @@
-﻿// <copyright file="FontShaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureShaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL
+namespace VelaptorTests.OpenGL.Shaders
 {
     using System;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Services;
+    using Velaptor.OpenGL.Shaders;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
-    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="FontShader"/> class.
+    /// Tests the <see cref="TextureShader"/> class.
     /// </summary>
-    public class FontShaderTests
+    public class TextureShaderTests
     {
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IOpenGLService> mockGLService;
@@ -27,49 +27,17 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FontShaderTests"/> class.
+        /// Initializes a new instance of the <see cref="TextureShaderTests"/> class.
         /// </summary>
-        public FontShaderTests()
+        public TextureShaderTests()
         {
             this.mockGL = new Mock<IGLInvoker>();
             this.mockGLService = new Mock<IOpenGLService>();
             this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
-            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
             this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
+            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         }
-
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WithNullInitReactorParam_ThrowsException()
-        {
-            // Arrange & Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new FontShader(
-                    this.mockGL.Object,
-                    this.mockGLService.Object,
-                    this.mockShaderLoader.Object,
-                    null,
-                    this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'glInitReactable')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullShutDownReactorParam_ThrowsException()
-        {
-            // Arrange & Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new FontShader(
-                    this.mockGL.Object,
-                    this.mockGLService.Object,
-                    this.mockShaderLoader.Object,
-                    this.mockGLInitReactable.Object,
-                    null);
-            }, "The parameter must not be null. (Parameter 'shutDownReactable')");
-        }
-        #endregion
 
         #region Method Tests
         [Fact]
@@ -77,16 +45,16 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             IReactor<GLInitData>? glInitReactor = null;
-
             const uint shaderId = 78;
             const int uniformLocation = 1234;
             this.mockGL.Setup(m => m.CreateProgram()).Returns(shaderId);
-            this.mockGL.Setup(m => m.GetUniformLocation(shaderId, "fontTexture"))
+            this.mockGL.Setup(m => m.GetUniformLocation(shaderId, "mainTexture"))
                 .Returns(uniformLocation);
             const int status = 1;
             this.mockGL.Setup(m
                     => m.GetProgram(shaderId, GLProgramParameterName.LinkStatus))
                 .Returns(status);
+
             this.mockGLInitReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<GLInitData>>()))
                 .Returns(this.mockGLInitUnsubscriber.Object)
                 .Callback<IReactor<GLInitData>>(reactor =>
@@ -99,21 +67,21 @@ namespace VelaptorTests.OpenGL
                     glInitReactor = reactor;
                 });
 
-            var shader = new FontShader(
+            var shader = new TextureShader(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object);
 
-            glInitReactor?.OnNext(default);
+            glInitReactor.OnNext(default);
 
             // Act
             shader.Use();
 
             // Assert
-            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture1), Times.Once);
-            this.mockGL.Verify(m => m.Uniform1(uniformLocation, 1), Times.Once);
+            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
+            this.mockGL.Verify(m => m.Uniform1(uniformLocation, 0), Times.Once);
         }
         #endregion
     }

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.OpenGL.GPUData
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

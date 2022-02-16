@@ -16,6 +16,8 @@ namespace Velaptor.Graphics
     using Velaptor.Content.Fonts;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.Buffers;
+    using Velaptor.OpenGL.Shaders;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
@@ -32,10 +34,13 @@ namespace Velaptor.Graphics
         private readonly IOpenGLService openGLService;
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
+        private readonly IShaderProgram rectShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
         private readonly IGPUBuffer<SpriteBatchItem> fontBuffer;
+        private readonly IGPUBuffer<RectShape> rectBuffer;
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
         private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
+        private readonly IBatchManagerService<RectShape> rectBatchService;
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
 
@@ -52,10 +57,13 @@ namespace Velaptor.Graphics
         /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="textureShader">The shader used for rendering textures.</param>
         /// <param name="fontShader">The shader used for rendering text.</param>
+        /// <param name="rectShader">The shader used for rendering rectangles.</param>
         /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
+        /// <param name="rectBuffer">Updates the data in the GPU related to rendering rectangles.</param>
         /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
         /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
+        /// <param name="rectBatchService">Manages the batch of rectangles to render.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
@@ -67,10 +75,13 @@ namespace Velaptor.Graphics
             IOpenGLService openGLService,
             IShaderProgram textureShader,
             IShaderProgram fontShader,
+            IShaderProgram rectShader,
             IGPUBuffer<SpriteBatchItem> textureBuffer,
             IGPUBuffer<SpriteBatchItem> fontBuffer,
+            IGPUBuffer<RectShape> rectBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
             IBatchManagerService<SpriteBatchItem> fontBatchService,
+            IBatchManagerService<RectShape> rectBatchService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
@@ -79,8 +90,10 @@ namespace Velaptor.Graphics
             this.openGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
             this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), "The parameter must not be null.");
             this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), "The parameter must not be null.");
+            this.rectShader = rectShader ?? throw new ArgumentNullException(nameof(rectShader), "The parameter must not be null.");
             this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), "The parameter must not be null.");
             this.fontBuffer = fontBuffer ?? throw new ArgumentNullException(nameof(fontBuffer), "The parameter must not be null.");
+            this.rectBuffer = rectBuffer ?? throw new ArgumentNullException(nameof(rectBuffer), "The parameter must not be null.");
 
             this.textureBatchService = textureBatchService ?? throw new ArgumentNullException(nameof(textureBatchService), "The parameter must not be null.");
             this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;
@@ -89,6 +102,10 @@ namespace Velaptor.Graphics
             this.fontBatchService = fontBatchService ?? throw new ArgumentNullException(nameof(fontBatchService), "The parameter must not be null.");
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
+
+            this.rectBatchService = rectBatchService ?? throw new ArgumentNullException(nameof(rectBatchService), "The parameter must not be null.");
+            this.rectBatchService.BatchSize = ISpriteBatch.BatchSize;
+            this.rectBatchService.BatchFilled += RectBatchService_BatchFilled;
 
             if (glInitReactable is null)
             {
@@ -156,6 +173,14 @@ namespace Velaptor.Graphics
 
         /// <inheritdoc/>
         public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
+
+        /// <inheritdoc/>
+        public void OnResize(SizeU size)
+        {
+            this.textureBuffer.ViewPortSize = size;
+            this.fontBuffer.ViewPortSize = size;
+            this.rectBuffer.ViewPortSize = size;
+        }
 
         /// <inheritdoc/>
         public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
@@ -354,10 +379,14 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc/>
+        public void Render(RectShape rectangle) => this.rectBatchService.Add(rectangle);
+
+        /// <inheritdoc/>
         public void EndBatch()
         {
             TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
             FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
+            RectBatchService_BatchFilled(this.rectBatchService, EventArgs.Empty);
 
             this.hasBegun = false;
         }
@@ -374,6 +403,7 @@ namespace Velaptor.Graphics
 
             this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
             this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
+            this.rectBatchService.BatchFilled -= RectBatchService_BatchFilled;
             this.cachedUIntProps.Clear();
             this.glInitUnsubscriber.Dispose();
             this.shutDownUnsubscriber.Dispose();
@@ -393,11 +423,21 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Invoked every time the batch of textures is ready to be rendered.
+        /// Invoked every time a batch of textures is ready to be rendered.
         /// </summary>
         private void TextureBatchService_BatchFilled(object? sender, EventArgs e)
         {
             var textureIsBound = false;
+
+            if (this.textureBatchService.BatchItems.Count <= 0)
+            {
+                this.openGLService.BeginGroup("Render Texture Process - Nothing To Render");
+                this.openGLService.EndGroup();
+
+                return;
+            }
+
+            this.openGLService.BeginGroup($"Render Texture Process With {this.textureShader.Name} Shader");
 
             this.textureShader.Use();
 
@@ -412,6 +452,8 @@ namespace Velaptor.Graphics
                     continue;
                 }
 
+                this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+
                 if (!textureIsBound)
                 {
                     this.gl.ActiveTexture(GLTextureUnit.Texture0);
@@ -421,6 +463,8 @@ namespace Velaptor.Graphics
 
                 this.textureBuffer.UploadData(batchItem, i);
                 totalItemsToRender += 1;
+
+                this.openGLService.EndGroup();
             }
 
             // Only render the amount of elements for the amount of batch items to render.
@@ -434,16 +478,26 @@ namespace Velaptor.Graphics
                 this.openGLService.EndGroup();
             }
 
-            // Empty the batch items
+            // Empty the batch
             this.textureBatchService.EmptyBatch();
+
+            this.openGLService.EndGroup();
         }
 
         /// <summary>
-        /// Invoked every time the batch of fonts is ready to be rendered.
+        /// Invoked every time a batch of fonts is ready to be rendered.
         /// </summary>
         private void FontBatchService_BatchFilled(object? sender, EventArgs e)
         {
             var fontTextureIsBound = false;
+
+            if (this.fontBatchService.BatchItems.Count <= 0)
+            {
+                this.openGLService.BeginGroup("Render Text Process - Nothing To Render");
+                this.openGLService.EndGroup();
+
+                return;
+            }
 
             this.openGLService.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
 
@@ -477,7 +531,7 @@ namespace Velaptor.Graphics
             }
 
             // Only render the amount of elements for the amount of batch items to render.
-            // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
+            // 6 = the number of vertices per quad and each batch is a quad. totalItemsToRender is the total quads to render
             if (totalItemsToRender > 0)
             {
                 var totalElements = 6u * totalItemsToRender;
@@ -487,8 +541,61 @@ namespace Velaptor.Graphics
                 this.openGLService.EndGroup();
             }
 
-            // Empty the batch items
+            // Empty the batch
             this.fontBatchService.EmptyBatch();
+
+            this.openGLService.EndGroup();
+        }
+
+        /// <summary>
+        /// Invoked every time a batch of rectangles is ready to be rendered.
+        /// </summary>
+        private void RectBatchService_BatchFilled(object? sender, EventArgs e)
+        {
+            if (this.rectBatchService.BatchItems.Count <= 0)
+            {
+                this.openGLService.BeginGroup("Render Rectangle Process - Nothing To Render");
+                this.openGLService.EndGroup();
+
+                return;
+            }
+
+            this.openGLService.BeginGroup($"Render Rectangle Process With {this.rectShader.Name} Shader");
+
+            this.rectShader.Use();
+
+            var totalItemsToRender = 0u;
+
+            for (var i = 0u; i < this.rectBatchService.BatchItems.Count; i++)
+            {
+                var (shouldRender, batchItem) = this.rectBatchService.BatchItems[i];
+
+                if (shouldRender is false || batchItem.IsEmpty())
+                {
+                    continue;
+                }
+
+                this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
+
+                this.rectBuffer.UploadData(batchItem, i);
+                totalItemsToRender += 1;
+
+                this.openGLService.EndGroup();
+            }
+
+            // Only render the amount of elements for the amount of batch items to render.
+            // 6 = the number of vertices per quad and each batch is a quad. totalItemsToRender is the total number of  quads to render
+            if (totalItemsToRender > 0)
+            {
+                var totalElements = 6u * totalItemsToRender;
+
+                this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.openGLService.EndGroup();
+            }
+
+            // Empty the batch
+            this.rectBatchService.EmptyBatch();
 
             this.openGLService.EndGroup();
         }

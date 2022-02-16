@@ -39,6 +39,7 @@ namespace Velaptor.Factories
                 IoC.Container.GetInstance<IPlatform>(),
                 IoC.Container.GetInstance<ITaskService>(),
                 ContentLoaderFactory.CreateContentLoader(),
+                SpriteBatchFactory.CreateSpriteBatch(width, height),
                 IoC.Container.GetInstance<IReactable<GLInitData>>(),
                 IoC.Container.GetInstance<IReactable<ShutDownData>>());
     }

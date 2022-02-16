@@ -9,7 +9,7 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// Represents the type of GPU buffer.
     /// </summary>
-    public enum BufferType
+    internal enum BufferType
     {
         /// <summary>
         ///  A vertex buffer object.
@@ -416,5 +416,31 @@ namespace Velaptor.OpenGL
         /// <see cref="GLTextureParameterName.TextureWrapT"/>, and on the exact mapping.
         /// </summary>
         Linear = 9729,
+    }
+
+    /// <summary>
+    /// Represents the first four vertex items out of an arbitrary number of vertex data values.
+    /// </summary>
+    internal enum VertexNumber
+    {
+        /// <summary>
+        /// The first vertex.
+        /// </summary>
+        One,
+
+        /// <summary>
+        /// The second vertex.
+        /// </summary>
+        Two,
+
+        /// <summary>
+        /// The third vertex.
+        /// </summary>
+        Three,
+
+        /// <summary>
+        /// The fourth vertex.
+        /// </summary>
+        Four,
     }
 }

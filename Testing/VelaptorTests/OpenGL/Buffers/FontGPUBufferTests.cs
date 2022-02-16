@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL
+namespace VelaptorTests.OpenGL.Buffers
 {
     using System.Collections.Generic;
     using System.Drawing;
@@ -10,6 +10,7 @@ namespace VelaptorTests.OpenGL
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.Buffers;
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;

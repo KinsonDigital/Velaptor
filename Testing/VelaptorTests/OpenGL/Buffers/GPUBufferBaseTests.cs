@@ -2,12 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.OpenGL
+namespace VelaptorTests.OpenGL.Buffers
 {
     using System;
     using Moq;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
+    using Velaptor.OpenGL.Buffers;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using VelaptorTests.Fakes;

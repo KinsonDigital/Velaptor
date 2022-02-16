@@ -5,7 +5,6 @@
 namespace VelaptorTesting.Scenes
 {
     using System;
-    using System.Collections.Generic;
     using System.Drawing;
     using System.Globalization;
     using System.Linq;
@@ -17,14 +16,11 @@ namespace VelaptorTesting.Scenes
 
     public class TestSoundsScene : SceneBase
     {
-        private const int BottomMargin = 50;
-        private const int HorBtnSpacing = 10;
+        private const int BottomMargin = 10;
+        private const int HoriBtnSpacing = 10;
         private const int VertLabelSpacing = 15;
-        private const int LeftMargin = 50;
+        private const int LeftMargin = 10;
         private readonly Point windowCenter;
-        private readonly int windowBottom;
-        private readonly List<IControl> buttons = new ();
-        private readonly List<IControl> labels = new ();
         private Label? lblDescription;
         private Label? lblState;
         private Label? lblCurrentTime;
@@ -43,20 +39,18 @@ namespace VelaptorTesting.Scenes
         {
             this.windowCenter.X = (int)MainWindow.WindowWidth / 2;
             this.windowCenter.Y = (int)MainWindow.WindowHeight / 2;
-
-            this.windowBottom = (int)MainWindow.WindowHeight;
         }
 
         public override void LoadContent()
         {
-            LoadLabels();
+            CreateLabels();
             LoadButtons();
 
             this.sound = ContentLoader.LoadSound("test-song");
 
             base.LoadContent();
 
-            PerformButtonLayout();
+            LayoutButtonsBottom();
             PerformLabelLayout();
 
             var soundLength = GetFormattedSoundTime(this.sound.Length.Minutes, this.sound.Length.Seconds);
@@ -78,8 +72,6 @@ namespace VelaptorTesting.Scenes
 
         public override void UnloadContent()
         {
-            this.buttons.Clear();
-
             if (this.sound is not null)
             {
                 this.sound.Stop();
@@ -105,23 +97,19 @@ namespace VelaptorTesting.Scenes
             return $"{minuteStr}:{secondStr}";
         }
 
-        private void LoadLabels()
+        private void CreateLabels()
         {
             this.lblDescription = new Label
             {
                 Text = "Use the buttons below to manipulate the sound.",
-                Position = new Point(this.windowCenter.X, 50),
                 Color = Color.White,
             };
-            AddControl(this.lblDescription);
 
             this.lblState = new Label
             {
                 Text = "Sound State:",
                 Color = Color.White,
             };
-            this.labels.Add(this.lblState);
-            AddControl(this.lblState);
 
             // Current Sound time
             this.lblCurrentTime = new Label
@@ -129,8 +117,6 @@ namespace VelaptorTesting.Scenes
                 Text = "Current Time: 0:0",
                 Color = Color.White,
             };
-            this.labels.Add(this.lblCurrentTime);
-            AddControl(this.lblCurrentTime);
 
             // Total Sound Length
             this.lblSoundLength = new Label
@@ -138,8 +124,6 @@ namespace VelaptorTesting.Scenes
                 Text = "Sound Length: ",
                 Color = Color.White,
             };
-            this.labels.Add(this.lblSoundLength);
-            AddControl(this.lblSoundLength);
 
             // Loop Setting
             this.lblRepeat = new Label
@@ -147,7 +131,11 @@ namespace VelaptorTesting.Scenes
                 Text = "Enable Repeat: no",
                 Color = Color.White,
             };
-            this.labels.Add(this.lblRepeat);
+
+            AddControl(this.lblDescription);
+            AddControl(this.lblState);
+            AddControl(this.lblCurrentTime);
+            AddControl(this.lblSoundLength);
             AddControl(this.lblRepeat);
         }
 
@@ -158,36 +146,30 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Play",
             };
-            this.buttons.Add(this.btnPlaySound);
             this.btnPlaySound.Click += (_, _) =>
             {
                 this.sound.Play();
             };
-            AddControl(this.btnPlaySound);
 
             // Stop Sound
             this.btnStopSound = new Button
             {
                 Text = "Stop",
             };
-            this.buttons.Add(this.btnStopSound);
             this.btnStopSound.Click += (_, _) =>
             {
                 this.sound.Stop();
             };
-            AddControl(this.btnStopSound);
 
             // Pause Sound
             this.btnPauseSound = new Button
             {
                 Text = "Pause",
             };
-            this.buttons.Add(this.btnPauseSound);
             this.btnPauseSound.Click += (_, _) =>
             {
                 this.sound.Pause();
             };
-            AddControl(this.btnPauseSound);
 
             // Fast Forward 10 Seconds
             this.btnFastForward10Sec = new Button
@@ -195,12 +177,10 @@ namespace VelaptorTesting.Scenes
                 Text = "Fast Forward 10 Sec",
                 FaceTextureName = "button-face-extra-large",
             };
-            this.buttons.Add(this.btnFastForward10Sec);
             this.btnFastForward10Sec.Click += (_, _) =>
             {
                 this.sound.FastForward(10f);
             };
-            AddControl(this.btnFastForward10Sec);
 
             // Rewind 10 Seconds
             this.btnRewind10Sec = new Button
@@ -208,12 +188,10 @@ namespace VelaptorTesting.Scenes
                 Text = "Rewind 10 Sec",
                 FaceTextureName = "button-face-extra-large",
             };
-            this.buttons.Add(this.btnRewind10Sec);
             this.btnRewind10Sec.Click += (_, _) =>
             {
                 this.sound.Rewind(10f);
             };
-            AddControl(this.btnRewind10Sec);
 
             // Loop Setting
             this.btnRepeat = new Button
@@ -221,37 +199,36 @@ namespace VelaptorTesting.Scenes
                 Text = "Enable Repeat",
                 FaceTextureName = "button-face-extra-large",
             };
-            this.buttons.Add(this.btnRepeat);
             this.btnRepeat.Click += (_, _) =>
             {
                 this.sound.IsLooping = !this.sound.IsLooping;
             };
+
+            AddControl(this.btnPlaySound);
+            AddControl(this.btnStopSound);
+            AddControl(this.btnPauseSound);
+            AddControl(this.btnFastForward10Sec);
+            AddControl(this.btnRewind10Sec);
             AddControl(this.btnRepeat);
         }
 
-        private void PerformButtonLayout()
+        private void LayoutButtonsBottom()
         {
-            var totalWidth = (from b in this.buttons
-                select (int)b.Width).ToArray().Sum();
-            totalWidth += (this.buttons.Count - 1) * HorBtnSpacing;
+            var buttons = GetControls<Button>();
+            var totalWidth = (from l in buttons
+                select (int)l.Width).ToArray().Sum();
+            totalWidth += (buttons.Length - 1) * HoriBtnSpacing;
 
             var totalHalfWidth = totalWidth / 2;
 
             IControl? prevButton = null;
 
-            foreach (var button in this.buttons)
+            foreach (var button in buttons)
             {
-                if (prevButton is null)
-                {
-                    button.Position =
-                        new Point((int)(this.windowCenter.X + (button.Width / 2) - totalHalfWidth),
-                            this.windowBottom - BottomMargin);
-                }
-                else
-                {
-                    button.Left = prevButton.Right + HorBtnSpacing;
-                    button.Top = (int)(this.windowBottom - BottomMargin - (button.Height / 2));
-                }
+                button.Bottom = (int)(MainWindow.WindowHeight - BottomMargin);
+                button.Left = prevButton is null
+                    ? button.Left = this.windowCenter.X - totalHalfWidth
+                    : button.Left = prevButton.Right + HoriBtnSpacing;
 
                 prevButton = button;
             }
@@ -259,26 +236,22 @@ namespace VelaptorTesting.Scenes
 
         private void PerformLabelLayout()
         {
-            var totalHeight = (from b in this.labels
+            var labels = GetControls<Label>();
+            var totalHeight = (from b in labels
                 select (int)b.Height).ToArray().Sum();
-            totalHeight += (this.labels.Count - 1) * VertLabelSpacing;
+
+            totalHeight += (labels.Length - 1) * VertLabelSpacing;
 
             var totalHalfHeight = totalHeight / 2;
 
             IControl? prevLabel = null;
 
-            foreach (var label in this.labels)
+            foreach (var label in labels)
             {
-                if (prevLabel is null)
-                {
-                    label.Left = LeftMargin;
-                    label.Top = this.windowCenter.Y - totalHalfHeight;
-                }
-                else
-                {
-                    label.Top = prevLabel.Bottom + VertLabelSpacing;
-                    label.Left = LeftMargin;
-                }
+                label.Left = LeftMargin;
+                label.Top = prevLabel is null
+                    ? label.Top = this.windowCenter.Y - totalHalfHeight
+                    : label.Top = prevLabel.Bottom + VertLabelSpacing;
 
                 prevLabel = label;
             }

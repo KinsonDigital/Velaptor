@@ -4,14 +4,19 @@
 
 namespace VelaptorTests.Helpers
 {
+    using System;
     using System.IO;
     using System.Reflection;
     using Newtonsoft.Json;
     using Xunit;
 
+    /// <summary>
+    /// Loads test data from the unit test project's SampleTestData folder.
+    /// </summary>
     public static class TestDataLoader
     {
-        private static readonly string RootDirPath = @$"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private const string TestDataFolderName = "SampleTestData";
+        private static readonly string RootDirPath = @$"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\{TestDataFolderName}\";
 
         /// <summary>
         /// Loads JSON formatted test data and returns it as type a list of type <typeparamref name="T"/>.
@@ -20,18 +25,23 @@ namespace VelaptorTests.Helpers
         /// <param name="fileName">The name of the test data file to load.</param>
         /// <typeparam name="T">The type of data to return.</typeparam>
         /// <returns>The list of data items of type <typeparamref name="T"/> to return.</returns>
-        /// <summary>
-        ///     The <paramref name="relativeDirPath"/> is the directory path relative to the root directory
-        ///     path which is the same directory as the test assembly.
-        /// </summary>
-        public static T[]? LoadTestData<T>(string? relativeDirPath, string fileName)
+        /// <remarks>
+        /// <para>
+        ///     The <paramref name="relativeDirPath"/> is the directory path relative to the root directory.
+        ///     This directory is the same as the directory location as the test assembly.
+        /// </para>
+        ///
+        /// <para>
+        ///     If the <paramref name="relativeDirPath"/> is null or empty, then the default root test data directory path will be used.
+        /// </para>
+        /// </remarks>
+        public static T[] LoadTestData<T>(string? relativeDirPath, string fileName)
         {
             const string loadTestDataPrefix = "Loading test data error:\n\t";
 
-            if (string.IsNullOrEmpty(relativeDirPath))
-            {
-                Assert.True(false, $"{loadTestDataPrefix}The parameter '{nameof(relativeDirPath)}' must not be null or empty.");
-            }
+            relativeDirPath = string.IsNullOrEmpty(relativeDirPath)
+                ? string.Empty
+                : relativeDirPath;
 
             if (string.IsNullOrEmpty(fileName))
             {
@@ -62,7 +72,7 @@ namespace VelaptorTests.Helpers
                 Assert.True(false, $"{loadTestDataPrefix}The directory path '{fullDirPath}' does not exist.");
             }
 
-            var fullTestDataFilePath = $"{fullDirPath}{fileName}";
+            var fullTestDataFilePath = $"{fullDirPath}{fileName}".Replace($@"\\", @"\");
 
             if (File.Exists(fullTestDataFilePath) is false)
             {
@@ -71,7 +81,14 @@ namespace VelaptorTests.Helpers
 
             var testJSONData = File.ReadAllText(fullTestDataFilePath);
 
-            return JsonConvert.DeserializeObject<T[]>(testJSONData);
+            var result = JsonConvert.DeserializeObject<T[]>(testJSONData);
+
+            if (result is null)
+            {
+                throw new Exception("Test data failed to load.");
+            }
+
+            return result;
         }
     }
 }

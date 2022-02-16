@@ -4,9 +4,13 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System.Collections.Generic;
     using System.Drawing;
     using System.Numerics;
+    using Velaptor.OpenGL.GPUData;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides various helper methods for OpenGL related operations.
@@ -100,20 +104,30 @@ namespace Velaptor.OpenGL
         ///     <item><see cref="Vector"/>.<see cref="Vector2.Y"/></item>
         /// </list>
         /// </remarks>
-        public static float[] ToArray(this Vector2 vector)
+        public static float[] ToArray(this Vector2 vector) => new[] { vector.X, vector.Y };
+
+        /// <summary>
+        /// Returns all of the <see cref="Vector4"/> components as a <see cref="float"/> array.
+        /// </summary>
+        /// <param name="vector">The vector to convert.</param>
+        /// <returns>The components in a <c>X</c> <c>Y</c> <c>Z</c> <c>W</c> order.</returns>
+        public static float[] ToArray(this Vector4 vector) => new[] { vector.X, vector.Y, vector.Z, vector.W };
+
+        /// <summary>
+        /// Converts the given list of <see cref="rects"/> into an array of continuous <see cref="float"/> values.
+        /// </summary>
+        /// <param name="rects">The list of rectangle data items to convert.</param>
+        /// <returns>The data in raw array format.</returns>
+        public static float[] ToArray(this IEnumerable<RectGPUData> rects)
         {
-            float x;
-            float y;
+            var result = new List<float>();
 
-            unsafe
+            foreach (var rectData in rects)
             {
-                var myPtr = &vector;
-
-                x = myPtr->X;
-                y = myPtr->Y;
+                result.AddRange(rectData.ToArray());
             }
 
-            return new[] { x, y };
+            return result.ToArray();
         }
 
         /// <summary>
@@ -135,50 +149,54 @@ namespace Velaptor.OpenGL
             => new float[] { color.R, color.G, color.B, color.A };
 
         /// <summary>
-        /// Converts the given <paramref name="data"/> to an array of <see cref="float"/>[] values.
+        /// Converts the given <paramref name="vertexData"/> components to an array of floats.
         /// </summary>
-        /// <param name="data">The value to convert.</param>
-        /// <returns>The components of the value as a <see cref="float"/>[] array.</returns>
-        /// <remarks>
-        /// Value To Array Order:
-        /// <list type="number">
-        ///     <item><see cref="TextureVertexData"/>.<see cref="TextureVertexData.VertexPos"/></item>
-        ///     <item><see cref="TextureVertexData"/>.<see cref="TextureVertexData.TextureCoord"/></item>
-        ///     <item><see cref="TextureVertexData"/>.<see cref="TextureVertexData.TintColor"/></item>
-        /// </list>
-        /// </remarks>
-        public static float[] ToArray(this TextureVertexData data)
+        /// <param name="vertexData">The data to convert.</param>
+        /// <returns>An array of float values.</returns>
+        public static float[] ToArray(this TextureVertexData vertexData)
         {
+            // NOTE: The order of the array elements are extremely important.
+            // They determine the layout of each stride of vertex data and the layout
+            // here has to match the layout told to OpenGL using the VertexAttribLocation() calls
             var result = new List<float>();
 
-            result.AddRange(data.VertexPos.ToArray());
-            result.AddRange(data.TextureCoord.ToArray());
-            result.AddRange(data.TintColor.ToArray());
+            result.AddRange(vertexData.VertexPos.ToArray());
+            result.AddRange(vertexData.TextureCoord.ToArray());
+            result.AddRange(vertexData.TintColor.ToArray());
 
             return result.ToArray();
         }
 
         /// <summary>
-        /// Converts the given <paramref name="data"/> to an array of <see cref="float"/>[] values.
+        /// Converts the given <paramref name="quad"/> components to an array of floats.
         /// </summary>
-        /// <param name="data">The value to convert.</param>
-        /// <returns>The components of the value as a <see cref="float"/>[] array.</returns>
-        /// <remarks>
-        /// Value To Array Order:
-        /// <list type="number">
-        ///     <item><see cref="TextureQuadData"/>.<see cref="TextureQuadData.Vertex1"/></item>
-        ///     <item><see cref="TextureQuadData"/>.<see cref="TextureQuadData.Vertex2"/></item>
-        ///     <item><see cref="TextureQuadData"/>.<see cref="TextureQuadData.Vertex3"/></item>
-        /// </list>
-        /// </remarks>
-        public static float[] ToArray(this TextureQuadData data)
+        /// <param name="quad">The quad to convert.</param>
+        /// <returns>An array of float values.</returns>
+        public static float[] ToArray(this TextureQuadData quad)
         {
             var result = new List<float>();
 
-            result.AddRange(data.Vertex1.ToArray());
-            result.AddRange(data.Vertex2.ToArray());
-            result.AddRange(data.Vertex3.ToArray());
-            result.AddRange(data.Vertex4.ToArray());
+            result.AddRange(quad.Vertex1.ToArray());
+            result.AddRange(quad.Vertex2.ToArray());
+            result.AddRange(quad.Vertex3.ToArray());
+            result.AddRange(quad.Vertex4.ToArray());
+
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Converts the given list of <paramref name="quads"/> to an array of floats.
+        /// </summary>
+        /// <param name="quads">The quads to convert.</param>
+        /// <returns>An array of float values.</returns>
+        public static float[] ToArray(this IEnumerable<TextureQuadData> quads)
+        {
+            var result = new List<float>();
+
+            foreach (var quad in quads)
+            {
+                result.AddRange(quad.ToArray());
+            }
 
             return result.ToArray();
         }

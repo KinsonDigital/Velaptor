@@ -17,6 +17,7 @@ namespace Velaptor
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Factories;
+    using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
@@ -151,6 +152,7 @@ namespace Velaptor
             IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
             IoCContainer.Register<IBatchManagerService<SpriteBatchItem>, TextureBatchService>();
+            IoCContainer.Register<IBatchManagerService<RectShape>, RectBatchService>();
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(

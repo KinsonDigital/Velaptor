@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.OpenGL.Shaders
 {
     // ReSharper disable RedundantNameQualifier
     using System;
@@ -250,6 +250,10 @@ namespace Velaptor.OpenGL
             else if (currentType == typeof(FontShader))
             {
                 attributes = Attribute.GetCustomAttributes(typeof(FontShader));
+            }
+            else if (currentType == typeof(RectangleShader))
+            {
+                attributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
             }
             else
             {

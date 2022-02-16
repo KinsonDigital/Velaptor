@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.OpenGL.Buffers
 {
     // ReSharper disable RedundantNameQualifier
     using System;
@@ -76,6 +76,9 @@ namespace Velaptor.OpenGL
 
             ShutDown();
         }
+
+        /// <inheritdoc/>
+        public SizeU ViewPortSize { get; set; }
 
         /// <summary>
         /// Gets the size of the sprite batch.

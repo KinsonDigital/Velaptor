@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.OpenGL.Shaders
 {
     // ReSharper disable RedundantNameQualifier
     using System;
@@ -19,7 +19,6 @@ namespace Velaptor.OpenGL
     [ShaderName("Texture")]
     internal class TextureShader : ShaderProgram
     {
-        // private readonly IDisposable shutDownReactorUnsubscriber;
         private int mainTextureUniformLocation = -1;
 
         /// <summary>

@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.OpenGL.Buffers
 {
     // ReSharper disable RedundantNameQualifier
     using System;
@@ -14,6 +14,7 @@ namespace Velaptor.OpenGL
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Exceptions;
+    using Velaptor.OpenGL.GPUData;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using NETRect = System.Drawing.Rectangle;
@@ -188,7 +189,7 @@ namespace Velaptor.OpenGL
                 });
             }
 
-            return result.ToVertexArray();
+            return OpenGLExtensionMethods.ToArray(result);
         }
 
         /// <inheritdoc/>
