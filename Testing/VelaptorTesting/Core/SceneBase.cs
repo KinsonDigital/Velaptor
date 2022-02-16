@@ -6,6 +6,7 @@ namespace VelaptorTesting.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Graphics;
@@ -30,6 +31,11 @@ namespace VelaptorTesting.Core
 
         /// <inheritdoc cref="IScene.Name"/>
         public string Name { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Gets the list of controls that have been added to the scene.
+        /// </summary>
+        public ReadOnlyCollection<IControl> Controls => this.controls.ToReadOnlyCollection();
 
         /// <inheritdoc cref="IScene.Id"/>
         public Guid Id { get; } = Guid.NewGuid();
