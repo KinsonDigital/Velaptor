@@ -8,7 +8,6 @@
 <details><summary>📄Description📄</summary>
 <!-- Provide a short, general summary of your changes in the Title above -->
 
-This pull request is for preview release **_[add version here]_**
 </details>
 
 
