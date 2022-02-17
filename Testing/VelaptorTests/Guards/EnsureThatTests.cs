@@ -1,0 +1,57 @@
+﻿// <copyright file="EnsureThatTests.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace VelaptorTests.Guards
+{
+    using System;
+    using Velaptor.Guards;
+    using VelaptorTests.Helpers;
+    using Xunit;
+
+    /// <summary>
+    /// Tests the <see cref="EnsureThat"/> class.
+    /// </summary>
+    public class EnsureThatTests
+    {
+        #region Method Tests
+        [Fact]
+        public void ArgIsNotNull_WithNullValue_ThrowsException()
+        {
+            // Arrange
+            object? nullObj = null;
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                EnsureThat.ParamIsNotNull(nullObj);
+            }, "The parameter must not be null. (Parameter 'nullObj')");
+        }
+
+        [Fact]
+        public void ThrowIfArgIsNull_WithNonNullValue_DoesNotThrowException()
+        {
+            // Arrange
+            object nonNullObj = "non-null-obj";
+
+            // Act & Assert
+            AssertExtensions.DoesNotThrow<Exception>(() =>
+            {
+                EnsureThat.ParamIsNotNull(nonNullObj);
+            });
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void StringArgIsNotNullOrEmpty_WhenInvoked_ThrowsException(string value)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                EnsureThat.StringParamIsNotNullOrEmpty(value);
+            }, $"The parameter must not be null or empty. (Parameter '{nameof(value)}')");
+        }
+        #endregion
+    }
+}
