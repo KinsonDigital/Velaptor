@@ -13,6 +13,7 @@ namespace Velaptor.Content
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Factories;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -21,7 +22,6 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class SoundLoader : ILoader<ISound>
     {
-        private const string NullParamExceptionMsg = "The parameter must not be null.";
         private const string OggFileExtension = ".ogg";
         private const string Mp3FileExtension = ".mp3";
         private readonly IItemCache<string, ISound> soundCache;
@@ -58,10 +58,15 @@ namespace Velaptor.Content
             IFile file,
             IPath path)
         {
-            this.soundCache = soundCache ?? throw new ArgumentNullException(nameof(soundCache), NullParamExceptionMsg);
-            this.soundPathResolver = soundPathResolver ?? throw new ArgumentNullException(nameof(soundPathResolver), NullParamExceptionMsg);
-            this.file = file ?? throw new ArgumentNullException(nameof(file), NullParamExceptionMsg);
-            this.path = path ?? throw new ArgumentNullException(nameof(path), NullParamExceptionMsg);
+            EnsureThat.ParamIsNotNull(soundCache);
+            EnsureThat.ParamIsNotNull(soundPathResolver);
+            EnsureThat.ParamIsNotNull(file);
+            EnsureThat.ParamIsNotNull(path);
+
+            this.soundCache = soundCache;
+            this.soundPathResolver = soundPathResolver;
+            this.file = file;
+            this.path = path;
         }
 
         /// <summary>

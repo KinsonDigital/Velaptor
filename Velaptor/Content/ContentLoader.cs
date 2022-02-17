@@ -6,6 +6,7 @@ namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
     using Velaptor.Content.Fonts;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -32,6 +33,11 @@ namespace Velaptor.Content
             ILoader<IAtlasData> atlasLoader,
             ILoader<IFont> fontLoader)
         {
+            EnsureThat.ParamIsNotNull(textureLoader);
+            EnsureThat.ParamIsNotNull(soundLoader);
+            EnsureThat.ParamIsNotNull(atlasLoader);
+            EnsureThat.ParamIsNotNull(fontLoader);
+
             this.textureLoader = textureLoader;
             this.soundLoader = soundLoader;
             this.atlasLoader = atlasLoader;

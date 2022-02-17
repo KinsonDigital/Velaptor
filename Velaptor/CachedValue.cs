@@ -4,8 +4,11 @@
 
 namespace Velaptor
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Caches a value as long as caching is turned on.

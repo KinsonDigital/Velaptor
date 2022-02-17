@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Guards;
-
 namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
@@ -14,6 +12,7 @@ namespace Velaptor.Content
     using System.Linq;
     using Velaptor.Content.Caching;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 

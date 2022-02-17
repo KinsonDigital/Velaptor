@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Content
 {
+    using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Reflection;
@@ -33,6 +34,16 @@ namespace VelaptorTests.Content
         }
 
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullDirectoryParam_ThrowsException()
+        {
+            // Arrange & Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SoundPathResolver(null);
+            }, "The parameter must not be null. (Parameter 'directory')");
+        }
+
         [Fact]
         public void Ctor_WhenInvoked_SetsContentDirectoryNameToCorrectValue()
         {
