@@ -5,12 +5,6 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <h1 style="font-weight:bold" align="center">Production Release Pull Request</h1>
 
-<details open><summary>📄Description📄</summary>
-<!-- Provide a short, general summary of your changes in the Title above -->
-
-This pull request is for production release **_[add version here]_**
-</details>
-
 
 <h2 style="font-weight:bold" align="center">✅Development Checklist✅</h2>
 
@@ -47,6 +41,7 @@ Contains Bug Fix(es)
 Any changes, including behavioral, that prevent a library user's application from compiling or behaving correctly.
 Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract) for more information.
 - [ ] Yes
+    - [ ] A ![breaking-change-label](https://user-images.githubusercontent.com/85414302/154378943-8e684157-2138-404d-ba19-b9d76061c12e.png) label has been added to the pull request.
 - [ ] No
 </details>
 
@@ -79,14 +74,6 @@ Contains changes that require documentation updates to code docs or **Velaptor**
 </details>
 
 
-<details open><summary>🧪Unit Testing🧪</summary>
-
-My change requires unit tests to be written.
-- [ ] Yes
-- [ ] No
-</details>
-
-
 <details open><summary>🧪Manual Testing🧪</summary>
 
 I have manually tested my changes.
@@ -102,7 +89,6 @@ This can be done by using the included testing application.
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] Pull request title matches the example below with the correct version.
     - **Example:** 🚀Release To Production - v1.2.3
-- [ ] The **_[add version here]_** text in the pull request description was replaced with the version.
 - [ ] Issues exist and are linked to this pull request.
 - [ ] My code follows the coding style of this project.
     - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and let's discuss it.
