@@ -258,7 +258,7 @@ jobs:
           Come check it out to take it for a spin and help support development. 🤘
           Release: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/releases/tag/${{ steps.proj-file-version.outputs.version }}
           Nuget Package: https://www.nuget.org/packages/KinsonDigital.${{ env.PROJECT_NAME }}/${{ steps.proj-file-version.outputs.version }}
-          Discord: https://discord.gg/dqNsFSgh
+          Discord: https://discord.gg/qewu6fNgv7
           Project: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}
         consumer-key: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
         consumer-secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
