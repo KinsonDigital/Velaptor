@@ -1,4 +1,4 @@
-// <copyright file="GPUBufferNameAttributeTests.cs" company="KinsonDigital">
+// <copyright file="ShaderNameAttributeTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,9 +10,9 @@ namespace VelaptorTests.OpenGL
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="GPUBufferNameAttribute"/> class.
+    /// Tests the <see cref="ShaderNameAttribute"/> class.
     /// </summary>
-    public class GPUBufferNameAttributeTests
+    public class ShaderNameAttributeTests
     {
         #region Constructor Tests
         [Theory]
@@ -23,7 +23,7 @@ namespace VelaptorTests.OpenGL
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new GPUBufferNameAttribute(value);
+                _ = new ShaderNameAttribute(value);
             }, "The parameter must not be null or empty. (Parameter 'name')");
         }
 
@@ -31,7 +31,7 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WhenInvoked_SetsProperty()
         {
             // Arrange & Act
-            var attribute = new GPUBufferNameAttribute("test-name");
+            var attribute = new ShaderNameAttribute("test-name");
 
             // Assert
             Assert.Equal("test-name", attribute.Name);
