@@ -47,6 +47,7 @@ Contains Bug Fix(es)
 Any changes, including behavioral, that prevent a library user's application from compiling or behaving correctly.
 Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract) for more information.
 - [ ] Yes
+    - [ ] A ![breaking-change-label](https://user-images.githubusercontent.com/85414302/154378943-8e684157-2138-404d-ba19-b9d76061c12e.png) label has been added to the pull request.
 - [ ] No
 </details>
 
