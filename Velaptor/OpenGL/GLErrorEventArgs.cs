@@ -4,7 +4,11 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Holds information about OpenGL errors that occur.
@@ -17,11 +21,7 @@ namespace Velaptor.OpenGL
         /// <param name="errorMessage">The error message.</param>
         public GLErrorEventArgs(string errorMessage)
         {
-            if (string.IsNullOrEmpty(errorMessage))
-            {
-                throw new ArgumentNullException(nameof(errorMessage), "The parameter must not be null or empty.");
-            }
-
+            EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
             ErrorMessage = errorMessage;
         }
 

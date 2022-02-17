@@ -6,7 +6,7 @@ namespace Velaptor.OpenGL
 {
     using System;
 
-    // TODO: Try and make this a stuct and see if it works as an EventArgs type
+    // TODO: Try and make this a struct and see if it works as an EventArgs type
     // This means you cannot inherit from EventArgs
 
     /// <summary>

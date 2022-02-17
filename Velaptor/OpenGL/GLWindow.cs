@@ -13,6 +13,7 @@ namespace Velaptor.OpenGL
     using System.Threading.Tasks;
     using Velaptor.Content;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Reactables.Core;
@@ -28,7 +29,6 @@ namespace Velaptor.OpenGL
     /// </summary>
     internal sealed class GLWindow : IWindow
     {
-        private const string NullParamExceptionMessage = "The parameter must not be null.";
         private readonly IGLInvoker gl;
         private readonly IGLFWInvoker glfw;
         private readonly ISystemMonitorService systemMonitorService;
@@ -71,16 +71,27 @@ namespace Velaptor.OpenGL
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
-            this.gl = glInvoker ?? throw new ArgumentNullException(nameof(glInvoker), NullParamExceptionMessage);
-            this.glfw = glfwInvoker ?? throw new ArgumentNullException(nameof(glfwInvoker), NullParamExceptionMessage);
-            this.systemMonitorService = systemMonitorService ?? throw new ArgumentNullException(nameof(systemMonitorService), NullParamExceptionMessage);
-            this.windowFacade = windowFacade ?? throw new ArgumentNullException(nameof(windowFacade), NullParamExceptionMessage);
-            this.platform = platform ?? throw new ArgumentNullException(nameof(platform), NullParamExceptionMessage);
-            this.taskService = taskService ?? throw new ArgumentNullException(nameof(taskService), NullParamExceptionMessage);
-            ContentLoader = contentLoader ?? throw new ArgumentNullException(nameof(contentLoader), NullParamExceptionMessage);
-            this.spriteBatch = spriteBatch ?? throw new ArgumentNullException(nameof(spriteBatch), NullParamExceptionMessage);
-            this.glInitReactable = glInitReactable ?? throw new ArgumentNullException(nameof(glInitReactable), NullParamExceptionMessage);
-            this.shutDownReactable = shutDownReactable ?? throw new ArgumentNullException(nameof(shutDownReactable), NullParamExceptionMessage);
+            EnsureThat.ParamIsNotNull(glInvoker);
+            EnsureThat.ParamIsNotNull(glfwInvoker);
+            EnsureThat.ParamIsNotNull(systemMonitorService);
+            EnsureThat.ParamIsNotNull(windowFacade);
+            EnsureThat.ParamIsNotNull(platform);
+            EnsureThat.ParamIsNotNull(taskService);
+            EnsureThat.ParamIsNotNull(contentLoader);
+            EnsureThat.ParamIsNotNull(spriteBatch);
+            EnsureThat.ParamIsNotNull(glInitReactable);
+            EnsureThat.ParamIsNotNull(shutDownReactable);
+
+            this.gl = glInvoker;
+            this.glfw = glfwInvoker;
+            this.systemMonitorService = systemMonitorService;
+            this.windowFacade = windowFacade;
+            this.platform = platform;
+            this.taskService = taskService;
+            ContentLoader = contentLoader;
+            this.spriteBatch = spriteBatch;
+            this.glInitReactable = glInitReactable;
+            this.shutDownReactable = shutDownReactable;
 
             SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
             SetupOtherPropCaches();

@@ -4,7 +4,11 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Represents the name of a buffer.
@@ -16,7 +20,11 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="GPUBufferNameAttribute"/> class.
         /// </summary>
         /// <param name="name">The name to give a buffer.</param>
-        public GPUBufferNameAttribute(string name) => Name = name;
+        public GPUBufferNameAttribute(string name)
+        {
+            EnsureThat.StringParamIsNotNullOrEmpty(name);
+            Name = name;
+        }
 
         /// <summary>
         /// Gets the name of a buffer.
