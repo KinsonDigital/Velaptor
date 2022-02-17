@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Guards;
+
 namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
@@ -67,12 +69,19 @@ namespace Velaptor.Content
             IFile file,
             IPath path)
         {
-            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), "The parameter must not be null.");
-            this.atlasDataFactory = atlasDataFactory ?? throw new ArgumentNullException(nameof(atlasDataFactory), "The parameter must not be null.");
-            this.atlasDataPathResolver = atlasDataPathResolver ?? throw new ArgumentNullException(nameof(atlasDataPathResolver), "The parameter must not be null.");
-            this.jsonService = jsonService ?? throw new ArgumentNullException(nameof(jsonService), "The parameter must not be null.");
-            this.file = file ?? throw new ArgumentNullException(nameof(file), "The parameter must not be null.");
-            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+            EnsureThat.ParamIsNotNull(textureCache);
+            EnsureThat.ParamIsNotNull(atlasDataFactory);
+            EnsureThat.ParamIsNotNull(atlasDataPathResolver);
+            EnsureThat.ParamIsNotNull(jsonService);
+            EnsureThat.ParamIsNotNull(file);
+            EnsureThat.ParamIsNotNull(path);
+
+            this.textureCache = textureCache;
+            this.atlasDataFactory = atlasDataFactory;
+            this.atlasDataPathResolver = atlasDataPathResolver;
+            this.jsonService = jsonService;
+            this.file = file;
+            this.path = path;
         }
 
         /// <summary>

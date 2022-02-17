@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Guards;
+
 namespace Velaptor.Content
 {
     // ReSharper disable RedundantNameQualifier
@@ -42,6 +44,8 @@ namespace Velaptor.Content
             string dirPath,
             string atlasName)
         {
+            EnsureThat.StringParamIsNotNullOrEmpty(dirPath);
+
             // Throw exception if the path is not a directory path
             if (string.IsNullOrEmpty(dirPath))
             {

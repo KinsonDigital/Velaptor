@@ -4,10 +4,14 @@
 
 namespace Velaptor.Content
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Resolves paths to atlas data content.
@@ -23,6 +27,7 @@ namespace Velaptor.Content
         /// <param name="directory">Manages directories.</param>
         public AtlasJSONDataPathResolver(IDirectory directory)
         {
+            EnsureThat.ParamIsNotNull(directory);
             this.directory = directory;
             ContentDirectoryName = "Atlas";
         }
