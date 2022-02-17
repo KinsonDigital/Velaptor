@@ -4,12 +4,14 @@
 
 namespace VelaptorTests.Hardware
 {
+    using System;
     using System.Collections.Generic;
     using System.Numerics;
     using System.Runtime.InteropServices;
     using Moq;
     using Velaptor;
     using Velaptor.Hardware;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -40,6 +42,18 @@ namespace VelaptorTests.Hardware
             yield return new object[] { OSPlatform.FreeBSD, 768 };
             yield return new object[] { OSPlatform.OSX, 576 };
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullPlatformParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new SystemMonitor(null);
+            }, "The parameter must not be null. (Parameter 'platform')");
+        }
+        #endregion
 
         #region Prop Tests
         [Theory]

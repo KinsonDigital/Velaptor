@@ -1,17 +1,43 @@
-﻿// <copyright file="CachedValueTests.cs" company="KinsonDigital">
+// <copyright file="CachedValueTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 // ReSharper disable RedundantArgumentDefaultValue Used to force being explicit for CachedValue Ctor
 namespace VelaptorTests
 {
+    using System;
     using Moq;
     using Velaptor;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     public class CachedValueTests
     {
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullGetterWhenNotCachingParam_ThrowsException()
+        {
+            // Arrange
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new CachedValue<int>(123, null, _ => { });
+            }, "The parameter must not be null. (Parameter 'getterWhenNotCaching')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullSetterWhenNotCachingParam_ThrowsException()
+        {
+            // Arrange
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new CachedValue<int>(123, () => 0, null);
+            }, "The parameter must not be null. (Parameter 'setterWhenNotCaching')");
+        }
+
         [Fact]
         public void Ctor_WhenInvokedWithCachingOn_SetsValueInternally()
         {
