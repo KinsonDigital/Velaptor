@@ -91,7 +91,6 @@ I have manually tested my changes. (This can be done by using project named **_V
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] Pull request title matches the example below with the correct version.
     - **Example:** 🚀Release To Preview - v1.2.3-preview.4
-- [ ] The **_[add version here]_** text in the pull request description was replaced with the version.
 - [ ] Issues exist and are linked to this pull request.
 - [ ] My code follows the coding style of this project.
     - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and let's discuss it.

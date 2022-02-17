@@ -5,12 +5,6 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <h1 style="font-weight:bold" align="center">Preview Feature Pull Request</h1>
 
-<details><summary>📄Description📄</summary>
-<!-- Provide a short, general summary of your changes in the Title above -->
-
-This pull request is for preview release **_[add version here]_**
-</details>
-
 
 <h2 style="font-weight:bold" align="center">✅Development Checklist✅</h2>
 
@@ -106,7 +100,6 @@ I have manually tested my changes. (This can be done by using project named **_V
 <!-- Go over all of the following points, and put an `x` in all the boxes that apply. -->
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 - [ ] Pull request title matches the title of the linked issue.
-- [ ] The **_[add version here]_** text in the pull request description was replaced with the version.
 - [ ] Associated issue exists and is linked to this pull request.
     - One issue per pull request.
 - [ ] My code follows the coding style of this project.
