@@ -3,7 +3,7 @@ name: ✔Unit Testing Status Check
 
 env:
   PROJECT_NAME: Velaptor
-  NET_SDK_VERSION: 5.0.x
+  NET_SDK_VERSION: 6.0.101
 
 
 on:

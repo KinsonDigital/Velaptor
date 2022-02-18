@@ -3,8 +3,8 @@ name: 🚀QA/Prod Release
 
 env:
   PROJECT_NAME: Velaptor
-  NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
-  ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
+  NET_SDK_VERSION: 6.0.101 # Changing this means changing ARTIFACT_FOLDER_NAME
+  ARTIFACT_FOLDER_NAME: '6.0.101' # Changing this means changing NET_SDK_VERSION
 
 
 on:
@@ -171,7 +171,7 @@ jobs:
     - name: Execute Unit Tests
       run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" `
         -c ${{ needs.Determine_Build_Config.outputs.build-config }} `
-        --collect:"XPlat Code Coverage" `
+        --collect:"Code Coverage" `
         --no-restore
 
     - name: Publish Code Coverage Results
