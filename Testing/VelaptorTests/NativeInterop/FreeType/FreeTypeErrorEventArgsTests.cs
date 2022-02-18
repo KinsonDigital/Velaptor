@@ -24,7 +24,7 @@ namespace VelaptorTests.NativeInterop.FreeType
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new FreeTypeErrorEventArgs(message);
-            }, "The parameter must not be null or empty. (Parameter 'errorMessage')");
+            }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
         }
 
         [Fact]

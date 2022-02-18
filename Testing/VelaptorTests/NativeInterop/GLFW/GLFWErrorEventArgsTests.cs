@@ -21,7 +21,7 @@ namespace VelaptorTests.NativeInterop.GLFW
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new GLFWErrorEventArgs(GLFWErrorCode.NoError, message);
-            }, "The parameter must not be null or empty. (Parameter 'errorMessage')");
+            }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
         }
 
         [Fact]

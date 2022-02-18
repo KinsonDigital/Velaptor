@@ -192,7 +192,7 @@ namespace VelaptorTests.Content.Fonts
                     12u,
                     true,
                     this.glyphMetrics.Values.ToArray());
-            }, "The parameter must not be null or empty. (Parameter 'name')");
+            }, "The string parameter must not be null or empty. (Parameter 'name')");
         }
 
         [Fact]

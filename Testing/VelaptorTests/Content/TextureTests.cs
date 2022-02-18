@@ -143,7 +143,7 @@ namespace VelaptorTests.Content
                     name,
                     TexturePath,
                     this.imageData);
-            }, "The parameter must not be null or empty. (Parameter 'name')");
+            }, "The string parameter must not be null or empty. (Parameter 'name')");
         }
 
         [Theory]
@@ -161,7 +161,7 @@ namespace VelaptorTests.Content
                     TextureName,
                     filePath,
                     this.imageData);
-            }, "The parameter must not be null or empty. (Parameter 'filePath')");
+            }, "The string parameter must not be null or empty. (Parameter 'filePath')");
         }
 
         [Fact]

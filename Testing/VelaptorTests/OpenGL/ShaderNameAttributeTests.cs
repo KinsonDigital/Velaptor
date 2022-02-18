@@ -24,7 +24,7 @@ namespace VelaptorTests.OpenGL
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new ShaderNameAttribute(value);
-            }, "The parameter must not be null or empty. (Parameter 'name')");
+            }, "The string parameter must not be null or empty. (Parameter 'name')");
         }
 
         [Fact]

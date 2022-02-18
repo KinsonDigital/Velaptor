@@ -120,7 +120,7 @@ namespace Velaptor.Content.Caching
         {
             if (string.IsNullOrEmpty(soundFilePath))
             {
-                throw new ArgumentNullException(nameof(soundFilePath), "The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(soundFilePath), "The string parameter must not be null or empty.");
             }
 
             var extension = this.path.GetExtension(soundFilePath);

@@ -219,7 +219,7 @@ namespace VelaptorTests.UI
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 var unused = new WindowFake(null);
-            }, "Window must not be null. (Parameter 'window')");
+            }, "The parameter must not be null. (Parameter 'window')");
         }
 
         [Fact]

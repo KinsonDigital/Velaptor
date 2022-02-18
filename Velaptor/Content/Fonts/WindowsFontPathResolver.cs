@@ -42,7 +42,7 @@ namespace Velaptor.Content.Fonts
         {
             if (string.IsNullOrEmpty(contentName))
             {
-                throw new ArgumentNullException(nameof(contentName), $"The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(contentName), $"The string parameter must not be null or empty.");
             }
 
             if (contentName.EndsWith(Path.DirectorySeparatorChar))

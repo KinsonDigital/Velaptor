@@ -139,7 +139,7 @@ namespace Velaptor.Content.Caching
         {
             if (string.IsNullOrEmpty(textureFilePath))
             {
-                throw new ArgumentNullException(nameof(textureFilePath), "The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(textureFilePath), "The string parameter must not be null or empty.");
             }
 
             var parseResult = this.fontMetaDataParser.Parse(textureFilePath);

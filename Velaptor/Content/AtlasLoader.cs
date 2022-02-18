@@ -117,7 +117,7 @@ namespace Velaptor.Content
             {
                 throw new ArgumentNullException(
                     nameof(contentNameOrPath),
-                    "The parameter must not be null or empty.");
+                    "The string parameter must not be null or empty.");
             }
 
             var isFullFilePath = contentNameOrPath.HasValidFullFilePathSyntax();

@@ -57,7 +57,7 @@ namespace Velaptor.Guards
         {
             if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentNullException(paramName, "The parameter must not be null or empty.");
+                throw new ArgumentNullException(paramName, "The string parameter must not be null or empty.");
             }
         }
     }

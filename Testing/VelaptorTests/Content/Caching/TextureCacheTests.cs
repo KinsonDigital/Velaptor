@@ -267,7 +267,7 @@ namespace VelaptorTests.Content.Caching
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 cache.GetItem(filePath);
-            }, "The parameter must not be null or empty. (Parameter 'textureFilePath')");
+            }, "The string parameter must not be null or empty. (Parameter 'textureFilePath')");
         }
 
         [Fact]

@@ -24,7 +24,7 @@ namespace VelaptorTests.OpenGL
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 _ = new GLErrorEventArgs(value);
-            }, "The parameter must not be null or empty. (Parameter 'errorMessage')");
+            }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
         }
 
         [Fact]

@@ -58,12 +58,12 @@ namespace Velaptor.Content.Factories
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException(nameof(name), "The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(name), "The string parameter must not be null or empty.");
             }
 
             if (string.IsNullOrEmpty(filePath))
             {
-                throw new ArgumentNullException(nameof(filePath), "The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(filePath), "The string parameter must not be null or empty.");
             }
 
             return new Texture(this.gl, this.mockGLService, this.disposeTexturesReactable, name, filePath, imageData);

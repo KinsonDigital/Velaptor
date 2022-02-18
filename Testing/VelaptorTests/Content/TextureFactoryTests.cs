@@ -87,7 +87,7 @@ namespace VelaptorTests.Content
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 factory.Create(name, "test-path", new ImageData(null, 1, 2));
-            }, "The parameter must not be null or empty. (Parameter 'name')");
+            }, "The string parameter must not be null or empty. (Parameter 'name')");
         }
 
         [Theory]
@@ -102,7 +102,7 @@ namespace VelaptorTests.Content
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 factory.Create("test-name", filePath, new ImageData(null, 1, 2));
-            }, "The parameter must not be null or empty. (Parameter 'filePath')");
+            }, "The string parameter must not be null or empty. (Parameter 'filePath')");
         }
 
         [Fact]

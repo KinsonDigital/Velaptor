@@ -50,7 +50,7 @@ namespace VelaptorTests.Guards
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 EnsureThat.StringParamIsNotNullOrEmpty(value);
-            }, $"The parameter must not be null or empty. (Parameter '{nameof(value)}')");
+            }, $"The string parameter must not be null or empty. (Parameter '{nameof(value)}')");
         }
         #endregion
     }
