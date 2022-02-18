@@ -1,4 +1,4 @@
-﻿// <copyright file="OpenGLContextReactorTests.cs" company="KinsonDigital">
+﻿// <copyright file="RemoveBatchItemReactableTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,9 +11,9 @@ namespace VelaptorTests.Reactables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="OpenGLContextReactable"/> class.
+    /// Tests the <see cref="RemoveBatchItemReactable"/> class.
     /// </summary>
-    public class OpenGLContextReactorTests
+    public class RemoveBatchItemReactableTests
     {
         #region Method Tests
         [Theory]
@@ -22,16 +22,18 @@ namespace VelaptorTests.Reactables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<GLContextData>>();
+            var reactor = new Mock<IReactor<RemoveBatchItemData>>();
 
-            var reactable = new OpenGLContextReactable();
+            var reactable = new RemoveBatchItemReactable();
             reactable.Subscribe(reactor.Object);
 
             // Act
-            reactable.PushNotification(default, unsubscribe);
+            var data = new RemoveBatchItemData(123u);
+            reactable.PushNotification(data, unsubscribe);
 
             // Assert
-            reactor.Verify(m => m.OnNext(default), Times.Once());
+            reactor.Verify(m => m.OnNext(data), Times.Once());
+
             Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion

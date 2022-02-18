@@ -1,4 +1,4 @@
-﻿// <copyright file="ShutDownReactorTests.cs" company="KinsonDigital">
+﻿// <copyright file="DisposeTexturesReactableTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,9 +11,9 @@ namespace VelaptorTests.Reactables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="ShutDownReactable"/> class.
+    /// Tests the <see cref="DisposeTexturesReactable"/> class.
     /// </summary>
-    public class ShutDownReactorTests
+    public class DisposeTexturesReactableTests
     {
         #region Method Tests
         [Theory]
@@ -22,16 +22,16 @@ namespace VelaptorTests.Reactables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<ShutDownData>>();
+            var reactor = new Mock<IReactor<DisposeTextureData>>();
 
-            var reactable = new ShutDownReactable();
+            var reactable = new DisposeTexturesReactable();
             reactable.Subscribe(reactor.Object);
 
             // Act
-            reactable.PushNotification(default, unsubscribe);
+            reactable.PushNotification(new DisposeTextureData(123u), unsubscribe);
 
             // Assert
-            reactor.Verify(m => m.OnNext(default), Times.Once());
+            reactor.Verify(m => m.OnNext(new DisposeTextureData(123u)), Times.Once());
             Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion
