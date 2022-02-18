@@ -66,10 +66,14 @@ These changes can only done by the project maintainers.
 
 <details open><summary>📃Documentation Updates📃</summary>
 
-Contains changes that require documentation updates to code docs or **Velaptor** documentation
+Contains changes that require updates to existing **_code_** and/or **_Velaptor product_** documentation.
 - [ ] Yes
     - [ ] I have updated the documentation accordingly.
-    - [ ] A ![documentation-label](https://user-images.githubusercontent.com/85414302/150810133-939e985d-2246-4c77-8c9c-815855da3664.png) label has been added to the pull request.
+        - Choose the type of documentation.
+        - [ ] Code Documentation
+            - [ ] A ![documentation-code-label](https://user-images.githubusercontent.com/85414302/154672489-8079ed03-b8ff-41ff-9864-1e2ae55300cc.png) label has been added to the pull request.
+        - [ ] Product Documentation
+            - [ ] A ![documentation-product-label](https://user-images.githubusercontent.com/85414302/154672508-5ac50eb7-67f8-4cdf-92b9-fe5fcbd93b14.png) label has been added to the pull request.
 - [ ] No
 </details>
 
