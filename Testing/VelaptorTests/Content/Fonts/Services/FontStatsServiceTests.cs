@@ -4,12 +4,14 @@
 
 namespace VelaptorTests.Content.Fonts.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
     using Velaptor.Content.Fonts.Services;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -52,6 +54,83 @@ namespace VelaptorTests.Content.Fonts.Services
 
             this.mockPath = new Mock<IPath>();
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullFontServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontStatsService(
+                    null,
+                    this.mockContentPathResolver.Object,
+                    this.mockSystemFontPathResolver.Object,
+                    this.mockDirectory.Object,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'fontService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullContentFontPathResolverParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontStatsService(
+                    this.mockFontService.Object,
+                    null,
+                    this.mockSystemFontPathResolver.Object,
+                    this.mockDirectory.Object,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'contentFontPathResolver')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullSysFontPathResolverParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontStatsService(
+                    this.mockFontService.Object,
+                    this.mockContentPathResolver.Object,
+                    null,
+                    this.mockDirectory.Object,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'sysFontPathResolver')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullDirectoryParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontStatsService(
+                    this.mockFontService.Object,
+                    this.mockContentPathResolver.Object,
+                    this.mockSystemFontPathResolver.Object,
+                    null,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'directory')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPathParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontStatsService(
+                    this.mockFontService.Object,
+                    this.mockContentPathResolver.Object,
+                    this.mockSystemFontPathResolver.Object,
+                    this.mockDirectory.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'path')");
+        }
+        #endregion
 
         #region Method Tests
         [Fact]

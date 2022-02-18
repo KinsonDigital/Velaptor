@@ -43,6 +43,17 @@ namespace VelaptorTests.NativeInterop.OpenGL
             }
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullGLInvokerParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new OpenGLService(null);
+            }, "The parameter must not be null. (Parameter 'glInvoker')");
+        }
+        #endregion
         #region Prop Tests
         [Fact]
         public void IsVBOBound_WhenGettingValue_ReturnsCorrectResult()

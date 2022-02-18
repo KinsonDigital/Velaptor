@@ -8,6 +8,7 @@ namespace Velaptor.Content.Fonts.Services
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -38,6 +39,12 @@ namespace Velaptor.Content.Fonts.Services
             IDirectory directory,
             IPath path)
         {
+            EnsureThat.ParamIsNotNull(fontService);
+            EnsureThat.ParamIsNotNull(contentFontPathResolver);
+            EnsureThat.ParamIsNotNull(sysFontPathResolver);
+            EnsureThat.ParamIsNotNull(directory);
+            EnsureThat.ParamIsNotNull(path);
+
             this.fontService = fontService;
             this.contentFontPathResolver = contentFontPathResolver;
             this.sysFontPathResolver = sysFontPathResolver;

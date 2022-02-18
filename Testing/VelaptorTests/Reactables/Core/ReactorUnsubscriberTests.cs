@@ -4,9 +4,11 @@
 
 namespace VelaptorTests.Reactables.Core
 {
+    using System;
     using System.Collections.Generic;
     using Moq;
     using Velaptor.Reactables.Core;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -16,12 +18,33 @@ namespace VelaptorTests.Reactables.Core
     {
         #region Constructor Tests
         [Fact]
+        public void Ctor_WithNullReactorsParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new ReactorUnsubscriber<bool>(null, new Reactor<bool>());
+            }, "The parameter must not be null. (Parameter 'reactors')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullReactorParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new ReactorUnsubscriber<bool>(new List<IReactor<bool>>(), null);
+            }, "The parameter must not be null. (Parameter 'reactor')");
+        }
+
+        [Fact]
         public void Ctor_WhenInvoked_SetsReactorProperty()
         {
             // Arrange
             var expected = new Mock<IReactor<It.IsAnyType>>();
+
             var unsubscriber = new ReactorUnsubscriber<It.IsAnyType>(
-                It.IsAny<List<IReactor<It.IsAnyType>>>(),
+                new List<IReactor<It.IsAnyType>>(),
                 expected.Object);
 
             // Act
@@ -42,7 +65,7 @@ namespace VelaptorTests.Reactables.Core
 
             var unsubscriber = new ReactorUnsubscriber<It.IsAnyType>(
                 reactors.Object,
-                It.IsAny<IReactor<It.IsAnyType>>());
+                new Mock<IReactor<It.IsAnyType>>().Object);
 
             // Act
             var actual = unsubscriber.TotalReactors;

@@ -4,8 +4,12 @@
 
 namespace Velaptor.Reactables.Core
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// A reactor unsubscriber for unsubscribing from an <see cref="Reactable{TData}"/>.
@@ -25,6 +29,8 @@ namespace Velaptor.Reactables.Core
         /// <param name="reactor">The reactor that has been subscribed.</param>
         internal ReactorUnsubscriber(List<IReactor<T>> reactors, IReactor<T> reactor)
         {
+            EnsureThat.ParamIsNotNull(reactors);
+            EnsureThat.ParamIsNotNull(reactor);
             this.reactors = reactors;
             Reactor = reactor;
         }

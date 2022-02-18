@@ -8,6 +8,7 @@ namespace Velaptor.OpenGL.Shaders
     using System;
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL.Exceptions;
     using Velaptor.OpenGL.Services;
@@ -44,24 +45,17 @@ namespace Velaptor.OpenGL.Shaders
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
-            GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-            OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
-            this.shaderLoaderService = shaderLoaderService ?? throw new ArgumentNullException(nameof(shaderLoaderService), "The parameter must not be null.");
+            EnsureThat.ParamIsNotNull(gl);
+            EnsureThat.ParamIsNotNull(openGLService);
+            EnsureThat.ParamIsNotNull(shaderLoaderService);
+            EnsureThat.ParamIsNotNull(glInitReactable);
+            EnsureThat.ParamIsNotNull(shutDownReactable);
 
-            if (glInitReactable is null)
-            {
-                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
-            }
-
+            GL = gl;
+            OpenGLService = openGLService;
+            this.shaderLoaderService = shaderLoaderService;
             this.glInitReactorUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
-
-            if (shutDownReactable is null)
-            {
-                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
-            }
-
-            this.shutDownReactorUnsubscriber =
-                shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
+            this.shutDownReactorUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
 
             ProcessCustomAttributes();
         }

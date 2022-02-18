@@ -8,6 +8,7 @@ namespace Velaptor.NativeInterop.GLFW
     using System;
     using System.Collections.Generic;
     using System.Numerics;
+    using Velaptor.Guards;
     using Velaptor.Hardware;
 
     // ReSharper restore RedundantNameQualifier
@@ -30,6 +31,9 @@ namespace Velaptor.NativeInterop.GLFW
         /// <param name="platform">The current platform.</param>
         public GLFWMonitors(IGLFWInvoker glfwInvoker, IPlatform platform)
         {
+            EnsureThat.ParamIsNotNull(glfwInvoker);
+            EnsureThat.ParamIsNotNull(platform);
+
             this.glfwInvoker = glfwInvoker;
             this.platform = platform;
 
