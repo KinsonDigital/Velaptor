@@ -14,6 +14,7 @@ namespace Velaptor.Services
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
     using NETRectangle = System.Drawing.Rectangle;
@@ -51,6 +52,11 @@ namespace Velaptor.Services
             ISystemMonitorService systemMonitorService,
             IFile file)
         {
+            EnsureThat.ParamIsNotNull(fontService);
+            EnsureThat.ParamIsNotNull(imageService);
+            EnsureThat.ParamIsNotNull(systemMonitorService);
+            EnsureThat.ParamIsNotNull(file);
+
             this.fontService = fontService;
             this.imageService = imageService;
             this.monitorService = systemMonitorService;
