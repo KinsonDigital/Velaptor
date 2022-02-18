@@ -16,7 +16,7 @@ namespace VelaptorTests.Guards
     {
         #region Method Tests
         [Fact]
-        public void ArgIsNotNull_WithNullValue_ThrowsException()
+        public void ParamIsNotNull_WithNullValue_ThrowsException()
         {
             // Arrange
             object? nullObj = null;
@@ -29,7 +29,7 @@ namespace VelaptorTests.Guards
         }
 
         [Fact]
-        public void ThrowIfArgIsNull_WithNonNullValue_DoesNotThrowException()
+        public void ParamIsNotNull_WithNonNullValue_DoesNotThrowException()
         {
             // Arrange
             object nonNullObj = "non-null-obj";
@@ -44,7 +44,7 @@ namespace VelaptorTests.Guards
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public void StringArgIsNotNullOrEmpty_WhenInvoked_ThrowsException(string value)
+        public void StringParamIsNotNullOrEmpty_WhenInvoked_ThrowsException(string value)
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
