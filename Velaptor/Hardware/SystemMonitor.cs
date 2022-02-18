@@ -23,11 +23,17 @@ namespace Velaptor.Hardware
         /// <summary>
         /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
         /// </summary>
+        [ExcludeFromCodeCoverage]
+        public SystemMonitor() => this.platform = IoC.Container.GetInstance<IPlatform>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
+        /// </summary>
         /// <param name="platform">The current platform.</param>
         /// <exception cref="ArgumentNullException">
         ///     Occurs if the <paramref name="platform"/> parameter is null.
         /// </exception>
-        public SystemMonitor(IPlatform platform)
+        internal SystemMonitor(IPlatform platform)
         {
             EnsureThat.ParamIsNotNull(platform);
             this.platform = platform;
