@@ -3,8 +3,8 @@ name: 🚀QA Preview Release
 
 env:
   PROJECT_NAME: Velaptor
-  NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
-  ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
+  NET_SDK_VERSION: 6.0.101 # Changing this means changing ARTIFACT_FOLDER_NAME
+  ARTIFACT_FOLDER_NAME: '6.0.101' # Changing this means changing NET_SDK_VERSION
 
 
 on:
@@ -48,7 +48,7 @@ jobs:
         version: "${{ steps.proj-file-version.outputs.version }}"
         check-nuget: "true"
         fail-if-nuget-version-exists: "true"
-      
+
 
   Validate_Branch_Name:
     name: Validate Branch Name
