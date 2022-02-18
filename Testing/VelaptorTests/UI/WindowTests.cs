@@ -34,6 +34,17 @@ namespace VelaptorTests.UI
             this.mockWindow.SetupGet(p => p.ContentLoader).Returns(this.mockContentLoader.Object);
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullWindowParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new WindowFake(null);
+            }, "The parameter must not be null. (Parameter 'window')");
+        }
+        #endregion
         #region Prop Tests
         [Fact]
         public void Title_WhenSettingValue_ReturnsCorrectResult()

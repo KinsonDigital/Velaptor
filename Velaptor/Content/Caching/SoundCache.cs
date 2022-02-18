@@ -14,6 +14,7 @@ namespace Velaptor.Content.Caching
     using System.Linq;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
+    using Velaptor.Guards;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
 
@@ -50,20 +51,20 @@ namespace Velaptor.Content.Caching
             IReactable<DisposeSoundData> disposeSoundsReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
-            this.soundFactory = soundFactory ?? throw new ArgumentNullException(nameof(soundFactory), NullParamExceptionMsg);
-            this.file = file ?? throw new ArgumentNullException(nameof(file), NullParamExceptionMsg);
-            this.path = path ?? throw new ArgumentNullException(nameof(path), NullParamExceptionMsg);
+            EnsureThat.ParamIsNotNull(soundFactory);
+            EnsureThat.ParamIsNotNull(file);
+            EnsureThat.ParamIsNotNull(path);
+            EnsureThat.ParamIsNotNull(disposeSoundsReactable);
+            EnsureThat.ParamIsNotNull(shutDownReactable);
 
-            if (shutDownReactable is null)
-            {
-                throw new ArgumentNullException(nameof(shutDownReactable), NullParamExceptionMsg);
-            }
+            this.soundFactory = soundFactory;
+            this.file = file;
+            this.path = path;
 
             this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
 
-            this.disposeSoundsReactable =
-                disposeSoundsReactable ??
-                throw new ArgumentNullException(nameof(disposeSoundsReactable), NullParamExceptionMsg);
+            this.disposeSoundsReactable = disposeSoundsReactable ??
+                                          throw new ArgumentNullException(nameof(disposeSoundsReactable), NullParamExceptionMsg);
         }
 
         /// <summary>
