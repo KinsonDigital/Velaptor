@@ -4,11 +4,15 @@
 
 namespace Velaptor.OpenGL.Services
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Guards;
     using Velaptor.Services;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Loads the source code for the vertex and fragment shaders for rendering 2D textures.
@@ -34,6 +38,10 @@ namespace Velaptor.OpenGL.Services
             IEmbeddedResourceLoaderService<string> resourceLoaderService,
             IPath path)
         {
+            EnsureThat.ParamIsNotNull(shaderSrcTemplateService);
+            EnsureThat.ParamIsNotNull(resourceLoaderService);
+            EnsureThat.ParamIsNotNull(path);
+
             this.shaderSrcTemplateService = shaderSrcTemplateService;
             this.resourceLoaderService = resourceLoaderService;
             this.path = path;
@@ -45,7 +53,7 @@ namespace Velaptor.OpenGL.Services
         /// </remarks>
         public string LoadVertSource(string shaderName, IEnumerable<(string name, uint value)>? props = null)
         {
-            var missingTemplateVariableMessage =
+            const string missingTemplateVariableMessage =
                 $"Missing the property '{BatchSizeVarName}' template variable for shader processing.";
 
             if (props is null)

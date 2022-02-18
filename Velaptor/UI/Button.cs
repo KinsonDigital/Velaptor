@@ -11,6 +11,7 @@ namespace Velaptor.UI
     using Velaptor.Content;
     using Velaptor.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -40,10 +41,11 @@ namespace Velaptor.UI
         ///         <item><paramref name="contentLoader"/></item>
         ///     </list>
         /// </exception>
-        internal Button(IContentLoader contentLoader) =>
-            this.contentLoader =
-                contentLoader ??
-                throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
+        internal Button(IContentLoader contentLoader)
+        {
+            EnsureThat.ParamIsNotNull(contentLoader);
+            this.contentLoader = contentLoader;
+        }
 
         /// <inheritdoc cref="IControl"/>
         public override Point Position

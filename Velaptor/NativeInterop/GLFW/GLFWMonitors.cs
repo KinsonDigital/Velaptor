@@ -1,4 +1,4 @@
-﻿// <copyright file="GLFWMonitors.cs" company="KinsonDigital">
+// <copyright file="GLFWMonitors.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,6 +8,7 @@ namespace Velaptor.NativeInterop.GLFW
     using System;
     using System.Collections.Generic;
     using System.Numerics;
+    using Velaptor.Guards;
     using Velaptor.Hardware;
 
     // ReSharper restore RedundantNameQualifier
@@ -15,7 +16,7 @@ namespace Velaptor.NativeInterop.GLFW
     /// <summary>
     /// Gets all of the monitors in the system.
     /// </summary>
-    internal sealed class GLFWMonitors : IDisposable
+    internal sealed class GLFWMonitors : IMonitors
     {
         private readonly bool glfwInitialized;
         private readonly IGLFWInvoker glfwInvoker;
@@ -30,6 +31,9 @@ namespace Velaptor.NativeInterop.GLFW
         /// <param name="platform">The current platform.</param>
         public GLFWMonitors(IGLFWInvoker glfwInvoker, IPlatform platform)
         {
+            EnsureThat.ParamIsNotNull(glfwInvoker);
+            EnsureThat.ParamIsNotNull(platform);
+
             this.glfwInvoker = glfwInvoker;
             this.platform = platform;
 
@@ -44,14 +48,10 @@ namespace Velaptor.NativeInterop.GLFW
             this.glfwInvoker.OnMonitorChanged += GLFWInvoker_OnMonitorChanged;
         }
 
-        /// <summary>
-        /// Gets a list of all the monitors currently in the system.
-        /// </summary>
+        /// <inheritdoc/>
         public SystemMonitor[] SystemMonitors => this.monitors.ToArray();
 
-        /// <summary>
-        /// Refreshes the monitor information.
-        /// </summary>
+        /// <inheritdoc/>
         public void Refresh()
         {
             Vector2 GetMonitorScale(IntPtr monitorHandle)

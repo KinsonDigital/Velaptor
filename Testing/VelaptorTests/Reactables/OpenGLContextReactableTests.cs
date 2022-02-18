@@ -1,4 +1,4 @@
-﻿// <copyright file="DisposeSoundsReactorTests.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLContextReactableTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,9 +11,9 @@ namespace VelaptorTests.Reactables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="DisposeSoundsReactable"/> class.
+    /// Tests the <see cref="OpenGLContextReactable"/> class.
     /// </summary>
-    public class DisposeSoundsReactorTests
+    public class OpenGLContextReactableTests
     {
         #region Method Tests
         [Theory]
@@ -22,17 +22,16 @@ namespace VelaptorTests.Reactables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<DisposeSoundData>>();
+            var reactor = new Mock<IReactor<GLContextData>>();
 
-            var reactable = new DisposeSoundsReactable();
+            var reactable = new OpenGLContextReactable();
             reactable.Subscribe(reactor.Object);
 
             // Act
-            var soundData = new DisposeSoundData(123u);
-            reactable.PushNotification(soundData, unsubscribe);
+            reactable.PushNotification(default, unsubscribe);
 
             // Assert
-            reactor.Verify(m => m.OnNext(soundData), Times.Once());
+            reactor.Verify(m => m.OnNext(default), Times.Once());
             Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion

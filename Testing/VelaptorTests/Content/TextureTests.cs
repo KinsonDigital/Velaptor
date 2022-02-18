@@ -113,7 +113,7 @@ namespace VelaptorTests.Content
         }
 
         [Fact]
-        public void Ctor_WithNullDisposeTexturesReactorParam_ThrowsException()
+        public void Ctor_WithNullDisposeTexturesReactableParam_ThrowsException()
         {
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -131,6 +131,24 @@ namespace VelaptorTests.Content
         [Theory]
         [InlineData("")]
         [InlineData(null)]
+        public void Ctor_WithEmptyOrNullNameParam_ThrowsException(string name)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                var unused = new Texture(
+                    this.mockGL.Object,
+                    this.mockGLService.Object,
+                    this.mockDisposeReactable.Object,
+                    name,
+                    TexturePath,
+                    this.imageData);
+            }, "The string parameter must not be null or empty. (Parameter 'name')");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
         public void Ctor_WithEmptyOrNullFilePath_ThrowsException(string filePath)
         {
             // Act & Assert
@@ -143,7 +161,7 @@ namespace VelaptorTests.Content
                     TextureName,
                     filePath,
                     this.imageData);
-            }, "The parameter must not be null or empty. (Parameter 'filePath')");
+            }, "The string parameter must not be null or empty. (Parameter 'filePath')");
         }
 
         [Fact]

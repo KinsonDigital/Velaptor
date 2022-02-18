@@ -12,6 +12,7 @@ namespace Velaptor.UI
     using Velaptor.Content.Fonts;
     using Velaptor.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -42,10 +43,13 @@ namespace Velaptor.UI
         ///         <item><paramref name="contentLoader"/></item>
         ///     </list>
         /// </exception>
-        internal Label(IContentLoader contentLoader) =>
+        internal Label(IContentLoader contentLoader)
+        {
+            EnsureThat.ParamIsNotNull(contentLoader);
             this.contentLoader =
                 contentLoader ??
                 throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
+        }
 
         /// <summary>
         /// Gets or sets the labelText of the label.

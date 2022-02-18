@@ -4,8 +4,12 @@
 
 namespace Velaptor.NativeInterop.GLFW
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Holds GLFW related error information.
@@ -19,6 +23,7 @@ namespace Velaptor.NativeInterop.GLFW
         /// <param name="errorMessage">The error message.</param>
         public GLFWErrorEventArgs(GLFWErrorCode errorCode, string errorMessage)
         {
+            EnsureThat.StringParamIsNotNullOrEmpty(errorMessage);
             ErrorCode = errorCode;
             ErrorMessage = errorMessage;
         }

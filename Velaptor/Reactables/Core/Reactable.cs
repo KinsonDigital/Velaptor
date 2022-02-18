@@ -4,9 +4,13 @@
 
 namespace Velaptor.Reactables.Core
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Defines a provider for push-based notifications.
@@ -25,6 +29,8 @@ namespace Velaptor.Reactables.Core
         /// <inheritdoc/>
         public virtual IDisposable Subscribe(IReactor<TData> reactor)
         {
+            EnsureThat.ParamIsNotNull(reactor);
+
             if (!this.reactors.Contains(reactor))
             {
                 this.reactors.Add(reactor);

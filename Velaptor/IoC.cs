@@ -96,12 +96,13 @@ namespace Velaptor
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IOpenGLService, OpenGLService>(Lifestyle.Singleton);
 
-            IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
+            IoCContainer.Register<GLFWMonitors>(Lifestyle.Singleton);
 
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
 
             IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IMonitors, GLFWMonitors>(Lifestyle.Singleton);
         }
 
         /// <summary>

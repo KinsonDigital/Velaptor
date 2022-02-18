@@ -12,6 +12,7 @@ namespace Velaptor.Content
     using System.Linq;
     using Velaptor.Content.Caching;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -42,6 +43,8 @@ namespace Velaptor.Content
             string dirPath,
             string atlasName)
         {
+            EnsureThat.StringParamIsNotNullOrEmpty(dirPath);
+
             // Throw exception if the path is not a directory path
             if (string.IsNullOrEmpty(dirPath))
             {

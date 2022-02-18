@@ -81,6 +81,28 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
+        public void Ctor_WithNullGLFWInvokerParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new GLWindow(
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
+                    this.mockGL.Object,
+                    null,
+                    this.mockMonitorService.Object,
+                    this.mockWindowFacade.Object,
+                    this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockContentLoader.Object,
+                    this.mockSpriteBatch.Object,
+                    this.mockGLInitReactable.Object,
+                    this.mockShutDownReactable.Object);
+            }, "The parameter must not be null. (Parameter 'glfwInvoker')");
+        }
+
+        [Fact]
         public void Ctor_WithNullSystemMonitorServiceParam_ThrowsException()
         {
             // Act & Assert

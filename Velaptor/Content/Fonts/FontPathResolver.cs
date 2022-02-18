@@ -4,9 +4,13 @@
 
 namespace Velaptor.Content.Fonts
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.IO.Abstractions;
     using System.Runtime.InteropServices;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Resolves paths to font content to be used for rendering text.
@@ -50,6 +54,12 @@ namespace Velaptor.Content.Fonts
             IDirectory directory,
             IPlatform platform)
         {
+            EnsureThat.ParamIsNotNull(contentFontPathResolver);
+            EnsureThat.ParamIsNotNull(windowsFontPathResolver);
+            EnsureThat.ParamIsNotNull(file);
+            EnsureThat.ParamIsNotNull(directory);
+            EnsureThat.ParamIsNotNull(platform);
+
             this.contentFontPathResolver = contentFontPathResolver;
             this.windowsFontPathResolver = windowsFontPathResolver;
             this.file = file;

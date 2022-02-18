@@ -14,6 +14,7 @@ namespace Velaptor.Content.Caching
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
@@ -28,10 +29,10 @@ namespace Velaptor.Content.Caching
         private const string DefaultTag = "[DEFAULT]";
         private const string TextureFileExtension = ".png";
         private const string FontFileExtension = ".ttf";
-        private static readonly string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
-        private static readonly string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
-        private static readonly string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
-        private static readonly string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
+        private const string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
+        private const string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
+        private const string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
+        private const string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IImageService imageService;
         private readonly ITextureFactory textureFactory;
@@ -66,22 +67,21 @@ namespace Velaptor.Content.Caching
             IReactable<ShutDownData> shutDownReactable,
             IReactable<DisposeTextureData> disposeTexturesReactable)
         {
-            this.imageService = imageService ?? throw new ArgumentNullException(nameof(imageService), "The parameter must not be null.");
-            this.textureFactory = textureFactory ?? throw new ArgumentNullException(nameof(textureFactory), "The parameter must not be null.");
-            this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
-            this.fontMetaDataParser = fontMetaDataParser ?? throw new ArgumentNullException(nameof(fontMetaDataParser), "The parameter must not be null.");
-            this.path = path ?? throw new ArgumentNullException(nameof(path), "The parameter must not be null.");
+            EnsureThat.ParamIsNotNull(imageService);
+            EnsureThat.ParamIsNotNull(textureFactory);
+            EnsureThat.ParamIsNotNull(fontAtlasService);
+            EnsureThat.ParamIsNotNull(fontMetaDataParser);
+            EnsureThat.ParamIsNotNull(path);
+            EnsureThat.ParamIsNotNull(shutDownReactable);
+            EnsureThat.ParamIsNotNull(disposeTexturesReactable);
 
-            if (shutDownReactable is null)
-            {
-                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
-            }
-
+            this.imageService = imageService;
+            this.textureFactory = textureFactory;
+            this.fontAtlasService = fontAtlasService;
+            this.fontMetaDataParser = fontMetaDataParser;
+            this.path = path;
             this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
-
-            this.disposeTexturesReactable =
-                disposeTexturesReactable ??
-                throw new ArgumentNullException(nameof(disposeTexturesReactable), "The parameter must not be null.");
+            this.disposeTexturesReactable = disposeTexturesReactable;
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Velaptor.Content.Caching
         {
             if (string.IsNullOrEmpty(textureFilePath))
             {
-                throw new ArgumentNullException(nameof(textureFilePath), "The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(textureFilePath), "The string parameter must not be null or empty.");
             }
 
             var parseResult = this.fontMetaDataParser.Parse(textureFilePath);

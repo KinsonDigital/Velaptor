@@ -179,7 +179,7 @@ namespace VelaptorTests.Content.Caching
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 cache.GetItem(filePath);
-            }, "The parameter must not be null or empty. (Parameter 'soundFilePath')");
+            }, "The string parameter must not be null or empty. (Parameter 'soundFilePath')");
         }
 
         [Fact]

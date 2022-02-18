@@ -4,10 +4,14 @@
 
 namespace Velaptor.NativeInterop.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Drawing;
     using System.Numerics;
+    using Velaptor.Guards;
     using Velaptor.OpenGL;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Provides OpenGL helper methods to improve OpenGL related operations.
@@ -20,7 +24,11 @@ namespace Velaptor.NativeInterop.OpenGL
         /// Initializes a new instance of the <see cref="OpenGLService"/> class.
         /// </summary>
         /// <param name="glInvoker">Invokes OpenGL functions.</param>
-        public OpenGLService(IGLInvoker glInvoker) => this.glInvoker = glInvoker;
+        public OpenGLService(IGLInvoker glInvoker)
+        {
+            EnsureThat.ParamIsNotNull(glInvoker);
+            this.glInvoker = glInvoker;
+        }
 
         /// <inheritdoc/>
         public bool IsVBOBound { get; private set; }

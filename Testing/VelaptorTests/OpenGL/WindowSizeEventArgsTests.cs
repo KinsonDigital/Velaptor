@@ -12,8 +12,9 @@ namespace VelaptorTests.OpenGL
     /// </summary>
     public class WindowSizeEventArgsTests
     {
+        #region Constructor Tests
         [Fact]
-        public void Ctor_WhenInvoked_ConstructsNewInstance()
+        public void Ctor_WhenInvoked_SetsProperties()
         {
             // Arrange
             var eventArgs = new WindowSizeEventArgs(123, 456);
@@ -26,5 +27,6 @@ namespace VelaptorTests.OpenGL
             Assert.Equal(123, actualWidth);
             Assert.Equal(456, actualHeight);
         }
+        #endregion
     }
 }

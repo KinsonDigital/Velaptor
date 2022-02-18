@@ -67,7 +67,7 @@ namespace Velaptor.OpenGL.Services
         ///     </item>
         /// </list>
         /// </returns>
-        private (bool invalid, string reason) IsVariableNameInvalid(string varName)
+        private static (bool invalid, string reason) IsVariableNameInvalid(string varName)
         {
             var startsWithUnderscore = varName.StartsWith('_');
             if (startsWithUnderscore)

@@ -7,6 +7,7 @@ namespace Velaptor.OpenGL.Buffers
     // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
@@ -43,21 +44,15 @@ namespace Velaptor.OpenGL.Buffers
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
+            EnsureThat.ParamIsNotNull(gl);
+            EnsureThat.ParamIsNotNull(openGLService);
+            EnsureThat.ParamIsNotNull(glInitReactable);
+            EnsureThat.ParamIsNotNull(shutDownReactable);
+
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
 
-            if (glInitReactable is null)
-            {
-                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
-            }
-
             this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
-
-            if (shutDownReactable is null)
-            {
-                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
-            }
-
             this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
 
             ProcessCustomAttributes();

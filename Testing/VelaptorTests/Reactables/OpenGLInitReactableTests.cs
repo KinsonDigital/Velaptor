@@ -1,4 +1,4 @@
-﻿// <copyright file="RemoveBatchItemReactorTests.cs" company="KinsonDigital">
+﻿// <copyright file="OpenGLInitReactableTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,9 +11,9 @@ namespace VelaptorTests.Reactables
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="RemoveBatchItemReactable"/> class.
+    /// Tests the <see cref="OpenGLInitReactable"/> class.
     /// </summary>
-    public class RemoveBatchItemReactorTests
+    public class OpenGLInitReactableTests
     {
         #region Method Tests
         [Theory]
@@ -22,18 +22,16 @@ namespace VelaptorTests.Reactables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<RemoveBatchItemData>>();
+            var reactor = new Mock<IReactor<GLInitData>>();
 
-            var reactable = new RemoveBatchItemReactable();
+            var reactable = new OpenGLInitReactable();
             reactable.Subscribe(reactor.Object);
 
             // Act
-            var data = new RemoveBatchItemData(123u);
-            reactable.PushNotification(data, unsubscribe);
+            reactable.PushNotification(default, unsubscribe);
 
             // Assert
-            reactor.Verify(m => m.OnNext(data), Times.Once());
-
+            reactor.Verify(m => m.OnNext(default), Times.Once());
             Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion

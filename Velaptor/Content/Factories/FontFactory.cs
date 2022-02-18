@@ -5,12 +5,12 @@
 namespace Velaptor.Content.Factories
 {
     // ReSharper disable RedundantNameQualifier
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Content.Caching;
     using Velaptor.Content.Fonts;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -21,7 +21,6 @@ namespace Velaptor.Content.Factories
     [ExcludeFromCodeCoverage]
     internal class FontFactory : IFontFactory
     {
-        private const string NullCtorParamMessage = "The parameter must not be null.";
         private readonly IFontService fontService;
         private readonly IFontStatsService fontStatsService;
         private readonly IFontAtlasService fontAtlasService;
@@ -40,10 +39,15 @@ namespace Velaptor.Content.Factories
             IFontAtlasService fontAtlasService,
             IItemCache<string, ITexture> textureCache)
         {
-            this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), NullCtorParamMessage);
-            this.textureCache = textureCache ?? throw new ArgumentNullException(nameof(textureCache), NullCtorParamMessage);
-            this.fontService = fontService ?? throw new ArgumentNullException(nameof(fontService), NullCtorParamMessage);
-            this.fontStatsService = fontStatsService ?? throw new ArgumentNullException(nameof(fontStatsService), NullCtorParamMessage);
+            EnsureThat.ParamIsNotNull(fontAtlasService);
+            EnsureThat.ParamIsNotNull(textureCache);
+            EnsureThat.ParamIsNotNull(fontService);
+            EnsureThat.ParamIsNotNull(fontStatsService);
+
+            this.fontAtlasService = fontAtlasService;
+            this.textureCache = textureCache;
+            this.fontService = fontService;
+            this.fontStatsService = fontStatsService;
         }
 
         /// <inheritdoc/>

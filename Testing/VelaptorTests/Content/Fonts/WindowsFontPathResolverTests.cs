@@ -23,6 +23,18 @@ namespace VelaptorTests.Content.Fonts
         /// </summary>
         public WindowsFontPathResolverTests() => this.mockDirectory = new Mock<IDirectory>();
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullDirectoryParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new WindowsFontPathResolver(null);
+            }, "The parameter must not be null. (Parameter 'directory')");
+        }
+        #endregion
+
         #region Prop tests
         [Fact]
         public void RootDirectoryPath_WhenGettingDefaultValue_ReturnsCorrectResult()
@@ -64,7 +76,7 @@ namespace VelaptorTests.Content.Fonts
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 resolver.ResolveFilePath(contentName);
-            }, "The parameter must not be null or empty. (Parameter 'contentName')");
+            }, "The string parameter must not be null or empty. (Parameter 'contentName')");
         }
 
         [Fact]

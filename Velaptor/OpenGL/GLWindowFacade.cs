@@ -11,6 +11,7 @@ namespace Velaptor.OpenGL
     using Silk.NET.Input;
     using Silk.NET.Maths;
     using Silk.NET.Windowing;
+    using Velaptor.Guards;
     using Velaptor.Input;
     using Velaptor.Input.Exceptions;
     using Velaptor.Reactables.Core;
@@ -51,11 +52,15 @@ namespace Velaptor.OpenGL
             IMouseInput<VelaptorMouseButton,
             MouseState> mouseInput)
         {
-            // TODO: Null check all of these params
-            this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
+            EnsureThat.ParamIsNotNull(glReactable);
+            EnsureThat.ParamIsNotNull(keyboardInput);
+            EnsureThat.ParamIsNotNull(mouseInput);
+
             this.glContextReactable = glReactable;
             this.keyboardInput = keyboardInput;
             this.mouseInput = mouseInput;
+
+            this.nullWindowExceptionMsg = $"The OpenGL context has not been created yet.  Invoke the '{nameof(IGameWindowFacade.PreInit)}()' method first.";
         }
 
         /// <inheritdoc/>

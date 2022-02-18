@@ -118,6 +118,64 @@ namespace VelaptorTests.Services
             this.mockFile.Setup(m => m.Exists(FontFilePath)).Returns(true);
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullFontServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontAtlasService(
+                    null,
+                    this.mockImageService.Object,
+                    this.mockMonitorService.Object,
+                    this.mockFile.Object);
+            }, "The parameter must not be null. (Parameter 'fontService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullImageServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontAtlasService(
+                    this.mockFontService.Object,
+                    null,
+                    this.mockMonitorService.Object,
+                    this.mockFile.Object);
+            }, "The parameter must not be null. (Parameter 'imageService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullSystemMonitorServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontAtlasService(
+                    this.mockFontService.Object,
+                    this.mockImageService.Object,
+                    null,
+                    this.mockFile.Object);
+            }, "The parameter must not be null. (Parameter 'systemMonitorService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFileParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontAtlasService(
+                    this.mockFontService.Object,
+                    this.mockImageService.Object,
+                    this.mockMonitorService.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'file')");
+        }
+        #endregion
+
         #region Method Tests
         [Theory]
         [InlineData("")]

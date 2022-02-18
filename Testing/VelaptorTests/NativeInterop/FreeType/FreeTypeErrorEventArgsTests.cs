@@ -4,7 +4,9 @@
 
 namespace VelaptorTests.NativeInterop.FreeType
 {
+    using System;
     using Velaptor.NativeInterop.FreeType;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -13,6 +15,18 @@ namespace VelaptorTests.NativeInterop.FreeType
     public class FreeTypeErrorEventArgsTests
     {
         #region Constructor Tests
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Ctor_WithNullErrorMessageParam_ThrowsException(string message)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FreeTypeErrorEventArgs(message);
+            }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
+        }
+
         [Fact]
         public void Ctor_WhenInvoked_SetsErrorMessageProperty()
         {

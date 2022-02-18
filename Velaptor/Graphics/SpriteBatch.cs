@@ -14,6 +14,7 @@ namespace Velaptor.Graphics
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.Buffers;
@@ -85,15 +86,23 @@ namespace Velaptor.Graphics
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
-            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), $"The parameter must not be null.");
+            EnsureThat.ParamIsNotNull(gl);
+            EnsureThat.ParamIsNotNull(openGLService);
+            EnsureThat.ParamIsNotNull(textureShader);
+            EnsureThat.ParamIsNotNull(fontShader);
+            EnsureThat.ParamIsNotNull(rectShader);
+            EnsureThat.ParamIsNotNull(textureBuffer);
+            EnsureThat.ParamIsNotNull(fontBuffer);
+            EnsureThat.ParamIsNotNull(rectBuffer);
 
-            this.openGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
-            this.textureShader = textureShader ?? throw new ArgumentNullException(nameof(textureShader), "The parameter must not be null.");
-            this.fontShader = fontShader ?? throw new ArgumentNullException(nameof(fontShader), "The parameter must not be null.");
-            this.rectShader = rectShader ?? throw new ArgumentNullException(nameof(rectShader), "The parameter must not be null.");
-            this.textureBuffer = textureBuffer ?? throw new ArgumentNullException(nameof(textureBuffer), "The parameter must not be null.");
-            this.fontBuffer = fontBuffer ?? throw new ArgumentNullException(nameof(fontBuffer), "The parameter must not be null.");
-            this.rectBuffer = rectBuffer ?? throw new ArgumentNullException(nameof(rectBuffer), "The parameter must not be null.");
+            this.gl = gl;
+            this.openGLService = openGLService;
+            this.textureShader = textureShader;
+            this.fontShader = fontShader;
+            this.rectShader = rectShader;
+            this.textureBuffer = textureBuffer;
+            this.fontBuffer = fontBuffer;
+            this.rectBuffer = rectBuffer;
 
             this.textureBatchService = textureBatchService ?? throw new ArgumentNullException(nameof(textureBatchService), "The parameter must not be null.");
             this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;

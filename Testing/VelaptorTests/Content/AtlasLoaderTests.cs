@@ -174,7 +174,7 @@ namespace VelaptorTests.Content
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 loader.Load(value);
-            }, "The parameter must not be null or empty. (Parameter 'contentNameOrPath')");
+            }, "The string parameter must not be null or empty. (Parameter 'contentNameOrPath')");
         }
 
         [Fact]

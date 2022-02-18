@@ -16,11 +16,11 @@ namespace Velaptor.Services
     public interface IImageService
     {
         /// <summary>
-        /// Loads an image file at the given <paramref name="path"/>.
+        /// Loads an image file at the given <paramref name="filePath"/>.
         /// </summary>
-        /// <param name="path">The directory path to the file.</param>
+        /// <param name="filePath">The file path to the file.</param>
         /// <returns>The image data to return.</returns>
-        ImageData Load(string path);
+        ImageData Load(string filePath);
 
         /// <summary>
         /// Saves the given <paramref name="image"/> to the given <paramref name="path"/>.

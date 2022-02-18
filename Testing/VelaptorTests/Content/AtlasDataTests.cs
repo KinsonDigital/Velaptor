@@ -122,7 +122,7 @@ namespace VelaptorTests.Content
                     Array.Empty<AtlasSubTextureData>(),
                     dirPath,
                     "atlas-name");
-            }, "The parameters must not be null or empty. (Parameter 'dirPath')");
+            }, "The string parameter must not be null or empty. (Parameter 'dirPath')");
         }
 
         [Theory]

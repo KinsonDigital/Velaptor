@@ -1,4 +1,4 @@
-// <copyright file="RectBatchingServiceTests.cs" company="KinsonDigital">
+// <copyright file="RectBatchServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,7 +18,7 @@ namespace VelaptorTests.Services
     /// <summary>
     /// Tests the <see cref="RectBatchService"/> class.
     /// </summary>
-    public class RectBatchingServiceTests
+    public class RectBatchServiceTests
     {
         #region Prop Tests
         [Fact]

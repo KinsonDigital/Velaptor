@@ -4,10 +4,14 @@
 
 namespace Velaptor.Content.Fonts
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Resolves paths to Windows system fonts.
@@ -21,7 +25,11 @@ namespace Velaptor.Content.Fonts
         /// Initializes a new instance of the <see cref="WindowsFontPathResolver"/> class.
         /// </summary>
         /// <param name="directory">Processes directories.</param>
-        public WindowsFontPathResolver(IDirectory directory) => this.directory = directory;
+        public WindowsFontPathResolver(IDirectory directory)
+        {
+            EnsureThat.ParamIsNotNull(directory);
+            this.directory = directory;
+        }
 
         /// <inheritdoc/>
         public string RootDirectoryPath => @"C:\Windows\";
@@ -34,7 +42,7 @@ namespace Velaptor.Content.Fonts
         {
             if (string.IsNullOrEmpty(contentName))
             {
-                throw new ArgumentNullException(nameof(contentName), $"The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(contentName), $"The string parameter must not be null or empty.");
             }
 
             if (contentName.EndsWith(Path.DirectorySeparatorChar))

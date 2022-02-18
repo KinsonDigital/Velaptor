@@ -12,6 +12,7 @@ namespace VelaptorTests.NativeInterop.GLFW
     using Velaptor;
     using Velaptor.Hardware;
     using Velaptor.NativeInterop.GLFW;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -87,7 +88,27 @@ namespace VelaptorTests.NativeInterop.GLFW
                 .Returns(new Vector2(77, 88));
         }
 
-        #region Constructor Tests
+        #region Constructor Test
+        [Fact]
+        public void Ctor_WithNullGLFWInvokerParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new GLFWMonitors(null, this.mockPlatform.Object);
+            }, "The parameter must not be null. (Parameter 'glfwInvoker')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPlatformParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new GLFWMonitors(this.mockGLFWInvoker.Object, null);
+            }, "The parameter must not be null. (Parameter 'platform')");
+        }
+
         [Fact]
         public void Ctor_WhenInvoked_InitializesGLFW()
         {

@@ -15,14 +15,16 @@ namespace VelaptorTests.OpenGL
     public class GLErrorEventArgsTests
     {
         #region Constructor Tests
-        [Fact]
-        public void Ctor_WithNullErrorMessage_ThrowsException()
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Ctor_WithNullErrorMessage_ThrowsException(string value)
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new GLErrorEventArgs(null);
-            }, "The parameter must not be null or empty. (Parameter 'errorMessage')");
+                _ = new GLErrorEventArgs(value);
+            }, "The string parameter must not be null or empty. (Parameter 'errorMessage')");
         }
 
         [Fact]

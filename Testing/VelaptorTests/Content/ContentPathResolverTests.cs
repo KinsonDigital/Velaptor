@@ -120,7 +120,7 @@ namespace VelaptorTests.Content
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 resolver.ResolveFilePath(null);
-            }, "The parameter must not be null or empty. (Parameter 'contentName')");
+            }, "The string parameter must not be null or empty. (Parameter 'contentName')");
         }
 
         [Fact]
