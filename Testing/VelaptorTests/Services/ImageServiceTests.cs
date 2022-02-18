@@ -339,20 +339,12 @@ namespace VelaptorTests.Services
 
             for (var y = 0; y < image.Height; y++)
             {
-                var row = y;
-                image.ProcessPixelRows(accessor =>
-                {
-                    var pixelRowSpan = accessor.GetRowSpan(row);
+                var pixelRowSpan = image.GetPixelRowSpan(y);
 
-                    for (var x = 0; x < image.Width; x++)
-                    {
-                        result[x, row] = NETColor.FromArgb(
-                            pixelRowSpan[x].A,
-                            pixelRowSpan[x].R,
-                            pixelRowSpan[x].G,
-                            pixelRowSpan[x].B);
-                    }
-                });
+                for (var x = 0; x < image.Width; x++)
+                {
+                    result[x, y] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
+                }
             }
 
             return result;
@@ -370,20 +362,16 @@ namespace VelaptorTests.Services
 
             for (var y = 0; y < image.Height; y++)
             {
-                var row = y;
-                image.ProcessPixelRows(accessor =>
-                {
-                    var pixelRowSpan = accessor.GetRowSpan(row);
+                var pixelRowSpan = image.GetPixelRowSpan(y);
 
-                    for (var x = 0; x < image.Width; x++)
-                    {
-                        pixelData[x, row] = NETColor.FromArgb(
-                            pixelRowSpan[x].A,
-                            pixelRowSpan[x].R,
-                            pixelRowSpan[x].G,
-                            pixelRowSpan[x].B);
-                    }
-                });
+                for (var x = 0; x < image.Width; x++)
+                {
+                    pixelData[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
             }
 
             return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);

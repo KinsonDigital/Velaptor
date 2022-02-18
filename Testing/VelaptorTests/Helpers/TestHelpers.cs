@@ -63,16 +63,12 @@ namespace VelaptorTests.Helpers
 
             for (var y = 0; y < image.Height; y++)
             {
-                var row = y;
-                image.ProcessPixelRows(accessor =>
-                {
-                    var pixelRowSpan = accessor.GetRowSpan(row);
+                var pixelRowSpan = image.GetPixelRowSpan(y);
 
-                    for (var x = 0; x < image.Width; x++)
-                    {
-                        result[x, row] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
-                    }
-                });
+                for (var x = 0; x < image.Width; x++)
+                {
+                    result[x, y] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
+                }
             }
 
             return result;
@@ -233,20 +229,16 @@ namespace VelaptorTests.Helpers
 
             for (var y = 0; y < result.Height; y++)
             {
-                var row = y;
-                result.ProcessPixelRows(accessor =>
-                {
-                    var pixelRowSpan = accessor.GetRowSpan(row);
+                var pixelRowSpan = result.GetPixelRowSpan(y);
 
-                    for (var x = 0; x < result.Width; x++)
-                    {
-                        pixelRowSpan[x] = new Rgba32(
-                            image.Pixels[x, row].R,
-                            image.Pixels[x, row].G,
-                            image.Pixels[x, row].B,
-                            image.Pixels[x, row].A);
-                    }
-                });
+                for (var x = 0; x < result.Width; x++)
+                {
+                    pixelRowSpan[x] = new Rgba32(
+                        image.Pixels[x, y].R,
+                        image.Pixels[x, y].G,
+                        image.Pixels[x, y].B,
+                        image.Pixels[x, y].A);
+                }
             }
 
             return result;
@@ -264,20 +256,16 @@ namespace VelaptorTests.Helpers
 
             for (var y = 0; y < image.Height; y++)
             {
-                var row = y;
-                image.ProcessPixelRows(accessor =>
-                {
-                    var pixelRowSpan = accessor.GetRowSpan(row);
+                var pixelRowSpan = image.GetPixelRowSpan(y);
 
-                    for (var x = 0; x < image.Width; x++)
-                    {
-                        pixelData[x, row] = NETColor.FromArgb(
-                            pixelRowSpan[x].A,
-                            pixelRowSpan[x].R,
-                            pixelRowSpan[x].G,
-                            pixelRowSpan[x].B);
-                    }
-                });
+                for (var x = 0; x < image.Width; x++)
+                {
+                    pixelData[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
             }
 
             return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);

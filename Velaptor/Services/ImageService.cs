@@ -49,15 +49,12 @@ namespace Velaptor.Services
 
             for (var y = 0; y < rgba32Image.Height; y++)
             {
-                var row = y;
-                rgba32Image.ProcessPixelRows(accessor =>
+                var pixelRowSpan = rgba32Image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < rgba32Image.Width; x++)
                 {
-                    var pixelRowSpan = accessor.GetRowSpan(row);
-                    for (var x = 0; x < rgba32Image.Width; x++)
-                    {
-                        imageData.Pixels[x, row] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
-                    }
-                });
+                    imageData.Pixels[x, y] = NETColor.FromArgb(pixelRowSpan[x].A, pixelRowSpan[x].R, pixelRowSpan[x].G, pixelRowSpan[x].B);
+                }
             }
 
             return imageData;
