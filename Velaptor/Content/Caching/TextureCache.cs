@@ -29,10 +29,10 @@ namespace Velaptor.Content.Caching
         private const string DefaultTag = "[DEFAULT]";
         private const string TextureFileExtension = ".png";
         private const string FontFileExtension = ".ttf";
-        private static readonly string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
-        private static readonly string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
-        private static readonly string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
-        private static readonly string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
+        private const string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
+        private const string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
+        private const string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
+        private const string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
         private readonly ConcurrentDictionary<string, ITexture> textures = new ();
         private readonly IImageService imageService;
         private readonly ITextureFactory textureFactory;

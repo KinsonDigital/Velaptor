@@ -40,18 +40,37 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new TextureFactory(null, this.mockGLService.Object, this.mockDisposeTexturesReactable.Object);
+                _ = new TextureFactory(
+                    null,
+                    this.mockGLService.Object,
+                    this.mockDisposeTexturesReactable.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
         }
 
         [Fact]
-        public void Ctor_WithNullGLInvokerExtensions_ThrowsException()
+        public void Ctor_WithNullOpenGLService_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new TextureFactory(this.mockGL.Object, null, this.mockDisposeTexturesReactable.Object);
+                _ = new TextureFactory(
+                    this.mockGL.Object,
+                    null,
+                    this.mockDisposeTexturesReactable.Object);
             }, "The parameter must not be null. (Parameter 'openGLService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullDisposeTexturesReactableParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new TextureFactory(
+                    this.mockGL.Object,
+                    this.mockGLService.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'disposeTexturesReactable')");
         }
         #endregion
 

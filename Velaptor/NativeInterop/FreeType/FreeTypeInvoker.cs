@@ -7,6 +7,7 @@ namespace Velaptor.NativeInterop.FreeType
     // TODO: Throw an exception for every method that takes a zero pointer.  Create custom exception for this
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using FreeTypeSharp.Native;
 
     /// <summary>
@@ -27,7 +28,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// <inheritdoc/>
         public FT_Vector FT_Get_Kerning(IntPtr face, uint left_glyph, uint right_glyph, uint kern_mode)
         {
-            var error = FT.FT_Get_Kerning(face, left_glyph, right_glyph, kern_mode, out FT_Vector akerning);
+            var error = FT.FT_Get_Kerning(face, left_glyph, right_glyph, kern_mode, out var akerning);
 
             if (error == FT_Error.FT_Err_Ok)
             {
@@ -55,7 +56,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// <inheritdoc/>
         public IntPtr FT_Init_FreeType()
         {
-            var error = FT.FT_Init_FreeType(out IntPtr result);
+            var error = FT.FT_Init_FreeType(out var result);
 
             if (error != FT_Error.FT_Err_Ok)
             {
@@ -69,7 +70,7 @@ namespace Velaptor.NativeInterop.FreeType
         /// <inheritdoc/>
         public IntPtr FT_New_Face(IntPtr library, string filepathname, int face_index)
         {
-            var error = FT.FT_New_Face(library, filepathname, face_index, out IntPtr aface);
+            var error = FT.FT_New_Face(library, filepathname, face_index, out var aface);
 
             if (error != FT_Error.FT_Err_Ok)
             {
@@ -137,12 +138,7 @@ namespace Velaptor.NativeInterop.FreeType
 
             var sections = freeTypeMsg.Split('_');
 
-            foreach (var section in sections)
-            {
-                result += section;
-            }
-
-            return result;
+            return sections.Aggregate(result, (current, section) => current + section);
         }
     }
 }

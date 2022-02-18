@@ -9,6 +9,7 @@ namespace Velaptor.Content.Factories
     using System.Diagnostics.CodeAnalysis;
     using Velaptor;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
@@ -43,13 +44,13 @@ namespace Velaptor.Content.Factories
         /// <param name="disposeTexturesReactable">Sends push notifications to dispose of textures.</param>
         internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IReactable<DisposeTextureData> disposeTexturesReactable)
         {
-            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-            this.mockGLService =
-                openGLService ??
-                throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
-            this.disposeTexturesReactable =
-                disposeTexturesReactable ??
-                throw new ArgumentNullException(nameof(disposeTexturesReactable), "The parameter must not be null.");
+            EnsureThat.ParamIsNotNull(gl);
+            EnsureThat.ParamIsNotNull(openGLService);
+            EnsureThat.ParamIsNotNull(disposeTexturesReactable);
+
+            this.gl = gl;
+            this.mockGLService = openGLService;
+            this.disposeTexturesReactable = disposeTexturesReactable;
         }
 
         /// <inheritdoc/>

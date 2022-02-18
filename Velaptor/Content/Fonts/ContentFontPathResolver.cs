@@ -4,10 +4,14 @@
 
 namespace Velaptor.Content.Fonts
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Resolves paths to font content.
@@ -23,6 +27,7 @@ namespace Velaptor.Content.Fonts
         /// <param name="directory">Processes directories.</param>
         public ContentFontPathResolver(IDirectory directory)
         {
+            EnsureThat.ParamIsNotNull(directory);
             this.directory = directory;
             ContentDirectoryName = "Fonts";
         }

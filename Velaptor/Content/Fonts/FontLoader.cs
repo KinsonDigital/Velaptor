@@ -14,6 +14,7 @@ namespace Velaptor.Content.Fonts
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Factories;
     using Velaptor.Factories;
+    using Velaptor.Guards;
     using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
@@ -25,10 +26,10 @@ namespace Velaptor.Content.Fonts
     {
         private const string ExpectedMetaDataSyntax = "size:<font-size>";
         private const string FontFileExtension = ".ttf";
-        private static readonly string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
-        private static readonly string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
-        private static readonly string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
-        private static readonly string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
+        private const string DefaultRegularFontName = $"TimesNewRoman-Regular{FontFileExtension}";
+        private const string DefaultBoldFontName = $"TimesNewRoman-Bold{FontFileExtension}";
+        private const string DefaultItalicFontName = $"TimesNewRoman-Italic{FontFileExtension}";
+        private const string DefaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontFileExtension}";
         private readonly IFontAtlasService fontAtlasService;
         private readonly IEmbeddedResourceLoaderService<Stream?> embeddedFontResourceService;
         private readonly IPathResolver fontPathResolver;
@@ -94,6 +95,17 @@ namespace Velaptor.Content.Fonts
             IFileStreamFactory fileStream,
             IPath path)
         {
+            EnsureThat.ParamIsNotNull(fontAtlasService);
+            EnsureThat.ParamIsNotNull(embeddedFontResourceService);
+            EnsureThat.ParamIsNotNull(fontPathResolver);
+            EnsureThat.ParamIsNotNull(textureCache);
+            EnsureThat.ParamIsNotNull(fontFactory);
+            EnsureThat.ParamIsNotNull(fontMetaDataParser);
+            EnsureThat.ParamIsNotNull(directory);
+            EnsureThat.ParamIsNotNull(file);
+            EnsureThat.ParamIsNotNull(fileStream);
+            EnsureThat.ParamIsNotNull(path);
+
             this.fontAtlasService = fontAtlasService ?? throw new ArgumentNullException(nameof(fontAtlasService), "The parameter must not be null.");
             this.embeddedFontResourceService = embeddedFontResourceService ?? throw new ArgumentNullException(nameof(embeddedFontResourceService), "The parameter must not be null.");
             this.fontPathResolver = fontPathResolver ?? throw new ArgumentNullException(nameof(fontPathResolver), "The parameter must not be null.");
