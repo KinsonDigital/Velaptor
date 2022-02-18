@@ -108,6 +108,13 @@ I have manually tested my changes. (This can be done by using project named **_V
     - One issue per pull request.
 - [ ] My code follows the coding style of this project.
     - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and let's discuss it.
-- [ ] All tests passed locally.
-    - Status checks are put in place to run unit tests every single time a change is pushed to a pull request.  This does not mean that the tests pass in both the local and CI environment.
 - [ ] A ![preview-label](https://user-images.githubusercontent.com/85414302/150838564-33f6044b-55f9-4dd9-8783-1d739de9d92f.png) label has been added to the pull request.
+- [ ] All tests passed locally.
+    - This extra check is required because unit tests might pass locally but not in the CI environment during the status check process or vise-versa.  
+      Tests might pass on the developer's machine but not necessarily on the code reviewer's machine.
+    - Status checks are put in place for pull requests merging into the following branches.  These checks are run every single time a change is pushed to a pull request.  
+      These checks validate things such as version syntax, tagging, builds, unit tests and more.
+        - master
+        - develop
+        - release/v\*.\*.*
+        - v\*.\*.\*-preview.*

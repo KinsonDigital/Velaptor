@@ -99,7 +99,14 @@ I have manually tested my changes. (This can be done by using project named **_V
 - [ ] My code follows the coding style of this project.
     - This is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with coding style that should be ignored or changed, reach out and let's discuss it.
 - [ ] All tests passed locally.
-    - Status checks are put in place to run unit tests every single time a change is pushed to a pull request.  This does not mean that the tests pass in both the local and CI environment.
+    - This extra check is required because unit tests might pass locally but not in the CI environment during the status check process or vise-versa.  
+      Tests might pass on the developer's machine but not necessarily on the code reviewer's machine.
+    - Status checks are put in place for pull requests merging into the following branches.  These checks are run every single time a change is pushed to a pull request.  
+    These checks validate things such as version syntax, tagging, builds, unit tests and more. 
+        - master
+        - develop
+        - release/v\*.\*.*
+        - v\*.\*.\*-preview.*
 - [ ] Update library version by updating the **_\<Version/\>_** and **_\<FileVersion/\>_** tags in the **_Velaptor_** **_.csproj_** file.
     - Every change to a pull request will run a status check to confirm that the version has the correct syntax, a tag does not exist, and that it has not already been published to [nuget](https://www.nuget.org/)
     - Make sure to add the **_-preview.\<number\>_** syntax to the end of the version.
