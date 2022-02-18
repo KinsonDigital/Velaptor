@@ -337,28 +337,24 @@ namespace Velaptor
         /// </summary>
         /// <param name="image">The image data to convert.</param>
         /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        public static Image<Rgba32> ToSixLaborImage(this ImageData image)
+        public static Image<Rgba32> ToSixLaborImage(in this ImageData image)
         {
             var result = new Image<Rgba32>((int)image.Width, (int)image.Height);
 
             for (var y = 0; y < result.Height; y++)
             {
-                var row = y;
-                result.ProcessPixelRows(accessor =>
+                var pixelRowSpan = result.GetPixelRowSpan(y);
+
+                for (var x = 0; x < result.Width; x++)
                 {
-                    var pixelRowSpan = accessor.GetRowSpan(row);
+                    var pixel = image.Pixels[x, y];
 
-                    for (var x = 0; x < result.Width; x++)
-                    {
-                        var pixel = image.Pixels[x, row];
-
-                        pixelRowSpan[x] = new Rgba32(
-                            pixel.R,
-                            pixel.G,
-                            pixel.B,
-                            pixel.A);
-                    }
-                });
+                    pixelRowSpan[x] = new Rgba32(
+                        pixel.R,
+                        pixel.G,
+                        pixel.B,
+                        pixel.A);
+                }
             }
 
             return result;
@@ -376,20 +372,16 @@ namespace Velaptor
 
             for (var y = 0; y < image.Height; y++)
             {
-                var row = y;
-                image.ProcessPixelRows(accessor =>
-                {
-                    var pixelRowSpan = accessor.GetRowSpan(row);
+                var pixelRowSpan = image.GetPixelRowSpan(y);
 
-                    for (var x = 0; x < image.Width; x++)
-                    {
-                        pixelData[x, row] = NETColor.FromArgb(
-                            pixelRowSpan[x].A,
-                            pixelRowSpan[x].R,
-                            pixelRowSpan[x].G,
-                            pixelRowSpan[x].B);
-                    }
-                });
+                for (var x = 0; x < image.Width; x++)
+                {
+                    pixelData[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
             }
 
             return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);

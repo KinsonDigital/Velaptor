@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Velaptor</RootNamespace>
     <AssemblyName>Velaptor</AssemblyName>
     <LangVersion>10.0</LangVersion>
@@ -86,7 +86,7 @@
     <PackageReference Include="NVorbis" Version="0.10.3" />
     <PackageReference Include="Silk.NET" Version="2.6.0" />
     <PackageReference Include="SimpleInjector" Version="5.3.2" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
