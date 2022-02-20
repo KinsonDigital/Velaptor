@@ -23,7 +23,7 @@ As with all software, including releases, there is always a chance for issues an
      - This can be applied to filled and empty rectangles
 2. Loading sounds cannot be cached to greatly improve sound loading performance.  
    GitHub Issues: [#131](https://github.com/KinsonDigital/Velaptor/issues/131)
-3. Loading sounds can now be loaded via a fully qualified file path.  This means you do not have to only load sounds from the content system!!.  
+3. Loading sounds can now be loaded via a fully qualified file path.  This means you do not have to only load sounds from the content system!!  
    GitHub Issues: [#128](https://github.com/KinsonDigital/Velaptor/issues/128)
 
 ---
@@ -39,11 +39,11 @@ As with all software, including releases, there is always a chance for issues an
 
 1. Upgraded all projects in the solution to use C# language **_v10_**  
    GitHub Issues: [#97](https://github.com/KinsonDigital/Velaptor/issues/97), [#184](https://github.com/KinsonDigital/Velaptor/issues/184)
-2. Upgraded all projects in the solution to use **_NET 6.0_**  
+2. Upgraded all projects in the solution to use **_.NET 6.0_**  
    GitHub Issues: [#97](https://github.com/KinsonDigital/Velaptor/issues/97), [#184](https://github.com/KinsonDigital/Velaptor/issues/184)
 1. Improved constructor argument null checks by implementing a guarding pattern.  
    GitHub Issues: [#153](https://github.com/KinsonDigital/Velaptor/issues/153)
-   - This resulted in null checks that were not being performed previously
+   - This resulted in null checks that were not being performed previously.
 
 ---
 
@@ -53,7 +53,7 @@ As with all software, including releases, there is always a chance for issues an
    GitHub Issues: [#150](https://github.com/KinsonDigital/Velaptor/issues/150), [#158](https://github.com/KinsonDigital/Velaptor/issues/158)
 2. Simple graphical fix with light and dark mode versions of the branching diagram.  
    GitHub Issues: [#159](https://github.com/KinsonDigital/Velaptor/issues/159)
-3. Added a **_BACKERS.md_** file to the root of the solution to hold a list of any backers that sponsor projects  
+3. Added a **_BACKERS.md_** file to the root of the solution to hold a list of any backers that sponsor projects.  
    GitHub Issues: [#162](https://github.com/KinsonDigital/Velaptor/issues/162)
 4. Made various improvements to all of the issue templates.  
    GitHub Issues: [#159](https://github.com/KinsonDigital/Velaptor/issues/159)
