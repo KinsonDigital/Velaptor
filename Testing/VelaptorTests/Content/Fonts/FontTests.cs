@@ -74,6 +74,128 @@ namespace VelaptorTests.Content.Fonts
 
         #region Constructor Tests
         [Fact]
+        public void Ctor_WithNullTextureParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new Font(
+                    null,
+                    this.mockFontService.Object,
+                    this.mockFontStatsService.Object,
+                    this.mockFontAtlasService.Object,
+                    this.mockTextureCache.Object,
+                    FontName,
+                    this.fontFilePath,
+                    12u,
+                    true,
+                    this.glyphMetrics.Values.ToArray());
+            }, "The parameter must not be null. (Parameter 'texture')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFontServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new Font(
+                    this.mockTexture.Object,
+                    null,
+                    this.mockFontStatsService.Object,
+                    this.mockFontAtlasService.Object,
+                    this.mockTextureCache.Object,
+                    FontName,
+                    this.fontFilePath,
+                    12u,
+                    true,
+                    this.glyphMetrics.Values.ToArray());
+            }, "The parameter must not be null. (Parameter 'fontService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFontStatsServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new Font(
+                    this.mockTexture.Object,
+                    this.mockFontService.Object,
+                    null,
+                    this.mockFontAtlasService.Object,
+                    this.mockTextureCache.Object,
+                    FontName,
+                    this.fontFilePath,
+                    12u,
+                    true,
+                    this.glyphMetrics.Values.ToArray());
+            }, "The parameter must not be null. (Parameter 'fontStatsService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFontAtlasServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new Font(
+                    this.mockTexture.Object,
+                    this.mockFontService.Object,
+                    this.mockFontStatsService.Object,
+                    null,
+                    this.mockTextureCache.Object,
+                    FontName,
+                    this.fontFilePath,
+                    12u,
+                    true,
+                    this.glyphMetrics.Values.ToArray());
+            }, "The parameter must not be null. (Parameter 'fontAtlasService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullTextureCacheParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new Font(
+                    this.mockTexture.Object,
+                    this.mockFontService.Object,
+                    this.mockFontStatsService.Object,
+                    this.mockFontAtlasService.Object,
+                    null,
+                    FontName,
+                    this.fontFilePath,
+                    12u,
+                    true,
+                    this.glyphMetrics.Values.ToArray());
+            }, "The parameter must not be null. (Parameter 'textureCache')");
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Ctor_WithNullNameParam_ThrowsException(string name)
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new Font(
+                    this.mockTexture.Object,
+                    this.mockFontService.Object,
+                    this.mockFontStatsService.Object,
+                    this.mockFontAtlasService.Object,
+                    this.mockTextureCache.Object,
+                    name,
+                    this.fontFilePath,
+                    12u,
+                    true,
+                    this.glyphMetrics.Values.ToArray());
+            }, "The string parameter must not be null or empty. (Parameter 'name')");
+        }
+
+        [Fact]
         public void Ctor_WhenInvoked_SetsPropertyValues()
         {
             // Arrange

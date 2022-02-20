@@ -64,6 +64,12 @@ namespace Velaptor.Graphics
         void EndBatch();
 
         /// <summary>
+        /// Updates the view port size.
+        /// </summary>
+        /// <param name="size">The size to set the view port to.</param>
+        void OnResize(SizeU size);
+
+        /// <summary>
         /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
         /// </summary>
         /// <param name="texture">The texture to render.</param>
@@ -285,5 +291,14 @@ namespace Velaptor.Graphics
         /// </para>
         /// </remarks>
         void Render(IFont font, string text, int x, int y, float size, float angle, Color color);
+
+        /// <summary>
+        /// Renders the given <paramref name="rectangle"/>.
+        /// </summary>
+        /// <param name="rectangle">The rectangle to render.</param>
+        /// <remarks>
+        ///     The <see cref="RectShape.Position"/> is the center of the rectangle.
+        /// </remarks>
+        void Render(RectShape rectangle);
     }
 }

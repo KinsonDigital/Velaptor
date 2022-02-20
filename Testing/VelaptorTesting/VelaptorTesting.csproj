@@ -47,6 +47,12 @@
     <None Update="Content\Graphics\button-next-prev-scene.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Sounds\test-song.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Graphics\button-face-extra-extra-large.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />

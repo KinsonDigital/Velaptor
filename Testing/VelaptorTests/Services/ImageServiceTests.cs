@@ -7,7 +7,9 @@ namespace VelaptorTests.Services
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Reflection;
+    using Moq;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
@@ -28,6 +30,7 @@ namespace VelaptorTests.Services
         private const string TestImageFileName = "TestCompareImage.png";
         private readonly string basePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
         private readonly string testAssetFilePath;
+        private readonly Mock<IFile> mockFile;
         private Image<Rgba32> testCompareImage;
 
         /// <summary>
@@ -41,14 +44,43 @@ namespace VelaptorTests.Services
 
             this.testCompareImage = Image.Load<Rgba32>(this.testAssetFilePath);
             this.testCompareImage.Mutate(context => context.Flip(FlipMode.Vertical));
+            this.mockFile = new Mock<IFile>();
+            this.mockFile.Setup(m => m.Exists(this.testAssetFilePath)).Returns(true);
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullFileParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new ImageService(null);
+            }, "The parameter must not be null. (Parameter 'file')");
+        }
+        #endregion
+
         #region Method Tests
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Load_WithNullOrEmptyParam_ThrowsException(string value)
+        {
+            // Arrange
+            var service = CreateService();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
+            {
+                service.Load(value);
+            }, "The image file was not found.");
+        }
+
         [Fact]
         public void Load_WhenInvoked_ProperlyLoadsImage()
         {
             // Arrange
-            var service = new ImageService();
+            var service = CreateService();
             var expected = TestHelpers.ToPixelColors(this.testCompareImage);
 
             // Act
@@ -62,8 +94,8 @@ namespace VelaptorTests.Services
         public void Save_WhenInvoked_CorrectlySavesImage()
         {
             // Arrange
-            var width = 8u;
-            var height = 8u;
+            const uint width = 8u;
+            const uint height = 8u;
             var expectedPixelData = new NETColor[width, height];
 
             // Fill the pixel data with 3 rows of pixels
@@ -96,7 +128,7 @@ namespace VelaptorTests.Services
 
             var imageData = new ImageData(expectedPixelData, width, height);
 
-            var service = new ImageService();
+            var service = CreateService();
             var saveResultImageFilePath = $"{TestHelpers.GetTestResultDirPath()}{nameof(Save_WhenInvoked_CorrectlySavesImage)}.png";
 
             // Act
@@ -111,8 +143,8 @@ namespace VelaptorTests.Services
         public void FlipVertically_WhenInvoked_FlipsImageVertically()
         {
             // Arrange
-            var service = new ImageService();
-            var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
+            var service = CreateService();
+            var comparisonSample = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
 
             // Act
             var flippedImage = service.FlipVertically(comparisonSample);
@@ -157,8 +189,8 @@ namespace VelaptorTests.Services
         public void FlipHorizontally_WhenInvoked_FlipsImageVertically()
         {
             // Arrange
-            var service = new ImageService();
-            var comparisonSample = Image.Load<Rgba32>(this.testAssetFilePath).ToImageData();
+            var service = CreateService();
+            var comparisonSample = ToImageData(Image.Load<Rgba32>(this.testAssetFilePath));
 
             // Act
             var flippedImage = service.FlipHorizontally(comparisonSample);
@@ -215,7 +247,7 @@ namespace VelaptorTests.Services
             var destImage = TestHelpers.CreateImageData(NETColor.FromArgb(255, 255, 255, 255), 8, 8);
             TestHelpers.SaveImageForTest(destImage, $"{nameof(Draw_WhenInvoked_CorrectlyDrawsSrcImageOntoDestination)}-DestImage");
 
-            var service = new ImageService();
+            var service = CreateService();
 
             // Act
             var actual = service.Draw(srcImage, destImage, new NETPoint(3, 3));
@@ -294,7 +326,7 @@ namespace VelaptorTests.Services
         /// </summary>
         /// <returns>The pixel data from the test comparison image.</returns>
         [ExcludeFromCodeCoverage]
-        private NETColor[,] LoadSaveResultImage(string filePath)
+        private static NETColor[,] LoadSaveResultImage(string filePath)
         {
             if (File.Exists(filePath) is false)
             {
@@ -317,5 +349,38 @@ namespace VelaptorTests.Services
 
             return result;
         }
+
+        /// <summary>
+        /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
+        /// to the type of <see cref="ImageData"/>.
+        /// </summary>
+        /// <param name="image">The image to convert.</param>
+        /// <returns>The image data of type <see cref="ImageData"/>.</returns>
+        private static ImageData ToImageData(Image<Rgba32> image)
+        {
+            var pixelData = new NETColor[image.Width, image.Height];
+
+            for (var y = 0; y < image.Height; y++)
+            {
+                var pixelRowSpan = image.GetPixelRowSpan(y);
+
+                for (var x = 0; x < image.Width; x++)
+                {
+                    pixelData[x, y] = NETColor.FromArgb(
+                        pixelRowSpan[x].A,
+                        pixelRowSpan[x].R,
+                        pixelRowSpan[x].G,
+                        pixelRowSpan[x].B);
+                }
+            }
+
+            return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
+        }
+
+        /// <summary>
+        /// Creates a new inst ance of <see cref="ImageService"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test.</returns>
+        private ImageService CreateService() => new (this.mockFile.Object);
     }
 }

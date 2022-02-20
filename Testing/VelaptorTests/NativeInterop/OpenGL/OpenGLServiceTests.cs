@@ -43,6 +43,17 @@ namespace VelaptorTests.NativeInterop.OpenGL
             }
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullGLInvokerParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new OpenGLService(null);
+            }, "The parameter must not be null. (Parameter 'glInvoker')");
+        }
+        #endregion
         #region Prop Tests
         [Fact]
         public void IsVBOBound_WhenGettingValue_ReturnsCorrectResult()
@@ -382,15 +393,16 @@ namespace VelaptorTests.NativeInterop.OpenGL
         }
 
         [Theory]
-        [InlineData("", BufferType.VertexBufferObject, "NOT SET VBO")]
-        [InlineData(null, BufferType.VertexBufferObject, "NOT SET VBO")]
-        [InlineData("test-label", BufferType.VertexBufferObject, "test-label VBO")]
-        [InlineData("", BufferType.IndexArrayObject, "NOT SET EBO")]
-        [InlineData(null, BufferType.IndexArrayObject, "NOT SET EBO")]
-        [InlineData("test-label", BufferType.IndexArrayObject, "test-label EBO")]
-        public void LabelBuffer_WhenInvoked_LabelsVertexArray(string label, BufferType bufferType, string expected)
+        [InlineData("", (int)BufferType.VertexBufferObject, "NOT SET VBO")]
+        [InlineData(null, (int)BufferType.VertexBufferObject, "NOT SET VBO")]
+        [InlineData("test-label", (int)BufferType.VertexBufferObject, "test-label VBO")]
+        [InlineData("", (int)BufferType.IndexArrayObject, "NOT SET EBO")]
+        [InlineData(null, (int)BufferType.IndexArrayObject, "NOT SET EBO")]
+        [InlineData("test-label", (int)BufferType.IndexArrayObject, "test-label EBO")]
+        public void LabelBuffer_WhenInvoked_LabelsVertexArray(string label, int bufferTypeNumericalValue, string expected)
         {
             // Arrange
+            var bufferType = (BufferType)bufferTypeNumericalValue;
             var service = CreateService();
 
             // Act

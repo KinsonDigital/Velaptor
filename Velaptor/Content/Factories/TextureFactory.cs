@@ -9,6 +9,7 @@ namespace Velaptor.Content.Factories
     using System.Diagnostics.CodeAnalysis;
     using Velaptor;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
@@ -43,13 +44,13 @@ namespace Velaptor.Content.Factories
         /// <param name="disposeTexturesReactable">Sends push notifications to dispose of textures.</param>
         internal TextureFactory(IGLInvoker gl, IOpenGLService openGLService, IReactable<DisposeTextureData> disposeTexturesReactable)
         {
-            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-            this.mockGLService =
-                openGLService ??
-                throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
-            this.disposeTexturesReactable =
-                disposeTexturesReactable ??
-                throw new ArgumentNullException(nameof(disposeTexturesReactable), "The parameter must not be null.");
+            EnsureThat.ParamIsNotNull(gl);
+            EnsureThat.ParamIsNotNull(openGLService);
+            EnsureThat.ParamIsNotNull(disposeTexturesReactable);
+
+            this.gl = gl;
+            this.mockGLService = openGLService;
+            this.disposeTexturesReactable = disposeTexturesReactable;
         }
 
         /// <inheritdoc/>
@@ -57,12 +58,12 @@ namespace Velaptor.Content.Factories
         {
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException(nameof(name), "The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(name), "The string parameter must not be null or empty.");
             }
 
             if (string.IsNullOrEmpty(filePath))
             {
-                throw new ArgumentNullException(nameof(filePath), "The parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(filePath), "The string parameter must not be null or empty.");
             }
 
             return new Texture(this.gl, this.mockGLService, this.disposeTexturesReactable, name, filePath, imageData);

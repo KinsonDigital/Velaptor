@@ -14,6 +14,7 @@ namespace Velaptor.Content.Fonts
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.Services;
     using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 
@@ -69,6 +70,13 @@ namespace Velaptor.Content.Fonts
             bool isDefaultFont,
             GlyphMetrics[] glyphMetrics)
         {
+            EnsureThat.ParamIsNotNull(texture);
+            EnsureThat.ParamIsNotNull(fontService);
+            EnsureThat.ParamIsNotNull(fontStatsService);
+            EnsureThat.ParamIsNotNull(fontAtlasService);
+            EnsureThat.ParamIsNotNull(textureCache);
+            EnsureThat.StringParamIsNotNullOrEmpty(name);
+
             FontTextureAtlas = texture;
             this.fontService = fontService;
             this.fontStatsService = fontStatsService;

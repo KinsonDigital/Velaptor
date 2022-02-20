@@ -3,8 +3,8 @@ name: 🚀QA/Prod Release
 
 env:
   PROJECT_NAME: Velaptor
-  NET_SDK_VERSION: 5.0.x # Changing this means changing ARTIFACT_FOLDER_NAME
-  ARTIFACT_FOLDER_NAME: '5.0' # Changing this means changing NET_SDK_VERSION
+  NET_SDK_VERSION: 6.0.101 # Changing this means changing ARTIFACT_FOLDER_NAME
+  ARTIFACT_FOLDER_NAME: '6.0.101' # Changing this means changing NET_SDK_VERSION
 
 
 on:
@@ -325,7 +325,7 @@ jobs:
           Come check it out to take it for a spin and help support development. 🤘
           Release: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}/releases/tag/${{ steps.proj-file-version.outputs.version }}
           Nuget Package: https://www.nuget.org/packages/KinsonDigital.${{ env.PROJECT_NAME }}/${{ steps.proj-file-version.outputs.version }}
-          Discord: https://discord.gg/dqNsFSgh
+          Discord: https://discord.gg/qewu6fNgv7
           Project: https://github.com/KinsonDigital/${{ env.PROJECT_NAME }}
         consumer-key: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
         consumer-secret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}

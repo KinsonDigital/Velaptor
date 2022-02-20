@@ -4,10 +4,14 @@
 
 namespace Velaptor.Hardware
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Numerics;
     using System.Runtime.InteropServices;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Holds information about a single monitor in the system.
@@ -19,8 +23,21 @@ namespace Velaptor.Hardware
         /// <summary>
         /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
         /// </summary>
+        [ExcludeFromCodeCoverage]
+        public SystemMonitor() => this.platform = IoC.Container.GetInstance<IPlatform>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
+        /// </summary>
         /// <param name="platform">The current platform.</param>
-        public SystemMonitor(IPlatform platform) => this.platform = platform;
+        /// <exception cref="ArgumentNullException">
+        ///     Occurs if the <paramref name="platform"/> parameter is null.
+        /// </exception>
+        internal SystemMonitor(IPlatform platform)
+        {
+            EnsureThat.ParamIsNotNull(platform);
+            this.platform = platform;
+        }
 
         /// <summary>
         /// Gets a value indicating whether or not the monitor is the primary monitor in the system.

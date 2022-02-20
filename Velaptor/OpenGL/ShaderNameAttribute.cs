@@ -4,7 +4,11 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
+    using Velaptor.Guards;
+
+    // ReSharper restore RedundantNameQualifier
 
     /// <summary>
     /// Represents the name of a shader.
@@ -16,7 +20,11 @@ namespace Velaptor.OpenGL
         /// Initializes a new instance of the <see cref="ShaderNameAttribute"/> class.
         /// </summary>
         /// <param name="name">The name to give a shader.</param>
-        public ShaderNameAttribute(string name) => Name = name;
+        public ShaderNameAttribute(string name)
+        {
+            EnsureThat.StringParamIsNotNullOrEmpty(name);
+            Name = name;
+        }
 
         /// <summary>
         /// Gets the name of a shader.

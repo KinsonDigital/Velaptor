@@ -14,10 +14,23 @@ namespace VelaptorTests.Input
     /// </summary>
     public class MouseTests : IDisposable
     {
+        // This is to make sure that no other tests are executed until other
+        // tests are finished being disposed of.  This is due to the fact
+        // that we are testing the value of static 'InputStates' array in the 'IMouseInput<MouseButton, MouseState>'
+        // interface.
+        private static bool isDisposing;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MouseTests"/> class.
         /// </summary>
-        public MouseTests() => ClearMouseState();
+        public MouseTests()
+        {
+            ClearMouseState();
+
+            while (isDisposing)
+            {
+            }
+        }
 
         [Fact]
         public void GetState_WhenInvokedWithNoDefaultState_SetsUpDefaultState()
@@ -158,10 +171,15 @@ namespace VelaptorTests.Input
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => ClearMouseState();
+        public void Dispose()
+        {
+            isDisposing = true;
+            ClearMouseState();
+            isDisposing = false;
+        }
 
         /// <summary>
-        /// Clears the state for the mouse for testing purposes.
+        /// Clears the state of the mouse for testing purposes.
         /// </summary>
         private static void ClearMouseState()
         {

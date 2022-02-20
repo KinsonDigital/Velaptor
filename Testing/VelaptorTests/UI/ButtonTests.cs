@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.UI
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Drawing;
@@ -13,6 +14,7 @@ namespace VelaptorTests.UI
     using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
     using Velaptor.UI;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -65,6 +67,18 @@ namespace VelaptorTests.UI
             this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman", 12))
                 .Returns(this.mockFont.Object);
         }
+
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullContentLoaderParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new Button(null);
+            }, "The parameter must not be null. (Parameter 'contentLoader')");
+        }
+        #endregion
 
         #region Prop Tests
         [Fact]

@@ -40,7 +40,7 @@ namespace VelaptorTests.Services
         public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var batchItem1 = (true, new SpriteBatchItem()
+            var batchItem1 = (true, new SpriteBatchItem
             {
                 Angle = 1,
                 Effects = RenderEffects.None,
@@ -51,7 +51,7 @@ namespace VelaptorTests.Services
                 TintColor = Color.FromArgb(12, 13, 14, 15),
                 ViewPortSize = new SizeF(16, 17),
             });
-            var batchItem2 = (true, new SpriteBatchItem()
+            var batchItem2 = (true, new SpriteBatchItem
             {
                 Angle = 18,
                 Effects = RenderEffects.FlipHorizontally,

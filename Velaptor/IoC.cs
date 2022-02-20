@@ -17,6 +17,7 @@ namespace Velaptor
     using Velaptor.Content.Factories;
     using Velaptor.Content.Fonts.Services;
     using Velaptor.Factories;
+    using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.NativeInterop.GLFW;
@@ -95,12 +96,13 @@ namespace Velaptor
             IoCContainer.Register<IGLInvoker, GLInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IOpenGLService, OpenGLService>(Lifestyle.Singleton);
 
-            IoCContainer.Register<GLFWMonitors>(suppressDisposal: true);
+            IoCContainer.Register<GLFWMonitors>(Lifestyle.Singleton);
 
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
 
             IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
+            IoCContainer.Register<IMonitors, GLFWMonitors>(Lifestyle.Singleton);
         }
 
         /// <summary>
@@ -119,14 +121,18 @@ namespace Velaptor
         /// <summary>
         /// Sets up container registration related to caching.
         /// </summary>
-        private static void SetupCaching() => IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
+        private static void SetupCaching()
+        {
+            IoCContainer.Register<IItemCache<string, ITexture>, TextureCache>(Lifestyle.Singleton);
+            IoCContainer.Register<IItemCache<string, ISound>, SoundCache>(Lifestyle.Singleton);
+        }
 
         /// <summary>
         /// Sets up container registration related to factories.
         /// </summary>
         private static void SetupFactories()
         {
-            IoCContainer.Register<ISoundFactory, SoundFactory>();
+            IoCContainer.Register<ISoundFactory, SoundFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IFontFactory, FontFactory>();
@@ -147,6 +153,7 @@ namespace Velaptor
             IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
             IoCContainer.Register<IBatchManagerService<SpriteBatchItem>, TextureBatchService>();
+            IoCContainer.Register<IBatchManagerService<RectShape>, RectBatchService>();
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(

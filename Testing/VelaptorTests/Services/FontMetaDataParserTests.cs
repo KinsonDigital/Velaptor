@@ -28,6 +28,7 @@ namespace VelaptorTests.Services
         [InlineData(FontFilePath + "|si(ze:22",                  true,               false,          FontFilePath,        "si(ze:22",                 0u)]
         [InlineData(FontFilePath + "|size:not-a-number",         true,               false,          FontFilePath,        "size:not-a-number",        0u)]
         [InlineData(FontFilePath + "|size:22",                   true,               true,           FontFilePath,        "size:22",                  22u)]
+        [InlineData(null,                                        false,              true,           "",                  "",                         0u)]
         public void Parse_Invoke_ReturnsCorrectResult(
             string stringToParse,
             bool containsMetaData,

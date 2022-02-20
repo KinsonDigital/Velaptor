@@ -10,6 +10,7 @@ namespace Velaptor.UI
     using System.Numerics;
     using System.Threading.Tasks;
     using Velaptor.Content;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -28,7 +29,8 @@ namespace Velaptor.UI
         [ExcludeFromCodeCoverage]
         protected Window(IWindow window)
         {
-            this.window = window ?? throw new ArgumentNullException(nameof(window), "Window must not be null.");
+            EnsureThat.ParamIsNotNull(window);
+            this.window = window;
 
             this.window.Initialize = OnLoad;
             this.window.Uninitialize = OnUnload;

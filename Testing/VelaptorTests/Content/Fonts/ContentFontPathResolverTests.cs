@@ -4,11 +4,13 @@
 
 namespace VelaptorTests.Content.Fonts
 {
+    using System;
     using System.IO;
     using System.IO.Abstractions;
     using System.Reflection;
     using Moq;
     using Velaptor.Content.Fonts;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -34,6 +36,16 @@ namespace VelaptorTests.Content.Fonts
         }
 
         #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullDirectoryParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new ContentFontPathResolver(null);
+            }, "The parameter must not be null. (Parameter 'directory')");
+        }
+
         [Fact]
         public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
         {

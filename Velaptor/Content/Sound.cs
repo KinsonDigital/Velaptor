@@ -153,7 +153,15 @@ namespace Velaptor.Content
         /// Stops the sound.
         /// </summary>
         /// <remarks>This will set the time position back to the beginning.</remarks>
-        public void Stop() => this.sound.Stop();
+        public void Stop()
+        {
+            if (this.sound.Unloaded)
+            {
+                return;
+            }
+
+            this.sound.Stop();
+        }
 
         /// <summary>
         /// Disposes of this <see cref="Sound"/> if the ID to dispose matches this sound's <see cref="Id"/>.

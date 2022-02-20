@@ -14,7 +14,7 @@ namespace Velaptor.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Manages the process of batching <see cref="ITexture"/>s when drawing sprites.
+    /// Manages the process of batching up the rendering of <see cref="ITexture"/>s.
     /// </summary>
     internal class TextureBatchService : IBatchManagerService<SpriteBatchItem>
     {

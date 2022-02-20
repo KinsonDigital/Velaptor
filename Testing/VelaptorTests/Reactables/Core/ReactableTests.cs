@@ -4,8 +4,10 @@
 
 namespace VelaptorTests.Reactables.Core
 {
+    using System;
     using Velaptor.Reactables.Core;
     using VelaptorTests.Fakes;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -15,10 +17,23 @@ namespace VelaptorTests.Reactables.Core
     {
         #region Method Tests
         [Fact]
+        public void Subscribe_WithNullReactorParam_ThrowsException()
+        {
+            // Arrange
+            var reactable = CreateReactable<bool>();
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                reactable.Subscribe(null);
+            }, "The parameter must not be null. (Parameter 'reactor')");
+        }
+
+        [Fact]
         public void Subscribe_WhenAddingNewReactor_ReactorAddedToReactable()
         {
             // Arrange
-            var reactable = CreateReactor<bool>();
+            var reactable = CreateReactable<bool>();
 
             // Act
             reactable.Subscribe(new Reactor<bool>());
@@ -31,7 +46,7 @@ namespace VelaptorTests.Reactables.Core
         public void Subscribe_WhenAddingNewReactor_ReturnsUnsubscriber()
         {
             // Arrange
-            var reactable = CreateReactor<bool>();
+            var reactable = CreateReactable<bool>();
             var reactor = new Reactor<bool>();
 
             // Act
@@ -47,7 +62,7 @@ namespace VelaptorTests.Reactables.Core
         public void Dispose_WhenInvokedWithReactors_RemovesReactors()
         {
             // Arrange
-            var reactable = CreateReactor<bool>();
+            var reactable = CreateReactable<bool>();
 
             reactable.Subscribe(new Reactor<bool>());
 
@@ -65,7 +80,7 @@ namespace VelaptorTests.Reactables.Core
         /// </summary>
         /// <typeparam name="T">The type of data that the reactable will deal with.</typeparam>
         /// <returns>The instance to test.</returns>
-        private static ReactableFake<T> CreateReactor<T>()
+        private static ReactableFake<T> CreateReactable<T>()
             => new ();
     }
 }

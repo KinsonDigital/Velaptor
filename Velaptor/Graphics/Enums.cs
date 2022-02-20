@@ -32,4 +32,25 @@ namespace Velaptor.Graphics
         /// </summary>
         FlipBothDirections = FlipHorizontally | FlipVertically,
     }
+
+    /// <summary>
+    /// Represents the type of gradient a color can.
+    /// </summary>
+    public enum ColorGradient
+    {
+        /// <summary>
+        /// No gradient is applied.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// A horizontal gradient is applied.
+        /// </summary>
+        Horizontal = 1,
+
+        /// <summary>
+        /// A vertical gradient is applied.
+        /// </summary>
+        Vertical = 2,
+    }
 }

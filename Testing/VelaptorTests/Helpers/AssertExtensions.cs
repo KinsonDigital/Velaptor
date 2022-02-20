@@ -115,7 +115,9 @@ namespace VelaptorTests.Helpers
             var actual = actualItems as T[] ?? actualItems.ToArray();
             if (expected.Length != actual.Length)
             {
-                Assert.True(false,
+                throw new AssertActualExpectedException(
+                    expected.Length,
+                    actual.Length,
                     $"The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
             }
 
@@ -126,19 +128,107 @@ namespace VelaptorTests.Helpers
             {
                 if (expectedArrayItems[i] is null && actualArrayItems[i] is not null)
                 {
-                    Assert.True(false,
-                        $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                    throw new AssertActualExpectedException(
+                        expectedArrayItems[i],
+                        actualArrayItems[i],
+                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
                 if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
                 {
-                    Assert.True(false,
-                        $"Both the expected and actual item must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                    throw new AssertActualExpectedException(
+                        expectedArrayItems[i],
+                        actualArrayItems[i],
+                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
 
                 if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
                 {
-                    Assert.True(false, $"The expected and actual item at index '{i}' are not equal.");
+                    throw new AssertActualExpectedException(
+                        expectedArrayItems[i],
+                        actualArrayItems[i],
+                        $"The expected and actual items at index '{i}' are not equal.");
+                }
+            }
+
+            Assert.True(true);
+        }
+
+        /// <summary>
+        /// Asserts that all of the individual <paramref name="expectedItems"/> and <paramref name="actualItems"/>
+        /// are equal on an item to item basis that are at the same index between the arrays.
+        /// </summary>
+        /// <typeparam name="T">The type of item in the lists.</typeparam>
+        /// <param name="expectedItems">The list of expected items.</param>
+        /// <param name="actualItems">The list of actual items to compare to the expected items.</param>
+        /// <param name="arrayRegions">
+        ///     The list of regions within the array that describe the start, stop, and label of the region.
+        /// </param>
+        /// <remarks>
+        ///     Will fail assertion when one item is null and the other is not.
+        ///     Will fail assertion when the total number of <paramref name="expectedItems"/> does not match the total number of <paramref name="actualItems"/>.
+        /// </remarks>
+        public static void ItemsEqual<T>(
+            IEnumerable<T> expectedItems,
+            IEnumerable<T> actualItems,
+            IEnumerable<(int start, int stop, string name)> arrayRegions)
+            where T : IEquatable<T>
+        {
+            if (expectedItems is null && actualItems is not null)
+            {
+                Assert.True(
+                false,
+                $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
+            }
+
+            if (expectedItems is not null && actualItems is null)
+            {
+                Assert.True(
+                false,
+                $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
+            }
+
+            var expected = expectedItems as T[] ?? expectedItems.ToArray();
+            var actual = actualItems as T[] ?? actualItems.ToArray();
+            if (expected.Length != actual.Length)
+            {
+                throw new AssertActualExpectedException(
+                    expected.Length,
+                    actual.Length,
+                    $"The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
+            }
+
+            var expectedArrayItems = expected.ToArray();
+            var actualArrayItems = actual.ToArray();
+
+            for (var i = 0; i < expectedArrayItems.Length; i++)
+            {
+                if (expectedArrayItems[i] is null && actualArrayItems[i] is not null)
+                {
+                    throw new AssertActualExpectedException(
+                        expectedArrayItems[i],
+                        actualArrayItems[i],
+                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                }
+
+                if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
+                {
+                    throw new AssertActualExpectedException(
+                        expectedArrayItems[i],
+                        actualArrayItems[i],
+                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                }
+
+                if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
+                {
+                    var sectionName = (from s in arrayRegions
+                        where i >= s.start && i <= s.stop
+                        select s.name).FirstOrDefault();
+
+                    throw new AssertActualExpectedException(
+                        expectedArrayItems[i],
+                        actualArrayItems[i],
+                        $"The expected and actual items at index '{i}' are not equal in the '{sectionName}' of the array.");
                 }
             }
 
@@ -169,6 +259,66 @@ namespace VelaptorTests.Helpers
                 }
 
                 Assert.True(false, $"The item '{itemsToCheck[i]}' at index '{i}' returned false with the '{nameof(arePredicate)}'");
+            }
+        }
+
+        /// <summary>
+        /// Asserts that all of the items between the <paramref name="expectedItems"/> and <paramref name="actualItems"/>
+        /// arrays are equal for all of the items inclusively between <paramref name="indexStart"/> and <paramref name="indexStop"/>.
+        /// </summary>
+        /// <param name="expectedItems">The expected items.</param>
+        /// <param name="actualItems">The actual items.</param>
+        /// <param name="indexStart">The inclusive starting index of the range of items to check.</param>
+        /// <param name="indexStop">The inclusive ending index of the range of items to check.</param>
+        /// <exception cref="AssertActualExpectedException">
+        ///     Thrown to fail the unit test if any of the items in the ranges between the arrays are not equal.
+        /// </exception>
+        public static void SectionEquals(float[] expectedItems, float[] actualItems, int indexStart, int indexStop)
+        {
+            if (expectedItems is null)
+            {
+                Assert.True(false,
+                    $"The '{nameof(SectionEquals)}()' method param '{nameof(expectedItems)}' must not be null.");
+            }
+
+            if (actualItems is null)
+            {
+                Assert.True(false,
+                    $"The '{nameof(SectionEquals)}()' method param '{nameof(actualItems)}' must not be null.");
+            }
+
+            if (expectedItems.Length - 1 < indexStart)
+            {
+                Assert.True(false,
+                    $"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
+            }
+
+            if (expectedItems.Length - 1 < indexStop)
+            {
+                Assert.True(false,
+                    $"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
+            }
+
+            if (actualItems.Length - 1 < indexStart)
+            {
+                Assert.True(false,
+                    $"The '{nameof(indexStart)}' value must be less than the '{nameof(expectedItems)}'.Length.");
+            }
+
+            if (actualItems.Length - 1 < indexStop)
+            {
+                Assert.True(false,
+                    $"The '{nameof(indexStop)}' value must be less than the '{nameof(actualItems)}'.Length.");
+            }
+
+            for (var i = indexStart; i < indexStop; i++)
+            {
+                var failMessage = $"The items in both arrays are not equal at index '{i}'";
+
+                if (Math.Abs(expectedItems[i] - actualItems[i]) != 0f)
+                {
+                    throw new AssertActualExpectedException(expectedItems[i], actualItems[i], failMessage);
+                }
             }
         }
 

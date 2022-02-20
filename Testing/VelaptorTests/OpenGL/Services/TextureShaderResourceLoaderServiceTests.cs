@@ -55,6 +55,48 @@ namespace VelaptorTests.OpenGL.Services
                         .Returns(this.unprocessedFragShaderSample);
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullShaderSrcTemplateServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new TextureShaderResourceLoaderService(
+                    null,
+                    this.mockResourceLoaderService.Object,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'shaderSrcTemplateService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullResourceLoaderServiceParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new TextureShaderResourceLoaderService(
+                    this.mockShaderSrcTemplateService.Object,
+                    null,
+                    this.mockPath.Object);
+            }, "The parameter must not be null. (Parameter 'resourceLoaderService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPathParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new TextureShaderResourceLoaderService(
+                    this.mockShaderSrcTemplateService.Object,
+                    this.mockResourceLoaderService.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'path')");
+        }
+        #endregion
+
+        #region Method Tests
         [Fact]
         public void LoadVerSource_WhenPropsParamAreNull_ThrowsException()
         {
@@ -127,6 +169,7 @@ namespace VelaptorTests.OpenGL.Services
             // Assert
             Assert.Equal(NoProcessingFragShaderSample, actual);
         }
+        #endregion
 
         /// <summary>
         /// Creates a new instance of <see cref="TextureShaderResourceLoaderService"/> for the purpose of testing.

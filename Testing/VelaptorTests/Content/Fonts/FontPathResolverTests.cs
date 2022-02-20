@@ -51,6 +51,83 @@ namespace VelaptorTests.Content.Fonts
                 .Returns(() => throw new Exception("Platform mock not setup for test."));
         }
 
+        #region Constructor Tests
+        [Fact]
+        public void Ctor_WithNullContentFontPathResolverParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontPathResolver(
+                    null,
+                    this.mockWindowsPathResolver.Object,
+                    this.mockFile.Object,
+                    this.mockDirectory.Object,
+                    this.mockPlatform.Object);
+            }, "The parameter must not be null. (Parameter 'contentFontPathResolver')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullWindowsFontPathResolverParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontPathResolver(
+                    this.mockContentPathResolver.Object,
+                    null,
+                    this.mockFile.Object,
+                    this.mockDirectory.Object,
+                    this.mockPlatform.Object);
+            }, "The parameter must not be null. (Parameter 'windowsFontPathResolver')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFileParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontPathResolver(
+                    this.mockContentPathResolver.Object,
+                    this.mockWindowsPathResolver.Object,
+                    null,
+                    this.mockDirectory.Object,
+                    this.mockPlatform.Object);
+            }, "The parameter must not be null. (Parameter 'file')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullDirectoryParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontPathResolver(
+                    this.mockContentPathResolver.Object,
+                    this.mockWindowsPathResolver.Object,
+                    this.mockFile.Object,
+                    null,
+                    this.mockPlatform.Object);
+            }, "The parameter must not be null. (Parameter 'directory')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPlatformParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new FontPathResolver(
+                    this.mockContentPathResolver.Object,
+                    this.mockWindowsPathResolver.Object,
+                    this.mockFile.Object,
+                    this.mockDirectory.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'platform')");
+        }
+        #endregion
+
         #region Prop Tests
         [Fact]
         public void RootDirectory_WhenFontExistsInContentDirectory_ReturnsContentRootDirectoryForContentLocation()

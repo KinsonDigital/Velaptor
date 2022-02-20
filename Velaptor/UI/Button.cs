@@ -11,6 +11,7 @@ namespace Velaptor.UI
     using Velaptor.Content;
     using Velaptor.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -20,6 +21,7 @@ namespace Velaptor.UI
     public sealed class Button : ControlBase
     {
         private readonly IContentLoader contentLoader;
+        private readonly Color disabledColor = Color.FromArgb(255, 100, 100, 100);
         private Label? label;
         private ITexture? texture;
         private string cachedText = string.Empty;
@@ -39,10 +41,11 @@ namespace Velaptor.UI
         ///         <item><paramref name="contentLoader"/></item>
         ///     </list>
         /// </exception>
-        internal Button(IContentLoader contentLoader) =>
-            this.contentLoader =
-                contentLoader ??
-                throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
+        internal Button(IContentLoader contentLoader)
+        {
+            EnsureThat.ParamIsNotNull(contentLoader);
+            this.contentLoader = contentLoader;
+        }
 
         /// <inheritdoc cref="IControl"/>
         public override Point Position
@@ -158,8 +161,7 @@ namespace Velaptor.UI
 
             if (this.texture is not null)
             {
-                spriteBatch.Render(this.texture, Position.X, Position.Y, TintColor);
-
+                spriteBatch.Render(this.texture, Position.X, Position.Y, Enabled ? TintColor : this.disabledColor);
                 this.label?.Render(spriteBatch);
             }
 

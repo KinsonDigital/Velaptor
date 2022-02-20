@@ -12,6 +12,8 @@ namespace Velaptor.OpenGL
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using Velaptor.Content;
+    using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Reactables.Core;
@@ -27,13 +29,13 @@ namespace Velaptor.OpenGL
     /// </summary>
     internal sealed class GLWindow : IWindow
     {
-        private const string NullParamExceptionMessage = "The parameter must not be null.";
         private readonly IGLInvoker gl;
         private readonly IGLFWInvoker glfw;
         private readonly ISystemMonitorService systemMonitorService;
         private readonly IGameWindowFacade windowFacade;
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
+        private readonly ISpriteBatch spriteBatch;
         private readonly IReactable<GLInitData> glInitReactable;
         private readonly IReactable<ShutDownData> shutDownReactable;
         private bool isShuttingDown;
@@ -52,6 +54,7 @@ namespace Velaptor.OpenGL
         /// <param name="platform">Information about the platform that is running the application.</param>
         /// <param name="taskService">Runs asynchronous tasks.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
+        /// <param name="spriteBatch">Renders textures and primitives.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         public GLWindow(
@@ -64,18 +67,31 @@ namespace Velaptor.OpenGL
             IPlatform platform,
             ITaskService taskService,
             IContentLoader contentLoader,
+            ISpriteBatch spriteBatch,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
-            this.gl = glInvoker ?? throw new ArgumentNullException(nameof(glInvoker), NullParamExceptionMessage);
-            this.glfw = glfwInvoker ?? throw new ArgumentNullException(nameof(glfwInvoker), NullParamExceptionMessage);
-            this.systemMonitorService = systemMonitorService ?? throw new ArgumentNullException(nameof(systemMonitorService), NullParamExceptionMessage);
-            this.windowFacade = windowFacade ?? throw new ArgumentNullException(nameof(windowFacade), NullParamExceptionMessage);
-            this.platform = platform ?? throw new ArgumentNullException(nameof(platform), NullParamExceptionMessage);
-            this.taskService = taskService ?? throw new ArgumentNullException(nameof(taskService), NullParamExceptionMessage);
-            this.glInitReactable = glInitReactable ?? throw new ArgumentNullException(nameof(glInitReactable), NullParamExceptionMessage);
-            this.shutDownReactable = shutDownReactable ?? throw new ArgumentNullException(nameof(shutDownReactable), NullParamExceptionMessage);
-            ContentLoader = contentLoader ?? throw new ArgumentNullException(nameof(contentLoader), NullParamExceptionMessage);
+            EnsureThat.ParamIsNotNull(glInvoker);
+            EnsureThat.ParamIsNotNull(glfwInvoker);
+            EnsureThat.ParamIsNotNull(systemMonitorService);
+            EnsureThat.ParamIsNotNull(windowFacade);
+            EnsureThat.ParamIsNotNull(platform);
+            EnsureThat.ParamIsNotNull(taskService);
+            EnsureThat.ParamIsNotNull(contentLoader);
+            EnsureThat.ParamIsNotNull(spriteBatch);
+            EnsureThat.ParamIsNotNull(glInitReactable);
+            EnsureThat.ParamIsNotNull(shutDownReactable);
+
+            this.gl = glInvoker;
+            this.glfw = glfwInvoker;
+            this.systemMonitorService = systemMonitorService;
+            this.windowFacade = windowFacade;
+            this.platform = platform;
+            this.taskService = taskService;
+            ContentLoader = contentLoader;
+            this.spriteBatch = spriteBatch;
+            this.glInitReactable = glInitReactable;
+            this.shutDownReactable = shutDownReactable;
 
             SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
             SetupOtherPropCaches();
@@ -290,7 +306,10 @@ namespace Velaptor.OpenGL
 
             // Update the view port so it is the same size as the window
             this.gl.Viewport(0, 0, uWidth, uHeight);
-            WinResize?.Invoke(new SizeU() { Width = uWidth, Height = uHeight });
+            var size = new SizeU { Width = uWidth, Height = uHeight };
+            WinResize?.Invoke(size);
+
+            this.spriteBatch.OnResize(size);
         }
 
         /// <summary>

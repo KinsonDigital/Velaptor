@@ -267,7 +267,7 @@ namespace VelaptorTests.Content.Caching
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 cache.GetItem(filePath);
-            }, "The parameter must not be null or empty. (Parameter 'textureFilePath')");
+            }, "The string parameter must not be null or empty. (Parameter 'textureFilePath')");
         }
 
         [Fact]
@@ -455,7 +455,7 @@ namespace VelaptorTests.Content.Caching
         }
 
         [Fact]
-        public void Unload_WhenItemToUnloadExists_RemovesAndDisposesOfTexture()
+        public void Unload_WhenTextureToUnloadExists_RemovesAndDisposesOfTexture()
         {
             // Arrange
             var mockTexture = new Mock<ITexture>();
@@ -483,7 +483,7 @@ namespace VelaptorTests.Content.Caching
         }
 
         [Fact]
-        public void Unload_WhenTextureDoesNotExist_DoesNotAttemptToDispose()
+        public void Unload_WhenTextureToUnloadDoesNotExist_DoesNotAttemptToDispose()
         {
             // Arrange
             var mockTexture = new Mock<ITexture>();

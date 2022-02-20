@@ -15,6 +15,7 @@ namespace Velaptor.Content.Fonts.Services
     using Velaptor.Content.Fonts;
     using Velaptor.Exceptions;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.FreeType;
     using Velaptor.Services;
 
@@ -43,6 +44,10 @@ namespace Velaptor.Content.Fonts.Services
             ISystemMonitorService sysMonitorService,
             IPlatform platform)
         {
+            EnsureThat.ParamIsNotNull(freeTypeInvoker);
+            EnsureThat.ParamIsNotNull(sysMonitorService);
+            EnsureThat.ParamIsNotNull(platform);
+
             this.freeTypeInvoker = freeTypeInvoker;
             this.sysMonitorService = sysMonitorService;
             this.platform = platform;

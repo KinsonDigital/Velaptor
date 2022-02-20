@@ -10,6 +10,7 @@ namespace Velaptor.Content.Factories
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Velaptor.Content;
+    using Velaptor.Guards;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
 
@@ -34,6 +35,9 @@ namespace Velaptor.Content.Factories
             IReactable<DisposeSoundData> disposeSoundReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
+            EnsureThat.ParamIsNotNull(disposeSoundReactable);
+            EnsureThat.ParamIsNotNull(shutDownReactable);
+
             this.disposeSoundUnsubscriber =
                 disposeSoundReactable.Subscribe(new Reactor<DisposeSoundData>(RemoveSoundId));
 

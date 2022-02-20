@@ -1,0 +1,322 @@
+[
+  {
+    "Item1": "Vertex1.Vertex Pos X",
+    "Item2": 0,
+    "Item3": 1.0
+  },
+  {
+    "Item1": "Vertex1.Vertex Pos Y",
+    "Item2": 1,
+    "Item3": 2.0
+  },
+  {
+    "Item1": "Vertex1.Rectangle X",
+    "Item2": 2,
+    "Item3": 3.0
+  },
+  {
+    "Item1": "Vertex1.Rectangle Y",
+    "Item2": 3,
+    "Item3": 4.0
+  },
+  {
+    "Item1": "Vertex1.Rectangle Width",
+    "Item2": 4,
+    "Item3": 5.0
+  },
+  {
+    "Item1": "Vertex1.Rectangle Height",
+    "Item2": 5,
+    "Item3": 6.0
+  },
+  {
+    "Item1": "Vertex1.Color R",
+    "Item2": 6,
+    "Item3": 8.0
+  },
+  {
+    "Item1": "Vertex1.Color G",
+    "Item2": 7,
+    "Item3": 9.0
+  },
+  {
+    "Item1": "Vertex1.Color B",
+    "Item2": 8,
+    "Item3": 10.0
+  },
+  {
+    "Item1": "Vertex1.Color A",
+    "Item2": 9,
+    "Item3": 7.0
+  },
+  {
+    "Item1": "Vertex1.IsFilled",
+    "Item2": 10,
+    "Item3": 1.0
+  },
+  {
+    "Item1": "Vertex1.Border Thickness",
+    "Item2": 11,
+    "Item3": 11.0
+  },
+  {
+    "Item1": "Vertex1.Top Left Radius",
+    "Item2": 12,
+    "Item3": 12.0
+  },
+  {
+    "Item1": "Vertex1.Bottom Left Radius",
+    "Item2": 13,
+    "Item3": 13.0
+  },
+  {
+    "Item1": "Vertex1.Bottom Right Radius",
+    "Item2": 14,
+    "Item3": 14.0
+  },
+  {
+    "Item1": "Vertex1.Top Right Radius",
+    "Item2": 15,
+    "Item3": 15.0
+  },
+  {
+    "Item1": "Vertex2.Vertex Pos X",
+    "Item2": 16,
+    "Item3": 16.0
+  },
+  {
+    "Item1": "Vertex2.Vertex Pos Y",
+    "Item2": 17,
+    "Item3": 17.0
+  },
+  {
+    "Item1": "Vertex2.Rectangle X",
+    "Item2": 18,
+    "Item3": 18.0
+  },
+  {
+    "Item1": "Vertex2.Rectangle Y",
+    "Item2": 19,
+    "Item3": 19.0
+  },
+  {
+    "Item1": "Vertex2.Rectangle Width",
+    "Item2": 20,
+    "Item3": 20.0
+  },
+  {
+    "Item1": "Vertex2.Rectangle Height",
+    "Item2": 21,
+    "Item3": 21.0
+  },
+  {
+    "Item1": "Vertex2.Color R",
+    "Item2": 22,
+    "Item3": 23.0
+  },
+  {
+    "Item1": "Vertex2.Color G",
+    "Item2": 23,
+    "Item3": 24.0
+  },
+  {
+    "Item1": "Vertex2.Color B",
+    "Item2": 24,
+    "Item3": 25.0
+  },
+  {
+    "Item1": "Vertex2.Color A",
+    "Item2": 25,
+    "Item3": 22.0
+  },
+  {
+    "Item1": "Vertex2.IsFilled",
+    "Item2": 26,
+    "Item3": 1.0
+  },
+  {
+    "Item1": "Vertex2.Border Thickness",
+    "Item2": 27,
+    "Item3": 26.0
+  },
+  {
+    "Item1": "Vertex2.Top Left Radius",
+    "Item2": 28,
+    "Item3": 27.0
+  },
+  {
+    "Item1": "Vertex2.Bottom Left Radius",
+    "Item2": 29,
+    "Item3": 28.0
+  },
+  {
+    "Item1": "Vertex2.Bottom Right Radius",
+    "Item2": 30,
+    "Item3": 29.0
+  },
+  {
+    "Item1": "Vertex2.Top Right Radius",
+    "Item2": 31,
+    "Item3": 30.0
+  },
+  {
+    "Item1": "Vertex3.Vertex Pos X",
+    "Item2": 32,
+    "Item3": 31.0
+  },
+  {
+    "Item1": "Vertex3.Vertex Pos Y",
+    "Item2": 33,
+    "Item3": 32.0
+  },
+  {
+    "Item1": "Vertex3.Rectangle X",
+    "Item2": 34,
+    "Item3": 33.0
+  },
+  {
+    "Item1": "Vertex3.Rectangle Y",
+    "Item2": 35,
+    "Item3": 34.0
+  },
+  {
+    "Item1": "Vertex3.Rectangle Width",
+    "Item2": 36,
+    "Item3": 35.0
+  },
+  {
+    "Item1": "Vertex3.Rectangle Height",
+    "Item2": 37,
+    "Item3": 36.0
+  },
+  {
+    "Item1": "Vertex3.Color R",
+    "Item2": 38,
+    "Item3": 38.0
+  },
+  {
+    "Item1": "Vertex3.Color G",
+    "Item2": 39,
+    "Item3": 39.0
+  },
+  {
+    "Item1": "Vertex3.Color B",
+    "Item2": 40,
+    "Item3": 40.0
+  },
+  {
+    "Item1": "Vertex3.Color A",
+    "Item2": 41,
+    "Item3": 37.0
+  },
+  {
+    "Item1": "Vertex3.IsFilled",
+    "Item2": 42,
+    "Item3": 1.0
+  },
+  {
+    "Item1": "Vertex3.Border Thickness",
+    "Item2": 43,
+    "Item3": 41.0
+  },
+  {
+    "Item1": "Vertex3.Top Left Radius",
+    "Item2": 44,
+    "Item3": 42.0
+  },
+  {
+    "Item1": "Vertex3.Bottom Left Radius",
+    "Item2": 45,
+    "Item3": 43.0
+  },
+  {
+    "Item1": "Vertex3.Bottom Right Radius",
+    "Item2": 46,
+    "Item3": 44.0
+  },
+  {
+    "Item1": "Vertex3.Top Right Radius",
+    "Item2": 47,
+    "Item3": 45.0
+  },
+  {
+    "Item1": "Vertex4.Vertex Pos X",
+    "Item2": 48,
+    "Item3": 46.0
+  },
+  {
+    "Item1": "Vertex4.Vertex Pos Y",
+    "Item2": 49,
+    "Item3": 47.0
+  },
+  {
+    "Item1": "Vertex4.Rectangle X",
+    "Item2": 50,
+    "Item3": 48.0
+  },
+  {
+    "Item1": "Vertex4.Rectangle Y",
+    "Item2": 51,
+    "Item3": 49.0
+  },
+  {
+    "Item1": "Vertex4.Rectangle Width",
+    "Item2": 52,
+    "Item3": 50.0
+  },
+  {
+    "Item1": "Vertex4.Rectangle Height",
+    "Item2": 53,
+    "Item3": 51.0
+  },
+  {
+    "Item1": "Vertex4.Color R",
+    "Item2": 54,
+    "Item3": 53.0
+  },
+  {
+    "Item1": "Vertex4.Color G",
+    "Item2": 55,
+    "Item3": 54.0
+  },
+  {
+    "Item1": "Vertex4.Color B",
+    "Item2": 56,
+    "Item3": 55.0
+  },
+  {
+    "Item1": "Vertex4.Color A",
+    "Item2": 57,
+    "Item3": 52.0
+  },
+  {
+    "Item1": "Vertex4.IsFilled",
+    "Item2": 58,
+    "Item3": 1.0
+  },
+  {
+    "Item1": "Vertex4.Border Thickness",
+    "Item2": 59,
+    "Item3": 56.0
+  },
+  {
+    "Item1": "Vertex4.Top Left Radius",
+    "Item2": 60,
+    "Item3": 57.0
+  },
+  {
+    "Item1": "Vertex4.Bottom Left Radius",
+    "Item2": 61,
+    "Item3": 58.0
+  },
+  {
+    "Item1": "Vertex4.Bottom Right Radius",
+    "Item2": 62,
+    "Item3": 59.0
+  },
+  {
+    "Item1": "Vertex4.Top Right Radius",
+    "Item2": 63,
+    "Item3": 60.0
+  }
+]

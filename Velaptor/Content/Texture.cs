@@ -9,6 +9,7 @@ namespace Velaptor.Content
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
     using Velaptor.Reactables.Core;
@@ -69,21 +70,16 @@ namespace Velaptor.Content
             string filePath,
             ImageData imageData)
         {
-            this.gl = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
-            this.openGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
+            EnsureThat.ParamIsNotNull(gl);
+            EnsureThat.ParamIsNotNull(openGLService);
+            EnsureThat.ParamIsNotNull(disposeTexturesReactable);
+            EnsureThat.StringParamIsNotNullOrEmpty(name);
+            EnsureThat.StringParamIsNotNullOrEmpty(filePath);
 
-            if (disposeTexturesReactable is null)
-            {
-                throw new ArgumentNullException(nameof(disposeTexturesReactable), "The parameter must not be null.");
-            }
-
+            this.gl = gl;
+            this.openGLService = openGLService;
             this.disposeUnsubscriber =
                 disposeTexturesReactable.Subscribe(new Reactor<DisposeTextureData>(Dispose));
-
-            if (string.IsNullOrEmpty(filePath))
-            {
-                throw new ArgumentNullException(nameof(filePath), "The parameter must not be null or empty.");
-            }
 
             FilePath = filePath;
             Init(name, imageData);

@@ -5,10 +5,13 @@
 namespace Velaptor.Services
 {
     // ReSharper disable RedundantNameQualifier
+    using System.IO;
+    using System.IO.Abstractions;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
     using Velaptor.Graphics;
+    using Velaptor.Guards;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
 
@@ -19,10 +22,27 @@ namespace Velaptor.Services
     /// </summary>
     public class ImageService : IImageService
     {
-        /// <inheritdoc/>
-        public ImageData Load(string path)
+        private readonly IFile file;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageService"/> class.
+        /// </summary>
+        /// <param name="file">Performs file related operations.</param>
+        public ImageService(IFile file)
         {
-            var rgba32Image = Image.Load<Rgba32>(path);
+            EnsureThat.ParamIsNotNull(file);
+            this.file = file;
+        }
+
+        /// <inheritdoc/>
+        public ImageData Load(string filePath)
+        {
+            if (this.file.Exists(filePath) is false)
+            {
+                throw new FileNotFoundException("The image file was not found.", filePath);
+            }
+
+            var rgba32Image = Image.Load<Rgba32>(filePath);
             rgba32Image.Mutate(context => context.Flip(FlipMode.Vertical));
 
             var imageData = new ImageData(new NETColor[rgba32Image.Width, rgba32Image.Height], (uint)rgba32Image.Width, (uint)rgba32Image.Height);

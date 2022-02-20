@@ -13,6 +13,17 @@ namespace Velaptor
     public struct SizeU : IEquatable<SizeU>
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="SizeU"/> struct.
+        /// </summary>
+        /// <param name="width">The width of the size.</param>
+        /// <param name="height">The height of the size.</param>
+        public SizeU(uint width, uint height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        /// <summary>
         /// Gets or sets the width of the size.
         /// </summary>
         public uint Width { get; set; }
