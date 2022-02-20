@@ -8,7 +8,7 @@ As with all software, including releases, there is always a chance for issues an
 
 <h2 style="font-weight:bold" align="center">New 🎉</h2>
 
-1. Add ability to render rectangles to the scene with the various attributes below  
+1. Add ability to render rectangles to the scene with the various attributes below:  
    GitHub Issues: [#75](https://github.com/KinsonDigital/Velaptor/issues/75)
    - Solid/filled rectangles
    - Empty rectangles
@@ -21,39 +21,39 @@ As with all software, including releases, there is always a chance for issues an
    - Ability to change the border thickness of an empty rectangle
    - Ability to set radius of each corner independently
      - This can be applied to filled and empty rectangles
-2. Loading sounds can not be cached to greatly improve sound loading performance.  
+2. Loading sounds cannot be cached to greatly improve sound loading performance.  
    GitHub Issues: [#131](https://github.com/KinsonDigital/Velaptor/issues/131)
-3. Loading sounds can now be loaded via a fully qualified file path.  This means you do not have to only load sounds from the content system!!  
+3. Loading sounds can now be loaded via a fully qualified file path.  This means you do not have to only load sounds from the content system!!.  
    GitHub Issues: [#128](https://github.com/KinsonDigital/Velaptor/issues/128)
 
 ---
 
 <h2 style="font-weight:bold" align="center">Breaking Changes 💣</h2>
 
-1. The class `SystemMonitor` constructor used to require an `IPlatform` type argument but not does not and has no arguments.  
+1. The class `SystemMonitor` constructor no longer requires an `IPlatform` type argument.  
    GitHub Issues: [#153](https://github.com/KinsonDigital/Velaptor/issues/153)
 
 ---
 
 <h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
 
-1. Upgraded all projects in solution to use C# language version **_v10_**  
+1. Upgraded all projects in the solution to use C# language **_v10_**  
    GitHub Issues: [#97](https://github.com/KinsonDigital/Velaptor/issues/97), [#184](https://github.com/KinsonDigital/Velaptor/issues/184)
-2. Upgraded all projects in solution to use **_NET 6.0_**  
+2. Upgraded all projects in the solution to use **_NET 6.0_**  
    GitHub Issues: [#97](https://github.com/KinsonDigital/Velaptor/issues/97), [#184](https://github.com/KinsonDigital/Velaptor/issues/184)
-1. Improved constructor argument null checks by implementing a guarding patterns  
+1. Improved constructor argument null checks by implementing a guarding pattern.  
    GitHub Issues: [#153](https://github.com/KinsonDigital/Velaptor/issues/153)
-   - This also resulted in null checks that were not being performed previously
+   - This resulted in null checks that were not being performed previously
 
 ---
 
 <h2 style="font-weight:bold" align="center">Other 👏</h2>
 
-1. Improvements to PR templates such as the code review checklist, grammar, and other misc. items.  This was done on all pull request templates.  
+1. Improvements to PR templates such as the code review checklist, grammar, and other miscellaneous items.  This was done on all pull request templates.  
    GitHub Issues: [#150](https://github.com/KinsonDigital/Velaptor/issues/150), [#158](https://github.com/KinsonDigital/Velaptor/issues/158)
 2. Simple graphical fix with light and dark mode versions of the branching diagram.  
    GitHub Issues: [#159](https://github.com/KinsonDigital/Velaptor/issues/159)
-3. Add a **_BACKERS.md_** file to the root of the solution to hold a list of any backers that  
+3. Added a **_BACKERS.md_** file to the root of the solution to hold a list of any backers that sponsor projects  
    GitHub Issues: [#162](https://github.com/KinsonDigital/Velaptor/issues/162)
-4. Made various improvements to all of the issue templates  
+4. Made various improvements to all of the issue templates.  
    GitHub Issues: [#159](https://github.com/KinsonDigital/Velaptor/issues/159)
