@@ -124,7 +124,7 @@ namespace Velaptor.Content.Fonts
             {
                 this.size = value;
 
-                if (this.fontInitialized)
+                if (this.fontInitialized && this.size > 0u)
                 {
                     RebuildFontAtlasTexture();
                 }

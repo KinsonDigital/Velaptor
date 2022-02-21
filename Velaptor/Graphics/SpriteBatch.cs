@@ -318,6 +318,11 @@ namespace Velaptor.Graphics
                 return;
             }
 
+            if (font.Size == 0u)
+            {
+                return;
+            }
+
             size = size < 0f ? 0f : size;
 
             if (!this.hasBegun)

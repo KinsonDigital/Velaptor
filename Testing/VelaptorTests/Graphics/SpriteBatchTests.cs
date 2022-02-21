@@ -126,6 +126,7 @@ namespace VelaptorTests.Graphics
 
             this.mockFont = new Mock<IFont>();
             this.mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTextureAtlas.Object);
+            this.mockFont.SetupGet(p => p.Size).Returns(12u);
         }
 
         #region Constructor Tests
@@ -863,6 +864,31 @@ namespace VelaptorTests.Graphics
             batch.Render(
                 new Mock<IFont>().Object,
                 renderText,
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<float>(),
+                It.IsAny<float>(),
+                It.IsAny<Color>());
+
+            // Assert
+            this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
+            this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
+            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<SpriteBatchItem>>()), Times.Never);
+        }
+
+        [Fact]
+        public void RenderFont_WithFontSizeSetToZero_DoesNotRenderText()
+        {
+            // Arrange
+            this.mockFont.SetupGet(p => p.Size).Returns(0);
+
+            var batch = CreateSpriteBatch();
+            batch.BeginBatch();
+
+            // Act
+            batch.Render(
+                this.mockFont.Object,
+                "test-text",
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<float>(),
