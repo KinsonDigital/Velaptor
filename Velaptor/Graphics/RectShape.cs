@@ -37,7 +37,7 @@ namespace Velaptor.Graphics
         /// Gets or sets the width of the rectangle.
         /// </summary>
         /// <remarks>
-        ///     If the value is less than 1, it will be set to 1.
+        ///     The width is restricted to a minimum value of 1.
         /// </remarks>
         public float Width
         {
@@ -54,7 +54,7 @@ namespace Velaptor.Graphics
         /// Gets or sets the height of the rectangle.
         /// </summary>
         /// <remarks>
-        ///     If the value is less than 1, it will be set to 1.
+        ///     The height is restricted to a minimum value of 1.
         /// </remarks>
         public float Height
         {
