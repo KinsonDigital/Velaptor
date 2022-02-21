@@ -2,8 +2,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <Configurations>Debug;Release</Configurations>
-    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
     <RootNamespace>VelaptorTesting</RootNamespace>

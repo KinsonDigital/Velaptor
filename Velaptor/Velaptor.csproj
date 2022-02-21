@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <RootNamespace>Velaptor</RootNamespace>
     <AssemblyName>Velaptor</AssemblyName>
-    <LangVersion>10.0</LangVersion>
 
     <!--Update this for production and preview releases-->
     <Version>1.0.0-preview.7</Version>
