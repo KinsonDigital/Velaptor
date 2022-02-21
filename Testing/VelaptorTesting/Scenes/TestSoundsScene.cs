@@ -83,7 +83,7 @@ namespace VelaptorTesting.Scenes
 
         private static string GetFormattedSoundTime(float minutes, float seconds)
         {
-            var minuteStr = Math.Round(minutes, 0).ToString(CultureInfo.InvariantCulture);
+            var minuteStr = ((int)minutes).ToString(CultureInfo.InvariantCulture);
             var secondStr = Math.Round(seconds, 0).ToString(CultureInfo.InvariantCulture);
 
             minuteStr = minuteStr.Length <= 1
