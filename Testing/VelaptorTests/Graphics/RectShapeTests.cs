@@ -28,8 +28,148 @@ namespace VelaptorTests.Graphics
             yield return new object[]
             {
                 Vector2.Zero, // Position
-                0f, // Width
-                0f, // Height
+                1f, // Width
+                1f, // Height
+                Color.Empty, // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.Empty, // Gradient Stop
+                true, // EXPECTED
+            };
+            yield return new object[]
+            {
+                new Vector2(44, 44), // Position
+                1f, // Width
+                1f, // Height
+                Color.Empty, // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.Empty, // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                44f, // Width
+                1f, // Height
+                Color.Empty, // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.Empty, // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                1f, // Width
+                44f, // Height
+                Color.Empty, // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.Empty, // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                1f, // Width
+                1f, // Height
+                Color.FromArgb(44, 44, 44, 44), // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.Empty, // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                1f, // Width
+                1f, // Height
+                Color.Empty, // Color
+                true, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.Empty, // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                1f, // Width
+                1f, // Height
+                Color.Empty, // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(44f, 44f, 44f, 44f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.Empty, // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                1f, // Width
+                1f, // Height
+                Color.Empty, // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.Horizontal, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.Empty, // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                1f, // Width
+                1f, // Height
+                Color.Empty, // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.FromArgb(44, 44, 44, 44), // Gradient Start
+                Color.Empty, // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                1f, // Width
+                1f, // Height
+                Color.Empty, // Color
+                false, // IsFilled
+                1f, // Border Thickness
+                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+                ColorGradient.None, // Gradient Type
+                Color.Empty, // Gradient Start
+                Color.FromArgb(44, 44, 44, 44), // Gradient Stop
+                false, // EXPECTED
+            };
+            yield return new object[]
+            {
+                Vector2.Zero, // Position
+                1f, // Width
+                1f, // Height
                 Color.Empty, // Color
                 false, // IsFilled
                 1f, // Border Thickness
@@ -54,8 +194,8 @@ namespace VelaptorTests.Graphics
 
             // Assert
             Assert.Equal(Vector2.Zero, rect.Position);
-            Assert.Equal(0f, rect.Width);
-            Assert.Equal(0f, rect.Height);
+            Assert.Equal(1f, rect.Width);
+            Assert.Equal(1f, rect.Height);
             Assert.Equal(Color.White, rect.Color);
             Assert.True(rect.IsFilled);
             Assert.Equal(1f, rect.BorderThickness);
@@ -68,8 +208,8 @@ namespace VelaptorTests.Graphics
 
         #region Prop Tests
         [Theory]
-        [InlineData(0, 0)]
-        [InlineData(-10f, 0)]
+        [InlineData(0, 1)]
+        [InlineData(-10f, 1)]
         [InlineData(123, 123)]
         public void Width_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
         {
@@ -85,8 +225,8 @@ namespace VelaptorTests.Graphics
         }
 
         [Theory]
-        [InlineData(0, 0)]
-        [InlineData(-10f, 0)]
+        [InlineData(0, 1)]
+        [InlineData(-10f, 1)]
         [InlineData(123, 123)]
         public void Height_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
         {
@@ -210,8 +350,8 @@ namespace VelaptorTests.Graphics
 
             // Assert
             Assert.Equal(Vector2.Zero, rect.Position);
-            Assert.Equal(0f, rect.Width);
-            Assert.Equal(0f, rect.Height);
+            Assert.Equal(1f, rect.Width);
+            Assert.Equal(1f, rect.Height);
             Assert.Equal(Color.Empty, rect.Color);
             Assert.False(rect.IsFilled);
             Assert.Equal(1f, rect.BorderThickness);

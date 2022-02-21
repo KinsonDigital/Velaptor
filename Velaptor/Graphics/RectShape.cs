@@ -4,7 +4,7 @@
 
 namespace Velaptor.Graphics
 {
-    using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Numerics;
 
@@ -13,10 +13,17 @@ namespace Velaptor.Graphics
     /// </summary>
     public struct RectShape
     {
-        private float width;
-        private float height;
+        private float width = 1f;
+        private float height = 1f;
         private float borderThickness = 1f;
         private CornerRadius cornerRadius = new (1f, 1f, 1f, 1f);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RectShape"/> struct.
+        /// </summary>
+        public RectShape()
+        {
+        }
 
         /// <summary>
         /// Gets or sets the position of the rectangle.
@@ -30,14 +37,14 @@ namespace Velaptor.Graphics
         /// Gets or sets the width of the rectangle.
         /// </summary>
         /// <remarks>
-        ///     If a negative value is used, it will be set to 0.
+        ///     The width is restricted to a minimum value of 1.
         /// </remarks>
         public float Width
         {
             get => this.width;
             set
             {
-                value = value < 0f ? 0f : value;
+                value = value < 1f ? 1f : value;
 
                 this.width = value;
             }
@@ -47,14 +54,14 @@ namespace Velaptor.Graphics
         /// Gets or sets the height of the rectangle.
         /// </summary>
         /// <remarks>
-        ///     If a negative value is used, it will be set to 0.
+        ///     The height is restricted to a minimum value of 1.
         /// </remarks>
         public float Height
         {
             get => this.height;
             set
             {
-                value = value < 0f ? 0f : value;
+                value = value < 1f ? 1f : value;
 
                 this.height = value;
             }
@@ -185,6 +192,7 @@ namespace Velaptor.Graphics
         /// <param name="radius">The struct with the value to set.</param>
         /// <param name="topLeft">The new top left value.</param>
         /// <returns>The original <paramref name="radius"/> with its  <see cref="CornerRadius"/> top left value updated.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         public static CornerRadius SetTopLeft(CornerRadius radius, float topLeft) =>
             new (topLeft, radius.BottomLeft, radius.BottomRight, radius.TopRight);
 
@@ -194,6 +202,7 @@ namespace Velaptor.Graphics
         /// <param name="radius">The struct with the value to set.</param>
         /// <param name="bottomLeft">The new bottom left value.</param>
         /// <returns>The original <paramref name="radius"/> with its  <see cref="CornerRadius"/> bottom left value updated.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         public static CornerRadius SetBottomLeft(CornerRadius radius, float bottomLeft) =>
             new (radius.TopLeft, bottomLeft, radius.BottomRight, radius.TopRight);
 
@@ -203,6 +212,7 @@ namespace Velaptor.Graphics
         /// <param name="radius">The struct with the value to set.</param>
         /// <param name="bottomRight">The new bottom right value.</param>
         /// <returns>The original <paramref name="radius"/> with its  <see cref="CornerRadius"/> bottom right value updated.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         public static CornerRadius SetBottomRight(CornerRadius radius, float bottomRight) =>
             new (radius.TopLeft, radius.BottomLeft, bottomRight, radius.TopRight);
 
@@ -212,6 +222,7 @@ namespace Velaptor.Graphics
         /// <param name="radius">The struct with the value to set.</param>
         /// <param name="topRight">The new top right value.</param>
         /// <returns>The original <paramref name="radius"/> with its  <see cref="CornerRadius"/> top right value updated.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         public static CornerRadius SetTopRight(CornerRadius radius, float topRight) =>
             new (radius.TopLeft, radius.BottomLeft, radius.BottomRight, topRight);
 
@@ -221,11 +232,11 @@ namespace Velaptor.Graphics
         /// <returns>True if empty.</returns>
         public bool IsEmpty() =>
             Position == Vector2.Zero &&
-            Width == 0 &&
-            Height == 0 &&
+            Width <= 1f &&
+            Height <= 1f &&
             Color.IsEmpty &&
             IsFilled is false &&
-            Math.Abs(BorderThickness - 1f) < 1f &&
+            BorderThickness <= 1f &&
             CornerRadius.IsEmpty() &&
             GradientType == ColorGradient.None &&
             GradientStart.IsEmpty &&
