@@ -405,6 +405,27 @@ namespace VelaptorTests.Content.Fonts
             // Assert
             Assert.Equal(22u, actual);
         }
+
+        [Fact]
+        public void Size_WhenValueIsEqualToZero_DoesNotBuildFontAtlasTexture()
+        {
+            // Arrange
+            this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
+                .Returns(123u);
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(It.IsAny<string>()))
+                .Returns(new FontStats[] { new () { Style = FontStyle.Regular, FontFilePath = this.fontFilePath } });
+
+            var font = CreateFont();
+
+            // Act
+            font.Size = 0;
+
+            // Assert
+            Assert.Same(this.mockTexture.Object, font.FontTextureAtlas);
+            Assert.Equal(123, font.LineSpacing);
+            this.mockFontAtlasService.VerifyNever(m => m.CreateFontAtlas(It.IsAny<string>(), It.IsAny<uint>()));
+            this.mockFontService.VerifyNever(m => m.GetFontScaledLineSpacing(It.IsAny<IntPtr>(), 0u));
+        }
         #endregion
 
         #region Method Tests
