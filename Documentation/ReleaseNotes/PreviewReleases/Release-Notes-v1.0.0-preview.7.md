@@ -37,10 +37,6 @@ As with all software, including releases, there is always a chance for issues an
 
 <h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
 
-1. Upgraded all projects in the solution to use C# language **_v10_**  
-   GitHub Issues: [#97](https://github.com/KinsonDigital/Velaptor/issues/97), [#184](https://github.com/KinsonDigital/Velaptor/issues/184)
-2. Upgraded all projects in the solution to use **_.NET 6.0_**  
-   GitHub Issues: [#97](https://github.com/KinsonDigital/Velaptor/issues/97), [#184](https://github.com/KinsonDigital/Velaptor/issues/184)
 1. Improved constructor argument null checks by implementing a guarding pattern.  
    GitHub Issues: [#153](https://github.com/KinsonDigital/Velaptor/issues/153)
    - This resulted in null checks that were not being performed previously.
