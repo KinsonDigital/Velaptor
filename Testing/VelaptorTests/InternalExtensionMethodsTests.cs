@@ -20,6 +20,7 @@ namespace VelaptorTests
     using VelaptorTests.Helpers;
     using Xunit;
     using NETColor = System.Drawing.Color;
+    using NETPoint = System.Drawing.Point;
     using NETRectF = System.Drawing.RectangleF;
     using NETSizeF = System.Drawing.SizeF;
 
@@ -801,6 +802,34 @@ namespace VelaptorTests
 
             // Assert
             Assert.All(actual, i => Assert.Equal("item", i));
+        }
+
+        [Fact]
+        public void ToVector2_WhenInvoked_ReturnsCorrectResult()
+        {
+            // Arrange
+            var point = new NETPoint(11, 22);
+
+            // Act
+            var actual = point.ToVector2();
+
+            // Assert
+            Assert.Equal(11f, actual.X);
+            Assert.Equal(22f, actual.Y);
+        }
+
+        [Fact]
+        public void ToPoint_WhenInvoked_ReturnsCorrectResult()
+        {
+            // Arrange
+            var point = new Vector2(11, 22);
+
+            // Act
+            var actual = point.ToPoint();
+
+            // Assert
+            Assert.Equal(11f, actual.X);
+            Assert.Equal(22f, actual.Y);
         }
         #endregion
 

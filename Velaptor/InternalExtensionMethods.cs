@@ -20,6 +20,7 @@ namespace Velaptor
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.GPUData;
     using NETColor = System.Drawing.Color;
+    using NETPoint = System.Drawing.Point;
     using NETRectF = System.Drawing.RectangleF;
     using NETSizeF = System.Drawing.SizeF;
 
@@ -911,5 +912,24 @@ namespace Velaptor
 
             return gpuData;
         }
+
+        /// <summary>
+        /// Converts the given <paramref name="value"/> from the type <see cref="Point"/> to the type <see cref="Vector2"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The <see cref="Vector2"/> result.</returns>
+        public static Vector2 ToVector2(this NETPoint value) => new (value.X, value.Y);
+
+        /// <summary>
+        /// Converts the given <paramref name="value"/> from the type <see cref="Vector2"/> to the type <see cref="NETPoint"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The <see cref="Point"/> result.</returns>
+        /// <remarks>
+        ///     Converting from floating point components of a <see cref="Vector2"/> to
+        ///     integer components of a <see cref="Point"/> could result in a loss of information.
+        ///     Regular casting rules apply.
+        /// </remarks>
+        public static NETPoint ToPoint(this Vector2 value) => new NETPoint((int)value.X, (int)value.Y);
     }
 }
