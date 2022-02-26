@@ -68,6 +68,64 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
+        /// Gets the half width of the rectangle.
+        /// </summary>
+        public float HalfWidth => Width / 2f;
+
+        /// <summary>
+        /// Gets the half height of the rectangle.
+        /// </summary>
+        public float HalfHeight => Height / 2f;
+
+        /// <summary>
+        /// Gets or sets the top location of the rectangle.
+        /// </summary>
+        /// <remarks>
+        ///     Will automatically update the <see cref="Position"/> of the rectangle.
+        /// </remarks>
+        public float Top
+        {
+            get => Position.Y - HalfHeight;
+            set => Position = new Vector2(Position.X, value + HalfHeight);
+        }
+
+        /// <summary>
+        /// Gets or sets the right location of the rectangle.
+        /// </summary>
+        /// <remarks>
+        ///     Will automatically update the <see cref="Position"/> of the rectangle.
+        /// </remarks>
+        public float Right
+        {
+            get => Position.X + HalfWidth;
+            set => Position = new Vector2(value - HalfWidth, Position.Y);
+        }
+
+        /// <summary>
+        /// Gets or sets the bottom location of the rectangle.
+        /// </summary>
+        /// <remarks>
+        ///     Will automatically update the <see cref="Position"/> of the rectangle.
+        /// </remarks>
+        public float Bottom
+        {
+            get => Position.Y - HalfHeight;
+            set => Position = new Vector2(Position.X, value + HalfHeight);
+        }
+
+        /// <summary>
+        /// Gets or sets the Left location of the rectangle.
+        /// </summary>
+        /// <remarks>
+        ///     Will automatically update the <see cref="Position"/> of the rectangle.
+        /// </remarks>
+        public float Left
+        {
+            get => Position.X - HalfWidth;
+            set => Position = new Vector2(value + HalfWidth, Position.Y);
+        }
+
+        /// <summary>
         /// Gets or sets the color of the rectangle.
         /// </summary>
         /// <remarks>

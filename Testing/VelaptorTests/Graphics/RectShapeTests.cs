@@ -241,6 +241,34 @@ namespace VelaptorTests.Graphics
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void HalfWidth_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Width = 100;
+
+            // Act
+            var actual = rect.HalfWidth;
+
+            // Assert
+            Assert.Equal(50f, actual);
+        }
+
+        [Fact]
+        public void HalfHeight_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Height = 100;
+
+            // Act
+            var actual = rect.HalfHeight;
+
+            // Assert
+            Assert.Equal(50f, actual);
+        }
+
         [Theory]
         [InlineData(10, 20, 30, 5)] // Width < Height & Value > Smallest Dimension
         [InlineData(20, 10, 30, 5)] // Width < Height & Value < Smallest Dimension
@@ -290,6 +318,82 @@ namespace VelaptorTests.Graphics
             AssertExtensions.EqualWithMessage(expected, actual.BottomLeft, "The bottom left value is incorrect.");
             AssertExtensions.EqualWithMessage(expected, actual.BottomRight, "The bottom right value is incorrect.");
             AssertExtensions.EqualWithMessage(expected, actual.TopRight, "The top right value is incorrect.");
+        }
+
+        [Fact]
+        public void Top_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Position = new Vector2(100, 100);
+            rect.Width = 100;
+            rect.Height = 50;
+
+            // Act
+            rect.Top = 40f;
+            var actual = rect.Top;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Top)} value incorrect.");
+            AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+            AssertExtensions.EqualWithMessage(65f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        }
+
+        [Fact]
+        public void Right_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Position = new Vector2(200, 100);
+            rect.Width = 100;
+            rect.Height = 50;
+
+            // Act
+            rect.Right = 100f;
+            var actual = rect.Right;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Right)} value incorrect.");
+            AssertExtensions.EqualWithMessage(50, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+            AssertExtensions.EqualWithMessage(100f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        }
+
+        [Fact]
+        public void Bottom_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Position = new Vector2(100, 100);
+            rect.Width = 100;
+            rect.Height = 50;
+
+            // Act
+            rect.Bottom = 40f;
+            var actual = rect.Bottom;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Bottom)} value incorrect.");
+            AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+            AssertExtensions.EqualWithMessage(65f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        }
+
+        [Fact]
+        public void Left_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Position = new Vector2(200, 100);
+            rect.Width = 100;
+            rect.Height = 50;
+
+            // Act
+            rect.Left = 100f;
+            var actual = rect.Left;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Left)} value incorrect.");
+            AssertExtensions.EqualWithMessage(150, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+            AssertExtensions.EqualWithMessage(100f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
         }
         #endregion
 
