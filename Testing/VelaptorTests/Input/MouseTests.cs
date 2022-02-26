@@ -115,7 +115,7 @@ namespace VelaptorTests.Input
             var mouse = new Mouse();
 
             // Act
-            mouse.SetScrollWheelValue(33);
+            mouse.SetScrollWheelSpeed(33);
             var actual = mouse.GetState().GetScrollWheelValue();
 
             // Assert
@@ -155,7 +155,8 @@ namespace VelaptorTests.Input
 
             mouse.SetXPos(111);
             mouse.SetYPos(222);
-            mouse.SetScrollWheelValue(333);
+            mouse.SetScrollWheelSpeed(333);
+            mouse.SetScrollWheelDirection(MouseScrollDirection.ScrollDown);
 
             // Act
             mouse.Reset();
@@ -168,6 +169,7 @@ namespace VelaptorTests.Input
             Assert.Equal(0, actual.GetX());
             Assert.Equal(0, actual.GetY());
             Assert.Equal(0, actual.GetScrollWheelValue());
+            Assert.Equal(MouseScrollDirection.None, actual.GetScrollDirection());
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>

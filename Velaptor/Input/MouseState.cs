@@ -22,6 +22,7 @@ namespace Velaptor.Input
         private bool isLeftButtonDown;
         private bool isRightButtonDown;
         private bool isMiddleButtonDown;
+        private MouseScrollDirection scrollDirection;
 
         /// <summary>
         /// Returns a value indicating if both operands are equal.
@@ -108,10 +109,16 @@ namespace Velaptor.Input
             };
 
         /// <summary>
-        /// Gets or sets the position value of the mouse scroll wheel.
+        /// Gets the position value of the mouse scroll wheel.
         /// </summary>
         /// <returns>The value of the scroll wheel.</returns>
         public int GetScrollWheelValue() => this.scrollWheelValue;
+
+        /// <summary>
+        /// Gets the direction that the mouse wheel has been turned.
+        /// </summary>
+        /// <returns>The scroll direction of the mouse wheel.</returns>
+        public MouseScrollDirection GetScrollDirection() => this.scrollDirection;
 
         /// <inheritdoc/>
         public override bool Equals(object? obj)
@@ -156,6 +163,12 @@ namespace Velaptor.Input
         /// </summary>
         /// <param name="value">The value to set the scroll to.</param>
         public void SetScrollWheelValue(int value) => this.scrollWheelValue = value;
+
+        /// <summary>
+        /// Sets the scroll direction of the mouse wheel.
+        /// </summary>
+        /// <param name="direction">The scroll direction.</param>
+        public void SetScrollWheelDirection(MouseScrollDirection direction) => this.scrollDirection = direction;
 
         /// <summary>
         /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.

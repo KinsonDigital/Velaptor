@@ -349,7 +349,6 @@ namespace Velaptor.OpenGL
                 throw new NoKeyboardException("Input Exception: No connected keyboards available.");
             }
 
-            // TODO: unregister on dispose
             this.glInputContext.Keyboards[0].KeyDown += GLKeyboardInput_KeyDown;
             this.glInputContext.Keyboards[0].KeyUp += GLKeyboardInput_KeyUp;
 
@@ -361,6 +360,7 @@ namespace Velaptor.OpenGL
             this.glInputContext.Mice[0].MouseDown += GLMouseInput_MouseDown;
             this.glInputContext.Mice[0].MouseUp += GLMouseInput_MouseUp;
             this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
+            this.glInputContext.Mice[0].Scroll += GLMouseInput_MouseScroll;
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -376,28 +376,61 @@ namespace Velaptor.OpenGL
         /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (this.isDisposed)
             {
-                if (disposing)
+                return;
+            }
+
+            if (disposing)
+            {
+                if (this.glInputContext is not null)
                 {
-                    if (this.glWindow is not null)
-                    {
-                        this.glWindow.Load -= GLWindow_Load;
-                        this.glWindow.Closing -= GLWindow_Closing;
-                        this.glWindow.Resize -= GLWindow_Resize;
-                        this.glWindow.Update -= GLWindow_Update;
-                        this.glWindow.Render -= GLWindow_Render;
-                    }
+                    this.glInputContext.Keyboards[0].KeyDown -= GLKeyboardInput_KeyDown;
+                    this.glInputContext.Keyboards[0].KeyUp -= GLKeyboardInput_KeyUp;
+                    this.glInputContext.Mice[0].MouseDown -= GLMouseInput_MouseDown;
+                    this.glInputContext.Mice[0].MouseUp -= GLMouseInput_MouseUp;
+                    this.glInputContext.Mice[0].MouseMove -= GLMouseMove_MouseMove;
+                    this.glInputContext.Mice[0].Scroll -= GLMouseInput_MouseScroll;
                 }
 
-                this.isDisposed = true;
+                if (this.glWindow is not null)
+                {
+                    this.glWindow.Load -= GLWindow_Load;
+                    this.glWindow.Closing -= GLWindow_Closing;
+                    this.glWindow.Resize -= GLWindow_Resize;
+                    this.glWindow.Update -= GLWindow_Update;
+                    this.glWindow.Render -= GLWindow_Render;
+                }
             }
+
+            this.isDisposed = true;
         }
 
         /// <summary>
-        /// Invoked when the mouseInput moves in the window.
+        /// Invoked when there is mouse scroll wheel input.
         /// </summary>
-        /// <param name="mouse">The system mouseInput.</param>
+        /// <param name="mouse">The system mouse object.</param>
+        /// <param name="wheelData">Positional data about the mouse scroll wheel.</param>
+        private void GLMouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
+        {
+            var wheelValue = Math.Abs(wheelData.Y);
+
+            this.mouseInput.SetScrollWheelSpeed((int)wheelValue);
+
+            var wheelDirection = wheelData.Y switch
+            {
+                > 0 => MouseScrollDirection.ScrollUp,
+                < 0 => MouseScrollDirection.ScrollDown,
+                _ => MouseScrollDirection.None
+            };
+
+            this.mouseInput.SetScrollWheelDirection(wheelDirection);
+        }
+
+        /// <summary>
+        /// Invoked when the mouse moves over the window.
+        /// </summary>
+        /// <param name="mouse">The system mouse object.</param>
         /// <param name="position">The position of the mouseInput.</param>
         private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
         {
@@ -406,16 +439,16 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked when any mouseInput buttons transition from the up position to the down position.
+        /// Invoked when the any of the mouse buttons are pressed into the down position over the window.
         /// </summary>
-        /// <param name="mouse">The system mouseInput.</param>
+        /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
         private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, true);
 
         /// <summary>
-        /// Invoked when any mouseInput buttons transition from the down position to the up position.
+        /// Invoked when the any of the mouse buttons are released from the down position into the up position over the window.
         /// </summary>
-        /// <param name="mouse">The system mouseInput.</param>
+        /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
         private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, false);
 
@@ -461,6 +494,11 @@ namespace Velaptor.OpenGL
         /// Invoked once per frame and invokes the <see cref="UpdateFrame"/> event.
         /// </summary>
         /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
-        private void GLWindow_Update(double frameTime) => this.UpdateFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
+        private void GLWindow_Update(double frameTime)
+        {
+            this.UpdateFrame?.Invoke(this, new FrameTimeEventArgs(frameTime));
+            this.mouseInput.SetScrollWheelSpeed(0);
+            this.mouseInput.SetScrollWheelDirection(MouseScrollDirection.None);
+        }
     }
 }
