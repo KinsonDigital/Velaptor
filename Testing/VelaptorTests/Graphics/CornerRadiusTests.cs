@@ -14,7 +14,7 @@ namespace VelaptorTests.Graphics
     {
         #region Constructor Tests
         [Fact]
-        public void Ctor_WhenInvoked_ProperlySetsProps()
+        public void Ctor_WithEachCornerValue_ProperlySetsProps()
         {
             // Arrange & Act
             var corners = new CornerRadius(11, 22, 33, 44);
@@ -24,6 +24,19 @@ namespace VelaptorTests.Graphics
             Assert.Equal(22u, corners.BottomLeft);
             Assert.Equal(33u, corners.BottomRight);
             Assert.Equal(44u, corners.TopRight);
+        }
+
+        [Fact]
+        public void Ctor_WithSingleValue_ProperlySetsProps()
+        {
+            // Arrange & Act
+            var corners = new CornerRadius(123f);
+
+            // Assert
+            Assert.Equal(123, corners.TopLeft);
+            Assert.Equal(123, corners.BottomLeft);
+            Assert.Equal(123, corners.BottomRight);
+            Assert.Equal(123, corners.TopRight);
         }
         #endregion
 
