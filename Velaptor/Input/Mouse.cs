@@ -23,7 +23,6 @@ namespace Velaptor.Input
         /// <returns>The state of the mouse.</returns>
         public MouseState GetState()
         {
-            // TODO: Check to see if we need to check '<='.  Instead use '<'
             if (IMouseInput<MouseButton, MouseState>.InputStates.Count <= 3)
             {
                 InitializeButtonStates();

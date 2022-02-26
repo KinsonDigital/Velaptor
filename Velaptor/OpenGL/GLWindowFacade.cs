@@ -439,14 +439,14 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked when the any of the mouse buttons are pressed into the down position over the window.
+        /// Invoked when any of the mouse buttons are pressed into the down position over the window.
         /// </summary>
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
         private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, true);
 
         /// <summary>
-        /// Invoked when the any of the mouse buttons are released from the down position into the up position over the window.
+        /// Invoked when any of the mouse buttons are released from the down position into the up position over the window.
         /// </summary>
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
