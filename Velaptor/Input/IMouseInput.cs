@@ -28,10 +28,16 @@ namespace Velaptor.Input
         void SetYPos(int y);
 
         /// <summary>
-        /// Sets the value of the scroll wheel.
+        /// Sets the speed that the mouse wheel was scrolled.
         /// </summary>
         /// <param name="value">The value to set the scroll wheel to.</param>
         [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Ignored until used by implementing issue #71")]
-        void SetScrollWheelValue(int value);
+        void SetScrollWheelSpeed(int value);
+
+        /// <summary>
+        /// Sets the direction of rotation of the mouse wheel.
+        /// </summary>
+        /// <param name="direction">The direction of rotation.</param>
+        void SetScrollWheelDirection(MouseScrollDirection direction);
     }
 }
