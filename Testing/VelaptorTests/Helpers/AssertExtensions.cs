@@ -263,6 +263,40 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
+        /// Verifies that all of the given <paramref name="items"/> in the collection pass as long as the
+        /// <paramref name="assertAction"/> does not contain an assertion failure.  If the <paramref name="includePredicate"/>
+        /// returns true, the item is checked.
+        /// </summary>
+        /// <param name="items">The items to check.</param>
+        /// <param name="includePredicate">Runs the <paramref name="assertAction"/> if the predicate returns true.</param>
+        /// <param name="assertAction">
+        ///     Contains the code to perform an assertion.  If the action code returns, then the assertion has passed.
+        /// </param>
+        /// <typeparam name="T">The data type of the items.</typeparam>
+        public static void AllIncluded<T>(IEnumerable<T> items, Predicate<T> includePredicate, Action<T> assertAction)
+        {
+            if (includePredicate is null)
+            {
+                Assert.True(false, $"Cannot perform assertion with null '{nameof(includePredicate)}' parameter.");
+            }
+
+            if (assertAction is null)
+            {
+                Assert.True(false, $"Cannot perform assertion with null '{nameof(assertAction)}' parameter.");
+            }
+
+            var itemsToCheck = items.ToArray();
+
+            foreach (var t in itemsToCheck)
+            {
+                if (includePredicate(t))
+                {
+                    assertAction(t);
+                }
+            }
+        }
+
+        /// <summary>
         /// Asserts that all of the items between the <paramref name="expectedItems"/> and <paramref name="actualItems"/>
         /// arrays are equal for all of the items inclusively between <paramref name="indexStart"/> and <paramref name="indexStop"/>.
         /// </summary>
