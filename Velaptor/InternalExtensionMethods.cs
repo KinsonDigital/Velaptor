@@ -156,25 +156,6 @@ namespace Velaptor
                 new ReadOnlyCollection<T>(items.ToList());
 
         /// <summary>
-        /// Converts the given list of <paramref name="items"/> to a read only dictionary where
-        /// the key is the <paramref name="items"/> array item index.
-        /// </summary>
-        /// <param name="items">The list of items to convert.</param>
-        /// <typeparam name="T">The type of values in the lists.</typeparam>
-        /// <returns>A read only dictionary of the given <paramref name="items"/>.</returns>
-        public static ReadOnlyDictionary<uint, T> ToReadOnlyDictionary<T>(this T[] items)
-        {
-            var result = new Dictionary<uint, T>();
-
-            for (var i = 0u; i < items.Length; i++)
-            {
-                result.Add(i, items[i]);
-            }
-
-            return new ReadOnlyDictionary<uint, T>(result);
-        }
-
-        /// <summary>
         /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
         /// inherit from <see cref="IDisposable"/>.
         /// </summary>
