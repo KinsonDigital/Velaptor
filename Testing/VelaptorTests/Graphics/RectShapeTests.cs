@@ -370,7 +370,7 @@ namespace VelaptorTests.Graphics
             // Assert
             AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Bottom)} value incorrect.");
             AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-            AssertExtensions.EqualWithMessage(65f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+            AssertExtensions.EqualWithMessage(15f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
         }
 
         [Fact]

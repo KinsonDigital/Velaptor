@@ -107,8 +107,8 @@ namespace Velaptor.Graphics
         /// </remarks>
         public float Bottom
         {
-            get => Position.Y - HalfHeight;
-            set => Position = new Vector2(Position.X, value + HalfHeight);
+            get => Position.Y + HalfHeight;
+            set => Position = new Vector2(Position.X, value - HalfHeight);
         }
 
         /// <summary>
