@@ -399,8 +399,8 @@ namespace Velaptor.Graphics
         public void EndBatch()
         {
             TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
-            FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
             RectBatchService_BatchFilled(this.rectBatchService, EventArgs.Empty);
+            FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
 
             this.hasBegun = false;
         }
