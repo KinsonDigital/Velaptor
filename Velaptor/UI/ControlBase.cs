@@ -1,4 +1,4 @@
-﻿// <copyright file="ControlBase.cs" company="KinsonDigital">
+// <copyright file="ControlBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -94,7 +94,7 @@ namespace Velaptor.UI
         public bool IsMouseOver { get; private set; }
 
         /// <inheritdoc cref="IContentLoadable.IsLoaded"/>
-        public bool IsLoaded { get; protected set; }
+        public bool IsLoaded { get; private set; }
 
         /// <summary>
         /// Gets or sets the color to apply to the control when the
@@ -105,8 +105,7 @@ namespace Velaptor.UI
         public Color MouseDownColor { get; set; } = Color.FromArgb(255, 190, 190, 190);
 
         /// <summary>
-        /// Gets or sets the color to apply to the control when the
-        /// mouse button is hovering over the control.
+        /// Gets or sets the color to apply to the control when the mouse button is hovering over the control.
         /// </summary>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by library users.")]
@@ -166,6 +165,7 @@ namespace Velaptor.UI
 
                 if (this.currentMouseState.IsLeftButtonDown())
                 {
+                    OnMouseDown();
                     this.MouseDown?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -174,6 +174,7 @@ namespace Velaptor.UI
                 this.previousMouseState.IsLeftButtonDown() &&
                 IsMouseOver)
             {
+                OnMouseUp();
                 this.MouseUp?.Invoke(this, EventArgs.Empty);
                 this.Click?.Invoke(this, EventArgs.Empty);
             }
@@ -188,6 +189,22 @@ namespace Velaptor.UI
         /// <param name="spriteBatch">Renders the control.</param>
         [ExcludeFromCodeCoverage]
         public virtual void Render(ISpriteBatch spriteBatch)
+        {
+        }
+
+        /// <summary>
+        /// Invoked when the mouse is in the down position over the control.
+        /// Used when a child control needs to get notified of the mouse in the down position.
+        /// </summary>
+        protected virtual void OnMouseDown()
+        {
+        }
+
+        /// <summary>
+        /// Invoked when the mouse is in the up position after the mouse was in the up position over the control.
+        /// Used when a child control needs to get notified of the mouse in the up position.
+        /// </summary>
+        protected virtual void OnMouseUp()
         {
         }
     }
