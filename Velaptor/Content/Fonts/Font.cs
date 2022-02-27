@@ -10,6 +10,7 @@ namespace Velaptor.Content.Fonts
     using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Linq;
+    using System.Numerics;
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
     using Velaptor.Content.Fonts.Services;
@@ -168,7 +169,6 @@ namespace Velaptor.Content.Fonts
         public ReadOnlyCollection<GlyphMetrics> Metrics => this.metrics.ToReadOnlyCollection();
 
         /// <inheritdoc/>
-        // TODO: Look into caching measurements with a cache total that is maintained
         public SizeF Measure(string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -280,6 +280,63 @@ namespace Velaptor.Content.Fonts
         /// </remarks>
         public float GetKerning(uint leftGlyphIndex, uint rightGlyphIndex)
             => this.fontService.GetKerning(this.facePtr, leftGlyphIndex, rightGlyphIndex);
+
+        /// <inheritdoc/>
+        public IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(string text, Vector2 textPos)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return Array.Empty<(char, RectangleF)>();
+            }
+
+            var textMetrics = new List<GlyphMetrics>();
+
+            foreach (var character in text)
+            {
+                var foundGlyph = (from g in this.metrics
+                    where g.Glyph == character
+                    select g).FirstOrDefault();
+
+                textMetrics.Add(foundGlyph);
+            }
+
+            var result = new List<(char character, RectangleF bounds)>();
+
+            var leftGlyphIndex = 0u;
+
+            foreach (var currentCharMetric in textMetrics)
+            {
+                textPos.X += GetKerning(leftGlyphIndex, currentCharMetric.CharIndex);
+
+                // Calculate the height offset
+                var heightOffset = currentCharMetric.GlyphHeight - currentCharMetric.HoriBearingY;
+
+                // Adjust for characters that have a negative horizontal bearing Y
+                // For example, the '_' character
+                if (currentCharMetric.HoriBearingY < 0)
+                {
+                    heightOffset += currentCharMetric.HoriBearingY;
+                }
+
+                // Create the destination rect
+                RectangleF charBounds = default;
+                charBounds.X = textPos.X;
+                charBounds.Y = textPos.Y + heightOffset;
+                charBounds.Width = currentCharMetric.GlyphBounds.Width <= 0 ? 1 : currentCharMetric.GlyphBounds.Width;
+                charBounds.Height = currentCharMetric.GlyphBounds.Height <= 0 ? 1 : currentCharMetric.GlyphBounds.Height;
+
+                result.Add((currentCharMetric.Glyph, charBounds));
+
+                // Horizontally advance to the next glyph
+                // Get the difference between the old glyph width
+                // and the glyph width with the size applied
+                textPos.X += currentCharMetric.HorizontalAdvance;
+
+                leftGlyphIndex = currentCharMetric.CharIndex;
+            }
+
+            return result.ToArray();
+        }
 
         /// <summary>
         /// Gets all of the stats for a font at the given <paramref name="filePath"/>.
