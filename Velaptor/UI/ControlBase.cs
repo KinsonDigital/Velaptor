@@ -1,4 +1,4 @@
-// <copyright file="ControlBase.cs" company="KinsonDigital">
+﻿// <copyright file="ControlBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -76,11 +76,15 @@ namespace Velaptor.UI
             set => Position = new Point(Position.X, (int)(value - (Height / 2f)));
         }
 
-        /// <inheritdoc cref="ISizable.Width"/>
-        public virtual uint Width { get; protected internal set; }
+        /// <summary>
+        /// Gets or sets the width of the <see cref="ControlBase"/>.
+        /// </summary>
+        public virtual uint Width { get; set; }
 
-        /// <inheritdoc cref="ISizable.Height"/>
-        public virtual uint Height { get; protected internal set; }
+        /// <summary>
+        /// Gets or sets the height of the <see cref="ControlBase"/>.
+        /// </summary>
+        public virtual uint Height { get; set; }
 
         /// <inheritdoc cref="IControl.Visible"/>
         public virtual bool Visible { get; set; } = true;
