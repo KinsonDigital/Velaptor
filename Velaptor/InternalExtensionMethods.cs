@@ -1,4 +1,4 @@
-﻿// <copyright file="InternalExtensionMethods.cs" company="KinsonDigital">
+// <copyright file="InternalExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -150,8 +150,10 @@ namespace Velaptor
         /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
         /// <param name="items">The items to convert.</param>
         /// <returns>The items as a read only collection.</returns>
-        public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
-            => new (items.ToList());
+        public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T>? items) =>
+            items is null ?
+                new ReadOnlyCollection<T>(Array.Empty<T>()) :
+                new ReadOnlyCollection<T>(items.ToList());
 
         /// <summary>
         /// Converts the given list of <paramref name="items"/> to a read only dictionary where

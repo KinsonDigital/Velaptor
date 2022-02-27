@@ -125,6 +125,20 @@ namespace VelaptorTests
         }
 
         [Fact]
+        public void ToReadOnlyCollection_WithNullIEnumerableItems_ReturnsEmptyReadOnlyCollection()
+        {
+            // Arrange
+            IEnumerable<int>? numbers = null;
+
+            // Act
+            var actual = numbers.ToReadOnlyCollection();
+
+            // Assert
+            Assert.NotNull(actual);
+            Assert.Empty(actual);
+        }
+
+        [Fact]
         public void ToSixLaborImage_WhenInvoked_CorrectlyConvertsToSixLaborImage()
         {
             // Arrange
