@@ -9,6 +9,7 @@ namespace VelaptorTests.UI
     using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Linq;
+    using System.Numerics;
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
@@ -68,109 +69,172 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Left_WhenSettingValue_ReturnsCorrectResult()
+        public void Position_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var label = CreateLabel();
-            label.Position = new Point(400, 300);
-            label.Width = 100;
 
             // Act
-            label.Left = 50;
-            var actual = label.Left;
+            label.Position = new Point(11, 22);
+            var actual = label.Position;
 
             // Assert
-            Assert.Equal(50, actual);
-            Assert.Equal(100, label.Position.X);
+            Assert.Equal(new Point(11, 22), actual);
         }
 
         [Fact]
-        public void Right_WhenSettingValue_ReturnsCorrectResult()
+        public void Position_WhenContentIsNotLoaded_CreatesCorrectCharacterBounds()
         {
             // Arrange
+            const string labelText = "xunit";
+
             var label = CreateLabel();
-            label.Position = new Point(400, 300);
-            label.Width = 100;
+            label.Position = new Point(100, 200);
+            label.Width = 108;
+            label.Text = labelText;
 
             // Act
-            label.Right = 300;
-            var actual = label.Right;
+            var actual = label.CharacterBounds;
 
             // Assert
-            Assert.Equal(300, actual);
-            Assert.Equal(250, label.Position.X);
+            Assert.Empty(actual);
+            this.mockFont.Verify(m => m.GetCharacterBounds(It.IsAny<string>(), It.IsAny<Vector2>()), Times.Never);
         }
 
         [Fact]
-        public void Top_WhenSettingValue_ReturnsCorrectResult()
+        public void Position_WhenContentIsLoaded_CreatesCorrectCharacterBounds()
         {
             // Arrange
-            var label = CreateLabel();
-            label.Position = new Point(400, 300);
-            label.Height = 100;
-
-            // Act
-            label.Top = 300;
-            var actual = label.Top;
-
-            // Assert
-            Assert.Equal(300, actual);
-            Assert.Equal(350, label.Position.Y);
-        }
-
-        [Fact]
-        public void Bottom_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var label = CreateLabel();
-            label.Position = new Point(400, 300);
-            label.Height = 100;
-
-            // Act
-            label.Bottom = 300;
-            var actual = label.Bottom;
-
-            // Assert
-            Assert.Equal(300, actual);
-            Assert.Equal(250, label.Position.Y);
-        }
-
-        [Fact]
-        public void Width_WhenSettingTextProp_CalculatesCorrectWidth()
-        {
-            // Arrange
-            this.mockFont.Setup(m => m.Measure(TextValue))
-                .Returns(new SizeF(10f, 0f));
+            const string labelText = "xunit";
+            var characters = labelText.ToArray();
 
             var label = CreateLabel();
+            label.AutoSize = false;
+            var mockedCharBounds = new List<(char character, RectangleF bounds)>()
+            {
+                (characters[0], RectangleF.Empty),
+                (characters[1], RectangleF.Empty),
+                (characters[2], RectangleF.Empty),
+                (characters[3], RectangleF.Empty),
+                (characters[4], RectangleF.Empty),
+            };
 
-            label.Text = TextValue;
+            this.mockFont.Setup(m => m.GetCharacterBounds(It.IsAny<string>(), It.IsAny<Vector2>()))
+                .Returns(mockedCharBounds);
+
+            label.Position = new Point(100, 200);
+            label.Width = 108;
+            label.Text = labelText;
             label.LoadContent();
 
             // Act
+            var actual = label.CharacterBounds;
+
+            // Assert
+            Assert.Equal(labelText.Length, actual.Count);
+            this.mockFont.Verify(m => m.GetCharacterBounds(labelText, new Vector2(46, 200)), Times.Once);
+        }
+
+        [Fact]
+        public void AutoSize_WhenGettingDefaultValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+
+            // Act
+            var actual = label.AutoSize;
+
+            // Assert
+            Assert.True(actual, $"The expected default value of the '{nameof(Label.AutoSize)}' property must be true.");
+        }
+
+        [Fact]
+        public void AutoSize_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+
+            // Act
+            label.AutoSize = false;
+
+            // Assert
+            Assert.False(label.AutoSize);
+        }
+
+        [Theory]
+        [InlineData(true, 123u, 0u)]
+        [InlineData(false, 123u, 123u)]
+        public void Width_WhenSettingValue_ReturnsCorrectResult(
+            bool autoSize,
+            uint width,
+            uint expected)
+        {
+            // Arrange
+            const string testText = "xunit";
+            this.mockFont.Setup(m => m.Measure(testText)).Returns(new SizeF(expected, 20));
+            var label = CreateLabel();
+            label.AutoSize = autoSize;
+            label.Text = testText;
+            label.LoadContent();
+
+            // Act
+            label.Width = width;
             var actual = label.Width;
 
             // Assert
-            Assert.Equal(10u, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Height_WhenSettingTextProp_CalculatesCorrectHeight()
+        [Theory]
+        [InlineData(true, 123u, 0u)]
+        [InlineData(false, 123u, 123u)]
+        public void Height_WhenSettingValue_ReturnsCorrectResult(
+            bool autoSize,
+            uint height,
+            uint expected)
         {
             // Arrange
-            this.mockFont.Setup(m => m.Measure(TextValue))
-                .Returns(new SizeF(0f, 20f));
-
+            const string testText = "xunit";
+            this.mockFont.Setup(m => m.Measure(testText)).Returns(new SizeF(10, expected));
             var label = CreateLabel();
-
-            label.Text = TextValue;
+            label.AutoSize = autoSize;
+            label.Text = testText;
             label.LoadContent();
 
             // Act
+            label.Height = height;
             var actual = label.Height;
 
             // Assert
-            Assert.Equal(20u, actual);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Style_WhenSettingValueWhenFontIsNotLoaded_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+
+            // Act
+            label.Style = FontStyle.Italic;
+
+            // Assert
+            Assert.Equal(FontStyle.Italic, label.Style);
+        }
+
+        [Fact]
+        public void Style_WhenSettingValueWhenFontIsLoaded_ReturnsCorrectResult()
+        {
+            // Arrange
+            this.mockFont.SetupProperty(p => p.Style);
+            var label = CreateLabel();
+            label.LoadContent();
+
+            // Act
+            label.Style = FontStyle.Italic;
+
+            // Assert
+            Assert.Equal(FontStyle.Italic, label.Style);
         }
 
         [Fact]
@@ -189,20 +253,6 @@ namespace VelaptorTests.UI
             // Assert
             Assert.Equal(0u, actualWidth);
             Assert.Equal(0u, actualHeight);
-        }
-
-        [Fact(Skip = "Cannot be tested until IFont is injected for mocking.")]
-        public void Style_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var label = CreateLabel();
-
-            // Act
-            label.Style = VelFontStyle.Bold;
-            var actual = label.Style;
-
-            // Assert
-            Assert.Equal(VelFontStyle.Bold, actual);
         }
 
         [Fact]
@@ -233,14 +283,28 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Size_WhenSettingValue_ReturnsCorrectResult()
+        public void Font_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var label = CreateLabel();
+            label.LoadContent();
+
+            // Act
+            var actual = label.Font;
+
+            // Assert
+            Assert.Same(this.mockFont.Object, actual);
+        }
+
+        [Fact]
+        public void FontSize_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var label = CreateLabel();
 
             // Act
-            label.Size = 123f;
-            var actual = label.Size;
+            label.FontSize = 123f;
+            var actual = label.FontSize;
 
             // Assert
             Assert.Equal(123f, actual);
@@ -260,6 +324,45 @@ namespace VelaptorTests.UI
 
             // Assert
             this.mockContentLoader.Verify(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12), Times.Once);
+        }
+
+        [Fact]
+        public void LoadContent_WhenInvoked_CreatesCorrectCharacterBounds()
+        {
+            // Arrange
+            const string labelText = "test-value";
+            var characters = labelText.ToArray();
+
+            var label = CreateLabel();
+            var mockedCharBounds = new List<(char character, RectangleF bounds)>()
+            {
+                (characters[0], RectangleF.Empty),
+                (characters[1], RectangleF.Empty),
+                (characters[2], RectangleF.Empty),
+                (characters[3], RectangleF.Empty),
+                (characters[4], RectangleF.Empty),
+                (characters[5], RectangleF.Empty),
+                (characters[6], RectangleF.Empty),
+                (characters[7], RectangleF.Empty),
+                (characters[8], RectangleF.Empty),
+                (characters[9], RectangleF.Empty),
+            };
+
+            this.mockFont.Setup(m => m.GetCharacterBounds(It.IsAny<string>(), It.IsAny<Vector2>()))
+                .Returns(mockedCharBounds);
+
+            label.AutoSize = false;
+            label.Position = new Point(100, 200);
+            label.Width = 108;
+            label.Text = labelText;
+            label.LoadContent();
+
+            // Act
+            var actual = label.CharacterBounds;
+
+            // Assert
+            Assert.Equal(labelText.Length, actual.Count);
+            this.mockFont.Verify(m => m.GetCharacterBounds(labelText, new Vector2(46, 200)), Times.Once);
         }
 
         [Fact]
@@ -343,6 +446,30 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
+        public void Render_WithNullOrEmptyText_DoesNotRender()
+        {
+            // Arrange
+            var mockSpriteBatch = new Mock<ISpriteBatch>();
+            var label = CreateLabel();
+            label.Text = string.Empty;
+            label.LoadContent();
+
+            // Act
+            label.Render(mockSpriteBatch.Object);
+
+            // Assert
+            mockSpriteBatch.Verify(m =>
+                m.Render(
+                    It.IsAny<IFont>(),
+                    It.IsAny<string>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<float>(),
+                    It.IsAny<float>(),
+                    It.IsAny<Color>()), Times.Never);
+        }
+
+        [Fact]
         public void Render_WhenInvoked_RendersText()
         {
             // Arrange
@@ -352,7 +479,7 @@ namespace VelaptorTests.UI
             label.Text = TextValue;
             label.Position = new Point(100, 200);
             label.Visible = true;
-            label.Size = 123f;
+            label.FontSize = 123f;
             label.Color = Color.FromArgb(11, 22, 33, 44);
             label.LoadContent();
 
@@ -389,7 +516,13 @@ namespace VelaptorTests.UI
 
                         if (alreadyAdded is false)
                         {
-                            result.Add(new GlyphMetrics { Glyph = text[charIndex], GlyphWidth = charIndex, GlyphHeight = charIndex * 10 });
+                            result.Add(new GlyphMetrics
+                            {
+                                Glyph = text[charIndex],
+                                GlyphWidth = charIndex,
+                                Ascender = i + 1,
+                                GlyphHeight = charIndex * 10,
+                            });
                         }
                     }
 

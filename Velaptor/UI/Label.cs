@@ -6,8 +6,10 @@ namespace Velaptor.UI
 {
     // ReSharper disable RedundantNameQualifier
     using System;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using System.Linq;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
     using Velaptor.Factories;
@@ -23,9 +25,10 @@ namespace Velaptor.UI
     {
         private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private readonly IContentLoader contentLoader;
-        private IFont? font;
+        private readonly Color disabledColor = Color.DarkGray;
         private string labelText = string.Empty;
         private FontStyle cachedStyle;
+        private (char character, RectangleF bounds)[]? textCharBounds;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Label"/> class.
@@ -61,36 +64,76 @@ namespace Velaptor.UI
             {
                 this.labelText = value;
 
-                UpdateLabelSize();
+                CalcTextCharacterBounds();
             }
         }
 
-        /// <inheritdoc cref="ControlBase.Left"/>
-        public override int Left
+        /// <summary>
+        /// Gets a list of all the bounds for each character of the <see cref="Label"/>.<see cref="Text"/>.
+        /// </summary>
+        public ReadOnlyCollection<(char character, RectangleF bounds)> CharacterBounds =>
+            this.textCharBounds.ToReadOnlyCollection();
+
+        /// <inheritdoc/>
+        public override Point Position
         {
-            get => (int)(Position.X - (Width / 2f));
-            set => Position = new Point((int)(value + (Width / 2f)), Position.Y);
+            get => base.Position;
+            set
+            {
+                base.Position = value;
+                CalcTextCharacterBounds();
+            }
         }
 
-        /// <inheritdoc cref="ControlBase.Right"/>
-        public override int Right
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the size of the <see cref="Label"/> will be
+        /// managed automatically based on the size of the text.
+        /// </summary>
+        /// <remarks>
+        ///     If <see cref="AutoSize"/> is <c>false</c>, this means that the user can set the size to anything they
+        ///     desire.  If the size is less than the width or height of the text, than only the text characters
+        ///     that are still within the bounds of the <see cref="Label"/> will be rendered.
+        /// </remarks>
+        public bool AutoSize { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the width of the <see cref="Label"/>.
+        /// </summary>
+        public override uint Width
         {
-            get => (int)(Position.X + (Width / 2f));
-            set => Position = new Point((int)(value - (Width / 2f)), Position.Y);
+            get
+            {
+                var result = base.Width;
+
+                if (!AutoSize)
+                {
+                    return result;
+                }
+
+                var textSize = Font?.Measure(this.labelText) ?? SizeF.Empty;
+                return (uint)textSize.Width;
+            }
+            set => base.Width = value;
         }
 
-        /// <inheritdoc cref="ControlBase.Top"/>
-        public override int Top
+        /// <summary>
+        /// Gets or sets the height of the <see cref="Label"/>.
+        /// </summary>
+        public override uint Height
         {
-            get => (int)(Position.Y - (Height / 2f));
-            set => Position = new Point(Position.X, (int)(value + (Height / 2f)));
-        }
+            get
+            {
+                var result = base.Height;
 
-        /// <inheritdoc cref="ControlBase.Bottom"/>
-        public override int Bottom
-        {
-            get => (int)(Position.Y + (Height / 2f));
-            set => Position = new Point(Position.X, (int)(value - (Height / 2f)));
+                if (!AutoSize)
+                {
+                    return result;
+                }
+
+                var textSize = Font?.Measure(this.labelText) ?? SizeF.Empty;
+                return (uint)textSize.Height;
+            }
+            set => base.Height = value;
         }
 
         /// <summary>
@@ -98,17 +141,16 @@ namespace Velaptor.UI
         /// </summary>
         public FontStyle Style
         {
-            get => this.font?.Style ?? this.cachedStyle;
+            get => Font?.Style ?? this.cachedStyle;
             set
             {
-                if (this.font is null)
+                if (Font is null)
                 {
                     this.cachedStyle = value;
                 }
                 else
                 {
-                    this.font.Style = this.cachedStyle;
-                    this.cachedStyle = value;
+                    Font.Style = value;
                 }
             }
         }
@@ -119,9 +161,14 @@ namespace Velaptor.UI
         public Color Color { get; set; } = Color.Black;
 
         /// <summary>
+        /// Gets the font for the label.
+        /// </summary>
+        public IFont? Font { get; private set; }
+
+        /// <summary>
         /// Gets or sets the size of the text of the label.
         /// </summary>
-        public float Size { get; set; } = 1f;
+        public float FontSize { get; set; } = 1f;
 
         /// <inheritdoc cref="ControlBase.UnloadContent"/>
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
@@ -132,11 +179,11 @@ namespace Velaptor.UI
                 return;
             }
 
-            this.font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
-
-            UpdateLabelSize();
+            Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
 
             base.LoadContent();
+
+            CalcTextCharacterBounds();
         }
 
         /// <inheritdoc cref="ControlBase.UnloadContent"/>
@@ -147,45 +194,73 @@ namespace Velaptor.UI
                 return;
             }
 
-            if (this.font is not null)
+            if (Font is not null)
             {
-                this.contentLoader.UnloadFont(this.font);
+                this.contentLoader.UnloadFont(Font);
             }
 
             base.UnloadContent();
         }
 
-        /// <inheritdoc cref="IDrawable.Render"/>
+        /// <summary>
+        /// Renders the <see cref="Label"/>.
+        /// </summary>
+        /// <param name="spriteBatch">Renders textures, primitives, and text.</param>
         /// <exception cref="ArgumentNullException">Invoked if the <paramref name="spriteBatch"/> is null.</exception>
         public override void Render(ISpriteBatch spriteBatch)
         {
-            if (spriteBatch == null)
-            {
-                throw new ArgumentNullException(nameof(spriteBatch), "The parameter must not be null.");
-            }
+            Render(spriteBatch, this.labelText);
+
+            base.Render(spriteBatch);
+        }
+
+        /// <summary>
+        /// Renders the <see cref="Label"/>.
+        /// </summary>
+        /// <param name="spriteBatch">Renders textures, primitives, and text.</param>
+        /// <param name="text">The text to render.</param>
+        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="spriteBatch"/> is null.</exception>
+        internal void Render(ISpriteBatch spriteBatch, string text)
+        {
+            EnsureThat.ParamIsNotNull(spriteBatch);
 
             if (IsLoaded is false || Visible is false)
             {
                 return;
             }
 
-            if (this.font is not null)
+            if (Font is not null && string.IsNullOrEmpty(text) is false)
             {
-                spriteBatch.Render(this.font, Text, Position.X, Position.Y, Size, 0f, Color);
+                spriteBatch.Render(
+                    Font,
+                    text,
+                    Position.X,
+                    Position.Y,
+                    FontSize,
+                    0f,
+                    Enabled ? Color : this.disabledColor);
             }
 
             base.Render(spriteBatch);
         }
 
         /// <summary>
-        /// Updates the width and height of the label by measuring the size of the text.
+        /// Calculates the bounds of each character of the labels <see cref="Text"/>.
         /// </summary>
-        private void UpdateLabelSize()
+        private void CalcTextCharacterBounds()
         {
-            var textSize = this.font?.Measure(this.labelText);
+            if (Font is null || IsLoaded is false)
+            {
+                return;
+            }
 
-            Width = (uint)(textSize?.Width ?? 0u);
-            Height = (uint)(textSize?.Height ?? 0u);
+            // Offset the position by the half width for centering purposes
+            var textPos = Position.ToVector2();
+            textPos.X -= Width / 2f;
+
+            var charBounds = Font.GetCharacterBounds(this.labelText, textPos);
+
+            this.textCharBounds = charBounds.ToArray();
         }
     }
 }
