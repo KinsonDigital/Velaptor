@@ -232,11 +232,6 @@ namespace Velaptor.Content.Fonts
 
                 var lastLine = i == lines.Length - 1;
 
-                if (lastLine)
-                {
-                    verticalOffset = lineGlyphs.Max(g => g.GlyphHeight - g.HoriBearingY);
-                }
-
                 var lineSize = MeasureLine(lineGlyphs);
                 totalHeight += lineSize.Height;
                 totalHeight += lastLine ? 0 : LineSpacing - lineSize.Height;

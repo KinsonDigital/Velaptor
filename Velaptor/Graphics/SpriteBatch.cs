@@ -363,10 +363,9 @@ namespace Velaptor.Graphics
                 {
                     var firstLineHeight = glyphLines.MaxHeight(i);
                     var textTop = originalY + firstLineHeight;
-                    var lastLineVerticalOffset = glyphLines.MaxVerticalOffset(glyphLines.Count - 1);
                     var textHalfHeight = textSize.Height / 2f;
 
-                    characterY = textTop - textHalfHeight - (lastLineVerticalOffset / 2f);
+                    characterY = textTop - textHalfHeight;
                 }
                 else
                 {
