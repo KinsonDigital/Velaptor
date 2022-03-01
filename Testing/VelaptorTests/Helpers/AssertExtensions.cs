@@ -19,6 +19,8 @@ namespace VelaptorTests.Helpers
     // ReSharper disable once ClassNeverInstantiated.Global
     public class AssertExtensions : Assert
     {
+        private const string TableFlip = "(╯‵□′)╯︵┻━┻  ";
+
         /// <summary>
         /// Verifies that the exact exception is thrown (and not a derived exception type) and that
         /// the exception message matches the given <paramref name="expectedMessage"/>.
@@ -42,7 +44,7 @@ namespace VelaptorTests.Helpers
         {
             if (testCode is null)
             {
-                throw new ArgumentNullException(nameof(testCode), "The parameter must not be null");
+                Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{testCode}' parameter.");
             }
 
             try
@@ -51,7 +53,7 @@ namespace VelaptorTests.Helpers
             }
             catch (T)
             {
-                Assert.True(false, $"Expected the exception {typeof(T).Name} to not be thrown.");
+                Assert.True(false, $"{TableFlip}Expected the exception {typeof(T).Name} to not be thrown.");
             }
         }
 
@@ -63,7 +65,7 @@ namespace VelaptorTests.Helpers
         {
             if (testCode is null)
             {
-                throw new ArgumentNullException(nameof(testCode), "The parameter must not be null");
+                Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{testCode}' parameter.");
             }
 
             try
@@ -74,7 +76,7 @@ namespace VelaptorTests.Helpers
             {
                 if (ex.GetType() == typeof(NullReferenceException))
                 {
-                    Assert.True(false, $"Expected not to raise a {nameof(NullReferenceException)} exception.");
+                    Assert.True(false, $"{TableFlip}Expected not to raise a {nameof(NullReferenceException)} exception.");
                 }
                 else
                 {
@@ -101,14 +103,14 @@ namespace VelaptorTests.Helpers
             {
                 Assert.True(
                 false,
-                $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
+                $"{TableFlip}Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
             }
 
             if (expectedItems is not null && actualItems is null)
             {
                 Assert.True(
                 false,
-                $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
+                $"{TableFlip}Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
             }
 
             var expected = expectedItems as T[] ?? expectedItems.ToArray();
@@ -118,7 +120,7 @@ namespace VelaptorTests.Helpers
                 throw new AssertActualExpectedException(
                     expected.Length,
                     actual.Length,
-                    $"The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
+                    $"{TableFlip}The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
             }
 
             var expectedArrayItems = expected.ToArray();
@@ -131,7 +133,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
                 if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
@@ -139,15 +141,15 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
 
                 if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
                 {
                     throw new AssertActualExpectedException(
-                        expectedArrayItems[i],
+                        expectedArrayItems[i] + "\n------------------------------------------------------------------------------------------------------------------------",
                         actualArrayItems[i],
-                        $"The expected and actual items at index '{i}' are not equal.");
+                        $"{TableFlip}The expected and actual items at index '{i}' are not equal.");
                 }
             }
 
@@ -178,14 +180,14 @@ namespace VelaptorTests.Helpers
             {
                 Assert.True(
                 false,
-                $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
+                $"{TableFlip}Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
             }
 
             if (expectedItems is not null && actualItems is null)
             {
                 Assert.True(
                 false,
-                $"Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
+                $"{TableFlip}Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
             }
 
             var expected = expectedItems as T[] ?? expectedItems.ToArray();
@@ -195,7 +197,7 @@ namespace VelaptorTests.Helpers
                 throw new AssertActualExpectedException(
                     expected.Length,
                     actual.Length,
-                    $"The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
+                    $"{TableFlip}The quantity of items for '{nameof(expectedItems)}' and '{nameof(actualItems)}' do not match.");
             }
 
             var expectedArrayItems = expected.ToArray();
@@ -208,7 +210,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
                 if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
@@ -216,7 +218,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
 
                 if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
@@ -228,7 +230,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"The expected and actual items at index '{i}' are not equal in the '{sectionName}' of the array.");
+                        $"{TableFlip}The expected and actual items at index '{i}' are not equal in the '{sectionName}' of the array.");
                 }
             }
 
@@ -246,7 +248,7 @@ namespace VelaptorTests.Helpers
         {
             if (arePredicate is null)
             {
-                throw new ArgumentNullException(nameof(arePredicate), "The parameter must not be null.");
+                Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{arePredicate}' parameter.");
             }
 
             var itemsToCheck = items.ToArray();
@@ -258,7 +260,7 @@ namespace VelaptorTests.Helpers
                     continue;
                 }
 
-                Assert.True(false, $"The item '{itemsToCheck[i]}' at index '{i}' returned false with the '{nameof(arePredicate)}'");
+                Assert.True(false, $"{TableFlip}The item '{itemsToCheck[i]}' at index '{i}' returned false with the '{nameof(arePredicate)}'");
             }
         }
 
@@ -277,12 +279,12 @@ namespace VelaptorTests.Helpers
         {
             if (includePredicate is null)
             {
-                Assert.True(false, $"Cannot perform assertion with null '{nameof(includePredicate)}' parameter.");
+                Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{nameof(includePredicate)}' parameter.");
             }
 
             if (assertAction is null)
             {
-                Assert.True(false, $"Cannot perform assertion with null '{nameof(assertAction)}' parameter.");
+                Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{nameof(assertAction)}' parameter.");
             }
 
             var itemsToCheck = items.ToArray();
@@ -425,7 +427,11 @@ namespace VelaptorTests.Helpers
                 }
             }
 
-            Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.  Are there any items?");
+            var userMessage = TableFlip;
+            userMessage += $"{TableFlip}No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.";
+            userMessage += "  Are there any items?";
+
+            Assert.True(actionInvoked, userMessage);
         }
 
         /// <summary>
@@ -444,7 +450,11 @@ namespace VelaptorTests.Helpers
                 action(collection[i], i);
             }
 
-            Assert.True(actionInvoked, $"No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.  Are there any items?");
+            var userMessage = TableFlip;
+            userMessage += $"No assertions were actually made in {nameof(AssertExtensions)}.{nameof(All)}<T>.";
+            userMessage += "  Are there any items?";
+
+            Assert.True(actionInvoked, userMessage);
         }
 
         /// <summary>
@@ -455,7 +465,7 @@ namespace VelaptorTests.Helpers
         /// <param name="message">The message to be shown about the failed assertion.</param>
         public static void EqualWithMessage(int expected, int actual, string message)
         {
-            var assertException = new AssertActualExpectedException(expected, actual, message);
+            var assertException = new AssertActualExpectedException(expected, actual, $"{TableFlip}{message}");
             try
             {
                 Equal(expected, actual);
@@ -474,11 +484,14 @@ namespace VelaptorTests.Helpers
         /// <param name="message">The message to be shown about the failed assertion.</param>
         public static void EqualWithMessage(Enum expected, Enum actual, string message)
         {
-            var assertException = new AssertActualExpectedException(expected.ToString(), actual.ToString(), message);
+            var assertException = new AssertActualExpectedException(
+                expected.ToString(),
+                actual.ToString(),
+                $"{TableFlip}{message}");
 
             try
             {
-                Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? string.Empty : message);
+                Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? TableFlip : message);
             }
             catch (Exception)
             {
@@ -505,8 +518,60 @@ namespace VelaptorTests.Helpers
                 var expectedStr = expected is null ? "NULL" : expected.ToString();
                 var actualStr = actual is null ? "NULL" : actual.ToString();
 
-                throw new AssertActualExpectedException(expectedStr, actualStr, message);
+                throw new AssertActualExpectedException(expectedStr, actualStr, $"{TableFlip}{message}");
             }
+        }
+
+        /// <summary>
+        /// Verifies if the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
+        /// </summary>
+        /// <typeparam name="T">
+        ///     The <see cref="IEquatable{T}"/> type of the <paramref name="expected"/> and <paramref name="actual"/>.
+        /// </typeparam>
+        /// <param name="expected">The expected <see langword="int"/> value.</param>
+        /// <param name="actual">The actual <see langword="int"/> value.</param>
+        /// <param name="typeName">The name of the type that is being compared.</param>
+        /// <param name="memberName">The name of the type member being compared.</param>
+        public static void TypeMemberEquals<T>(T? expected, T? actual, string typeName, string memberName)
+            where T : IEquatable<T>
+        {
+            var message = $"{typeName}.{memberName} incorrect.";
+
+            try
+            {
+                Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? string.Empty : message);
+            }
+            catch (Exception)
+            {
+                var expectedStr = expected is null ? "NULL" : expected.ToString();
+                var actualStr = actual is null ? "NULL" : actual.ToString();
+
+                throw new AssertActualExpectedException(expectedStr, actualStr, $"{TableFlip}{message}");
+            }
+        }
+
+        /// <summary>
+        /// Verifies that an expression is true for a member of a type.
+        /// </summary>
+        /// <param name="condition">The condition to be expected.</param>
+        /// <param name="typeName">The name of the type that contains the member.</param>
+        /// <param name="memberName">The name of the member that is not <c>true</c>.</param>
+        public static void TypeMemberTrue(bool condition, string typeName, string memberName)
+        {
+            var message = $"{TableFlip}{typeName}.{memberName} not true.";
+            Assert.True(condition, message);
+        }
+
+        /// <summary>
+        /// Verifies that an expression is false for a member of a type.
+        /// </summary>
+        /// <param name="condition">The condition to be expected.</param>
+        /// <param name="typeName">The name of the type that contains the member.</param>
+        /// <param name="memberName">The name of the member that is not <c>false</c>.</param>
+        public static void TypeMemberFalse(bool condition, string typeName, string memberName)
+        {
+            var message = $"{TableFlip}{typeName}.{memberName} not true.";
+            Assert.False(condition, message);
         }
 
         /// <summary>
@@ -522,7 +587,6 @@ namespace VelaptorTests.Helpers
             try
             {
                 Assert.Raises(attach, detach, testCode);
-
                 Assert.Equal("No event was raised", "An event was raised.");
             }
             catch (Exception ex)
