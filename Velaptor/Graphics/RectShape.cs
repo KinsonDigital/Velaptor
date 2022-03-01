@@ -15,8 +15,6 @@ namespace Velaptor.Graphics
     {
         private float width = 1f;
         private float height = 1f;
-        private float borderThickness = 1f;
-        private CornerRadius cornerRadius = new (1f, 1f, 1f, 1f);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RectShape"/> struct.
@@ -150,25 +148,7 @@ namespace Velaptor.Graphics
         ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
         /// </para>
         /// </remarks>
-        public float BorderThickness
-        {
-            get => this.borderThickness;
-            set
-            {
-                /*
-                 * Always have the smallest value between the width and height (divided by 2)
-                 * as the maximum limit of what the border thickness can be.
-                 * If the value was allowed to be larger then the smallest value between
-                 * the width and height, it would produce strange rendering artifacts.
-                 */
-                var largestValueAllowed = (Width <= Height ? Width : Height) / 2f;
-
-                value = value > largestValueAllowed ? largestValueAllowed : value;
-                value = value < 1f ? 1f : value;
-
-                this.borderThickness = value;
-            }
-        }
+        public float BorderThickness { get; set; } = 1f;
 
         /// <summary>
         /// Gets or sets the radius of each corner of the rectangle.
@@ -176,32 +156,7 @@ namespace Velaptor.Graphics
         /// <remarks>
         ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
         /// </remarks>
-        public CornerRadius CornerRadius
-        {
-            get => this.cornerRadius;
-            set
-            {
-                /*
-                 * Always have the smallest value between the width and height (divided by 2)
-                 * as the maximum limit of what any corner radius can be.
-                 * If the value was allowed to be larger then the smallest value between
-                 * the width and height, it would produce strange rendering artifacts.
-                 */
-                var largestValueAllowed = (Width <= Height ? Width : Height) / 2f;
-
-                value = value.TopLeft > largestValueAllowed ? SetTopLeft(value, largestValueAllowed) : value;
-                value = value.BottomLeft > largestValueAllowed ? SetBottomLeft(value, largestValueAllowed) : value;
-                value = value.BottomRight > largestValueAllowed ? SetBottomRight(value, largestValueAllowed) : value;
-                value = value.TopRight > largestValueAllowed ? SetTopRight(value, largestValueAllowed) : value;
-
-                value = value.TopLeft < 0 ? SetTopLeft(value, 0) : value;
-                value = value.BottomLeft < 0 ? SetBottomLeft(value, 0) : value;
-                value = value.BottomRight < 0 ? SetBottomRight(value, 0) : value;
-                value = value.TopRight < 0 ? SetTopRight(value, 0) : value;
-
-                this.cornerRadius = value;
-            }
-        }
+        public CornerRadius CornerRadius { get; set; } = new (1f, 1f, 1f, 1f);
 
         /// <summary>
         /// Gets or sets the type of color gradient that will be applied to the rectangle.
