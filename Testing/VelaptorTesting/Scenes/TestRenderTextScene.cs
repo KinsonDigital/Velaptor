@@ -94,8 +94,8 @@ namespace VelaptorTesting.Scenes
             // Increase Render Size Button
             this.btnIncreaseRenderSize = new Button
             {
-                    Text = $"Render Size({Math.Round(this.renderSize, 2)}) +",
-                    FaceTextureName = "button-face-extra-large",
+                Text = $"Render Size({Math.Round(this.renderSize, 2)}) +",
+                Name = nameof(this.btnIncreaseRenderSize),
             };
 
             this.btnIncreaseRenderSize.MouseDown += (_, _) =>
@@ -115,8 +115,8 @@ namespace VelaptorTesting.Scenes
             // Decrease Render Size Button
             this.btnDecreaseRenderSize = new Button
             {
-                    Text = $"Render Size({Math.Round(this.renderSize, 2)}) -",
-                    FaceTextureName = "button-face-extra-large",
+                Text = $"Render Size({Math.Round(this.renderSize, 2)}) -",
+                Name = nameof(this.btnDecreaseRenderSize),
             };
 
             this.btnDecreaseRenderSize.MouseDown += (_, _) =>
@@ -136,8 +136,8 @@ namespace VelaptorTesting.Scenes
             // Set Multi-Line
             this.btnSetMultiLine = new Button
             {
-                    Text = $"Multi-Line: {this.isMultiLine}",
-                    FaceTextureName = "button-face-large",
+                Text = $"Multi-Line: {this.isMultiLine}",
+                Name = nameof(this.btnSetMultiLine),
             };
 
             this.btnSetMultiLine.MouseUp += (_, _) =>
@@ -150,8 +150,8 @@ namespace VelaptorTesting.Scenes
             // Set Color
             this.btnSetColor = new Button
             {
-                    Text = $"Set Color: {(this.isClrSet ? "On" : "Off")}",
-                    FaceTextureName = "button-face-large",
+                Text = $"Set Color: {(this.isClrSet ? "On" : "Off")}",
+                Name = nameof(this.btnSetColor),
             };
 
             this.btnSetColor.MouseUp += (_, _) =>
@@ -163,8 +163,8 @@ namespace VelaptorTesting.Scenes
             // Set the font style to bold
             this.btnSetStyle = new Button
             {
-                    Text = $"Style: {this.textFont.Style}",
-                    FaceTextureName = "button-face-large",
+                Text = $"Style: {this.textFont.Style}",
+                Name = nameof(this.btnSetStyle),
             };
 
             this.btnSetStyle.MouseUp += (_, _) =>
@@ -184,8 +184,8 @@ namespace VelaptorTesting.Scenes
             // Increase font size
             this.btnIncreaseFontSize = new Button
             {
-                    Text = $"Font Size({this.textFont.Size}) +",
-                    FaceTextureName = "button-face-large",
+                Text = $"Font Size({this.textFont.Size}) +",
+                Name = nameof(this.btnIncreaseFontSize),
             };
             this.btnIncreaseFontSize.MouseUp += (_, _) =>
             {
@@ -197,8 +197,8 @@ namespace VelaptorTesting.Scenes
             // Decrease font size
             this.btnDecreaseFontSize = new Button
             {
-                    Text = $"Font Size({this.textFont.Size}) -",
-                    FaceTextureName = "button-face-large",
+                Text = $"Font Size({this.textFont.Size}) -",
+                Name = nameof(this.btnDecreaseFontSize),
             };
             this.btnDecreaseFontSize.MouseUp += (_, _) =>
             {

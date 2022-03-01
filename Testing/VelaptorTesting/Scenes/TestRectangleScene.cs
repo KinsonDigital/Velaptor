@@ -117,7 +117,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Width +",
                 Name = nameof(this.btnIncreaseWidth),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseWidth.MouseDown += (_, _) => this.rectangle.Width += 5;
 
@@ -125,7 +124,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Width -",
                 Name = nameof(this.btnDecreaseWidth),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseWidth.MouseDown += (_, _) => this.rectangle.Width -= 5;
 
@@ -133,7 +131,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Height +",
                 Name = nameof(this.btnIncreaseHeight),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseHeight.MouseDown += (_, _) => this.rectangle.Height += 5;
 
@@ -141,7 +138,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Height -",
                 Name = nameof(this.btnDecreaseHeight),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseHeight.MouseDown += (_, _) => this.rectangle.Height -= 5;
 
@@ -149,7 +145,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Is Filled: true",
                 Name = nameof(this.btnIsFilled),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIsFilled.Click += (_, _) =>
             {
@@ -163,7 +158,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Solid Fill Clr: Red",
                 Name = nameof(this.btnSolidFillClr),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnSolidFillClr.Click += (_, _) =>
             {
@@ -191,7 +185,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Border Thickness +",
                 Name = nameof(this.btnIncreaseBorderThickness),
-                FaceTextureName = "button-face-extra-large",
                 Enabled = false,
             };
             this.btnIncreaseBorderThickness.MouseDown += (_, _) =>
@@ -201,7 +194,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Border Thickness -",
                 Name = nameof(this.btnDecreaseBorderThickness),
-                FaceTextureName = "button-face-extra-large",
                 Enabled = false,
             };
             this.btnDecreaseBorderThickness.MouseDown += (_, _) =>
@@ -211,7 +203,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Top Left Radius +",
                 Name = nameof(this.btnIncreaseTopLeftRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseTopLeftRadius.MouseDown += (_, _) =>
                 this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopLeft(1);
@@ -220,7 +211,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Top Left Radius -",
                 Name = nameof(this.btnDecreaseTopLeftRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseTopLeftRadius.MouseDown += (_, _) =>
                 this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopLeft(1);
@@ -229,7 +219,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Bottom Left Radius +",
                 Name = nameof(this.btnIncreaseBottomLeftRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseBottomLeftRadius.MouseDown += (_, _) =>
                 this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomLeft(1);
@@ -238,7 +227,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Bottom Left Radius -",
                 Name = nameof(this.btnDecreaseBottomLeftRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseBottomLeftRadius.MouseDown += (_, _) =>
                 this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomLeft(1);
@@ -247,7 +235,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Bottom Right Radius +",
                 Name = nameof(this.btnIncreaseBottomRightRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseBottomRightRadius.MouseDown += (_, _) =>
                 this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomRight(1);
@@ -256,7 +243,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Bottom Right Radius -",
                 Name = nameof(this.btnDecreaseBottomRightRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseBottomRightRadius.MouseDown += (_, _) =>
                 this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomRight(1);
@@ -265,7 +251,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Top Right Radius +",
                 Name = nameof(this.btnIncreaseTopRightRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseTopRightRadius.MouseDown += (_, _) =>
                 this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopRight(1);
@@ -274,7 +259,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Top Right Radius -",
                 Name = nameof(this.btnDecreaseTopRightRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseTopRightRadius.MouseDown += (_, _) =>
                 this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopRight(1);
@@ -283,7 +267,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Gradient Type: None",
                 Name = nameof(this.btnGradientType),
-                FaceTextureName = "button-face-extra-extra-large",
             };
             this.btnGradientType.Click += (_, _) =>
             {
@@ -302,7 +285,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Grad Clr Start: Red",
                 Name = nameof(this.btnGradClrStart),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnGradClrStart.Click += (_, _) =>
             {
@@ -330,7 +312,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Grad Clr Stop: Red",
                 Name = nameof(this.btnGradClrStop),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnGradClrStop.Click += (_, _) =>
             {
