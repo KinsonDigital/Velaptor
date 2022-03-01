@@ -15,7 +15,7 @@ namespace VelaptorTesting.Scenes
 
     public class TestRectangleScene : SceneBase
     {
-        private const int LeftMargin = 10;
+        private const int LeftMargin = 30;
         private const int RightMargin = 10;
         private const int BottomMargin = 10;
         private const int VertButtonSpacing = 10;
@@ -205,7 +205,17 @@ namespace VelaptorTesting.Scenes
                 Name = nameof(this.btnIncreaseTopLeftRadius),
             };
             this.btnIncreaseTopLeftRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopLeft(1);
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.CornerRadius.TopLeft > maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopLeft(newValue);
+            };
 
             this.btnDecreaseTopLeftRadius = new Button
             {
@@ -213,7 +223,13 @@ namespace VelaptorTesting.Scenes
                 Name = nameof(this.btnDecreaseTopLeftRadius),
             };
             this.btnDecreaseTopLeftRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopLeft(1);
+            {
+                var newValue = this.rectangle.CornerRadius.TopLeft <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopLeft(newValue);
+            };
 
             this.btnIncreaseBottomLeftRadius = new Button
             {
@@ -221,7 +237,17 @@ namespace VelaptorTesting.Scenes
                 Name = nameof(this.btnIncreaseBottomLeftRadius),
             };
             this.btnIncreaseBottomLeftRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomLeft(1);
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.CornerRadius.BottomLeft > maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomLeft(newValue);
+            };
 
             this.btnDecreaseBottomLeftRadius = new Button
             {
@@ -229,7 +255,13 @@ namespace VelaptorTesting.Scenes
                 Name = nameof(this.btnDecreaseBottomLeftRadius),
             };
             this.btnDecreaseBottomLeftRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomLeft(1);
+            {
+                var newValue = this.rectangle.CornerRadius.BottomLeft <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomLeft(newValue);
+            };
 
             this.btnIncreaseBottomRightRadius = new Button
             {
@@ -237,7 +269,17 @@ namespace VelaptorTesting.Scenes
                 Name = nameof(this.btnIncreaseBottomRightRadius),
             };
             this.btnIncreaseBottomRightRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomRight(1);
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.CornerRadius.BottomRight > maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomRight(newValue);
+            };
 
             this.btnDecreaseBottomRightRadius = new Button
             {
@@ -245,7 +287,13 @@ namespace VelaptorTesting.Scenes
                 Name = nameof(this.btnDecreaseBottomRightRadius),
             };
             this.btnDecreaseBottomRightRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomRight(1);
+            {
+                var newValue = this.rectangle.CornerRadius.BottomRight <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomRight(newValue);
+            };
 
             this.btnIncreaseTopRightRadius = new Button
             {
@@ -253,7 +301,17 @@ namespace VelaptorTesting.Scenes
                 Name = nameof(this.btnIncreaseTopRightRadius),
             };
             this.btnIncreaseTopRightRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopRight(1);
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.CornerRadius.TopRight > maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopRight(newValue);
+            };
 
             this.btnDecreaseTopRightRadius = new Button
             {
@@ -261,7 +319,13 @@ namespace VelaptorTesting.Scenes
                 Name = nameof(this.btnDecreaseTopRightRadius),
             };
             this.btnDecreaseTopRightRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopRight(1);
+            {
+                var newValue = this.rectangle.CornerRadius.TopRight <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopRight(newValue);
+            };
 
             this.btnGradientType = new Button
             {
@@ -398,17 +462,6 @@ namespace VelaptorTesting.Scenes
                     : button.Top = prevButton.Bottom + VertButtonSpacing;
 
                 prevButton = button;
-            }
-
-            // Center all of the buttons horizontally relative to each other
-            var largestBtnWidth = buttons.Max(b => b.Width);
-            var desiredPosition = (from b in buttons
-                where b.Width == largestBtnWidth
-                select b.Position).FirstOrDefault();
-
-            foreach (var button in buttons)
-            {
-                button.Position = new Point(desiredPosition.X, button.Position.Y);
             }
         }
 

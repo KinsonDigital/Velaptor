@@ -19,11 +19,14 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestRenderTextScene : SceneBase
     {
+        private const int LeftMargin = 50;
+        private const int VertButtonSpacing = 10;
         private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private const float AngularVelocity = 10f;
         private const float SizeChangeAmount = 0.5f;
         private const string SingleLineText = "Change me using the buttons to the left.";
         private const string MultiLineText = "Change me using\nthe buttons to the left.";
+        private readonly Point windowCenter;
         private IFont? textFont;
         private Button? btnRotateCW;
         private Button? btnRotateCCW;
@@ -48,9 +51,10 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         /// <param name="contentLoader">Loads content for the scene.</param>
         public TestRenderTextScene(IContentLoader contentLoader)
-            : base(contentLoader)
-        {
-        }
+            : base(contentLoader) =>
+                this.windowCenter = new Point(
+                    (int)(MainWindow.WindowWidth / 2f),
+                    (int)(MainWindow.WindowHeight / 2f));
 
         /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()
@@ -64,6 +68,7 @@ namespace VelaptorTesting.Scenes
 
             // Rotate CW Button
             this.btnRotateCW = new Button { Text = "CW" };
+            this.btnRotateCW.Name = nameof(this.btnRotateCW);
             this.btnRotateCW.MouseDown += (_, _) =>
             {
                 this.cwButtonDown = true;
@@ -77,8 +82,11 @@ namespace VelaptorTesting.Scenes
             };
 
             // Rotate CCW Button
-            this.btnRotateCCW = new Button { Text = "CCW" };
-
+            this.btnRotateCCW = new Button
+            {
+                Text = "CCW",
+                Name = nameof(this.btnRotateCCW),
+            };
             this.btnRotateCCW.MouseDown += (_, _) =>
             {
                 this.ccwButtonDown = true;
@@ -96,6 +104,9 @@ namespace VelaptorTesting.Scenes
             {
                 Text = $"Render Size({Math.Round(this.renderSize, 2)}) +",
                 Name = nameof(this.btnIncreaseRenderSize),
+                AutoSize = false,
+                Width = 250,
+                Height = 42,
             };
 
             this.btnIncreaseRenderSize.MouseDown += (_, _) =>
@@ -117,6 +128,9 @@ namespace VelaptorTesting.Scenes
             {
                 Text = $"Render Size({Math.Round(this.renderSize, 2)}) -",
                 Name = nameof(this.btnDecreaseRenderSize),
+                AutoSize = false,
+                Width = 250,
+                Height = 42,
             };
 
             this.btnDecreaseRenderSize.MouseDown += (_, _) =>
@@ -219,7 +233,7 @@ namespace VelaptorTesting.Scenes
 
             base.LoadContent();
 
-            SetupUIControlPositioning();
+            LayoutButtonsLeftSide();
         }
 
         /// <inheritdoc cref="IScene.UnloadContent"/>
@@ -309,79 +323,57 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         private void UnloadSceneContent() => ContentLoader.UnloadFont(this.textFont);
 
-        /// <summary>
-        /// Sets up the positioning of all the UI controls in the window.
-        /// </summary>
-        private void SetupUIControlPositioning()
+        private void LayoutButtonsLeftSide()
         {
-            // Control Positioning
-            const int buttonSpacing = 15;
-            var screenCenterY = (int)(MainWindow.WindowHeight / 2);
-            var buttonWidths = new[]
+            var excludeList = new[]
             {
-                this.btnRotateCW.Width,
-                this.btnRotateCCW.Width,
-                this.btnIncreaseRenderSize.Width,
-                this.btnDecreaseRenderSize.Width,
-                this.btnSetMultiLine.Width,
-                this.btnSetColor.Width,
-                this.btnSetStyle.Width,
-                this.btnIncreaseFontSize.Width,
-                this.btnDecreaseFontSize.Width,
+                nameof(this.btnRotateCW),
+                nameof(this.btnRotateCCW),
+                nameof(this.btnIncreaseRenderSize),
+                nameof(this.btnDecreaseRenderSize),
+                nameof(this.btnSetMultiLine),
+                nameof(this.btnSetColor),
+                nameof(this.btnSetStyle),
+                nameof(this.btnIncreaseFontSize),
+                nameof(this.btnDecreaseFontSize),
             };
-            var buttonHeights = new[]
+            var buttons = (from c in GetControls<Button>()
+                where excludeList.Contains(c.Name)
+                select c).ToArray();
+
+            if (buttons.Length <= 0)
             {
-                this.btnRotateCW.Height,
-                this.btnRotateCCW.Height,
-                this.btnIncreaseRenderSize.Height,
-                this.btnDecreaseRenderSize.Height,
-                this.btnSetMultiLine.Height,
-                this.btnSetColor.Height,
-                this.btnSetStyle.Height,
-                this.btnIncreaseFontSize.Height,
-                this.btnDecreaseFontSize.Height,
-            };
+                return;
+            }
 
-            var largestHalfWidth = (int)buttonWidths.Max() / 2;
+            var totalHeight = (from b in buttons
+                select (int)b.Height).ToArray().Sum();
+            totalHeight += (buttons.Length - 1) * VertButtonSpacing;
+            var totalHalfHeight = totalHeight / 2;
 
-            var totalButtonHeight = (int)buttonHeights.Sum(h => h) + (buttonHeights.Length * buttonSpacing);
-            var buttonPosYStart = screenCenterY - (totalButtonHeight / 2);
+            IControl? prevButton = null;
 
-            var leftMargin = 15 + largestHalfWidth;
+            foreach (var button in buttons)
+            {
+                button.Left = LeftMargin;
 
-            this.btnRotateCW.Position = new Point(leftMargin, buttonPosYStart);
+                button.Top = prevButton is null
+                    ? button.Top = this.windowCenter.Y - totalHalfHeight
+                    : button.Top = prevButton.Bottom + VertButtonSpacing;
 
-            this.btnRotateCCW.Position = new Point(
-                leftMargin,
-                this.btnRotateCW.Bottom + (int)(this.btnRotateCCW.Height / 2) + buttonSpacing);
+                prevButton = button;
+            }
 
-            this.btnIncreaseRenderSize.Position = new Point(
-                leftMargin,
-                this.btnRotateCCW.Bottom + (int)(this.btnIncreaseRenderSize.Height / 2) + buttonSpacing);
+            // Center all of the buttons horizontally relative to each other
+            var largestBtnWidth = buttons.Max(b => b.Width);
+            var desiredPosition = (from b in buttons
+                where b.Width == largestBtnWidth
+                select b.Position).FirstOrDefault();
 
-            this.btnDecreaseRenderSize.Position = new Point(
-                leftMargin,
-                this.btnIncreaseRenderSize.Bottom + ((int)this.btnDecreaseRenderSize.Height / 2) + buttonSpacing);
-
-            this.btnSetMultiLine.Position = new Point(
-                leftMargin,
-                this.btnDecreaseRenderSize.Bottom + ((int)this.btnSetMultiLine.Height / 2) + buttonSpacing);
-
-            this.btnSetColor.Position = new Point(
-                leftMargin,
-                this.btnSetMultiLine.Bottom + ((int)this.btnSetColor.Height / 2) + buttonSpacing);
-
-            this.btnSetStyle.Position = new Point(
-                leftMargin,
-                this.btnSetColor.Bottom + ((int)this.btnSetStyle.Height / 2) + buttonSpacing);
-
-            this.btnIncreaseFontSize.Position = new Point(
-                leftMargin,
-                this.btnSetStyle.Bottom + ((int)this.btnIncreaseFontSize.Height / 2) + buttonSpacing);
-
-            this.btnDecreaseFontSize.Position = new Point(
-                leftMargin,
-                this.btnIncreaseFontSize.Bottom + ((int)this.btnDecreaseFontSize.Height / 2) + buttonSpacing);
+            foreach (var button in buttons)
+            {
+                button.Position = new Point(desiredPosition.X, button.Position.Y);
+            }
         }
     }
 }
