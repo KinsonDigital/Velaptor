@@ -348,8 +348,8 @@ namespace Velaptor.Graphics
 
             var glyphLines = lines.Select(l =>
             {
-                                        /* ⚙️ Perf Optimization️ ⚙️ */
-                // Not need to apply a size to waist compute time if the size is 0 which is no size change.
+                /* ⚙️ Perf Optimization️ ⚙️ */
+                // No need to apply a size to waist compute time if the size
                 return normalizedSize == 0f
                     ? font.ToGlyphMetrics(l)
                     : font.ToGlyphMetrics(l).Select(g => g.ApplySize(normalizedSize)).ToArray();

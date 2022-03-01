@@ -91,7 +91,7 @@ namespace Velaptor.UI
         /// </summary>
         /// <remarks>
         ///     If <see cref="AutoSize"/> is <c>false</c>, this means that the user can set the size to anything they
-        ///     desire.  If the size is less than the width or height of the text, than only the text characters
+        ///     desire.  If the size is less than the width or height of the text, then only the text characters
         ///     that are still within the bounds of the <see cref="Label"/> will be rendered.
         /// </remarks>
         public bool AutoSize { get; set; } = true;

@@ -980,7 +980,7 @@ namespace VelaptorTests.Graphics
         public void RenderFont_WhenInvoked_AddsCorrectBatchItems()
         {
             // Arrange
-            var expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoked_AddsCorrectBatchItems)}.json";
+            const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoked_AddsCorrectBatchItems)}.json";
             var expectedSpriteBatchResultData =
                 TestDataLoader.LoadTestData<SpriteBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
             var actualSpriteBatchResultData = Array.Empty<SpriteBatchItem>();
