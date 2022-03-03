@@ -11,6 +11,7 @@ namespace VelaptorTests.UI
     using System.Linq;
     using System.Numerics;
     using Moq;
+    using Velaptor;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
@@ -37,7 +38,7 @@ namespace VelaptorTests.UI
             MockGlyphs(TextValue);
 
             this.mockContentLoader = new Mock<IContentLoader>();
-            this.mockContentLoader.Setup(m => m.LoadFont(It.IsAny<string>(), It.IsAny<int>()))
+            this.mockContentLoader.Setup(m => m.LoadFont(It.IsAny<string>(), It.IsAny<uint>()))
                 .Returns(this.mockFont.Object);
         }
 
@@ -48,8 +49,18 @@ namespace VelaptorTests.UI
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new Label(null);
+                _ = new Label(null, this.mockFont.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFontParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new Label(this.mockContentLoader.Object, null);
+            }, "The parameter must not be null. (Parameter 'font')");
         }
         #endregion
 
@@ -210,25 +221,11 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Style_WhenSettingValueWhenFontIsNotLoaded_ReturnsCorrectResult()
-        {
-            // Arrange
-            var label = CreateLabel();
-
-            // Act
-            label.Style = FontStyle.Italic;
-
-            // Assert
-            Assert.Equal(FontStyle.Italic, label.Style);
-        }
-
-        [Fact]
-        public void Style_WhenSettingValueWhenFontIsLoaded_ReturnsCorrectResult()
+        public void Style_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             this.mockFont.SetupProperty(p => p.Style);
             var label = CreateLabel();
-            label.LoadContent();
 
             // Act
             label.Style = FontStyle.Italic;
@@ -295,20 +292,6 @@ namespace VelaptorTests.UI
             // Assert
             Assert.Same(this.mockFont.Object, actual);
         }
-
-        [Fact]
-        public void FontSize_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var label = CreateLabel();
-
-            // Act
-            label.FontSize = 123f;
-            var actual = label.FontSize;
-
-            // Assert
-            Assert.Equal(123f, actual);
-        }
         #endregion
 
         #region Method Tests
@@ -316,14 +299,27 @@ namespace VelaptorTests.UI
         public void LoadContent_WhenInvoked_LoadsCorrectFont()
         {
             // Arrange
+            var expectedCharBounds = new ReadOnlyCollection<(char, RectangleF)>(
+                new[]
+                {
+                    ('a', new RectangleF(1f, 2f, 3f, 4f)),
+                    ('b', new RectangleF(5f, 6f, 7f, 8f)),
+                });
+
+            const string testText = "test-value";
+            var position = new Vector2(11f, 22f);
+            this.mockFont.Setup(m => m.GetCharacterBounds(testText, position))
+                .Returns(() => expectedCharBounds);
             var label = CreateLabel();
+            label.Text = testText;
+            label.Position = position.ToPoint();
 
             // Act
             label.LoadContent();
             label.LoadContent();
 
             // Assert
-            this.mockContentLoader.Verify(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12), Times.Once);
+            Assert.Equal(expectedCharBounds, label.CharacterBounds);
         }
 
         [Fact]
@@ -479,7 +475,6 @@ namespace VelaptorTests.UI
             label.Text = TextValue;
             label.Position = new Point(100, 200);
             label.Visible = true;
-            label.FontSize = 123f;
             label.Color = Color.FromArgb(11, 22, 33, 44);
             label.LoadContent();
 
@@ -492,7 +487,7 @@ namespace VelaptorTests.UI
                     TextValue,
                     100,
                     200,
-                    123f,
+                    1f,
                     0f,
                     Color.FromArgb(11, 22, 33, 44)), Times.Once());
         }
@@ -534,6 +529,6 @@ namespace VelaptorTests.UI
         /// Creates a new label for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private Label CreateLabel() => new (this.mockContentLoader.Object);
+        private Label CreateLabel() => new (this.mockContentLoader.Object, this.mockFont.Object);
     }
 }

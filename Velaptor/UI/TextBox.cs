@@ -44,7 +44,7 @@ namespace Velaptor.UI
 
             // TODO: Setup textbox border rect
 
-            this.text = new Label(contentLoader)
+            this.text = new Label(contentLoader, null)
             {
                 Position = Point.Empty,
                 Text = "Textbox Text",

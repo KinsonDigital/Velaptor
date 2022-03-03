@@ -21,37 +21,43 @@ namespace Velaptor.UI
     /// <summary>
     /// A simple label that renders text on the screen.
     /// </summary>
-    public sealed class Label : ControlBase
+    public class Label : ControlBase
     {
         private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private readonly IContentLoader contentLoader;
         private readonly Color disabledColor = Color.DarkGray;
         private string labelText = string.Empty;
-        private FontStyle cachedStyle;
         private (char character, RectangleF bounds)[]? textCharBounds;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Label"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        public Label() => this.contentLoader = ContentLoaderFactory.CreateContentLoader();
+        public Label()
+        {
+            this.contentLoader = ContentLoaderFactory.CreateContentLoader();
+            Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Label"/> class.
         /// </summary>
         /// <param name="contentLoader">Loads various kinds of content.</param>
+        /// <param name="font">The type of font to render the text with.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown if the any of the parameters below are null:
         ///     <list type="bullet">
         ///         <item><paramref name="contentLoader"/></item>
         ///     </list>
         /// </exception>
-        internal Label(IContentLoader contentLoader)
+        internal Label(IContentLoader contentLoader, IFont font)
         {
             EnsureThat.ParamIsNotNull(contentLoader);
+            EnsureThat.ParamIsNotNull(font);
             this.contentLoader =
                 contentLoader ??
                 throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
+            Font = font;
         }
 
         /// <summary>
@@ -103,15 +109,14 @@ namespace Velaptor.UI
         {
             get
             {
-                var result = base.Width;
-
                 if (!AutoSize)
                 {
-                    return result;
+                    return base.Width;
                 }
 
-                var textSize = Font?.Measure(this.labelText) ?? SizeF.Empty;
-                return (uint)textSize.Width;
+                var textSize = Font.Measure(this.labelText);
+                base.Width = (uint)textSize.Width;
+                return base.Width;
             }
             set => base.Width = value;
         }
@@ -130,7 +135,7 @@ namespace Velaptor.UI
                     return result;
                 }
 
-                var textSize = Font?.Measure(this.labelText) ?? SizeF.Empty;
+                var textSize = Font.Measure(this.labelText);
                 return (uint)textSize.Height;
             }
             set => base.Height = value;
@@ -141,18 +146,8 @@ namespace Velaptor.UI
         /// </summary>
         public FontStyle Style
         {
-            get => Font?.Style ?? this.cachedStyle;
-            set
-            {
-                if (Font is null)
-                {
-                    this.cachedStyle = value;
-                }
-                else
-                {
-                    Font.Style = value;
-                }
-            }
+            get => Font.Style;
+            set => Font.Style = value;
         }
 
         /// <summary>
@@ -163,12 +158,7 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets the font for the label.
         /// </summary>
-        public IFont? Font { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the size of the text of the label.
-        /// </summary>
-        public float FontSize { get; set; } = 1f;
+        public IFont Font { get; private set; }
 
         /// <inheritdoc cref="ControlBase.UnloadContent"/>
         /// <exception cref="Exception">Thrown if the control has been disposed.</exception>
@@ -178,8 +168,6 @@ namespace Velaptor.UI
             {
                 return;
             }
-
-            Font = this.contentLoader.LoadFont(DefaultRegularFont, 12);
 
             base.LoadContent();
 
@@ -194,10 +182,7 @@ namespace Velaptor.UI
                 return;
             }
 
-            if (Font is not null)
-            {
-                this.contentLoader.UnloadFont(Font);
-            }
+            this.contentLoader.UnloadFont(Font);
 
             base.UnloadContent();
         }
@@ -229,14 +214,14 @@ namespace Velaptor.UI
                 return;
             }
 
-            if (Font is not null && string.IsNullOrEmpty(text) is false)
+            if (string.IsNullOrEmpty(text) is false)
             {
                 spriteBatch.Render(
                     Font,
                     text,
                     Position.X,
                     Position.Y,
-                    FontSize,
+                    1f,
                     0f,
                     Enabled ? Color : this.disabledColor);
             }
@@ -249,7 +234,7 @@ namespace Velaptor.UI
         /// </summary>
         private void CalcTextCharacterBounds()
         {
-            if (Font is null || IsLoaded is false)
+            if (IsLoaded is false)
             {
                 return;
             }
