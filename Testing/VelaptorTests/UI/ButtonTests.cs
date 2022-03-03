@@ -69,20 +69,10 @@ namespace VelaptorTests.UI
             this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman", 12))
                 .Returns(this.mockFont.Object);
 
-            this.label = new Label(this.mockContentLoader.Object);
+            this.label = new Label(this.mockContentLoader.Object, this.mockFont.Object);
         }
 
         #region Constructor Tests
-        [Fact]
-        public void Ctor_WithSingleNullLabelParam_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                _ = new Button(null);
-            }, "The parameter must not be null. (Parameter 'label')");
-        }
-
         [Fact]
         public void Ctor_WithNullContentLoaderParamWith2Args_ThrowsException()
         {
@@ -94,23 +84,13 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Ctor2Args_WithNullLabelParamWith_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                _ = new Button(this.mockContentLoader.Object, null);
-            }, "The parameter must not be null. (Parameter 'label')");
-        }
-
-        [Fact]
-        public void Ctor2Args_WithContentLoaderAndLabelParams_SetsLabelProperty()
+        public void Ctor2Args_WithContentLoaderAndLabelParams_LabelPropertyNotNull()
         {
             // Arrange & Act
             var button = new Button(this.mockContentLoader.Object, this.label);
 
             // Assert
-            Assert.Same(this.label, button.Label);
+            Assert.NotNull(button.Label);
         }
         #endregion
 
@@ -182,8 +162,8 @@ namespace VelaptorTests.UI
             uint expectedWidth)
         {
             // Arrange
-            this.label.AutoSize = false;
-            this.label.Width = 30;
+            this.mockFont.Setup(m => m.Measure(It.IsAny<string>())).Returns(new SizeF(30, 40));
+            this.label.AutoSize = true;
             var button = CreateButton();
             button.AutoSize = autoSize;
 
@@ -357,17 +337,18 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void FontSize_WhenSettingValue_ReturnsCorrectResult()
+        public void FontSize_WhenSettingValue_SetsAndReturnsLabelFontSize()
         {
             // Arrange
+            this.mockFont.SetupProperty(p => p.Size);
             var button = CreateButton();
             button.LoadContent();
 
             // Act
-            button.FontSize = 123f;
+            button.FontSize = 123u;
 
             // Assert
-            Assert.Equal(123f, button.FontSize);
+            Assert.Equal(123u, button.FontSize);
         }
 
         [Fact]
@@ -403,15 +384,21 @@ namespace VelaptorTests.UI
         public void LoadContent_WhenInvoked_LoadsContent()
         {
             // Arrange
-            var button = CreateButton();
+            this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12))
+                .Returns(this.mockFont.Object);
+
+            var button = new Button(this.mockContentLoader.Object, null);
+            button.Text = "test-value";
+            button.Enabled = false;
+            button.Position = new Point(11, 22);
 
             // Act
             button.LoadContent();
-            button.LoadContent();
 
             // Assert
-            // TODO: Remove
-            // this.mockContentLoader.Verify(m => m.LoadTexture(TextureName), Times.Once);
+            Assert.Equal("test-value", button.Text);
+            Assert.False(button.Enabled);
+            Assert.Equal(new Point(11, 22), button.Position);
             this.mockContentLoader.Verify(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12), Times.Once);
         }
 

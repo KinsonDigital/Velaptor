@@ -21,6 +21,7 @@ namespace Velaptor.UI
     /// </summary>
     public sealed class Button : ControlBase
     {
+        private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
         private const float HoverBrightness = 0.2f;
         private const float MouseDownBrightness = 0.2f;
         private const uint DefaultButtonWidth = 100;
@@ -44,11 +45,22 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="label">The label to display on the face of the button.</param>
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-        public Button(Label label)
+        public Button(Label? label)
         {
             EnsureThat.ParamIsNotNull(label);
             Init();
             Label = label;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Button"/> class.
+        /// </summary>
+        /// <param name="position">The position of the button.</param>
+        [ExcludeFromCodeCoverage]
+        public Button(Point position)
+        {
+            Init();
+            Position = position;
         }
 
         /// <summary>
@@ -73,7 +85,7 @@ namespace Velaptor.UI
         /// <param name="label">The label to display on the face of the button.</param>
         [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-        public Button(uint width, uint height, Label label)
+        public Button(uint width, uint height, Label? label)
         {
             Init();
             Width = width;
@@ -106,7 +118,7 @@ namespace Velaptor.UI
         /// <param name="label">The label to display on the face of the button.</param>
         [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by library users.")]
-        public Button(Point position, uint width, uint height, Label label)
+        public Button(Point position, uint width, uint height, Label? label)
         {
             Init();
             Position = position;
@@ -126,10 +138,9 @@ namespace Velaptor.UI
         ///         <item><paramref name="contentLoader"/></item>
         ///     </list>
         /// </exception>
-        internal Button(IContentLoader contentLoader, Label label)
+        internal Button(IContentLoader contentLoader, Label? label)
         {
             EnsureThat.ParamIsNotNull(contentLoader);
-            EnsureThat.ParamIsNotNull(label);
             this.contentLoader = contentLoader;
             Label = label;
         }
@@ -276,12 +287,12 @@ namespace Velaptor.UI
         /// </summary>
         public float FontSize
         {
-            get => Label?.FontSize ?? 0f;
+            get => Label?.Font.Size ?? 0f;
             set
             {
                 if (Label != null)
                 {
-                    Label.FontSize = value;
+                    Label.Font.Size = value;
                 }
             }
         }
@@ -314,7 +325,7 @@ namespace Velaptor.UI
                 return;
             }
 
-            Label ??= new Label(this.contentLoader);
+            Label ??= new Label(this.contentLoader, this.contentLoader.LoadFont(DefaultRegularFont, 12));
 
             Label.LoadContent();
             Label.Text = this.cachedText;
