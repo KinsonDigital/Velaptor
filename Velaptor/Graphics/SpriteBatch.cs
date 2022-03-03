@@ -275,12 +275,12 @@ namespace Velaptor.Graphics
             => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White);
 
         /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y, float size, float angle)
-            => Render(font, text, x, y, size, angle, Color.White);
+        public void Render(IFont font, string text, int x, int y, float renderSize, float angle)
+            => Render(font, text, x, y, renderSize, angle, Color.White);
 
         /// <inheritdoc/>
-        public void Render(IFont font, string text, Vector2 position, float size, float angle)
-            => Render(font, text, (int)position.X, (int)position.Y, size, angle, Color.White);
+        public void Render(IFont font, string text, Vector2 position, float renderSize, float angle)
+            => Render(font, text, (int)position.X, (int)position.Y, renderSize, angle, Color.White);
 
         /// <inheritdoc/>
         public void Render(IFont font, string text, int x, int y, Color color)
@@ -306,7 +306,7 @@ namespace Velaptor.Graphics
         ///     If <paramref name="font"/> is null, nothing will be rendered.
         ///     <para>A null reference exception will not be thrown.</para>
         /// </remarks>
-        public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
+        public void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color)
         {
             if (font is null)
             {
@@ -323,14 +323,14 @@ namespace Velaptor.Graphics
                 return;
             }
 
-            size = size < 0f ? 0f : size;
+            renderSize = renderSize < 0f ? 0f : renderSize;
 
             if (!this.hasBegun)
             {
                 throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
-            var normalizedSize = size - 1f;
+            var normalizedSize = renderSize - 1f;
             var originalX = (float)x;
             var originalY = (float)y;
             var characterY = (float)y;
