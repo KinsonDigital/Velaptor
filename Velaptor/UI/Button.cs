@@ -285,9 +285,9 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets or sets the font size of the text on the face of the button.
         /// </summary>
-        public float FontSize
+        public uint FontSize
         {
-            get => Label?.Font.Size ?? 0f;
+            get => Label?.Font.Size ?? 0u;
             set
             {
                 if (Label != null)
