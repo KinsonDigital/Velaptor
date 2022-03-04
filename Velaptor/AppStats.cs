@@ -15,24 +15,24 @@ namespace Velaptor
     public static class AppStats
     {
         private const string DefaultTag = "[DEFAULT]";
-        private static readonly Queue<(uint frame, uint textureId, RectangleF srcRect)> Textures = new ();
+        private static readonly Queue<(uint frame, char glyph, uint textureId, RectangleF srcRect)> Textures = new ();
         private static readonly List<(string fontFileName, string fontSize)> LoadedFonts = new ();
 
         /// <summary>
         /// Gets all of the rendered textures for the last 2 frames in <c>string</c> format.
         /// </summary>
         /// <returns>The recorded frame info.</returns>
-        public static string GetTexturesRendered()
+        public static string GetFontGlyphRenderingData()
         {
             var result = string.Empty;
 
             var largestFrame = Textures.Max(i => i.frame);
 
-            foreach (var texture in Textures)
+            foreach (var (frame, glyph, textureId, srcRect) in Textures)
             {
-                if (texture.frame == largestFrame)
+                if (frame == largestFrame)
                 {
-                    result += $"Frame: {texture.frame} | Texture ID: {texture.textureId} | Source Rect: {texture.srcRect}\n";
+                    result += $"Frame: {frame} | Glyph: {glyph} | Texture ID: {textureId} | Source Rect: {srcRect}\n";
                 }
             }
 
@@ -59,11 +59,12 @@ namespace Velaptor
         /// Records information about the textures that have been rendered for the 2 most recent frames.
         /// </summary>
         /// <param name="frame">The application frame.</param>
-        /// <param name="textureId">The ID of the texture being rendered.</param>
-        /// <param name="destRect">The bounds destination rectangle of where the texture was rendered on the screen.</param>
-        internal static void RecordTexturesRendered(uint frame, uint textureId, RectangleF destRect)
+        /// <param name="glyph">The glyph being rendered.</param>
+        /// <param name="fontAtlasTextureId">The font atlas texture ID.</param>
+        /// <param name="destRect">The destination rectangle of the glyph.</param>
+        internal static void RecordFontGlyphRendering(uint frame, char glyph, uint fontAtlasTextureId, RectangleF destRect)
         {
-            Textures.Enqueue((frame, textureId, destRect));
+            Textures.Enqueue((frame, glyph, fontAtlasTextureId, destRect));
 
             var largestFrame = Textures.Max(i => i.frame);
             var secondLargest = 0u;

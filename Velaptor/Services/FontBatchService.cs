@@ -100,6 +100,14 @@
 
                 (bool shouldRender, FontBatchItem spriteItem) itemToEmpty = this.batchItems[i];
 
+#if DEBUG
+                AppStats.RecordFontGlyphRendering(
+                    this.currentFrame,
+                    itemToEmpty.spriteItem.Glyph,
+                    itemToEmpty.spriteItem.TextureId,
+                    itemToEmpty.spriteItem.DestRect);
+#endif
+
                 itemToEmpty.shouldRender = false;
                 itemToEmpty.spriteItem.Empty();
 

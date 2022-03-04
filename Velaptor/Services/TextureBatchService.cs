@@ -116,10 +116,6 @@ namespace Velaptor.Services
 
                 (bool shouldRender, SpriteBatchItem spriteItem) itemToEmpty = this.batchItems[i];
 
-#if DEBUG
-                AppStats.RecordTexturesRendered(this.currentFrame, itemToEmpty.spriteItem.TextureId, itemToEmpty.spriteItem.DestRect);
-#endif
-
                 itemToEmpty.shouldRender = false;
                 itemToEmpty.spriteItem.Empty();
 
