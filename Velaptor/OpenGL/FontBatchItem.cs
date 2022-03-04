@@ -88,6 +88,7 @@ namespace Velaptor.OpenGL
         /// <returns>True if empty.</returns>
         public bool IsEmpty() =>
             this.TextureId == 0 &&
+            this.Glyph == '\0' &&
             this.SrcRect.IsEmpty &&
             this.DestRect.IsEmpty &&
             this.Size == 0f &&
@@ -102,6 +103,7 @@ namespace Velaptor.OpenGL
         public void Empty()
         {
             this.TextureId = 0u;
+            this.Glyph = '\0';
             this.SrcRect = default;
             this.DestRect = default;
             this.Size = 0f;
@@ -120,7 +122,8 @@ namespace Velaptor.OpenGL
             this.TintColor.Equals(other.TintColor) &&
             this.Effects == other.Effects &&
             this.ViewPortSize.Equals(other.ViewPortSize) &&
-            this.TextureId == other.TextureId;
+            this.TextureId == other.TextureId &&
+            this.Glyph == other.Glyph;
 
         /// <inheritdoc cref="object.Equals(object?)"/>
         public override bool Equals(object? obj) => obj is FontBatchItem other && Equals(other);
@@ -129,21 +132,23 @@ namespace Velaptor.OpenGL
         [ExcludeFromCodeCoverage]
         public override int GetHashCode()
             => HashCode.Combine(
-                this.SrcRect,
-                this.DestRect,
-                this.Size,
-                this.Angle,
-                this.TintColor,
-                (int)this.Effects,
-                this.ViewPortSize,
-                this.TextureId);
+                HashCode.Combine(
+                    this.SrcRect,
+                    this.DestRect,
+                    this.Size,
+                    this.Angle,
+                    this.TintColor,
+                    (int)this.Effects,
+                    this.ViewPortSize,
+                    this.TextureId),
+                this.Glyph);
 
         /// <inheritdoc/>
         public override string ToString()
         {
             var result = new StringBuilder();
 
-            result.AppendLine("Sprite Batch Item Values:");
+            result.AppendLine("Font Batch Item Values:");
             result.AppendLine($"Src Rect: {this.SrcRect.ToString()}");
             result.AppendLine($"Dest Rect: {this.DestRect.ToString()}");
             result.AppendLine($"Size: {this.Size.ToString(CultureInfo.InvariantCulture)}");
@@ -152,7 +157,8 @@ namespace Velaptor.OpenGL
                 $"Tint Clr: {{A={this.TintColor.A},R={this.TintColor.R},G={this.TintColor.G},B={this.TintColor.B}}}");
             result.AppendLine($"Effects: {this.Effects.ToString()}");
             result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
-            result.Append($"Texture ID: {this.TextureId.ToString()}");
+            result.AppendLine($"Texture ID: {this.TextureId.ToString()}");
+            result.Append($"Glyph: {this.Glyph}");
 
             return result.ToString();
         }
