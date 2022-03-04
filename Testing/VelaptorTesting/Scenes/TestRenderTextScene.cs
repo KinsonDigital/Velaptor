@@ -67,8 +67,11 @@ namespace VelaptorTesting.Scenes
             this.textFont = ContentLoader.LoadFont(DefaultRegularFont, 12);
 
             // Rotate CW Button
-            this.btnRotateCW = new Button { Text = "CW" };
-            this.btnRotateCW.Name = nameof(this.btnRotateCW);
+            this.btnRotateCW = new Button
+            {
+                Text = "CW",
+                Name = nameof(this.btnRotateCW),
+            };
             this.btnRotateCW.MouseDown += (_, _) =>
             {
                 this.cwButtonDown = true;
@@ -92,7 +95,6 @@ namespace VelaptorTesting.Scenes
                 this.ccwButtonDown = true;
                 this.cwButtonDown = false;
             };
-
             this.btnRotateCCW.MouseUp += (_, _) =>
             {
                 this.ccwButtonDown = false;

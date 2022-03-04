@@ -7,10 +7,8 @@ namespace VelaptorTests.OpenGL.Buffers
     using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.IO;
     using System.Numerics;
     using Moq;
-    using Newtonsoft.Json;
     using Velaptor;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;

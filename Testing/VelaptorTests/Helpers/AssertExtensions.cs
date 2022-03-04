@@ -19,7 +19,7 @@ namespace VelaptorTests.Helpers
     // ReSharper disable once ClassNeverInstantiated.Global
     public class AssertExtensions : Assert
     {
-        private const string TableFlip = "(╯‵□′)╯︵┻━┻  ";
+        private const string TableFlip = "(╯'□')╯︵┻━┻  ";
 
         /// <summary>
         /// Verifies that the exact exception is thrown (and not a derived exception type) and that
