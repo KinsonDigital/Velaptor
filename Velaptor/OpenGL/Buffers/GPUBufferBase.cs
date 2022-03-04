@@ -216,6 +216,10 @@ namespace Velaptor.OpenGL.Buffers
             {
                 attributes = Attribute.GetCustomAttributes(typeof(FontGPUBuffer));
             }
+            else if (currentType == typeof(RectGPUBuffer))
+            {
+                attributes = Attribute.GetCustomAttributes(typeof(RectGPUBuffer));
+            }
             else
             {
                 Name = "UNKNOWN BUFFER";
