@@ -17,8 +17,8 @@ namespace VelaptorTests.Helpers
         /// type <see cref="Dictionary{TKey,TValue}"/>.
         /// </summary>
         /// <param name="items">The items to convert.</param>
-        /// <typeparam name="T">The type of items held by the list of items.</typeparam>
-        /// <returns>The list of items in as the type <see cref="Dictionary{TKey,TValue}"/>.</returns>
+        /// <typeparam name="T">The type of items in the <see cref="List{T}"/>.</typeparam>
+        /// <returns>The list of items as the type <see cref="Dictionary{TKey,TValue}"/>.</returns>
         public static Dictionary<uint, T> ToDictionary<T>(this List<T> items)
         {
             var result = new Dictionary<uint, T>();

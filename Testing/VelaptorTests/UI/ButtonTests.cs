@@ -74,7 +74,7 @@ namespace VelaptorTests.UI
 
         #region Constructor Tests
         [Fact]
-        public void Ctor_WithNullContentLoaderParamWith2Args_ThrowsException()
+        public void Ctor2Args_WithNullContentLoaderParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -256,19 +256,6 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void BorderThickness_WhenGettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var button = CreateButton();
-
-            // Act
-            var actual = button.BorderThickness;
-
-            // Assert
-            Assert.Equal(2u, actual);
-        }
-
-        [Fact]
         public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
@@ -282,19 +269,6 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void FaceColor_WhenGettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var button = CreateButton();
-
-            // Act
-            var actual = button.FaceColor;
-
-            // Assert
-            Assert.Equal(Color.DarkGray, actual);
-        }
-
-        [Fact]
         public void FaceColor_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
@@ -302,24 +276,9 @@ namespace VelaptorTests.UI
 
             // Act
             button.FaceColor = Color.CornflowerBlue;
-            var actual = button.FaceColor;
 
             // Assert
-            Assert.Equal(Color.CornflowerBlue, actual);
-        }
-
-        [Fact]
-        public void CornerRadius_WhenGettingDefaultValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var expected = new CornerRadius(6f);
-            var button = CreateButton();
-
-            // Act
-            var actual = button.CornerRadius;
-
-            // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(Color.CornflowerBlue, button.FaceColor);
         }
 
         [Fact]

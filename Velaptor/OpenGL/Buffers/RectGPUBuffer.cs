@@ -52,8 +52,8 @@ namespace Velaptor.OpenGL.Buffers
             /*
              * Always have the smallest value between the width and height (divided by 2)
              * as the maximum limit of what the border thickness can be.
-             * If the value was allowed to be larger then the smallest value between
-             * the width and height, it would produce strange rendering artifacts.
+             * If the value was allowed to be larger than the smallest value between
+             * the width and height, it would produce unintended rendering artifacts.
              */
 
             rectShape = ProcessBorderThicknessLimit(rectShape);
@@ -301,7 +301,7 @@ namespace Velaptor.OpenGL.Buffers
 
         /// <summary>
         /// Process the border thickness by checking that the value is within limits.
-        /// If not within limits, it will be forced to be within limits.
+        /// If it is not within limits, it will force the value to be within limits.
         /// </summary>
         /// <param name="rect">The rectangle containing the border thickness to set within a limit.</param>
         /// <remarks>
@@ -323,7 +323,7 @@ namespace Velaptor.OpenGL.Buffers
 
         /// <summary>
         /// Processes the corner radius by checking each corner radius value and making sure they
-        /// are within limits.  If not within limits, forces the values to be within limits.
+        /// are within limits.  If it is not within limits, it will force the values to be within limits.
         /// </summary>
         /// <param name="rect">The rectangle containing the radius values to process.</param>
         /// <returns>The rect with the corner radius values set within limits.</returns>
@@ -336,8 +336,8 @@ namespace Velaptor.OpenGL.Buffers
             /*
                  * Always have the smallest value between the width and height (divided by 2)
                  * as the maximum limit of what any corner radius can be.
-                 * If the value was allowed to be larger then the smallest value between
-                 * the width and height, it would produce strange rendering artifacts.
+                 * If the value was allowed to be larger than the smallest value between
+                 * the width and height, it would produce unintended rendering artifacts.
                  */
             var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
 

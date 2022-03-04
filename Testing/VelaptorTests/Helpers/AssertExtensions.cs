@@ -526,7 +526,7 @@ namespace VelaptorTests.Helpers
         /// Verifies if the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
         /// </summary>
         /// <typeparam name="T">
-        ///     The <see cref="IEquatable{T}"/> type of the <paramref name="expected"/> and <paramref name="actual"/>.
+        ///     The <see cref="IEquatable{T}"/> type of the <paramref name="expected"/> and <paramref name="actual"/> parameters.
         /// </typeparam>
         /// <param name="expected">The expected <see langword="int"/> value.</param>
         /// <param name="actual">The actual <see langword="int"/> value.</param>
