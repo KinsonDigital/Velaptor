@@ -1,4 +1,4 @@
-﻿// <copyright file="FontBatchItemTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchItemTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -11,9 +11,9 @@ namespace VelaptorTests.OpenGL
     using Xunit;
 
     /// <summary>
-    /// Test the <see cref="FontBatchItem"/> struct.
+    /// Test the <see cref="FontGlyphBatchItem"/> struct.
     /// </summary>
-    public class FontBatchItemTests
+    public class FontGlyphBatchItemTests
     {
         /// <summary>
         /// Gets all of the test data related to testing the end result
@@ -137,7 +137,7 @@ namespace VelaptorTests.OpenGL
         public void IsEmpty_WhenBatchItemIsEmpty_ReturnsTrue()
         {
             // Arrange
-            var item = default(FontBatchItem);
+            var item = default(FontGlyphBatchItem);
 
             // Act
             var actual = item.IsEmpty();
@@ -150,7 +150,7 @@ namespace VelaptorTests.OpenGL
         public void Empty_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var batchItem = default(FontBatchItem);
+            var batchItem = default(FontGlyphBatchItem);
             batchItem.Angle = 1;
             batchItem.Effects = RenderEffects.None;
             batchItem.Size = 2;
@@ -186,7 +186,7 @@ namespace VelaptorTests.OpenGL
             bool expected)
         {
             // Arrange
-            var batchItemA = default(FontBatchItem);
+            var batchItemA = default(FontGlyphBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -196,7 +196,7 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-            var batchItemB = default(FontBatchItem);
+            var batchItemB = default(FontGlyphBatchItem);
             batchItemB.Angle = angle;
             batchItemB.Effects = effects;
             batchItemB.Size = size;
@@ -217,7 +217,7 @@ namespace VelaptorTests.OpenGL
         public void EqualsOperator_WithEqualOperands_ReturnsTrue()
         {
             // Arrange
-            var batchItemA = default(FontBatchItem);
+            var batchItemA = default(FontGlyphBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -227,7 +227,7 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-            var batchItemB = default(FontBatchItem);
+            var batchItemB = default(FontGlyphBatchItem);
             batchItemB.Angle = 1;
             batchItemB.Effects = RenderEffects.None;
             batchItemB.Size = 2;
@@ -248,7 +248,7 @@ namespace VelaptorTests.OpenGL
         public void NotEqualsOperator_WithUnequalOperands_ReturnsTrue()
         {
             // Arrange
-            var batchItemA = default(FontBatchItem);
+            var batchItemA = default(FontGlyphBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -258,7 +258,7 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-            var batchItemB = default(FontBatchItem);
+            var batchItemB = default(FontGlyphBatchItem);
             batchItemB.Angle = 11;
             batchItemB.Effects = RenderEffects.None;
             batchItemB.Size = 22;
@@ -279,7 +279,7 @@ namespace VelaptorTests.OpenGL
         public void Equals_WhenUsingObjectParamOverloadWithMatchingType_ReturnsTrue()
         {
             // Arrange
-            var batchItemA = default(FontBatchItem);
+            var batchItemA = default(FontGlyphBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -289,7 +289,7 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-            object batchItemB = new FontBatchItem()
+            object batchItemB = new FontGlyphBatchItem()
             {
                 Angle = 1,
                 Effects = RenderEffects.None,
@@ -312,7 +312,7 @@ namespace VelaptorTests.OpenGL
         public void Equals_WhenUsingObjectParamOverloadWithDifferentType_ReturnsFalse()
         {
             // Arrange
-            var batchItemA = default(FontBatchItem);
+            var batchItemA = default(FontGlyphBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -346,7 +346,7 @@ namespace VelaptorTests.OpenGL
             expected += "\r\nTexture ID: 11";
             expected += "\r\nGlyph: V";
 
-            var batchItem = default(FontBatchItem);
+            var batchItem = default(FontGlyphBatchItem);
             batchItem.Angle = 1;
             batchItem.Effects = RenderEffects.None;
             batchItem.Size = 2;

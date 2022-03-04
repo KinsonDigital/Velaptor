@@ -1,4 +1,4 @@
-﻿// <copyright file="FontBatchServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace VelaptorTests.Services
     using VelaptorTests.Helpers;
     using Xunit;
 
-    public class FontBatchServiceTests
+    public class FontGlyphBatchServiceTests
     {
         #region Prop Tests
         [Fact]
@@ -36,7 +36,7 @@ namespace VelaptorTests.Services
         public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var batchItem1 = (true, new FontBatchItem
+            var batchItem1 = (true, new FontGlyphBatchItem
             {
                 Angle = 1,
                 Effects = RenderEffects.None,
@@ -47,7 +47,7 @@ namespace VelaptorTests.Services
                 TintColor = Color.FromArgb(12, 13, 14, 15),
                 ViewPortSize = new SizeF(16, 17),
             });
-            var batchItem2 = (true, new FontBatchItem
+            var batchItem2 = (true, new FontGlyphBatchItem
             {
                 Angle = 18,
                 Effects = RenderEffects.FlipHorizontally,
@@ -59,8 +59,8 @@ namespace VelaptorTests.Services
                 ViewPortSize = new SizeF(33, 34),
             });
 
-            var batchItems = new List<(bool, FontBatchItem)> { batchItem1, batchItem2 };
-            var expected = new ReadOnlyDictionary<uint, (bool, FontBatchItem)>(batchItems.ToDictionary());
+            var batchItems = new List<(bool, FontGlyphBatchItem)> { batchItem1, batchItem2 };
+            var expected = new ReadOnlyDictionary<uint, (bool, FontGlyphBatchItem)>(batchItems.ToDictionary());
             var service = CreateService();
 
             // Act
@@ -78,9 +78,9 @@ namespace VelaptorTests.Services
         public void Add_WhenBatchIsFull_InvokesBatchFilledEvent()
         {
             // Arrange
-            var batchItem1 = default(FontBatchItem);
+            var batchItem1 = default(FontGlyphBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(FontBatchItem);
+            var batchItem2 = default(FontGlyphBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
@@ -106,9 +106,9 @@ namespace VelaptorTests.Services
         public void AddRange_WhenInvoked_InvokesBatchFilledEvent()
         {
             // Arrange
-            var batchItem1 = default(FontBatchItem);
+            var batchItem1 = default(FontGlyphBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(FontBatchItem);
+            var batchItem2 = default(FontGlyphBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
@@ -133,9 +133,9 @@ namespace VelaptorTests.Services
         public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
         {
             // Arrange
-            var batchItem1 = default(FontBatchItem);
+            var batchItem1 = default(FontGlyphBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(FontBatchItem);
+            var batchItem2 = default(FontGlyphBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
@@ -153,14 +153,14 @@ namespace VelaptorTests.Services
         public void EmptyBatch_WithNoItemsReadyToRender_DoesNotEmptyItems()
         {
             // Arrange
-            var batchItem1 = default(FontBatchItem);
+            var batchItem1 = default(FontGlyphBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(FontBatchItem);
+            var batchItem2 = default(FontGlyphBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
             service.BatchSize = 2;
-            service.BatchItems = new List<(bool, FontBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
+            service.BatchItems = new List<(bool, FontGlyphBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
 
             // Act
             service.EmptyBatch();
@@ -172,9 +172,9 @@ namespace VelaptorTests.Services
         #endregion
 
         /// <summary>
-        /// Creates a new instance of <see cref="FontBatchService"/> for the purpose of testing.
+        /// Creates a new instance of <see cref="FontGlyphBatchService"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private static FontBatchService CreateService() => new ();
+        private static FontGlyphBatchService CreateService() => new ();
     }
 }

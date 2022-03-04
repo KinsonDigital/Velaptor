@@ -47,7 +47,7 @@ namespace Velaptor.Factories
             var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
             var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
             var textureBatchService = IoC.Container.GetInstance<IBatchManagerService<SpriteBatchItem>>();
-            var fontBatchService = IoC.Container.GetInstance<IBatchManagerService<FontBatchItem>>();
+            var fontBatchService = IoC.Container.GetInstance<IBatchManagerService<FontGlyphBatchItem>>();
             var rectBatchService = IoC.Container.GetInstance<IBatchManagerService<RectShape>>();
 
             spriteBatch = new SpriteBatch(

@@ -1,4 +1,4 @@
-﻿// <copyright file="FontBatchService.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,11 +13,11 @@ namespace Velaptor.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Manages the process of batching up the rendering of text.
+    /// Manages the process of batching up glyphs to be rendered.
     /// </summary>
-    internal class FontBatchService : IBatchManagerService<FontBatchItem>
+    internal class FontGlyphBatchService : IBatchManagerService<FontGlyphBatchItem>
     {
-        private SortedDictionary<uint, (bool shouldRender, FontBatchItem item)> batchItems = new ();
+        private SortedDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)> batchItems = new ();
         private uint currentBatchIndex;
         private uint batchSize;
         private uint currentFrame;
@@ -26,10 +26,7 @@ namespace Velaptor.Services
         /// Occurs when a batch is full.
         /// </summary>
         /// <remarks>
-        /// Scenarios When The Batch Is Ready:
-        /// <list type="number">
-        ///     <item>The batch is ready when the total amount of items to be rendered is equal to the <see cref="BatchSize"/>.</item>
-        /// </list>
+        /// The batch is ready when the total amount of items to be rendered is equal to the <see cref="BatchSize"/>.
         /// </remarks>
         public event EventHandler<EventArgs>? BatchFilled;
 
@@ -50,17 +47,17 @@ namespace Velaptor.Services
         }
 
         /// <inheritdoc/>
-        public ReadOnlyDictionary<uint, (bool shouldRender, FontBatchItem item)> BatchItems
+        public ReadOnlyDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)> BatchItems
         {
             get => new (this.batchItems);
-            set => this.batchItems = new SortedDictionary<uint, (bool shouldRender, FontBatchItem item)>(value);
+            set => this.batchItems = new SortedDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)>(value);
         }
 
         /// <summary>
-        /// Adds the given <paramref name="rect"/> to the batch.
+        /// Adds the given <paramref name="item"/> to the batch.
         /// </summary>
-        /// <param name="rect">The item to be added.</param>
-        public void Add(FontBatchItem rect)
+        /// <param name="item">The item to be added.</param>
+        public void Add(FontGlyphBatchItem item)
         {
             var batchIsFull = this.currentBatchIndex >= BatchSize;
 
@@ -69,17 +66,17 @@ namespace Velaptor.Services
                 this.BatchFilled?.Invoke(this, EventArgs.Empty);
             }
 
-            this.batchItems[this.currentBatchIndex] = (true, rect);
+            this.batchItems[this.currentBatchIndex] = (true, item);
             this.currentBatchIndex += 1;
         }
 
         /// <summary>
-        /// Adds the given list of <paramref name="rects"/> to batch.
+        /// Adds the given list of <paramref name="items"/> to batch.
         /// </summary>
-        /// <param name="rects">The items to be added.</param>
-        public void AddRange(IEnumerable<FontBatchItem> rects)
+        /// <param name="items">The items to be added.</param>
+        public void AddRange(IEnumerable<FontGlyphBatchItem> items)
         {
-            foreach (var rect in rects)
+            foreach (var rect in items)
             {
                 Add(rect);
             }
@@ -102,7 +99,7 @@ namespace Velaptor.Services
                     continue;
                 }
 
-                (bool shouldRender, FontBatchItem spriteItem) itemToEmpty = this.batchItems[i];
+                (bool shouldRender, FontGlyphBatchItem spriteItem) itemToEmpty = this.batchItems[i];
 
 #if DEBUG
                 AppStats.RecordFontGlyphRendering(

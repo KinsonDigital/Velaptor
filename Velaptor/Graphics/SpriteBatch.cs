@@ -37,10 +37,10 @@ namespace Velaptor.Graphics
         private readonly IShaderProgram fontShader;
         private readonly IShaderProgram rectShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
-        private readonly IGPUBuffer<FontBatchItem> fontBuffer;
+        private readonly IGPUBuffer<FontGlyphBatchItem> fontBuffer;
         private readonly IGPUBuffer<RectShape> rectBuffer;
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
-        private readonly IBatchManagerService<FontBatchItem> fontBatchService;
+        private readonly IBatchManagerService<FontGlyphBatchItem> fontBatchService;
         private readonly IBatchManagerService<RectShape> rectBatchService;
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
@@ -78,10 +78,10 @@ namespace Velaptor.Graphics
             IShaderProgram fontShader,
             IShaderProgram rectShader,
             IGPUBuffer<SpriteBatchItem> textureBuffer,
-            IGPUBuffer<FontBatchItem> fontBuffer,
+            IGPUBuffer<FontGlyphBatchItem> fontBuffer,
             IGPUBuffer<RectShape> rectBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
-            IBatchManagerService<FontBatchItem> fontBatchService,
+            IBatchManagerService<FontGlyphBatchItem> fontBatchService,
             IBatchManagerService<RectShape> rectBatchService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
@@ -627,7 +627,7 @@ namespace Velaptor.Graphics
         /// <param name="atlasWidth">The width of the font texture atlas.</param>
         /// <param name="atlasHeight">The height of the font texture atlas.</param>
         /// <returns>The list of glyphs that make up the string as sprite batch items.</returns>
-        private IEnumerable<FontBatchItem> ToFontBatchItems(
+        private IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
             Vector2 textPos,
             IEnumerable<GlyphMetrics> charMetrics,
             IFont font,
@@ -638,7 +638,7 @@ namespace Velaptor.Graphics
             float atlasWidth,
             float atlasHeight)
         {
-            var result = new List<FontBatchItem>();
+            var result = new List<FontGlyphBatchItem>();
 
             var leftGlyphIndex = 0u;
 
@@ -676,7 +676,7 @@ namespace Velaptor.Graphics
                 // Only render characters that are not a space (32 char code)
                 if (currentCharMetric.Glyph != ' ')
                 {
-                    var itemToAdd = default(FontBatchItem);
+                    var itemToAdd = default(FontGlyphBatchItem);
 
                     itemToAdd.Glyph = currentCharMetric.Glyph;
                     itemToAdd.SrcRect = srcRect;

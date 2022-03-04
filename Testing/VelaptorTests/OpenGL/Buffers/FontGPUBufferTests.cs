@@ -133,7 +133,7 @@ namespace VelaptorTests.OpenGL.Buffers
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
             {
-                buffer.UploadVertexData(It.IsAny<FontBatchItem>(), It.IsAny<uint>());
+                buffer.UploadVertexData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>());
             }, "The font buffer has not been initialized.");
         }
 
@@ -141,7 +141,7 @@ namespace VelaptorTests.OpenGL.Buffers
         public void UploadVertexData_WhenInvoked_CreatesOpenGLDebugGroups()
         {
             // Arrange
-            var batchItem = default(FontBatchItem);
+            var batchItem = default(FontGlyphBatchItem);
             batchItem.Effects = RenderEffects.None;
 
             var buffer = CreateBuffer();
@@ -167,7 +167,7 @@ namespace VelaptorTests.OpenGL.Buffers
                 0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.804163694f, 0.702218235f, 0.571428597f, 0.25f, 147f,
                 112f, 219f, 255f,
             };
-            var batchItem = default(FontBatchItem);
+            var batchItem = default(FontGlyphBatchItem);
             batchItem.Angle = 45;
             batchItem.Effects = RenderEffects.None;
             batchItem.Size = 1.5f;

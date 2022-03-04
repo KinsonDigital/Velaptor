@@ -1,4 +1,4 @@
-﻿// <copyright file="FontBatchItem.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchItem.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,15 +17,15 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// A single item in a batch of glyph items that can be rendered to the screen.
     /// </summary>
-    internal struct FontBatchItem : IEquatable<FontBatchItem>
+    internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     {
         /// <summary>
-        /// The source rectangle inside of the texture to render.
+        /// The source rectangle inside of the font atlas texture to render.
         /// </summary>
         public RectangleF SrcRect;
 
         /// <summary>
-        /// The destination rectangular area of where to render the texture on the screen.
+        /// The destination rectangular area of where to render the glyph on the screen.
         /// </summary>
         public RectangleF DestRect;
 
@@ -35,24 +35,24 @@ namespace Velaptor.OpenGL
         public char Glyph;
 
         /// <summary>
-        /// The size of the texture to be rendered.
+        /// The size of the glyph texture to be rendered.
         /// </summary>
         /// <remarks>This must be a value between 0 and 1.</remarks>
         public float Size;
 
         /// <summary>
-        /// The angle in degrees of the texture.
+        /// The angle in degrees of the glyph texture.
         /// </summary>
         /// <remarks>Needs to be a value between 0 and 360.</remarks>
         public float Angle;
 
         /// <summary>
-        /// The color to apply to the entire texture.
+        /// The color to apply to the entire glyph texture.
         /// </summary>
         public Color TintColor;
 
         /// <summary>
-        /// The type of effects to apply to the texture when rendering.
+        /// The type of effects to apply to the glyph texture when rendering.
         /// </summary>
         public RenderEffects Effects;
 
@@ -62,7 +62,7 @@ namespace Velaptor.OpenGL
         public SizeF ViewPortSize;
 
         /// <summary>
-        /// The ID of the texture.
+        /// The ID of the font atlas texture.
         /// </summary>
         public uint TextureId;
 
@@ -72,7 +72,7 @@ namespace Velaptor.OpenGL
         /// <param name="left">The left operand compared with the right operand.</param>
         /// <param name="right">The right operand compared with the left operand.</param>
         /// <returns>True if both operands are equal.</returns>
-        public static bool operator ==(FontBatchItem left, FontBatchItem right) => left.Equals(right);
+        public static bool operator ==(FontGlyphBatchItem left, FontGlyphBatchItem right) => left.Equals(right);
 
         /// <summary>
         /// Returns a value indicating if the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
@@ -80,10 +80,10 @@ namespace Velaptor.OpenGL
         /// <param name="left">The left operand compared with the right operand.</param>
         /// <param name="right">The right operand compared with the left operand.</param>
         /// <returns>True if both operands are not equal.</returns>
-        public static bool operator !=(FontBatchItem left, FontBatchItem right) => !(left == right);
+        public static bool operator !=(FontGlyphBatchItem left, FontGlyphBatchItem right) => !(left == right);
 
         /// <summary>
-        /// Gets a value indicating whether or not the current <see cref="FontBatchItem"/> is empty.
+        /// Gets a value indicating whether or not the current <see cref="FontGlyphBatchItem"/> is empty.
         /// </summary>
         /// <returns>True if empty.</returns>
         public bool IsEmpty() =>
@@ -114,7 +114,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
-        public bool Equals(FontBatchItem other) =>
+        public bool Equals(FontGlyphBatchItem other) =>
             this.SrcRect.Equals(other.SrcRect) &&
             this.DestRect.Equals(other.DestRect) &&
             this.Size.Equals(other.Size) &&
@@ -126,7 +126,7 @@ namespace Velaptor.OpenGL
             this.Glyph == other.Glyph;
 
         /// <inheritdoc cref="object.Equals(object?)"/>
-        public override bool Equals(object? obj) => obj is FontBatchItem other && Equals(other);
+        public override bool Equals(object? obj) => obj is FontGlyphBatchItem other && Equals(other);
 
         /// <inheritdoc cref="object.GetHashCode"/>
         [ExcludeFromCodeCoverage]
