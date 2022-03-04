@@ -4,6 +4,7 @@
 
 namespace Velaptor.OpenGL
 {
+    // ReSharper disable RedundantNameQualifier
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
@@ -11,6 +12,11 @@ namespace Velaptor.OpenGL
     using System.Text;
     using Velaptor.Graphics;
 
+    // ReSharper restore RedundantNameQualifier
+
+    /// <summary>
+    /// A single item in a batch of glyph items that can be rendered to the screen.
+    /// </summary>
     internal struct FontBatchItem : IEquatable<FontBatchItem>
     {
         /// <summary>

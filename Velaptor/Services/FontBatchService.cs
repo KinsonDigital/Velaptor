@@ -1,4 +1,8 @@
-﻿namespace Velaptor.Services
+﻿// <copyright file="FontBatchService.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Velaptor.Services
 {
     // ReSharper disable RedundantNameQualifier
     using System;

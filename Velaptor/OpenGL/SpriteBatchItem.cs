@@ -15,7 +15,7 @@ namespace Velaptor.OpenGL
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// A single item in a batch of items that could be rendered to the screen.
+    /// A single item in a batch of sprite items that can be rendered to the screen.
     /// </summary>
     internal struct SpriteBatchItem : IEquatable<SpriteBatchItem>
     {
