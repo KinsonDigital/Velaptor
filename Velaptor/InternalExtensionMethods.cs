@@ -914,5 +914,32 @@ namespace Velaptor
         ///     Regular casting rules apply.
         /// </remarks>
         public static NETPoint ToPoint(this Vector2 value) => new NETPoint((int)value.X, (int)value.Y);
+
+        /// <summary>
+        /// Dequeues the given <paramref name="queue"/> of items until the <paramref name="untilPredicate"/> returns true.
+        /// </summary>
+        /// <param name="queue">The <see cref="Queue{T}"/> to process.</param>
+        /// <param name="untilPredicate">Stops dequeuing the items if the <see cref="Predicate{T}"/> returns true.</param>
+        /// <typeparam name="T">The type of items in the <paramref name="queue"/>.</typeparam>
+        public static void DequeueWhile<T>(this Queue<T> queue, Predicate<T> untilPredicate)
+        {
+            if (queue.Count <= 0)
+            {
+                return;
+            }
+
+            while (true)
+            {
+                if (queue.Count <= 0)
+                {
+                    break;
+                }
+
+                var peekedItem = queue.Peek();
+                untilPredicate(peekedItem);
+
+                queue.Dequeue();
+            }
+        }
     }
 }

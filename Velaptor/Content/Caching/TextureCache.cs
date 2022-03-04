@@ -243,6 +243,9 @@ namespace Velaptor.Content.Caching
                     contentName = $"FontAtlasTexture|{contentName}|{parseResult.MetaData}";
                 }
 
+#if DEBUG
+                AppStats.RecordLoadedFont(cacheKey);
+#endif
                 return this.textureFactory.Create(contentName, fullFilePath, imageData);
             });
         }
@@ -255,6 +258,9 @@ namespace Velaptor.Content.Caching
             if (texture is not null)
             {
                 this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
+#if DEBUG
+                AppStats.ClearLoadedFont(cacheKey);
+#endif
             }
         }
 

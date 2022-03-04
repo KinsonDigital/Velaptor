@@ -24,6 +24,7 @@ namespace Velaptor.Services
         private bool firstTimeRender = true;
         private uint currentTextureId;
         private uint previousTextureId;
+        private uint currentFrame;
 
         /// <summary>
         /// Occurs when a batch is full.
@@ -104,6 +105,8 @@ namespace Velaptor.Services
         /// </remarks>
         public void EmptyBatch()
         {
+            this.currentFrame += 1u;
+
             for (var i = 0u; i < this.batchItems.Count; i++)
             {
                 if (this.batchItems[i].shouldRender is false)
@@ -112,6 +115,11 @@ namespace Velaptor.Services
                 }
 
                 (bool shouldRender, SpriteBatchItem spriteItem) itemToEmpty = this.batchItems[i];
+
+#if DEBUG
+                AppStats.RecordTexturesRendered(this.currentFrame, itemToEmpty.spriteItem.TextureId, itemToEmpty.spriteItem.DestRect);
+#endif
+
                 itemToEmpty.shouldRender = false;
                 itemToEmpty.spriteItem.Empty();
 
