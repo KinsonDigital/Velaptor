@@ -24,7 +24,7 @@ namespace Velaptor.OpenGL.Buffers
     /// </summary>
     [GPUBufferName("Font")]
     [SpriteBatchSize(ISpriteBatch.BatchSize)]
-    internal class FontGPUBuffer : GPUBufferBase<SpriteBatchItem>
+    internal class FontGPUBuffer : GPUBufferBase<FontBatchItem>
     {
         private const string BufferNotInitMsg = "The font buffer has not been initialized.";
 
@@ -143,7 +143,7 @@ namespace Velaptor.OpenGL.Buffers
         }
 
         /// <inheritdoc/>
-        protected internal override void UploadVertexData(SpriteBatchItem textureQuad, uint batchIndex)
+        protected internal override void UploadVertexData(FontBatchItem textureQuad, uint batchIndex)
         {
             if (IsInitialized is false)
             {

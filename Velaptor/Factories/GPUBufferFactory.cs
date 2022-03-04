@@ -22,7 +22,7 @@ namespace Velaptor.Factories
     internal static class GPUBufferFactory
     {
         private static IGPUBuffer<SpriteBatchItem>? textureBuffer;
-        private static IGPUBuffer<SpriteBatchItem>? fontBuffer;
+        private static IGPUBuffer<FontBatchItem>? fontBuffer;
         private static IGPUBuffer<RectShape>? rectBuffer;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Velaptor.Factories
         /// <remarks>
         ///     The instance is a singleton.  Every call to this method will return the same instance.
         /// </remarks>
-        public static IGPUBuffer<SpriteBatchItem> CreateFontGPUBuffer()
+        public static IGPUBuffer<FontBatchItem> CreateFontGPUBuffer()
         {
             if (fontBuffer is not null)
             {

@@ -37,10 +37,10 @@ namespace Velaptor.Graphics
         private readonly IShaderProgram fontShader;
         private readonly IShaderProgram rectShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
-        private readonly IGPUBuffer<SpriteBatchItem> fontBuffer;
+        private readonly IGPUBuffer<FontBatchItem> fontBuffer;
         private readonly IGPUBuffer<RectShape> rectBuffer;
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
-        private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
+        private readonly IBatchManagerService<FontBatchItem> fontBatchService;
         private readonly IBatchManagerService<RectShape> rectBatchService;
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
@@ -78,10 +78,10 @@ namespace Velaptor.Graphics
             IShaderProgram fontShader,
             IShaderProgram rectShader,
             IGPUBuffer<SpriteBatchItem> textureBuffer,
-            IGPUBuffer<SpriteBatchItem> fontBuffer,
+            IGPUBuffer<FontBatchItem> fontBuffer,
             IGPUBuffer<RectShape> rectBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
-            IBatchManagerService<SpriteBatchItem> fontBatchService,
+            IBatchManagerService<FontBatchItem> fontBatchService,
             IBatchManagerService<RectShape> rectBatchService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
@@ -376,7 +376,7 @@ namespace Velaptor.Graphics
                 var textLinePos = new Vector2(characterX, characterY);
 
                 // Convert all of the glyphs to sprite batch items to be rendered
-                var batchItems = ToSpriteBatchItems(
+                var batchItems = ToFontBatchItems(
                     textLinePos,
                     glyphLines.ToArray()[i],
                     font,
@@ -627,7 +627,7 @@ namespace Velaptor.Graphics
         /// <param name="atlasWidth">The width of the font texture atlas.</param>
         /// <param name="atlasHeight">The height of the font texture atlas.</param>
         /// <returns>The list of glyphs that make up the string as sprite batch items.</returns>
-        private IEnumerable<SpriteBatchItem> ToSpriteBatchItems(
+        private IEnumerable<FontBatchItem> ToFontBatchItems(
             Vector2 textPos,
             IEnumerable<GlyphMetrics> charMetrics,
             IFont font,
@@ -638,7 +638,7 @@ namespace Velaptor.Graphics
             float atlasWidth,
             float atlasHeight)
         {
-            var result = new List<SpriteBatchItem>();
+            var result = new List<FontBatchItem>();
 
             var leftGlyphIndex = 0u;
 
@@ -676,8 +676,9 @@ namespace Velaptor.Graphics
                 // Only render characters that are not a space (32 char code)
                 if (currentCharMetric.Glyph != ' ')
                 {
-                    var itemToAdd = default(SpriteBatchItem);
+                    var itemToAdd = default(FontBatchItem);
 
+                    itemToAdd.Glyph = currentCharMetric.Glyph;
                     itemToAdd.SrcRect = srcRect;
                     itemToAdd.DestRect = destRect;
                     itemToAdd.Size = size;
