@@ -41,6 +41,7 @@ namespace Velaptor.OpenGL
         private bool isShuttingDown;
         private bool firstRenderInvoked;
         private bool isDisposed;
+        private Action? afterUnload;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
@@ -221,8 +222,10 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public async Task ShowAsync()
+        public async Task ShowAsync(Action? afterStart = null, Action? afterUnloadAction = null)
         {
+            this.afterUnload = afterUnloadAction;
+
             this.taskService.SetAction(
                 () =>
                 {
@@ -232,6 +235,12 @@ namespace Velaptor.OpenGL
                 });
 
             this.taskService.Start();
+
+            if (afterStart is not null)
+            {
+                afterStart();
+                return;
+            }
 
             await this.taskService.ContinueWith(
                 _ => { },
@@ -294,6 +303,8 @@ namespace Velaptor.OpenGL
             Uninitialize?.Invoke();
             this.shutDownReactable.PushNotification(default, true);
             this.shutDownReactable.Dispose();
+
+            this.afterUnload?.Invoke();
         }
 
         /// <summary>
