@@ -9,6 +9,7 @@ namespace Velaptor.Content.Fonts
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using System.Numerics;
     using Velaptor.Graphics;
     using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 
@@ -96,5 +97,18 @@ namespace Velaptor.Content.Fonts
         /// <returns>The kerning result between the glyphs.</returns>
         /// <remarks>Refer to https://freetype.org/freetype2/docs/glyphs/glyphs-4.html for more info.</remarks>
         float GetKerning(uint leftGlyphIndex, uint rightGlyphIndex);
+
+        /// <summary>
+        /// Returns the bounds of each character in the given <paramref name="text"/> based on the
+        /// given <paramref name="textPos"/>.
+        /// </summary>
+        /// <param name="text">The text to get the bounds data.</param>
+        /// <param name="textPos">The position of the text as a whole.</param>
+        /// <returns>The bounds for each character.</returns>
+        /// <remarks>
+        ///     The bounds include the width, height, and position of the character relative to
+        ///     the <paramref name="textPos"/>.  The position is relative to the top left corner of the character.
+        /// </remarks>
+        IEnumerable<(char character, RectangleF bounds)> GetCharacterBounds(string text, Vector2 textPos);
     }
 }

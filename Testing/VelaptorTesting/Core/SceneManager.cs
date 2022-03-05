@@ -38,10 +38,10 @@ namespace VelaptorTesting.Core
         {
             this.spriteBatch = spriteBatch;
 
-            this.nextButton = new Button { Text = "-->", FaceTextureName = "button-next-prev-scene" };
+            this.nextButton = new Button { Text = "-->" };
             this.nextButton.Click += (_, _) => NextScene();
 
-            this.previousButton = new Button { Text = "<--", FaceTextureName = "button-next-prev-scene" };
+            this.previousButton = new Button { Text = "<--" };
             this.previousButton.Click += (_, _) => PreviousScene();
 
             this.keyboard = new Keyboard();

@@ -6,6 +6,7 @@ namespace Velaptor.Factories
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
+    using Velaptor.Content.Fonts;
     using Velaptor.UI;
 
     // ReSharper restore RedundantNameQualifier
@@ -24,7 +25,9 @@ namespace Velaptor.Factories
         /// <returns>The label to render.</returns>
         public static Label CreateLabel(string labelText)
         {
-            var label = new Label(ContentLoaderFactory.CreateContentLoader()) { Text = labelText };
+            var label = new Label(
+                ContentLoaderFactory.CreateContentLoader(),
+                IoC.Container.GetInstance<IFont>()) { Text = labelText };
 
             return label;
         }

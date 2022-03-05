@@ -54,7 +54,7 @@ namespace Velaptor.Content
         public IAtlasData LoadAtlas(string nameOrFilePath) => this.atlasLoader.Load(nameOrFilePath);
 
         /// <inheritdoc/>
-        public IFont LoadFont(string nameOrFilePath, int size) => this.fontLoader.Load($"{nameOrFilePath}|size:{size}");
+        public IFont LoadFont(string nameOrFilePath, uint size) => this.fontLoader.Load($"{nameOrFilePath}|size:{size}");
 
         /// <inheritdoc/>
         public void UnloadTexture(ITexture content) => this.textureLoader.Unload(content.FilePath);

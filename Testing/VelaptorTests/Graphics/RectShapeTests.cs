@@ -241,55 +241,155 @@ namespace VelaptorTests.Graphics
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [InlineData(10, 20, 30, 5)] // Width < Height & Value > Smallest Dimension
-        [InlineData(20, 10, 30, 5)] // Width < Height & Value < Smallest Dimension
-        [InlineData(200, 200, 50, 50)] // Width == Height & Value < Smallest Dimension
-        [InlineData(200, 400, -50, 1)] // Width < Height & Value Is Negative
-        public void BorderThickness_WhenSettingValue_ReturnsCorrectResult(
-            float width,
-            float height,
-            float value,
-            float expected)
+        [Fact]
+        public void HalfWidth_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var rect = new RectShape();
-            rect.Width = width;
-            rect.Height = height;
+            rect.Width = 100;
 
             // Act
-            rect.BorderThickness = value;
+            var actual = rect.HalfWidth;
+
+            // Assert
+            Assert.Equal(50f, actual);
+        }
+
+        [Fact]
+        public void HalfHeight_WhenGettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Height = 100;
+
+            // Act
+            var actual = rect.HalfHeight;
+
+            // Assert
+            Assert.Equal(50f, actual);
+        }
+
+        [Fact]
+        public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+
+            // Act
+            rect.BorderThickness = 123f;
             var actual = rect.BorderThickness;
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(123f, actual);
         }
 
-        [Theory]
-        [InlineData(10, 20, 30, 5)] // Width < Height & Value > Smallest Dimension
-        [InlineData(20, 10, 30, 5)] // Width < Height & Value < Smallest Dimension
-        [InlineData(200, 200, 50, 50)] // Width == Height & Value < Smallest Dimension
-        [InlineData(200, 400, -50, 0)] // Width < Height & Value Is Negative
-        public void CornerRadius_WhenInvoked_ReturnsCorrectResult(
-            float width,
-            float height,
-            float radius,
-            float expected)
+        [Fact]
+        public void CornerRadius_WhenGettingDefaultValue_ReturnsCorrectResult()
         {
             // Arrange
             var rect = new RectShape();
-            rect.Width = width;
-            rect.Height = height;
 
             // Act
-            rect.CornerRadius = new CornerRadius(radius, radius, radius, radius);
             var actual = rect.CornerRadius;
 
             // Assert
-            AssertExtensions.EqualWithMessage(expected, actual.TopLeft, "The top left value is incorrect.");
-            AssertExtensions.EqualWithMessage(expected, actual.BottomLeft, "The bottom left value is incorrect.");
-            AssertExtensions.EqualWithMessage(expected, actual.BottomRight, "The bottom right value is incorrect.");
-            AssertExtensions.EqualWithMessage(expected, actual.TopRight, "The top right value is incorrect.");
+            AssertExtensions.EqualWithMessage(1f, actual.TopLeft, "The top left value is incorrect.");
+            AssertExtensions.EqualWithMessage(1f, actual.BottomLeft, "The bottom left value is incorrect.");
+            AssertExtensions.EqualWithMessage(1f, actual.BottomRight, "The bottom right value is incorrect.");
+            AssertExtensions.EqualWithMessage(1f, actual.TopRight, "The top right value is incorrect.");
+        }
+
+        [Fact]
+        public void CornerRadius_WhenInvoked_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+
+            // Act
+            rect.CornerRadius = new CornerRadius(11f, 22f, 33f, 44f);
+            var actual = rect.CornerRadius;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(11f, actual.TopLeft, "The top left value is incorrect.");
+            AssertExtensions.EqualWithMessage(22f, actual.BottomLeft, "The bottom left value is incorrect.");
+            AssertExtensions.EqualWithMessage(33f, actual.BottomRight, "The bottom right value is incorrect.");
+            AssertExtensions.EqualWithMessage(44f, actual.TopRight, "The top right value is incorrect.");
+        }
+
+        [Fact]
+        public void Top_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Position = new Vector2(100, 100);
+            rect.Width = 100;
+            rect.Height = 50;
+
+            // Act
+            rect.Top = 40f;
+            var actual = rect.Top;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Top)} value incorrect.");
+            AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+            AssertExtensions.EqualWithMessage(65f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        }
+
+        [Fact]
+        public void Right_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Position = new Vector2(200, 100);
+            rect.Width = 100;
+            rect.Height = 50;
+
+            // Act
+            rect.Right = 100f;
+            var actual = rect.Right;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Right)} value incorrect.");
+            AssertExtensions.EqualWithMessage(50, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+            AssertExtensions.EqualWithMessage(100f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        }
+
+        [Fact]
+        public void Bottom_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Position = new Vector2(100, 100);
+            rect.Width = 100;
+            rect.Height = 50;
+
+            // Act
+            rect.Bottom = 40f;
+            var actual = rect.Bottom;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Bottom)} value incorrect.");
+            AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+            AssertExtensions.EqualWithMessage(15f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+        }
+
+        [Fact]
+        public void Left_WhenSettingValue_ReturnsCorrectResult()
+        {
+            // Arrange
+            var rect = new RectShape();
+            rect.Position = new Vector2(200, 100);
+            rect.Width = 100;
+            rect.Height = 50;
+
+            // Act
+            rect.Left = 100f;
+            var actual = rect.Left;
+
+            // Assert
+            AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Left)} value incorrect.");
+            AssertExtensions.EqualWithMessage(150, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+            AssertExtensions.EqualWithMessage(100f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
         }
         #endregion
 
@@ -354,7 +454,7 @@ namespace VelaptorTests.Graphics
             Assert.Equal(1f, rect.Height);
             Assert.Equal(Color.Empty, rect.Color);
             Assert.False(rect.IsFilled);
-            Assert.Equal(1f, rect.BorderThickness);
+            Assert.Equal(0f, rect.BorderThickness);
             Assert.Equal(new CornerRadius(0f, 0f, 0f, 0f), rect.CornerRadius);
             Assert.Equal(ColorGradient.None, rect.GradientType);
             Assert.Equal(Color.Empty, rect.GradientStart);

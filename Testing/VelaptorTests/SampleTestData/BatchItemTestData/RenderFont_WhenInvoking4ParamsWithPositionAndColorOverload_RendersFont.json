@@ -1,422 +1,432 @@
 [
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+    "Glyph": "h",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+    "Glyph": "e",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+    "Glyph": "l",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
+    "Glyph": "l",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
     },
-    {
-        "SrcRect": {
-            "Location": {
-                "IsEmpty": true,
-                "X": 0.0,
-                "Y": 0.0
-            },
-            "Size": "1, 1",
-            "X": 0.0,
-            "Y": 0.0,
-            "Width": 1.0,
-            "Height": 1.0,
-            "Left": 0.0,
-            "Top": 0.0,
-            "Right": 1.0,
-            "Bottom": 1.0,
-            "IsEmpty": false
-        },
-        "DestRect": {
-            "Location": {
-                "IsEmpty": false,
-                "X": 758.0,
-                "Y": 137.0
-            },
-            "Size": "0, 0",
-            "X": 758.0,
-            "Y": 137.0,
-            "Width": 0.0,
-            "Height": 0.0,
-            "Left": 758.0,
-            "Top": 137.0,
-            "Right": 758.0,
-            "Bottom": 137.0,
-            "IsEmpty": true
-        },
-        "Size": -1.0,
-        "Angle": 0.0,
-        "TintColor": "MediumPurple",
-        "Effects": 1,
-        "ViewPortSize": "0, 0",
-        "TextureId": 0
-    }
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
+    },
+    "Glyph": "o",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
+    },
+    "Glyph": "w",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
+    },
+    "Glyph": "o",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
+    },
+    "Glyph": "r",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
+    },
+    "Glyph": "l",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  },
+  {
+    "SrcRect": {
+      "Location": {
+        "IsEmpty": true,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      "Size": "1, 1",
+      "X": 0.0,
+      "Y": 0.0,
+      "Width": 1.0,
+      "Height": 1.0,
+      "Left": 0.0,
+      "Top": 0.0,
+      "Right": 1.0,
+      "Bottom": 1.0,
+      "IsEmpty": false
+    },
+    "DestRect": {
+      "Location": {
+        "IsEmpty": false,
+        "X": 758.0,
+        "Y": 137.0
+      },
+      "Size": "0, 0",
+      "X": 758.0,
+      "Y": 137.0,
+      "Width": 0.0,
+      "Height": 0.0,
+      "Left": 758.0,
+      "Top": 137.0,
+      "Right": 758.0,
+      "Bottom": 137.0,
+      "IsEmpty": true
+    },
+    "Glyph": "d",
+    "Size": -1.0,
+    "Angle": 0.0,
+    "TintColor": "MediumPurple",
+    "Effects": 1,
+    "ViewPortSize": "0, 0",
+    "TextureId": 0
+  }
 ]

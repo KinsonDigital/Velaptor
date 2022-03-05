@@ -7,10 +7,8 @@ namespace VelaptorTests.OpenGL.Buffers
     using System;
     using System.Collections.Generic;
     using System.Drawing;
-    using System.IO;
     using System.Numerics;
     using Moq;
-    using Newtonsoft.Json;
     using Velaptor;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
@@ -434,7 +432,7 @@ namespace VelaptorTests.OpenGL.Buffers
             var actual = buffer.GenerateData();
 
             // Assert
-            Assert.Equal(100u, buffer.BatchSize);
+            Assert.Equal(1000u, buffer.BatchSize);
             Assert.Equal(expected, actual);
         }
 
@@ -504,10 +502,8 @@ namespace VelaptorTests.OpenGL.Buffers
             // Act
             var actual = buffer.GenerateIndices();
 
-            var jsonData = JsonConvert.SerializeObject(actual);
-            File.WriteAllText($@"C:\temp\{nameof(GenerateIndices_WhenInvoked_ReturnsCorrectResult)}.json", jsonData);
             // Assert
-            Assert.Equal(100u, buffer.BatchSize);
+            Assert.Equal(1000u, buffer.BatchSize);
             Assert.Equal(expected, actual);
         }
         #endregion

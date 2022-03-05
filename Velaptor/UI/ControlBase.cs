@@ -76,11 +76,15 @@ namespace Velaptor.UI
             set => Position = new Point(Position.X, (int)(value - (Height / 2f)));
         }
 
-        /// <inheritdoc cref="ISizable.Width"/>
-        public virtual uint Width { get; protected internal set; }
+        /// <summary>
+        /// Gets or sets the width of the <see cref="ControlBase"/>.
+        /// </summary>
+        public virtual uint Width { get; set; }
 
-        /// <inheritdoc cref="ISizable.Height"/>
-        public virtual uint Height { get; protected internal set; }
+        /// <summary>
+        /// Gets or sets the height of the <see cref="ControlBase"/>.
+        /// </summary>
+        public virtual uint Height { get; set; }
 
         /// <inheritdoc cref="IControl.Visible"/>
         public virtual bool Visible { get; set; } = true;
@@ -94,7 +98,7 @@ namespace Velaptor.UI
         public bool IsMouseOver { get; private set; }
 
         /// <inheritdoc cref="IContentLoadable.IsLoaded"/>
-        public bool IsLoaded { get; protected set; }
+        public bool IsLoaded { get; private set; }
 
         /// <summary>
         /// Gets or sets the color to apply to the control when the
@@ -105,8 +109,7 @@ namespace Velaptor.UI
         public Color MouseDownColor { get; set; } = Color.FromArgb(255, 190, 190, 190);
 
         /// <summary>
-        /// Gets or sets the color to apply to the control when the
-        /// mouse button is hovering over the control.
+        /// Gets or sets the color to apply to the control when the mouse button is hovering over the control.
         /// </summary>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
         [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global", Justification = "Used by library users.")]
@@ -166,6 +169,7 @@ namespace Velaptor.UI
 
                 if (this.currentMouseState.IsLeftButtonDown())
                 {
+                    OnMouseDown();
                     this.MouseDown?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -174,6 +178,7 @@ namespace Velaptor.UI
                 this.previousMouseState.IsLeftButtonDown() &&
                 IsMouseOver)
             {
+                OnMouseUp();
                 this.MouseUp?.Invoke(this, EventArgs.Empty);
                 this.Click?.Invoke(this, EventArgs.Empty);
             }
@@ -188,6 +193,22 @@ namespace Velaptor.UI
         /// <param name="spriteBatch">Renders the control.</param>
         [ExcludeFromCodeCoverage]
         public virtual void Render(ISpriteBatch spriteBatch)
+        {
+        }
+
+        /// <summary>
+        /// Invoked when the mouse is in the down position over the control.
+        /// Used when a child control needs to be notified if the mouse is the down position.
+        /// </summary>
+        protected virtual void OnMouseDown()
+        {
+        }
+
+        /// <summary>
+        /// Invoked when the mouse is in the up position after the mouse was in the up position over the control.
+        /// Used when a child control needs to be notified if the mouse is in the up position.
+        /// </summary>
+        protected virtual void OnMouseUp()
         {
         }
     }

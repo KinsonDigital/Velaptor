@@ -12,6 +12,7 @@ namespace VelaptorTests
     using System.Numerics;
     using Velaptor;
     using Velaptor.Graphics;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -231,6 +232,62 @@ namespace VelaptorTests
 
             // Assert
             Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(20, 30, 40, 0.2f, 100, 24, 36, 48)] // Brightness within range
+        [InlineData(20, 30, 40, -0.2f, 100, 20, 30, 40)] // Brightness below min
+        [InlineData(20, 30, 40, 200f, 100, 40, 60, 80)] // Brightness above max
+        [InlineData(255, 255, 255, 0.2f, 100, 255, 255, 255)] // Color components <= 255
+        public void IncreaseBrightness_WhenInvoked_CorrectlySetsColor(
+            byte red,
+            byte green,
+            byte blue,
+            float brightness,
+            byte expectedAlpha,
+            byte expectedRed,
+            byte expectedGreen,
+            byte expectedBlue)
+        {
+            // Arrange
+            var color = Color.FromArgb(100, red, green, blue);
+
+            // Act
+            var actual = color.IncreaseBrightness(brightness);
+
+            // Assert
+            AssertExtensions.EqualWithMessage(expectedAlpha, actual.A, $"{nameof(Color.A)} value incorrect.");
+            AssertExtensions.EqualWithMessage(expectedRed, actual.R, $"{nameof(Color.R)} value incorrect.");
+            AssertExtensions.EqualWithMessage(expectedGreen, actual.G, $"{nameof(Color.G)} value incorrect.");
+            AssertExtensions.EqualWithMessage(expectedBlue, actual.B, $"{nameof(Color.B)} value incorrect.");
+        }
+
+        [Theory]
+        [InlineData(20, 30, 40, 0.2f, 100, 16, 24, 32)] // Brightness within range
+        [InlineData(20, 30, 40, -0.2f, 100, 20, 30, 40)] // Brightness below min
+        [InlineData(20, 30, 40, 200f, 100, 0, 0, 0)] // Brightness above max
+        [InlineData(0, 0, 0, 0.2f, 100, 0, 0, 0)] // Color components >= 0
+        public void DecreaseBrightness_WhenInvoked_CorrectlySetsColor(
+            byte red,
+            byte green,
+            byte blue,
+            float brightness,
+            byte expectedAlpha,
+            byte expectedRed,
+            byte expectedGreen,
+            byte expectedBlue)
+        {
+            // Arrange
+            var color = Color.FromArgb(100, red, green, blue);
+
+            // Act
+            var actual = color.DecreaseBrightness(brightness);
+
+            // Assert
+            AssertExtensions.EqualWithMessage(expectedAlpha, actual.A, $"{nameof(Color.A)} value incorrect.");
+            AssertExtensions.EqualWithMessage(expectedRed, actual.R, $"{nameof(Color.R)} value incorrect.");
+            AssertExtensions.EqualWithMessage(expectedGreen, actual.G, $"{nameof(Color.G)} value incorrect.");
+            AssertExtensions.EqualWithMessage(expectedBlue, actual.B, $"{nameof(Color.B)} value incorrect.");
         }
 
         [Fact]

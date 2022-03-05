@@ -17,7 +17,7 @@ namespace Velaptor
         /// <summary>
         /// Renders the object.
         /// </summary>
-        /// <param name="spriteBatch">Renders sprites.</param>
+        /// <param name="spriteBatch">Renders textures, primitives, and text.</param>
         void Render(ISpriteBatch spriteBatch);
     }
 }

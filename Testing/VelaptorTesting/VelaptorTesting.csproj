@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <Configurations>Debug;Release</Configurations>
@@ -20,18 +20,6 @@
 
   <ItemGroup>
     <None Remove="stylecop.json" />
-    <None Update="Content\Graphics\next-scene.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\previous-scene.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\button-face-small.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\button-face-large.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Content\Graphics\button-face-small.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -41,17 +29,8 @@
     <None Update="Content\Fonts\TimesNewRoman-Regular.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Graphics\button-face-extra-large.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\button-next-prev-scene.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Content\Sounds\test-song.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\button-face-extra-extra-large.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +51,7 @@
 
   <ItemGroup>
     <Folder Include="Content\Atlas\" />
+    <Folder Include="Content\Graphics" />
   </ItemGroup>
 
   <ItemGroup>

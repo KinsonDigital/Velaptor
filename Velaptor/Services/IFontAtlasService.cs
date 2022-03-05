@@ -20,7 +20,7 @@ namespace Velaptor.Services
         /// Creates a font atlas texture and atlas data that can be used for rendering.
         /// </summary>
         /// <param name="fontFilePath">The path to the font file.</param>
-        /// <param name="size">The size to make the font.</param>
+        /// <param name="sizeInPoints">The size to make the font.</param>
         /// <returns>
         /// <list type="number">
         ///     <item>
@@ -33,6 +33,6 @@ namespace Velaptor.Services
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="fontFilePath"/> is null or empty.</exception>
         /// <exception cref="FileNotFoundException">Thrown if the file cannot be found.</exception>
-        (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint size);
+        (ImageData atlasImage, GlyphMetrics[] atlasData) CreateFontAtlas(string fontFilePath, uint sizeInPoints);
     }
 }

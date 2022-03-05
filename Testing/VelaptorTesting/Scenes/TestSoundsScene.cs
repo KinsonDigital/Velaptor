@@ -175,7 +175,6 @@ namespace VelaptorTesting.Scenes
             this.btnFastForward10Sec = new Button
             {
                 Text = "Fast Forward 10 Sec",
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnFastForward10Sec.Click += (_, _) =>
             {
@@ -186,7 +185,6 @@ namespace VelaptorTesting.Scenes
             this.btnRewind10Sec = new Button
             {
                 Text = "Rewind 10 Sec",
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnRewind10Sec.Click += (_, _) =>
             {
@@ -197,7 +195,6 @@ namespace VelaptorTesting.Scenes
             this.btnRepeat = new Button
             {
                 Text = "Enable Repeat",
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnRepeat.Click += (_, _) =>
             {
