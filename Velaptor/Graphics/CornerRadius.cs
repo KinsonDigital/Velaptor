@@ -30,7 +30,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="CornerRadius"/> struct.
         /// </summary>
-        /// <param name="value">The value to set all corner radius values to.</param>
+        /// <param name="value">The value to set all corner radius values.</param>
         public CornerRadius(float value)
         {
             TopLeft = value;

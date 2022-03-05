@@ -309,7 +309,6 @@ namespace Velaptor.OpenGL.Buffers
         /// </remarks>
         private static RectShape ProcessBorderThicknessLimit(RectShape rect)
         {
-            // TODO: This needs to be unit tested
             var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
 
             rect.BorderThickness = rect.BorderThickness > largestValueAllowed
@@ -332,7 +331,6 @@ namespace Velaptor.OpenGL.Buffers
         /// </remarks>
         private static RectShape ProcessCornerRadiusLimits(RectShape rect)
         {
-            // TODO: This needs to be unit tested
             /*
                  * Always have the smallest value between the width and height (divided by 2)
                  * as the maximum limit of what any corner radius can be.

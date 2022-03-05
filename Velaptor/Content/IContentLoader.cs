@@ -39,7 +39,7 @@ namespace Velaptor.Content
         /// Loads font content using the given <paramref name="nameOrFilePath"/> and <paramref name="size"/>.
         /// </summary>
         /// <param name="nameOrFilePath">The name content in the application's content directory or direct file path to the content.</param>
-        /// <param name="size">The size of the font in points.</param>
+        /// <param name="size">The point size of the font.</param>
         /// <returns>The loaded font content.</returns>
         IFont LoadFont(string nameOrFilePath, uint size);
 

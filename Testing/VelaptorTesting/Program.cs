@@ -187,11 +187,11 @@ namespace VelaptorTesting
         }
 
         /// <summary>
-        /// Prints the given <paramref name="value"/> to the console using the given <paramref name="color"/> with a new line after.
+        /// Prints the given <paramref name="value"/> to the console using the given <paramref name="color"/> and adds a new line below.
         /// </summary>
         /// <param name="value">The value to print.</param>
         /// <param name="color">The color of the printed value.</param>
-        /// <param name="emptyLineAfter">True to add an empty line after the value has been printed.</param>
+        /// <param name="emptyLineAfter">Adds an empty line after the value has been printed.</param>
         private static void WriteLine(string value, ConsoleColor color, bool emptyLineAfter = false)
         {
             var prevClr = Console.ForegroundColor;

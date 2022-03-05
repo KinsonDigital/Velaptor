@@ -22,7 +22,7 @@ namespace VelaptorTests.Helpers
         private const string TableFlip = "(╯'□')╯︵┻━┻  ";
 
         /// <summary>
-        /// Verifies that the exact exception is thrown (and not a derived exception type) and that
+        /// Verifies that the exact exception type (not a derived exception type) is thrown and that
         /// the exception message matches the given <paramref name="expectedMessage"/>.
         /// </summary>
         /// <typeparam name="T">The type of exception that the test is verifying.</typeparam>
@@ -523,7 +523,7 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Verifies if the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
+        /// Verifies whether or not the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
         /// </summary>
         /// <typeparam name="T">
         ///     The <see cref="IEquatable{T}"/> type of the <paramref name="expected"/> and <paramref name="actual"/> parameters.

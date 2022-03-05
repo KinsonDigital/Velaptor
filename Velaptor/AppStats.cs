@@ -21,7 +21,7 @@ namespace Velaptor
         /// <summary>
         /// Gets all of the rendered textures for the last 2 frames in <c>string</c> format.
         /// </summary>
-        /// <returns>The recorded frame info.</returns>
+        /// <returns>The recorded frame information.</returns>
         public static string GetFontGlyphRenderingData()
         {
             var result = string.Empty;
@@ -76,7 +76,7 @@ namespace Velaptor
 
             var distinctResult = frames.Distinct().ToArray();
 
-            // As long as there is at least 2 frames of info recorded
+            // As long as there are at least 2 frames of info recorded
             if (distinctResult.Length >= 2)
             {
                 secondLargest = distinctResult.Skip(1).First();
@@ -103,7 +103,7 @@ namespace Velaptor
 
             var sections = fontInfo.Split('|');
 
-            // If there is not 2 sections and it does not contain any font meta data
+            // If there are not 2 sections and it does not contain any font metadata
             if (sections.Length != 2 || !sections[1].Contains(':'))
             {
                 return;
@@ -128,7 +128,7 @@ namespace Velaptor
         /// <summary>
         /// Clears the given <paramref name="fontInfo"/>.
         /// </summary>
-        /// <param name="fontInfo">Clears the loaded font info.</param>
+        /// <param name="fontInfo">Clears the loaded font information.</param>
         internal static void ClearLoadedFont(string fontInfo)
         {
             if (string.IsNullOrEmpty(fontInfo) is false &&

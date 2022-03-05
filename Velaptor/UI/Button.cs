@@ -170,7 +170,7 @@ namespace Velaptor.UI
         /// managed automatically based on the size of the <see cref="UI.Label"/>.
         /// </summary>
         /// <remarks>
-        ///     If <see cref="AutoSize"/> is <c>false</c>, this means that the user can set the size to anything they
+        ///     If <see cref="AutoSize"/> is <c>false</c>, the user can set the size to anything they
         ///     desire.  If the size is less than the width or height of the text, then only the text characters
         ///     that are still within the bounds of the <see cref="UI.Label"/> will be rendered.
         /// </remarks>
@@ -331,10 +331,9 @@ namespace Velaptor.UI
             Label.Text = this.cachedText;
 
             // Update the enabled status of the label to match the button.
-            // Just in case the enabled value was set before loading of the content,
-            // this will "cache" the value until the content is loaded
+            // If the enabled value was set before the content was loaded,
+            // it will "cache" the value until the content is loaded
             Label.Enabled = base.Enabled;
-
             Label.Position = Position;
 
             base.LoadContent();

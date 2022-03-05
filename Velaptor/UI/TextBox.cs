@@ -42,8 +42,6 @@ namespace Velaptor.UI
         {
             this.contentLoader = contentLoader;
 
-            // TODO: Setup textbox border rect
-
             this.text = new Label(contentLoader, null)
             {
                 Position = Point.Empty,
@@ -71,7 +69,6 @@ namespace Velaptor.UI
         /// <summary>
         /// Gets or sets the text in the <see cref="TextBox"/>.
         /// </summary>
-        // TODO: Map this value to the label text
         public string Text { get; set; } = string.Empty;
 
         /// <summary>
@@ -119,97 +116,6 @@ namespace Velaptor.UI
         /// </summary>
         private static void ProcessKeys()
         {
-            // TODO: Need to get this working with new Keyboard implementation using the KeyboardState struct
-            // this.keyboard.UpdateCurrentState();
-
-            // if (this.keyboard.IsKeyPressed(KeyCode.Right))
-            // {
-            //    this.lastDirectionOfTravel = 1;
-
-            // this.characterPosition = this.characterPosition > Text.Length - 1 ?
-            //        this.characterPosition :
-            //        this.characterPosition + 1;
-
-            // this.visibleTextCharPosition = this.visibleTextCharPosition > (this.visibleText is null ? 0 : this.visibleText.Text.Length - 1) ?
-            //        this.visibleTextCharPosition :
-            //        this.visibleTextCharPosition + 1;
-
-            // this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
-
-            // this.keyboard.UpdatePreviousState();
-            //    return;
-            // }
-
-            // if (this.keyboard.IsKeyPressed(KeyCode.Left))
-            // {
-            //    this.lastDirectionOfTravel = -1;
-
-            // this.characterPosition = this.characterPosition <= 0 ?
-            //        this.characterPosition :
-            //        this.characterPosition - 1;
-
-            // this.visibleTextCharPosition = this.visibleTextCharPosition == 0 ?
-            //        this.visibleTextCharPosition :
-            //        this.visibleTextCharPosition - 1;
-
-            // this.charPosDelta = Math.Abs(this.characterPosition - this.visibleTextCharPosition);
-
-            // this.keyboard.UpdatePreviousState();
-            //    return;
-            // }
-
-            // var isShiftDown = this.keyboard.IsKeyDown(KeyCode.LeftShift) || this.keyboard.IsKeyDown(KeyCode.RightShift);
-
-            // if (this.visibleText is not null && !string.IsNullOrEmpty(this.visibleText.Text))
-            // {
-            //    // The delete keys. This is the standard one and the numpad one
-            //    if (this.keyboard.IsDeleteKeyPressed())
-            //    {
-            //        this.visibleText.Text = this.visibleText.Text.Remove(this.characterPosition, 1);
-            //    }
-
-            // if (this.keyboard.IsKeyPressed(KeyCode.Back) && this.characterPosition > 0)
-            //    {
-            //        RemoveCharacterUsingBackspace();
-            //    }
-            // }
-
-            // TODO: Need to change how we can check for pressed letters AND to return the letter itself.  Tuples?
-            // If a letter is pressed, add it to the <see cref="TextBox"/>
-            // if (this.keyboard.AnyLettersPressed(out var letter))
-            // {
-            //    string letterText;
-
-            // if (letter == KeyCode.Space)
-            //    {
-            //        letterText = " ";
-            //    }
-            //    else
-            //    {
-            //        letterText = isShiftDown || this.keyboard.CapsLockOn ?
-            //            letter.ToString() :
-            //            letter.ToString().ToUpperInvariant();
-            //    }
-
-            // if (this.visibleText is not null)
-            //        this.visibleText.Text = this.visibleText.Text.Insert(this.characterPosition, letterText);
-
-            // this.characterPosition += 1;
-            // }
-
-            // TODO: Need to change how we can check for pressed numbers AND to return the number itself.  Tuples?
-            //// If a number was pressed on the keyboard
-            // if (this.keyboard.AnyNumbersPressed(out var number))
-            // {
-            //    var character = this.keyboard.KeyToChar(number).ToString(CultureInfo.InvariantCulture);
-
-            // if (this.visibleText is not null)
-            //        this.visibleText.Text = this.visibleText.Text.Insert(this.characterPosition, character);
-
-            // this.characterPosition += 1;
-            // }
-
-            // this.keyboard.UpdatePreviousState();
         }
 
         /// <summary>

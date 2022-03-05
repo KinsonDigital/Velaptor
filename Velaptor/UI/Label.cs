@@ -19,7 +19,7 @@ namespace Velaptor.UI
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// A simple label that renders text on the screen.
+    /// A label that renders text on the screen.
     /// </summary>
     public class Label : ControlBase
     {
@@ -43,7 +43,7 @@ namespace Velaptor.UI
         /// Initializes a new instance of the <see cref="Label"/> class.
         /// </summary>
         /// <param name="contentLoader">Loads various kinds of content.</param>
-        /// <param name="font">The type of font to render the text with.</param>
+        /// <param name="font">The type of font to render the text.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown if the any of the parameters below are null:
         ///     <list type="bullet">
@@ -96,8 +96,8 @@ namespace Velaptor.UI
         /// managed automatically based on the size of the text.
         /// </summary>
         /// <remarks>
-        ///     If <see cref="AutoSize"/> is <c>false</c>, this means that the user can set the size to anything they
-        ///     desire.  If the size is less than the width or height of the text, then only the text characters
+        ///     If <see cref="AutoSize"/> is <c>false</c>, it means that the user can set the size to what they
+        ///     want.  If the size is less than the width or height of the text, then only the text characters
         ///     that are still within the bounds of the <see cref="Label"/> will be rendered.
         /// </remarks>
         public bool AutoSize { get; set; } = true;

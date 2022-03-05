@@ -198,7 +198,7 @@ namespace Velaptor.UI
 
         /// <summary>
         /// Invoked when the mouse is in the down position over the control.
-        /// Used when a child control needs to get notified of the mouse in the down position.
+        /// Used when a child control needs to be notified if the mouse is the down position.
         /// </summary>
         protected virtual void OnMouseDown()
         {
@@ -206,7 +206,7 @@ namespace Velaptor.UI
 
         /// <summary>
         /// Invoked when the mouse is in the up position after the mouse was in the up position over the control.
-        /// Used when a child control needs to get notified of the mouse in the up position.
+        /// Used when a child control needs to be notified if the mouse is in the up position.
         /// </summary>
         protected virtual void OnMouseUp()
         {
