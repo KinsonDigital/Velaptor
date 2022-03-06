@@ -27,73 +27,74 @@ namespace VelaptorTesting
 
             var containsValidArgs = args.Length > 0 && args[0].ToLower().StartsWith(ShowDebugConsole);
 
-            if (containsValidArgs)
+            if (HasDebugConsole())
             {
                 Console.WriteLine("Velaptor Starting . . .");
-                var argSections = args[0].ToLower().Split('=');
 
-                if (argSections.Length >= 2 && argSections[1].ToLower() == True)
+                gameWindow.ShowAsync(() =>
                 {
-                    gameWindow.ShowAsync(() =>
+                    var command = string.Empty;
+                    Console.WriteLine("Velaptor Running");
+                    Console.WriteLine("Run '--help' for more help.");
+
+                    while (command != "--exit")
                     {
-                        var command = string.Empty;
-                        Console.WriteLine("Velaptor Running");
-                        Console.WriteLine("Run '--help' for more help.");
+                        command = Console.ReadLine();
 
-                        while (command != "--exit")
+                        if (string.IsNullOrEmpty(command))
                         {
-                            command = Console.ReadLine();
+                            continue;
+                        }
 
-                            if (command.StartsWith("--help") ||
-                                command.StartsWith("-h") ||
-                                command.StartsWith("-?"))
-                            {
-                                ShowHelp(command);
-                            }
-                            else if (command is "--cls" or "--clear")
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Run '--help' for more help.");
-                                EmptyLine();
-                            }
-                            else if (command.StartsWith("--show"))
-                            {
-                                var showCommandSections = command.Split(' ');
+                        if (command.StartsWith("--help") ||
+                            command.StartsWith("-h") ||
+                            command.StartsWith("-?"))
+                        {
+                            ShowHelp(command);
+                        }
+                        else if (command is "--cls" or "--clear")
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Run '--help' for more help.");
+                            EmptyLine();
+                        }
+                        else if (command.StartsWith("--show"))
+                        {
+                            var showCommandSections = command.Split(' ');
 
-                                if (showCommandSections.Length >= 2)
+                            if (showCommandSections.Length >= 2)
+                            {
+                                switch (showCommandSections[1])
                                 {
-                                    switch (showCommandSections[1])
-                                    {
-                                        case "glyphs":
-                                            Console.WriteLine(AppStats.GetFontGlyphRenderingData());
-                                            EmptyLine();
-                                            break;
-                                        case "loaded-fonts":
-                                            Console.WriteLine(AppStats.GetLoadedFonts());
-                                            EmptyLine();
-                                            break;
-                                    }
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"The command '{command}' is invalid.  Type '--help' for help.");
-                                    EmptyLine();
+                                    case "glyphs":
+                                        Console.WriteLine(AppStats.GetFontGlyphRenderingData());
+                                        EmptyLine();
+                                        break;
+                                    case "loaded-fonts":
+                                        Console.WriteLine(AppStats.GetLoadedFonts());
+                                        EmptyLine();
+                                        break;
                                 }
                             }
                             else
                             {
-                                var prevClr = Console.ForegroundColor;
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Run '--help' for more help.");
-                                Console.ForegroundColor = prevClr;
+                                Console.WriteLine($"The command '{command}' is invalid.  Type '--help' for help.");
+                                EmptyLine();
                             }
                         }
-                    }, () =>
-                    {
-                        gameWindow.Dispose();
-                        Environment.Exit(0);
-                    });
-                }
+                        else
+                        {
+                            var prevClr = Console.ForegroundColor;
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Run '--help' for more help.");
+                            Console.ForegroundColor = prevClr;
+                        }
+                    }
+                }, () =>
+                {
+                    gameWindow.Dispose();
+                    Environment.Exit(0);
+                });
             }
             else
             {
@@ -210,5 +211,19 @@ namespace VelaptorTesting
         /// Prints an empty line to the console.
         /// </summary>
         private static void EmptyLine() => Console.WriteLine();
+
+        /// <summary>
+        /// Returns a value indicating if the testing application uses a debug console
+        /// to assist with debugging.
+        /// </summary>
+        /// <returns>True if using a debug console.</returns>
+        private static bool HasDebugConsole()
+        {
+#if DEBUG_CONSOLE
+            return true;
+#else
+            return false;
+#endif
+        }
     }
 }

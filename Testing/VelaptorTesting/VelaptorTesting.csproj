@@ -1,20 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Release;Debug-Console;Debug-Win</Configurations>
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
     <RootNamespace>VelaptorTesting</RootNamespace>
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug-Console' ">
+    <OutputType>Exe</OutputType>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug-Win' ">
+    <OutputType>WinExe</OutputType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputType>WinExe</OutputType>
     <Optimize>true</Optimize>
   </PropertyGroup>
 
@@ -33,6 +40,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
