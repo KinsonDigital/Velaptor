@@ -363,6 +363,7 @@ namespace VelaptorTesting.Scenes
                 };
 
                 this.btnGradientType.Text = $"Gradient Type: {this.rectangle.GradientType}";
+                LayoutButtonsBottom();
             };
 
             this.btnGradClrStart = new Button
@@ -535,7 +536,7 @@ namespace VelaptorTesting.Scenes
 
             var totalWidth = (from b in buttons
                 select (int)b.Width).ToArray().Sum();
-            totalWidth += (buttons.Length - 1) * VertButtonSpacing;
+            totalWidth += (buttons.Length - 1) * HoriButtonSpacing;
             var totalHalfWidth = totalWidth / 2;
 
             IControl? prevButton = null;
