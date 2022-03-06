@@ -188,7 +188,17 @@ namespace VelaptorTesting.Scenes
                 Enabled = false,
             };
             this.btnIncreaseBorderThickness.MouseDown += (_, _) =>
-                this.rectangle.BorderThickness = this.rectangle.BorderThickness += 1f;
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.BorderThickness >= maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.BorderThickness = this.rectangle.BorderThickness += newValue;
+            };
 
             this.btnDecreaseBorderThickness = new Button
             {
@@ -197,7 +207,17 @@ namespace VelaptorTesting.Scenes
                 Enabled = false,
             };
             this.btnDecreaseBorderThickness.MouseDown += (_, _) =>
-                this.rectangle.BorderThickness = this.rectangle.BorderThickness -= 1f;
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.BorderThickness <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.BorderThickness = this.rectangle.BorderThickness -= newValue;
+            };
 
             this.btnIncreaseTopLeftRadius = new Button
             {
