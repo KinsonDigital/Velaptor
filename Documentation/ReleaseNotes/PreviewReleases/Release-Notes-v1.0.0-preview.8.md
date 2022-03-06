@@ -24,14 +24,14 @@ As with all software, including releases, there is always a chance for issues an
 6. Added a new property named `Bottom` to the `RectShape` struct to get or set the location of the bottom of the rectangle.  
    GitHub Issues: [#196](https://github.com/KinsonDigital/Velaptor/issues/196)
     * This will automatically update the `Position` property of the rectangle.
-1.  Added a new property named `Left` to the `RectShape` struct to get or set the location of the left side of the rectangle.  
+7.  Added a new property named `Left` to the `RectShape` struct to get or set the location of the left side of the rectangle.  
     GitHub Issues: [#196](https://github.com/KinsonDigital/Velaptor/issues/196)
     * This will automatically update the `Position` property of the rectangle.
-1.  Added new `System.Drawing.Color` extension method named `IncreaseBrightness()` to increase the brightness of the color.  
+8.  Added new `System.Drawing.Color` extension method named `IncreaseBrightness()` to increase the brightness of the color.  
     GitHub Issues: [#196](https://github.com/KinsonDigital/Velaptor/issues/196)
 9.  Added new `System.Drawing.Color` extension method named `DecreaseBrightness()` to decrease the brightness of the color.  
     GitHub Issues: [#196](https://github.com/KinsonDigital/Velaptor/issues/196)
-10. Changed the `ControlBase.Width` and `ControlBase.Height` property setters from `protected internal` to `public`  
+10. Changed the `ControlBase.Width` and `ControlBase.Height` property setters from `protected internal` to `public`.  
     GitHub Issues: [#196](https://github.com/KinsonDigital/Velaptor/issues/196)
 11. Added property named `AutoSize` to the `Label` control.  
     GitHub Issues: [#196](https://github.com/KinsonDigital/Velaptor/issues/196)
@@ -57,9 +57,9 @@ As with all software, including releases, there is always a chance for issues an
 
 1. Fixed bug where animating and non-animating textures were not being rendered correctly.  
    GitHub Issues: [#204](https://github.com/KinsonDigital/Velaptor/issues/204)
-2. Fixed an issue where a font size of 0 would crash the application  
+2. Fixed an issue where a font size of 0 would crash the application.  
    GitHub Issues: [#189](https://github.com/KinsonDigital/Velaptor/issues/189)
-3. Fixed issue with sound time not displaying correctly in the sound testing scene of the testing application  
+3. Fixed issue with sound time not displaying correctly in the sound testing scene of the testing application.  
    GitHub Issues: [#192](https://github.com/KinsonDigital/Velaptor/issues/192)
 4. Fixed an issue with the scroll mouse wheel not working.  
    GitHub Issues: [#71](https://github.com/KinsonDigital/Velaptor/issues/71)
@@ -69,7 +69,7 @@ As with all software, including releases, there is always a chance for issues an
 <h2 style="font-weight:bold" align="center">Breaking Changes 💣</h2>
 
 1. Changed the order of rendering from textures, text, then rectangle primitives to textures, rectangle primitives, then text.
-2. Changed the behavior of the `RectShape.BorderThickness` and `RectShape.CornerRadius` properties
+2. Changed the behavior of the `RectShape.BorderThickness` and `RectShape.CornerRadius` properties.
     * Previously, both properties would check the incoming value and restrict them to a limit of the smallest value between the half width or half height.  This was done to prevent any unintended rendering artifacts when rendering rectangles.  This behavior was removed from the `RectShape` and moved to the internal `RectGPUBuffer` class.  These checks and restrictions now occur right before sending the data to the GPU.
 3. Changed the `ControlBase.IsLoaded` property from `protected` to `private`.
     * The property was meant to be updated via the `ControlBase.LoadContent()` method.
@@ -78,24 +78,24 @@ As with all software, including releases, there is always a chance for issues an
 
 <h2 style="font-weight:bold" align="center">Internal Changes ⚙️</h2>
 
-1. Created new extension method named `ToVector2()` that converts a `System.Drawing.Point` type to the `System.Numerics.Vector2` type
-2. Created new extension method named `ToPoint()` that converts a `System.Numerics.Vector2` type to the `System.Drawing.Point` type
+1. Created new extension method named `ToVector2()` that converts a `System.Drawing.Point` type to the `System.Numerics.Vector2` type.
+2. Created new extension method named `ToPoint()` that converts a `System.Numerics.Vector2` type to the `System.Drawing.Point` type.
 
 ---
 
 <h2 style="font-weight:bold" align="center">Nuget/Library Updates 📦</h2>
 
-1. Update nuget package **SixLabors.ImageSharp** library from **_v1.0.3_** to **_v2.0.0_**  
+1. Update nuget package **SixLabors.ImageSharp** library from **_v1.0.3_** to **_v2.0.0_**.  
    GitHub Issues: [#204](https://github.com/KinsonDigital/Velaptor/issues/204)
-    - This is what fixed the texture rendering issue
+    - This is what fixed the texture rendering issue.
 
 ---
 
 <h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
 
-1. Upgraded all projects in the solution to use C# language **_v10_**  
+1. Upgraded all projects in the solution to use C# language **_v10_**.  
    GitHub Issues: [#197](https://github.com/KinsonDigital/Velaptor/issues/197)
-2. Upgraded all projects in the solution to use **_.NET 6.0_**  
+2. Upgraded all projects in the solution to use **_.NET 6.0_**.  
    GitHub Issues: [#197](https://github.com/KinsonDigital/Velaptor/issues/197)
 
 ---
@@ -103,4 +103,4 @@ As with all software, including releases, there is always a chance for issues an
 <h2 style="font-weight:bold" align="center">Other 👏</h2>
 
 1. Fixed an issue with the status check workflows where the status checks were not being run for preview branches.
-    * This was done by adding an additional branch to the branch filter in the status check workflows
+    * This was done by adding an additional branch to the branch filter in the status check workflows.
