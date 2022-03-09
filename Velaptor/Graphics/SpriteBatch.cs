@@ -620,7 +620,7 @@ namespace Velaptor.Graphics
         /// <param name="charMetrics">The glyph metrics of the characters in the text.</param>
         /// <param name="font">The font being used.</param>
         /// <param name="origin">The origin to rotate the text around.</param>
-        /// <param name="size">The size of the text.</param>
+        /// <param name="renderSize">The size of the text.</param>
         /// <param name="angle">The angle of the text.</param>
         /// <param name="color">The color of the text.</param>
         /// <param name="atlasWidth">The width of the font texture atlas.</param>
@@ -631,7 +631,7 @@ namespace Velaptor.Graphics
             IEnumerable<GlyphMetrics> charMetrics,
             IFont font,
             Vector2 origin,
-            float size,
+            float renderSize,
             float angle,
             Color color,
             float atlasWidth,
@@ -680,7 +680,7 @@ namespace Velaptor.Graphics
                     itemToAdd.Glyph = currentCharMetric.Glyph;
                     itemToAdd.SrcRect = srcRect;
                     itemToAdd.DestRect = destRect;
-                    itemToAdd.Size = size;
+                    itemToAdd.Size = renderSize;
                     itemToAdd.Angle = angle;
                     itemToAdd.TintColor = color;
                     itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
