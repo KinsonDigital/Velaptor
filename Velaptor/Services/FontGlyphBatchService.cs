@@ -62,6 +62,7 @@ namespace Velaptor.Services
         /// <param name="item">The item to be added.</param>
         public void Add(FontGlyphBatchItem item)
         {
+            this.currentTextureId = item.TextureId;
             var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
                                      && this.firstTimeRender is false;
             var batchIsFull = this.currentBatchIndex >= BatchSize;
