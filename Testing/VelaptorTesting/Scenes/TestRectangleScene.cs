@@ -208,10 +208,6 @@ namespace VelaptorTesting.Scenes
             };
             this.btnDecreaseBorderThickness.MouseDown += (_, _) =>
             {
-                var maxValue = (this.rectangle.Width > this.rectangle.Height
-                    ? this.rectangle.Width
-                    : this.rectangle.Height) / 2f;
-
                 var newValue = this.rectangle.BorderThickness <= 0
                     ? 0
                     : 1;

@@ -61,6 +61,7 @@ namespace Velaptor
         /// <param name="frame">The application frame.</param>
         /// <param name="glyph">The glyph being rendered.</param>
         /// <param name="fontAtlasTextureId">The font atlas texture ID.</param>
+        /// <param name="renderSize">The size that the glyph will be rendered at.</param>
         /// <param name="destRect">The destination rectangle of the glyph.</param>
         internal static void RecordFontGlyphRendering(
             uint frame,
