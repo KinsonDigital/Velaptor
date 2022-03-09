@@ -1,4 +1,4 @@
-// <copyright file="FontGlyphBatchService.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -114,6 +114,7 @@ namespace Velaptor.Services
                     this.currentFrame,
                     itemToEmpty.spriteItem.Glyph,
                     itemToEmpty.spriteItem.TextureId,
+                    itemToEmpty.spriteItem.Size,
                     itemToEmpty.spriteItem.DestRect);
 #endif
 
