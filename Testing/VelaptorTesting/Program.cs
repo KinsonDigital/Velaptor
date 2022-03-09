@@ -15,8 +15,6 @@ namespace VelaptorTesting
     /// </summary>
     public static class Program
     {
-        private const string ShowDebugConsole = "--show-debug-console";
-        private const string True = "true";
         private static IWindow? window;
         private static MainWindow? gameWindow;
 
@@ -24,8 +22,6 @@ namespace VelaptorTesting
         {
             window = WindowFactory.CreateWindow(1500, 800);
             gameWindow = new MainWindow(window);
-
-            var containsValidArgs = args.Length > 0 && args[0].ToLower().StartsWith(ShowDebugConsole);
 
             if (HasDebugConsole())
             {

@@ -15,7 +15,7 @@ namespace Velaptor
     public static class AppStats
     {
         private const string DefaultTag = "[DEFAULT]";
-        private static readonly Queue<(uint frame, char glyph, uint textureId, RectangleF srcRect)> Textures = new ();
+        private static readonly Queue<(uint frame, char glyph, uint textureId, float renderSize, RectangleF srcRect)> Textures = new ();
         private static readonly List<(string fontFileName, string fontSize)> LoadedFonts = new ();
 
         /// <summary>
@@ -28,11 +28,11 @@ namespace Velaptor
 
             var largestFrame = Textures.Max(i => i.frame);
 
-            foreach (var (frame, glyph, textureId, srcRect) in Textures)
+            foreach (var (frame, glyph, textureId, renderSize, srcRect) in Textures)
             {
                 if (frame == largestFrame)
                 {
-                    result += $"Frame: {frame} | Glyph: {glyph} | Texture ID: {textureId} | Source Rect: {srcRect}\n";
+                    result += $"Frame: {frame} | Glyph: {glyph} | Texture ID: {textureId} | Render Size: {renderSize} | Source Rect: {srcRect}\n";
                 }
             }
 
@@ -61,10 +61,16 @@ namespace Velaptor
         /// <param name="frame">The application frame.</param>
         /// <param name="glyph">The glyph being rendered.</param>
         /// <param name="fontAtlasTextureId">The font atlas texture ID.</param>
+        /// <param name="renderSize">The size that the glyph will be rendered at.</param>
         /// <param name="destRect">The destination rectangle of the glyph.</param>
-        internal static void RecordFontGlyphRendering(uint frame, char glyph, uint fontAtlasTextureId, RectangleF destRect)
+        internal static void RecordFontGlyphRendering(
+            uint frame,
+            char glyph,
+            uint fontAtlasTextureId,
+            float renderSize,
+            RectangleF destRect)
         {
-            Textures.Enqueue((frame, glyph, fontAtlasTextureId, destRect));
+            Textures.Enqueue((frame, glyph, fontAtlasTextureId, renderSize, destRect));
 
             var largestFrame = Textures.Max(i => i.frame);
             var secondLargest = 0u;

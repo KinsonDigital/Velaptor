@@ -1382,7 +1382,6 @@ namespace VelaptorTests.Graphics
                     GLDrawElementsType.UnsignedInt,
                     IntPtr.Zero),
                 Times.Once());
-            this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture1), Times.Once);
             this.mockGLService.Verify(m => m.BindTexture2D(textureId), Times.Once);
             this.mockFontBuffer.Verify(m => m.UploadData(It.IsAny<FontGlyphBatchItem>(),
                     It.IsAny<uint>()),

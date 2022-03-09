@@ -61,12 +61,12 @@ namespace Velaptor.Services
         }
 
         /// <summary>
-        /// Adds the given <paramref name="rect"/> to the batch.
+        /// Adds the given <paramref name="item"/> to the batch.
         /// </summary>
-        /// <param name="rect">The item to be added.</param>
-        public void Add(SpriteBatchItem rect)
+        /// <param name="item">The item to be added.</param>
+        public void Add(SpriteBatchItem item)
         {
-            this.currentTextureId = rect.TextureId;
+            this.currentTextureId = item.TextureId;
 
             var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
                 && this.firstTimeRender is false;
@@ -77,7 +77,7 @@ namespace Velaptor.Services
                 this.BatchFilled?.Invoke(this, EventArgs.Empty);
             }
 
-            this.batchItems[this.currentBatchIndex] = (true, rect);
+            this.batchItems[this.currentBatchIndex] = (true, item);
             this.currentBatchIndex += 1;
 
             this.previousTextureId = this.currentTextureId;
@@ -85,12 +85,12 @@ namespace Velaptor.Services
         }
 
         /// <summary>
-        /// Adds the given list of <paramref name="rects"/> to batch.
+        /// Adds the given list of <paramref name="items"/> to batch.
         /// </summary>
-        /// <param name="rects">The items to be added.</param>
-        public void AddRange(IEnumerable<SpriteBatchItem> rects)
+        /// <param name="items">The items to be added.</param>
+        public void AddRange(IEnumerable<SpriteBatchItem> items)
         {
-            foreach (var rect in rects)
+            foreach (var rect in items)
             {
                 Add(rect);
             }

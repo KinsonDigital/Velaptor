@@ -21,6 +21,9 @@ namespace Velaptor.Services
         private uint currentBatchIndex;
         private uint batchSize;
         private uint currentFrame;
+        private bool firstTimeRender = true;
+        private uint currentTextureId;
+        private uint previousTextureId;
 
         /// <summary>
         /// Occurs when a batch is full.
@@ -59,15 +62,21 @@ namespace Velaptor.Services
         /// <param name="item">The item to be added.</param>
         public void Add(FontGlyphBatchItem item)
         {
+            this.currentTextureId = item.TextureId;
+            var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
+                                     && this.firstTimeRender is false;
             var batchIsFull = this.currentBatchIndex >= BatchSize;
 
-            if (batchIsFull)
+            if (hasSwitchedTexture || batchIsFull)
             {
                 this.BatchFilled?.Invoke(this, EventArgs.Empty);
             }
 
             this.batchItems[this.currentBatchIndex] = (true, item);
             this.currentBatchIndex += 1;
+
+            this.previousTextureId = this.currentTextureId;
+            this.firstTimeRender = false;
         }
 
         /// <summary>
@@ -106,6 +115,7 @@ namespace Velaptor.Services
                     this.currentFrame,
                     itemToEmpty.spriteItem.Glyph,
                     itemToEmpty.spriteItem.TextureId,
+                    itemToEmpty.spriteItem.Size,
                     itemToEmpty.spriteItem.DestRect);
 #endif
 
