@@ -11,9 +11,10 @@ on:
   pull_request:
     types: [ synchronize ]
     branches: [
-      develop, # QA Releases
-      release/v*.*.*, # Preview Releases
-      master # Production Releases
+      develop, # Development branch
+      release/v*.*.*, # Release Branches
+      preview/v*.*.*-preview.*, # Preview Branches
+      master # Production Branch
     ]
     paths-ignore:
       - ".github/**"

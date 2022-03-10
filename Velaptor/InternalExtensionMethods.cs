@@ -1,4 +1,4 @@
-﻿// <copyright file="InternalExtensionMethods.cs" company="KinsonDigital">
+// <copyright file="InternalExtensionMethods.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,6 +20,7 @@ namespace Velaptor
     using Velaptor.OpenGL;
     using Velaptor.OpenGL.GPUData;
     using NETColor = System.Drawing.Color;
+    using NETPoint = System.Drawing.Point;
     using NETRectF = System.Drawing.RectangleF;
     using NETSizeF = System.Drawing.SizeF;
 
@@ -149,27 +150,10 @@ namespace Velaptor
         /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
         /// <param name="items">The items to convert.</param>
         /// <returns>The items as a read only collection.</returns>
-        public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
-            => new (items.ToList());
-
-        /// <summary>
-        /// Converts the given list of <paramref name="items"/> to a read only dictionary where
-        /// the key is the <paramref name="items"/> array item index.
-        /// </summary>
-        /// <param name="items">The list of items to convert.</param>
-        /// <typeparam name="T">The type of values in the lists.</typeparam>
-        /// <returns>A read only dictionary of the given <paramref name="items"/>.</returns>
-        public static ReadOnlyDictionary<uint, T> ToReadOnlyDictionary<T>(this T[] items)
-        {
-            var result = new Dictionary<uint, T>();
-
-            for (var i = 0u; i < items.Length; i++)
-            {
-                result.Add(i, items[i]);
-            }
-
-            return new ReadOnlyDictionary<uint, T>(result);
-        }
+        public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T>? items) =>
+            items is null ?
+                new ReadOnlyCollection<T>(Array.Empty<T>()) :
+                new ReadOnlyCollection<T>(items.ToList());
 
         /// <summary>
         /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
@@ -337,24 +321,28 @@ namespace Velaptor
         /// </summary>
         /// <param name="image">The image data to convert.</param>
         /// <returns>The image data of type <see cref="Image{Rgba32}"/>.</returns>
-        public static Image<Rgba32> ToSixLaborImage(in this ImageData image)
+        public static Image<Rgba32> ToSixLaborImage(this ImageData image)
         {
             var result = new Image<Rgba32>((int)image.Width, (int)image.Height);
 
             for (var y = 0; y < result.Height; y++)
             {
-                var pixelRowSpan = result.GetPixelRowSpan(y);
-
-                for (var x = 0; x < result.Width; x++)
+                var row = y;
+                result.ProcessPixelRows(accessor =>
                 {
-                    var pixel = image.Pixels[x, y];
+                    var pixelRowSpan = accessor.GetRowSpan(row);
 
-                    pixelRowSpan[x] = new Rgba32(
-                        pixel.R,
-                        pixel.G,
-                        pixel.B,
-                        pixel.A);
-                }
+                    for (var x = 0; x < result.Width; x++)
+                    {
+                        var pixel = image.Pixels[x, row];
+
+                        pixelRowSpan[x] = new Rgba32(
+                            pixel.R,
+                            pixel.G,
+                            pixel.B,
+                            pixel.A);
+                    }
+                });
             }
 
             return result;
@@ -372,16 +360,20 @@ namespace Velaptor
 
             for (var y = 0; y < image.Height; y++)
             {
-                var pixelRowSpan = image.GetPixelRowSpan(y);
-
-                for (var x = 0; x < image.Width; x++)
+                var row = y;
+                image.ProcessPixelRows(accessor =>
                 {
-                    pixelData[x, y] = NETColor.FromArgb(
-                        pixelRowSpan[x].A,
-                        pixelRowSpan[x].R,
-                        pixelRowSpan[x].G,
-                        pixelRowSpan[x].B);
-                }
+                    var pixelRowSpan = accessor.GetRowSpan(row);
+
+                    for (var x = 0; x < image.Width; x++)
+                    {
+                        pixelData[x, row] = NETColor.FromArgb(
+                            pixelRowSpan[x].A,
+                            pixelRowSpan[x].R,
+                            pixelRowSpan[x].G,
+                            pixelRowSpan[x].B);
+                    }
+                });
             }
 
             return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
@@ -902,6 +894,52 @@ namespace Velaptor
             gpuData = gpuData.SetColor(color, VertexNumber.Four);
 
             return gpuData;
+        }
+
+        /// <summary>
+        /// Converts the given <paramref name="value"/> from the type <see cref="Point"/> to the type <see cref="Vector2"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The <see cref="Vector2"/> result.</returns>
+        public static Vector2 ToVector2(this NETPoint value) => new (value.X, value.Y);
+
+        /// <summary>
+        /// Converts the given <paramref name="value"/> from the type <see cref="Vector2"/> to the type <see cref="NETPoint"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The <see cref="Point"/> result.</returns>
+        /// <remarks>
+        ///     Converting from floating point components of a <see cref="Vector2"/> to
+        ///     integer components of a <see cref="Point"/> could result in a loss of information.
+        ///     Regular casting rules apply.
+        /// </remarks>
+        public static NETPoint ToPoint(this Vector2 value) => new NETPoint((int)value.X, (int)value.Y);
+
+        /// <summary>
+        /// Dequeues the given <paramref name="queue"/> of items until the <paramref name="untilPredicate"/> returns true.
+        /// </summary>
+        /// <param name="queue">The <see cref="Queue{T}"/> to process.</param>
+        /// <param name="untilPredicate">Stops dequeuing the items if the <see cref="Predicate{T}"/> returns true.</param>
+        /// <typeparam name="T">The type of items in the <paramref name="queue"/>.</typeparam>
+        public static void DequeueWhile<T>(this Queue<T> queue, Predicate<T> untilPredicate)
+        {
+            if (queue.Count <= 0)
+            {
+                return;
+            }
+
+            while (true)
+            {
+                if (queue.Count <= 0)
+                {
+                    break;
+                }
+
+                var peekedItem = queue.Peek();
+                untilPredicate(peekedItem);
+
+                queue.Dequeue();
+            }
         }
     }
 }

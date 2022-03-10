@@ -239,7 +239,7 @@ namespace VelaptorTests.UI
         public async void ShowAsync_WhenInvoked_ShowsInternalWindow()
         {
             // Arrange
-            this.mockWindow.Setup(m => m.ShowAsync())
+            this.mockWindow.Setup(m => m.ShowAsync(null, null))
                 .Returns(Task.Run(() => { }));
             var window = CreateWindow();
 
@@ -247,7 +247,7 @@ namespace VelaptorTests.UI
             await window.ShowAsync();
 
             // Assert
-            this.mockWindow.Verify(m => m.ShowAsync(), Times.Once);
+            this.mockWindow.Verify(m => m.ShowAsync(null, null), Times.Once);
         }
 
         [Fact]

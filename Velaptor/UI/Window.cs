@@ -138,11 +138,14 @@ namespace Velaptor.UI
         /// <summary>
         /// Shows the window asynchronously.
         /// </summary>
+        /// <param name="afterStart">Executed after the application starts asynchronously.</param>
+        /// <param name="afterUnloadAction">Executed after the window has been unloaded.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         /// <remarks>
         ///     This runs the window on another thread.
         /// </remarks>
-        public async Task ShowAsync() => await this.window.ShowAsync().ConfigureAwait(true);
+        public async Task ShowAsync(Action? afterStart = null, Action? afterUnloadAction = null) =>
+            await this.window.ShowAsync(afterStart, afterUnloadAction).ConfigureAwait(true);
 
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>

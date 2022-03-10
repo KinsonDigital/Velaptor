@@ -8,6 +8,7 @@ namespace VelaptorTests.Content.Fonts
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Numerics;
     using System.Reflection;
     using Moq;
     using Newtonsoft.Json;
@@ -405,6 +406,27 @@ namespace VelaptorTests.Content.Fonts
             // Assert
             Assert.Equal(22u, actual);
         }
+
+        [Fact]
+        public void Size_WhenValueIsEqualToZero_DoesNotBuildFontAtlasTexture()
+        {
+            // Arrange
+            this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12))
+                .Returns(123u);
+            this.mockFontStatsService.Setup(m => m.GetContentStatsForFontFamily(It.IsAny<string>()))
+                .Returns(new FontStats[] { new () { Style = FontStyle.Regular, FontFilePath = this.fontFilePath } });
+
+            var font = CreateFont();
+
+            // Act
+            font.Size = 0;
+
+            // Assert
+            Assert.Same(this.mockTexture.Object, font.FontTextureAtlas);
+            Assert.Equal(123, font.LineSpacing);
+            this.mockFontAtlasService.VerifyNever(m => m.CreateFontAtlas(It.IsAny<string>(), It.IsAny<uint>()));
+            this.mockFontService.VerifyNever(m => m.GetFontScaledLineSpacing(It.IsAny<IntPtr>(), 0u));
+        }
         #endregion
 
         #region Method Tests
@@ -486,6 +508,94 @@ namespace VelaptorTests.Content.Fonts
             Assert.Equal('s', actual[2].Glyph);
             Assert.Equal('t', actual[3].Glyph);
             Assert.Equal(InvalidCharacter, actual[4].Glyph);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void GetCharacterBounds_WithNullOrEmptyText_ReturnsEmptyResult(string value)
+        {
+            // Arrange
+            var font = CreateFont();
+
+            // Act
+            var actual = font.GetCharacterBounds(value, Vector2.Zero);
+
+            // Assert
+            Assert.Empty(actual);
+        }
+
+        [Fact]
+        public void GetCharacterBounds_WhenInvoked_ReturnsCorrectResult()
+        {
+            // Arrange
+            const string testText = "test-value";
+            // MockGlyphKernings(testText);
+            var font = CreateFont();
+
+            // Act
+            var actual = font.GetCharacterBounds(testText, Vector2.Zero).ToArray();
+
+            // Assert
+            // ReSharper disable StringLiteralTypo
+            Assert.All(actual, charBounds =>
+            {
+                var (character, _) = charBounds;
+                Assert.True(testText.Contains(character),
+                    $"The character '{character}' in the test text '{testText}' is not found.");
+            });
+
+            AssertExtensions.AllIncluded(actual,
+                item => "tesvalu".Contains(item.character),
+                item =>
+                {
+                    var (character, bounds) = item;
+                    var failMsg = $"The character '{character}' {nameof(bounds.Y)} must be a value of 0.";
+                    AssertExtensions.EqualWithMessage(0f, bounds.Y, failMsg);
+                });
+
+            // Assert that the character t has the correct height
+            AssertExtensions.AllIncluded(actual,
+                item => item.character == 't',
+                item =>
+                {
+                    var (character, bounds) = item;
+                    var failMsg = $"The character '{character}' {nameof(bounds.Height)} must be a value of 26.";
+                    AssertExtensions.EqualWithMessage(26, bounds.Height, failMsg);
+                });
+
+            // Assert that the character - has the correct height
+            AssertExtensions.AllIncluded(actual,
+                item => item.character == '-',
+                item =>
+                {
+                    var (character, bounds) = item;
+                    var failMsg = $"The character '{character}' {nameof(bounds.Height)} must be a value of 26.";
+                    AssertExtensions.EqualWithMessage(4, bounds.Height, failMsg);
+                });
+
+            // Assert that the character l has the correct height
+            AssertExtensions.AllIncluded(actual,
+                item => item.character == 'l',
+                item =>
+                {
+                    var (character, bounds) = item;
+                    var failMsg = $"The character '{character}' {nameof(bounds.Height)} must be a value of 26.";
+                    AssertExtensions.EqualWithMessage(31, bounds.Height, failMsg);
+                });
+
+            // Assert that all the characters e, s, v, a, and u all have a height of 20
+            AssertExtensions.AllIncluded(actual,
+                item => "esvau".Contains(item.character),
+                item =>
+                {
+                    var (character, bounds) = item;
+                    var failMsg = $"The character '{character}' {nameof(bounds.Height)} must be a value of 20.";
+                    AssertExtensions.EqualWithMessage(20, bounds.Height, failMsg);
+                });
+
+            Assert.Equal(10, actual.Length);
+            // ReSharper restore StringLiteralTypo
         }
         #endregion
 

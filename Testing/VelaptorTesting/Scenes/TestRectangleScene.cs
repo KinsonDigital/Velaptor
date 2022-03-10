@@ -15,7 +15,7 @@ namespace VelaptorTesting.Scenes
 
     public class TestRectangleScene : SceneBase
     {
-        private const int LeftMargin = 10;
+        private const int LeftMargin = 30;
         private const int RightMargin = 10;
         private const int BottomMargin = 10;
         private const int VertButtonSpacing = 10;
@@ -117,7 +117,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Width +",
                 Name = nameof(this.btnIncreaseWidth),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseWidth.MouseDown += (_, _) => this.rectangle.Width += 5;
 
@@ -125,7 +124,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Width -",
                 Name = nameof(this.btnDecreaseWidth),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseWidth.MouseDown += (_, _) => this.rectangle.Width -= 5;
 
@@ -133,7 +131,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Height +",
                 Name = nameof(this.btnIncreaseHeight),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseHeight.MouseDown += (_, _) => this.rectangle.Height += 5;
 
@@ -141,7 +138,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Height -",
                 Name = nameof(this.btnDecreaseHeight),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseHeight.MouseDown += (_, _) => this.rectangle.Height -= 5;
 
@@ -149,7 +145,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Is Filled: true",
                 Name = nameof(this.btnIsFilled),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIsFilled.Click += (_, _) =>
             {
@@ -163,7 +158,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Solid Fill Clr: Red",
                 Name = nameof(this.btnSolidFillClr),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnSolidFillClr.Click += (_, _) =>
             {
@@ -191,99 +185,168 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Border Thickness +",
                 Name = nameof(this.btnIncreaseBorderThickness),
-                FaceTextureName = "button-face-extra-large",
                 Enabled = false,
             };
             this.btnIncreaseBorderThickness.MouseDown += (_, _) =>
-                this.rectangle.BorderThickness = this.rectangle.BorderThickness += 1f;
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.BorderThickness >= maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.BorderThickness = this.rectangle.BorderThickness += newValue;
+            };
 
             this.btnDecreaseBorderThickness = new Button
             {
                 Text = "Border Thickness -",
                 Name = nameof(this.btnDecreaseBorderThickness),
-                FaceTextureName = "button-face-extra-large",
                 Enabled = false,
             };
             this.btnDecreaseBorderThickness.MouseDown += (_, _) =>
-                this.rectangle.BorderThickness = this.rectangle.BorderThickness -= 1f;
+            {
+                var newValue = this.rectangle.BorderThickness <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.BorderThickness = this.rectangle.BorderThickness -= newValue;
+            };
 
             this.btnIncreaseTopLeftRadius = new Button
             {
                 Text = "Top Left Radius +",
                 Name = nameof(this.btnIncreaseTopLeftRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseTopLeftRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopLeft(1);
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.CornerRadius.TopLeft > maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopLeft(newValue);
+            };
 
             this.btnDecreaseTopLeftRadius = new Button
             {
                 Text = "Top Left Radius -",
                 Name = nameof(this.btnDecreaseTopLeftRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseTopLeftRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopLeft(1);
+            {
+                var newValue = this.rectangle.CornerRadius.TopLeft <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopLeft(newValue);
+            };
 
             this.btnIncreaseBottomLeftRadius = new Button
             {
                 Text = "Bottom Left Radius +",
                 Name = nameof(this.btnIncreaseBottomLeftRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseBottomLeftRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomLeft(1);
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.CornerRadius.BottomLeft > maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomLeft(newValue);
+            };
 
             this.btnDecreaseBottomLeftRadius = new Button
             {
                 Text = "Bottom Left Radius -",
                 Name = nameof(this.btnDecreaseBottomLeftRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseBottomLeftRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomLeft(1);
+            {
+                var newValue = this.rectangle.CornerRadius.BottomLeft <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomLeft(newValue);
+            };
 
             this.btnIncreaseBottomRightRadius = new Button
             {
                 Text = "Bottom Right Radius +",
                 Name = nameof(this.btnIncreaseBottomRightRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseBottomRightRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomRight(1);
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.CornerRadius.BottomRight > maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseBottomRight(newValue);
+            };
 
             this.btnDecreaseBottomRightRadius = new Button
             {
                 Text = "Bottom Right Radius -",
                 Name = nameof(this.btnDecreaseBottomRightRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseBottomRightRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomRight(1);
+            {
+                var newValue = this.rectangle.CornerRadius.BottomRight <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseBottomRight(newValue);
+            };
 
             this.btnIncreaseTopRightRadius = new Button
             {
                 Text = "Top Right Radius +",
                 Name = nameof(this.btnIncreaseTopRightRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnIncreaseTopRightRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopRight(1);
+            {
+                var maxValue = (this.rectangle.Width > this.rectangle.Height
+                    ? this.rectangle.Width
+                    : this.rectangle.Height) / 2f;
+
+                var newValue = this.rectangle.CornerRadius.TopRight > maxValue
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.IncreaseTopRight(newValue);
+            };
 
             this.btnDecreaseTopRightRadius = new Button
             {
                 Text = "Top Right Radius -",
                 Name = nameof(this.btnDecreaseTopRightRadius),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnDecreaseTopRightRadius.MouseDown += (_, _) =>
-                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopRight(1);
+            {
+                var newValue = this.rectangle.CornerRadius.TopRight <= 0
+                    ? 0
+                    : 1;
+
+                this.rectangle.CornerRadius = this.rectangle.CornerRadius.DecreaseTopRight(newValue);
+            };
 
             this.btnGradientType = new Button
             {
                 Text = "Gradient Type: None",
                 Name = nameof(this.btnGradientType),
-                FaceTextureName = "button-face-extra-extra-large",
             };
             this.btnGradientType.Click += (_, _) =>
             {
@@ -296,13 +359,13 @@ namespace VelaptorTesting.Scenes
                 };
 
                 this.btnGradientType.Text = $"Gradient Type: {this.rectangle.GradientType}";
+                LayoutButtonsBottom();
             };
 
             this.btnGradClrStart = new Button
             {
                 Text = "Grad Clr Start: Red",
                 Name = nameof(this.btnGradClrStart),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnGradClrStart.Click += (_, _) =>
             {
@@ -330,7 +393,6 @@ namespace VelaptorTesting.Scenes
             {
                 Text = "Grad Clr Stop: Red",
                 Name = nameof(this.btnGradClrStop),
-                FaceTextureName = "button-face-extra-large",
             };
             this.btnGradClrStop.Click += (_, _) =>
             {
@@ -418,17 +480,6 @@ namespace VelaptorTesting.Scenes
 
                 prevButton = button;
             }
-
-            // Center all of the buttons horizontally relative to each other
-            var largestBtnWidth = buttons.Max(b => b.Width);
-            var desiredPosition = (from b in buttons
-                where b.Width == largestBtnWidth
-                select b.Position).FirstOrDefault();
-
-            foreach (var button in buttons)
-            {
-                button.Position = new Point(desiredPosition.X, button.Position.Y);
-            }
         }
 
         private void LayoutButtonsRightSide()
@@ -481,7 +532,7 @@ namespace VelaptorTesting.Scenes
 
             var totalWidth = (from b in buttons
                 select (int)b.Width).ToArray().Sum();
-            totalWidth += (buttons.Length - 1) * VertButtonSpacing;
+            totalWidth += (buttons.Length - 1) * HoriButtonSpacing;
             var totalHalfWidth = totalWidth / 2;
 
             IControl? prevButton = null;

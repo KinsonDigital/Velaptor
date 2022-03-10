@@ -15,6 +15,7 @@ namespace Velaptor.Input
         private static int xPos;
         private static int yPos;
         private static int scrollWheelValue;
+        private static MouseScrollDirection mouseScrollDirection;
 
         /// <summary>
         /// Gets the current state of the mouse.
@@ -30,6 +31,7 @@ namespace Velaptor.Input
             var result = default(MouseState);
             result.SetPosition(xPos, yPos);
             result.SetScrollWheelValue(scrollWheelValue);
+            result.SetScrollWheelDirection(mouseScrollDirection);
 
             // Set all of the states for the buttons
             foreach (var state in IMouseInput<MouseButton, MouseState>.InputStates)
@@ -59,7 +61,10 @@ namespace Velaptor.Input
         public void SetYPos(int y) => yPos = y;
 
         /// <inheritdoc/>
-        public void SetScrollWheelValue(int value) => scrollWheelValue = value;
+        public void SetScrollWheelSpeed(int value) => scrollWheelValue = value;
+
+        /// <inheritdoc/>
+        public void SetScrollWheelDirection(MouseScrollDirection direction) => mouseScrollDirection = direction;
 
         /// <inheritdoc/>
         public void Reset()
@@ -79,6 +84,7 @@ namespace Velaptor.Input
             xPos = 0;
             yPos = 0;
             scrollWheelValue = 0;
+            mouseScrollDirection = MouseScrollDirection.None;
         }
 
         /// <summary>

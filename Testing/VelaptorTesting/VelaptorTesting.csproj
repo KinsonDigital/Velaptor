@@ -1,37 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <Configurations>Debug;Release</Configurations>
-    <LangVersion>9.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <Configurations>Release;Debug-Console;Debug-Win</Configurations>
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
     <RootNamespace>VelaptorTesting</RootNamespace>
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug-Console' ">
+    <OutputType>Exe</OutputType>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug-Win' ">
+    <OutputType>WinExe</OutputType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputType>WinExe</OutputType>
     <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="stylecop.json" />
-    <None Update="Content\Graphics\next-scene.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\previous-scene.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\button-face-small.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\button-face-large.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Content\Graphics\button-face-small.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -41,19 +36,11 @@
     <None Update="Content\Fonts\TimesNewRoman-Regular.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Graphics\button-face-extra-large.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Graphics\button-next-prev-scene.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Content\Sounds\test-song.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Graphics\button-face-extra-extra-large.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
+
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
@@ -72,6 +59,7 @@
 
   <ItemGroup>
     <Folder Include="Content\Atlas\" />
+    <Folder Include="Content\Graphics" />
   </ItemGroup>
 
   <ItemGroup>

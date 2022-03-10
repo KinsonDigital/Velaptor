@@ -625,4 +625,25 @@ namespace Velaptor.Input
         /// </summary>
         MiddleButton = 2,
     }
+
+    /// <summary>
+    /// Represents the different scroll directions of a mouse.
+    /// </summary>
+    public enum MouseScrollDirection
+    {
+        /// <summary>
+        /// The mouse wheel has not been scrolled in any direction.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// The mouse wheel scrolling in the down direction.
+        /// </summary>
+        ScrollDown = 1,
+
+        /// <summary>
+        /// The mouse wheel scrolling in the up direction.
+        /// </summary>
+        ScrollUp = 2,
+    }
 }

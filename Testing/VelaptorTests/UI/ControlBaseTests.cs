@@ -519,7 +519,7 @@ namespace VelaptorTests.UI
             var mouse = new Mouse();
             mouse.SetXPos(0);
             mouse.SetYPos(0);
-            mouse.SetScrollWheelValue(0);
+            mouse.SetScrollWheelSpeed(0);
         }
     }
 }

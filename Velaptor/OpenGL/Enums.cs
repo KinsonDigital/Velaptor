@@ -1,4 +1,4 @@
-﻿// <copyright file="Enums.cs" company="KinsonDigital">
+// <copyright file="Enums.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -234,7 +234,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// OpenGL enum name GL_TEXTURE1.
         /// </summary>
-        Texture1,
+        Texture1 = 33985,
     }
 
     /// <summary>

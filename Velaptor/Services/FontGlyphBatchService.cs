@@ -1,4 +1,4 @@
-// <copyright file="TextureBatchService.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,19 +8,19 @@ namespace Velaptor.Services
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using Velaptor.Content;
     using Velaptor.OpenGL;
 
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Manages the process of batching up the rendering of <see cref="ITexture"/>s.
+    /// Manages the process of batching up glyphs to be rendered.
     /// </summary>
-    internal class TextureBatchService : IBatchManagerService<SpriteBatchItem>
+    internal class FontGlyphBatchService : IBatchManagerService<FontGlyphBatchItem>
     {
-        private SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)> batchItems = new ();
+        private SortedDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)> batchItems = new ();
         private uint currentBatchIndex;
         private uint batchSize;
+        private uint currentFrame;
         private bool firstTimeRender = true;
         private uint currentTextureId;
         private uint previousTextureId;
@@ -29,11 +29,7 @@ namespace Velaptor.Services
         /// Occurs when a batch is full.
         /// </summary>
         /// <remarks>
-        /// Scenarios When The Batch Is Ready:
-        /// <list type="number">
-        ///     <item>The batch is ready when draw calls switch to another texture.</item>
-        ///     <item>The batch is ready when the total amount of items to be rendered is equal to the <see cref="BatchSize"/>.</item>
-        /// </list>
+        /// The batch is ready when the total amount of items to be rendered is equal to the <see cref="BatchSize"/>.
         /// </remarks>
         public event EventHandler<EventArgs>? BatchFilled;
 
@@ -54,22 +50,21 @@ namespace Velaptor.Services
         }
 
         /// <inheritdoc/>
-        public ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)> BatchItems
+        public ReadOnlyDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)> BatchItems
         {
             get => new (this.batchItems);
-            set => this.batchItems = new SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)>(value);
+            set => this.batchItems = new SortedDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)>(value);
         }
 
         /// <summary>
         /// Adds the given <paramref name="item"/> to the batch.
         /// </summary>
         /// <param name="item">The item to be added.</param>
-        public void Add(SpriteBatchItem item)
+        public void Add(FontGlyphBatchItem item)
         {
             this.currentTextureId = item.TextureId;
-
             var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
-                && this.firstTimeRender is false;
+                                     && this.firstTimeRender is false;
             var batchIsFull = this.currentBatchIndex >= BatchSize;
 
             if (hasSwitchedTexture || batchIsFull)
@@ -88,7 +83,7 @@ namespace Velaptor.Services
         /// Adds the given list of <paramref name="items"/> to batch.
         /// </summary>
         /// <param name="items">The items to be added.</param>
-        public void AddRange(IEnumerable<SpriteBatchItem> items)
+        public void AddRange(IEnumerable<FontGlyphBatchItem> items)
         {
             foreach (var rect in items)
             {
@@ -104,6 +99,8 @@ namespace Velaptor.Services
         /// </remarks>
         public void EmptyBatch()
         {
+            this.currentFrame += 1u;
+
             for (var i = 0u; i < this.batchItems.Count; i++)
             {
                 if (this.batchItems[i].shouldRender is false)
@@ -111,7 +108,16 @@ namespace Velaptor.Services
                     continue;
                 }
 
-                (bool shouldRender, SpriteBatchItem spriteItem) itemToEmpty = this.batchItems[i];
+                (bool shouldRender, FontGlyphBatchItem spriteItem) itemToEmpty = this.batchItems[i];
+
+#if DEBUG
+                AppStats.RecordFontGlyphRendering(
+                    this.currentFrame,
+                    itemToEmpty.spriteItem.Glyph,
+                    itemToEmpty.spriteItem.TextureId,
+                    itemToEmpty.spriteItem.Size,
+                    itemToEmpty.spriteItem.DestRect);
+#endif
 
                 itemToEmpty.shouldRender = false;
                 itemToEmpty.spriteItem.Empty();
@@ -120,7 +126,6 @@ namespace Velaptor.Services
             }
 
             this.currentBatchIndex = 0u;
-            this.previousTextureId = 0u;
         }
     }
 }

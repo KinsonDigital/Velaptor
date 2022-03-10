@@ -37,10 +37,10 @@ namespace Velaptor.Graphics
         private readonly IShaderProgram fontShader;
         private readonly IShaderProgram rectShader;
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
-        private readonly IGPUBuffer<SpriteBatchItem> fontBuffer;
+        private readonly IGPUBuffer<FontGlyphBatchItem> fontBuffer;
         private readonly IGPUBuffer<RectShape> rectBuffer;
         private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
-        private readonly IBatchManagerService<SpriteBatchItem> fontBatchService;
+        private readonly IBatchManagerService<FontGlyphBatchItem> fontBatchService;
         private readonly IBatchManagerService<RectShape> rectBatchService;
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
@@ -78,10 +78,10 @@ namespace Velaptor.Graphics
             IShaderProgram fontShader,
             IShaderProgram rectShader,
             IGPUBuffer<SpriteBatchItem> textureBuffer,
-            IGPUBuffer<SpriteBatchItem> fontBuffer,
+            IGPUBuffer<FontGlyphBatchItem> fontBuffer,
             IGPUBuffer<RectShape> rectBuffer,
             IBatchManagerService<SpriteBatchItem> textureBatchService,
-            IBatchManagerService<SpriteBatchItem> fontBatchService,
+            IBatchManagerService<FontGlyphBatchItem> fontBatchService,
             IBatchManagerService<RectShape> rectBatchService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
@@ -275,12 +275,12 @@ namespace Velaptor.Graphics
             => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White);
 
         /// <inheritdoc/>
-        public void Render(IFont font, string text, int x, int y, float size, float angle)
-            => Render(font, text, x, y, size, angle, Color.White);
+        public void Render(IFont font, string text, int x, int y, float renderSize, float angle)
+            => Render(font, text, x, y, renderSize, angle, Color.White);
 
         /// <inheritdoc/>
-        public void Render(IFont font, string text, Vector2 position, float size, float angle)
-            => Render(font, text, (int)position.X, (int)position.Y, size, angle, Color.White);
+        public void Render(IFont font, string text, Vector2 position, float renderSize, float angle)
+            => Render(font, text, (int)position.X, (int)position.Y, renderSize, angle, Color.White);
 
         /// <inheritdoc/>
         public void Render(IFont font, string text, int x, int y, Color color)
@@ -306,7 +306,7 @@ namespace Velaptor.Graphics
         ///     If <paramref name="font"/> is null, nothing will be rendered.
         ///     <para>A null reference exception will not be thrown.</para>
         /// </remarks>
-        public void Render(IFont font, string text, int x, int y, float size, float angle, Color color)
+        public void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color)
         {
             if (font is null)
             {
@@ -318,14 +318,19 @@ namespace Velaptor.Graphics
                 return;
             }
 
-            size = size < 0f ? 0f : size;
+            if (font.Size == 0u)
+            {
+                return;
+            }
+
+            renderSize = renderSize < 0f ? 0f : renderSize;
 
             if (!this.hasBegun)
             {
                 throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
-            var normalizedSize = size - 1f;
+            var normalizedSize = renderSize - 1f;
             var originalX = (float)x;
             var originalY = (float)y;
             var characterY = (float)y;
@@ -343,8 +348,8 @@ namespace Velaptor.Graphics
 
             var glyphLines = lines.Select(l =>
             {
-                                        /* ⚙️ Perf Optimization️ ⚙️ */
-                // Not need to apply a size to waist compute time if the size is 0 which is no size change.
+                /* ⚙️ Perf Optimization️ ⚙️ */
+                // No need to apply a size to waste compute time if the size
                 return normalizedSize == 0f
                     ? font.ToGlyphMetrics(l)
                     : font.ToGlyphMetrics(l).Select(g => g.ApplySize(normalizedSize)).ToArray();
@@ -358,10 +363,9 @@ namespace Velaptor.Graphics
                 {
                     var firstLineHeight = glyphLines.MaxHeight(i);
                     var textTop = originalY + firstLineHeight;
-                    var lastLineVerticalOffset = glyphLines.MaxVerticalOffset(glyphLines.Count - 1);
                     var textHalfHeight = textSize.Height / 2f;
 
-                    characterY = textTop - textHalfHeight - (lastLineVerticalOffset / 2f);
+                    characterY = textTop - textHalfHeight;
                 }
                 else
                 {
@@ -372,7 +376,7 @@ namespace Velaptor.Graphics
                 var textLinePos = new Vector2(characterX, characterY);
 
                 // Convert all of the glyphs to sprite batch items to be rendered
-                var batchItems = ToSpriteBatchItems(
+                var batchItems = ToFontBatchItems(
                     textLinePos,
                     glyphLines.ToArray()[i],
                     font,
@@ -394,8 +398,8 @@ namespace Velaptor.Graphics
         public void EndBatch()
         {
             TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
-            FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
             RectBatchService_BatchFilled(this.rectBatchService, EventArgs.Empty);
+            FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
 
             this.hasBegun = false;
         }
@@ -527,7 +531,6 @@ namespace Velaptor.Graphics
 
                 if (!fontTextureIsBound)
                 {
-                    this.gl.ActiveTexture(GLTextureUnit.Texture1);
                     this.openGLService.BindTexture2D(batchItem.TextureId);
                     fontTextureIsBound = true;
                 }
@@ -617,24 +620,24 @@ namespace Velaptor.Graphics
         /// <param name="charMetrics">The glyph metrics of the characters in the text.</param>
         /// <param name="font">The font being used.</param>
         /// <param name="origin">The origin to rotate the text around.</param>
-        /// <param name="size">The size of the text.</param>
+        /// <param name="renderSize">The size of the text.</param>
         /// <param name="angle">The angle of the text.</param>
         /// <param name="color">The color of the text.</param>
         /// <param name="atlasWidth">The width of the font texture atlas.</param>
         /// <param name="atlasHeight">The height of the font texture atlas.</param>
         /// <returns>The list of glyphs that make up the string as sprite batch items.</returns>
-        private IEnumerable<SpriteBatchItem> ToSpriteBatchItems(
+        private IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
             Vector2 textPos,
             IEnumerable<GlyphMetrics> charMetrics,
             IFont font,
             Vector2 origin,
-            float size,
+            float renderSize,
             float angle,
             Color color,
             float atlasWidth,
             float atlasHeight)
         {
-            var result = new List<SpriteBatchItem>();
+            var result = new List<FontGlyphBatchItem>();
 
             var leftGlyphIndex = 0u;
 
@@ -672,11 +675,12 @@ namespace Velaptor.Graphics
                 // Only render characters that are not a space (32 char code)
                 if (currentCharMetric.Glyph != ' ')
                 {
-                    var itemToAdd = default(SpriteBatchItem);
+                    var itemToAdd = default(FontGlyphBatchItem);
 
+                    itemToAdd.Glyph = currentCharMetric.Glyph;
                     itemToAdd.SrcRect = srcRect;
                     itemToAdd.DestRect = destRect;
-                    itemToAdd.Size = size;
+                    itemToAdd.Size = renderSize;
                     itemToAdd.Angle = angle;
                     itemToAdd.TintColor = color;
                     itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);

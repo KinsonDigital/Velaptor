@@ -49,6 +49,16 @@ namespace Velaptor.OpenGL.Buffers
         {
             OpenGLService.BeginGroup($"Update Rectangle - BatchItem({batchIndex})");
 
+            /*
+             * Always have the smallest value between the width and height (divided by 2)
+             * as the maximum limit of what the border thickness can be.
+             * If the value was allowed to be larger than the smallest value between
+             * the width and height, it would produce unintended rendering artifacts.
+             */
+
+            rectShape = ProcessBorderThicknessLimit(rectShape);
+            rectShape = ProcessCornerRadiusLimits(rectShape);
+
             var data = RectGPUData.Empty();
             var halfWidth = rectShape.Width / 2f;
             var halfHeight = rectShape.Height / 2f;
@@ -287,6 +297,59 @@ namespace Velaptor.OpenGL.Buffers
             }
 
             return data;
+        }
+
+        /// <summary>
+        /// Process the border thickness by checking that the value is within limits.
+        /// If it is not within limits, it will force the value to be within limits.
+        /// </summary>
+        /// <param name="rect">The rectangle containing the border thickness to set within a limit.</param>
+        /// <remarks>
+        ///     This is done to prevent any undesired rendering artifacts from occuring.
+        /// </remarks>
+        private static RectShape ProcessBorderThicknessLimit(RectShape rect)
+        {
+            var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
+
+            rect.BorderThickness = rect.BorderThickness > largestValueAllowed
+                ? largestValueAllowed
+                : rect.BorderThickness;
+
+            rect.BorderThickness = rect.BorderThickness < 1f ? 1f : rect.BorderThickness;
+
+            return rect;
+        }
+
+        /// <summary>
+        /// Processes the corner radius by checking each corner radius value and making sure they
+        /// are within limits.  If it is not within limits, it will force the values to be within limits.
+        /// </summary>
+        /// <param name="rect">The rectangle containing the radius values to process.</param>
+        /// <returns>The rect with the corner radius values set within limits.</returns>
+        /// <remarks>
+        ///     This is done to prevent any undesired rendering artifacts from occuring.
+        /// </remarks>
+        private static RectShape ProcessCornerRadiusLimits(RectShape rect)
+        {
+            /*
+                 * Always have the smallest value between the width and height (divided by 2)
+                 * as the maximum limit of what any corner radius can be.
+                 * If the value was allowed to be larger than the smallest value between
+                 * the width and height, it would produce unintended rendering artifacts.
+                 */
+            var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
+
+            rect.CornerRadius = rect.CornerRadius.TopLeft > largestValueAllowed ? RectShape.SetTopLeft(rect.CornerRadius, largestValueAllowed) : rect.CornerRadius;
+            rect.CornerRadius = rect.CornerRadius.BottomLeft > largestValueAllowed ? RectShape.SetBottomLeft(rect.CornerRadius, largestValueAllowed) : rect.CornerRadius;
+            rect.CornerRadius = rect.CornerRadius.BottomRight > largestValueAllowed ? RectShape.SetBottomRight(rect.CornerRadius, largestValueAllowed) : rect.CornerRadius;
+            rect.CornerRadius = rect.CornerRadius.TopRight > largestValueAllowed ? RectShape.SetTopRight(rect.CornerRadius, largestValueAllowed) : rect.CornerRadius;
+
+            rect.CornerRadius = rect.CornerRadius.TopLeft < 0 ? RectShape.SetTopLeft(rect.CornerRadius, 0) : rect.CornerRadius;
+            rect.CornerRadius = rect.CornerRadius.BottomLeft < 0 ? RectShape.SetBottomLeft(rect.CornerRadius, 0) : rect.CornerRadius;
+            rect.CornerRadius = rect.CornerRadius.BottomRight < 0 ? RectShape.SetBottomRight(rect.CornerRadius, 0) : rect.CornerRadius;
+            rect.CornerRadius = rect.CornerRadius.TopRight < 0 ? RectShape.SetTopRight(rect.CornerRadius, 0) : rect.CornerRadius;
+
+            return rect;
         }
     }
 }

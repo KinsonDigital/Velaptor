@@ -162,7 +162,7 @@ jobs:
     - name: Build Testing App
       run: |
         dotnet publish "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" `
-          -c Debug `
+          -c Debug-Win `
           -o "${{ github.workspace }}/Testing/PreviewQARelease/" `
           --no-restore `
 

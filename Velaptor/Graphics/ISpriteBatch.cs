@@ -161,7 +161,7 @@ namespace Velaptor.Graphics
         /// <param name="text">The text to render.</param>
         /// <param name="x">The X coordinate location to render the text.</param>
         /// <param name="y">The Y coordinate location to render the text.</param>
-        /// <param name="size">The size of the text.</param>
+        /// <param name="renderSize">The size of the text.</param>
         /// <param name="angle">The angle of the text in degrees.</param>
         /// <remarks>
         /// <para>
@@ -174,7 +174,7 @@ namespace Velaptor.Graphics
         ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
-        void Render(IFont font, string text, int x, int y, float size, float angle);
+        void Render(IFont font, string text, int x, int y, float renderSize, float angle);
 
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -270,13 +270,13 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
         /// at the position determined by the given <paramref name="x"/> and <paramref name="y"/> coordinates,
-        /// with the given <paramref name="angle"/>, <paramref name="size"/>, and <paramref name="color"/>.
+        /// with the given <paramref name="angle"/>, <paramref name="renderSize"/>, and <paramref name="color"/>.
         /// </summary>
         /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
         /// <param name="text">The text to render.</param>
         /// <param name="x">The X coordinate location to render the text.</param>
         /// <param name="y">The Y coordinate location to render the text.</param>
-        /// <param name="size">The size of the text.</param>
+        /// <param name="renderSize">The size of the text.</param>
         /// <param name="angle">The angle of the text in degrees.</param>
         /// <param name="color">The color to apply to the rendering.</param>
         /// <remarks>
@@ -290,7 +290,7 @@ namespace Velaptor.Graphics
         ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
         /// </para>
         /// </remarks>
-        void Render(IFont font, string text, int x, int y, float size, float angle, Color color);
+        void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color);
 
         /// <summary>
         /// Renders the given <paramref name="rectangle"/>.

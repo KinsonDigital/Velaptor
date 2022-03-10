@@ -171,6 +171,150 @@ namespace Velaptor
         public static Vector4 ToVector4(this Color clr) => new (clr.R, clr.G, clr.B, clr.A);
 
         /// <summary>
+        /// Increases the brightness of the color using the given <paramref name="brightness"/> value.
+        /// </summary>
+        /// <param name="clr">The color to change.</param>
+        /// <param name="brightness">The amount of brightness to apply.</param>
+        /// <returns>
+        ///     The new color with the brightness applied.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        ///     The <paramref name="brightness"/> value must be a value between 0.0 and 1.0.
+        /// </para>
+        /// <para>
+        ///     If a value lower than 0.0 or greater than 1.0, the brightness will automatically
+        ///     be adjusted within the range of 0.0 to 1.0.
+        /// </para>
+        /// <para>
+        ///     Think of the <paramref name="brightness"/> value as a percentage between 0% and 100%.
+        /// </para>
+        /// <para>
+        ///     The <see cref="Color"/>.<see cref="Color.A"/> color component is not effected.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        ///     <code>
+        ///         var clr = Color.FromArgb(255, 10, 20, 30);
+        ///
+        ///         <para>
+        ///         // Increase the brightness by 20%
+        ///         clr = clr.IncreaseBrightness(0.2f);
+        ///         </para>
+        ///     </code>
+        ///     <para>
+        ///         In the example above, the values would equal the results below:
+        ///     </para>
+        ///     <list type="bullet">
+        ///         <item>
+        ///             Alpha component would be unchanged with a value of 255.
+        ///         </item>
+        ///         <item>
+        ///             Red component with brightness applied would result in a value of 12.
+        ///         </item>
+        ///         <item>
+        ///             Green component with brightness applied would result in a value of 24.
+        ///         </item>
+        ///         <item>
+        ///             Blue component with brightness applied would result in a value of 36.
+        ///         </item>
+        ///     </list>
+        /// </example>
+        public static Color IncreaseBrightness(this Color clr, float brightness)
+        {
+            brightness = brightness > 1f ? 1f : brightness;
+            brightness = brightness < 0f ? 0f : brightness;
+
+            var newRed = clr.R + (clr.R * brightness);
+            var newGreen = clr.G + (clr.G * brightness);
+            var newBlue = clr.B + (clr.B * brightness);
+
+            newRed = newRed > 255f ? 255f : newRed;
+            newGreen = newGreen > 255f ? 255f : newGreen;
+            newBlue = newBlue > 255f ? 255f : newBlue;
+
+            clr = Color.FromArgb(
+                clr.A,
+                (byte)newRed,
+                (byte)newGreen,
+                (byte)newBlue);
+
+            return clr;
+        }
+
+        /// <summary>
+        /// Decreases the brightness of the color using the given <paramref name="brightness"/> value.
+        /// </summary>
+        /// <param name="clr">The color to change.</param>
+        /// <param name="brightness">The amount of brightness to apply.</param>
+        /// <returns>
+        ///     The new color with the brightness applied.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        ///     The <paramref name="brightness"/> value must be a value between 0.0 and 1.0.
+        /// </para>
+        /// <para>
+        ///     If a value lower than 0.0 or greater than 1.0, the brightness will automatically
+        ///     be adjusted within the range of 0.0 to 1.0.
+        /// </para>
+        /// <para>
+        ///     Think of the <paramref name="brightness"/> value as a percentage between 0% and 100%.
+        /// </para>
+        /// <para>
+        ///     The <see cref="Color"/>.<see cref="Color.A"/> color component is not effected.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        ///     <code>
+        ///         var clr = Color.FromArgb(255, 10, 20, 30);
+        ///
+        ///         <para>
+        ///         // Increase the brightness by 20%
+        ///         clr = clr.IncreaseBrightness(0.2f);
+        ///         </para>
+        ///     </code>
+        ///     <para>
+        ///         In the example above, the values would equal the results below:
+        ///     </para>
+        ///     <list type="bullet">
+        ///         <item>
+        ///             Alpha value would be unchanged with a value of 255.
+        ///         </item>
+        ///         <item>
+        ///             Red component with brightness applied would result in a value of 8.
+        ///         </item>
+        ///         <item>
+        ///             Green component with brightness applied would result in a value of 16.
+        ///         </item>
+        ///         <item>
+        ///             Blue component with brightness applied would result in a value of 24.
+        ///         </item>
+        ///     </list>
+        /// </example>
+        public static Color DecreaseBrightness(this Color clr, float brightness)
+        {
+            brightness = brightness > 1f ? 1f : brightness;
+            brightness = brightness < 0f ? 0f : brightness;
+
+            var newRed = clr.R - (clr.R * brightness);
+            var newGreen = clr.G - (clr.G * brightness);
+            var newBlue = clr.B - (clr.B * brightness);
+
+            newRed = newRed < 0f ? 0f : newRed;
+            newGreen = newGreen < 0f ? 0f : newGreen;
+            newBlue = newBlue < 0f ? 0f : newBlue;
+
+            clr = Color.FromArgb(
+                clr.A,
+                (byte)newRed,
+                (byte)newGreen,
+                (byte)newBlue);
+
+            return clr;
+        }
+
+        /// <summary>
         /// Returns the position in the given <paramref name="rect"/> as a <see cref="Vector2"/>.
         /// </summary>
         /// <param name="rect">The rect that contains the position.</param>
