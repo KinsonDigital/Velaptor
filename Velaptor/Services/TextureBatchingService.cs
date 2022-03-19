@@ -1,4 +1,4 @@
-// <copyright file="TextureBatchService.cs" company="KinsonDigital">
+// <copyright file="TextureBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,7 +16,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Manages the process of batching up the rendering of <see cref="ITexture"/>s.
     /// </summary>
-    internal class TextureBatchService : IBatchingService<SpriteBatchItem>
+    internal class TextureBatchingService : IBatchingService<SpriteBatchItem>
     {
         private SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)> batchItems = new ();
         private uint currentBatchIndex;

@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureBatchServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,9 +17,9 @@ namespace VelaptorTests.Services
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="TextureBatchService"/> class.
+    /// Tests the <see cref="TextureBatchingService"/> class.
     /// </summary>
-    public class TextureBatchServiceTests
+    public class TextureBatchingServiceTests
     {
         #region Prop Tests
         [Fact]
@@ -202,9 +202,9 @@ namespace VelaptorTests.Services
         #endregion
 
         /// <summary>
-        /// Creates a new instance of <see cref="TextureBatchService"/> for the purpose of testing.
+        /// Creates a new instance of <see cref="TextureBatchingService"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private static TextureBatchService CreateService() => new ();
+        private static TextureBatchingService CreateService() => new ();
     }
 }
