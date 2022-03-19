@@ -1,4 +1,4 @@
-﻿// <copyright file="FontGlyphBatchService.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,12 +15,14 @@ namespace Velaptor.Services
     /// <summary>
     /// Manages the process of batching up glyphs to be rendered.
     /// </summary>
-    internal class FontGlyphBatchService : IBatchingService<FontGlyphBatchItem>
+    internal class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
     {
         private SortedDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)> batchItems = new ();
         private uint currentBatchIndex;
         private uint batchSize;
+#if DEBUG
         private uint currentFrame;
+#endif
         private bool firstTimeRender = true;
         private uint currentTextureId;
         private uint previousTextureId;
@@ -99,7 +101,9 @@ namespace Velaptor.Services
         /// </remarks>
         public void EmptyBatch()
         {
+#if DEBUG
             this.currentFrame += 1u;
+#endif
 
             for (var i = 0u; i < this.batchItems.Count; i++)
             {

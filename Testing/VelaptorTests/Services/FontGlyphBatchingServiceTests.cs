@@ -1,4 +1,4 @@
-﻿// <copyright file="FontGlyphBatchServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace VelaptorTests.Services
     using VelaptorTests.Helpers;
     using Xunit;
 
-    public class FontGlyphBatchServiceTests
+    public class FontGlyphBatchingServiceTests
     {
         #region Prop Tests
         [Fact]
@@ -172,9 +172,9 @@ namespace VelaptorTests.Services
         #endregion
 
         /// <summary>
-        /// Creates a new instance of <see cref="FontGlyphBatchService"/> for the purpose of testing.
+        /// Creates a new instance of <see cref="FontGlyphBatchingService"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private static FontGlyphBatchService CreateService() => new ();
+        private static FontGlyphBatchingService CreateService() => new ();
     }
 }
