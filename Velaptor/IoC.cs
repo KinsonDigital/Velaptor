@@ -154,7 +154,7 @@ namespace Velaptor
             IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
             IoCContainer.Register<IBatchingService<SpriteBatchItem>, TextureBatchService>();
             IoCContainer.Register<IBatchingService<FontGlyphBatchItem>, FontGlyphBatchService>();
-            IoCContainer.Register<IBatchingService<RectShape>, RectBatchService>();
+            IoCContainer.Register<IBatchingService<RectShape>, RectBatchingService>();
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(
