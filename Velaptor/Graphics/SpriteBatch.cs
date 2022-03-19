@@ -39,9 +39,9 @@ namespace Velaptor.Graphics
         private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
         private readonly IGPUBuffer<FontGlyphBatchItem> fontBuffer;
         private readonly IGPUBuffer<RectShape> rectBuffer;
-        private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
-        private readonly IBatchManagerService<FontGlyphBatchItem> fontBatchService;
-        private readonly IBatchManagerService<RectShape> rectBatchService;
+        private readonly IBatchingService<SpriteBatchItem> textureBatchService;
+        private readonly IBatchingService<FontGlyphBatchItem> fontBatchService;
+        private readonly IBatchingService<RectShape> rectBatchService;
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
 
@@ -62,9 +62,9 @@ namespace Velaptor.Graphics
         /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
         /// <param name="rectBuffer">Updates the data in the GPU related to rendering rectangles.</param>
-        /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
-        /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
-        /// <param name="rectBatchService">Manages the batch of rectangles to render.</param>
+        /// <param name="textureBatchingService">Manages the batch of textures to render textures.</param>
+        /// <param name="fontBatchingService">Manages the batch of textures to render text.</param>
+        /// <param name="rectBatchingService">Manages the batch of rectangles to render.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
@@ -80,9 +80,9 @@ namespace Velaptor.Graphics
             IGPUBuffer<SpriteBatchItem> textureBuffer,
             IGPUBuffer<FontGlyphBatchItem> fontBuffer,
             IGPUBuffer<RectShape> rectBuffer,
-            IBatchManagerService<SpriteBatchItem> textureBatchService,
-            IBatchManagerService<FontGlyphBatchItem> fontBatchService,
-            IBatchManagerService<RectShape> rectBatchService,
+            IBatchingService<SpriteBatchItem> textureBatchingService,
+            IBatchingService<FontGlyphBatchItem> fontBatchingService,
+            IBatchingService<RectShape> rectBatchingService,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
@@ -104,15 +104,15 @@ namespace Velaptor.Graphics
             this.fontBuffer = fontBuffer;
             this.rectBuffer = rectBuffer;
 
-            this.textureBatchService = textureBatchService ?? throw new ArgumentNullException(nameof(textureBatchService), "The parameter must not be null.");
+            this.textureBatchService = textureBatchingService ?? throw new ArgumentNullException(nameof(textureBatchingService), "The parameter must not be null.");
             this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.textureBatchService.BatchFilled += TextureBatchService_BatchFilled;
 
-            this.fontBatchService = fontBatchService ?? throw new ArgumentNullException(nameof(fontBatchService), "The parameter must not be null.");
+            this.fontBatchService = fontBatchingService ?? throw new ArgumentNullException(nameof(fontBatchingService), "The parameter must not be null.");
             this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
-            this.rectBatchService = rectBatchService ?? throw new ArgumentNullException(nameof(rectBatchService), "The parameter must not be null.");
+            this.rectBatchService = rectBatchingService ?? throw new ArgumentNullException(nameof(rectBatchingService), "The parameter must not be null.");
             this.rectBatchService.BatchSize = ISpriteBatch.BatchSize;
             this.rectBatchService.BatchFilled += RectBatchService_BatchFilled;
 

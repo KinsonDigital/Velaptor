@@ -1,4 +1,4 @@
-﻿// <copyright file="IBatchManagerService.cs" company="KinsonDigital">
+﻿// <copyright file="IBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -12,7 +12,7 @@ namespace Velaptor.Services
     /// Manages the process of batching items.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the batch.</typeparam>
-    internal interface IBatchManagerService<T>
+    internal interface IBatchingService<T>
     {
         /// <summary>
         /// Occurs when a batch is full.

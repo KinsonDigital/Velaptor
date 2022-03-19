@@ -39,14 +39,14 @@ namespace VelaptorTests.Graphics
         private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IShaderProgram> mockTextureShader;
         private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockTextureBuffer;
-        private readonly Mock<IBatchManagerService<SpriteBatchItem>> mockTextureBatchService;
+        private readonly Mock<IBatchingService<SpriteBatchItem>> mockTextureBatchingService;
         private readonly Mock<IShaderProgram> mockFontShader;
         private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontBuffer;
-        private readonly Mock<IBatchManagerService<FontGlyphBatchItem>> mockFontBatchService;
+        private readonly Mock<IBatchingService<FontGlyphBatchItem>> mockFontBatchingService;
         private readonly Mock<IFont> mockFont;
         private readonly Mock<IShaderProgram> mockRectShader;
         private readonly Mock<IGPUBuffer<RectShape>> mockRectBuffer;
-        private readonly Mock<IBatchManagerService<RectShape>> mockRectBatchService;
+        private readonly Mock<IBatchingService<RectShape>> mockRectBatchingService;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
@@ -87,20 +87,20 @@ namespace VelaptorTests.Graphics
             this.mockFontBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
             this.mockRectBuffer = new Mock<IGPUBuffer<RectShape>>();
 
-            this.mockTextureBatchService = new Mock<IBatchManagerService<SpriteBatchItem>>();
-            this.mockTextureBatchService.SetupProperty(p => p.BatchSize);
-            this.mockTextureBatchService.SetupGet(p => p.BatchItems)
+            this.mockTextureBatchingService = new Mock<IBatchingService<SpriteBatchItem>>();
+            this.mockTextureBatchingService.SetupProperty(p => p.BatchSize);
+            this.mockTextureBatchingService.SetupGet(p => p.BatchItems)
                 .Returns(Array.Empty<(bool shouldRender, SpriteBatchItem item)>().ToReadOnlyDictionary());
 
-            this.mockFontBatchService = new Mock<IBatchManagerService<FontGlyphBatchItem>>();
-            this.mockFontBatchService.SetupProperty(p => p.BatchSize);
-            this.mockFontBatchService.SetupGet(p => p.BatchItems)
+            this.mockFontBatchingService = new Mock<IBatchingService<FontGlyphBatchItem>>();
+            this.mockFontBatchingService.SetupProperty(p => p.BatchSize);
+            this.mockFontBatchingService.SetupGet(p => p.BatchItems)
                 .Returns(Array.Empty<(bool shouldRender, FontGlyphBatchItem item)>().ToReadOnlyDictionary());
 
-            this.mockRectBatchService = new Mock<IBatchManagerService<RectShape>>();
-            this.mockRectBatchService.SetupProperty(p => p.BatchSize);
-            this.mockRectBatchService.SetupProperty(p => p.BatchItems);
-            this.mockRectBatchService.SetupGet(p => p.BatchItems)
+            this.mockRectBatchingService = new Mock<IBatchingService<RectShape>>();
+            this.mockRectBatchingService.SetupProperty(p => p.BatchSize);
+            this.mockRectBatchingService.SetupProperty(p => p.BatchItems);
+            this.mockRectBatchingService.SetupGet(p => p.BatchItems)
                 .Returns(Array.Empty<(bool shouldRender, RectShape item)>().ToReadOnlyDictionary());
 
             this.mockGLInitUnsubscriber = new Mock<IDisposable>();
@@ -145,9 +145,9 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'gl')");
@@ -168,9 +168,9 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'textureShader')");
@@ -191,9 +191,9 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'fontShader')");
@@ -214,9 +214,9 @@ namespace VelaptorTests.Graphics
                     null,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'textureBuffer')");
@@ -237,9 +237,9 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'rectShader')");
@@ -260,9 +260,9 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     null,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'fontBuffer')");
@@ -283,9 +283,9 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     null,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'rectBuffer')");
@@ -307,11 +307,11 @@ namespace VelaptorTests.Graphics
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
                     null,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'textureBatchService')");
+            }, "The parameter must not be null. (Parameter 'textureBatchingService')");
         }
 
         [Fact]
@@ -329,12 +329,12 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
+                    this.mockTextureBatchingService.Object,
                     null,
-                    this.mockRectBatchService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'fontBatchService')");
+            }, "The parameter must not be null. (Parameter 'fontBatchingService')");
         }
 
         [Fact]
@@ -352,12 +352,12 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
                     null,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'rectBatchService')");
+            }, "The parameter must not be null. (Parameter 'rectBatchingService')");
         }
 
         [Fact]
@@ -375,9 +375,9 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     null,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glInitReactable')");
@@ -398,9 +398,9 @@ namespace VelaptorTests.Graphics
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
-                    this.mockTextureBatchService.Object,
-                    this.mockFontBatchService.Object,
-                    this.mockRectBatchService.Object,
+                    this.mockTextureBatchingService.Object,
+                    this.mockFontBatchingService.Object,
+                    this.mockRectBatchingService.Object,
                     this.mockGLInitReactable.Object,
                     null);
             }, "The parameter must not be null. (Parameter 'shutDownReactable')");
@@ -413,9 +413,9 @@ namespace VelaptorTests.Graphics
             var unused = CreateSpriteBatch();
 
             // Assert
-            this.mockTextureBatchService
+            this.mockTextureBatchingService
                 .VerifyAdd(e => e.BatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-            this.mockFontBatchService
+            this.mockFontBatchingService
                 .VerifyAdd(e => e.BatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
         }
         #endregion
@@ -605,7 +605,7 @@ namespace VelaptorTests.Graphics
             var unused = CreateSpriteBatch();
 
             // Act
-            this.mockTextureBatchService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
+            this.mockTextureBatchingService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
 
             // Assert
             this.mockGLService.Verify(m => m.BeginGroup("Render Texture Process - Nothing To Render"), Times.Once);
@@ -625,7 +625,7 @@ namespace VelaptorTests.Graphics
                 It.IsAny<uint>(),
                 It.IsAny<GLDrawElementsType>(),
                 It.IsAny<IntPtr>()));
-            this.mockFontBatchService.VerifyNever(m => m.EmptyBatch());
+            this.mockFontBatchingService.VerifyNever(m => m.EmptyBatch());
         }
 
         [Fact]
@@ -646,7 +646,7 @@ namespace VelaptorTests.Graphics
 
             SpriteBatchItem actualBatchItem = default;
 
-            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
@@ -656,7 +656,7 @@ namespace VelaptorTests.Graphics
             batch.Render(mockTexture.Object, 10, 20);
 
             // Assert
-            this.mockTextureBatchService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
             AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
@@ -679,7 +679,7 @@ namespace VelaptorTests.Graphics
 
             SpriteBatchItem actualBatchItem = default;
 
-            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
@@ -689,7 +689,7 @@ namespace VelaptorTests.Graphics
             batch.Render(mockTexture.Object, 10, 20, expectedRenderEffects);
 
             // Assert
-            this.mockTextureBatchService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
             AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
@@ -712,7 +712,7 @@ namespace VelaptorTests.Graphics
 
             SpriteBatchItem actualBatchItem = default;
 
-            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
@@ -722,7 +722,7 @@ namespace VelaptorTests.Graphics
             batch.Render(mockTexture.Object, 10, 20, expectedClr);
 
             // Assert
-            this.mockTextureBatchService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
             AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
@@ -746,7 +746,7 @@ namespace VelaptorTests.Graphics
 
             SpriteBatchItem actualBatchItem = default;
 
-            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
@@ -756,7 +756,7 @@ namespace VelaptorTests.Graphics
             batch.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects);
 
             // Assert
-            this.mockTextureBatchService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
             AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
@@ -776,11 +776,11 @@ namespace VelaptorTests.Graphics
 
             // TODO: Fix this
             var batch = CreateSpriteBatch();
-            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(_ =>
                 {
                     MockTextureBatchItems(items);
-                    this.mockTextureBatchService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
+                    this.mockTextureBatchingService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
                 });
             this.glInitReactor.OnNext(default);
 
@@ -803,7 +803,7 @@ namespace VelaptorTests.Graphics
             this.mockGLService.Verify(m => m.BindTexture2D(textureId), Times.Once);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, batchIndex), Times.Once);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, batchIndex), Times.Never);
-            this.mockTextureBatchService.Verify(m => m.EmptyBatch(), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
         }
 
         [Fact]
@@ -828,7 +828,7 @@ namespace VelaptorTests.Graphics
             var unused = CreateSpriteBatch();
 
             // Act
-            this.mockFontBatchService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
+            this.mockFontBatchingService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
 
             // Assert
             this.mockGLService.Verify(m => m.BeginGroup("Render Text Process - Nothing To Render"), Times.Once);
@@ -848,7 +848,7 @@ namespace VelaptorTests.Graphics
                 It.IsAny<uint>(),
                 It.IsAny<GLDrawElementsType>(),
                 It.IsAny<IntPtr>()));
-            this.mockFontBatchService.VerifyNever(m => m.EmptyBatch());
+            this.mockFontBatchingService.VerifyNever(m => m.EmptyBatch());
         }
 
         [Theory]
@@ -873,7 +873,7 @@ namespace VelaptorTests.Graphics
             // Assert
             this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
             this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Never);
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Never);
         }
 
         [Fact]
@@ -898,7 +898,7 @@ namespace VelaptorTests.Graphics
             // Assert
             this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
             this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Never);
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Never);
         }
 
         [Fact]
@@ -988,7 +988,7 @@ namespace VelaptorTests.Graphics
             const string renderText = "Font_Testing";
             MockFontMetrics();
             MockToGlyphMetrics(renderText);
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData = rects.ToArray();
@@ -1008,7 +1008,7 @@ namespace VelaptorTests.Graphics
                 Color.FromArgb(11, 22, 33, 44));
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Once);
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Once);
             Assert.Equal(12, actualSpriteBatchResultData.Length);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1030,7 +1030,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData.AddRange(rects.ToArray());
@@ -1047,7 +1047,7 @@ namespace VelaptorTests.Graphics
                 22);
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
             Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1069,7 +1069,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData.AddRange(rects.ToArray());
@@ -1085,7 +1085,7 @@ namespace VelaptorTests.Graphics
                 new Vector2(33, 44));
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
             Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1107,7 +1107,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData.AddRange(rects.ToArray());
@@ -1126,7 +1126,7 @@ namespace VelaptorTests.Graphics
                 230f);
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
             Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1148,7 +1148,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData.AddRange(rects.ToArray());
@@ -1166,7 +1166,7 @@ namespace VelaptorTests.Graphics
                 8f);
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
             Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1188,7 +1188,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData.AddRange(rects.ToArray());
@@ -1206,7 +1206,7 @@ namespace VelaptorTests.Graphics
                 Color.DarkOrange);
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
             Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1228,7 +1228,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData.AddRange(rects.ToArray());
@@ -1245,7 +1245,7 @@ namespace VelaptorTests.Graphics
                 Color.MediumPurple);
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
             Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1267,7 +1267,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData.AddRange(rects.ToArray());
@@ -1286,7 +1286,7 @@ namespace VelaptorTests.Graphics
                 Color.IndianRed);
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
             Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1308,7 +1308,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
                 {
                     actualSpriteBatchResultData.AddRange(rects.ToArray());
@@ -1326,7 +1326,7 @@ namespace VelaptorTests.Graphics
                 Color.CornflowerBlue);
 
             // Assert
-            this.mockFontBatchService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
+            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
             Assert.Equal(line1.Length + line2.Length, actualSpriteBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedSpriteBatchResultData, actualSpriteBatchResultData);
         }
@@ -1350,7 +1350,7 @@ namespace VelaptorTests.Graphics
 
             var batch = CreateSpriteBatch();
 
-            this.mockFontBatchService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
+            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
                 .Callback<IEnumerable<FontGlyphBatchItem>>(items =>
                 {
                     var itemsToMock = items.Select(item => (shouldRender: false, item)).ToArray();
@@ -1362,7 +1362,7 @@ namespace VelaptorTests.Graphics
                     }
 
                     MockFontBatchItems(itemsToMock);
-                    this.mockFontBatchService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
+                    this.mockFontBatchingService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
                 });
 
             this.glInitReactor.OnNext(default);
@@ -1386,7 +1386,7 @@ namespace VelaptorTests.Graphics
             this.mockFontBuffer.Verify(m => m.UploadData(It.IsAny<FontGlyphBatchItem>(),
                     It.IsAny<uint>()),
                 Times.Exactly(textBeingRendered.Length));
-            this.mockFontBatchService.Verify(m => m.EmptyBatch(), Times.Once);
+            this.mockFontBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
         }
 
         [Fact]
@@ -1398,7 +1398,7 @@ namespace VelaptorTests.Graphics
             var unused = CreateSpriteBatch();
 
             // Act
-            this.mockRectBatchService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
+            this.mockRectBatchingService.Raise(e => e.BatchFilled += null, EventArgs.Empty);
 
             // Assert
             this.mockGLService.Verify(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"), Times.Once);
@@ -1418,7 +1418,7 @@ namespace VelaptorTests.Graphics
                 It.IsAny<uint>(),
                 It.IsAny<GLDrawElementsType>(),
                 It.IsAny<IntPtr>()));
-            this.mockRectBatchService.VerifyNever(m => m.EmptyBatch());
+            this.mockRectBatchingService.VerifyNever(m => m.EmptyBatch());
         }
 
         [Fact]
@@ -1439,7 +1439,7 @@ namespace VelaptorTests.Graphics
                 GradientStop = Color.Magenta,
             };
 
-            this.mockRectBatchService.Setup(m => m.Add(It.IsAny<RectShape>()));
+            this.mockRectBatchingService.Setup(m => m.Add(It.IsAny<RectShape>()));
 
             var batch = CreateSpriteBatch();
 
@@ -1447,7 +1447,7 @@ namespace VelaptorTests.Graphics
             batch.Render(expected);
 
             // Assert
-            this.mockRectBatchService.Verify(m => m.Add(expected), Times.Once);
+            this.mockRectBatchingService.Verify(m => m.Add(expected), Times.Once);
         }
 
         [Fact]
@@ -1459,7 +1459,7 @@ namespace VelaptorTests.Graphics
             var batch = CreateSpriteBatch();
 
             // Mock that the batch items will return a single batch item that is marked to NOT render
-            this.mockTextureBatchService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
                 .Callback<SpriteBatchItem>(_ =>
                 {
                     MockTextureBatchItems(textureBatchItems);
@@ -1496,7 +1496,7 @@ namespace VelaptorTests.Graphics
             var fontBatchItems = new[] { (false, default(SpriteBatchItem)) };
 
             var batch = CreateSpriteBatch();
-            this.mockFontBatchService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
                 .Callback<FontGlyphBatchItem>(_ =>
                 {
                     MockTextureBatchItems(fontBatchItems);
@@ -1537,7 +1537,7 @@ namespace VelaptorTests.Graphics
             var rectBatchItems = new[] { (true, GenerateRectShape(0)) };
             var batch = CreateSpriteBatch();
 
-            this.mockRectBatchService.SetupGet(p => p.BatchItems)
+            this.mockRectBatchingService.SetupGet(p => p.BatchItems)
                 .Returns(rectBatchItems.ToReadOnlyDictionary());
 
             // Act
@@ -1554,7 +1554,7 @@ namespace VelaptorTests.Graphics
             // Arrange
             var rectBatchItems = new[] { (false, default(RectShape)) };
 
-            this.mockRectBatchService.SetupGet(p => p.BatchItems)
+            this.mockRectBatchingService.SetupGet(p => p.BatchItems)
                 .Returns(rectBatchItems.ToReadOnlyDictionary());
 
             var batch = CreateSpriteBatch();
@@ -1599,9 +1599,9 @@ namespace VelaptorTests.Graphics
             shutDownReactor?.OnNext(default);
 
             // Assert
-            this.mockTextureBatchService
+            this.mockTextureBatchingService
                 .VerifyRemove(e => e.BatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once());
-            this.mockFontBatchService
+            this.mockFontBatchingService
                 .VerifyRemove(e => e.BatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once());
             this.mockGLInitUnsubscriber.Verify(m => m.Dispose(), Times.Once());
             this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
@@ -1705,9 +1705,9 @@ namespace VelaptorTests.Graphics
                 this.mockTextureBuffer.Object,
                 this.mockFontBuffer.Object,
                 this.mockRectBuffer.Object,
-                this.mockTextureBatchService.Object,
-                this.mockFontBatchService.Object,
-                this.mockRectBatchService.Object,
+                this.mockTextureBatchingService.Object,
+                this.mockFontBatchingService.Object,
+                this.mockRectBatchingService.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object);
 
@@ -1720,8 +1720,8 @@ namespace VelaptorTests.Graphics
         /// <param name="items">The items to store in the service.</param>
         private void MockTextureBatchItems((bool shouldRender, SpriteBatchItem item)[] items)
         {
-            this.mockTextureBatchService.SetupProperty(p => p.BatchItems);
-            this.mockTextureBatchService.Object.BatchItems = items.ToReadOnlyDictionary();
+            this.mockTextureBatchingService.SetupProperty(p => p.BatchItems);
+            this.mockTextureBatchingService.Object.BatchItems = items.ToReadOnlyDictionary();
         }
 
         /// <summary>
@@ -1730,8 +1730,8 @@ namespace VelaptorTests.Graphics
         /// <param name="items">The items to store in the service.</param>
         private void MockFontBatchItems((bool shouldRender, FontGlyphBatchItem item)[] items)
         {
-            this.mockFontBatchService.SetupProperty(p => p.BatchItems);
-            this.mockFontBatchService.Object.BatchItems = items.ToReadOnlyDictionary();
+            this.mockFontBatchingService.SetupProperty(p => p.BatchItems);
+            this.mockFontBatchingService.Object.BatchItems = items.ToReadOnlyDictionary();
         }
     }
 }
