@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatchItemTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureBatchItemTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ namespace VelaptorTests.OpenGL
     /// <summary>
     /// Test the <see cref="TextureBatchItem"/> struct.
     /// </summary>
-    public class SpriteBatchItemTests
+    public class TextureBatchItemTests
     {
         /// <summary>
         /// Gets all of the test data related to testing the end result
@@ -335,7 +335,7 @@ namespace VelaptorTests.OpenGL
         public void ToString_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            var expected = "Sprite Batch Item Values:";
+            var expected = "Texture Batch Item Values:";
             expected += "\r\nSrc Rect: {X=7,Y=8,Width=9,Height=10}";
             expected += "\r\nDest Rect: {X=3,Y=4,Width=5,Height=6}";
             expected += "\r\nSize: 2";

@@ -1,4 +1,4 @@
-﻿// <copyright file="ISpriteBatch.cs" company="KinsonDigital">
+﻿// <copyright file="IRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,10 +18,10 @@ namespace Velaptor.Graphics
     /// Renders a single or batch of textures.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public facing API required for library users.")]
-    public interface ISpriteBatch
+    public interface IRenderer
     {
         /// <summary>
-        /// Gets the total number of sprites rendered for each batch.
+        /// Gets the total number of items rendered for each batch.
         /// </summary>
         public const uint BatchSize = 1000;
 
@@ -58,7 +58,7 @@ namespace Velaptor.Graphics
         void Clear();
 
         /// <summary>
-        /// Ends the sprite batch process.  Calling this will render any textures
+        /// Ends the batch process.  Calling this will render any textures
         /// still in the batch.
         /// </summary>
         void EndBatch();

@@ -35,7 +35,7 @@ namespace Velaptor.OpenGL
         private readonly IGameWindowFacade windowFacade;
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
-        private readonly ISpriteBatch spriteBatch;
+        private readonly IRenderer renderer;
         private readonly IReactable<GLInitData> glInitReactable;
         private readonly IReactable<ShutDownData> shutDownReactable;
         private bool isShuttingDown;
@@ -55,7 +55,7 @@ namespace Velaptor.OpenGL
         /// <param name="platform">Information about the platform that is running the application.</param>
         /// <param name="taskService">Runs asynchronous tasks.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
-        /// <param name="spriteBatch">Renders textures and primitives.</param>
+        /// <param name="renderer">Renders textures and primitives.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         public GLWindow(
@@ -68,7 +68,7 @@ namespace Velaptor.OpenGL
             IPlatform platform,
             ITaskService taskService,
             IContentLoader contentLoader,
-            ISpriteBatch spriteBatch,
+            IRenderer renderer,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
@@ -79,7 +79,7 @@ namespace Velaptor.OpenGL
             EnsureThat.ParamIsNotNull(platform);
             EnsureThat.ParamIsNotNull(taskService);
             EnsureThat.ParamIsNotNull(contentLoader);
-            EnsureThat.ParamIsNotNull(spriteBatch);
+            EnsureThat.ParamIsNotNull(renderer);
             EnsureThat.ParamIsNotNull(glInitReactable);
             EnsureThat.ParamIsNotNull(shutDownReactable);
 
@@ -90,7 +90,7 @@ namespace Velaptor.OpenGL
             this.platform = platform;
             this.taskService = taskService;
             ContentLoader = contentLoader;
-            this.spriteBatch = spriteBatch;
+            this.renderer = renderer;
             this.glInitReactable = glInitReactable;
             this.shutDownReactable = shutDownReactable;
 
@@ -320,7 +320,7 @@ namespace Velaptor.OpenGL
             var size = new SizeU { Width = uWidth, Height = uHeight };
             WinResize?.Invoke(size);
 
-            this.spriteBatch.OnResize(size);
+            this.renderer.OnResize(size);
         }
 
         /// <summary>

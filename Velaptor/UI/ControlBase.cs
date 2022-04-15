@@ -190,9 +190,9 @@ namespace Velaptor.UI
         /// <summary>
         /// Renders the control to the screen.
         /// </summary>
-        /// <param name="spriteBatch">Renders the control.</param>
+        /// <param name="renderer">Renders the control.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void Render(ISpriteBatch spriteBatch)
+        public virtual void Render(IRenderer renderer)
         {
         }
 

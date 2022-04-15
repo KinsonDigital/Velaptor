@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="Renderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -28,7 +28,7 @@ namespace Velaptor.Graphics
     // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc/>
-    internal sealed class SpriteBatch : ISpriteBatch
+    internal sealed class Renderer : IRenderer
     {
         private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
         private readonly IGLInvoker gl;
@@ -51,7 +51,7 @@ namespace Velaptor.Graphics
         private bool hasBegun;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpriteBatch"/> class.
+        /// Initializes a new instance of the <see cref="Renderer"/> class.
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
@@ -71,7 +71,7 @@ namespace Velaptor.Graphics
         ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
-        public SpriteBatch(
+        public Renderer(
             IGLInvoker gl,
             IOpenGLService openGLService,
             IShaderProgram textureShader,
@@ -105,15 +105,15 @@ namespace Velaptor.Graphics
             this.rectBuffer = rectBuffer;
 
             this.textureBatchService = textureBatchingService ?? throw new ArgumentNullException(nameof(textureBatchingService), "The parameter must not be null.");
-            this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;
+            this.textureBatchService.BatchSize = IRenderer.BatchSize;
             this.textureBatchService.BatchFilled += TextureBatchService_BatchFilled;
 
             this.fontBatchService = fontBatchingService ?? throw new ArgumentNullException(nameof(fontBatchingService), "The parameter must not be null.");
-            this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
+            this.fontBatchService.BatchSize = IRenderer.BatchSize;
             this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
 
             this.rectBatchService = rectBatchingService ?? throw new ArgumentNullException(nameof(rectBatchingService), "The parameter must not be null.");
-            this.rectBatchService.BatchSize = ISpriteBatch.BatchSize;
+            this.rectBatchService.BatchSize = IRenderer.BatchSize;
             this.rectBatchService.BatchFilled += RectBatchService_BatchFilled;
 
             if (glInitReactable is null)
@@ -143,10 +143,10 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="SpriteBatch"/> class.
+        /// Finalizes an instance of the <see cref="Renderer"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        ~SpriteBatch()
+        ~Renderer()
         {
             if (UnitTestDetector.IsRunningFromUnitTest)
             {
@@ -375,7 +375,7 @@ namespace Velaptor.Graphics
                 var characterX = originalX - textHalfWidth + firstLineFirstCharBearingX;
                 var textLinePos = new Vector2(characterX, characterY);
 
-                // Convert all of the glyphs to sprite batch items to be rendered
+                // Convert all of the glyphs to batch items to be rendered
                 var batchItems = ToFontBatchItems(
                     textLinePos,
                     glyphLines.ToArray()[i],
@@ -425,7 +425,7 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Initializes the sprite batch.
+        /// Initializes the renderer.
         /// </summary>
         private void Init()
         {
@@ -613,7 +613,7 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Constructs a list of sprite batch items from the given
+        /// Constructs a list of batch items from the given
         /// <paramref name="charMetrics"/> to be rendered.
         /// </summary>
         /// <param name="textPos">The position to render the text.</param>
@@ -625,7 +625,7 @@ namespace Velaptor.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="atlasWidth">The width of the font texture atlas.</param>
         /// <param name="atlasHeight">The height of the font texture atlas.</param>
-        /// <returns>The list of glyphs that make up the string as sprite batch items.</returns>
+        /// <returns>The list of glyphs that make up the string as font batch items.</returns>
         private IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
             Vector2 textPos,
             IEnumerable<GlyphMetrics> charMetrics,

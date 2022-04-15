@@ -25,7 +25,7 @@ namespace Velaptor.OpenGL.Buffers
     /// Updates texture data in the GPU buffer.
     /// </summary>
     [GPUBufferName("Texture")]
-    [SpriteBatchSize(ISpriteBatch.BatchSize)]
+    [BatchSize(IRenderer.BatchSize)]
     internal class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     {
         private const string BufferNotInitMsg = "The texture buffer has not been initialized.";

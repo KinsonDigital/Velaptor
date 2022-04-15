@@ -287,12 +287,12 @@ namespace VelaptorTesting.Scenes
         }
 
         /// <inheritdoc cref="IDrawable.Render"/>
-        public override void Render(ISpriteBatch spriteBatch)
+        public override void Render(IRenderer renderer)
         {
             var xPos = (int)(MainWindow.WindowWidth / 2f);
             var yPos = (int)MainWindow.WindowHeight / 2;
 
-            spriteBatch.Render(
+            renderer.Render(
                 this.textFont,
                 this.isMultiLine ? MultiLineText : SingleLineText,
                 xPos,
@@ -301,7 +301,7 @@ namespace VelaptorTesting.Scenes
                 this.angle,
                 this.isClrSet ? Color.CornflowerBlue : Color.White);
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <inheritdoc cref="SceneBase.Dispose(bool)"/>

@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatchItem.cs" company="KinsonDigital">
+﻿// <copyright file="TextureBatchItem.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace Velaptor.OpenGL
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// A single item in a batch of sprite items that can be rendered to the screen.
+    /// A single texture batch item that can be rendered to the screen.
     /// </summary>
     internal struct TextureBatchItem : IEquatable<TextureBatchItem>
     {
@@ -138,7 +138,7 @@ namespace Velaptor.OpenGL
         {
             var result = new StringBuilder();
 
-            result.AppendLine("Sprite Batch Item Values:");
+            result.AppendLine("Texture Batch Item Values:");
             result.AppendLine($"Src Rect: {this.SrcRect.ToString()}");
             result.AppendLine($"Dest Rect: {this.DestRect.ToString()}");
             result.AppendLine($"Size: {this.Size.ToString(CultureInfo.InvariantCulture)}");

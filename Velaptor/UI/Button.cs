@@ -353,7 +353,7 @@ namespace Velaptor.UI
         }
 
         /// <inheritdoc cref="IDrawable.Render"/>
-        public override void Render(ISpriteBatch spriteBatch)
+        public override void Render(IRenderer renderer)
         {
             if (IsLoaded is false || Visible is false)
             {
@@ -376,7 +376,7 @@ namespace Velaptor.UI
             buttonFace.Width = Width;
             buttonFace.Height = Height;
             buttonFace.CornerRadius = CornerRadius;
-            spriteBatch.Render(buttonFace);
+            renderer.Render(buttonFace);
 
             if (BorderVisible)
             {
@@ -389,7 +389,7 @@ namespace Velaptor.UI
                 buttonBorder.Height = Height;
                 buttonBorder.CornerRadius = CornerRadius;
 
-                spriteBatch.Render(buttonBorder);
+                renderer.Render(buttonBorder);
             }
 
             var textToWide = Label?.Width > Width;
@@ -412,10 +412,10 @@ namespace Velaptor.UI
                     textToRender = new string(charsToRender);
                 }
 
-                Label?.Render(spriteBatch, textToRender);
+                Label?.Render(renderer, textToRender);
             }
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <summary>

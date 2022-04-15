@@ -119,11 +119,11 @@ namespace VelaptorTesting.Core
         }
 
         /// <inheritdoc cref="IDrawable.Render"/>
-        public virtual void Render(ISpriteBatch spriteBatch)
+        public virtual void Render(IRenderer renderer)
         {
-            if (spriteBatch == null)
+            if (renderer == null)
             {
-                throw new ArgumentNullException(nameof(spriteBatch), "The parameter must not be null.");
+                throw new ArgumentNullException(nameof(renderer), "The parameter must not be null.");
             }
 
             if (IsLoaded is false)
@@ -133,7 +133,7 @@ namespace VelaptorTesting.Core
 
             foreach (var control in this.controls)
             {
-                control.Render(spriteBatch);
+                control.Render(renderer);
             }
         }
 

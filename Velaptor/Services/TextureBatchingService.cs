@@ -111,10 +111,10 @@ namespace Velaptor.Services
                     continue;
                 }
 
-                (bool shouldRender, TextureBatchItem spriteItem) itemToEmpty = this.batchItems[i];
+                (bool shouldRender, TextureBatchItem batchItem) itemToEmpty = this.batchItems[i];
 
                 itemToEmpty.shouldRender = false;
-                itemToEmpty.spriteItem.Empty();
+                itemToEmpty.batchItem.Empty();
 
                 this.batchItems[i] = itemToEmpty;
             }

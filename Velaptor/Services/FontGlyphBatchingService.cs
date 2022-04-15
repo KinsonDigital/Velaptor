@@ -112,19 +112,19 @@ namespace Velaptor.Services
                     continue;
                 }
 
-                (bool shouldRender, FontGlyphBatchItem spriteItem) itemToEmpty = this.batchItems[i];
+                (bool shouldRender, FontGlyphBatchItem batchItem) itemToEmpty = this.batchItems[i];
 
 #if DEBUG
                 AppStats.RecordFontGlyphRendering(
                     this.currentFrame,
-                    itemToEmpty.spriteItem.Glyph,
-                    itemToEmpty.spriteItem.TextureId,
-                    itemToEmpty.spriteItem.Size,
-                    itemToEmpty.spriteItem.DestRect);
+                    itemToEmpty.batchItem.Glyph,
+                    itemToEmpty.batchItem.TextureId,
+                    itemToEmpty.batchItem.Size,
+                    itemToEmpty.batchItem.DestRect);
 #endif
 
                 itemToEmpty.shouldRender = false;
-                itemToEmpty.spriteItem.Empty();
+                itemToEmpty.batchItem.Empty();
 
                 this.batchItems[i] = itemToEmpty;
             }

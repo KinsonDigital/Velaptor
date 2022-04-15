@@ -135,7 +135,7 @@ namespace VelaptorTesting.Scenes
         }
 
         /// <inheritdoc cref="IDrawable.Render"/>
-        public override void Render(ISpriteBatch spriteBatch)
+        public override void Render(IRenderer renderer)
         {
             var posX = this.windowHalfWidth - (this.octagonData.Bounds.Width / 2);
             var posY = this.windowHalfHeight - (this.octagonData.Bounds.Height / 2);
@@ -143,9 +143,9 @@ namespace VelaptorTesting.Scenes
             var instructionsX = (int)(this.textSize.Width / 2) + 25;
             var instructionsY = (int)(this.textSize.Height / 2) + 25;
 
-            spriteBatch.Render(this.font, this.instructions, instructionsX, instructionsY);
+            renderer.Render(this.font, this.instructions, instructionsX, instructionsY);
 
-            spriteBatch.Render(
+            renderer.Render(
                 this.mainAtlas.Texture,
                 this.octagonData.Bounds,
                 new Rectangle(posX, posY, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
@@ -154,7 +154,7 @@ namespace VelaptorTesting.Scenes
                 Color.White,
                 this.renderEffects);
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <inheritdoc cref="SceneBase.Dispose(bool)"/>

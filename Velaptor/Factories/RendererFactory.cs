@@ -1,4 +1,4 @@
-﻿// <copyright file="SpriteBatchFactory.cs" company="KinsonDigital">
+﻿// <copyright file="RendererFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,24 +16,24 @@ namespace Velaptor.Factories
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Creates instances of the type <see cref="SpriteBatch"/>.
+    /// Creates instances of the type <see cref="Renderer"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public static class SpriteBatchFactory
+    public static class RendererFactory
     {
-        private static ISpriteBatch? spriteBatch;
+        private static IRenderer? renderer;
 
         /// <summary>
-        /// Initializes and instance of a <see cref="ISpriteBatch"/>.
+        /// Initializes and instance of a <see cref="IRenderer"/>.
         /// </summary>
         /// <param name="renderSurfaceWidth">The width of the render surface.</param>
         /// <param name="renderSurfaceHeight">The height of the render surface.</param>
-        /// <returns>A Velaptor implemented sprite batch.</returns>
-        public static ISpriteBatch CreateSpriteBatch(uint renderSurfaceWidth, uint renderSurfaceHeight)
+        /// <returns>A Velaptor implemented renderer.</returns>
+        public static IRenderer CreateRenderer(uint renderSurfaceWidth, uint renderSurfaceHeight)
         {
-            if (spriteBatch is not null)
+            if (renderer is not null)
             {
-                return spriteBatch;
+                return renderer;
             }
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
@@ -50,7 +50,7 @@ namespace Velaptor.Factories
             var fontBatchingService = IoC.Container.GetInstance<IBatchingService<FontGlyphBatchItem>>();
             var rectBatchingService = IoC.Container.GetInstance<IBatchingService<RectShape>>();
 
-            spriteBatch = new SpriteBatch(
+            renderer = new Renderer(
                 glInvoker,
                 openGLService,
                 textureShader,
@@ -65,10 +65,10 @@ namespace Velaptor.Factories
                 glInitReactor,
                 shutDownReactor);
 
-            spriteBatch.RenderSurfaceWidth = renderSurfaceWidth;
-            spriteBatch.RenderSurfaceHeight = renderSurfaceHeight;
+            renderer.RenderSurfaceWidth = renderSurfaceWidth;
+            renderer.RenderSurfaceHeight = renderSurfaceHeight;
 
-            return spriteBatch;
+            return renderer;
         }
     }
 }
