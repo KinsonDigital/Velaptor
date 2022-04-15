@@ -152,9 +152,10 @@ namespace Velaptor
             IoCContainer.Register<IJSONService, JSONService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService<Stream?>, EmbeddedFontResourceService>(Lifestyle.Singleton);
             IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
-            IoCContainer.Register<IBatchingService<SpriteBatchItem>, TextureBatchingService>();
+            IoCContainer.Register<IBatchingService<TextureBatchItem>, TextureBatchingService>();
             IoCContainer.Register<IBatchingService<FontGlyphBatchItem>, FontGlyphBatchingService>();
             IoCContainer.Register<IBatchingService<RectShape>, RectBatchingService>();
+            IoCContainer.Register<IBatchManager, BatchManager>();
 
             IoCContainer.Register<IFontStatsService>(
                 () => new FontStatsService(

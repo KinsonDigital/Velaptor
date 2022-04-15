@@ -38,8 +38,8 @@ namespace VelaptorTests.Graphics
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IShaderProgram> mockTextureShader;
-        private readonly Mock<IGPUBuffer<SpriteBatchItem>> mockTextureBuffer;
-        private readonly Mock<IBatchingService<SpriteBatchItem>> mockTextureBatchingService;
+        private readonly Mock<IGPUBuffer<TextureBatchItem>> mockTextureBuffer;
+        private readonly Mock<IBatchingService<TextureBatchItem>> mockTextureBatchingService;
         private readonly Mock<IShaderProgram> mockFontShader;
         private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontBuffer;
         private readonly Mock<IBatchingService<FontGlyphBatchItem>> mockFontBatchingService;
@@ -83,14 +83,14 @@ namespace VelaptorTests.Graphics
             this.mockRectShader = new Mock<IShaderProgram>();
             this.mockRectShader.SetupGet(p => p.ShaderId).Returns(RectShaderId);
 
-            this.mockTextureBuffer = new Mock<IGPUBuffer<SpriteBatchItem>>();
+            this.mockTextureBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
             this.mockFontBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
             this.mockRectBuffer = new Mock<IGPUBuffer<RectShape>>();
 
-            this.mockTextureBatchingService = new Mock<IBatchingService<SpriteBatchItem>>();
+            this.mockTextureBatchingService = new Mock<IBatchingService<TextureBatchItem>>();
             this.mockTextureBatchingService.SetupProperty(p => p.BatchSize);
             this.mockTextureBatchingService.SetupGet(p => p.BatchItems)
-                .Returns(Array.Empty<(bool shouldRender, SpriteBatchItem item)>().ToReadOnlyDictionary());
+                .Returns(Array.Empty<(bool shouldRender, TextureBatchItem item)>().ToReadOnlyDictionary());
 
             this.mockFontBatchingService = new Mock<IBatchingService<FontGlyphBatchItem>>();
             this.mockFontBatchingService.SetupProperty(p => p.BatchSize);
@@ -617,7 +617,7 @@ namespace VelaptorTests.Graphics
             this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
             this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
             this.mockTextureBuffer.VerifyNever(m =>
-                m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()));
+                m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()));
             this.mockGLService.VerifyNever(m =>
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
             this.mockGL.VerifyNever(m => m.DrawElements(
@@ -644,10 +644,10 @@ namespace VelaptorTests.Graphics
             mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
             mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
 
-            SpriteBatchItem actualBatchItem = default;
+            TextureBatchItem actualBatchItem = default;
 
-            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
-                .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<TextureBatchItem>()))
+                .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
             batch.BeginBatch();
@@ -656,7 +656,7 @@ namespace VelaptorTests.Graphics
             batch.Render(mockTexture.Object, 10, 20);
 
             // Assert
-            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<TextureBatchItem>()), Times.Once);
             AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
@@ -677,10 +677,10 @@ namespace VelaptorTests.Graphics
             mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
             mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
 
-            SpriteBatchItem actualBatchItem = default;
+            TextureBatchItem actualBatchItem = default;
 
-            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
-                .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<TextureBatchItem>()))
+                .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
             batch.BeginBatch();
@@ -689,7 +689,7 @@ namespace VelaptorTests.Graphics
             batch.Render(mockTexture.Object, 10, 20, expectedRenderEffects);
 
             // Assert
-            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<TextureBatchItem>()), Times.Once);
             AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
@@ -710,10 +710,10 @@ namespace VelaptorTests.Graphics
             mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
             mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
 
-            SpriteBatchItem actualBatchItem = default;
+            TextureBatchItem actualBatchItem = default;
 
-            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
-                .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<TextureBatchItem>()))
+                .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
             batch.BeginBatch();
@@ -722,7 +722,7 @@ namespace VelaptorTests.Graphics
             batch.Render(mockTexture.Object, 10, 20, expectedClr);
 
             // Assert
-            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<TextureBatchItem>()), Times.Once);
             AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
@@ -744,10 +744,10 @@ namespace VelaptorTests.Graphics
             mockTexture.SetupGet(p => p.Width).Returns(expectedWidth);
             mockTexture.SetupGet(p => p.Height).Returns(expectedHeight);
 
-            SpriteBatchItem actualBatchItem = default;
+            TextureBatchItem actualBatchItem = default;
 
-            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
-                .Callback<SpriteBatchItem>(rect => actualBatchItem = rect);
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<TextureBatchItem>()))
+                .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateSpriteBatch();
             this.glInitReactor.OnNext(default);
             batch.BeginBatch();
@@ -756,7 +756,7 @@ namespace VelaptorTests.Graphics
             batch.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects);
 
             // Assert
-            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<SpriteBatchItem>()), Times.Once);
+            this.mockTextureBatchingService.Verify(m => m.Add(It.IsAny<TextureBatchItem>()), Times.Once);
             AssertExtensions.EqualWithMessage(expectedBatchItem, actualBatchItem, "The sprite batch item being added is incorrect.");
         }
 
@@ -767,17 +767,17 @@ namespace VelaptorTests.Graphics
             const uint textureId = 1;
             const uint batchIndex = 0;
 
-            var shouldRenderItem = default(SpriteBatchItem);
+            var shouldRenderItem = default(TextureBatchItem);
             shouldRenderItem.Angle = 45;
             shouldRenderItem.TextureId = textureId;
 
-            var shouldNotRenderItem = default(SpriteBatchItem);
+            var shouldNotRenderItem = default(TextureBatchItem);
             var items = new[] { (true, shouldRenderItem), (false, shouldNotRenderItem) };
 
             // TODO: Fix this
             var batch = CreateSpriteBatch();
-            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
-                .Callback<SpriteBatchItem>(_ =>
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<TextureBatchItem>()))
+                .Callback<TextureBatchItem>(_ =>
                 {
                     MockTextureBatchItems(items);
                     this.mockTextureBatchingService.Raise(m => m.BatchFilled += null, EventArgs.Empty);
@@ -1454,13 +1454,13 @@ namespace VelaptorTests.Graphics
         public void EndBatch_WithEmptyTextureBatch_DoesNotAttemptRender()
         {
             // Arrange
-            var textureBatchItems = new[] { (false, default(SpriteBatchItem)) };
+            var textureBatchItems = new[] { (false, default(TextureBatchItem)) };
 
             var batch = CreateSpriteBatch();
 
             // Mock that the batch items will return a single batch item that is marked to NOT render
-            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<SpriteBatchItem>()))
-                .Callback<SpriteBatchItem>(_ =>
+            this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<TextureBatchItem>()))
+                .Callback<TextureBatchItem>(_ =>
                 {
                     MockTextureBatchItems(textureBatchItems);
                 });
@@ -1484,8 +1484,8 @@ namespace VelaptorTests.Graphics
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Never());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Never);
             this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Never);
-            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
-            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()), Times.Never);
         }
 
         [Fact]
@@ -1493,7 +1493,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             const string textToRender = "test-text";
-            var fontBatchItems = new[] { (false, default(SpriteBatchItem)) };
+            var fontBatchItems = new[] { (false, default(TextureBatchItem)) };
 
             var batch = CreateSpriteBatch();
             this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
@@ -1519,8 +1519,8 @@ namespace VelaptorTests.Graphics
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Never());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Never);
             this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Never);
-            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
-            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()), Times.Never);
         }
 
         [Fact]
@@ -1578,8 +1578,8 @@ namespace VelaptorTests.Graphics
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Never());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Never);
             this.mockGL.Verify(m => m.BindTexture(GLTextureTarget.Texture2D, It.IsAny<uint>()), Times.Never);
-            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
-            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()), Times.Never);
+            this.mockTextureBuffer.Verify(m => m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()), Times.Never);
         }
 
         [Fact]
@@ -1622,7 +1622,7 @@ namespace VelaptorTests.Graphics
         }
 
         /// <summary>
-        /// Creates a <see cref="SpriteBatchItem"/> using the given parameters for the purpose of testing.
+        /// Creates a <see cref="TextureBatchItem"/> using the given parameters for the purpose of testing.
         /// </summary>
         /// <param name="x">The X location of the item.</param>
         /// <param name="y">The Y location of the item.</param>
@@ -1632,9 +1632,9 @@ namespace VelaptorTests.Graphics
         /// <param name="clr">The color of the item.</param>
         /// <param name="textureId">The ID of the texture.</param>
         /// <returns>The instance to use for testing.</returns>
-        private static SpriteBatchItem CreateBatchItem(int x, int y, int width, int height, RenderEffects effects, Color clr, int textureId)
+        private static TextureBatchItem CreateBatchItem(int x, int y, int width, int height, RenderEffects effects, Color clr, int textureId)
         {
-            var result = default(SpriteBatchItem);
+            var result = default(TextureBatchItem);
             result.SrcRect = new RectangleF(0f, 0f, width, height);
             result.DestRect = new RectangleF(x, y, width, height);
             result.Size = 1f;
@@ -1718,7 +1718,7 @@ namespace VelaptorTests.Graphics
         /// Mocks the batch items property of the texture batch service.
         /// </summary>
         /// <param name="items">The items to store in the service.</param>
-        private void MockTextureBatchItems((bool shouldRender, SpriteBatchItem item)[] items)
+        private void MockTextureBatchItems((bool shouldRender, TextureBatchItem item)[] items)
         {
             this.mockTextureBatchingService.SetupProperty(p => p.BatchItems);
             this.mockTextureBatchingService.Object.BatchItems = items.ToReadOnlyDictionary();

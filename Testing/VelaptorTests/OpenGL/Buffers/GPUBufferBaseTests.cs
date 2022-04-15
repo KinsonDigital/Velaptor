@@ -226,7 +226,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.glInitReactor.OnNext(default);
 
             // Assert
-            Assert.True(unused.GenerateDataInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.GenerateData)}'() has not been invoked.");
+            Assert.True(unused.GenerateDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
         }
 
         [Fact]
@@ -239,7 +239,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.glInitReactor.OnNext(default);
 
             // Assert
-            Assert.True(unused.GenerateIndicesInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.GenerateData)}'() has not been invoked.");
+            Assert.True(unused.GenerateIndicesInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
         }
 
         [Fact]
@@ -284,7 +284,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.glInitReactor.OnNext(default);
 
             // Assert
-            Assert.True(unused.SetupVAOInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.SetupVAO)}'() has not been invoked.");
+            Assert.True(unused.SetupVAOInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.SetupVAO)}'() has not been invoked.");
         }
 
         [Fact]
@@ -340,13 +340,13 @@ namespace VelaptorTests.OpenGL.Buffers
         {
             // Arrange
             var buffer = CreateBuffer();
-            var batchItem = default(SpriteBatchItem);
+            var batchItem = default(TextureBatchItem);
 
             // Act
             buffer.UploadData(batchItem, 0u);
 
             // Assert
-            Assert.True(buffer.PrepareForUseInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.PrepareForUpload)}'() has not been invoked.");
+            Assert.True(buffer.PrepareForUseInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.PrepareForUpload)}'() has not been invoked.");
         }
 
         [Fact]
@@ -354,13 +354,13 @@ namespace VelaptorTests.OpenGL.Buffers
         {
             // Arrange
             var buffer = CreateBuffer();
-            var batchItem = default(SpriteBatchItem);
+            var batchItem = default(TextureBatchItem);
 
             // Act
             buffer.UploadData(batchItem, 0u);
 
             // Assert
-            Assert.True(buffer.UpdateVertexDataInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.UploadVertexData)}'() has not been invoked.");
+            Assert.True(buffer.UpdateVertexDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.UploadVertexData)}'() has not been invoked.");
         }
 
         [Fact]

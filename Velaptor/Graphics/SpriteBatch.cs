@@ -36,10 +36,10 @@ namespace Velaptor.Graphics
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
         private readonly IShaderProgram rectShader;
-        private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
+        private readonly IGPUBuffer<TextureBatchItem> textureBuffer;
         private readonly IGPUBuffer<FontGlyphBatchItem> fontBuffer;
         private readonly IGPUBuffer<RectShape> rectBuffer;
-        private readonly IBatchingService<SpriteBatchItem> textureBatchService;
+        private readonly IBatchingService<TextureBatchItem> textureBatchService;
         private readonly IBatchingService<FontGlyphBatchItem> fontBatchService;
         private readonly IBatchingService<RectShape> rectBatchService;
         private readonly IDisposable glInitUnsubscriber;
@@ -77,10 +77,10 @@ namespace Velaptor.Graphics
             IShaderProgram textureShader,
             IShaderProgram fontShader,
             IShaderProgram rectShader,
-            IGPUBuffer<SpriteBatchItem> textureBuffer,
+            IGPUBuffer<TextureBatchItem> textureBuffer,
             IGPUBuffer<FontGlyphBatchItem> fontBuffer,
             IGPUBuffer<RectShape> rectBuffer,
-            IBatchingService<SpriteBatchItem> textureBatchingService,
+            IBatchingService<TextureBatchItem> textureBatchingService,
             IBatchingService<FontGlyphBatchItem> fontBatchingService,
             IBatchingService<RectShape> rectBatchingService,
             IReactable<GLInitData> glInitReactable,
@@ -252,7 +252,7 @@ namespace Velaptor.Graphics
                 throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
             }
 
-            var itemToAdd = default(SpriteBatchItem);
+            var itemToAdd = default(TextureBatchItem);
 
             itemToAdd.SrcRect = srcRect;
             itemToAdd.DestRect = destRect;

@@ -17,7 +17,7 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// A single item in a batch of sprite items that can be rendered to the screen.
     /// </summary>
-    internal struct SpriteBatchItem : IEquatable<SpriteBatchItem>
+    internal struct TextureBatchItem : IEquatable<TextureBatchItem>
     {
         /// <summary>
         /// The source rectangle inside of the texture to render.
@@ -67,7 +67,7 @@ namespace Velaptor.OpenGL
         /// <param name="left">The left operand compared with the right operand.</param>
         /// <param name="right">The right operand compared with the left operand.</param>
         /// <returns>True if both operands are equal.</returns>
-        public static bool operator ==(SpriteBatchItem left, SpriteBatchItem right) => left.Equals(right);
+        public static bool operator ==(TextureBatchItem left, TextureBatchItem right) => left.Equals(right);
 
         /// <summary>
         /// Returns a value indicating if the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
@@ -75,10 +75,10 @@ namespace Velaptor.OpenGL
         /// <param name="left">The left operand compared with the right operand.</param>
         /// <param name="right">The right operand compared with the left operand.</param>
         /// <returns>True if both operands are not equal.</returns>
-        public static bool operator !=(SpriteBatchItem left, SpriteBatchItem right) => !(left == right);
+        public static bool operator !=(TextureBatchItem left, TextureBatchItem right) => !(left == right);
 
         /// <summary>
-        /// Gets a value indicating whether or not the current <see cref="SpriteBatchItem"/> is empty.
+        /// Gets a value indicating whether or not the current <see cref="TextureBatchItem"/> is empty.
         /// </summary>
         /// <returns>True if empty.</returns>
         public bool IsEmpty() =>
@@ -107,7 +107,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
-        public bool Equals(SpriteBatchItem other) =>
+        public bool Equals(TextureBatchItem other) =>
             this.SrcRect.Equals(other.SrcRect) &&
             this.DestRect.Equals(other.DestRect) &&
             this.Size.Equals(other.Size) &&
@@ -118,7 +118,7 @@ namespace Velaptor.OpenGL
             this.TextureId == other.TextureId;
 
         /// <inheritdoc cref="object.Equals(object?)"/>
-        public override bool Equals(object? obj) => obj is SpriteBatchItem other && Equals(other);
+        public override bool Equals(object? obj) => obj is TextureBatchItem other && Equals(other);
 
         /// <inheritdoc cref="object.GetHashCode"/>
         [ExcludeFromCodeCoverage]

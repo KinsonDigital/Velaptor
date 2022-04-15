@@ -40,7 +40,7 @@ namespace VelaptorTests.Services
         public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var batchItem1 = (true, new SpriteBatchItem
+            var batchItem1 = (true, new TextureBatchItem
             {
                 Angle = 1,
                 Effects = RenderEffects.None,
@@ -51,7 +51,7 @@ namespace VelaptorTests.Services
                 TintColor = Color.FromArgb(12, 13, 14, 15),
                 ViewPortSize = new SizeF(16, 17),
             });
-            var batchItem2 = (true, new SpriteBatchItem
+            var batchItem2 = (true, new TextureBatchItem
             {
                 Angle = 18,
                 Effects = RenderEffects.FlipHorizontally,
@@ -63,8 +63,8 @@ namespace VelaptorTests.Services
                 ViewPortSize = new SizeF(33, 34),
             });
 
-            var batchItems = new List<(bool, SpriteBatchItem)> { batchItem1, batchItem2 };
-            var expected = new ReadOnlyDictionary<uint, (bool, SpriteBatchItem)>(batchItems.ToDictionary());
+            var batchItems = new List<(bool, TextureBatchItem)> { batchItem1, batchItem2 };
+            var expected = new ReadOnlyDictionary<uint, (bool, TextureBatchItem)>(batchItems.ToDictionary());
             var service = CreateService();
 
             // Act
@@ -82,9 +82,9 @@ namespace VelaptorTests.Services
         public void Add_WhenSwitchingTextures_InvokesBatchFilledEvent()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 20;
 
             var service = CreateService();
@@ -108,9 +108,9 @@ namespace VelaptorTests.Services
         public void Add_WhenBatchIsFull_InvokesBatchFilledEvent()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
@@ -136,9 +136,9 @@ namespace VelaptorTests.Services
         public void AddRange_WhenInvoked_InvokesBatchFilledEvent()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
@@ -163,9 +163,9 @@ namespace VelaptorTests.Services
         public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
@@ -183,14 +183,14 @@ namespace VelaptorTests.Services
         public void EmptyBatch_WithNoItemsReadyToRender_DoesNotEmptyItems()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
             service.BatchSize = 2;
-            service.BatchItems = new List<(bool, SpriteBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
+            service.BatchItems = new List<(bool, TextureBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
 
             // Act
             service.EmptyBatch();

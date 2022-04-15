@@ -46,7 +46,7 @@ namespace Velaptor.Factories
             var rectBuffer = GPUBufferFactory.CreateRectGPUBuffer();
             var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
             var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
-            var textureBatchingService = IoC.Container.GetInstance<IBatchingService<SpriteBatchItem>>();
+            var textureBatchingService = IoC.Container.GetInstance<IBatchingService<TextureBatchItem>>();
             var fontBatchingService = IoC.Container.GetInstance<IBatchingService<FontGlyphBatchItem>>();
             var rectBatchingService = IoC.Container.GetInstance<IBatchingService<RectShape>>();
 

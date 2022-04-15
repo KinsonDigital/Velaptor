@@ -11,7 +11,7 @@ namespace VelaptorTests.OpenGL
     using Xunit;
 
     /// <summary>
-    /// Test the <see cref="SpriteBatchItem"/> struct.
+    /// Test the <see cref="TextureBatchItem"/> struct.
     /// </summary>
     public class SpriteBatchItemTests
     {
@@ -137,7 +137,7 @@ namespace VelaptorTests.OpenGL
         public void IsEmpty_WhenBatchItemIsEmpty_ReturnsTrue()
         {
             // Arrange
-            var item = default(SpriteBatchItem);
+            var item = default(TextureBatchItem);
 
             // Act
             var actual = item.IsEmpty();
@@ -150,7 +150,7 @@ namespace VelaptorTests.OpenGL
         public void Empty_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var batchItem = default(SpriteBatchItem);
+            var batchItem = default(TextureBatchItem);
             batchItem.Angle = 1;
             batchItem.Effects = RenderEffects.None;
             batchItem.Size = 2;
@@ -186,7 +186,7 @@ namespace VelaptorTests.OpenGL
             bool expected)
         {
             // Arrange
-            var batchItemA = default(SpriteBatchItem);
+            var batchItemA = default(TextureBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -196,7 +196,7 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-            var batchItemB = default(SpriteBatchItem);
+            var batchItemB = default(TextureBatchItem);
             batchItemB.Angle = angle;
             batchItemB.Effects = effects;
             batchItemB.Size = size;
@@ -217,7 +217,7 @@ namespace VelaptorTests.OpenGL
         public void EqualsOperator_WithEqualOperands_ReturnsTrue()
         {
             // Arrange
-            var batchItemA = default(SpriteBatchItem);
+            var batchItemA = default(TextureBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -227,7 +227,7 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-            var batchItemB = default(SpriteBatchItem);
+            var batchItemB = default(TextureBatchItem);
             batchItemB.Angle = 1;
             batchItemB.Effects = RenderEffects.None;
             batchItemB.Size = 2;
@@ -248,7 +248,7 @@ namespace VelaptorTests.OpenGL
         public void NotEqualsOperator_WithUnequalOperands_ReturnsTrue()
         {
             // Arrange
-            var batchItemA = default(SpriteBatchItem);
+            var batchItemA = default(TextureBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -258,7 +258,7 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-            var batchItemB = default(SpriteBatchItem);
+            var batchItemB = default(TextureBatchItem);
             batchItemB.Angle = 11;
             batchItemB.Effects = RenderEffects.None;
             batchItemB.Size = 22;
@@ -279,7 +279,7 @@ namespace VelaptorTests.OpenGL
         public void Equals_WhenUsingObjectParamOverloadWithMatchingType_ReturnsTrue()
         {
             // Arrange
-            var batchItemA = default(SpriteBatchItem);
+            var batchItemA = default(TextureBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -289,7 +289,7 @@ namespace VelaptorTests.OpenGL
             batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
             batchItemA.ViewPortSize = new SizeF(16, 17);
 
-            object batchItemB = new SpriteBatchItem()
+            object batchItemB = new TextureBatchItem()
             {
                 Angle = 1,
                 Effects = RenderEffects.None,
@@ -312,7 +312,7 @@ namespace VelaptorTests.OpenGL
         public void Equals_WhenUsingObjectParamOverloadWithDifferentType_ReturnsFalse()
         {
             // Arrange
-            var batchItemA = default(SpriteBatchItem);
+            var batchItemA = default(TextureBatchItem);
             batchItemA.Angle = 1;
             batchItemA.Effects = RenderEffects.None;
             batchItemA.Size = 2;
@@ -345,7 +345,7 @@ namespace VelaptorTests.OpenGL
             expected += "\r\nView Port Size: {W=16,H=17}";
             expected += "\r\nTexture ID: 11";
 
-            var batchItem = default(SpriteBatchItem);
+            var batchItem = default(TextureBatchItem);
             batchItem.Angle = 1;
             batchItem.Effects = RenderEffects.None;
             batchItem.Size = 2;

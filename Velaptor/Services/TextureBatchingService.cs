@@ -16,9 +16,9 @@ namespace Velaptor.Services
     /// <summary>
     /// Manages the process of batching up the rendering of <see cref="ITexture"/>s.
     /// </summary>
-    internal class TextureBatchingService : IBatchingService<SpriteBatchItem>
+    internal class TextureBatchingService : IBatchingService<TextureBatchItem>
     {
-        private SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)> batchItems = new ();
+        private SortedDictionary<uint, (bool shouldRender, TextureBatchItem item)> batchItems = new ();
         private uint currentBatchIndex;
         private uint batchSize;
         private bool firstTimeRender = true;
@@ -54,17 +54,17 @@ namespace Velaptor.Services
         }
 
         /// <inheritdoc/>
-        public ReadOnlyDictionary<uint, (bool shouldRender, SpriteBatchItem item)> BatchItems
+        public ReadOnlyDictionary<uint, (bool shouldRender, TextureBatchItem item)> BatchItems
         {
             get => new (this.batchItems);
-            set => this.batchItems = new SortedDictionary<uint, (bool shouldRender, SpriteBatchItem item)>(value);
+            set => this.batchItems = new SortedDictionary<uint, (bool shouldRender, TextureBatchItem item)>(value);
         }
 
         /// <summary>
         /// Adds the given <paramref name="item"/> to the batch.
         /// </summary>
         /// <param name="item">The item to be added.</param>
-        public void Add(SpriteBatchItem item)
+        public void Add(TextureBatchItem item)
         {
             this.currentTextureId = item.TextureId;
 
@@ -88,7 +88,7 @@ namespace Velaptor.Services
         /// Adds the given list of <paramref name="items"/> to batch.
         /// </summary>
         /// <param name="items">The items to be added.</param>
-        public void AddRange(IEnumerable<SpriteBatchItem> items)
+        public void AddRange(IEnumerable<TextureBatchItem> items)
         {
             foreach (var rect in items)
             {
@@ -111,7 +111,7 @@ namespace Velaptor.Services
                     continue;
                 }
 
-                (bool shouldRender, SpriteBatchItem spriteItem) itemToEmpty = this.batchItems[i];
+                (bool shouldRender, TextureBatchItem spriteItem) itemToEmpty = this.batchItems[i];
 
                 itemToEmpty.shouldRender = false;
                 itemToEmpty.spriteItem.Empty();

@@ -137,7 +137,7 @@ namespace VelaptorTests.OpenGL.Buffers
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
             {
-                buffer.UploadVertexData(It.IsAny<SpriteBatchItem>(), It.IsAny<uint>());
+                buffer.UploadVertexData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>());
             }, "The texture buffer has not been initialized.");
         }
 
@@ -145,7 +145,7 @@ namespace VelaptorTests.OpenGL.Buffers
         public void UploadVertexData_WithInvalidRenderEffects_ThrowsException()
         {
             // Arrange
-            var textureQuad = new SpriteBatchItem() { Effects = (RenderEffects)1234, };
+            var textureQuad = new TextureBatchItem() { Effects = (RenderEffects)1234, };
             var buffer = CreateBuffer();
             this.glInitReactor.OnNext(default);
 
@@ -160,7 +160,7 @@ namespace VelaptorTests.OpenGL.Buffers
         public void UploadVertexData_WhenInvoked_CreatesOpenGLDebugGroups()
         {
             // Arrange
-            var batchItem = default(SpriteBatchItem);
+            var batchItem = default(TextureBatchItem);
             batchItem.Effects = RenderEffects.None;
 
             var buffer = CreateBuffer();
@@ -180,7 +180,7 @@ namespace VelaptorTests.OpenGL.Buffers
         public void UploadVertexData_WhenInvoked_UploadsData(RenderEffects effects, float[] expected)
         {
             // Arrange
-            var batchItem = default(SpriteBatchItem);
+            var batchItem = default(TextureBatchItem);
             batchItem.Angle = 45;
             batchItem.Effects = effects;
             batchItem.Size = 1.5f;
