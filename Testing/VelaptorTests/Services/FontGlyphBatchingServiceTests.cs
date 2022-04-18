@@ -75,7 +75,7 @@ namespace VelaptorTests.Services
 
         #region Method Tests
         [Fact]
-        public void Add_WhenBatchIsFull_InvokesBatchFilledEvent()
+        public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
         {
             // Arrange
             var batchItem1 = default(FontGlyphBatchItem);
@@ -103,7 +103,7 @@ namespace VelaptorTests.Services
         }
 
         [Fact]
-        public void AddRange_WhenInvoked_InvokesBatchFilledEvent()
+        public void AddRange_WhenInvoked_RaisesBatchFilledEvent()
         {
             // Arrange
             var batchItem1 = default(FontGlyphBatchItem);

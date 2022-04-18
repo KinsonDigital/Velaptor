@@ -336,7 +336,7 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Update_WhenMouseMovesOverCtrl_InvokesMouseMoveEvent()
+        public void Update_WhenMouseMovesOverCtrl_RaisesMouseMoveEvent()
         {
             // Arrange
             var ctrlBase = new ControlBaseFake();
@@ -370,7 +370,7 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Update_WithMouseButtonDownAndOverCtrl_InvokesMouseDownEvent()
+        public void Update_WithMouseButtonDownAndOverCtrl_RaisesMouseDownEvent()
         {
             // Arrange
             var ctrlBase = new ControlBaseFake();
@@ -400,7 +400,7 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Update_WithMouseButtonDownThenUpOverCtrl_InvokesMouseUpAndClickEvent()
+        public void Update_WithMouseButtonDownThenUpOverCtrl_RaisesMouseUpAndClickEvent()
         {
             // Arrange
             var ctrlBase = new ControlBaseFake();

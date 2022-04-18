@@ -96,7 +96,7 @@ namespace VelaptorTests.UI
 
         #region Prop Tests
         [Fact]
-        public void Position_WhenSettingValue_ReturnsCorrectValue()
+        public void Position_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var expected = new Point(11, 22);
