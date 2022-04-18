@@ -178,7 +178,7 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc/>
-        public void BeginBatch() => this.hasBegun = true;
+        public void Begin() => this.hasBegun = true;
 
         /// <inheritdoc/>
         public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
@@ -219,7 +219,7 @@ namespace Velaptor.Graphics
 
         /// <inheritdoc/>
         /// <exception cref="InvalidOperationException">
-        ///     Thrown if the <see cref="BeginBatch"/>() method is not called before calling this method.
+        ///     Thrown if the <see cref="Begin"/>() method is not called before calling this method.
         /// </exception>
         /// <exception cref="ArgumentException">
         ///     Thrown if the <see cref="Rectangle.Width"/> or <see cref="Rectangle.Height"/> property
@@ -244,7 +244,7 @@ namespace Velaptor.Graphics
 
             if (!this.hasBegun)
             {
-                throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+                throw new InvalidOperationException($"The '{nameof(Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
             if (srcRect.Width <= 0 || srcRect.Height <= 0)
@@ -300,7 +300,7 @@ namespace Velaptor.Graphics
 
         /// <inheritdoc/>
         /// <exception cref="InvalidOperationException">
-        ///     Thrown if the <see cref="BeginBatch"/>() method is not called before calling this method.
+        ///     Thrown if the <see cref="Begin"/>() method is not called before calling this method.
         /// </exception>
         /// <remarks>
         ///     If <paramref name="font"/> is null, nothing will be rendered.
@@ -327,7 +327,7 @@ namespace Velaptor.Graphics
 
             if (!this.hasBegun)
             {
-                throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+                throw new InvalidOperationException($"The '{nameof(Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
             var normalizedSize = renderSize - 1f;
@@ -395,7 +395,7 @@ namespace Velaptor.Graphics
         public void Render(RectShape rectangle) => this.rectBatchService.Add(rectangle);
 
         /// <inheritdoc/>
-        public void EndBatch()
+        public void End()
         {
             TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
             RectBatchService_BatchFilled(this.rectBatchService, EventArgs.Empty);

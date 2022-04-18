@@ -234,7 +234,7 @@ namespace VelaptorTesting.Core
             }
 
             this.renderer.Clear();
-            this.renderer.BeginBatch();
+            this.renderer.Begin();
 
             this.scenes[this.currentSceneIndex].Render(this.renderer);
 
@@ -242,7 +242,7 @@ namespace VelaptorTesting.Core
             this.nextButton.Render(this.renderer);
             this.previousButton.Render(this.renderer);
 
-            this.renderer.EndBatch();
+            this.renderer.End();
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>

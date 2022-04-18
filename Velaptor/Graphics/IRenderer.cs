@@ -45,7 +45,7 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Starts the batch rendering process.  Must be called before invoking any render methods.
         /// </summary>
-        void BeginBatch();
+        void Begin();
 
         /// <summary>
         /// Clears the buffers.
@@ -61,7 +61,7 @@ namespace Velaptor.Graphics
         /// Ends the batch process.  Calling this will render any textures
         /// still in the batch.
         /// </summary>
-        void EndBatch();
+        void End();
 
         /// <summary>
         /// Updates the view port size.
@@ -75,7 +75,7 @@ namespace Velaptor.Graphics
         /// <param name="texture">The texture to render.</param>
         /// <param name="x">The X location of the texture.</param>
         /// <param name="y">The y location of the texture.</param>
-        /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
+        /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
         void Render(ITexture texture, int x, int y);
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Velaptor.Graphics
         /// <param name="x">The X location of the texture.</param>
         /// <param name="y">The y location of the texture.</param>
         /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
-        /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
+        /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
         void Render(ITexture texture, int x, int y, RenderEffects effects);
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Velaptor.Graphics
         /// <param name="x">The X location of the texture.</param>
         /// <param name="y">The y location of the texture.</param>
         /// <param name="color">The color to apply to the texture.</param>
-        /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
+        /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
         void Render(ITexture texture, int x, int y, Color color);
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Velaptor.Graphics
         /// <param name="y">The y location of the texture.</param>
         /// <param name="color">The color to apply to the texture.</param>
         /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
-        /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
+        /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
         void Render(ITexture texture, int x, int y, Color color, RenderEffects effects);
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Velaptor.Graphics
         /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
         /// <param name="color">The color to apply to the rendering.</param>
         /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
-        /// <exception cref="Exception">Thrown if the <see cref="BeginBatch"/>() method has not been called.</exception>
+        /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
         /// <remarks>
         ///     The position is based on the center of the text.  The center of the text is based on the
         ///     furthest most left, right, top, and bottom edges of the text.
