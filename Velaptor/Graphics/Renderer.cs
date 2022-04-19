@@ -387,7 +387,10 @@ namespace Velaptor.Graphics
                     atlasWidth,
                     atlasHeight);
 
-                this.fontBatchService.AddRange(batchItems);
+                foreach (var item in batchItems)
+                {
+                    this.fontBatchService.Add(item);
+                }
             }
         }
 

@@ -103,33 +103,6 @@ namespace VelaptorTests.Services
         }
 
         [Fact]
-        public void AddRange_WhenInvoked_RaisesBatchFilledEvent()
-        {
-            // Arrange
-            var batchItem1 = default(FontGlyphBatchItem);
-            batchItem1.TextureId = 10;
-            var batchItem2 = default(FontGlyphBatchItem);
-            batchItem2.TextureId = 10;
-
-            var service = CreateService();
-            service.BatchSize = 1;
-
-            // Act & Assert
-            Assert.Raises<EventArgs>(e =>
-            {
-                service.BatchFilled += e;
-            }, e =>
-            {
-                service.BatchFilled -= e;
-            }, () =>
-            {
-                service.AddRange(new[] { batchItem1, batchItem2 });
-            });
-
-            Assert.Equal(2, service.BatchItems.Count);
-        }
-
-        [Fact]
         public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
         {
             // Arrange
@@ -140,7 +113,8 @@ namespace VelaptorTests.Services
 
             var service = CreateService();
             service.BatchSize = 2;
-            service.AddRange(new[] { batchItem1, batchItem2 });
+            service.Add(batchItem1);
+            service.Add(batchItem2);
 
             // Act
             service.EmptyBatch();

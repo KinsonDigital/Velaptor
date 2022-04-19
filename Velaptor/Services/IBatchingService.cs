@@ -5,7 +5,6 @@
 namespace Velaptor.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
     /// <summary>
@@ -41,12 +40,6 @@ namespace Velaptor.Services
         /// </summary>
         /// <param name="item">The item to be added.</param>
         void Add(T item);
-
-        /// <summary>
-        /// Adds the given list of <paramref name="items"/> to batch.
-        /// </summary>
-        /// <param name="items">The items to be added.</param>
-        void AddRange(IEnumerable<T> items);
 
         /// <summary>
         /// Empties the entire batch.

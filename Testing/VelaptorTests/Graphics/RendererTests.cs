@@ -549,7 +549,7 @@ namespace VelaptorTests.Graphics
                     It.IsAny<float>(),
                     It.IsAny<Color>(),
                     It.IsAny<RenderEffects>());
-            }, "The 'BeginBatch()' method must be invoked first before any 'Render()' methods.");
+            }, "The 'Begin()' method must be invoked first before any 'Render()' methods.");
         }
 
         [Theory]
@@ -559,7 +559,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
@@ -580,7 +580,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -650,7 +650,7 @@ namespace VelaptorTests.Graphics
                 .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateRenderer();
             this.glInitReactor.OnNext(default);
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(mockTexture.Object, 10, 20);
@@ -683,7 +683,7 @@ namespace VelaptorTests.Graphics
                 .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateRenderer();
             this.glInitReactor.OnNext(default);
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(mockTexture.Object, 10, 20, expectedRenderEffects);
@@ -716,7 +716,7 @@ namespace VelaptorTests.Graphics
                 .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateRenderer();
             this.glInitReactor.OnNext(default);
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(mockTexture.Object, 10, 20, expectedClr);
@@ -750,7 +750,7 @@ namespace VelaptorTests.Graphics
                 .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
             var batch = CreateRenderer();
             this.glInitReactor.OnNext(default);
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects);
@@ -785,7 +785,7 @@ namespace VelaptorTests.Graphics
             this.glInitReactor.OnNext(default);
 
             // Act
-            batch.BeginBatch();
+            batch.Begin();
 
             batch.Render(
                 MockTexture(textureId),
@@ -858,7 +858,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -873,7 +873,7 @@ namespace VelaptorTests.Graphics
             // Assert
             this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
             this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Never);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()), Times.Never);
         }
 
         [Fact]
@@ -883,7 +883,7 @@ namespace VelaptorTests.Graphics
             this.mockFont.SetupGet(p => p.Size).Returns(0);
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -898,7 +898,7 @@ namespace VelaptorTests.Graphics
             // Assert
             this.mockFont.Verify(m => m.Measure(It.IsAny<string>()), Times.Never);
             this.mockFont.Verify(m => m.ToGlyphMetrics(It.IsAny<string>()), Times.Never);
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Never);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()), Times.Never);
         }
 
         [Fact]
@@ -921,7 +921,7 @@ namespace VelaptorTests.Graphics
                     It.IsAny<float>(),
                     It.IsAny<float>(),
                     It.IsAny<Color>());
-            }, "The 'BeginBatch()' method must be invoked first before any 'Render()' methods.");
+            }, "The 'Begin()' method must be invoked first before any 'Render()' methods.");
         }
 
         [Fact]
@@ -932,7 +932,7 @@ namespace VelaptorTests.Graphics
             MockFontMetrics();
             MockToGlyphMetrics(renderText);
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -959,7 +959,7 @@ namespace VelaptorTests.Graphics
             MockToGlyphMetrics("world");
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -983,19 +983,19 @@ namespace VelaptorTests.Graphics
             const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoked_AddsCorrectBatchItems)}.json";
             var expectedBatchResultData =
                 TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
-            var actualBatchResultData = Array.Empty<FontGlyphBatchItem>();
+            var actualBatchResultData = new List<FontGlyphBatchItem>();// Array.Empty<FontGlyphBatchItem>();
 
             const string renderText = "Font_Testing";
             MockFontMetrics();
             MockToGlyphMetrics(renderText);
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData = rects.ToArray();
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1008,8 +1008,8 @@ namespace VelaptorTests.Graphics
                 Color.FromArgb(11, 22, 33, 44));
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Once);
-            Assert.Equal(12, actualBatchResultData.Length);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()), Times.Exactly(renderText.Length));
+            Assert.Equal(12, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1026,18 +1026,19 @@ namespace VelaptorTests.Graphics
             const string line1 = "hello";
             const string line2 = "world";
             const string renderText = $"{line1}\n{line2}";
+            var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData.AddRange(rects.ToArray());
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1047,8 +1048,9 @@ namespace VelaptorTests.Graphics
                 22);
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
-            Assert.Equal(line1.Length + line2.Length, actualBatchResultData.Count);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()),
+                Times.Exactly(totalGlyphs));
+            Assert.Equal(totalGlyphs, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1065,18 +1067,19 @@ namespace VelaptorTests.Graphics
             const string line1 = "hello";
             const string line2 = "world";
             const string renderText = $"{line1}\n{line2}";
+            var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData.AddRange(rects.ToArray());
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1085,8 +1088,9 @@ namespace VelaptorTests.Graphics
                 new Vector2(33, 44));
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
-            Assert.Equal(line1.Length + line2.Length, actualBatchResultData.Count);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()),
+                Times.Exactly(totalGlyphs));
+            Assert.Equal(totalGlyphs, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1103,18 +1107,19 @@ namespace VelaptorTests.Graphics
             const string line1 = "hello";
             const string line2 = "world";
             const string renderText = $"{line1}\n{line2}";
+            var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData.AddRange(rects.ToArray());
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1126,8 +1131,9 @@ namespace VelaptorTests.Graphics
                 230f);
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
-            Assert.Equal(line1.Length + line2.Length, actualBatchResultData.Count);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()),
+                Times.Exactly(totalGlyphs));
+            Assert.Equal(totalGlyphs, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1144,18 +1150,19 @@ namespace VelaptorTests.Graphics
             const string line1 = "hello";
             const string line2 = "world";
             const string renderText = $"{line1}\n{line2}";
+            var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData.AddRange(rects.ToArray());
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1166,8 +1173,9 @@ namespace VelaptorTests.Graphics
                 8f);
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
-            Assert.Equal(line1.Length + line2.Length, actualBatchResultData.Count);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()),
+                Times.Exactly(totalGlyphs));
+            Assert.Equal(totalGlyphs, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1184,18 +1192,19 @@ namespace VelaptorTests.Graphics
             const string line1 = "hello";
             const string line2 = "world";
             const string renderText = $"{line1}\n{line2}";
+            var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData.AddRange(rects.ToArray());
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1206,8 +1215,9 @@ namespace VelaptorTests.Graphics
                 Color.DarkOrange);
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
-            Assert.Equal(line1.Length + line2.Length, actualBatchResultData.Count);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()),
+                Times.Exactly(totalGlyphs));
+            Assert.Equal(totalGlyphs, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1224,18 +1234,19 @@ namespace VelaptorTests.Graphics
             const string line1 = "hello";
             const string line2 = "world";
             const string renderText = $"{line1}\n{line2}";
+            var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData.AddRange(rects.ToArray());
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1245,8 +1256,9 @@ namespace VelaptorTests.Graphics
                 Color.MediumPurple);
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
-            Assert.Equal(line1.Length + line2.Length, actualBatchResultData.Count);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()),
+                Times.Exactly(totalGlyphs));
+            Assert.Equal(totalGlyphs, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1263,18 +1275,19 @@ namespace VelaptorTests.Graphics
             const string line1 = "hello";
             const string line2 = "world";
             const string renderText = $"{line1}\n{line2}";
+            var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData.AddRange(rects.ToArray());
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1286,8 +1299,9 @@ namespace VelaptorTests.Graphics
                 Color.IndianRed);
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
-            Assert.Equal(line1.Length + line2.Length, actualBatchResultData.Count);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()),
+                Times.Exactly(totalGlyphs));
+            Assert.Equal(totalGlyphs, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1304,18 +1318,19 @@ namespace VelaptorTests.Graphics
             const string line1 = "hello";
             const string line2 = "world";
             const string renderText = $"{line1}\n{line2}";
+            var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
             MockToGlyphMetrics("world");
-            this.mockFontBatchingService.Setup(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()))
-                .Callback<IEnumerable<FontGlyphBatchItem>>(rects =>
+            this.mockFontBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
+                .Callback<FontGlyphBatchItem>(batchItem =>
                 {
-                    actualBatchResultData.AddRange(rects.ToArray());
+                    actualBatchResultData.Add(batchItem);
                 });
 
             var batch = CreateRenderer();
-            batch.BeginBatch();
+            batch.Begin();
 
             // Act
             batch.Render(
@@ -1326,8 +1341,9 @@ namespace VelaptorTests.Graphics
                 Color.CornflowerBlue);
 
             // Assert
-            this.mockFontBatchingService.Verify(m => m.AddRange(It.IsAny<IEnumerable<FontGlyphBatchItem>>()), Times.Exactly(2));
-            Assert.Equal(line1.Length + line2.Length, actualBatchResultData.Count);
+            this.mockFontBatchingService.Verify(m => m.Add(It.IsAny<FontGlyphBatchItem>()),
+                Times.Exactly(totalGlyphs));
+            Assert.Equal(totalGlyphs, actualBatchResultData.Count);
             AssertExtensions.ItemsEqual(expectedBatchResultData, actualBatchResultData);
         }
 
@@ -1368,7 +1384,7 @@ namespace VelaptorTests.Graphics
             this.glInitReactor.OnNext(default);
 
             // Act
-            batch.BeginBatch();
+            batch.Begin();
 
             batch.Render(
                 this.mockFont.Object,

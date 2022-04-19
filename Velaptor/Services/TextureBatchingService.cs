@@ -85,18 +85,6 @@ namespace Velaptor.Services
         }
 
         /// <summary>
-        /// Adds the given list of <paramref name="items"/> to batch.
-        /// </summary>
-        /// <param name="items">The items to be added.</param>
-        public void AddRange(IEnumerable<TextureBatchItem> items)
-        {
-            foreach (var rect in items)
-            {
-                Add(rect);
-            }
-        }
-
-        /// <summary>
         /// Empties the entire batch.
         /// </summary>
         /// <remarks>
