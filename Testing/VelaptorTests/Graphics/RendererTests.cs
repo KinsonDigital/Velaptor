@@ -34,6 +34,7 @@ namespace VelaptorTests.Graphics
         private const uint TextureShaderId = 1111u;
         private const uint FontShaderId = 2222u;
         private const uint RectShaderId = 3333u;
+        private const uint TextureId = 456u;
         private const uint FontAtlasTextureId = 1234u;
         private const char InvalidCharacter = '□';
         private readonly Mock<IGLInvoker> mockGL;
@@ -688,12 +689,11 @@ namespace VelaptorTests.Graphics
         public void RenderTexture_WhenInvoked_RendersTexture()
         {
             // Arrange
-            const uint textureId = 1;
             const uint batchIndex = 0;
 
             var shouldRenderItem = default(TextureBatchItem);
             shouldRenderItem.Angle = 45;
-            shouldRenderItem.TextureId = textureId;
+            shouldRenderItem.TextureId = TextureId;
 
             var shouldNotRenderItem = default(TextureBatchItem);
             var items = new[] { (true, shouldRenderItem), (false, shouldNotRenderItem) };
@@ -711,7 +711,7 @@ namespace VelaptorTests.Graphics
             batch.Begin();
 
             batch.Render(
-                MockTexture(textureId),
+                MockTexture(TextureId),
                 new Rectangle(0, 0, 1, 2),
                 It.IsAny<Rectangle>(),
                 It.IsAny<float>(),
@@ -723,7 +723,7 @@ namespace VelaptorTests.Graphics
             this.mockGLService.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
-            this.mockGLService.Verify(m => m.BindTexture2D(textureId), Times.Once);
+            this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, batchIndex), Times.Once);
             this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, batchIndex), Times.Never);
             this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Texture), Times.Once);
@@ -1389,6 +1389,59 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
+        public void RenderRectangle_WhenInvoked_RendersRectangle()
+        {
+            // Arrange
+            const uint batchIndex = 0;
+
+            var shouldRenderItem = default(RectShape);
+            shouldRenderItem.Position = new Vector2(1, 2);
+            shouldRenderItem.Width = 3;
+            shouldRenderItem.Height = 4;
+            shouldRenderItem.BorderThickness = 5;
+            shouldRenderItem.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
+            shouldRenderItem.GradientStart = Color.FromArgb(11, 22, 33, 44);
+            shouldRenderItem.GradientStop = Color.FromArgb(55, 66, 77, 88);
+            shouldRenderItem.GradientType = ColorGradient.Horizontal;
+
+            var shouldNotRenderItem = default(RectShape);
+            shouldNotRenderItem.Position = new Vector2(99, 111);
+            shouldNotRenderItem.Width = 222;
+            shouldNotRenderItem.Height = 333;
+            shouldNotRenderItem.BorderThickness = 444;
+            shouldNotRenderItem.CornerRadius = new CornerRadius(555f, 666f, 777f, 888f);
+            shouldNotRenderItem.GradientStart = Color.FromArgb(112, 113, 114, 115);
+            shouldNotRenderItem.GradientStop = Color.FromArgb(116, 117, 118, 119);
+            shouldNotRenderItem.GradientType = ColorGradient.Vertical;
+
+            var shouldNotRenderEmptyItem = default(RectShape);
+
+            var items = new[] { (true, shouldRenderItem), (false, shouldNotRenderItem), (true, shouldNotRenderEmptyItem) };
+
+            var batch = CreateRenderer();
+            this.mockBatchServiceManager.Setup(m => m.AddRectBatchItem(It.IsAny<RectShape>()))
+                .Callback<RectShape>(_ =>
+                {
+                    MockRectBatchItems(items);
+                    this.mockBatchServiceManager.Raise(m => m.RectBatchFilled += null, EventArgs.Empty);
+                });
+            this.glInitReactor.OnNext(default);
+
+            // Act
+            batch.Begin();
+            batch.Render(shouldRenderItem);
+
+            // Assert
+            this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
+            this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
+            this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
+            this.mockRectBuffer.Verify(m => m.UploadData(shouldRenderItem, batchIndex), Times.Once);
+            this.mockRectBuffer.Verify(m => m.UploadData(shouldNotRenderItem, batchIndex), Times.Never);
+            this.mockRectBuffer.Verify(m => m.UploadData(shouldNotRenderEmptyItem, batchIndex), Times.Never);
+            this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Rectangle), Times.Once);
+        }
+
+        [Fact]
         public void End_WhenInvoked_EndsBatches()
         {
             // Arrange
@@ -1524,6 +1577,16 @@ namespace VelaptorTests.Graphics
             this.mockBatchServiceManager.Object.TextureBatchItems = items.ToReadOnlyDictionary();
         }
 
+        /// <summary>
+        /// Mocks the <see cref="BatchServiceManager.FontGlyphBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
+        /// </summary>
+        /// <param name="batchGlyphs">The glyphs to mock.</param>
+        /// <param name="excludeIndexStart">The starting index of the glyph to inclusively exclude from mocking.</param>
+        /// <param name="excludeIndexStop">The ending index of the glyph to inclusively exclude from mocking.</param>
+        /// <remarks>
+        ///     The <paramref name="excludeIndexStart"/> and <paramref name="excludeIndexStop"/> are the index start and stop
+        ///     of the given glyph string param <paramref name="batchGlyphs"/>.
+        /// </remarks>
         private void MockFontBatchItems(string batchGlyphs, int excludeIndexStart, int excludeIndexStop)
         {
             var glyphsToMock = new List<(bool, FontGlyphBatchItem)>();
@@ -1541,6 +1604,16 @@ namespace VelaptorTests.Graphics
 
             this.mockBatchServiceManager.SetupProperty(p => p.FontGlyphBatchItems);
             this.mockBatchServiceManager.Object.FontGlyphBatchItems = glyphsToMock.ToReadOnlyDictionary();
+        }
+
+        /// <summary>
+        /// Mocks the <see cref="BatchServiceManager.RectBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
+        /// </summary>
+        /// <param name="items">The items to store in the service.</param>
+        private void MockRectBatchItems((bool shouldRender, RectShape item)[] items)
+        {
+            this.mockBatchServiceManager.SetupProperty(p => p.RectBatchItems);
+            this.mockBatchServiceManager.Object.RectBatchItems = items.ToReadOnlyDictionary();
         }
     }
 }
