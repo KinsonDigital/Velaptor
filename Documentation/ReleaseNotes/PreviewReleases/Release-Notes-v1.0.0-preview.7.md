@@ -28,7 +28,7 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Breaking Changes 💣</h2>
+<h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
 1. The class `SystemMonitor` constructor no longer requires an `IPlatform` type argument.  
    GitHub Issues: [#153](https://github.com/KinsonDigital/Velaptor/issues/153)

@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatch.cs" company="KinsonDigital">
+// <copyright file="Renderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -28,7 +28,7 @@ namespace Velaptor.Graphics
     // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc/>
-    internal sealed class SpriteBatch : ISpriteBatch
+    internal sealed class Renderer : IRenderer
     {
         private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
         private readonly IGLInvoker gl;
@@ -36,12 +36,10 @@ namespace Velaptor.Graphics
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
         private readonly IShaderProgram rectShader;
-        private readonly IGPUBuffer<SpriteBatchItem> textureBuffer;
+        private readonly IGPUBuffer<TextureBatchItem> textureBuffer;
         private readonly IGPUBuffer<FontGlyphBatchItem> fontBuffer;
         private readonly IGPUBuffer<RectShape> rectBuffer;
-        private readonly IBatchManagerService<SpriteBatchItem> textureBatchService;
-        private readonly IBatchManagerService<FontGlyphBatchItem> fontBatchService;
-        private readonly IBatchManagerService<RectShape> rectBatchService;
+        private readonly IBatchServiceManager batchServiceManager;
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
 
@@ -51,7 +49,7 @@ namespace Velaptor.Graphics
         private bool hasBegun;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpriteBatch"/> class.
+        /// Initializes a new instance of the <see cref="Renderer"/> class.
         /// NOTE: Used for unit testing to inject a mocked <see cref="IGLInvoker"/>.
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
@@ -62,27 +60,23 @@ namespace Velaptor.Graphics
         /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
         /// <param name="rectBuffer">Updates the data in the GPU related to rendering rectangles.</param>
-        /// <param name="textureBatchService">Manages the batch of textures to render textures.</param>
-        /// <param name="fontBatchService">Manages the batch of textures to render text.</param>
-        /// <param name="rectBatchService">Manages the batch of rectangles to render.</param>
+        /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         /// <remarks>
         ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
         ///     pushes the notification that OpenGL has been initialized.
         /// </remarks>
-        public SpriteBatch(
+        public Renderer(
             IGLInvoker gl,
             IOpenGLService openGLService,
             IShaderProgram textureShader,
             IShaderProgram fontShader,
             IShaderProgram rectShader,
-            IGPUBuffer<SpriteBatchItem> textureBuffer,
+            IGPUBuffer<TextureBatchItem> textureBuffer,
             IGPUBuffer<FontGlyphBatchItem> fontBuffer,
             IGPUBuffer<RectShape> rectBuffer,
-            IBatchManagerService<SpriteBatchItem> textureBatchService,
-            IBatchManagerService<FontGlyphBatchItem> fontBatchService,
-            IBatchManagerService<RectShape> rectBatchService,
+            IBatchServiceManager batchServiceManager,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
@@ -94,6 +88,9 @@ namespace Velaptor.Graphics
             EnsureThat.ParamIsNotNull(textureBuffer);
             EnsureThat.ParamIsNotNull(fontBuffer);
             EnsureThat.ParamIsNotNull(rectBuffer);
+            EnsureThat.ParamIsNotNull(batchServiceManager);
+            EnsureThat.ParamIsNotNull(glInitReactable);
+            EnsureThat.ParamIsNotNull(shutDownReactable);
 
             this.gl = gl;
             this.openGLService = openGLService;
@@ -104,22 +101,13 @@ namespace Velaptor.Graphics
             this.fontBuffer = fontBuffer;
             this.rectBuffer = rectBuffer;
 
-            this.textureBatchService = textureBatchService ?? throw new ArgumentNullException(nameof(textureBatchService), "The parameter must not be null.");
-            this.textureBatchService.BatchSize = ISpriteBatch.BatchSize;
-            this.textureBatchService.BatchFilled += TextureBatchService_BatchFilled;
-
-            this.fontBatchService = fontBatchService ?? throw new ArgumentNullException(nameof(fontBatchService), "The parameter must not be null.");
-            this.fontBatchService.BatchSize = ISpriteBatch.BatchSize;
-            this.fontBatchService.BatchFilled += FontBatchService_BatchFilled;
-
-            this.rectBatchService = rectBatchService ?? throw new ArgumentNullException(nameof(rectBatchService), "The parameter must not be null.");
-            this.rectBatchService.BatchSize = ISpriteBatch.BatchSize;
-            this.rectBatchService.BatchFilled += RectBatchService_BatchFilled;
-
-            if (glInitReactable is null)
-            {
-                throw new ArgumentNullException(nameof(glInitReactable), "The parameter must not be null.");
-            }
+            this.batchServiceManager = batchServiceManager;
+            this.batchServiceManager.SetBatchSize(BatchServiceType.Texture, IRenderer.BatchSize);
+            this.batchServiceManager.SetBatchSize(BatchServiceType.Rectangle, IRenderer.BatchSize);
+            this.batchServiceManager.SetBatchSize(BatchServiceType.FontGlyph, IRenderer.BatchSize);
+            this.batchServiceManager.TextureBatchFilled += TextureBatchService_BatchFilled;
+            this.batchServiceManager.FontGlyphBatchFilled += FontGlyphBatchService_BatchFilled;
+            this.batchServiceManager.RectBatchFilled += RectBatchService_BatchFilled;
 
             // Receive a push notification that OpenGL has initialized
             this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
@@ -132,21 +120,16 @@ namespace Velaptor.Graphics
                     Init();
                 }));
 
-            if (shutDownReactable is null)
-            {
-                throw new ArgumentNullException(nameof(shutDownReactable), "The parameter must not be null.");
-            }
-
             this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
 
             SetupPropertyCaches();
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="SpriteBatch"/> class.
+        /// Finalizes an instance of the <see cref="Renderer"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
-        ~SpriteBatch()
+        ~Renderer()
         {
             if (UnitTestDetector.IsRunningFromUnitTest)
             {
@@ -178,7 +161,7 @@ namespace Velaptor.Graphics
         }
 
         /// <inheritdoc/>
-        public void BeginBatch() => this.hasBegun = true;
+        public void Begin() => this.hasBegun = true;
 
         /// <inheritdoc/>
         public void Clear() => this.gl.Clear(GLClearBufferMask.ColorBufferBit);
@@ -219,7 +202,7 @@ namespace Velaptor.Graphics
 
         /// <inheritdoc/>
         /// <exception cref="InvalidOperationException">
-        ///     Thrown if the <see cref="BeginBatch"/>() method is not called before calling this method.
+        ///     Thrown if the <see cref="Begin"/>() method is not called before calling this method.
         /// </exception>
         /// <exception cref="ArgumentException">
         ///     Thrown if the <see cref="Rectangle.Width"/> or <see cref="Rectangle.Height"/> property
@@ -244,7 +227,7 @@ namespace Velaptor.Graphics
 
             if (!this.hasBegun)
             {
-                throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+                throw new InvalidOperationException($"The '{nameof(Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
             if (srcRect.Width <= 0 || srcRect.Height <= 0)
@@ -252,7 +235,7 @@ namespace Velaptor.Graphics
                 throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
             }
 
-            var itemToAdd = default(SpriteBatchItem);
+            var itemToAdd = default(TextureBatchItem);
 
             itemToAdd.SrcRect = srcRect;
             itemToAdd.DestRect = destRect;
@@ -263,7 +246,7 @@ namespace Velaptor.Graphics
             itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
             itemToAdd.TextureId = texture.Id;
 
-            this.textureBatchService.Add(itemToAdd);
+            this.batchServiceManager.AddTextureBatchItem(itemToAdd);
         }
 
         /// <inheritdoc/>
@@ -300,7 +283,7 @@ namespace Velaptor.Graphics
 
         /// <inheritdoc/>
         /// <exception cref="InvalidOperationException">
-        ///     Thrown if the <see cref="BeginBatch"/>() method is not called before calling this method.
+        ///     Thrown if the <see cref="Begin"/>() method is not called before calling this method.
         /// </exception>
         /// <remarks>
         ///     If <paramref name="font"/> is null, nothing will be rendered.
@@ -327,7 +310,7 @@ namespace Velaptor.Graphics
 
             if (!this.hasBegun)
             {
-                throw new InvalidOperationException($"The '{nameof(BeginBatch)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
+                throw new InvalidOperationException($"The '{nameof(Begin)}()' method must be invoked first before any '{nameof(Render)}()' methods.");
             }
 
             var normalizedSize = renderSize - 1f;
@@ -349,7 +332,7 @@ namespace Velaptor.Graphics
             var glyphLines = lines.Select(l =>
             {
                 /* ⚙️ Perf Optimization️ ⚙️ */
-                // No need to apply a size to waste compute time if the size
+                // No need to apply a size to waste compute time if the size is equal to 0
                 return normalizedSize == 0f
                     ? font.ToGlyphMetrics(l)
                     : font.ToGlyphMetrics(l).Select(g => g.ApplySize(normalizedSize)).ToArray();
@@ -375,7 +358,7 @@ namespace Velaptor.Graphics
                 var characterX = originalX - textHalfWidth + firstLineFirstCharBearingX;
                 var textLinePos = new Vector2(characterX, characterY);
 
-                // Convert all of the glyphs to sprite batch items to be rendered
+                // Convert all of the glyphs to batch items to be rendered
                 var batchItems = ToFontBatchItems(
                     textLinePos,
                     glyphLines.ToArray()[i],
@@ -387,19 +370,22 @@ namespace Velaptor.Graphics
                     atlasWidth,
                     atlasHeight);
 
-                this.fontBatchService.AddRange(batchItems);
+                foreach (var item in batchItems)
+                {
+                    this.batchServiceManager.AddFontGlyphBatchItem(item);
+                }
             }
         }
 
         /// <inheritdoc/>
-        public void Render(RectShape rectangle) => this.rectBatchService.Add(rectangle);
+        public void Render(RectShape rectangle) => this.batchServiceManager.AddRectBatchItem(rectangle);
 
         /// <inheritdoc/>
-        public void EndBatch()
+        public void End()
         {
-            TextureBatchService_BatchFilled(this.textureBatchService, EventArgs.Empty);
-            RectBatchService_BatchFilled(this.rectBatchService, EventArgs.Empty);
-            FontBatchService_BatchFilled(this.fontBatchService, EventArgs.Empty);
+            this.batchServiceManager.EndBatch(BatchServiceType.Texture);
+            this.batchServiceManager.EndBatch(BatchServiceType.Rectangle);
+            this.batchServiceManager.EndBatch(BatchServiceType.FontGlyph);
 
             this.hasBegun = false;
         }
@@ -414,9 +400,10 @@ namespace Velaptor.Graphics
                 return;
             }
 
-            this.textureBatchService.BatchFilled -= TextureBatchService_BatchFilled;
-            this.fontBatchService.BatchFilled -= FontBatchService_BatchFilled;
-            this.rectBatchService.BatchFilled -= RectBatchService_BatchFilled;
+            this.batchServiceManager.TextureBatchFilled -= TextureBatchService_BatchFilled;
+            this.batchServiceManager.FontGlyphBatchFilled -= FontGlyphBatchService_BatchFilled;
+            this.batchServiceManager.RectBatchFilled -= RectBatchService_BatchFilled;
+            this.batchServiceManager.Dispose();
             this.cachedUIntProps.Clear();
             this.glInitUnsubscriber.Dispose();
             this.shutDownUnsubscriber.Dispose();
@@ -425,7 +412,7 @@ namespace Velaptor.Graphics
         }
 
         /// <summary>
-        /// Initializes the sprite batch.
+        /// Initializes the renderer.
         /// </summary>
         private void Init()
         {
@@ -442,7 +429,7 @@ namespace Velaptor.Graphics
         {
             var textureIsBound = false;
 
-            if (this.textureBatchService.BatchItems.Count <= 0)
+            if (this.batchServiceManager.TextureBatchItems.Count <= 0)
             {
                 this.openGLService.BeginGroup("Render Texture Process - Nothing To Render");
                 this.openGLService.EndGroup();
@@ -456,9 +443,9 @@ namespace Velaptor.Graphics
 
             var totalItemsToRender = 0u;
 
-            for (var i = 0u; i < this.textureBatchService.BatchItems.Count; i++)
+            for (var i = 0u; i < this.batchServiceManager.TextureBatchItems.Count; i++)
             {
-                var (shouldRender, batchItem) = this.textureBatchService.BatchItems[i];
+                var (shouldRender, batchItem) = this.batchServiceManager.TextureBatchItems[i];
 
                 if (shouldRender is false || batchItem.IsEmpty())
                 {
@@ -492,7 +479,7 @@ namespace Velaptor.Graphics
             }
 
             // Empty the batch
-            this.textureBatchService.EmptyBatch();
+            this.batchServiceManager.EmptyBatch(BatchServiceType.Texture);
 
             this.openGLService.EndGroup();
         }
@@ -500,11 +487,11 @@ namespace Velaptor.Graphics
         /// <summary>
         /// Invoked every time a batch of fonts is ready to be rendered.
         /// </summary>
-        private void FontBatchService_BatchFilled(object? sender, EventArgs e)
+        private void FontGlyphBatchService_BatchFilled(object? sender, EventArgs e)
         {
             var fontTextureIsBound = false;
 
-            if (this.fontBatchService.BatchItems.Count <= 0)
+            if (this.batchServiceManager.FontGlyphBatchItems.Count <= 0)
             {
                 this.openGLService.BeginGroup("Render Text Process - Nothing To Render");
                 this.openGLService.EndGroup();
@@ -518,9 +505,9 @@ namespace Velaptor.Graphics
 
             var totalItemsToRender = 0u;
 
-            for (var i = 0u; i < this.fontBatchService.BatchItems.Count; i++)
+            for (var i = 0u; i < this.batchServiceManager.FontGlyphBatchItems.Count; i++)
             {
-                var (shouldRender, batchItem) = this.fontBatchService.BatchItems[i];
+                var (shouldRender, batchItem) = this.batchServiceManager.FontGlyphBatchItems[i];
 
                 if (shouldRender is false || batchItem.IsEmpty())
                 {
@@ -554,7 +541,7 @@ namespace Velaptor.Graphics
             }
 
             // Empty the batch
-            this.fontBatchService.EmptyBatch();
+            this.batchServiceManager.EmptyBatch(BatchServiceType.FontGlyph);
 
             this.openGLService.EndGroup();
         }
@@ -564,7 +551,7 @@ namespace Velaptor.Graphics
         /// </summary>
         private void RectBatchService_BatchFilled(object? sender, EventArgs e)
         {
-            if (this.rectBatchService.BatchItems.Count <= 0)
+            if (this.batchServiceManager.RectBatchItems.Count <= 0)
             {
                 this.openGLService.BeginGroup("Render Rectangle Process - Nothing To Render");
                 this.openGLService.EndGroup();
@@ -578,9 +565,9 @@ namespace Velaptor.Graphics
 
             var totalItemsToRender = 0u;
 
-            for (var i = 0u; i < this.rectBatchService.BatchItems.Count; i++)
+            for (var i = 0u; i < this.batchServiceManager.RectBatchItems.Count; i++)
             {
-                var (shouldRender, batchItem) = this.rectBatchService.BatchItems[i];
+                var (shouldRender, batchItem) = this.batchServiceManager.RectBatchItems[i];
 
                 if (shouldRender is false || batchItem.IsEmpty())
                 {
@@ -607,13 +594,13 @@ namespace Velaptor.Graphics
             }
 
             // Empty the batch
-            this.rectBatchService.EmptyBatch();
+            this.batchServiceManager.EmptyBatch(BatchServiceType.Rectangle);
 
             this.openGLService.EndGroup();
         }
 
         /// <summary>
-        /// Constructs a list of sprite batch items from the given
+        /// Constructs a list of batch items from the given
         /// <paramref name="charMetrics"/> to be rendered.
         /// </summary>
         /// <param name="textPos">The position to render the text.</param>
@@ -625,7 +612,7 @@ namespace Velaptor.Graphics
         /// <param name="color">The color of the text.</param>
         /// <param name="atlasWidth">The width of the font texture atlas.</param>
         /// <param name="atlasHeight">The height of the font texture atlas.</param>
-        /// <returns>The list of glyphs that make up the string as sprite batch items.</returns>
+        /// <returns>The list of glyphs that make up the string as font batch items.</returns>
         private IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
             Vector2 textPos,
             IEnumerable<GlyphMetrics> charMetrics,

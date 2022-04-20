@@ -1,4 +1,4 @@
-// <copyright file="SpriteBatchSizeAttributeTests.cs" company="KinsonDigital">
+// <copyright file="BatchSizeAttributeTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -8,16 +8,16 @@ namespace VelaptorTests.OpenGL
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="SpriteBatchSizeAttribute"/> class.
+    /// Tests the <see cref="BatchSizeAttribute"/> class.
     /// </summary>
-    public class SpriteBatchSizeAttributeTests
+    public class BatchSizeAttributeTests
     {
         #region Constructor Tests
         [Fact]
         public void Ctor_WhenInvoked_SetsProperty()
         {
             // Arrange & Act
-            var attribute = new SpriteBatchSizeAttribute(123u);
+            var attribute = new BatchSizeAttribute(123u);
 
             // Assert
             Assert.Equal(123u, attribute.BatchSize);

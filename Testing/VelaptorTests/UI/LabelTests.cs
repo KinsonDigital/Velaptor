@@ -389,7 +389,7 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Render_WithNullSpriteBatch_ThrowsException()
+        public void Render_WithNullRenderer_ThrowsException()
         {
             // Arrange
             var label = CreateLabel();
@@ -398,22 +398,22 @@ namespace VelaptorTests.UI
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
                 label.Render(null);
-            }, "The parameter must not be null. (Parameter 'spriteBatch')");
+            }, "The parameter must not be null. (Parameter 'renderer')");
         }
 
         [Fact]
         public void Render_WhenInvokedWithoutLoadedContent_DoesNotRender()
         {
             // Arrange
-            var mockSpriteBatch = new Mock<ISpriteBatch>();
+            var mockRenderer = new Mock<IRenderer>();
             var label = CreateLabel();
             label.Visible = true;
 
             // Act
-            label.Render(mockSpriteBatch.Object);
+            label.Render(mockRenderer.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m => m.Render(It.IsAny<IFont>(),
+            mockRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
                                                                It.IsAny<string>(),
                                                                It.IsAny<int>(),
                                                                It.IsAny<int>(),
@@ -424,16 +424,16 @@ namespace VelaptorTests.UI
         public void Render_WhenInvokedWhileNotVisible_DoesNotRender()
         {
             // Arrange
-            var mockSpriteBatch = new Mock<ISpriteBatch>();
+            var mockRenderer = new Mock<IRenderer>();
             var label = CreateLabel();
             label.Visible = false;
 
             // Act
             label.LoadContent();
-            label.Render(mockSpriteBatch.Object);
+            label.Render(mockRenderer.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m =>
+            mockRenderer.Verify(m =>
                 m.Render(It.IsAny<IFont>(),
                     It.IsAny<string>(),
                     It.IsAny<int>(),
@@ -445,16 +445,16 @@ namespace VelaptorTests.UI
         public void Render_WithNullOrEmptyText_DoesNotRender()
         {
             // Arrange
-            var mockSpriteBatch = new Mock<ISpriteBatch>();
+            var mockRenderer = new Mock<IRenderer>();
             var label = CreateLabel();
             label.Text = string.Empty;
             label.LoadContent();
 
             // Act
-            label.Render(mockSpriteBatch.Object);
+            label.Render(mockRenderer.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m =>
+            mockRenderer.Verify(m =>
                 m.Render(
                     It.IsAny<IFont>(),
                     It.IsAny<string>(),
@@ -469,7 +469,7 @@ namespace VelaptorTests.UI
         public void Render_WhenInvoked_RendersText()
         {
             // Arrange
-            var mockSpriteBatch = new Mock<ISpriteBatch>();
+            var mockRenderer = new Mock<IRenderer>();
 
             var label = CreateLabel();
             label.Text = TextValue;
@@ -479,10 +479,10 @@ namespace VelaptorTests.UI
             label.LoadContent();
 
             // Act
-            label.Render(mockSpriteBatch.Object);
+            label.Render(mockRenderer.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m =>
+            mockRenderer.Verify(m =>
                 m.Render(this.mockFont.Object,
                     TextValue,
                     100,

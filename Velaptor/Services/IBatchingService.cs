@@ -1,18 +1,17 @@
-﻿// <copyright file="IBatchManagerService.cs" company="KinsonDigital">
+﻿// <copyright file="IBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
     /// <summary>
     /// Manages the process of batching items.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the batch.</typeparam>
-    internal interface IBatchManagerService<T>
+    internal interface IBatchingService<T>
     {
         /// <summary>
         /// Occurs when a batch is full.
@@ -41,12 +40,6 @@ namespace Velaptor.Services
         /// </summary>
         /// <param name="item">The item to be added.</param>
         void Add(T item);
-
-        /// <summary>
-        /// Adds the given list of <paramref name="items"/> to batch.
-        /// </summary>
-        /// <param name="items">The items to be added.</param>
-        void AddRange(IEnumerable<T> items);
 
         /// <summary>
         /// Empties the entire batch.

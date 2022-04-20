@@ -73,10 +73,10 @@ namespace VelaptorTesting.Scenes
             LayoutButtonsBottom();
         }
 
-        public override void Render(ISpriteBatch spriteBatch)
+        public override void Render(IRenderer renderer)
         {
-            base.Render(spriteBatch);
-            spriteBatch.Render(this.rectangle);
+            base.Render(renderer);
+            renderer.Render(this.rectangle);
         }
 
         private void CreateButtons()

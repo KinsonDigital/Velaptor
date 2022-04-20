@@ -48,7 +48,7 @@ namespace Velaptor.UI
         /// <remarks>
         /// <para>
         ///     If this is set to true, this means you do not have to
-        ///     use or invoke the <see cref="ISpriteBatch.Clear"/>() method.
+        ///     use or invoke the <see cref="IRenderer.Clear"/>() method.
         /// </para>
         /// <para>
         ///     Set to the value of <see langword="false"/> if you want more control over when
@@ -56,7 +56,7 @@ namespace Velaptor.UI
         /// </para>
         /// <para>
         ///     WARNING!! - To prevent performance issues, do not have the clear
-        ///     the buffers with the <see cref="ISpriteBatch.Clear"/>() method
+        ///     the buffers with the <see cref="IRenderer.Clear"/>() method
         ///     and set this property to true.  That would be a waste of resources.
         /// </para>
         /// </remarks>

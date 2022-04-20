@@ -190,24 +190,24 @@ namespace Velaptor.UI
         /// <summary>
         /// Renders the <see cref="Label"/>.
         /// </summary>
-        /// <param name="spriteBatch">Renders textures, primitives, and text.</param>
-        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="spriteBatch"/> is null.</exception>
-        public override void Render(ISpriteBatch spriteBatch)
+        /// <param name="renderer">Renders textures, primitives, and text.</param>
+        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="renderer"/> is null.</exception>
+        public override void Render(IRenderer renderer)
         {
-            Render(spriteBatch, this.labelText);
+            Render(renderer, this.labelText);
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <summary>
         /// Renders the <see cref="Label"/>.
         /// </summary>
-        /// <param name="spriteBatch">Renders textures, primitives, and text.</param>
+        /// <param name="renderer">Renders textures, primitives, and text.</param>
         /// <param name="text">The text to render.</param>
-        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="spriteBatch"/> is null.</exception>
-        internal void Render(ISpriteBatch spriteBatch, string text)
+        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="renderer"/> is null.</exception>
+        internal void Render(IRenderer renderer, string text)
         {
-            EnsureThat.ParamIsNotNull(spriteBatch);
+            EnsureThat.ParamIsNotNull(renderer);
 
             if (IsLoaded is false || Visible is false)
             {
@@ -216,7 +216,7 @@ namespace Velaptor.UI
 
             if (string.IsNullOrEmpty(text) is false)
             {
-                spriteBatch.Render(
+                renderer.Render(
                     Font,
                     text,
                     Position.X,
@@ -226,7 +226,7 @@ namespace Velaptor.UI
                     Enabled ? Color : this.disabledColor);
             }
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <summary>

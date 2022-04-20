@@ -76,7 +76,7 @@ namespace Velaptor.OpenGL.Buffers
         public SizeU ViewPortSize { get; set; }
 
         /// <summary>
-        /// Gets the size of the sprite batch.
+        /// Gets the size of the batch.
         /// </summary>
         protected internal uint BatchSize { get; private set; } = 100;
 
@@ -234,7 +234,7 @@ namespace Velaptor.OpenGL.Buffers
             {
                 switch (attribute)
                 {
-                    case SpriteBatchSizeAttribute sizeAttribute:
+                    case BatchSizeAttribute sizeAttribute:
                         BatchSize = sizeAttribute.BatchSize;
                         break;
                     case GPUBufferNameAttribute nameAttribute:

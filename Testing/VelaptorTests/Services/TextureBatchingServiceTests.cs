@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureBatchServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="TextureBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,9 +17,9 @@ namespace VelaptorTests.Services
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="TextureBatchService"/> class.
+    /// Tests the <see cref="TextureBatchingService"/> class.
     /// </summary>
-    public class TextureBatchServiceTests
+    public class TextureBatchingServiceTests
     {
         #region Prop Tests
         [Fact]
@@ -40,7 +40,7 @@ namespace VelaptorTests.Services
         public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var batchItem1 = (true, new SpriteBatchItem
+            var batchItem1 = (true, new TextureBatchItem
             {
                 Angle = 1,
                 Effects = RenderEffects.None,
@@ -51,7 +51,7 @@ namespace VelaptorTests.Services
                 TintColor = Color.FromArgb(12, 13, 14, 15),
                 ViewPortSize = new SizeF(16, 17),
             });
-            var batchItem2 = (true, new SpriteBatchItem
+            var batchItem2 = (true, new TextureBatchItem
             {
                 Angle = 18,
                 Effects = RenderEffects.FlipHorizontally,
@@ -63,8 +63,8 @@ namespace VelaptorTests.Services
                 ViewPortSize = new SizeF(33, 34),
             });
 
-            var batchItems = new List<(bool, SpriteBatchItem)> { batchItem1, batchItem2 };
-            var expected = new ReadOnlyDictionary<uint, (bool, SpriteBatchItem)>(batchItems.ToDictionary());
+            var batchItems = new List<(bool, TextureBatchItem)> { batchItem1, batchItem2 };
+            var expected = new ReadOnlyDictionary<uint, (bool, TextureBatchItem)>(batchItems.ToDictionary());
             var service = CreateService();
 
             // Act
@@ -79,12 +79,12 @@ namespace VelaptorTests.Services
 
         #region Method Tests
         [Fact]
-        public void Add_WhenSwitchingTextures_InvokesBatchFilledEvent()
+        public void Add_WhenSwitchingTextures_RaisesBatchFilledEvent()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 20;
 
             var service = CreateService();
@@ -105,12 +105,12 @@ namespace VelaptorTests.Services
         }
 
         [Fact]
-        public void Add_WhenBatchIsFull_InvokesBatchFilledEvent()
+        public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
@@ -133,44 +133,18 @@ namespace VelaptorTests.Services
         }
 
         [Fact]
-        public void AddRange_WhenInvoked_InvokesBatchFilledEvent()
-        {
-            // Arrange
-            var batchItem1 = default(SpriteBatchItem);
-            batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
-            batchItem2.TextureId = 10;
-
-            var service = CreateService();
-            service.BatchSize = 1;
-
-            // Act & Assert
-            Assert.Raises<EventArgs>(e =>
-            {
-                service.BatchFilled += e;
-            }, e =>
-            {
-                service.BatchFilled -= e;
-            }, () =>
-            {
-                service.AddRange(new[] { batchItem1, batchItem2 });
-            });
-
-            Assert.Equal(2, service.BatchItems.Count);
-        }
-
-        [Fact]
         public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
             service.BatchSize = 2;
-            service.AddRange(new[] { batchItem1, batchItem2 });
+            service.Add(batchItem1);
+            service.Add(batchItem2);
 
             // Act
             service.EmptyBatch();
@@ -183,14 +157,14 @@ namespace VelaptorTests.Services
         public void EmptyBatch_WithNoItemsReadyToRender_DoesNotEmptyItems()
         {
             // Arrange
-            var batchItem1 = default(SpriteBatchItem);
+            var batchItem1 = default(TextureBatchItem);
             batchItem1.TextureId = 10;
-            var batchItem2 = default(SpriteBatchItem);
+            var batchItem2 = default(TextureBatchItem);
             batchItem2.TextureId = 10;
 
             var service = CreateService();
             service.BatchSize = 2;
-            service.BatchItems = new List<(bool, SpriteBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
+            service.BatchItems = new List<(bool, TextureBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
 
             // Act
             service.EmptyBatch();
@@ -202,9 +176,9 @@ namespace VelaptorTests.Services
         #endregion
 
         /// <summary>
-        /// Creates a new instance of <see cref="TextureBatchService"/> for the purpose of testing.
+        /// Creates a new instance of <see cref="TextureBatchingService"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private static TextureBatchService CreateService() => new ();
+        private static TextureBatchingService CreateService() => new ();
     }
 }

@@ -35,7 +35,7 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IGameWindowFacade> mockWindowFacade;
         private readonly Mock<IPlatform> mockPlatform;
         private readonly Mock<IContentLoader> mockContentLoader;
-        private readonly Mock<ISpriteBatch> mockSpriteBatch;
+        private readonly Mock<IRenderer> mockRenderer;
         private readonly Mock<ITaskService> mockTaskService;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
@@ -51,7 +51,7 @@ namespace VelaptorTests.OpenGL
             this.mockWindowFacade = new Mock<IGameWindowFacade>();
             this.mockPlatform = new Mock<IPlatform>();
             this.mockContentLoader = new Mock<IContentLoader>();
-            this.mockSpriteBatch = new Mock<ISpriteBatch>();
+            this.mockRenderer = new Mock<IRenderer>();
             this.mockTaskService = new Mock<ITaskService>();
             this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
             this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
@@ -74,7 +74,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
@@ -96,7 +96,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glfwInvoker')");
@@ -118,7 +118,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
@@ -140,7 +140,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'windowFacade')");
@@ -162,7 +162,7 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
@@ -184,7 +184,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     null,
                     this.mockContentLoader.Object,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'taskService')");
@@ -206,14 +206,14 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     null,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
         }
 
         [Fact]
-        public void Ctor_WithNullSpriteBatchParam_ThrowsException()
+        public void Ctor_WithNullRendererParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -231,7 +231,7 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'spriteBatch')");
+            }, "The parameter must not be null. (Parameter 'renderer')");
         }
 
         [Fact]
@@ -250,7 +250,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     null,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glInitReactable')");
@@ -272,7 +272,7 @@ namespace VelaptorTests.OpenGL
                     this.mockPlatform.Object,
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
-                    this.mockSpriteBatch.Object,
+                    this.mockRenderer.Object,
                     this.mockGLInitReactable.Object,
                     null);
             }, "The parameter must not be null. (Parameter 'shutDownReactable')");
@@ -829,7 +829,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockGL.Verify(m => m.Viewport(0, 0, 30, 40));
-            this.mockSpriteBatch.Verify(m => m.OnResize(new SizeU(30u, 40u)), Times.Once);
+            this.mockRenderer.Verify(m => m.OnResize(new SizeU(30u, 40u)), Times.Once);
             Assert.Equal(30u, actualSize.Width);
             Assert.Equal(40u, actualSize.Height);
         }
@@ -931,7 +931,7 @@ namespace VelaptorTests.OpenGL
                 this.mockPlatform.Object,
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
-                this.mockSpriteBatch.Object,
+                this.mockRenderer.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object);
     }

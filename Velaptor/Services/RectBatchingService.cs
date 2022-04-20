@@ -1,4 +1,4 @@
-// <copyright file="RectBatchService.cs" company="KinsonDigital">
+// <copyright file="RectBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Manages the process of batching the rendering of rectangles.
     /// </summary>
-    internal class RectBatchService : IBatchManagerService<RectShape>
+    internal class RectBatchingService : IBatchingService<RectShape>
     {
         private SortedDictionary<uint, (bool shouldRender, RectShape item)> batchItems = new ();
         private uint currentBatchIndex;

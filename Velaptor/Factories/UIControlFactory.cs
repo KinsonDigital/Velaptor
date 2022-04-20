@@ -15,6 +15,7 @@ namespace Velaptor.Factories
     /// Generates UI controls.
     /// </summary>
     [ExcludeFromCodeCoverage]
+
     // TODO: Left as internal to prevent user from using this clas until it is finished
     internal static class UIControlFactory
     {

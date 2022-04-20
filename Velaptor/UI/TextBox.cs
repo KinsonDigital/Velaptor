@@ -101,14 +101,14 @@ namespace Velaptor.UI
         }
 
         /// <inheritdoc/>
-        public override void Render(ISpriteBatch spriteBatch)
+        public override void Render(IRenderer renderer)
         {
             if (IsLoaded is false || Visible is false)
             {
                 return;
             }
 
-            this.text.Render(spriteBatch);
+            this.text.Render(renderer);
         }
 
         /// <summary>

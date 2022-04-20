@@ -60,7 +60,7 @@ As with all software, there is always a chance for issues and bugs to exist with
 
 ---
 
-<h2 style="font-weight:bold" align="center">Breaking Changes 💣</h2>
+<h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
 1. Removed the following classes/types
    - _`RenderText`_

@@ -1,4 +1,4 @@
-// <copyright file="RectBatchServiceTests.cs" company="KinsonDigital">
+// <copyright file="RectBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,9 +16,9 @@ namespace VelaptorTests.Services
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="RectBatchService"/> class.
+    /// Tests the <see cref="RectBatchingService"/> class.
     /// </summary>
-    public class RectBatchServiceTests
+    public class RectBatchingServiceTests
     {
         #region Prop Tests
         [Fact]
@@ -82,7 +82,7 @@ namespace VelaptorTests.Services
 
         #region Method Tests
         [Fact]
-        public void Add_WhenBatchIsFull_InvokesBatchFilledEvent()
+        public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
         {
             // Arrange
             var batchItem1 = default(RectShape);
@@ -102,31 +102,6 @@ namespace VelaptorTests.Services
             }, () =>
             {
                 service.Add(batchItem2);
-            });
-
-            Assert.Equal(2, service.BatchItems.Count);
-        }
-
-        [Fact]
-        public void AddRange_WhenInvoked_InvokesBatchFilledEvent()
-        {
-            // Arrange
-            var batchItem1 = default(RectShape);
-            var batchItem2 = default(RectShape);
-
-            var service = CreateService();
-            service.BatchSize = 1;
-
-            // Act & Assert
-            Assert.Raises<EventArgs>(e =>
-            {
-                service.BatchFilled += e;
-            }, e =>
-            {
-                service.BatchFilled -= e;
-            }, () =>
-            {
-                service.AddRange(new[] { batchItem1, batchItem2 });
             });
 
             Assert.Equal(2, service.BatchItems.Count);
@@ -171,9 +146,9 @@ namespace VelaptorTests.Services
         #endregion
 
         /// <summary>
-        /// Creates a new instance of <see cref="RectBatchService"/> for the purpose of testing.
+        /// Creates a new instance of <see cref="RectBatchingService"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private static RectBatchService CreateService() => new ();
+        private static RectBatchingService CreateService() => new ();
     }
 }

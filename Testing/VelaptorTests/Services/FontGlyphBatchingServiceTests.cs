@@ -1,4 +1,4 @@
-﻿// <copyright file="FontGlyphBatchServiceTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchingServiceTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,7 +15,7 @@ namespace VelaptorTests.Services
     using VelaptorTests.Helpers;
     using Xunit;
 
-    public class FontGlyphBatchServiceTests
+    public class FontGlyphBatchingServiceTests
     {
         #region Prop Tests
         [Fact]
@@ -75,7 +75,7 @@ namespace VelaptorTests.Services
 
         #region Method Tests
         [Fact]
-        public void Add_WhenBatchIsFull_InvokesBatchFilledEvent()
+        public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
         {
             // Arrange
             var batchItem1 = default(FontGlyphBatchItem);
@@ -103,33 +103,6 @@ namespace VelaptorTests.Services
         }
 
         [Fact]
-        public void AddRange_WhenInvoked_InvokesBatchFilledEvent()
-        {
-            // Arrange
-            var batchItem1 = default(FontGlyphBatchItem);
-            batchItem1.TextureId = 10;
-            var batchItem2 = default(FontGlyphBatchItem);
-            batchItem2.TextureId = 10;
-
-            var service = CreateService();
-            service.BatchSize = 1;
-
-            // Act & Assert
-            Assert.Raises<EventArgs>(e =>
-            {
-                service.BatchFilled += e;
-            }, e =>
-            {
-                service.BatchFilled -= e;
-            }, () =>
-            {
-                service.AddRange(new[] { batchItem1, batchItem2 });
-            });
-
-            Assert.Equal(2, service.BatchItems.Count);
-        }
-
-        [Fact]
         public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
         {
             // Arrange
@@ -140,7 +113,8 @@ namespace VelaptorTests.Services
 
             var service = CreateService();
             service.BatchSize = 2;
-            service.AddRange(new[] { batchItem1, batchItem2 });
+            service.Add(batchItem1);
+            service.Add(batchItem2);
 
             // Act
             service.EmptyBatch();
@@ -172,9 +146,9 @@ namespace VelaptorTests.Services
         #endregion
 
         /// <summary>
-        /// Creates a new instance of <see cref="FontGlyphBatchService"/> for the purpose of testing.
+        /// Creates a new instance of <see cref="FontGlyphBatchingService"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private static FontGlyphBatchService CreateService() => new ();
+        private static FontGlyphBatchingService CreateService() => new ();
     }
 }
