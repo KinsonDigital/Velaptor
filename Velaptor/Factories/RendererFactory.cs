@@ -8,7 +8,6 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.OpenGL;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
@@ -44,11 +43,9 @@ namespace Velaptor.Factories
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
             var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
             var rectBuffer = GPUBufferFactory.CreateRectGPUBuffer();
+            var batchServiceManager = IoC.Container.GetInstance<IBatchServiceManager>();
             var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
             var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
-            var textureBatchingService = IoC.Container.GetInstance<IBatchingService<TextureBatchItem>>();
-            var fontBatchingService = IoC.Container.GetInstance<IBatchingService<FontGlyphBatchItem>>();
-            var rectBatchingService = IoC.Container.GetInstance<IBatchingService<RectShape>>();
 
             renderer = new Renderer(
                 glInvoker,
@@ -59,9 +56,7 @@ namespace Velaptor.Factories
                 textureBuffer,
                 fontBuffer,
                 rectBuffer,
-                textureBatchingService,
-                fontBatchingService,
-                rectBatchingService,
+                batchServiceManager,
                 glInitReactor,
                 shutDownReactor);
 
