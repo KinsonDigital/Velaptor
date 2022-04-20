@@ -42,7 +42,7 @@ Contains Bug Fix(es)
 </details>
 
 
-<details open><summary>💣Breaking Change(s)💣</summary>
+<details open><summary>🧨Breaking Change(s)🧨</summary>
 
 Contains [breaking change(s)](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract)
 - [ ] Yes
