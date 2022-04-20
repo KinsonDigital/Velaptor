@@ -40,12 +40,12 @@ namespace VelaptorTests.Graphics
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IShaderProgram> mockTextureShader;
-        private readonly Mock<IGPUBuffer<TextureBatchItem>> mockTextureBuffer;
         private readonly Mock<IShaderProgram> mockFontShader;
-        private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontBuffer;
-        private readonly Mock<IFont> mockFont;
         private readonly Mock<IShaderProgram> mockRectShader;
+        private readonly Mock<IGPUBuffer<TextureBatchItem>> mockTextureBuffer;
+        private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontBuffer;
         private readonly Mock<IGPUBuffer<RectShape>> mockRectBuffer;
+        private readonly Mock<IFont> mockFont;
         private readonly Mock<IBatchServiceManager> mockBatchServiceManager;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IDisposable> mockGLInitUnsubscriber;

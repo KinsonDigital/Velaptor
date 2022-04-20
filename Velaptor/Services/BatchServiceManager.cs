@@ -195,7 +195,7 @@ namespace Velaptor.Services
             => this.FontGlyphBatchFilled?.Invoke(sender, e);
 
         /// <summary>
-        /// Invoked the rect batch filled event.
+        /// Invoked the rectangle batch filled event.
         /// </summary>
         private void RectBatchingService_BatchFilled(object? sender, EventArgs e)
             => this.RectBatchFilled?.Invoke(sender, e);

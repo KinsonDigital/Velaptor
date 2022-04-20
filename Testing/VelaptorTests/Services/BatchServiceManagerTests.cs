@@ -444,7 +444,7 @@ namespace VelaptorTests.Services
         }
 
         [Fact]
-        public void EndBatch_WhenRectBatch_RaisesFontGlyphBatchFilledEvent()
+        public void EndBatch_WhenRectBatch_RaisesRectBatchFilledEvent()
         {
             // Arrange
             var manager = CreateManager();

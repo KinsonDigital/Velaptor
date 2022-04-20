@@ -13,7 +13,7 @@ namespace Velaptor.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// Manages batching services operations.
+    /// Manages batching service operations.
     /// </summary>
     internal interface IBatchServiceManager : IDisposable
     {
