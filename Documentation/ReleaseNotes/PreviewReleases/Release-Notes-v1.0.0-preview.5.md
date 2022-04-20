@@ -48,7 +48,7 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Breaking Changes 💣</h2>
+<h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
 1. Changed the data type of the _`Width`_ and _`Height`_ properties from _`int`_ to _`uint`_ for both the _`IAtlasData`_ interface and _`AtlasData`_ class.
 2. Moved the `FontStyle` enumeration to a new namespace named `Velaptor/Content/Fonts`.
