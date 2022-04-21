@@ -39,9 +39,7 @@ namespace VelaptorTests.Graphics
         private const char InvalidCharacter = '□';
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IOpenGLService> mockGLService;
-        private readonly Mock<IShaderProgram> mockTextureShader;
-        private readonly Mock<IShaderProgram> mockFontShader;
-        private readonly Mock<IShaderProgram> mockRectShader;
+        private readonly Mock<IShaderManager> mockShaderManager;
         private readonly Mock<IGPUBuffer<TextureBatchItem>> mockTextureBuffer;
         private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontBuffer;
         private readonly Mock<IGPUBuffer<RectShape>> mockRectBuffer;
@@ -74,14 +72,10 @@ namespace VelaptorTests.Graphics
             this.mockGLService.Setup(m => m.ShaderCompiledSuccessfully(It.IsAny<uint>())).Returns(true);
             this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(800, 600));
 
-            this.mockTextureShader = new Mock<IShaderProgram>();
-            this.mockTextureShader.SetupGet(p => p.ShaderId).Returns(TextureShaderId);
-
-            this.mockFontShader = new Mock<IShaderProgram>();
-            this.mockFontShader.SetupGet(p => p.ShaderId).Returns(FontShaderId);
-
-            this.mockRectShader = new Mock<IShaderProgram>();
-            this.mockRectShader.SetupGet(p => p.ShaderId).Returns(RectShaderId);
+            this.mockShaderManager = new Mock<IShaderManager>();
+            this.mockShaderManager.Setup(m => m.GetShaderId(ShaderType.Texture)).Returns(TextureShaderId);
+            this.mockShaderManager.Setup(m => m.GetShaderId(ShaderType.Font)).Returns(FontShaderId);
+            this.mockShaderManager.Setup(m => m.GetShaderId(ShaderType.Rectangle)).Returns(RectShaderId);
 
             this.mockTextureBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
             this.mockFontBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
@@ -131,9 +125,7 @@ namespace VelaptorTests.Graphics
                 var unused = new Renderer(
                     null,
                     this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object,
+                    this.mockShaderManager.Object,
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
@@ -144,7 +136,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void Ctor_WithNullTextureShaderParam_ThrowsException()
+        public void Ctor_WithNullShaderManagerParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -153,36 +145,13 @@ namespace VelaptorTests.Graphics
                     this.mockGL.Object,
                     this.mockGLService.Object,
                     null,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object,
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
                     this.mockBatchServiceManager.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'textureShader')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullFontShaderParam_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new Renderer(
-                    this.mockGL.Object,
-                    this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    null,
-                    this.mockRectShader.Object,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockRectBuffer.Object,
-                    this.mockBatchServiceManager.Object,
-                    this.mockGLInitReactable.Object,
-                    this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'fontShader')");
+            }, "The parameter must not be null. (Parameter 'shaderManager')");
         }
 
         [Fact]
@@ -194,9 +163,7 @@ namespace VelaptorTests.Graphics
                 var unused = new Renderer(
                     this.mockGL.Object,
                     this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object,
+                    this.mockShaderManager.Object,
                     null,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
@@ -204,27 +171,6 @@ namespace VelaptorTests.Graphics
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'textureBuffer')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullRectShaderParam_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new Renderer(
-                    this.mockGL.Object,
-                    this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    null,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockRectBuffer.Object,
-                    this.mockBatchServiceManager.Object,
-                    this.mockGLInitReactable.Object,
-                    this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'rectShader')");
         }
 
         [Fact]
@@ -236,9 +182,7 @@ namespace VelaptorTests.Graphics
                 var unused = new Renderer(
                     this.mockGL.Object,
                     this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object,
+                    this.mockShaderManager.Object,
                     this.mockTextureBuffer.Object,
                     null,
                     this.mockRectBuffer.Object,
@@ -257,9 +201,7 @@ namespace VelaptorTests.Graphics
                 var unused = new Renderer(
                     this.mockGL.Object,
                     this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object,
+                    this.mockShaderManager.Object,
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     null,
@@ -278,9 +220,7 @@ namespace VelaptorTests.Graphics
                 var unused = new Renderer(
                     this.mockGL.Object,
                     this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object,
+                    this.mockShaderManager.Object,
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
@@ -299,9 +239,7 @@ namespace VelaptorTests.Graphics
                 var unused = new Renderer(
                     this.mockGL.Object,
                     this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object,
+                    this.mockShaderManager.Object,
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
@@ -320,9 +258,7 @@ namespace VelaptorTests.Graphics
                 var unused = new Renderer(
                     this.mockGL.Object,
                     this.mockGLService.Object,
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object,
+                    this.mockShaderManager.Object,
                     this.mockTextureBuffer.Object,
                     this.mockFontBuffer.Object,
                     this.mockRectBuffer.Object,
@@ -526,7 +462,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             const string shaderName = "TestTextureShader";
-            this.mockTextureShader.SetupGet(p => p.Name).Returns(shaderName);
+            this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Texture)).Returns(shaderName);
             var unused = CreateRenderer();
 
             // Act
@@ -536,7 +472,7 @@ namespace VelaptorTests.Graphics
             this.mockGLService.Verify(m => m.BeginGroup("Render Texture Process - Nothing To Render"), Times.Once);
             this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
             this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Texture Process With {shaderName} Shader"));
-            this.mockTextureShader.VerifyNever(m => m.Use());
+            this.mockShaderManager.VerifyNever(m => m.Use(It.IsAny<ShaderType>()));
             this.mockGLService.VerifyNever(m =>
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Texture Data - TextureID"))));
             this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
@@ -747,7 +683,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             const string shaderName = "TestFontShader";
-            this.mockFontShader.SetupGet(p => p.Name).Returns(shaderName);
+            this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Font)).Returns(shaderName);
             var unused = CreateRenderer();
 
             // Act
@@ -757,7 +693,7 @@ namespace VelaptorTests.Graphics
             this.mockGLService.Verify(m => m.BeginGroup("Render Text Process - Nothing To Render"), Times.Once);
             this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
             this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Text Process With {shaderName} Shader"));
-            this.mockFontShader.VerifyNever(m => m.Use());
+            this.mockShaderManager.VerifyNever(m => m.Use(It.IsAny<ShaderType>()));
             this.mockGLService.VerifyNever(m =>
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Character Data - TextureID"))));
             this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
@@ -1334,7 +1270,7 @@ namespace VelaptorTests.Graphics
         {
             // Arrange
             const string shaderName = "TestRectShader";
-            this.mockFontShader.SetupGet(p => p.Name).Returns(shaderName);
+            this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Rectangle)).Returns(shaderName);
             var unused = CreateRenderer();
 
             // Act
@@ -1344,7 +1280,7 @@ namespace VelaptorTests.Graphics
             this.mockGLService.Verify(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"), Times.Once);
             this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
             this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Rectangle Process With {shaderName} Shader"));
-            this.mockRectShader.VerifyNever(m => m.Use());
+            this.mockShaderManager.VerifyNever(m => m.Use(It.IsAny<ShaderType>()));
             this.mockGLService.VerifyNever(m =>
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID"))));
             this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
@@ -1554,9 +1490,7 @@ namespace VelaptorTests.Graphics
             var result = new Renderer(
                 this.mockGL.Object,
                 this.mockGLService.Object,
-                this.mockTextureShader.Object,
-                this.mockFontShader.Object,
-                this.mockRectShader.Object,
+                this.mockShaderManager.Object,
                 this.mockTextureBuffer.Object,
                 this.mockFontBuffer.Object,
                 this.mockRectBuffer.Object,

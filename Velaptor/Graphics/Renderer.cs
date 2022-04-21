@@ -33,9 +33,7 @@ namespace Velaptor.Graphics
         private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
         private readonly IGLInvoker gl;
         private readonly IOpenGLService openGLService;
-        private readonly IShaderProgram textureShader;
-        private readonly IShaderProgram fontShader;
-        private readonly IShaderProgram rectShader;
+        private readonly IShaderManager shaderManager;
         private readonly IGPUBuffer<TextureBatchItem> textureBuffer;
         private readonly IGPUBuffer<FontGlyphBatchItem> fontBuffer;
         private readonly IGPUBuffer<RectShape> rectBuffer;
@@ -54,9 +52,7 @@ namespace Velaptor.Graphics
         /// </summary>
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-        /// <param name="textureShader">The shader used for rendering textures.</param>
-        /// <param name="fontShader">The shader used for rendering text.</param>
-        /// <param name="rectShader">The shader used for rendering rectangles.</param>
+        /// <param name="shaderManager">Manages various shader operations.</param>
         /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
         /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
         /// <param name="rectBuffer">Updates the data in the GPU related to rendering rectangles.</param>
@@ -70,9 +66,7 @@ namespace Velaptor.Graphics
         public Renderer(
             IGLInvoker gl,
             IOpenGLService openGLService,
-            IShaderProgram textureShader,
-            IShaderProgram fontShader,
-            IShaderProgram rectShader,
+            IShaderManager shaderManager,
             IGPUBuffer<TextureBatchItem> textureBuffer,
             IGPUBuffer<FontGlyphBatchItem> fontBuffer,
             IGPUBuffer<RectShape> rectBuffer,
@@ -82,9 +76,7 @@ namespace Velaptor.Graphics
         {
             EnsureThat.ParamIsNotNull(gl);
             EnsureThat.ParamIsNotNull(openGLService);
-            EnsureThat.ParamIsNotNull(textureShader);
-            EnsureThat.ParamIsNotNull(fontShader);
-            EnsureThat.ParamIsNotNull(rectShader);
+            EnsureThat.ParamIsNotNull(shaderManager);
             EnsureThat.ParamIsNotNull(textureBuffer);
             EnsureThat.ParamIsNotNull(fontBuffer);
             EnsureThat.ParamIsNotNull(rectBuffer);
@@ -94,9 +86,7 @@ namespace Velaptor.Graphics
 
             this.gl = gl;
             this.openGLService = openGLService;
-            this.textureShader = textureShader;
-            this.fontShader = fontShader;
-            this.rectShader = rectShader;
+            this.shaderManager = shaderManager;
             this.textureBuffer = textureBuffer;
             this.fontBuffer = fontBuffer;
             this.rectBuffer = rectBuffer;
@@ -437,9 +427,9 @@ namespace Velaptor.Graphics
                 return;
             }
 
-            this.openGLService.BeginGroup($"Render Texture Process With {this.textureShader.Name} Shader");
+            this.openGLService.BeginGroup($"Render Texture Process With {this.shaderManager.GetShaderName(ShaderType.Texture)} Shader");
 
-            this.textureShader.Use();
+            this.shaderManager.Use(ShaderType.Texture);
 
             var totalItemsToRender = 0u;
 
@@ -499,9 +489,9 @@ namespace Velaptor.Graphics
                 return;
             }
 
-            this.openGLService.BeginGroup($"Render Text Process With {this.fontShader.Name} Shader");
+            this.openGLService.BeginGroup($"Render Text Process With {this.shaderManager.GetShaderName(ShaderType.Font)} Shader");
 
-            this.fontShader.Use();
+            this.shaderManager.Use(ShaderType.Font);
 
             var totalItemsToRender = 0u;
 
@@ -559,9 +549,9 @@ namespace Velaptor.Graphics
                 return;
             }
 
-            this.openGLService.BeginGroup($"Render Rectangle Process With {this.rectShader.Name} Shader");
+            this.openGLService.BeginGroup($"Render Rectangle Process With {this.shaderManager.GetShaderName(ShaderType.Rectangle)} Shader");
 
-            this.rectShader.Use();
+            this.shaderManager.Use(ShaderType.Rectangle);
 
             var totalItemsToRender = 0u;
 
