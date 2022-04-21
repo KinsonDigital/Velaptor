@@ -6,8 +6,6 @@ namespace VelaptorTests.Input
 {
     using System.Drawing;
     using Velaptor.Input;
-    using Velaptor.Input.Exceptions;
-    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>

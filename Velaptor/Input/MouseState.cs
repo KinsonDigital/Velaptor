@@ -8,7 +8,6 @@ namespace Velaptor.Input
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
-    using Velaptor.Input.Exceptions;
 
     // ReSharper restore RedundantNameQualifier
 
