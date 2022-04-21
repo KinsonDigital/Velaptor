@@ -15,6 +15,9 @@ namespace VelaptorTests.OpenGL.Buffers
     using VelaptorTests.Helpers;
     using Xunit;
 
+    /// <summary>
+    /// Tests the <see cref="BufferManager"/> class.
+    /// </summary>
     public class BufferManagerTests
     {
         private readonly Mock<IGPUBufferFactory> mockBufferFactory;
@@ -22,6 +25,9 @@ namespace VelaptorTests.OpenGL.Buffers
         private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontGlyphBuffer;
         private readonly Mock<IGPUBuffer<RectShape>> mockRectBuffer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BufferManagerTests"/> class.
+        /// </summary>
         public BufferManagerTests()
         {
             this.mockTextureBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();

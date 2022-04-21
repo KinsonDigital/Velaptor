@@ -167,8 +167,8 @@ namespace Velaptor.NativeInterop.OpenGL
         /// </summary>
         /// <param name="bufferId">The ID of the buffer object.</param>
         /// <param name="label">The label to give the buffer object.</param>
-        /// <param name="openGLBufferType">The type of buffer.</param>
-        void LabelBuffer(uint bufferId, string label, OpenGLBufferType openGLBufferType);
+        /// <param name="bufferType">The type of buffer.</param>
+        void LabelBuffer(uint bufferId, string label, OpenGLBufferType bufferType);
 
         /// <summary>
         /// Labels a texture with the given <paramref name="textureId"/> with the given <paramref name="label"/>.
