@@ -6,6 +6,7 @@ namespace VelaptorTests.OpenGL.Shaders
 {
     using System;
     using Moq;
+    using Velaptor.Factories;
     using Velaptor.OpenGL.Shaders;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -21,6 +22,7 @@ namespace VelaptorTests.OpenGL.Shaders
         private const uint TextureShaderId = 123u;
         private const uint FontShaderId = 456u;
         private const uint RectangleShaderId = 789u;
+        private readonly Mock<IShaderFactory> mockShaderFactory;
         private readonly Mock<IShaderProgram> mockTextureShader;
         private readonly Mock<IShaderProgram> mockFontShader;
         private readonly Mock<IShaderProgram> mockRectShader;
@@ -41,46 +43,22 @@ namespace VelaptorTests.OpenGL.Shaders
             this.mockRectShader = new Mock<IShaderProgram>();
             this.mockRectShader.SetupGet(p => p.Name).Returns(RectangleShaderName);
             this.mockRectShader.SetupGet(p => p.ShaderId).Returns(RectangleShaderId);
+
+            this.mockShaderFactory = new Mock<IShaderFactory>();
+            this.mockShaderFactory.Setup(m => m.CreateTextureShader()).Returns(this.mockTextureShader.Object);
+            this.mockShaderFactory.Setup(m => m.CreateFontShader()).Returns(this.mockFontShader.Object);
+            this.mockShaderFactory.Setup(m => m.CreateRectShader()).Returns(this.mockRectShader.Object);
         }
 
         #region Constructor Tests
         [Fact]
-        public void Ctor_WithNullTextureShaderParam_ThrowsException()
+        public void Ctor_WithNullShaderFactoryParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                var unused = new ShaderManager(
-                    null,
-                    this.mockFontShader.Object,
-                    this.mockRectShader.Object);
-            }, "The parameter must not be null. (Parameter 'textureShader')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullFontShaderParam_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new ShaderManager(
-                    this.mockTextureShader.Object,
-                    null,
-                    this.mockRectShader.Object);
-            }, "The parameter must not be null. (Parameter 'fontShader')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullRectShaderParam_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new ShaderManager(
-                    this.mockTextureShader.Object,
-                    this.mockFontShader.Object,
-                    null);
-            }, "The parameter must not be null. (Parameter 'rectShader')");
+                var unused = new ShaderManager(null);
+            }, "The parameter must not be null. (Parameter 'shaderFactory')");
         }
         #endregion
 
@@ -195,10 +173,6 @@ namespace VelaptorTests.OpenGL.Shaders
         /// Creates a new instance of <see cref="ShaderManager"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private ShaderManager CreateManager()
-            => new ShaderManager(
-                this.mockTextureShader.Object,
-                this.mockFontShader.Object,
-                this.mockRectShader.Object);
+        private ShaderManager CreateManager() => new (this.mockShaderFactory.Object);
     }
 }

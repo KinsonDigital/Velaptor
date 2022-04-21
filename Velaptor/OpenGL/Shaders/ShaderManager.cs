@@ -6,6 +6,7 @@ namespace Velaptor.OpenGL.Shaders
 {
     // ReSharper disable RedundantNameQualifier
     using System;
+    using Velaptor.Factories;
     using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
@@ -20,21 +21,14 @@ namespace Velaptor.OpenGL.Shaders
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderManager"/> class.
         /// </summary>
-        /// <param name="textureShader">The shader used for rendering textures.</param>
-        /// <param name="fontShader">The shader used for rendering text.</param>
-        /// <param name="rectShader">The shader used for rendering rectangles.</param>
-        public ShaderManager(
-            IShaderProgram textureShader,
-            IShaderProgram fontShader,
-            IShaderProgram rectShader)
+        /// <param name="shaderFactory">Creates various shaders.</param>
+        public ShaderManager(IShaderFactory shaderFactory)
         {
-            EnsureThat.ParamIsNotNull(textureShader);
-            EnsureThat.ParamIsNotNull(fontShader);
-            EnsureThat.ParamIsNotNull(rectShader);
+            EnsureThat.ParamIsNotNull(shaderFactory);
 
-            this.textureShader = textureShader;
-            this.fontShader = fontShader;
-            this.rectShader = rectShader;
+            this.textureShader = shaderFactory.CreateTextureShader();
+            this.fontShader = shaderFactory.CreateFontShader();
+            this.rectShader = shaderFactory.CreateRectShader();
         }
 
         /// <inheritdoc/>
