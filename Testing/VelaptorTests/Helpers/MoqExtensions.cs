@@ -1,4 +1,4 @@
-// <copyright file="MoqExtensions.cs" company="KinsonDigital">
+﻿// <copyright file="MoqExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -26,15 +26,13 @@ namespace VelaptorTests.Helpers
         /// <typeparam name="T">The type that the setup is mocking.</typeparam>
         public static void CallbackInOrder<T>(this ISetup<T> setup, string methodName, int expectedOrder)
             where T : class
-        {
-            setup.Callback(() =>
+            => setup.Callback(() =>
             {
                 AssertExtensions.EqualWithMessage(
                     expectedOrder,
                     callOrder++,
                     $"Method '{methodName}' called out of order.");
             });
-        }
 
         /// <summary>
         /// Specifies a callback to invoke when the method is called and then asserts that the call is in the correct order
@@ -50,15 +48,13 @@ namespace VelaptorTests.Helpers
         /// <typeparam name="T">The type that the setup is mocking.</typeparam>
         public static void CallbackInOrder<T>(this ISetup<T> setup, string methodName, int id, int expectedOrder)
             where T : class
-        {
-            setup.Callback(() =>
+            => setup.Callback(() =>
             {
                 AssertExtensions.EqualWithMessage(
                     expectedOrder,
                     callOrder++,
                     $"Method '{methodName}' with ID '{id}' called out of order.");
             });
-        }
 
         /// <summary>
         /// Verifies that a specific invocation matching the given expression was never performed on the mock.
@@ -72,9 +68,7 @@ namespace VelaptorTests.Helpers
         /// </exception>
         public static void VerifyNever<T>(this Mock<T> mock, Expression<Action<T>> expression)
             where T : class
-        {
-            mock.Verify(expression, Times.Never);
-        }
+            => mock.Verify(expression, Times.Never);
 
         /// <summary>
         /// Verifies that a specific invocation matching the given expression was only performed on the mock exactly one time.
@@ -88,7 +82,7 @@ namespace VelaptorTests.Helpers
         /// </exception>
         public static void VerifyOnce<T>(this Mock<T> mock, Expression<Action<T>> expression)
             where T : class
-        {
+            => mock.Verify(expression, Times.Once);
 
         /// <summary>
         ///   Verifies that a property was set on the mock exactly one time.
