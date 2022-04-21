@@ -6,8 +6,6 @@ namespace VelaptorTests.Input
 {
     using System.Drawing;
     using Velaptor.Input;
-    using Velaptor.Input.Exceptions;
-    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -193,19 +191,6 @@ namespace VelaptorTests.Input
 
             // Assert
             Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void GetButtonState_WithInvalidState_ThrowsException()
-        {
-            // Arrange
-            var state = default(MouseState);
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<InvalidInputException>(() =>
-            {
-                state.SetButtonState((MouseButton)123, true);
-            }, "Invalid Mouse Input");
         }
 
         [Theory]

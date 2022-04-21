@@ -8,7 +8,6 @@ namespace Velaptor.Input
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
-    using Velaptor.Input.Exceptions;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -174,23 +173,24 @@ namespace Velaptor.Input
         /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
-        /// <param name="state">The state to set the button to.</param>
+        /// <param name="state">Sets the state of the <paramref name="mouseButton"/>.</param>
         public void SetButtonState(MouseButton mouseButton, bool state)
         {
-            switch (mouseButton)
+            // ReSharper disable ConvertIfStatementToSwitchStatement
+            if (mouseButton == MouseButton.LeftButton)
             {
-                case MouseButton.LeftButton:
-                    this.isLeftButtonDown = state;
-                    break;
-                case MouseButton.RightButton:
-                    this.isRightButtonDown = state;
-                    break;
-                case MouseButton.MiddleButton:
-                    this.isMiddleButtonDown = state;
-                    break;
-                default:
-                    throw new InvalidInputException("Invalid Mouse Input");
+                this.isLeftButtonDown = state;
             }
+            else if (mouseButton == MouseButton.RightButton)
+            {
+                this.isRightButtonDown = state;
+            }
+            else if (mouseButton == MouseButton.MiddleButton)
+            {
+                this.isMiddleButtonDown = state;
+            }
+
+            // ReSharper restore ConvertIfStatementToSwitchStatement
         }
     }
 }
