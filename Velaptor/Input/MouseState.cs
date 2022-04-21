@@ -173,7 +173,7 @@ namespace Velaptor.Input
         /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
-        /// <param name="state">Sets the state pf the <paramref name="mouseButton"/>.</param>
+        /// <param name="state">Sets the state of the <paramref name="mouseButton"/>.</param>
         public void SetButtonState(MouseButton mouseButton, bool state)
         {
             // ReSharper disable ConvertIfStatementToSwitchStatement
