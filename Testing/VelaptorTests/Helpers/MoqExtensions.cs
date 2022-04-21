@@ -1,4 +1,4 @@
-﻿// <copyright file="MoqExtensions.cs" company="KinsonDigital">
+// <copyright file="MoqExtensions.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -89,7 +89,34 @@ namespace VelaptorTests.Helpers
         public static void VerifyOnce<T>(this Mock<T> mock, Expression<Action<T>> expression)
             where T : class
         {
-            mock.Verify(expression, Times.Once);
-        }
+
+        /// <summary>
+        ///   Verifies that a property was set on the mock exactly one time.
+        /// </summary>
+        /// <param name="mock">The mock object to extend.</param>
+        /// <param name="setterExpression">Expression to verify.</param>
+        /// <typeparam name="T">Type to mock, which can be an interface, a class, or a delegate.</typeparam>
+        /// <exception cref="MockException">
+        ///   The invocation was not called exactly one time.
+        /// </exception>
+        public static void VerifySetOnce<T>(this Mock<T> mock, Action<T> setterExpression)
+            where T : class
+            => mock.VerifySet(setterExpression, Times.Once);
+
+        /// <summary>
+        ///   Verifies that a property was read on the mock exactly one time.
+        /// </summary>
+        /// <param name="mock">The mock object to extend.</param>
+        /// <param name="expression">Expression to verify.</param>
+        /// <typeparam name="T">Type to mock, which can be an interface, a class, or a delegate.</typeparam>
+        /// <typeparam name="TProperty">
+        ///   Type of the property to verify. Typically omitted as it can be inferred from the expression's return type.
+        /// </typeparam>
+        /// <exception cref="MockException">
+        ///   The invocation was not called exactly one time.
+        /// </exception>
+        public static void VerifyGetOnce<T, TProperty>(this Mock<T> mock, Expression<Func<T, TProperty>> expression)
+            where T : class
+            => mock.VerifyGet(expression, Times.Once);
     }
 }
