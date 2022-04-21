@@ -35,7 +35,7 @@ namespace VelaptorTests.Helpers
             });
 
         /// <summary>
-        /// Specifies a callback to invoke when the method is called and then asserts that the call is in the correct order
+        /// Specifies a callback to invoke when the method is called and then asserts that the call is in the correct order.
         /// specified by the given <paramref name="expectedOrder"/>.
         /// </summary>
         /// <param name="setup">The mock setup to extend.</param>
