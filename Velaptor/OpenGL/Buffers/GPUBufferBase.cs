@@ -167,11 +167,11 @@ namespace Velaptor.OpenGL.Buffers
 
             VBO = GL.GenBuffer();
             OpenGLService.BindVBO(VBO);
-            OpenGLService.LabelBuffer(VBO, Name, BufferType.VertexBufferObject);
+            OpenGLService.LabelBuffer(VBO, Name, OpenGLBufferType.VertexBufferObject);
 
             this.ebo = GL.GenBuffer();
             OpenGLService.BindEBO(this.ebo);
-            OpenGLService.LabelBuffer(this.ebo, Name, BufferType.IndexArrayObject);
+            OpenGLService.LabelBuffer(this.ebo, Name, OpenGLBufferType.IndexArrayObject);
 
             OpenGLService.BeginGroup($"Setup {Name} Data");
             OpenGLService.BeginGroup($"Upload {Name} Vertex Data");

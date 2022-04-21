@@ -34,9 +34,7 @@ namespace Velaptor.Graphics
         private readonly IGLInvoker gl;
         private readonly IOpenGLService openGLService;
         private readonly IShaderManager shaderManager;
-        private readonly IGPUBuffer<TextureBatchItem> textureBuffer;
-        private readonly IGPUBuffer<FontGlyphBatchItem> fontBuffer;
-        private readonly IGPUBuffer<RectShape> rectBuffer;
+        private readonly IBufferManager bufferManager;
         private readonly IBatchServiceManager batchServiceManager;
         private readonly IDisposable glInitUnsubscriber;
         private readonly IDisposable shutDownUnsubscriber;
@@ -53,9 +51,7 @@ namespace Velaptor.Graphics
         /// <param name="gl">Invokes OpenGL functions.</param>
         /// <param name="openGLService">Provides OpenGL related helper methods.</param>
         /// <param name="shaderManager">Manages various shader operations.</param>
-        /// <param name="textureBuffer">Updates the data in the GPU related to rendering textures.</param>
-        /// <param name="fontBuffer">Updates the data in the GPU related to rendering text.</param>
-        /// <param name="rectBuffer">Updates the data in the GPU related to rendering rectangles.</param>
+        /// <param name="bufferManager">Manages various buffer operations.</param>
         /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
@@ -67,9 +63,7 @@ namespace Velaptor.Graphics
             IGLInvoker gl,
             IOpenGLService openGLService,
             IShaderManager shaderManager,
-            IGPUBuffer<TextureBatchItem> textureBuffer,
-            IGPUBuffer<FontGlyphBatchItem> fontBuffer,
-            IGPUBuffer<RectShape> rectBuffer,
+            IBufferManager bufferManager,
             IBatchServiceManager batchServiceManager,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
@@ -77,9 +71,7 @@ namespace Velaptor.Graphics
             EnsureThat.ParamIsNotNull(gl);
             EnsureThat.ParamIsNotNull(openGLService);
             EnsureThat.ParamIsNotNull(shaderManager);
-            EnsureThat.ParamIsNotNull(textureBuffer);
-            EnsureThat.ParamIsNotNull(fontBuffer);
-            EnsureThat.ParamIsNotNull(rectBuffer);
+            EnsureThat.ParamIsNotNull(bufferManager);
             EnsureThat.ParamIsNotNull(batchServiceManager);
             EnsureThat.ParamIsNotNull(glInitReactable);
             EnsureThat.ParamIsNotNull(shutDownReactable);
@@ -87,9 +79,7 @@ namespace Velaptor.Graphics
             this.gl = gl;
             this.openGLService = openGLService;
             this.shaderManager = shaderManager;
-            this.textureBuffer = textureBuffer;
-            this.fontBuffer = fontBuffer;
-            this.rectBuffer = rectBuffer;
+            this.bufferManager = bufferManager;
 
             this.batchServiceManager = batchServiceManager;
             this.batchServiceManager.SetBatchSize(BatchServiceType.Texture, IRenderer.BatchSize);
@@ -159,9 +149,9 @@ namespace Velaptor.Graphics
         /// <inheritdoc/>
         public void OnResize(SizeU size)
         {
-            this.textureBuffer.ViewPortSize = size;
-            this.fontBuffer.ViewPortSize = size;
-            this.rectBuffer.ViewPortSize = size;
+            this.bufferManager.SetViewPortSize(VelaptorBufferType.Texture, size);
+            this.bufferManager.SetViewPortSize(VelaptorBufferType.Font, size);
+            this.bufferManager.SetViewPortSize(VelaptorBufferType.Rectangle, size);
         }
 
         /// <inheritdoc/>
@@ -451,7 +441,7 @@ namespace Velaptor.Graphics
                     textureIsBound = true;
                 }
 
-                this.textureBuffer.UploadData(batchItem, i);
+                this.bufferManager.UploadTextureData(batchItem, i);
                 totalItemsToRender += 1;
 
                 this.openGLService.EndGroup();
@@ -512,8 +502,7 @@ namespace Velaptor.Graphics
                     fontTextureIsBound = true;
                 }
 
-                this.fontBuffer.UploadData(batchItem, i);
-
+                this.bufferManager.UploadFontGlyphData(batchItem, i);
                 totalItemsToRender += 1;
 
                 this.openGLService.EndGroup();
@@ -566,7 +555,7 @@ namespace Velaptor.Graphics
 
                 this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
 
-                this.rectBuffer.UploadData(batchItem, i);
+                this.bufferManager.UploadRectData(batchItem, i);
                 totalItemsToRender += 1;
 
                 this.openGLService.EndGroup();

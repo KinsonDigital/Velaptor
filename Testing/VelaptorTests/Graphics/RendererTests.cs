@@ -40,9 +40,7 @@ namespace VelaptorTests.Graphics
         private readonly Mock<IGLInvoker> mockGL;
         private readonly Mock<IOpenGLService> mockGLService;
         private readonly Mock<IShaderManager> mockShaderManager;
-        private readonly Mock<IGPUBuffer<TextureBatchItem>> mockTextureBuffer;
-        private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontBuffer;
-        private readonly Mock<IGPUBuffer<RectShape>> mockRectBuffer;
+        private readonly Mock<IBufferManager> mockBufferManager;
         private readonly Mock<IFont> mockFont;
         private readonly Mock<IBatchServiceManager> mockBatchServiceManager;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
@@ -77,9 +75,7 @@ namespace VelaptorTests.Graphics
             this.mockShaderManager.Setup(m => m.GetShaderId(ShaderType.Font)).Returns(FontShaderId);
             this.mockShaderManager.Setup(m => m.GetShaderId(ShaderType.Rectangle)).Returns(RectShaderId);
 
-            this.mockTextureBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
-            this.mockFontBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
-            this.mockRectBuffer = new Mock<IGPUBuffer<RectShape>>();
+            this.mockBufferManager = new Mock<IBufferManager>();
 
             this.mockBatchServiceManager = new Mock<IBatchServiceManager>();
             this.mockBatchServiceManager.SetupGet(p => p.TextureBatchItems)
@@ -126,9 +122,7 @@ namespace VelaptorTests.Graphics
                     null,
                     this.mockGLService.Object,
                     this.mockShaderManager.Object,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockRectBuffer.Object,
+                    this.mockBufferManager.Object,
                     this.mockBatchServiceManager.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
@@ -145,9 +139,7 @@ namespace VelaptorTests.Graphics
                     this.mockGL.Object,
                     this.mockGLService.Object,
                     null,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockRectBuffer.Object,
+                    this.mockBufferManager.Object,
                     this.mockBatchServiceManager.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
@@ -155,7 +147,7 @@ namespace VelaptorTests.Graphics
         }
 
         [Fact]
-        public void Ctor_WithNullTextureGPUBufferParam_ThrowsException()
+        public void Ctor_WithNullBufferManagerParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -165,50 +157,10 @@ namespace VelaptorTests.Graphics
                     this.mockGLService.Object,
                     this.mockShaderManager.Object,
                     null,
-                    this.mockFontBuffer.Object,
-                    this.mockRectBuffer.Object,
                     this.mockBatchServiceManager.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'textureBuffer')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullFontGPUBufferParam_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new Renderer(
-                    this.mockGL.Object,
-                    this.mockGLService.Object,
-                    this.mockShaderManager.Object,
-                    this.mockTextureBuffer.Object,
-                    null,
-                    this.mockRectBuffer.Object,
-                    this.mockBatchServiceManager.Object,
-                    this.mockGLInitReactable.Object,
-                    this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'fontBuffer')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullRectGPUBufferParam_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                var unused = new Renderer(
-                    this.mockGL.Object,
-                    this.mockGLService.Object,
-                    this.mockShaderManager.Object,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    null,
-                    this.mockBatchServiceManager.Object,
-                    this.mockGLInitReactable.Object,
-                    this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'rectBuffer')");
+            }, "The parameter must not be null. (Parameter 'bufferManager')");
         }
 
         [Fact]
@@ -221,9 +173,7 @@ namespace VelaptorTests.Graphics
                     this.mockGL.Object,
                     this.mockGLService.Object,
                     this.mockShaderManager.Object,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockRectBuffer.Object,
+                    this.mockBufferManager.Object,
                     null,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
@@ -240,9 +190,7 @@ namespace VelaptorTests.Graphics
                     this.mockGL.Object,
                     this.mockGLService.Object,
                     this.mockShaderManager.Object,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockRectBuffer.Object,
+                    this.mockBufferManager.Object,
                     this.mockBatchServiceManager.Object,
                     null,
                     this.mockShutDownReactable.Object);
@@ -259,9 +207,7 @@ namespace VelaptorTests.Graphics
                     this.mockGL.Object,
                     this.mockGLService.Object,
                     this.mockShaderManager.Object,
-                    this.mockTextureBuffer.Object,
-                    this.mockFontBuffer.Object,
-                    this.mockRectBuffer.Object,
+                    this.mockBufferManager.Object,
                     this.mockBatchServiceManager.Object,
                     this.mockGLInitReactable.Object,
                     null);
@@ -388,9 +334,9 @@ namespace VelaptorTests.Graphics
             batch.OnResize(new SizeU(11u, 22u));
 
             // Assert
-            this.mockTextureBuffer.VerifySet(p => p.ViewPortSize = new SizeU(11u, 22u));
-            this.mockFontBuffer.VerifySet(p => p.ViewPortSize = new SizeU(11u, 22u));
-            this.mockRectBuffer.VerifySet(p => p.ViewPortSize = new SizeU(11u, 22u));
+            this.mockBufferManager.VerifyOnce(m => m.SetViewPortSize(VelaptorBufferType.Texture, new SizeU(11u, 22u)));
+            this.mockBufferManager.VerifyOnce(m => m.SetViewPortSize(VelaptorBufferType.Font, new SizeU(11u, 22u)));
+            this.mockBufferManager.VerifyOnce(m => m.SetViewPortSize(VelaptorBufferType.Rectangle, new SizeU(11u, 22u)));
         }
 
         [Fact]
@@ -477,8 +423,8 @@ namespace VelaptorTests.Graphics
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Texture Data - TextureID"))));
             this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
             this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-            this.mockTextureBuffer.VerifyNever(m =>
-                m.UploadData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()));
+            this.mockBufferManager.VerifyNever(m =>
+                m.UploadTextureData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>()));
             this.mockGLService.VerifyNever(m =>
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
             this.mockGL.VerifyNever(m => m.DrawElements(
@@ -660,8 +606,8 @@ namespace VelaptorTests.Graphics
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
             this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
             this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
-            this.mockTextureBuffer.Verify(m => m.UploadData(shouldRenderItem, batchIndex), Times.Once);
-            this.mockTextureBuffer.Verify(m => m.UploadData(shouldNotRenderItem, batchIndex), Times.Never);
+            this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(shouldRenderItem, batchIndex));
+            this.mockBufferManager.VerifyNever(m => m.UploadTextureData(shouldNotRenderItem, batchIndex));
             this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Texture), Times.Once);
         }
 
@@ -698,8 +644,8 @@ namespace VelaptorTests.Graphics
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Character Data - TextureID"))));
             this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
             this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-            this.mockFontBuffer.VerifyNever(m =>
-                m.UploadData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>()));
+            this.mockBufferManager.VerifyNever(m =>
+                m.UploadFontGlyphData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>()));
             this.mockGLService.VerifyNever(m =>
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Font Elements"))));
             this.mockGL.VerifyNever(m => m.DrawElements(
@@ -1259,7 +1205,7 @@ namespace VelaptorTests.Graphics
                     IntPtr.Zero),
                 Times.Once());
             this.mockGLService.Verify(m => m.BindTexture2D(FontAtlasTextureId), Times.Once);
-            this.mockFontBuffer.Verify(m => m.UploadData(It.IsAny<FontGlyphBatchItem>(),
+            this.mockBufferManager.Verify(m => m.UploadFontGlyphData(It.IsAny<FontGlyphBatchItem>(),
                     It.IsAny<uint>()),
                     Times.Exactly(textBeingRendered.Length));
             this.mockBatchServiceManager.VerifyOnce(m => m.EmptyBatch(BatchServiceType.FontGlyph));
@@ -1285,8 +1231,8 @@ namespace VelaptorTests.Graphics
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Rectangle Data - TextureID"))));
             this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
             this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
-            this.mockRectBuffer.VerifyNever(m =>
-                m.UploadData(It.IsAny<RectShape>(), It.IsAny<uint>()));
+            this.mockBufferManager.VerifyNever(m =>
+                m.UploadRectData(It.IsAny<RectShape>(), It.IsAny<uint>()));
             this.mockGLService.VerifyNever(m =>
                 m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
             this.mockGL.VerifyNever(m => m.DrawElements(
@@ -1371,9 +1317,9 @@ namespace VelaptorTests.Graphics
             this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
             this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
             this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
-            this.mockRectBuffer.Verify(m => m.UploadData(shouldRenderItem, batchIndex), Times.Once);
-            this.mockRectBuffer.Verify(m => m.UploadData(shouldNotRenderItem, batchIndex), Times.Never);
-            this.mockRectBuffer.Verify(m => m.UploadData(shouldNotRenderEmptyItem, batchIndex), Times.Never);
+            this.mockBufferManager.VerifyOnce(m => m.UploadRectData(shouldRenderItem, batchIndex));
+            this.mockBufferManager.VerifyNever(m => m.UploadRectData(shouldNotRenderItem, batchIndex));
+            this.mockBufferManager.VerifyNever(m => m.UploadRectData(shouldNotRenderEmptyItem, batchIndex));
             this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Rectangle), Times.Once);
         }
 
@@ -1491,9 +1437,7 @@ namespace VelaptorTests.Graphics
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderManager.Object,
-                this.mockTextureBuffer.Object,
-                this.mockFontBuffer.Object,
-                this.mockRectBuffer.Object,
+                this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object);
