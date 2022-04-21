@@ -38,10 +38,8 @@ namespace Velaptor.Factories
 
             var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
             var openGLService = IoC.Container.GetInstance<IOpenGLService>();
-            var textureShader = ShaderFactory.CreateTextureShader();
-            var fontShader = ShaderFactory.CreateFontShader();
-            var rectShader = ShaderFactory.CreateRectShader();
-            var shaderManager = new ShaderManager(textureShader, fontShader, rectShader);
+            var shaderFactory = IoC.Container.GetInstance<IShaderFactory>();
+            var shaderManager = new ShaderManager(shaderFactory);
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
             var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
             var rectBuffer = GPUBufferFactory.CreateRectGPUBuffer();

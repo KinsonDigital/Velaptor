@@ -136,6 +136,7 @@ namespace Velaptor
             IoCContainer.Register<ISoundFactory, SoundFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<IShaderFactory, ShaderFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IFontFactory, FontFactory>();
         }
 
