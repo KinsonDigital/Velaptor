@@ -195,19 +195,6 @@ namespace VelaptorTests.Input
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void GetButtonState_WithInvalidState_ThrowsException()
-        {
-            // Arrange
-            var state = default(MouseState);
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<InvalidInputException>(() =>
-            {
-                state.SetButtonState((MouseButton)123, true);
-            }, "Invalid Mouse Input");
-        }
-
         [Theory]
         [InlineData(MouseButton.LeftButton, true)]
         [InlineData(MouseButton.MiddleButton, true)]
