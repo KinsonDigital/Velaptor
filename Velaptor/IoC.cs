@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Runtime.CompilerServices;
+
 [assembly: InternalsVisibleTo("VelaptorTests", AllInternalsVisible = true)]
 
 namespace Velaptor
