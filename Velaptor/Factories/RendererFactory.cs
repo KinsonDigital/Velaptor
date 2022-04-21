@@ -8,6 +8,7 @@ namespace Velaptor.Factories
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Graphics;
     using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.OpenGL.Shaders;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
@@ -40,6 +41,7 @@ namespace Velaptor.Factories
             var textureShader = ShaderFactory.CreateTextureShader();
             var fontShader = ShaderFactory.CreateFontShader();
             var rectShader = ShaderFactory.CreateRectShader();
+            var shaderManager = new ShaderManager(textureShader, fontShader, rectShader);
             var textureBuffer = GPUBufferFactory.CreateTextureGPUBuffer();
             var fontBuffer = GPUBufferFactory.CreateFontGPUBuffer();
             var rectBuffer = GPUBufferFactory.CreateRectGPUBuffer();
@@ -50,9 +52,7 @@ namespace Velaptor.Factories
             renderer = new Renderer(
                 glInvoker,
                 openGLService,
-                textureShader,
-                fontShader,
-                rectShader,
+                shaderManager,
                 textureBuffer,
                 fontBuffer,
                 rectBuffer,
