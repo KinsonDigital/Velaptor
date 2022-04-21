@@ -196,7 +196,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
             this.mockGLService.Verify(m => m.BindVBO(VertexBufferId), Times.Once);
             this.mockGLService.Verify(m => m.UnbindVBO(), Times.Once);
-            this.mockGLService.Verify(m => m.LabelBuffer(VertexBufferId, BufferName, BufferType.VertexBufferObject));
+            this.mockGLService.Verify(m => m.LabelBuffer(VertexBufferId, BufferName, OpenGLBufferType.VertexBufferObject));
         }
 
         [Fact]
@@ -213,7 +213,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
             this.mockGLService.Verify(m => m.BindEBO(IndexBufferId), Times.Once);
             this.mockGLService.Verify(m => m.UnbindEBO(), Times.Once);
-            this.mockGLService.Verify(m => m.LabelBuffer(IndexBufferId, BufferName, BufferType.IndexArrayObject));
+            this.mockGLService.Verify(m => m.LabelBuffer(IndexBufferId, BufferName, OpenGLBufferType.IndexArrayObject));
         }
 
         [Fact]

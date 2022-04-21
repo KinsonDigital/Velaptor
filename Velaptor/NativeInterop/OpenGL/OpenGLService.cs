@@ -189,17 +189,17 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <inheritdoc/>
-        public void LabelBuffer(uint bufferId, string label, BufferType bufferType)
+        public void LabelBuffer(uint bufferId, string label, OpenGLBufferType openGLBufferType)
         {
             label = string.IsNullOrEmpty(label)
                 ? "NOT SET"
                 : label;
 
-            var bufferTypeAcronym = bufferType switch
+            var bufferTypeAcronym = openGLBufferType switch
             {
-                BufferType.VertexBufferObject => "VBO",
-                BufferType.IndexArrayObject => "EBO",
-                _ => throw new ArgumentOutOfRangeException(nameof(bufferType), bufferType, null)
+                OpenGLBufferType.VertexBufferObject => "VBO",
+                OpenGLBufferType.IndexArrayObject => "EBO",
+                _ => throw new ArgumentOutOfRangeException(nameof(openGLBufferType), openGLBufferType, null)
             };
 
             var newLabel = $"{label} {bufferTypeAcronym}";
