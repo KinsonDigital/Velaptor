@@ -1,0 +1,46 @@
+﻿// <copyright file="App.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+namespace Velaptor.Factories
+{
+    // ReSharper disable RedundantNameQualifier
+    using System.Diagnostics.CodeAnalysis;
+    using Velaptor.NativeInterop.GLFW;
+    using Velaptor.NativeInterop.OpenGL;
+    using Velaptor.OpenGL;
+    using Velaptor.Reactables.Core;
+    using Velaptor.Reactables.ReactableData;
+    using Velaptor.Services;
+    using Velaptor.UI;
+
+    // ReSharper restore RedundantNameQualifier
+
+    /// <summary>
+    /// Velaptor application specific functionality.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public static class App
+    {
+        /// <summary>
+        /// Creates an instance of a Velaptor window implementation.
+        /// </summary>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
+        /// <returns>A Velaptor framework window implementation.</returns>
+        public static IWindow CreateWindow(uint width, uint height)
+            => new GLWindow(
+                width,
+                height,
+                IoC.Container.GetInstance<IGLInvoker>(),
+                IoC.Container.GetInstance<IGLFWInvoker>(),
+                IoC.Container.GetInstance<ISystemMonitorService>(),
+                IoC.Container.GetInstance<IGameWindowFacade>(),
+                IoC.Container.GetInstance<IPlatform>(),
+                IoC.Container.GetInstance<ITaskService>(),
+                ContentLoaderFactory.CreateContentLoader(),
+                RendererFactory.CreateRenderer(width, height),
+                IoC.Container.GetInstance<IReactable<GLInitData>>(),
+                IoC.Container.GetInstance<IReactable<ShutDownData>>());
+    }
+}

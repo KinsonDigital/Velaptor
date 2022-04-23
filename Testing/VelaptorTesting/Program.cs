@@ -20,7 +20,7 @@ namespace VelaptorTesting
 
         public static async Task Main(string[] args)
         {
-            window = WindowFactory.CreateWindow(1500, 800);
+            window = App.CreateWindow(1500, 800);
             gameWindow = new MainWindow(window);
 
             if (HasDebugConsole())
