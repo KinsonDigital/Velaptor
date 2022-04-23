@@ -4,43 +4,18 @@
 
 namespace Velaptor.Factories
 {
-    // ReSharper disable RedundantNameQualifier
-    using System.Diagnostics.CodeAnalysis;
-    using Velaptor.NativeInterop.GLFW;
-    using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.OpenGL;
-    using Velaptor.Reactables.Core;
-    using Velaptor.Reactables.ReactableData;
-    using Velaptor.Services;
-    using Velaptor.UI;
+    using Silk.NET.Windowing;
 
-    // ReSharper restore RedundantNameQualifier
-
-    /// <summary>
-    /// Creates an instance of a Velaptor window.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public static class WindowFactory
+    /// <inheritdoc/>
+    internal class WindowFactory : IWindowFactory
     {
-        /// <summary>
-        /// Creates an instance of a Velaptor window implementation.
-        /// </summary>
-        /// <param name="width">The width of the window.</param>
-        /// <param name="height">The height of the window.</param>
-        /// <returns>A Velaptor framework window implementation.</returns>
-        public static IWindow CreateWindow(uint width, uint height)
-            => new GLWindow(
-                width,
-                height,
-                IoC.Container.GetInstance<IGLInvoker>(),
-                IoC.Container.GetInstance<IGLFWInvoker>(),
-                IoC.Container.GetInstance<ISystemMonitorService>(),
-                IoC.Container.GetInstance<IGameWindowFacade>(),
-                IoC.Container.GetInstance<IPlatform>(),
-                IoC.Container.GetInstance<ITaskService>(),
-                ContentLoaderFactory.CreateContentLoader(),
-                RendererFactory.CreateRenderer(width, height),
-                IoC.Container.GetInstance<IReactable<GLInitData>>(),
-                IoC.Container.GetInstance<IReactable<ShutDownData>>());
+        /// <inheritdoc/>
+        public IWindow CreateSilkWindow()
+        {
+            var windowOptions = WindowOptions.Default;
+            windowOptions.ShouldSwapAutomatically = false;
+
+            return Window.Create(windowOptions);
+        }
     }
 }
