@@ -47,8 +47,7 @@ namespace Velaptor.OpenGL
         /// <param name="mouseInput">The system mouseInput for handling mouseInput events.</param>
         public GLWindowFacade(
             IReactable<GLContextData> glReactable,
-            IKeyboardInput<KeyCode,
-            KeyboardState> keyboardInput,
+            IKeyboardInput<KeyCode, KeyboardState> keyboardInput,
             IMouseInput<VelaptorMouseButton,
             MouseState> mouseInput)
         {
