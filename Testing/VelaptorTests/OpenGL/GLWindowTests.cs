@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -384,7 +384,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Ctor_WithNullGLReactableParam_ThrowsException()
+        public void Ctor_WithNullGLContextReactableParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -406,7 +406,7 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'glReactable')");
+            }, "The parameter must not be null. (Parameter 'glContextReactable')");
         }
 
         [Fact]
@@ -717,7 +717,6 @@ namespace VelaptorTests.OpenGL
         public void WindowState_WhenSettingInvalidValue_ThrowsException()
         {
             // Arrange
-            // this.mockSilkWindow.SetupSet(p => p.WindowState).Returns((SilkWindowBorder)1234);
             var window = CreateWindow();
             window.Show();
 
@@ -919,40 +918,11 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Show_WhenInvoked_InitializesWindowFacade()
-        {
-            // Arrange
-            var window = CreateWindow(123, 456);
-
-            // Act
-            window.Show();
-            // this.mockWindowFacade.Raise(w => w.Load += null, EventArgs.Empty);
-
-            // Assert
-            // this.mockWindowFacade.Verify(m => m.Init(123, 456), Times.Once());
-        }
-
-        [Fact]
-        public void Show_WhenInvoked_RunsWindowFacade()
-        {
-            // Arrange
-            var window = CreateWindow(123, 456);
-
-            // Act
-            window.Show();
-
-            // Assert
-            // this.mockWindowFacade.Verify(m => m.Show(), Times.Once());
-        }
-
-        [Fact]
         public void Show_WhenInvoked_SetsUpOpenGLErrorCallback()
         {
             // Arrange
             var window = CreateWindow();
             window.Show();
-
-            // this.mockWindowFacade.Raise(i => i.Load += null, EventArgs.Empty);
 
             // Act
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
@@ -970,19 +940,13 @@ namespace VelaptorTests.OpenGL
             // Arrange
             var updateInvoked = false;
             var window = CreateWindow();
-
-            void TestHandler(FrameTime e) => updateInvoked = true;
-
-            window.Update += TestHandler;
+            window.Update += _ => updateInvoked = true;
 
             // Act
             window.Show();
-            // this.mockWindowFacade.Raise(m => m.Unload += null, EventArgs.Empty);
-            // this.mockWindowFacade.Raise(m => m.UpdateFrame += null, new FrameTimeEventArgs(123));
-            window.Update -= TestHandler;
 
             // Assert
-            Assert.False(updateInvoked);
+            Assert.False(updateInvoked, $"The '{nameof(GLWindow)}.{nameof(GLWindow.Update)}' action should not be invoked.");
         }
 
         [Fact]
@@ -992,80 +956,13 @@ namespace VelaptorTests.OpenGL
             var renderInvoked = false;
             var window = CreateWindow();
 
-            void TestHandler(FrameTime e) => renderInvoked = true;
-
-            window.Draw += TestHandler;
+            window.Draw += _ => renderInvoked = true;
 
             // Act
             window.Show();
-            // this.mockWindowFacade.Raise(m => m.Unload += null, EventArgs.Empty);
-            // this.mockWindowFacade.Raise(m => m.RenderFrame += null, new FrameTimeEventArgs(234));
-            window.Draw -= TestHandler;
 
             // Assert
-            Assert.False(renderInvoked);
-        }
-
-        [Fact]
-        public async void ShowAsync_WhenInvoked_SubscribesToWindowEvents()
-        {
-            // Arrange
-            this.mockTaskService.Setup(m => m.SetAction(It.IsAny<Action>()))
-                .Callback<Action>(action =>
-                {
-                    action();
-                });
-
-            var window = CreateWindow();
-
-            // Act
-            await window.ShowAsync();
-
-            // Assert
-            // this.mockWindowFacade.VerifyAdd(s => s.Load += It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Load)}' event did not occur.");
-            // this.mockWindowFacade.VerifyAdd(s => s.Unload += It.IsAny<EventHandler<EventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Unload)}' event did not occur.");
-            // this.mockWindowFacade.VerifyAdd(s => s.UpdateFrame += It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' event did not occur.");
-            // this.mockWindowFacade.VerifyAdd(s => s.RenderFrame += It.IsAny<EventHandler<FrameTimeEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.RenderFrame)}' event did not occur.");
-            // this.mockWindowFacade.VerifyAdd(s => s.Resize += It.IsAny<EventHandler<WindowSizeEventArgs>>(), Times.Once(), $"Subscription of the '{nameof(IGameWindowFacade.Resize)}' event did not occur.");
-        }
-
-        [Fact]
-        public async void ShowAsync_WhenInvoked_InitWindowFacade()
-        {
-            // Arrange
-            this.mockTaskService.Setup(m => m.SetAction(It.IsAny<Action>()))
-                .Callback<Action>(action =>
-                {
-                    action();
-                });
-
-            var window = CreateWindow();
-
-            // Act
-            await window.ShowAsync();
-            // this.mockWindowFacade.Raise(w => w.Load += null, EventArgs.Empty);
-
-            // Assert
-            // this.mockWindowFacade.Verify(m => m.Init(It.IsAny<uint>(), It.IsAny<uint>()), Times.Once());
-        }
-
-        [Fact]
-        public async void ShowAsync_WhenInvoked_ExecutesWindowShow()
-        {
-            // Arrange
-            this.mockTaskService.Setup(m => m.SetAction(It.IsAny<Action>()))
-                .Callback<Action>(action =>
-                {
-                    action();
-                });
-
-            var window = CreateWindow();
-
-            // Act
-            await window.ShowAsync();
-
-            // Assert
-            // this.mockWindowFacade.Verify(m => m.Show(), Times.Once());
+            Assert.False(renderInvoked, $"The '{nameof(GLWindow)}.{nameof(GLWindow.Draw)}' action should not be invoked.");
         }
 
         [Fact]
@@ -1134,7 +1031,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Dispose_WhenInvoked_DisposesOfWindowFacade()
+        public void Dispose_WhenInvoked_DisposesOfWindow()
         {
             // Arrange
             var window = CreateWindow();
@@ -1147,10 +1044,10 @@ namespace VelaptorTests.OpenGL
             // Assert
             this.mockGL.VerifyRemoveOnce(e => e.GLError -= It.IsAny<EventHandler<GLErrorEventArgs>>(), $"Unsubscription of the '{nameof(IGLInvoker.GLError)}' event did not occur.");
             this.mockSilkWindow.VerifyRemoveOnce(e => e.Load -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(IWindow.Load)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(s => s.Update -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(IGameWindowFacade.UpdateFrame)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(s => s.Render -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(IGameWindowFacade.RenderFrame)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(s => s.Resize -= It.IsAny<Action<Vector2D<int>>>(), $"Unsubscription of the '{nameof(IGameWindowFacade.Resize)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(s => s.Closing -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(IGameWindowFacade.Unload)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(s => s.Update -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(IWindow.Update)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(s => s.Render -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(IWindow.Render)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(s => s.Resize -= It.IsAny<Action<Vector2D<int>>>(), $"Unsubscription of the '{nameof(IWindow.Resize)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(s => s.Closing -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(IWindow.Closing)}' event did not occur.");
             this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
             this.mockGL.Verify(m => m.Dispose(), Times.Once());
             this.mockGLFW.Verify(m => m.Dispose(), Times.Once());
@@ -1195,7 +1092,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void GLWindow_WhenUpdatingWhenNotShuttingDown_PerformsUpdate()
+        public void GLWindow_WhileUpdatingWhenNotShuttingDown_PerformsUpdate()
         {
             // Arrange
             var windowUpdateInvoked = false;
@@ -1244,7 +1141,7 @@ namespace VelaptorTests.OpenGL
             window.Show();
 
             // Act
-            // this.mockWindowFacade.Raise(e => e.RenderFrame += null, null, new FrameTimeEventArgs(16));
+            this.mockSilkWindow.Raise(e => e.Render += It.IsAny<Action<double>>(), 0.016);
 
             // Assert
             this.mockGL.Verify(m => m.Clear(It.IsAny<GLClearBufferMask>()), Times.Never);
@@ -1364,7 +1261,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void GLWindow_WhenMouseButtonIsReleasedDown_UpdatesMouseInputState()
+        public void GLWindow_WhenMouseButtonIsReleased_UpdatesMouseInputState()
         {
             // Arrange
             var window = CreateWindow();
@@ -1419,7 +1316,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Close_WhenInvoked_ClosesInternalWindowFacade()
+        public void Close_WhenInvoked_ClosesWindow()
         {
             // Arrange
             var window = CreateWindow();

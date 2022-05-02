@@ -7,7 +7,7 @@ namespace Velaptor.Factories
     using SILKWindow = Silk.NET.Windowing.IWindow;
 
     /// <summary>
-    /// Creates different native windows.
+    /// Creates a native window.
     /// </summary>
     internal interface IWindowFactory
     {

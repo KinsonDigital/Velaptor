@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using Velaptor.Exceptions;
+
 namespace Velaptor
 {
     // ReSharper disable RedundantNameQualifier
@@ -456,6 +458,7 @@ namespace Velaptor
                 VertexNumber.Two => gpuData.Vertex2,
                 VertexNumber.Three => gpuData.Vertex3,
                 VertexNumber.Four => gpuData.Vertex4,
+                // Replace this exception below with EnumOutOfRangeException
                 _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), "The vertex number is invalid.")
             };
 

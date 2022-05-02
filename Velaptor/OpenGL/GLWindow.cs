@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -26,6 +26,7 @@ namespace Velaptor.OpenGL
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
+    using Velaptor.UI;
     using SilkIWindow = Silk.NET.Windowing.IWindow;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
     using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
@@ -37,7 +38,7 @@ namespace Velaptor.OpenGL
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// An OpenGL window implementation to be used inside of the <see cref="VelaptorWindow"/> class.
+    /// An OpenGL window implementation to be used inside of the <see cref="Velaptor.UI.Window"/> class.
     /// </summary>
     internal sealed class GLWindow : VelaptorIWindow
     {
@@ -77,7 +78,7 @@ namespace Velaptor.OpenGL
         /// <param name="renderer">Renders textures and primitives.</param>
         /// <param name="keyboardInput">Holds the state of the keyboard.</param>
         /// <param name="mouseInput">Holds the state of the mouse.</param>
-        /// <param name="glReactable">Subscribed to for push notifications.</param>
+        /// <param name="glContextReactable">Subscribed to for OpenGL related push notifications.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         public GLWindow(
@@ -94,7 +95,7 @@ namespace Velaptor.OpenGL
             IRenderer renderer,
             IKeyboardInput<KeyCode, KeyboardState> keyboardInput,
             IMouseInput<VelaptorMouseButton, MouseState> mouseInput,
-            IReactable<GLContextData> glReactable,
+            IReactable<GLContextData> glContextReactable,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
@@ -109,7 +110,7 @@ namespace Velaptor.OpenGL
             EnsureThat.ParamIsNotNull(renderer);
             EnsureThat.ParamIsNotNull(keyboardInput);
             EnsureThat.ParamIsNotNull(mouseInput);
-            EnsureThat.ParamIsNotNull(glReactable);
+            EnsureThat.ParamIsNotNull(glContextReactable);
             EnsureThat.ParamIsNotNull(glInitReactable);
             EnsureThat.ParamIsNotNull(shutDownReactable);
 
@@ -127,7 +128,7 @@ namespace Velaptor.OpenGL
             this.mouseInput = mouseInput;
 
             this.glInitReactable = glInitReactable;
-            this.glContextReactable = glReactable;
+            this.glContextReactable = glContextReactable;
             this.shutDownReactable = shutDownReactable;
 
             SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
@@ -295,7 +296,7 @@ namespace Velaptor.OpenGL
             /*NOTE:
              * Only dispose of the window here and not in the Dispose() method!!
              *
-             * This is because this line of code will not be executed until the Window.Run() method
+             * This is because the line of code below will not be executed until the Window.Run() method
              * has finished executing.  This happens once the window is closed.
              *
              * If you dispose of the window in the Dispose() method before the Run() method is finished
@@ -304,14 +305,13 @@ namespace Velaptor.OpenGL
             this.glWindow.Dispose();
         }
 
+        /// <summary>
+        /// Initializes window related setup before the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="Silk.NET.Windowing.IWindow.Load"/>
+        /// event is fired.
+        /// </summary>
         private void PreInit()
         {
             this.glWindow = this.windowFactory.CreateSilkWindow();
-
-            if (this.glWindow is null)
-            {
-                throw new InvalidOperationException("The constructed native window cannot be null.");
-            }
 
             this.glWindow.UpdatesPerSecond = 120;
             this.glWindow.Load += GLWindow_Load;
@@ -321,6 +321,14 @@ namespace Velaptor.OpenGL
             this.glWindow.Render += GLWindow_Render;
         }
 
+        /// <summary>
+        /// Initializes window related setup after the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="Silk.NET.Windowing.IWindow.Load"/>
+        /// event is fired.
+        /// </summary>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
+        /// <exception cref="NoKeyboardException">Thrown if no keyboard could be created.</exception>
+        /// <exception cref="NoMouseException">Thrown if no mouse could be created.</exception>
         private void Init(uint width, uint height)
         {
             this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
@@ -352,7 +360,7 @@ namespace Velaptor.OpenGL
         /// </summary>
         private void GLWindow_Load()
         {
-            // OpenGL is ready to take function calls after this Init() call has ran
+            // OpenGL is ready to take function calls after this Init() call has executed
             Init(Width, Height);
 
             this.gl.SetupErrorCallback();
@@ -396,8 +404,8 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked every time the size of the window changes and invokes the
-        /// <see cref="IGameWindowFacade.Resize"/> event.
+        /// Invoked every time the native window size changes and invokes the
+        /// <see cref="IWindowActions.WinResize"/> event.
         /// </summary>
         private void GLWindow_Resize(Vector2D<int> obj)
         {
@@ -469,7 +477,7 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Invoked when any keyboardInput key transitions from the up position to the down position.
+        /// Invoked when any keyboard input key transitions from the up position to the down position.
         /// </summary>
         /// <param name="keyboard">The system keyboardInput.</param>
         /// <param name="key">The key that was pushed down.</param>
@@ -477,7 +485,7 @@ namespace Velaptor.OpenGL
         private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, true);
 
         /// <summary>
-        /// Invoked when any keyboardInput key transitions from the down position to the up position.
+        /// Invoked when any keyboard input key transitions from the down position to the up position.
         /// </summary>
         /// <param name="keyboard">The system keyboardInput.</param>
         /// <param name="key">The key that was released.</param>
@@ -521,7 +529,7 @@ namespace Velaptor.OpenGL
         /// Invoked when the mouse moves over the window.
         /// </summary>
         /// <param name="mouse">The system mouse object.</param>
-        /// <param name="position">The position of the mouseInput.</param>
+        /// <param name="position">The position of the mouse input.</param>
         private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
         {
             this.mouseInput.SetXPos((int)position.X);
