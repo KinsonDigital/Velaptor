@@ -85,7 +85,7 @@ namespace VelaptorTests.Helpers
             => mock.Verify(expression, Times.Once);
 
         /// <summary>
-        ///   Verifies that a specific invocation matching the given expression was performed on the mock.
+        ///   Verifies that a specific invocation, matching the given expression, was performed on the mock.
         ///   Use in conjunction with the default <see cref="MockBehavior.Loose"/>.
         /// </summary>
         /// <param name="mock">The mock object to extend.</param>
