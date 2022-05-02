@@ -1,10 +1,11 @@
-// <copyright file="AppStats.cs" company="KinsonDigital">
+﻿// <copyright file="AppStats.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace Velaptor
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.IO;
     using System.Linq;
@@ -12,6 +13,7 @@ namespace Velaptor
     /// <summary>
     /// Records and retrieves information about the running application.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class AppStats
     {
         private const string DefaultTag = "[DEFAULT]";
