@@ -100,7 +100,6 @@ namespace Velaptor
             IoCContainer.Register<GLFWMonitors>(Lifestyle.Singleton);
 
             IoCContainer.Register<IGLFWInvoker, GLFWInvoker>(Lifestyle.Singleton);
-            IoCContainer.Register<IGameWindowFacade, GLWindowFacade>(Lifestyle.Singleton, suppressDisposal: true);
 
             IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
             IoCContainer.Register<IMonitors, GLFWMonitors>(Lifestyle.Singleton);
@@ -133,6 +132,8 @@ namespace Velaptor
         /// </summary>
         private static void SetupFactories()
         {
+            IoCContainer.Register<IWindowFactory, SilkWindowFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<IInputFactory, InputFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ISoundFactory, SoundFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);

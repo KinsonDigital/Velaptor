@@ -6,6 +6,7 @@ namespace Velaptor.Factories
 {
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
+    using Velaptor.Input;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.OpenGL;
@@ -29,17 +30,21 @@ namespace Velaptor.Factories
         /// <param name="height">The height of the window.</param>
         /// <returns>A Velaptor framework window implementation.</returns>
         public static IWindow CreateWindow(uint width, uint height)
-            => new GLWindow(
+                => new GLWindow(
                 width,
                 height,
+                IoC.Container.GetInstance<IWindowFactory>(),
+                IoC.Container.GetInstance<IInputFactory>(),
                 IoC.Container.GetInstance<IGLInvoker>(),
                 IoC.Container.GetInstance<IGLFWInvoker>(),
                 IoC.Container.GetInstance<ISystemMonitorService>(),
-                IoC.Container.GetInstance<IGameWindowFacade>(),
                 IoC.Container.GetInstance<IPlatform>(),
                 IoC.Container.GetInstance<ITaskService>(),
                 ContentLoaderFactory.CreateContentLoader(),
                 RendererFactory.CreateRenderer(width, height),
+                IoC.Container.GetInstance<IKeyboardInput<KeyCode, KeyboardState>>(),
+                IoC.Container.GetInstance<IMouseInput<MouseButton, MouseState>>(),
+                IoC.Container.GetInstance<IReactable<GLContextData>>(),
                 IoC.Container.GetInstance<IReactable<GLInitData>>(),
                 IoC.Container.GetInstance<IReactable<ShutDownData>>());
     }
