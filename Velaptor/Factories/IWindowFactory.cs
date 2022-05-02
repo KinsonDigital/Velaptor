@@ -5,7 +5,6 @@
 namespace Velaptor.Factories
 {
     using SILKWindow = Silk.NET.Windowing.IWindow;
-    using VelaptorWindow = Velaptor.UI.IWindow;
 
     /// <summary>
     /// Creates different native windows.
