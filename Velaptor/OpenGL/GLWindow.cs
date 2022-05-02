@@ -11,87 +11,124 @@ namespace Velaptor.OpenGL
     using System.Numerics;
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
+    using Silk.NET.Input;
+    using Silk.NET.Maths;
+    using Silk.NET.Windowing;
     using Velaptor.Content;
+    using Velaptor.Exceptions;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Guards;
+    using Velaptor.Input;
+    using Velaptor.Input.Exceptions;
     using Velaptor.NativeInterop.GLFW;
     using Velaptor.NativeInterop.OpenGL;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
     using Velaptor.UI;
-    using VelaptorMouseButton = Velaptor.Input.MouseButton; // TODO: Need to normalize these 2 enums and figure out which one to use if any at all
+    using SilkIWindow = Silk.NET.Windowing.IWindow;
+    using SilkMouseButton = Silk.NET.Input.MouseButton;
+    using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
+    using VelaptorIWindow = Velaptor.UI.IWindow;
+    using VelaptorMouseButton = Velaptor.Input.MouseButton;
+    using VelaptorWindow = Velaptor.UI.Window;
+    using VelaptorWindowBorder = Velaptor.WindowBorder;
 
     // ReSharper restore RedundantNameQualifier
 
     /// <summary>
-    /// An OpenGL window implementation to be used inside of the <see cref="Window"/> class.
+    /// An OpenGL window implementation to be used inside of the <see cref="Velaptor.UI.Window"/> class.
     /// </summary>
-    internal sealed class GLWindow : IWindow
+    internal sealed class GLWindow : VelaptorIWindow
     {
+        private readonly IWindowFactory windowFactory;
+        private readonly IInputFactory inputFactory;
         private readonly IGLInvoker gl;
         private readonly IGLFWInvoker glfw;
         private readonly ISystemMonitorService systemMonitorService;
-        private readonly IGameWindowFacade windowFacade;
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
         private readonly IRenderer renderer;
+        private readonly IKeyboardInput<KeyCode, KeyboardState> keyboardInput;
+        private readonly IMouseInput<VelaptorMouseButton, MouseState> mouseInput;
         private readonly IReactable<GLInitData> glInitReactable;
+        private readonly IReactable<GLContextData> glContextReactable;
         private readonly IReactable<ShutDownData> shutDownReactable;
+        private SilkIWindow glWindow = null!;
+        private IInputContext glInputContext = null!;
         private bool isShuttingDown;
         private bool firstRenderInvoked;
         private bool isDisposed;
-        private Action? afterUnload;
+        private Action? afterUnloadAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
         /// </summary>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
+        /// <param name="windowFactory">Creates a window object.</param>
+        /// <param name="inputFactory">Creates an input object.</param>
         /// <param name="glInvoker">Invokes OpenGL functions.</param>
         /// <param name="glfwInvoker">Invokes GLFW functions.</param>
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
-        /// <param name="windowFacade">The internal OpenGL window facade.</param>
         /// <param name="platform">Information about the platform that is running the application.</param>
         /// <param name="taskService">Runs asynchronous tasks.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="renderer">Renders textures and primitives.</param>
+        /// <param name="keyboardInput">Holds the state of the keyboard.</param>
+        /// <param name="mouseInput">Holds the state of the mouse.</param>
+        /// <param name="glContextReactable">Subscribed to for OpenGL related push notifications.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         public GLWindow(
             uint width,
             uint height,
+            IWindowFactory windowFactory,
+            IInputFactory inputFactory,
             IGLInvoker glInvoker,
             IGLFWInvoker glfwInvoker,
             ISystemMonitorService systemMonitorService,
-            IGameWindowFacade windowFacade,
             IPlatform platform,
             ITaskService taskService,
             IContentLoader contentLoader,
             IRenderer renderer,
+            IKeyboardInput<KeyCode, KeyboardState> keyboardInput,
+            IMouseInput<VelaptorMouseButton, MouseState> mouseInput,
+            IReactable<GLContextData> glContextReactable,
             IReactable<GLInitData> glInitReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
+            EnsureThat.ParamIsNotNull(windowFactory);
+            EnsureThat.ParamIsNotNull(inputFactory);
             EnsureThat.ParamIsNotNull(glInvoker);
             EnsureThat.ParamIsNotNull(glfwInvoker);
             EnsureThat.ParamIsNotNull(systemMonitorService);
-            EnsureThat.ParamIsNotNull(windowFacade);
             EnsureThat.ParamIsNotNull(platform);
             EnsureThat.ParamIsNotNull(taskService);
             EnsureThat.ParamIsNotNull(contentLoader);
             EnsureThat.ParamIsNotNull(renderer);
+            EnsureThat.ParamIsNotNull(keyboardInput);
+            EnsureThat.ParamIsNotNull(mouseInput);
+            EnsureThat.ParamIsNotNull(glContextReactable);
             EnsureThat.ParamIsNotNull(glInitReactable);
             EnsureThat.ParamIsNotNull(shutDownReactable);
 
+            this.windowFactory = windowFactory;
+            this.inputFactory = inputFactory;
             this.gl = glInvoker;
             this.glfw = glfwInvoker;
             this.systemMonitorService = systemMonitorService;
-            this.windowFacade = windowFacade;
             this.platform = platform;
             this.taskService = taskService;
             ContentLoader = contentLoader;
             this.renderer = renderer;
+
+            this.keyboardInput = keyboardInput;
+            this.mouseInput = mouseInput;
+
             this.glInitReactable = glInitReactable;
+            this.glContextReactable = glContextReactable;
             this.shutDownReactable = shutDownReactable;
 
             SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
@@ -159,7 +196,7 @@ namespace Velaptor.OpenGL
         public Action<SizeU>? WinResize { get; set; }
 
         /// <inheritdoc/>
-        public WindowBorder TypeOfBorder
+        public VelaptorWindowBorder TypeOfBorder
         {
             get => CachedTypeOfBorder.GetValue();
             set => CachedTypeOfBorder.SetValue(value);
@@ -206,7 +243,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Gets the cache for the <see cref="TypeOfBorder"/> property.
         /// </summary>
-        public CachedValue<WindowBorder> CachedTypeOfBorder { get; private set; } = null!;
+        public CachedValue<VelaptorWindowBorder> CachedTypeOfBorder { get; private set; } = null!;
 
         /// <summary>
         /// Gets the cache for the <see cref="Position"/> property.
@@ -216,22 +253,20 @@ namespace Velaptor.OpenGL
         /// <inheritdoc/>
         public void Show()
         {
-            this.windowFacade.PreInit();
-            RegisterEvents();
-            this.windowFacade.Show();
+            PreInit();
+            RunGLWindow();
         }
 
         /// <inheritdoc/>
-        public async Task ShowAsync(Action? afterStart = null, Action? afterUnloadAction = null)
+        public async Task ShowAsync(Action? afterStart = null, Action? afterUnload = null)
         {
-            this.afterUnload = afterUnloadAction;
+            this.afterUnloadAction = afterUnload;
 
             this.taskService.SetAction(
                 () =>
                 {
-                    this.windowFacade.PreInit();
-                    RegisterEvents();
-                    this.windowFacade.Show();
+                    PreInit();
+                    RunGLWindow();
                 });
 
             this.taskService.Start();
@@ -249,23 +284,84 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public void Close() => this.windowFacade.Close();
+        public void Close() => this.glWindow.Close();
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose() => Dispose(true);
 
+        private void RunGLWindow()
+        {
+            this.glWindow.Run();
+
+            /*NOTE:
+             * Only dispose of the window here and not in the Dispose() method!!
+             *
+             * This is because the line of code below will not be executed until the Window.Run() method
+             * has finished executing.  This happens once the window is closed.
+             *
+             * If you dispose of the window in the Dispose() method before the Run() method is finished
+             * then the application will crash.
+             */
+            this.glWindow.Dispose();
+        }
+
         /// <summary>
-        /// Invoked when an OpenGL error occurs.
+        /// Initializes window related setup before the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="Silk.NET.Windowing.IWindow.Load"/>
+        /// event is fired.
         /// </summary>
-        private static void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
+        private void PreInit()
+        {
+            this.glWindow = this.windowFactory.CreateSilkWindow();
+
+            this.glWindow.UpdatesPerSecond = 120;
+            this.glWindow.Load += GLWindow_Load;
+            this.glWindow.Closing += GLWindow_Closing;
+            this.glWindow.Resize += GLWindow_Resize;
+            this.glWindow.Update += GLWindow_Update;
+            this.glWindow.Render += GLWindow_Render;
+        }
+
+        /// <summary>
+        /// Initializes window related setup after the <see cref="Silk.NET.Windowing.IWindow"/>.<see cref="Silk.NET.Windowing.IWindow.Load"/>
+        /// event is fired.
+        /// </summary>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
+        /// <exception cref="NoKeyboardException">Thrown if no keyboard could be created.</exception>
+        /// <exception cref="NoMouseException">Thrown if no mouse could be created.</exception>
+        private void Init(uint width, uint height)
+        {
+            this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
+
+            this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
+            this.glInputContext = this.inputFactory.CreateInput();
+
+            if (this.glInputContext.Keyboards.Count <= 0)
+            {
+                throw new NoKeyboardException("Input Exception: No connected keyboards available.");
+            }
+
+            this.glInputContext.Keyboards[0].KeyDown += GLKeyboardInput_KeyDown;
+            this.glInputContext.Keyboards[0].KeyUp += GLKeyboardInput_KeyUp;
+
+            if (this.glInputContext.Mice.Count <= 0)
+            {
+                throw new NoMouseException("Input Exception: No connected mice available.");
+            }
+
+            this.glInputContext.Mice[0].MouseDown += GLMouseInput_MouseDown;
+            this.glInputContext.Mice[0].MouseUp += GLMouseInput_MouseUp;
+            this.glInputContext.Mice[0].MouseMove += GLMouseMove_MouseMove;
+            this.glInputContext.Mice[0].Scroll += GLMouseInput_MouseScroll;
+        }
 
         /// <summary>
         /// Invokes the <see cref="Initialize"/> action property.
         /// </summary>
-        private void GameWindow_Load(object? sender, EventArgs e)
+        private void GLWindow_Load()
         {
-            // OpenGL is ready to take function calls after this Init() call has ran
-            this.windowFacade.Init(Width, Height);
+            // OpenGL is ready to take function calls after this Init() call has executed
+            Init(Width, Height);
 
             this.gl.SetupErrorCallback();
             this.gl.Enable(GLEnableCap.DebugOutput);
@@ -294,9 +390,9 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Sets the state of the window as shutting down and starts the uninitialize process.
+        /// Invoked when the window is in the process of closing and invokes the <see cref="Uninitialize"/> action.
         /// </summary>
-        private void GameWindow_Unload(object? sender, EventArgs e)
+        private void GLWindow_Closing()
         {
             this.isShuttingDown = true;
 
@@ -304,16 +400,17 @@ namespace Velaptor.OpenGL
             this.shutDownReactable.PushNotification(default, true);
             this.shutDownReactable.Dispose();
 
-            this.afterUnload?.Invoke();
+            this.afterUnloadAction?.Invoke();
         }
 
         /// <summary>
-        /// Invokes the <see cref="WinResize"/> action property..
+        /// Invoked every time the native window size changes and invokes the
+        /// <see cref="IWindowActions.WinResize"/> event.
         /// </summary>
-        private void GameWindow_Resize(object? sender, WindowSizeEventArgs e)
+        private void GLWindow_Resize(Vector2D<int> obj)
         {
-            var uWidth = (uint)e.Width;
-            var uHeight = (uint)e.Height;
+            var uWidth = (uint)obj.X;
+            var uHeight = (uint)obj.Y;
 
             // Update the view port so it is the same size as the window
             this.gl.Viewport(0, 0, uWidth, uHeight);
@@ -324,9 +421,10 @@ namespace Velaptor.OpenGL
         }
 
         /// <summary>
-        /// Invokes the <see cref="Update"/> action property.
+        /// Invoked once per frame and invokes the <see cref="Update"/> action.
         /// </summary>
-        private void GameWindow_UpdateFrame(object? sender, FrameTimeEventArgs e)
+        /// <param name="time">The amount of time that has passed for the current frame.</param>
+        private void GLWindow_Update(double time)
         {
             if (this.isShuttingDown)
             {
@@ -335,20 +433,26 @@ namespace Velaptor.OpenGL
 
             var frameTime = new FrameTime()
             {
-                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(e.FrameTime * 1000.0)),
+                ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
             };
 
             Update?.Invoke(frameTime);
+            this.mouseInput.SetScrollWheelSpeed(0);
+            this.mouseInput.SetScrollWheelDirection(MouseScrollDirection.None);
         }
 
         /// <summary>
-        /// Invokes the <see cref="Draw"/> action property.
+        /// Invoked once per frame and invokes the <see cref="Draw"/> action.
         /// </summary>
-        private void GameWindow_RenderFrame(object? sender, FrameTimeEventArgs e)
+        /// <param name="time">The amount of time that has passed for the current frame.</param>
+        private void GLWindow_Render(double time)
         {
             if (this.firstRenderInvoked is false)
             {
-                GameWindow_UpdateFrame(sender, e);
+                Update?.Invoke(new FrameTime()
+                {
+                    ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
+                });
                 this.firstRenderInvoked = true;
             }
 
@@ -359,7 +463,7 @@ namespace Velaptor.OpenGL
 
             var frameTime = new FrameTime()
             {
-                ElapsedTime = new TimeSpan(0, 0, 0, 0, (int)(e.FrameTime * 1000.0)),
+                ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
             };
 
             if (AutoClearBuffer)
@@ -369,20 +473,73 @@ namespace Velaptor.OpenGL
 
             Draw?.Invoke(frameTime);
 
-            this.windowFacade.SwapBuffers();
+            this.glWindow.SwapBuffers();
         }
 
         /// <summary>
-        /// Sets up the OpenGL window.
+        /// Invoked when any keyboard input key transitions from the up position to the down position.
         /// </summary>
-        private void RegisterEvents()
+        /// <param name="keyboard">The system keyboardInput.</param>
+        /// <param name="key">The key that was pushed down.</param>
+        /// <param name="arg3">Additional argument from OpenGL.</param>
+        private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, true);
+
+        /// <summary>
+        /// Invoked when any keyboard input key transitions from the down position to the up position.
+        /// </summary>
+        /// <param name="keyboard">The system keyboardInput.</param>
+        /// <param name="key">The key that was released.</param>
+        /// <param name="arg3">Additional argument from OpenGL.</param>
+        private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, false);
+
+        /// <summary>
+        /// Invoked when any of the mouse buttons are pressed into the down position over the window.
+        /// </summary>
+        /// <param name="mouse">The system mouse object.</param>
+        /// <param name="button">The button that was pushed down.</param>
+        private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, true);
+
+        /// <summary>
+        /// Invoked when any of the mouse buttons are released from the down position into the up position over the window.
+        /// </summary>
+        /// <param name="mouse">The system mouse object.</param>
+        /// <param name="button">The button that was pushed down.</param>
+        private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, false);
+
+        /// <summary>
+        /// Invoked when there is mouse scroll wheel input.
+        /// </summary>
+        /// <param name="mouse">The system mouse object.</param>
+        /// <param name="wheelData">Positional data about the mouse scroll wheel.</param>
+        private void GLMouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
         {
-            this.windowFacade.Load += GameWindow_Load;
-            this.windowFacade.Unload += GameWindow_Unload;
-            this.windowFacade.UpdateFrame += GameWindow_UpdateFrame;
-            this.windowFacade.RenderFrame += GameWindow_RenderFrame;
-            this.windowFacade.Resize += GameWindow_Resize;
+            this.mouseInput.SetScrollWheelSpeed((int)wheelData.Y);
+
+            var wheelDirection = wheelData.Y switch
+            {
+                > 0 => MouseScrollDirection.ScrollUp,
+                < 0 => MouseScrollDirection.ScrollDown,
+                _ => MouseScrollDirection.None
+            };
+
+            this.mouseInput.SetScrollWheelDirection(wheelDirection);
         }
+
+        /// <summary>
+        /// Invoked when the mouse moves over the window.
+        /// </summary>
+        /// <param name="mouse">The system mouse object.</param>
+        /// <param name="position">The position of the mouse input.</param>
+        private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
+        {
+            this.mouseInput.SetXPos((int)position.X);
+            this.mouseInput.SetYPos((int)position.Y);
+        }
+
+        /// <summary>
+        /// Invoked when an OpenGL error occurs.
+        /// </summary>
+        private void GL_GLError(object? sender, GLErrorEventArgs e) => throw new Exception(e.ErrorMessage);
 
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -403,12 +560,19 @@ namespace Velaptor.OpenGL
 
                 this.gl.GLError -= GL_GLError;
 
-                this.windowFacade.Load -= GameWindow_Load;
-                this.windowFacade.Unload -= GameWindow_Unload;
-                this.windowFacade.UpdateFrame -= GameWindow_UpdateFrame;
-                this.windowFacade.RenderFrame -= GameWindow_RenderFrame;
-                this.windowFacade.Resize -= GameWindow_Resize;
-                this.windowFacade.Dispose();
+                this.glInputContext.Keyboards[0].KeyDown -= GLKeyboardInput_KeyDown;
+                this.glInputContext.Keyboards[0].KeyUp -= GLKeyboardInput_KeyUp;
+                this.glInputContext.Mice[0].MouseDown -= GLMouseInput_MouseDown;
+                this.glInputContext.Mice[0].MouseUp -= GLMouseInput_MouseUp;
+                this.glInputContext.Mice[0].MouseMove -= GLMouseMove_MouseMove;
+                this.glInputContext.Mice[0].Scroll -= GLMouseInput_MouseScroll;
+
+                this.glWindow.Load -= GLWindow_Load;
+                this.glWindow.Update -= GLWindow_Update;
+                this.glWindow.Render -= GLWindow_Render;
+                this.glWindow.Resize -= GLWindow_Resize;
+                this.glWindow.Closing -= GLWindow_Closing;
+
                 this.taskService.Dispose();
 
                 this.gl.Dispose();
@@ -429,20 +593,20 @@ namespace Velaptor.OpenGL
                 nameof(Width), // key
                 new CachedValue<uint>( // value
                     defaultValue: width,
-                    getterWhenNotCaching: () => (uint)this.windowFacade.Size.X,
+                    getterWhenNotCaching: () => (uint)this.glWindow.Size.X,
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.Size = new Vector2(value, this.windowFacade.Size.Y);
+                        this.glWindow.Size = new Vector2D<int>((int)value, this.glWindow.Size.Y);
                     }));
 
             CachedUIntProps.Add(
                 nameof(Height), // key
                 new CachedValue<uint>( // value
                     defaultValue: height,
-                    getterWhenNotCaching: () => (uint)this.windowFacade.Size.Y,
+                    getterWhenNotCaching: () => (uint)this.glWindow.Size.Y,
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.Size = new Vector2(this.windowFacade.Size.X, value);
+                        this.glWindow.Size = new Vector2D<int>(this.glWindow.Size.X, (int)value);
                     }));
         }
 
@@ -455,10 +619,10 @@ namespace Velaptor.OpenGL
                 nameof(Title), // key
                 new CachedValue<string>( // value
                     defaultValue: "Velaptor Application",
-                    getterWhenNotCaching: () => this.windowFacade.Title,
+                    getterWhenNotCaching: () => this.glWindow.Title,
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.Title = value;
+                        this.glWindow.Title = value;
                     }));
 
             var defaultPosition = Vector2.Zero;
@@ -476,51 +640,108 @@ namespace Velaptor.OpenGL
 
             if (mainMonitor is not null)
             {
+                // Set the default position to be in the center of the monitor
                 defaultPosition = new Vector2(mainMonitor.Center.X - halfWidth, mainMonitor.Center.Y - halfHeight);
             }
 
             CachedPosition = new CachedValue<Vector2>(
                 defaultValue: defaultPosition,
-                getterWhenNotCaching: () => new Vector2(this.windowFacade.Location.X, this.windowFacade.Location.Y),
+                getterWhenNotCaching: () => new Vector2(this.glWindow.Position.X, this.glWindow.Position.Y),
                 setterWhenNotCaching: (value) =>
                 {
-                    this.windowFacade.Location = value;
+                    this.glWindow.Position = new Vector2D<int>((int)value.X, (int)value.Y);
                 });
 
             CachedIntProps.Add(
                 nameof(UpdateFrequency), // key
                 new CachedValue<int>( // value
                     defaultValue: 60,
-                    getterWhenNotCaching: () => (int)this.windowFacade.UpdateFrequency,
+                    getterWhenNotCaching: () => (int)this.glWindow.UpdatesPerSecond,
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.UpdateFrequency = value;
+                        this.glWindow.UpdatesPerSecond = value;
                     }));
 
             CachedBoolProps.Add(
                 nameof(MouseCursorVisible), // key
                 new CachedValue<bool>( // value
                     defaultValue: true,
-                    getterWhenNotCaching: () => this.windowFacade.CursorVisible,
+                    getterWhenNotCaching: () => this.glInputContext.Mice.Count > 0 &&
+                                                this.glInputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal,
                     setterWhenNotCaching: (value) =>
                     {
-                        this.windowFacade.CursorVisible = value;
+                        var cursorMode = value ? CursorMode.Normal : CursorMode.Hidden;
+                        this.glInputContext.Mice[0].Cursor.CursorMode = cursorMode;
                     }));
 
             CachedWindowState = new CachedValue<StateOfWindow>(
                 defaultValue: StateOfWindow.Normal,
-                getterWhenNotCaching: () => this.windowFacade.WindowState,
+                getterWhenNotCaching: () =>
+                {
+                    var enumTypeStr = nameof(Silk);
+                    enumTypeStr += $".{nameof(Silk.NET)}";
+                    enumTypeStr += $".{nameof(Silk.NET.Windowing)}";
+                    enumTypeStr += $".{nameof(Silk.NET.Windowing.WindowState)}";
+
+                    var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
+                    return this.glWindow.WindowState switch
+                    {
+                        Silk.NET.Windowing.WindowState.Normal => StateOfWindow.Normal,
+                        Silk.NET.Windowing.WindowState.Minimized => StateOfWindow.Minimized,
+                        Silk.NET.Windowing.WindowState.Maximized => StateOfWindow.Maximized,
+                        Silk.NET.Windowing.WindowState.Fullscreen => StateOfWindow.FullScreen,
+                        _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    };
+                },
                 setterWhenNotCaching: (value) =>
                 {
-                    this.windowFacade.WindowState = value;
+                    var enumTypeStr = nameof(Velaptor);
+                    enumTypeStr += $".{nameof(StateOfWindow)}";
+
+                    var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
+                    this.glWindow.WindowState = value switch
+                    {
+                        StateOfWindow.Normal => Silk.NET.Windowing.WindowState.Normal,
+                        StateOfWindow.Minimized => Silk.NET.Windowing.WindowState.Minimized,
+                        StateOfWindow.Maximized => Silk.NET.Windowing.WindowState.Maximized,
+                        StateOfWindow.FullScreen => Silk.NET.Windowing.WindowState.Fullscreen,
+                        _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    };
                 });
 
-            CachedTypeOfBorder = new CachedValue<WindowBorder>(
-                defaultValue: WindowBorder.Resizable,
-                getterWhenNotCaching: () => this.windowFacade.WindowBorder,
+            CachedTypeOfBorder = new CachedValue<VelaptorWindowBorder>(
+                defaultValue: VelaptorWindowBorder.Resizable,
+                getterWhenNotCaching: () =>
+                {
+                    var enumTypeStr = nameof(Silk);
+                    enumTypeStr += $".{nameof(Silk.NET)}";
+                    enumTypeStr += $".{nameof(Silk.NET.Windowing)}";
+
+                    // ReSharper disable once RedundantNameQualifier
+                    enumTypeStr += $".{nameof(Silk.NET.Windowing.WindowBorder)}";
+
+                    var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
+                    return this.glWindow.WindowBorder switch
+                    {
+                        SilkWindowBorder.Fixed => VelaptorWindowBorder.Fixed,
+                        SilkWindowBorder.Hidden => VelaptorWindowBorder.Hidden,
+                        SilkWindowBorder.Resizable => VelaptorWindowBorder.Resizable,
+                        _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    };
+                },
                 setterWhenNotCaching: (value) =>
                 {
-                    this.windowFacade.WindowBorder = value;
+                    var enumTypeStr = nameof(Velaptor);
+                    enumTypeStr += $".{nameof(Velaptor.WindowBorder)}";
+
+                    var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
+                    this.glWindow.WindowBorder = value switch
+                    {
+                        VelaptorWindowBorder.Fixed => WindowBorder.Fixed,
+                        VelaptorWindowBorder.Hidden => WindowBorder.Hidden,
+                        VelaptorWindowBorder.Resizable => WindowBorder.Resizable,
+                        _ => throw new EnumOutOfRangeException(exceptionMsg),
+                    };
                 });
         }
     }
