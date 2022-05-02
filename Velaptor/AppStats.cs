@@ -1,4 +1,4 @@
-﻿// <copyright file="AppStats.cs" company="KinsonDigital">
+// <copyright file="AppStats.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -92,7 +92,7 @@ namespace Velaptor
             // that are older than the last 2 recorded frames
             if (largestFrame != 0u && secondLargest != 0u)
             {
-                Textures.DequeueWhile(_ => frames.Length > 2);
+                Textures.DequeueWhile(_ => frames.Length >= 2);
             }
         }
 

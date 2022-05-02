@@ -923,12 +923,10 @@ namespace Velaptor
         /// <typeparam name="T">The type of items in the <paramref name="queue"/>.</typeparam>
         public static void DequeueWhile<T>(this Queue<T> queue, Predicate<T> untilPredicate)
         {
-            if (queue.Count <= 0)
-            {
-                return;
-            }
+            var maxIterations = queue.Count + 1;
+            var currentIteration = 0;
 
-            while (true)
+            while (currentIteration < maxIterations)
             {
                 if (queue.Count <= 0)
                 {
@@ -936,9 +934,13 @@ namespace Velaptor
                 }
 
                 var peekedItem = queue.Peek();
-                untilPredicate(peekedItem);
 
-                queue.Dequeue();
+                if (untilPredicate(peekedItem))
+                {
+                    queue.Dequeue();
+                }
+
+                currentIteration += 1;
             }
         }
     }
