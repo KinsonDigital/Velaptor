@@ -1,4 +1,4 @@
-// <copyright file="GLWindowTests.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindowTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -26,9 +26,11 @@ namespace VelaptorTests.OpenGL
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
     using Velaptor.Services;
+    using Velaptor.UI;
     using VelaptorTests.Helpers;
     using Xunit;
     using SilkMouseButton = Silk.NET.Input.MouseButton;
+    using SilkWindow = Silk.NET.Windowing.IWindow;
     using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
     using SysVector2 = System.Numerics.Vector2;
     using VelaptorKeyboardState = Velaptor.Input.KeyboardState;
@@ -54,7 +56,7 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IReactable<GLContextData>> mockContextReactable;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
-        private readonly Mock<IWindow> mockSilkWindow;
+        private readonly Mock<SilkWindow> mockSilkWindow;
         private readonly Mock<IWindowFactory> mockWindowFactory;
         private Mock<IInputFactory>? mockInputFactory;
         private Mock<IInputContext>? mockSilkInputContext;
@@ -68,14 +70,8 @@ namespace VelaptorTests.OpenGL
         public GLWindowTests()
         {
             this.mockGLContext = new Mock<IGLContext>();
-            this.mockSilkWindow = new Mock<IWindow>();
+            this.mockSilkWindow = new Mock<SilkWindow>();
             this.mockSilkWindow.SetupGet(p => p.GLContext).Returns(this.mockGLContext.Object);
-            this.mockSilkWindow.Setup(m => m.Run(It.IsAny<Action>()))
-                .Callback<Action>(_ =>
-                {
-                    // Mock the behavior of the load event being invoked when the app is ran
-                    this.mockSilkWindow.Raise(e => e.Load += null);
-                });
 
             MockSystemSilkInput();
 
@@ -685,6 +681,7 @@ namespace VelaptorTests.OpenGL
         public void MouseCursorVisible_WhenSettingValueAndNotCaching_ReturnsCorrectResult()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -703,6 +700,7 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             this.mockSilkWindow.SetupGet(p => p.WindowState).Returns((WindowState)1234);
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -717,6 +715,7 @@ namespace VelaptorTests.OpenGL
         public void WindowState_WhenSettingInvalidValue_ThrowsException()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -795,6 +794,7 @@ namespace VelaptorTests.OpenGL
         public void Initialized_WhenWindowIsInitialized_ReturnsTrue()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
 
             // Act
@@ -809,6 +809,7 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -824,6 +825,7 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -878,6 +880,7 @@ namespace VelaptorTests.OpenGL
             // Arrange
             this.mockSilkInputContext.Setup(p => p.Keyboards)
                 .Returns(Array.Empty<IKeyboard>().ToReadOnlyCollection());
+            MockWindowLoadEvent();
             var window = CreateWindow();
 
             // Act & Assert
@@ -893,6 +896,7 @@ namespace VelaptorTests.OpenGL
             // Arrange
             this.mockSilkInputContext.Setup(p => p.Mice)
                 .Returns(Array.Empty<IMouse>().ToReadOnlyCollection());
+            MockWindowLoadEvent();
             var window = CreateWindow();
 
             // Act & Assert
@@ -906,6 +910,7 @@ namespace VelaptorTests.OpenGL
         public void Show_WhenInvoked_SetsUpOpenGLErrorCallback()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -1019,6 +1024,7 @@ namespace VelaptorTests.OpenGL
         public void Dispose_WhenInvoked_DisposesOfWindow()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -1028,14 +1034,36 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockGL.VerifyRemoveOnce(e => e.GLError -= It.IsAny<EventHandler<GLErrorEventArgs>>(), $"Unsubscription of the '{nameof(IGLInvoker.GLError)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(e => e.Load -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(IWindow.Load)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(s => s.Update -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(IWindow.Update)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(s => s.Render -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(IWindow.Render)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(s => s.Resize -= It.IsAny<Action<Vector2D<int>>>(), $"Unsubscription of the '{nameof(IWindow.Resize)}' event did not occur.");
-            this.mockSilkWindow.VerifyRemoveOnce(s => s.Closing -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(IWindow.Closing)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(e => e.Load -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkWindow.Load)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(s => s.Update -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(SilkWindow.Update)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(s => s.Render -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(SilkWindow.Render)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(s => s.Resize -= It.IsAny<Action<Vector2D<int>>>(), $"Unsubscription of the '{nameof(SilkWindow.Resize)}' event did not occur.");
+            this.mockSilkWindow.VerifyRemoveOnce(s => s.Closing -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkWindow.Closing)}' event did not occur.");
             this.mockTaskService.Verify(m => m.Dispose(), Times.Once());
             this.mockGL.Verify(m => m.Dispose(), Times.Once());
             this.mockGLFW.Verify(m => m.Dispose(), Times.Once());
+        }
+
+        [Fact]
+        public void GLWindow_WhenLoading_LoadsWindow()
+        {
+            // Arrange
+            var initializeInvoked = false;
+            MockWindowLoadEvent();
+            var window = CreateWindow();
+            window.Initialize += () => initializeInvoked = true;
+
+            // Act
+            window.Show();
+
+            // Assert
+            this.mockGL.VerifyOnce(m => m.SetupErrorCallback());
+            this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutput));
+            this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutputSynchronous));
+            this.mockGL.VerifyAddOnce(e => e.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>());
+            this.mockGLInitReactable.VerifyOnce(m
+                => m.PushNotification(default, true));
+            Assert.True(initializeInvoked, $"The action '{nameof(IWindowActions)}.{nameof(IWindowActions.Initialize)}' must be invoked");
         }
 
         [Fact]
@@ -1199,6 +1227,7 @@ namespace VelaptorTests.OpenGL
         public void GLWindow_WhenKeyboardKeyIsPressedDown_UpdatesKeyboardInputState()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -1216,6 +1245,7 @@ namespace VelaptorTests.OpenGL
         public void GLWindow_WhenKeyboardKeyIsReleased_UpdatesKeyboardInputState()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -1233,6 +1263,7 @@ namespace VelaptorTests.OpenGL
         public void GLWindow_WhenMouseButtonIsPressedDown_UpdatesMouseInputState()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -1249,6 +1280,7 @@ namespace VelaptorTests.OpenGL
         public void GLWindow_WhenMouseButtonIsReleased_UpdatesMouseInputState()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -1270,6 +1302,7 @@ namespace VelaptorTests.OpenGL
             // Arrange
             var wheelData = new ScrollWheel(0, wheelValue);
 
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -1287,6 +1320,7 @@ namespace VelaptorTests.OpenGL
         public void GLWindow_WhenMouseMoves_UpdatesMouseInputState()
         {
             // Arrange
+            MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
 
@@ -1339,6 +1373,16 @@ namespace VelaptorTests.OpenGL
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
                 this.mockShutDownReactable.Object);
+
+        private void MockWindowLoadEvent()
+        {
+            this.mockSilkWindow.Setup(m => m.Run(It.IsAny<Action>()))
+                .Callback<Action>(_ =>
+                {
+                    // Mock the behavior of the load event being invoked when the app is ran
+                    this.mockSilkWindow.Raise(e => e.Load += null);
+                });
+        }
 
         /// <summary>
         /// Mocks the following:
