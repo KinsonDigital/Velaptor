@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -41,7 +41,7 @@ namespace Velaptor.OpenGL
         private bool isShuttingDown;
         private bool firstRenderInvoked;
         private bool isDisposed;
-        private Action? afterUnload;
+        private Action? afterUnloadAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GLWindow"/> class.
@@ -222,9 +222,9 @@ namespace Velaptor.OpenGL
         }
 
         /// <inheritdoc/>
-        public async Task ShowAsync(Action? afterStart = null, Action? afterUnloadAction = null)
+        public async Task ShowAsync(Action? afterStart = null, Action? afterUnload = null)
         {
-            this.afterUnload = afterUnloadAction;
+            this.afterUnloadAction = afterUnload;
 
             this.taskService.SetAction(
                 () =>
@@ -304,7 +304,7 @@ namespace Velaptor.OpenGL
             this.shutDownReactable.PushNotification(default, true);
             this.shutDownReactable.Dispose();
 
-            this.afterUnload?.Invoke();
+            this.afterUnloadAction?.Invoke();
         }
 
         /// <summary>
