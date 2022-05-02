@@ -845,6 +845,45 @@ namespace VelaptorTests
             Assert.Equal(11f, actual.X);
             Assert.Equal(22f, actual.Y);
         }
+
+        [Fact]
+        public void DequeueWhile_WithNoItems_DoesNotInvokedPredicate()
+        {
+            // Arrange
+            var queue = new Queue<int>();
+
+            var untilPredicate = new Predicate<int>(_ =>
+            {
+                Assert.True(false, "The 'untilPredicate' should not be invoked with 0 queue items.");
+                return false;
+            });
+
+            // Act & Assert
+            queue.DequeueWhile(untilPredicate);
+        }
+
+        [Fact]
+        public void DequeueWhile_WhenInvoked_PerformsDequeueWhenPredicateIsTrue()
+        {
+            // Arrange
+            var totalInvokes = 0;
+            var queue = new Queue<int>();
+            queue.Enqueue(11);
+            queue.Enqueue(22);
+
+            var untilPredicate = new Predicate<int>(_ =>
+            {
+                totalInvokes += 1;
+                return true;
+            });
+
+            // Act
+            queue.DequeueWhile(untilPredicate);
+
+            // Assert
+            Assert.Equal(2, totalInvokes);
+            Assert.Empty(queue);
+        }
         #endregion
 
         /// <summary>
