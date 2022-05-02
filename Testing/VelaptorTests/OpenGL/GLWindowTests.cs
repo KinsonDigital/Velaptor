@@ -873,21 +873,6 @@ namespace VelaptorTests.OpenGL
 
         #region Method Tests
         [Fact]
-        public void Show_WithNullGLWindow_ThrowsException()
-        {
-            // Arrange
-            this.mockWindowFactory.Setup(m => m.CreateSilkWindow())
-                .Returns(() => null!);
-            var window = CreateWindow();
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
-            {
-                window.Show();
-            }, "The constructed native window cannot be null.");
-        }
-
-        [Fact]
         public void Show_WithNoSystemKeyboards_ThrowsException()
         {
             // Arrange
