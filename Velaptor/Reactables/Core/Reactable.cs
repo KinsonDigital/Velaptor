@@ -51,11 +51,17 @@ namespace Velaptor.Reactables.Core
                 return;
             }
 
-            foreach (var reactor in this.reactors)
+            // ReSharper disable ForCanBeConvertedToForeach
+            /* Keep this for loop as a for-loop.  Do not convert to for-each.
+             * This is due to the Dispose() method possibly being called during
+             * iteration of the reactors list which will cause an exception.
+            */
+            for (var i = 0; i < this.reactors.Count; i++)
             {
-                reactor.OnCompleted();
+                this.reactors[i].OnCompleted();
             }
 
+            // ReSharper restore ForCanBeConvertedToForeach
             this.notificationsEnded = true;
         }
 
