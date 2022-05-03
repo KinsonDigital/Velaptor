@@ -58,7 +58,7 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
         private readonly Mock<SilkWindow> mockSilkWindow;
         private readonly Mock<IWindowFactory> mockWindowFactory;
-        private Mock<IInputFactory>? mockInputFactory;
+        private Mock<INativeInputFactory>? mockNativeInputFactory;
         private Mock<IInputContext>? mockSilkInputContext;
         private Mock<IKeyboard>? mockSilkKeyboard;
         private Mock<IMouse>? mockSilkMouse;
@@ -103,7 +103,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     null,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -120,7 +120,7 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Ctor_WithNullInputFactoryParam_ThrowsException()
+        public void Ctor_WithNullNativeInputFactoryParam_ThrowsException()
         {
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -142,7 +142,7 @@ namespace VelaptorTests.OpenGL
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
                     this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'inputFactory')");
+            }, "The parameter must not be null. (Parameter 'nativeInputFactory')");
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     null,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -181,7 +181,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     null,
                     this.mockMonitorService.Object,
@@ -207,7 +207,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     null,
@@ -233,7 +233,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -259,7 +259,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -285,7 +285,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -311,7 +311,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -337,7 +337,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -363,7 +363,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -389,7 +389,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -415,7 +415,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -441,7 +441,7 @@ namespace VelaptorTests.OpenGL
                     It.IsAny<uint>(),
                     It.IsAny<uint>(),
                     this.mockWindowFactory.Object,
-                    this.mockInputFactory.Object,
+                    this.mockNativeInputFactory.Object,
                     this.mockGL.Object,
                     this.mockGLFW.Object,
                     this.mockMonitorService.Object,
@@ -1360,7 +1360,7 @@ namespace VelaptorTests.OpenGL
                 width,
                 height,
                 this.mockWindowFactory.Object,
-                this.mockInputFactory.Object,
+                this.mockNativeInputFactory.Object,
                 this.mockGL.Object,
                 this.mockGLFW.Object,
                 this.mockMonitorService.Object,
@@ -1388,7 +1388,7 @@ namespace VelaptorTests.OpenGL
         /// Mocks the following:
         /// <list type="bullet">
         ///     <item><see cref="Silk"/>.<see cref="IInputContext"/></item>
-        ///     <item><see cref="Velaptor"/>.<see cref="IInputFactory"/></item>
+        ///     <item><see cref="Velaptor"/>.<see cref="INativeInputFactory"/></item>
         ///     <item><see cref="Silk"/>.<see cref="IKeyboard"/></item>
         ///     <item><see cref="Silk"/>.<see cref="IMouse"/></item>
         /// </list>
@@ -1396,8 +1396,8 @@ namespace VelaptorTests.OpenGL
         private void MockSystemSilkInput()
         {
             this.mockSilkInputContext = new Mock<IInputContext>();
-            this.mockInputFactory = new Mock<IInputFactory>();
-            this.mockInputFactory.Setup(m => m.CreateInput()).Returns(this.mockSilkInputContext.Object);
+            this.mockNativeInputFactory = new Mock<INativeInputFactory>();
+            this.mockNativeInputFactory.Setup(m => m.CreateInput()).Returns(this.mockSilkInputContext.Object);
 
             MockSilkKeyboard();
             MockSilkMouse();

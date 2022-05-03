@@ -132,7 +132,7 @@ namespace Velaptor
         private static void SetupFactories()
         {
             IoCContainer.Register<IWindowFactory, SilkWindowFactory>(Lifestyle.Singleton);
-            IoCContainer.Register<IInputFactory, InputFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<INativeInputFactory, NativeInputFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ISoundFactory, SoundFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);

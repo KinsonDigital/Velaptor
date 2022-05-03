@@ -1,4 +1,4 @@
-﻿// <copyright file="InputFactory.cs" company="KinsonDigital">
+﻿// <copyright file="NativeInputFactory.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,15 +9,15 @@ namespace Velaptor.Factories
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    internal class InputFactory : IInputFactory
+    internal class NativeInputFactory : INativeInputFactory
     {
         private readonly IWindowFactory windowFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InputFactory"/> class.
+        /// Initializes a new instance of the <see cref="NativeInputFactory"/> class.
         /// </summary>
         /// <param name="windowFactory">Creates a window object.</param>
-        public InputFactory(IWindowFactory windowFactory) => this.windowFactory = windowFactory;
+        public NativeInputFactory(IWindowFactory windowFactory) => this.windowFactory = windowFactory;
 
         /// <inheritdoc/>
         public IInputContext CreateInput()

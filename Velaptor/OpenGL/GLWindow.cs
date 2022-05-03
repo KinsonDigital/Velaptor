@@ -1,4 +1,4 @@
-﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
+// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -43,7 +43,7 @@ namespace Velaptor.OpenGL
     internal sealed class GLWindow : VelaptorIWindow
     {
         private readonly IWindowFactory windowFactory;
-        private readonly IInputFactory inputFactory;
+        private readonly INativeInputFactory nativeInputFactory;
         private readonly IGLInvoker gl;
         private readonly IGLFWInvoker glfw;
         private readonly ISystemMonitorService systemMonitorService;
@@ -68,7 +68,7 @@ namespace Velaptor.OpenGL
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <param name="windowFactory">Creates a window object.</param>
-        /// <param name="inputFactory">Creates an input object.</param>
+        /// <param name="nativeInputFactory">Creates a native input object.</param>
         /// <param name="glInvoker">Invokes OpenGL functions.</param>
         /// <param name="glfwInvoker">Invokes GLFW functions.</param>
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
@@ -85,7 +85,7 @@ namespace Velaptor.OpenGL
             uint width,
             uint height,
             IWindowFactory windowFactory,
-            IInputFactory inputFactory,
+            INativeInputFactory nativeInputFactory,
             IGLInvoker glInvoker,
             IGLFWInvoker glfwInvoker,
             ISystemMonitorService systemMonitorService,
@@ -100,7 +100,7 @@ namespace Velaptor.OpenGL
             IReactable<ShutDownData> shutDownReactable)
         {
             EnsureThat.ParamIsNotNull(windowFactory);
-            EnsureThat.ParamIsNotNull(inputFactory);
+            EnsureThat.ParamIsNotNull(nativeInputFactory);
             EnsureThat.ParamIsNotNull(glInvoker);
             EnsureThat.ParamIsNotNull(glfwInvoker);
             EnsureThat.ParamIsNotNull(systemMonitorService);
@@ -115,7 +115,7 @@ namespace Velaptor.OpenGL
             EnsureThat.ParamIsNotNull(shutDownReactable);
 
             this.windowFactory = windowFactory;
-            this.inputFactory = inputFactory;
+            this.nativeInputFactory = nativeInputFactory;
             this.gl = glInvoker;
             this.glfw = glfwInvoker;
             this.systemMonitorService = systemMonitorService;
@@ -334,7 +334,7 @@ namespace Velaptor.OpenGL
             this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
 
             this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
-            this.glInputContext = this.inputFactory.CreateInput();
+            this.glInputContext = this.nativeInputFactory.CreateInput();
 
             if (this.glInputContext.Keyboards.Count <= 0)
             {

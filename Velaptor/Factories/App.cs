@@ -34,7 +34,7 @@ namespace Velaptor.Factories
                 width,
                 height,
                 IoC.Container.GetInstance<IWindowFactory>(),
-                IoC.Container.GetInstance<IInputFactory>(),
+                IoC.Container.GetInstance<INativeInputFactory>(),
                 IoC.Container.GetInstance<IGLInvoker>(),
                 IoC.Container.GetInstance<IGLFWInvoker>(),
                 IoC.Container.GetInstance<ISystemMonitorService>(),
