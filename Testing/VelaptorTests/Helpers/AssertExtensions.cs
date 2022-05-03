@@ -22,6 +22,11 @@ namespace VelaptorTests.Helpers
         private const string TableFlip = "(╯'□')╯︵┻━┻  ";
 
         /// <summary>
+        /// Fails the test with a message that the unit test is not implemented or needs rework.
+        /// </summary>
+        public static void TestNotImplemented() => Assert.True(false, "Test Not Implemented Or Needs Rework");
+
+        /// <summary>
         /// Verifies that the exact exception type (not a derived exception type) is thrown and that
         /// the exception message matches the given <paramref name="expectedMessage"/>.
         /// </summary>
@@ -521,6 +526,14 @@ namespace VelaptorTests.Helpers
                 throw new AssertActualExpectedException(expectedStr, actualStr, $"{TableFlip}{message}");
             }
         }
+
+        /// <summary>
+        /// Verifies that an object reference is not null and shows the given <paramref name="message"/> if the assertion fails.
+        /// </summary>
+        /// <param name="obj">The object to be validated.</param>
+        /// <param name="message">The message to display if the assertion fails.</param>
+        /// <exception cref="T:Xunit.Sdk.NotNullException">Thrown when the object is not null.</exception>
+        public static void NotNullWithMessage(object obj, string message) => Assert.True(obj != null, message);
 
         /// <summary>
         /// Verifies whether or not the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
