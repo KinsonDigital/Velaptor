@@ -30,6 +30,14 @@ namespace Velaptor.Reactables.Core
         void PushNotification(T data, bool unsubscribeAfterProcessing = false);
 
         /// <summary>
+        /// Ends notifications by invoking <see cref="Reactor{T}.OnCompleted"/> to all subscribed <see cref="IReactor{T}"/>s.
+        /// </summary>
+        /// <remarks>
+        ///     Will not invoked the <see cref="IReactor{T}"/>.<see cref="IReactor{T}.OnCompleted"/> more than once.
+        /// </remarks>
+        void EndNotifications();
+
+        /// <summary>
         /// Unsubscribes all of the currently subscribed reactors.
         /// </summary>
         void UnsubscribeAll();

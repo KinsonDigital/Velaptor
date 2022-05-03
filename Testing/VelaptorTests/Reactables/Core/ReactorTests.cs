@@ -45,6 +45,22 @@ namespace VelaptorTests.Reactables.Core
         }
 
         [Fact]
+        public void OnNext_WhenCompleted_DoesNotExecutesOnNext()
+        {
+            // Arrange
+            var onNextInvoked = false;
+
+            var reactor = new Reactor<bool>(onNext: _ => onNextInvoked = true);
+
+            // Act
+            reactor.OnCompleted();
+            reactor.OnNext(It.IsAny<bool>());
+
+            // Assert
+            Assert.False(onNextInvoked);
+        }
+
+        [Fact]
         public void OnCompleted_WithNullOnCompletedDelegate_DoesNotThrowException()
         {
             // Arrange
@@ -58,18 +74,37 @@ namespace VelaptorTests.Reactables.Core
         }
 
         [Fact]
+        public void OnCompleted_WhenInvokedAfterCompletion_DoesNotExecuteOnCompleted()
+        {
+            // Arrange
+            var onCompleteInvokedCount = 0;
+
+            var reactor = new Reactor<bool>(onCompleted: () => onCompleteInvokedCount += 1);
+
+            // Act
+            reactor.OnCompleted();
+            reactor.OnCompleted();
+
+            // Assert
+            AssertExtensions.EqualWithMessage(1, onCompleteInvokedCount, "The 'onCompleted' action was invoked more than once.");
+        }
+
+        [Fact]
         public void OnCompleted_WhenInvoked_ExecutesOnCompleted()
         {
             // Arrange
+            var onNextInvoked = false;
             var onCompletedInvoked = false;
 
-            var reactor = new Reactor<bool>(onCompleted: () => onCompletedInvoked = true);
+            var reactor = new Reactor<bool>(onNext: _ => onNextInvoked = true,
+                onCompleted: () => onCompletedInvoked = true);
 
             // Act
             reactor.OnCompleted();
 
             // Assert
             Assert.True(onCompletedInvoked);
+            Assert.False(onNextInvoked);
         }
 
         [Fact]

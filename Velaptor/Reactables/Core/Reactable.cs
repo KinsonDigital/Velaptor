@@ -20,6 +20,7 @@ namespace Velaptor.Reactables.Core
     {
         private readonly List<IReactor<TData>> reactors = new ();
         private bool isDisposed;
+        private bool notificationsEnded;
 
         /// <summary>
         /// Gets the list of reactors that are subscribed to this <see cref="Reactable{TData}"/>.
@@ -41,6 +42,22 @@ namespace Velaptor.Reactables.Core
 
         /// <inheritdoc/>
         public abstract void PushNotification(TData data, bool unsubscribeAfterProcessing = false);
+
+        /// <inheritdoc/>
+        public void EndNotifications()
+        {
+            if (this.notificationsEnded)
+            {
+                return;
+            }
+
+            foreach (var reactor in this.reactors)
+            {
+                reactor.OnCompleted();
+            }
+
+            this.notificationsEnded = true;
+        }
 
         /// <inheritdoc/>
         public void UnsubscribeAll() => this.reactors.Clear();
