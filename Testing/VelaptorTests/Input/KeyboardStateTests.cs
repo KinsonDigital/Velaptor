@@ -358,10 +358,9 @@ namespace VelaptorTests.Input
         public void AnyKeysDown_WhenCheckingCertainKeysAndAtLeastOneOfThemIsDown_ReturnsTrue()
         {
             // Arrange
-            var keyboard = new Keyboard();
             var downKeys = new[] { KeyCode.H, KeyCode.I };
 
-            var state = keyboard.GetState();
+            var state = default(KeyboardState);
             state.SetKeyState(KeyCode.H, true);
 
             // Act
