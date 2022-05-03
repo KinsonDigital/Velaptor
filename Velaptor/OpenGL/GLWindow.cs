@@ -1,4 +1,4 @@
-// <copyright file="GLWindow.cs" company="KinsonDigital">
+﻿// <copyright file="GLWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -50,10 +50,10 @@ namespace Velaptor.OpenGL
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
         private readonly IRenderer renderer;
-        private readonly IKeyboardInput<KeyCode, KeyboardState> keyboardInput;
         private readonly IMouseInput<VelaptorMouseButton, MouseState> mouseInput;
         private readonly IReactable<GLInitData> glInitReactable;
         private readonly IReactable<GLContextData> glContextReactable;
+        private readonly IReactable<(KeyCode key, bool isDown)> keyboardReactable;
         private readonly IReactable<ShutDownData> shutDownReactable;
         private SilkIWindow glWindow = null!;
         private IInputContext glInputContext = null!;
@@ -76,10 +76,10 @@ namespace Velaptor.OpenGL
         /// <param name="taskService">Runs asynchronous tasks.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="renderer">Renders textures and primitives.</param>
-        /// <param name="keyboardInput">Holds the state of the keyboard.</param>
         /// <param name="mouseInput">Holds the state of the mouse.</param>
         /// <param name="glContextReactable">Subscribed to for OpenGL related push notifications.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
+        /// <param name="keyboardReactable">Provides updates to the state of the keyboard.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         public GLWindow(
             uint width,
@@ -93,10 +93,10 @@ namespace Velaptor.OpenGL
             ITaskService taskService,
             IContentLoader contentLoader,
             IRenderer renderer,
-            IKeyboardInput<KeyCode, KeyboardState> keyboardInput,
             IMouseInput<VelaptorMouseButton, MouseState> mouseInput,
             IReactable<GLContextData> glContextReactable,
             IReactable<GLInitData> glInitReactable,
+            IReactable<(KeyCode key, bool isDown)> keyboardReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
             EnsureThat.ParamIsNotNull(windowFactory);
@@ -108,10 +108,10 @@ namespace Velaptor.OpenGL
             EnsureThat.ParamIsNotNull(taskService);
             EnsureThat.ParamIsNotNull(contentLoader);
             EnsureThat.ParamIsNotNull(renderer);
-            EnsureThat.ParamIsNotNull(keyboardInput);
             EnsureThat.ParamIsNotNull(mouseInput);
             EnsureThat.ParamIsNotNull(glContextReactable);
             EnsureThat.ParamIsNotNull(glInitReactable);
+            EnsureThat.ParamIsNotNull(keyboardReactable); // TODO: Create unit test
             EnsureThat.ParamIsNotNull(shutDownReactable);
 
             this.windowFactory = windowFactory;
@@ -124,11 +124,11 @@ namespace Velaptor.OpenGL
             ContentLoader = contentLoader;
             this.renderer = renderer;
 
-            this.keyboardInput = keyboardInput;
             this.mouseInput = mouseInput;
 
             this.glInitReactable = glInitReactable;
             this.glContextReactable = glContextReactable;
+            this.keyboardReactable = keyboardReactable;
             this.shutDownReactable = shutDownReactable;
 
             SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
@@ -397,9 +397,9 @@ namespace Velaptor.OpenGL
             this.isShuttingDown = true;
 
             Uninitialize?.Invoke();
-            this.shutDownReactable.PushNotification(default, true);
-            this.shutDownReactable.Dispose();
 
+            this.keyboardReactable.EndNotifications();
+            this.shutDownReactable.PushNotification(default, true);
             this.afterUnloadAction?.Invoke();
         }
 
@@ -482,7 +482,8 @@ namespace Velaptor.OpenGL
         /// <param name="keyboard">The system keyboardInput.</param>
         /// <param name="key">The key that was pushed down.</param>
         /// <param name="arg3">Additional argument from OpenGL.</param>
-        private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, true);
+        private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
+            => this.keyboardReactable.PushNotification(((KeyCode)key, true));
 
         /// <summary>
         /// Invoked when any keyboard input key transitions from the down position to the up position.
@@ -490,7 +491,8 @@ namespace Velaptor.OpenGL
         /// <param name="keyboard">The system keyboardInput.</param>
         /// <param name="key">The key that was released.</param>
         /// <param name="arg3">Additional argument from OpenGL.</param>
-        private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, false);
+        private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
+            => this.keyboardReactable.PushNotification(((KeyCode)key, false));
 
         /// <summary>
         /// Invoked when any of the mouse buttons are pressed into the down position over the window.
@@ -557,6 +559,9 @@ namespace Velaptor.OpenGL
                 CachedStringProps.Clear();
                 CachedIntProps.Clear();
                 CachedBoolProps.Clear();
+
+                this.keyboardReactable.Dispose();
+                this.shutDownReactable.Dispose();
 
                 this.gl.GLError -= GL_GLError;
 

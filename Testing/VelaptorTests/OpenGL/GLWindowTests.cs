@@ -50,11 +50,11 @@ namespace VelaptorTests.OpenGL
         private readonly Mock<IPlatform> mockPlatform;
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<IRenderer> mockRenderer;
-        private readonly Mock<IKeyboardInput<KeyCode, KeyboardState>> mockKeyInput;
         private readonly Mock<IMouseInput<VelaptorMouseButton, MouseState>> mockMouseInput;
         private readonly Mock<ITaskService> mockTaskService;
         private readonly Mock<IReactable<GLContextData>> mockContextReactable;
         private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
+        private readonly Mock<IReactable<(KeyCode key, bool isDown)>> mockKeyboardReactable;
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
         private readonly Mock<SilkWindow> mockSilkWindow;
         private readonly Mock<IWindowFactory> mockWindowFactory;
@@ -84,11 +84,11 @@ namespace VelaptorTests.OpenGL
             this.mockPlatform = new Mock<IPlatform>();
             this.mockContentLoader = new Mock<IContentLoader>();
             this.mockRenderer = new Mock<IRenderer>();
-            this.mockKeyInput = new Mock<IKeyboardInput<KeyCode, VelaptorKeyboardState>>();
             this.mockMouseInput = new Mock<IMouseInput<VelaptorMouseButton, MouseState>>();
             this.mockTaskService = new Mock<ITaskService>();
             this.mockContextReactable = new Mock<IReactable<GLContextData>>();
             this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
+            this.mockKeyboardReactable = new Mock<IReactable<(KeyCode key, bool isDown)>>();
             this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         }
 
@@ -111,10 +111,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'windowFactory')");
         }
@@ -137,10 +137,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'nativeInputFactory')");
         }
@@ -163,10 +163,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glInvoker')");
         }
@@ -189,10 +189,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glfwInvoker')");
         }
@@ -215,10 +215,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'systemMonitorService')");
         }
@@ -241,10 +241,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'platform')");
         }
@@ -267,10 +267,10 @@ namespace VelaptorTests.OpenGL
                     null,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'taskService')");
         }
@@ -293,10 +293,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     null,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
         }
@@ -319,38 +319,12 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     null,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'renderer')");
-        }
-
-        [Fact]
-        public void Ctor_WithNullKeyboardInputParam_ThrowsException()
-        {
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-            {
-                _ = new GLWindow(
-                    It.IsAny<uint>(),
-                    It.IsAny<uint>(),
-                    this.mockWindowFactory.Object,
-                    this.mockNativeInputFactory.Object,
-                    this.mockGL.Object,
-                    this.mockGLFW.Object,
-                    this.mockMonitorService.Object,
-                    this.mockPlatform.Object,
-                    this.mockTaskService.Object,
-                    this.mockContentLoader.Object,
-                    this.mockRenderer.Object,
-                    null,
-                    this.mockMouseInput.Object,
-                    this.mockContextReactable.Object,
-                    this.mockGLInitReactable.Object,
-                    this.mockShutDownReactable.Object);
-            }, "The parameter must not be null. (Parameter 'keyboardInput')");
         }
 
         [Fact]
@@ -371,10 +345,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     null,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'mouseInput')");
         }
@@ -397,10 +371,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     null,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glContextReactable')");
         }
@@ -423,12 +397,38 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     null,
+                    this.mockKeyboardReactable.Object,
                     this.mockShutDownReactable.Object);
             }, "The parameter must not be null. (Parameter 'glInitReactable')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullKeyboardReactableParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new GLWindow(
+                    It.IsAny<uint>(),
+                    It.IsAny<uint>(),
+                    this.mockWindowFactory.Object,
+                    this.mockNativeInputFactory.Object,
+                    this.mockGL.Object,
+                    this.mockGLFW.Object,
+                    this.mockMonitorService.Object,
+                    this.mockPlatform.Object,
+                    this.mockTaskService.Object,
+                    this.mockContentLoader.Object,
+                    this.mockRenderer.Object,
+                    this.mockMouseInput.Object,
+                    this.mockContextReactable.Object,
+                    this.mockGLInitReactable.Object,
+                    null,
+                    this.mockShutDownReactable.Object);
+            }, "The parameter must not be null. (Parameter 'keyboardReactable')");
         }
 
         [Fact]
@@ -449,10 +449,10 @@ namespace VelaptorTests.OpenGL
                     this.mockTaskService.Object,
                     this.mockContentLoader.Object,
                     this.mockRenderer.Object,
-                    this.mockKeyInput.Object,
                     this.mockMouseInput.Object,
                     this.mockContextReactable.Object,
                     this.mockGLInitReactable.Object,
+                    this.mockKeyboardReactable.Object,
                     null);
             }, "The parameter must not be null. (Parameter 'shutDownReactable')");
         }
@@ -1033,6 +1033,8 @@ namespace VelaptorTests.OpenGL
             window.Dispose();
 
             // Assert
+            this.mockKeyboardReactable.VerifyOnce(m => m.Dispose());
+            this.mockShutDownReactable.VerifyOnce(m => m.Dispose());
             this.mockGL.VerifyRemoveOnce(e => e.GLError -= It.IsAny<EventHandler<GLErrorEventArgs>>(), $"Unsubscription of the '{nameof(IGLInvoker.GLError)}' event did not occur.");
             this.mockSilkWindow.VerifyRemoveOnce(e => e.Load -= It.IsAny<Action>(), $"Unsubscription of the '{nameof(SilkWindow.Load)}' event did not occur.");
             this.mockSilkWindow.VerifyRemoveOnce(s => s.Update -= It.IsAny<Action<double>>(), $"Unsubscription of the '{nameof(SilkWindow.Update)}' event did not occur.");
@@ -1220,13 +1222,13 @@ namespace VelaptorTests.OpenGL
             // Assert
             Assert.True(uninitializeInvoked);
             this.mockShutDownReactable.Verify(m => m.PushNotification(default, true), Times.Once);
-            this.mockShutDownReactable.Verify(m => m.Dispose(), Times.Once);
         }
 
         [Fact]
-        public void GLWindow_WhenKeyboardKeyIsPressedDown_UpdatesKeyboardInputState()
+        public void GLWindow_WhenKeyboardKeyIsPressedDown_UpdatesKeyboardState()
         {
             // Arrange
+            var expectedKeyState = (KeyCode.Space, true);
             MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
@@ -1238,13 +1240,14 @@ namespace VelaptorTests.OpenGL
                 0);
 
             // Assert
-            this.mockKeyInput.VerifyOnce(m => m.SetState(KeyCode.Space, true));
+            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState, false));
         }
 
         [Fact]
-        public void GLWindow_WhenKeyboardKeyIsReleased_UpdatesKeyboardInputState()
+        public void GLWindow_WhenKeyboardKeyIsReleased_UpdatesKeyboardState()
         {
             // Arrange
+            var expectedKeyState = (KeyCode.K, false);
             MockWindowLoadEvent();
             var window = CreateWindow();
             window.Show();
@@ -1252,11 +1255,11 @@ namespace VelaptorTests.OpenGL
             // Act
             this.mockSilkKeyboard.Raise(e => e.KeyUp += It.IsAny<Action<IKeyboard, Key, int>>(),
                 null,
-                Key.Z,
+                Key.K,
                 0);
 
             // Assert
-            this.mockKeyInput.VerifyOnce(m => m.SetState(KeyCode.Z, false));
+            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState, false));
         }
 
         [Fact]
@@ -1368,10 +1371,10 @@ namespace VelaptorTests.OpenGL
                 this.mockTaskService.Object,
                 this.mockContentLoader.Object,
                 this.mockRenderer.Object,
-                this.mockKeyInput.Object,
                 this.mockMouseInput.Object,
                 this.mockContextReactable.Object,
                 this.mockGLInitReactable.Object,
+                this.mockKeyboardReactable.Object,
                 this.mockShutDownReactable.Object);
 
         private void MockWindowLoadEvent()
