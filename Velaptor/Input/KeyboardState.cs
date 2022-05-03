@@ -304,6 +304,12 @@ namespace Velaptor.Input
         public bool IsAnyCtrlKeyDown() => IsKeyDown(KeyCode.LeftControl) || IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
+        /// Returns a value indicating if any of the alt keys are in the down position.
+        /// </summary>
+        /// <returns><see langword="true"/> if any of the control keys are down.</returns>
+        public bool IsAnyAltKeyDown() => IsKeyDown(KeyCode.LeftAlt) || IsKeyDown(KeyCode.RightAlt);
+
+        /// <summary>
         ///     Returns the character equivalent of the given key if it is
         ///     a letter, number or symbol key.  The value of 0 will be returned
         ///     if the key is not a letter, number or symbol.

@@ -449,6 +449,22 @@ namespace VelaptorTests.Input
         }
 
         [Theory]
+        [InlineData(KeyCode.LeftAlt, true)]
+        [InlineData(KeyCode.RightAlt, true)]
+        public void IsAnyAltKeyDown_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+        {
+            // Arrange
+            var state = default(KeyboardState);
+            state.SetKeyState(key, expected);
+
+            // Act
+            var actual = state.IsAnyAltKeyDown();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
         [MemberData(nameof(LetterKeyUpperCaseCharacterData))]
         public void KeyToChar_WithShiftKeyDownAndLetterKeys_ReturnsCorrectResult(KeyCode key, char expected)
         {
