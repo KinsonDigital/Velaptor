@@ -115,7 +115,6 @@ namespace Velaptor
             IoCContainer.Register<IReactable<GLContextData>, OpenGLContextReactable>(Lifestyle.Singleton);
             IoCContainer.Register<IReactable<DisposeTextureData>, DisposeTexturesReactable>(Lifestyle.Singleton);
             IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
-            IoCContainer.Register<IReactable<RemoveBatchItemData>, RemoveBatchItemReactable>(Lifestyle.Singleton);
         }
 
         /// <summary>
