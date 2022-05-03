@@ -5,104 +5,101 @@
 namespace VelaptorTests.Input
 {
     using System;
-    using System.Linq;
+    using Moq;
     using Velaptor.Input;
+    using Velaptor.Reactables.Core;
     using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
     /// Tests the <see cref="Keyboard"/> class.
     /// </summary>
-    public class KeyboardTests : IDisposable
+    public class KeyboardTests
     {
+        private readonly Mock<IReactable<(KeyCode key, bool isDown)>> mockKeyboardReactable;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyboardTests"/> class.
         /// </summary>
-        public KeyboardTests() => IKeyboardInput<KeyCode, KeyboardState>.InputStates.Clear();
+        public KeyboardTests() => this.mockKeyboardReactable = new Mock<IReactable<(KeyCode key, bool isDown)>>();
 
-        #region Method Tests
+        #region Constructor Tests
         [Fact]
-        public void GetState_WhenInvokedWithNoKeyStates_SetsUpKeyStates()
+        public void Ctor_WhenInvoked_SubscribesToReactable()
         {
-            // Act
-            var keyboard = new Keyboard();
-            keyboard.GetState();
+            // Arrange & Act
+            var unused = CreateKeyboard();
 
             // Assert
-            Assert.Equal(119, IKeyboardInput<KeyCode, KeyboardState>.InputStates.Count);
+            this.mockKeyboardReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(KeyCode, bool)>>()));
         }
+        #endregion
 
+        #region Method Tests
         [Fact]
         public void GetState_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            var keyboard = new Keyboard();
-            keyboard.SetState(KeyCode.T, true);
+            IReactor<(KeyCode key, bool isDown)>? reactor = null;
+
+            var keyState = (KeyCode.K, true);
+            this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(KeyCode key, bool isDown)>>()))
+                .Callback<IReactor<(KeyCode key, bool isDown)>>(reactorObj =>
+                {
+                    reactor = reactorObj;
+                });
+            this.mockKeyboardReactable.Setup(m
+                    => m.PushNotification(It.IsAny<(KeyCode key, bool isDown)>(), false))
+                .Callback<(KeyCode key, bool isDown), bool>((data, _) =>
+                {
+                    reactor.OnNext(data);
+                });
+
+            var keyboard = CreateKeyboard();
+            this.mockKeyboardReactable.Object.PushNotification(keyState);
 
             // Act
             var actual = keyboard.GetState();
 
             // Assert
-            AssertExtensions.AllItemsAre(actual.GetKeyStates(), state =>
-            {
-                if (state.Key == KeyCode.T)
-                {
-                    return state.Value;
-                }
-                else
-                {
-                    return true;
-                }
-            });
+            AssertExtensions.AllItemsAre(actual.GetKeyStates(),
+                state => state.Key == KeyCode.K || state.Value == false);
         }
 
         [Fact]
-        public void SetState_WhenInvoked_InitializesKeyStates()
+        public void Reactable_WhenReactableCompletes_DisposeOfSubscription()
         {
             // Arrange
-            var keyboard = new Keyboard();
+            var mockUnsubscriber = new Mock<IDisposable>();
+            IReactor<(KeyCode key, bool isDown)>? reactor = null;
+            mockUnsubscriber.Name = nameof(mockUnsubscriber);
 
-            // Act & Assert
-            Assert.All(Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray(), (keyCode) =>
-            {
-                keyboard.SetState(keyCode, true);
-                Assert.True(IKeyboardInput<KeyCode, KeyboardState>.InputStates[keyCode]);
-            });
-        }
-
-        [Fact]
-        public void SetState_WhenInvoked_SetsProperKey()
-        {
-            // Act
-            var keyboard = new Keyboard();
-            keyboard.SetState(KeyCode.F, true);
-            var actual = keyboard.GetState();
-
-            // Assert
-            AssertExtensions.AllItemsAre(actual.GetKeyStates(), state =>
-                state.Key != KeyCode.F || state.Value);
-        }
-
-        [Fact]
-        public void Reset_WhenInvoked_InitializesDefaultStates()
-        {
-            // Arrange
-            var keyboard = new Keyboard();
+            this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(KeyCode key, bool isDown)>>()))
+                .Returns(mockUnsubscriber.Object)
+                .Callback<IReactor<(KeyCode key, bool isDown)>>(reactorObj =>
+                {
+                    reactor = reactorObj;
+                });
+            this.mockKeyboardReactable.Setup(m => m.EndNotifications())
+                .Callback(() =>
+                {
+                    AssertExtensions.NotNullWithMessage(reactor, $"The reactor must not be null.");
+                    reactor.OnCompleted();
+                });
+            var unused = new Keyboard(this.mockKeyboardReactable.Object);
 
             // Act
-            keyboard.Reset();
+            this.mockKeyboardReactable.Object.EndNotifications();
 
             // Assert
-            Assert.Equal(Enum.GetValues(typeof(KeyCode)).Length, IKeyboardInput<KeyCode, KeyboardState>.InputStates.Count);
-            Assert.All(IKeyboardInput<KeyCode, KeyboardState>.InputStates, state =>
-            {
-                var (_, value) = state;
-                Assert.False(value);
-            });
+            mockUnsubscriber.VerifyOnce(m => m.Dispose());
         }
         #endregion
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose() => IKeyboardInput<KeyCode, KeyboardState>.InputStates.Clear();
+        /// <summary>
+        /// Creates a new instance of <see cref="Keyboard"/> for the purpose of testing.
+        /// </summary>
+        /// <returns>The instance to test.</returns>
+        private Keyboard CreateKeyboard() => new Keyboard(this.mockKeyboardReactable.Object);
     }
 }

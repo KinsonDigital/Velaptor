@@ -8,6 +8,7 @@ namespace VelaptorTesting.Scenes
     using System.Text;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Factories;
     using Velaptor.Input;
     using Velaptor.UI;
     using VelaptorTesting.Core;
@@ -18,7 +19,7 @@ namespace VelaptorTesting.Scenes
     public class TestKeyboardScene : SceneBase
     {
         private const int TopMargin = 50;
-        private readonly Keyboard keyboard;
+        private readonly IAppInput<KeyboardState> keyboard;
         private Label? lblInstructions;
         private Label? downKeys;
         private KeyboardState currentKeyboardState;
@@ -28,8 +29,8 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         /// <param name="contentLoader">Loads content for the scene.</param>
         public TestKeyboardScene(IContentLoader contentLoader)
-            : base(contentLoader) =>
-                this.keyboard = new Keyboard();
+            : base(contentLoader)
+            => this.keyboard = AppInputFactory.CreateKeyboard();
 
         /// <inheritdoc cref="IScene.LoadContent"/>.
         public override void LoadContent()

@@ -10,6 +10,7 @@ namespace VelaptorTesting.Core
     using System.Drawing;
     using System.Linq;
     using Velaptor;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.UI;
@@ -22,7 +23,7 @@ namespace VelaptorTesting.Core
         private readonly List<IScene> scenes = new ();
         private readonly Button nextButton;
         private readonly Button previousButton;
-        private readonly Keyboard keyboard;
+        private readonly IAppInput<KeyboardState> keyboard;
         private IRenderer renderer;
         private int currentSceneIndex;
         private bool isDisposed;
@@ -44,7 +45,7 @@ namespace VelaptorTesting.Core
             this.previousButton = new Button { Text = "<--" };
             this.previousButton.Click += (_, _) => PreviousScene();
 
-            this.keyboard = new Keyboard();
+            this.keyboard = AppInputFactory.CreateKeyboard();
         }
 
         /// <summary>
