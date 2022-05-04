@@ -50,10 +50,12 @@ namespace Velaptor.OpenGL
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
         private readonly IRenderer renderer;
-        private readonly IMouseInput<VelaptorMouseButton, MouseState> mouseInput;
         private readonly IReactable<GLInitData> glInitReactable;
         private readonly IReactable<GLContextData> glContextReactable;
         private readonly IReactable<(KeyCode key, bool isDown)> keyboardReactable;
+        private readonly IReactable<(int x, int y)> mousePosReactable;
+        private readonly IReactable<(VelaptorMouseButton button, bool isDown)> mouseBtnReactable;
+        private readonly IReactable<(MouseScrollDirection scrollDirection, int wheelValue)> mouseWheelReactable;
         private readonly IReactable<ShutDownData> shutDownReactable;
         private SilkIWindow glWindow = null!;
         private IInputContext glInputContext = null!;
@@ -76,10 +78,12 @@ namespace Velaptor.OpenGL
         /// <param name="taskService">Runs asynchronous tasks.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="renderer">Renders textures and primitives.</param>
-        /// <param name="mouseInput">Holds the state of the mouse.</param>
         /// <param name="glContextReactable">Subscribed to for OpenGL related push notifications.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
         /// <param name="keyboardReactable">Provides updates to the state of the keyboard.</param>
+        /// <param name="mousePosReactable">Used to send push notifications of the position of the mouse.</param>
+        /// <param name="mouseBtnReactable">Used to send push notifications of the state of the mouse buttons.</param>
+        /// <param name="mouseWheelReactable">Used to send push notifications of the state of the mouse wheel.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         public GLWindow(
             uint width,
@@ -93,10 +97,12 @@ namespace Velaptor.OpenGL
             ITaskService taskService,
             IContentLoader contentLoader,
             IRenderer renderer,
-            IMouseInput<VelaptorMouseButton, MouseState> mouseInput,
             IReactable<GLContextData> glContextReactable,
             IReactable<GLInitData> glInitReactable,
             IReactable<(KeyCode key, bool isDown)> keyboardReactable,
+            IReactable<(int x, int y)> mousePosReactable,
+            IReactable<(VelaptorMouseButton button, bool isDown)> mouseBtnReactable,
+            IReactable<(MouseScrollDirection scrollDirection, int wheelValue)> mouseWheelReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
             EnsureThat.ParamIsNotNull(windowFactory);
@@ -108,10 +114,12 @@ namespace Velaptor.OpenGL
             EnsureThat.ParamIsNotNull(taskService);
             EnsureThat.ParamIsNotNull(contentLoader);
             EnsureThat.ParamIsNotNull(renderer);
-            EnsureThat.ParamIsNotNull(mouseInput);
             EnsureThat.ParamIsNotNull(glContextReactable);
             EnsureThat.ParamIsNotNull(glInitReactable);
-            EnsureThat.ParamIsNotNull(keyboardReactable); // TODO: Create unit test
+            EnsureThat.ParamIsNotNull(keyboardReactable);
+            EnsureThat.ParamIsNotNull(mousePosReactable);
+            EnsureThat.ParamIsNotNull(mouseBtnReactable);
+            EnsureThat.ParamIsNotNull(mouseWheelReactable);
             EnsureThat.ParamIsNotNull(shutDownReactable);
 
             this.windowFactory = windowFactory;
@@ -124,11 +132,12 @@ namespace Velaptor.OpenGL
             ContentLoader = contentLoader;
             this.renderer = renderer;
 
-            this.mouseInput = mouseInput;
-
             this.glInitReactable = glInitReactable;
             this.glContextReactable = glContextReactable;
             this.keyboardReactable = keyboardReactable;
+            this.mousePosReactable = mousePosReactable;
+            this.mouseBtnReactable = mouseBtnReactable;
+            this.mouseWheelReactable = mouseWheelReactable;
             this.shutDownReactable = shutDownReactable;
 
             SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
@@ -437,8 +446,7 @@ namespace Velaptor.OpenGL
             };
 
             Update?.Invoke(frameTime);
-            this.mouseInput.SetScrollWheelSpeed(0);
-            this.mouseInput.SetScrollWheelDirection(MouseScrollDirection.None);
+            this.mouseWheelReactable.PushNotification((MouseScrollDirection.None, 0));
         }
 
         /// <summary>
@@ -499,14 +507,16 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
-        private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, true);
+        private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
+            => this.mouseBtnReactable.PushNotification(((VelaptorMouseButton)button, true));
 
         /// <summary>
         /// Invoked when any of the mouse buttons are released from the down position into the up position over the window.
         /// </summary>
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
-        private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, false);
+        private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
+            => this.mouseBtnReactable.PushNotification(((VelaptorMouseButton)button, false));
 
         /// <summary>
         /// Invoked when there is mouse scroll wheel input.
@@ -515,8 +525,6 @@ namespace Velaptor.OpenGL
         /// <param name="wheelData">Positional data about the mouse scroll wheel.</param>
         private void GLMouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
         {
-            this.mouseInput.SetScrollWheelSpeed((int)wheelData.Y);
-
             var wheelDirection = wheelData.Y switch
             {
                 > 0 => MouseScrollDirection.ScrollUp,
@@ -524,7 +532,7 @@ namespace Velaptor.OpenGL
                 _ => MouseScrollDirection.None
             };
 
-            this.mouseInput.SetScrollWheelDirection(wheelDirection);
+            this.mouseWheelReactable.PushNotification((wheelDirection, (int)wheelData.Y));
         }
 
         /// <summary>
@@ -533,10 +541,7 @@ namespace Velaptor.OpenGL
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="position">The position of the mouse input.</param>
         private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
-        {
-            this.mouseInput.SetXPos((int)position.X);
-            this.mouseInput.SetYPos((int)position.Y);
-        }
+            => this.mousePosReactable.PushNotification(((int)position.X, (int)position.Y));
 
         /// <summary>
         /// Invoked when an OpenGL error occurs.

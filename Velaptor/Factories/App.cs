@@ -42,10 +42,12 @@ namespace Velaptor.Factories
                 IoC.Container.GetInstance<ITaskService>(),
                 ContentLoaderFactory.CreateContentLoader(),
                 RendererFactory.CreateRenderer(width, height),
-                IoC.Container.GetInstance<IMouseInput<MouseButton, MouseState>>(),
                 IoC.Container.GetInstance<IReactable<GLContextData>>(),
                 IoC.Container.GetInstance<IReactable<GLInitData>>(),
                 IoC.Container.GetInstance<IReactable<(KeyCode, bool)>>(),
+                IoC.Container.GetInstance<IReactable<(int, int)>>(),
+                IoC.Container.GetInstance<IReactable<(MouseButton, bool)>>(),
+                IoC.Container.GetInstance<IReactable<(MouseScrollDirection, int)>>(),
                 IoC.Container.GetInstance<IReactable<ShutDownData>>());
     }
 }
