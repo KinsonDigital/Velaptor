@@ -21,5 +21,11 @@ namespace Velaptor.Factories
         /// </summary>
         /// <returns>The keyboard singleton object.</returns>
         public static IAppInput<KeyboardState> CreateKeyboard() => IoC.Container.GetInstance<IAppInput<KeyboardState>>();
+
+        /// <summary>
+        /// Creates a mouse object.
+        /// </summary>
+        /// <returns>The keyboard singleton object.</returns>
+        public static IAppInput<MouseState> CreateMouse() => IoC.Container.GetInstance<IAppInput<MouseState>>();
     }
 }
