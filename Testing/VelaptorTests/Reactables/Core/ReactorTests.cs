@@ -45,7 +45,7 @@ namespace VelaptorTests.Reactables.Core
         }
 
         [Fact]
-        public void OnNext_WhenCompleted_DoesNotExecutesOnNext()
+        public void OnNext_WhenCompleted_DoesNotExecuteOnNext()
         {
             // Arrange
             var onNextInvoked = false;

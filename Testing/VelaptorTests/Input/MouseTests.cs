@@ -56,9 +56,9 @@ namespace VelaptorTests.Input
                 });
 
             var mouse = CreateMouse();
+            reactor?.OnNext((11, 22));
 
             // Act
-            reactor?.OnNext((11, 22));
             var actual = mouse.GetState();
 
             // Assert
@@ -83,9 +83,9 @@ namespace VelaptorTests.Input
                 });
 
             var mouse = CreateMouse();
+            reactor?.OnNext((mouseButton, true));
 
             // Act
-            reactor?.OnNext((mouseButton, true));
             var actual = mouse.GetState();
 
             // Assert
@@ -105,9 +105,9 @@ namespace VelaptorTests.Input
                 });
 
             var mouse = CreateMouse();
+            reactor?.OnNext((MouseScrollDirection.ScrollDown, 33));
 
             // Act
-            reactor?.OnNext((MouseScrollDirection.ScrollDown, 33));
             var actual = mouse.GetState();
 
             // Assert
