@@ -141,37 +141,37 @@ namespace Velaptor.Input
         /// Gets a value indicating whether or not the left shift key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the left shift key is down.</returns>
-        public bool IsLeftShiftDown() => IsKeyDown(KeyCode.LeftShift);
+        public bool IsLeftShiftKeyDown() => IsKeyDown(KeyCode.LeftShift);
 
         /// <summary>
         /// Gets a value indicating whether or not the right shift key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the right shift key is down.</returns>
-        public bool IsRightShiftDown() => IsKeyDown(KeyCode.RightShift);
+        public bool IsRightShiftKeyDown() => IsKeyDown(KeyCode.RightShift);
 
         /// <summary>
         /// Gets a value indicating whether or not the left control key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the left control key is down.</returns>
-        public bool IsLeftCtrlDown() => IsKeyDown(KeyCode.LeftControl);
+        public bool IsLeftCtrlKeyDown() => IsKeyDown(KeyCode.LeftControl);
 
         /// <summary>
         /// Gets a value indicating whether or not the right control key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the right control key is down.</returns>
-        public bool IsRightCtrlDown() => IsKeyDown(KeyCode.RightControl);
+        public bool IsRightCtrlKeyDown() => IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
         /// Gets a value indicating whether or not the left alt key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the left alt key is down.</returns>
-        public bool IsLeftAltDown() => IsKeyDown(KeyCode.LeftAlt);
+        public bool IsLeftAltKeyDown() => IsKeyDown(KeyCode.LeftAlt);
 
         /// <summary>
         /// Gets a value indicating whether or not the right alt key is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the right alt key is down.</returns>
-        public bool IsRightAltDown() => IsKeyDown(KeyCode.RightAlt);
+        public bool IsRightAltKeyDown() => IsKeyDown(KeyCode.RightAlt);
 
         /// <summary>
         /// Returns all of the keys that are in the down position.
@@ -295,19 +295,19 @@ namespace Velaptor.Input
         /// Returns a value indicating if any of the shift keys are in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if any of the shift keys are down.</returns>
-        public bool IsAnyShiftKeyDown() => IsKeyDown(KeyCode.LeftShift) || IsKeyDown(KeyCode.RightShift);
+        public bool AnyShiftKeysDown() => IsKeyDown(KeyCode.LeftShift) || IsKeyDown(KeyCode.RightShift);
 
         /// <summary>
         /// Returns a value indicating if any of the control keys are in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if any of the control keys are down.</returns>
-        public bool IsAnyCtrlKeyDown() => IsKeyDown(KeyCode.LeftControl) || IsKeyDown(KeyCode.RightControl);
+        public bool AnyCtrlKeysDown() => IsKeyDown(KeyCode.LeftControl) || IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
         /// Returns a value indicating if any of the alt keys are in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if any of the control keys are down.</returns>
-        public bool IsAnyAltKeyDown() => IsKeyDown(KeyCode.LeftAlt) || IsKeyDown(KeyCode.RightAlt);
+        public bool AnyAltKeysDown() => IsKeyDown(KeyCode.LeftAlt) || IsKeyDown(KeyCode.RightAlt);
 
         /// <summary>
         ///     Returns the character equivalent of the given key if it is
@@ -318,7 +318,7 @@ namespace Velaptor.Input
         /// <returns>The character that matches the given key.</returns>
         public char KeyToChar(KeyCode key)
         {
-            if (IsAnyShiftKeyDown())
+            if (AnyShiftKeysDown())
             {
                 // NOTE!!  THIS MIGHT NOT WORK.  THE ToUpperInvariant() THAT IS
                 if (LetterKeys.Contains(key))
