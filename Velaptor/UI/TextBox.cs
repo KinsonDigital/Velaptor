@@ -42,7 +42,7 @@ namespace Velaptor.UI
         {
             this.contentLoader = contentLoader;
 
-            this.text = new Label(contentLoader, null)
+            this.text = new Label(contentLoader, null, null)
             {
                 Position = Point.Empty,
                 Text = "Textbox Text",

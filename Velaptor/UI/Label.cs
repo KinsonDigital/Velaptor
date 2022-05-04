@@ -1,4 +1,4 @@
-﻿// <copyright file="Label.cs" company="KinsonDigital">
+// <copyright file="Label.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -15,6 +15,7 @@ namespace Velaptor.UI
     using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Guards;
+    using Velaptor.Input;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -44,13 +45,15 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="font">The type of font to render the text.</param>
+        /// <param name="mouse">Used to get the state of the mouse.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown if the any of the parameters below are null:
         ///     <list type="bullet">
         ///         <item><paramref name="contentLoader"/></item>
         ///     </list>
         /// </exception>
-        internal Label(IContentLoader contentLoader, IFont font)
+        internal Label(IContentLoader contentLoader, IFont font, IAppInput<MouseState> mouse)
+            : base(mouse)
         {
             EnsureThat.ParamIsNotNull(contentLoader);
             EnsureThat.ParamIsNotNull(font);

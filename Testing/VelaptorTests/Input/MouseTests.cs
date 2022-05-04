@@ -5,189 +5,169 @@
 namespace VelaptorTests.Input
 {
     using System;
-    using System.Linq;
+    using Moq;
     using Velaptor.Input;
+    using Velaptor.Reactables.Core;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
     /// Tests the <see cref="Mouse"/> class.
     /// </summary>
-    public class MouseTests : IDisposable
+    public class MouseTests
     {
-        // This is to make sure that no other tests are executed until other
-        // tests are finished being disposed of.  This is due to the fact
-        // that we are testing the value of static 'InputStates' array in the 'IMouseInput<MouseButton, MouseState>'
-        // interface.
-        private static bool isDisposing;
+        private readonly Mock<IReactable<(int x, int y)>> mockMousePosReactable;
+        private readonly Mock<IReactable<(MouseButton button, bool isDown)>> mockMouseBtnReactable;
+        private readonly Mock<IReactable<(MouseScrollDirection wheelDirection, int mouseWheelValue)>> mockMouseWheelReactable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MouseTests"/> class.
         /// </summary>
         public MouseTests()
         {
-            ClearMouseState();
+            this.mockMousePosReactable = new Mock<IReactable<(int x, int y)>>();
+            this.mockMouseBtnReactable = new Mock<IReactable<(MouseButton button, bool isDown)>>();
+            this.mockMouseWheelReactable = new Mock<IReactable<(MouseScrollDirection wheelDirection, int mouseWheelValue)>>();
+        }
 
-            while (isDisposing)
-            {
-            }
+        #region Method Tests
+        [Fact]
+        public void Ctor_WhenInvoked_SubscribesToReactables()
+        {
+            // Act & Arrange
+            var unused = CreateMouse();
+
+            // Assert
+            this.mockMousePosReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(int, int)>>()));
+            this.mockMouseBtnReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(MouseButton, bool)>>()));
+            this.mockMouseWheelReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(MouseScrollDirection, int)>>()));
         }
 
         [Fact]
-        public void GetState_WhenInvokedWithNoDefaultState_SetsUpDefaultState()
+        public void GetState_WhenGettingMousePosition_ReturnsCorrectResult()
         {
             // Arrange
-            var mouse = new Mouse();
+            IReactor<(int, int)>? reactor = null;
+
+            this.mockMousePosReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(int x, int y)>>()))
+                .Callback<IReactor<(int x, int y)>>(reactorObj =>
+                {
+                    reactor = reactorObj;
+                });
+
+            var mouse = CreateMouse();
 
             // Act
-            var actual = mouse.GetState();
-
-            var keyCodes = Enum.GetValues(typeof(MouseButton)).Cast<MouseButton>().ToArray();
-
-            // Assert
-            Assert.All(keyCodes, (mouseInput) =>
-            {
-                Assert.False(actual.GetButtonState(mouseInput));
-            });
-        }
-
-        [Fact]
-        public void GetState_WhenInvoked_ReturnsCorrectState()
-        {
-            // Arrange
-            var mouse = new Mouse();
-            IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
-
-            // Act
+            reactor?.OnNext((11, 22));
             var actual = mouse.GetState();
 
             // Assert
-            Assert.True(actual.IsLeftButtonDown());
+            Assert.Equal(11, actual.GetPosition().X);
+            Assert.Equal(22, actual.GetPosition().Y);
         }
 
         [Theory]
-        [InlineData(MouseButton.LeftButton)]
-        [InlineData(MouseButton.RightButton)]
-        [InlineData(MouseButton.MiddleButton)]
-        public void SetState_WithButton_CorrectlySetsState(MouseButton button)
+        [InlineData(0)] // Left
+        [InlineData(1)] // Right
+        [InlineData(2)] // Middle
+        public void GetState_WhenGettingMouseButton_ReturnsCorrectResult(int mouseButtonValue)
         {
             // Arrange
-            var mouse = new Mouse();
+            var mouseButton = (MouseButton)mouseButtonValue;
+            IReactor<(MouseButton, bool)>? reactor = null;
+
+            this.mockMouseBtnReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(MouseButton, bool)>>()))
+                .Callback<IReactor<(MouseButton, bool)>>(reactorObj =>
+                {
+                    reactor = reactorObj;
+                });
+
+            var mouse = CreateMouse();
 
             // Act
-            mouse.SetState(button, true);
-
-            // Assert
-            Assert.True(IMouseInput<MouseButton, MouseState>.InputStates[button]);
-        }
-
-        [Fact]
-        public void SetXPos_WhenInvoked_SetsXPosition()
-        {
-            // Arrange
-            var mouse = new Mouse();
-
-            // Act
-            mouse.SetXPos(11);
-            var actual = mouse.GetState().GetX();
-
-            // Assert
-            Assert.Equal(11, actual);
-        }
-
-        [Fact]
-        public void SetYPos_WhenInvoked_SetsYPosition()
-        {
-            // Arrange
-            var mouse = new Mouse();
-
-            // Act
-            mouse.SetYPos(22);
-            var actual = mouse.GetState().GetY();
-
-            // Assert
-            Assert.Equal(22, actual);
-        }
-
-        [Fact]
-        public void SetScrollWheelValue_WhenInvoked_SetsScrollWheelValue()
-        {
-            // Arrange
-            var mouse = new Mouse();
-
-            // Act
-            mouse.SetScrollWheelSpeed(33);
-            var actual = mouse.GetState().GetScrollWheelValue();
-
-            // Assert
-            Assert.Equal(33, actual);
-        }
-
-        [Fact]
-        public void Reset_WhenInvoked_InitializesButtonState()
-        {
-            // Arrange
-            var mouse = new Mouse();
-
-            // Act
-            mouse.Reset();
-
-            // Assert
-            Assert.Equal(Enum.GetValues(typeof(MouseButton)).Length, IMouseInput<MouseButton, MouseState>.InputStates.Count);
-            Assert.All(IMouseInput<MouseButton, MouseState>.InputStates, (state) =>
-            {
-                var (_, value) = state;
-                Assert.False(value);
-            });
-        }
-
-        [Fact]
-        public void Reset_WhenInvoked_CorrectlyResetsAllState()
-        {
-            // Arrange
-            var mouse = new Mouse();
-
-            var keyCodes = Enum.GetValues(typeof(MouseButton)).Cast<MouseButton>().ToArray();
-
-            foreach (var key in keyCodes)
-            {
-                IMouseInput<MouseButton, MouseState>.InputStates.Add(key, true);
-            }
-
-            mouse.SetXPos(111);
-            mouse.SetYPos(222);
-            mouse.SetScrollWheelSpeed(333);
-            mouse.SetScrollWheelDirection(MouseScrollDirection.ScrollDown);
-
-            // Act
-            mouse.Reset();
+            reactor?.OnNext((mouseButton, true));
             var actual = mouse.GetState();
 
             // Assert
-            Assert.False(IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton]);
-            Assert.False(IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.RightButton]);
-            Assert.False(IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.MiddleButton]);
-            Assert.Equal(0, actual.GetX());
-            Assert.Equal(0, actual.GetY());
-            Assert.Equal(0, actual.GetScrollWheelValue());
-            Assert.Equal(MouseScrollDirection.None, actual.GetScrollDirection());
+            Assert.True(actual.GetButtonState(mouseButton));
         }
 
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
+        [Fact]
+        public void GetState_WhenGettingMouseWheelData_ReturnsCorrectResult()
         {
-            isDisposing = true;
-            ClearMouseState();
-            isDisposing = false;
+            // Arrange
+            IReactor<(MouseScrollDirection, int)>? reactor = null;
+
+            this.mockMouseWheelReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(MouseScrollDirection, int)>>()))
+                .Callback<IReactor<(MouseScrollDirection, int)>>(reactorObj =>
+                {
+                    reactor = reactorObj;
+                });
+
+            var mouse = CreateMouse();
+
+            // Act
+            reactor?.OnNext((MouseScrollDirection.ScrollDown, 33));
+            var actual = mouse.GetState();
+
+            // Assert
+            Assert.Equal(MouseScrollDirection.ScrollDown, actual.GetScrollDirection());
+            Assert.Equal(33, actual.GetScrollWheelValue());
         }
+
+        [Fact]
+        public void Reactable_WhenReactorCompletes_DisposesOfSubscriptions()
+        {
+            // Arrange
+            IReactor<(int, int)>? posReactor = null;
+            IReactor<(MouseButton, bool)>? btnReactor = null;
+            IReactor<(MouseScrollDirection, int)>? wheelReactor = null;
+            var mockMousePosUnsubscriber = new Mock<IDisposable>();
+            var mockMouseBtnUnsubscriber = new Mock<IDisposable>();
+            var mockMouseWheelUnsubscriber = new Mock<IDisposable>();
+
+            this.mockMousePosReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(int x, int y)>>()))
+                .Returns(mockMousePosUnsubscriber.Object)
+                .Callback<IReactor<(int x, int y)>>(reactorObj =>
+                {
+                    posReactor = reactorObj;
+                });
+
+            this.mockMouseBtnReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(MouseButton, bool)>>()))
+                .Returns(mockMouseBtnUnsubscriber.Object)
+                .Callback<IReactor<(MouseButton, bool)>>(reactorObj =>
+                {
+                    btnReactor = reactorObj;
+                });
+
+            this.mockMouseWheelReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(MouseScrollDirection, int)>>()))
+                .Returns(mockMouseWheelUnsubscriber.Object)
+                .Callback<IReactor<(MouseScrollDirection, int)>>(reactorObj =>
+                {
+                    wheelReactor = reactorObj;
+                });
+
+            var unused = CreateMouse();
+
+            // Act
+            posReactor.OnCompleted();
+            btnReactor.OnCompleted();
+            wheelReactor.OnCompleted();
+
+            // Assert
+            mockMousePosUnsubscriber.VerifyOnce(m => m.Dispose());
+            mockMouseBtnUnsubscriber.VerifyOnce(m => m.Dispose());
+            mockMouseWheelUnsubscriber.VerifyOnce(m => m.Dispose());
+        }
+        #endregion
 
         /// <summary>
-        /// Clears the state of the mouse for testing purposes.
+        /// Creates a new instance of <see cref="Mouse"/> for the purpose of testing.
         /// </summary>
-        private static void ClearMouseState()
-        {
-            new Mouse().SetXPos(0);
-            new Mouse().SetYPos(0);
-            IMouseInput<MouseButton, MouseState>.InputStates.Clear();
-        }
+        /// <returns>The instance to test.</returns>
+        private Mouse CreateMouse()
+            => new Mouse(this.mockMousePosReactable.Object,
+                this.mockMouseBtnReactable.Object,
+                this.mockMouseWheelReactable.Object);
     }
 }

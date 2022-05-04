@@ -5,6 +5,7 @@
 namespace VelaptorTests.Fakes
 {
     using System.Drawing;
+    using Velaptor.Input;
     using Velaptor.UI;
 
     /// <summary>
@@ -12,6 +13,15 @@ namespace VelaptorTests.Fakes
     /// </summary>
     public class ControlBaseFake : ControlBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ControlBaseFake"/> class.
+        /// </summary>
+        /// <param name="mouseMock">Mouse input mock.</param>
+        public ControlBaseFake(IAppInput<MouseState> mouseMock)
+            : base(mouseMock)
+        {
+        }
+
         /// <summary>
         /// Gets the tint color value of the control base.
         /// </summary>

@@ -15,6 +15,7 @@ namespace VelaptorTests.UI
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
     using Velaptor.Graphics;
+    using Velaptor.Input;
     using Velaptor.UI;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -28,6 +29,7 @@ namespace VelaptorTests.UI
         private const string TextValue = "hello world";
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<IFont> mockFont;
+        private readonly Mock<IAppInput<MouseState>> mockMouse;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LabelTests"/> class.
@@ -40,6 +42,8 @@ namespace VelaptorTests.UI
             this.mockContentLoader = new Mock<IContentLoader>();
             this.mockContentLoader.Setup(m => m.LoadFont(It.IsAny<string>(), It.IsAny<uint>()))
                 .Returns(this.mockFont.Object);
+
+            this.mockMouse = new Mock<IAppInput<MouseState>>();
         }
 
         #region Constructor Tests
@@ -49,7 +53,7 @@ namespace VelaptorTests.UI
             // Arrange & Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new Label(null, this.mockFont.Object);
+                _ = new Label(null, this.mockFont.Object, this.mockMouse.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
         }
 
@@ -59,7 +63,7 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new Label(this.mockContentLoader.Object, null);
+                _ = new Label(this.mockContentLoader.Object, null, this.mockMouse.Object);
             }, "The parameter must not be null. (Parameter 'font')");
         }
         #endregion
@@ -529,6 +533,6 @@ namespace VelaptorTests.UI
         /// Creates a new label for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private Label CreateLabel() => new (this.mockContentLoader.Object, this.mockFont.Object);
+        private Label CreateLabel() => new (this.mockContentLoader.Object, this.mockFont.Object, this.mockMouse.Object);
     }
 }

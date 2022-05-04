@@ -13,7 +13,9 @@ namespace VelaptorTests.UI
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Input;
     using Velaptor.UI;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -28,6 +30,7 @@ namespace VelaptorTests.UI
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITexture> mockTexture;
         private readonly Mock<IFont> mockFont;
+        private readonly Mock<IUIControlFactory> mockControlFactory;
         private readonly Label label;
 
         /// <summary>
@@ -69,7 +72,13 @@ namespace VelaptorTests.UI
             this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman", 12))
                 .Returns(this.mockFont.Object);
 
-            this.label = new Label(this.mockContentLoader.Object, this.mockFont.Object);
+            var mockMouse = new Mock<IAppInput<MouseState>>();
+
+            this.label = new Label(this.mockContentLoader.Object, this.mockFont.Object, mockMouse.Object);
+
+            this.mockControlFactory = new Mock<IUIControlFactory>();
+            this.mockControlFactory.Setup(m => m.CreateLabel(It.IsAny<string>(), It.IsAny<IFont>()))
+                .Returns(this.label);
         }
 
         #region Constructor Tests
@@ -79,18 +88,8 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new Button(null, this.label);
+                _ = new Button(null, this.mockControlFactory.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
-        }
-
-        [Fact]
-        public void Ctor2Args_WithContentLoaderAndLabelParams_LabelPropertyNotNull()
-        {
-            // Arrange & Act
-            var button = new Button(this.mockContentLoader.Object, this.label);
-
-            // Assert
-            Assert.NotNull(button.Label);
         }
         #endregion
 
@@ -165,6 +164,7 @@ namespace VelaptorTests.UI
             this.mockFont.Setup(m => m.Measure(It.IsAny<string>())).Returns(new SizeF(30, 40));
             this.label.AutoSize = true;
             var button = CreateButton();
+            button.LoadContent();
             button.AutoSize = autoSize;
 
             // Act
@@ -346,7 +346,7 @@ namespace VelaptorTests.UI
             this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12))
                 .Returns(this.mockFont.Object);
 
-            var button = new Button(this.mockContentLoader.Object, null);
+            var button = CreateButton();
             button.Text = "test-value";
             button.Enabled = false;
             button.Position = new Point(11, 22);
@@ -574,8 +574,6 @@ namespace VelaptorTests.UI
         /// </summary>
         /// <returns>The button instance to test.</returns>
         private Button CreateButton()
-        {
-            return new Button(this.mockContentLoader.Object, this.label);
-        }
+            => new (this.mockContentLoader.Object, this.mockControlFactory.Object);
     }
 }
