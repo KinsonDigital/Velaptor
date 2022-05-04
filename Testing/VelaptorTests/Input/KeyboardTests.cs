@@ -67,7 +67,7 @@ namespace VelaptorTests.Input
         }
 
         [Fact]
-        public void Reactable_WhenReactableCompletes_DisposeOfSubscription()
+        public void Reactable_WhenReactorCompletes_DisposeOfSubscription()
         {
             // Arrange
             var mockUnsubscriber = new Mock<IDisposable>();
@@ -80,16 +80,10 @@ namespace VelaptorTests.Input
                 {
                     reactor = reactorObj;
                 });
-            this.mockKeyboardReactable.Setup(m => m.EndNotifications())
-                .Callback(() =>
-                {
-                    AssertExtensions.NotNullWithMessage(reactor, $"The reactor must not be null.");
-                    reactor.OnCompleted();
-                });
             var unused = new Keyboard(this.mockKeyboardReactable.Object);
 
             // Act
-            this.mockKeyboardReactable.Object.EndNotifications();
+            reactor.OnCompleted();
 
             // Assert
             mockUnsubscriber.VerifyOnce(m => m.Dispose());

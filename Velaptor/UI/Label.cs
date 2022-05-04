@@ -1,4 +1,4 @@
-// <copyright file="Label.cs" company="KinsonDigital">
+﻿// <copyright file="Label.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -57,9 +57,8 @@ namespace Velaptor.UI
         {
             EnsureThat.ParamIsNotNull(contentLoader);
             EnsureThat.ParamIsNotNull(font);
-            this.contentLoader =
-                contentLoader ??
-                throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
+
+            this.contentLoader = contentLoader;
             Font = font;
         }
 
