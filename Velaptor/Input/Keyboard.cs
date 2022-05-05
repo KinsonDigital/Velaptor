@@ -23,7 +23,7 @@ namespace Velaptor.Input
         /// <summary>
         /// Initializes a new instance of the <see cref="Keyboard"/> class.
         /// </summary>
-        /// <param name="keyboardReactable">Subscribed to for keyboard state push notifications.</param>
+        /// <param name="keyboardReactable">Subscribed for keyboard state push notifications.</param>
         public Keyboard(IReactable<(KeyCode key, bool isDown)> keyboardReactable)
         {
             this.keyboardStateUnsubscriber = keyboardReactable.Subscribe(new Reactor<(KeyCode key, bool isDown)>(

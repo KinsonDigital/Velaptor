@@ -328,21 +328,22 @@ namespace Velaptor.UI
                 return;
             }
 
-            // If the label is null
             Label ??= this.controlFactory.CreateLabel(this.cachedText, this.contentLoader.LoadFont(DefaultRegularFont, 12));
 
             Label?.LoadContent();
 
-            // Update the enabled status of the label to match the button.
-            // If the enabled value was set before the content was loaded,
-            // it will "cache" the value until the content is loaded
+            /* Update the enabled status of the label to match the button.
+             * If the enabled value was set before the content was loaded,
+             * it will "cache" the value until the content is loaded
+            */
             if (Label is not null)
             {
                 Label.Enabled = base.Enabled;
                 Label.Position = Position;
 
-                // Set the text to the cached text value if was set previously
-                // This occurs when the text of the button was set before load content was invoked
+                /* Set the text to the cached text value if was set previously
+                 * This occurs when the text of the button was set before load content was invoked
+                 */
                 Label.Text = string.IsNullOrEmpty(this.cachedText) ? string.Empty : this.cachedText;
             }
 
