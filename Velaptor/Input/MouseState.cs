@@ -8,6 +8,7 @@ namespace Velaptor.Input
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
+    using Velaptor.Exceptions;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -58,6 +59,40 @@ namespace Velaptor.Input
         public int GetY() => this.position.Y;
 
         /// <summary>
+        /// Returns a value indicating whether or not the given mouse <paramref name="button"/>
+        /// is in the down position.
+        /// </summary>
+        /// <param name="button">The mouse button to check.</param>
+        /// <returns>True if the mouse button is in the down position.</returns>
+        public bool IsButtonDown(MouseButton button)
+        {
+            switch (button)
+            {
+                case MouseButton.LeftButton:
+                    return this.isLeftButtonDown;
+                case MouseButton.MiddleButton:
+                    return this.isMiddleButtonDown;
+                case MouseButton.RightButton:
+                    return this.isRightButtonDown;
+                default:
+                    var enumTypeStr = nameof(Velaptor);
+                    enumTypeStr += $".{nameof(Input)}";
+                    enumTypeStr += $".{nameof(MouseButton)}";
+
+                    var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
+                    throw new EnumOutOfRangeException(exceptionMsg);
+            }
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given mouse <paramref name="button"/>
+        /// is in the up position.
+        /// </summary>
+        /// <param name="button">The mouse button to check.</param>
+        /// <returns>True if the mouse button is in the up position.</returns>
+        public bool IsButtonUp(MouseButton button) => !IsButtonDown(button);
+
+        /// <summary>
         /// Gets or sets a value indicating whether or not the left mouse button is in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if the button is down.</returns>
@@ -106,6 +141,14 @@ namespace Velaptor.Input
                 MouseButton.MiddleButton => this.isMiddleButtonDown,
                 _ => false,
             };
+
+        /// <summary>
+        /// Returns a value indicating whether or not any of the mouse buttons are in the down position.
+        /// </summary>
+        /// <returns>True if any buttons are in the down position.</returns>
+        public bool AnyButtonsDown() => IsButtonDown(MouseButton.LeftButton) ||
+                                        IsButtonDown(MouseButton.MiddleButton) ||
+                                        IsButtonDown(MouseButton.RightButton);
 
         /// <summary>
         /// Gets the position value of the mouse scroll wheel.
