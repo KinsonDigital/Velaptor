@@ -1,4 +1,4 @@
-﻿// <copyright file="MouseState.cs" company="KinsonDigital">
+// <copyright file="MouseState.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -155,26 +155,26 @@ namespace Velaptor.Input
         /// </summary>
         /// <param name="x">The X position of the mouse.</param>
         /// <param name="y">The Y position of the mouse.</param>
-        public void SetPosition(int x, int y) => this.position = new Point(x, y);
+        internal void SetPosition(int x, int y) => this.position = new Point(x, y);
 
         /// <summary>
         /// Sets the value of the scroll wheel.
         /// </summary>
         /// <param name="value">The value to set the scroll to.</param>
-        public void SetScrollWheelValue(int value) => this.scrollWheelValue = value;
+        internal void SetScrollWheelValue(int value) => this.scrollWheelValue = value;
 
         /// <summary>
         /// Sets the scroll direction of the mouse wheel.
         /// </summary>
         /// <param name="direction">The scroll direction.</param>
-        public void SetScrollWheelDirection(MouseScrollDirection direction) => this.scrollDirection = direction;
+        internal void SetScrollWheelDirection(MouseScrollDirection direction) => this.scrollDirection = direction;
 
         /// <summary>
         /// Sets the given <paramref name="mouseButton"/> to the given <paramref name="state"/>.
         /// </summary>
         /// <param name="mouseButton">The button to set.</param>
         /// <param name="state">Sets the state of the <paramref name="mouseButton"/>.</param>
-        public void SetButtonState(MouseButton mouseButton, bool state)
+        internal void SetButtonState(MouseButton mouseButton, bool state)
         {
             // ReSharper disable ConvertIfStatementToSwitchStatement
             if (mouseButton == MouseButton.LeftButton)
