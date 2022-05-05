@@ -1,4 +1,4 @@
-// <copyright file="MouseState.cs" company="KinsonDigital">
+﻿// <copyright file="MouseState.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -25,7 +25,7 @@ namespace Velaptor.Input
         private MouseScrollDirection scrollDirection;
 
         /// <summary>
-        /// Returns a value indicating if both operands are equal.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
@@ -33,7 +33,7 @@ namespace Velaptor.Input
         public static bool operator ==(MouseState left, MouseState right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating if both operands are not equal.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
@@ -129,7 +129,8 @@ namespace Velaptor.Input
         public bool IsRightButtonUp() => !IsRightButtonDown();
 
         /// <summary>
-        /// Returns the state for the given <paramref name="mouseButton"/>.
+        /// Returns a value indicating whether or not the state for the given <paramref name="mouseButton"/>
+        /// is in the down or up position.
         /// </summary>
         /// <param name="mouseButton">The button state to retrieve.</param>
         /// <returns><see langword="true"/> if the button is down.</returns>

@@ -30,7 +30,7 @@ namespace Velaptor.OpenGL.GPUData
         public Color TintColor; // Location 2 | aTintColor
 
         /// <summary>
-        /// Returns a value indicating if the left and right side of the not equals operator are not equal.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -38,7 +38,7 @@ namespace Velaptor.OpenGL.GPUData
         public static bool operator !=(TextureVertexData left, TextureVertexData right) => !left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating if the left and right side of the not equals operator are equal.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
