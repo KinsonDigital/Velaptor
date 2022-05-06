@@ -379,8 +379,6 @@ namespace VelaptorTests.OpenGL.Buffers
         public void WithShutDownNotification_DisposesOfBuffer()
         {
             // Arrange
-            IReactor<ShutDownData>? shutDownReactor = null;
-
             this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
                 .Returns(this.mockShutDownUnsubscriber.Object)
                 .Callback<IReactor<ShutDownData>>((reactor) =>
@@ -390,7 +388,7 @@ namespace VelaptorTests.OpenGL.Buffers
                         Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
                     }
 
-                    shutDownReactor = reactor;
+                    this.shutDownReactor = reactor;
                 });
 
             CreateBuffer();
@@ -398,8 +396,8 @@ namespace VelaptorTests.OpenGL.Buffers
             this.glInitReactor.OnNext(default);
 
             // Act
-            shutDownReactor?.OnNext(default);
-            shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.DeleteVertexArray(VertexArrayId), Times.Once());
