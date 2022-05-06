@@ -52,8 +52,19 @@ namespace Velaptor.OpenGL.Buffers
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
 
-            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
-            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
+                _ => Init(),
+                onCompleted: () =>
+                {
+                    this.glInitUnsubscriber?.Dispose();
+                }));
+
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
+                _ => ShutDown(),
+                onCompleted: () =>
+                {
+                    this.shutDownUnsubscriber?.Dispose();
+                }));
 
             ProcessCustomAttributes();
         }
@@ -258,8 +269,8 @@ namespace Velaptor.OpenGL.Buffers
             GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(this.ebo);
 
-            this.glInitUnsubscriber.Dispose();
-            this.shutDownUnsubscriber.Dispose();
+            // this.glInitUnsubscriber.Dispose(); // TODO: Remove
+            // this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }
