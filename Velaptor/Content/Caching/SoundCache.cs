@@ -62,9 +62,7 @@ namespace Velaptor.Content.Caching
             this.path = path;
 
             this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
-
-            this.disposeSoundsReactable = disposeSoundsReactable ??
-                                          throw new ArgumentNullException(nameof(disposeSoundsReactable), NullParamExceptionMsg);
+            this.disposeSoundsReactable = disposeSoundsReactable;
         }
 
         /// <summary>
