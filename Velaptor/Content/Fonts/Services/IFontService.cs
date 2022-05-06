@@ -62,7 +62,7 @@ namespace Velaptor.Content.Fonts.Services
         /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
         /// </summary>
         /// <param name="facePtr">The pointer to the font face.</param>
-        /// <returns><see langword="true"/> if the face uses kerning.</returns>
+        /// <returns><c>true</c> if the face uses kerning.</returns>
         bool HasKerning(IntPtr facePtr);
 
         /// <summary>

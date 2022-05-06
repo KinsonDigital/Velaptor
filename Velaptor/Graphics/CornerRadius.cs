@@ -64,7 +64,7 @@ namespace Velaptor.Graphics
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
-        /// <returns><see langword="true"/> if the operands are equal.</returns>
+        /// <returns><c>true</c> if the operands are equal.</returns>
         public static bool operator ==(CornerRadius left, CornerRadius right) => left.Equals(right);
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Velaptor.Graphics
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
-        /// <returns><see langword="true"/> if the operands are not equal.</returns>
+        /// <returns><c>true</c> if the operands are not equal.</returns>
         public static bool operator !=(CornerRadius left, CornerRadius right) => !(left == right);
 
         /// <summary>

@@ -110,7 +110,7 @@ namespace Velaptor.Hardware
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if both operands are equal.</returns>
+        /// <returns><c>true</c> if both operands are equal.</returns>
         public static bool operator ==(SystemMonitor? left, SystemMonitor right) => left is not null && left.Equals(right);
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Velaptor.Hardware
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if both operands are not equal.</returns>
+        /// <returns><c>true</c> if both operands are not equal.</returns>
         public static bool operator !=(SystemMonitor left, SystemMonitor right) => !(left == right);
 
         /// <inheritdoc/>

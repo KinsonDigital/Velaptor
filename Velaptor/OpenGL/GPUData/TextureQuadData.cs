@@ -38,7 +38,7 @@ namespace Velaptor.OpenGL.GPUData
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if the 2 operands are equal.</returns>
+        /// <returns><c>true</c> if the 2 operands are equal.</returns>
         public static bool operator ==(TextureQuadData left, TextureQuadData right) => left.Equals(right);
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Velaptor.OpenGL.GPUData
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if the 2 operands are equal.</returns>
+        /// <returns><c>true</c> if the 2 operands are equal.</returns>
         public static bool operator !=(TextureQuadData left, TextureQuadData right) => !(left == right);
 
         /// <summary>

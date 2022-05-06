@@ -114,7 +114,7 @@ namespace Velaptor.Input
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if operands are equal.</returns>
+        /// <returns><c>true</c> if operands are equal.</returns>
         public static bool operator ==(KeyboardState left, KeyboardState right) => left.Equals(right);
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Velaptor.Input
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if operands are not equal.</returns>
+        /// <returns><c>true</c> if operands are not equal.</returns>
         [ExcludeFromCodeCoverage] // NOTE: No public state to check for unit testing to be viable.
         public static bool operator !=(KeyboardState left, KeyboardState right) => !left.Equals(right);
 
@@ -140,37 +140,37 @@ namespace Velaptor.Input
         /// <summary>
         /// Gets a value indicating whether or not the left shift key is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the left shift key is down.</returns>
+        /// <returns><c>true</c> if the left shift key is down.</returns>
         public bool IsLeftShiftKeyDown() => IsKeyDown(KeyCode.LeftShift);
 
         /// <summary>
         /// Gets a value indicating whether or not the right shift key is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the right shift key is down.</returns>
+        /// <returns><c>true</c> if the right shift key is down.</returns>
         public bool IsRightShiftKeyDown() => IsKeyDown(KeyCode.RightShift);
 
         /// <summary>
         /// Gets a value indicating whether or not the left control key is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the left control key is down.</returns>
+        /// <returns><c>true</c> if the left control key is down.</returns>
         public bool IsLeftCtrlKeyDown() => IsKeyDown(KeyCode.LeftControl);
 
         /// <summary>
         /// Gets a value indicating whether or not the right control key is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the right control key is down.</returns>
+        /// <returns><c>true</c> if the right control key is down.</returns>
         public bool IsRightCtrlKeyDown() => IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
         /// Gets a value indicating whether or not the left alt key is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the left alt key is down.</returns>
+        /// <returns><c>true</c> if the left alt key is down.</returns>
         public bool IsLeftAltKeyDown() => IsKeyDown(KeyCode.LeftAlt);
 
         /// <summary>
         /// Gets a value indicating whether or not the right alt key is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the right alt key is down.</returns>
+        /// <returns><c>true</c> if the right alt key is down.</returns>
         public bool IsRightAltKeyDown() => IsKeyDown(KeyCode.RightAlt);
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Velaptor.Input
         /// <summary>
         /// Gets a value indicating whether or not any keys are in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if any keys on the keyboard are in the down position.</returns>
+        /// <returns><c>true</c> if any keys on the keyboard are in the down position.</returns>
         public bool AnyKeysDown()
         {
             InitKeys();
@@ -210,7 +210,7 @@ namespace Velaptor.Input
         /// Returns a value indicating whether or not any of the given <paramref name="keys"/> are in the down position.
         /// </summary>
         /// <param name="keys">The list of key codes to check.</param>
-        /// <returns><see langword="true"/> if any of the given <paramref name="keys"/> are in the down position.</returns>
+        /// <returns><c>true</c> if any of the given <paramref name="keys"/> are in the down position.</returns>
         public bool AnyKeysDown(IEnumerable<KeyCode> keys)
         {
             InitKeys();
@@ -232,7 +232,7 @@ namespace Velaptor.Input
         /// Returns a value indicating whether or not the given <paramref name="key"/> is in the down position.
         /// </summary>
         /// <param name="key">The key to check.</param>
-        /// <returns><see langword="true"/> if the given <paramref name="key"/> is in the down position.</returns>
+        /// <returns><c>true</c> if the given <paramref name="key"/> is in the down position.</returns>
         public bool IsKeyDown(KeyCode key)
         {
             InitKeys();
@@ -244,7 +244,7 @@ namespace Velaptor.Input
         /// Returns a value indicating whether or not the given <paramref name="key"/> is in the up position.
         /// </summary>
         /// <param name="key">The key to check.</param>
-        /// <returns><see langword="true"/> if the given <paramref name="key"/> is in the up position.</returns>
+        /// <returns><c>true</c> if the given <paramref name="key"/> is in the up position.</returns>
         public bool IsKeyUp(KeyCode key)
         {
             InitKeys();
@@ -256,7 +256,7 @@ namespace Velaptor.Input
         /// Returns a value indicating whether or not any of the standard number keys,
         /// above the letter keys, are in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if any of the standard number keys are in the down position.</returns>
+        /// <returns><c>true</c> if any of the standard number keys are in the down position.</returns>
         public bool AnyStandardNumberKeysDown()
         {
             InitKeys();
@@ -277,7 +277,7 @@ namespace Velaptor.Input
         /// Returns a value indicating whether or not any of the numpad number keys
         /// are in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if any of the numpad number keys are in the down position.</returns>
+        /// <returns><c>true</c> if any of the numpad number keys are in the down position.</returns>
         public bool AnyNumpadNumberKeysDown()
         {
             // Check all of the numpad number keys
@@ -295,19 +295,19 @@ namespace Velaptor.Input
         /// <summary>
         /// Returns a value indicating whether or not any of the shift keys are in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if any of the shift keys are down.</returns>
+        /// <returns><c>true</c> if any of the shift keys are down.</returns>
         public bool AnyShiftKeysDown() => IsKeyDown(KeyCode.LeftShift) || IsKeyDown(KeyCode.RightShift);
 
         /// <summary>
         /// Returns a value indicating whether or not any of the control keys are in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if any of the control keys are down.</returns>
+        /// <returns><c>true</c> if any of the control keys are down.</returns>
         public bool AnyCtrlKeysDown() => IsKeyDown(KeyCode.LeftControl) || IsKeyDown(KeyCode.RightControl);
 
         /// <summary>
         /// Returns a value indicating whether or not any of the alt keys are in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if any of the control keys are down.</returns>
+        /// <returns><c>true</c> if any of the control keys are down.</returns>
         public bool AnyAltKeysDown() => IsKeyDown(KeyCode.LeftAlt) || IsKeyDown(KeyCode.RightAlt);
 
         /// <summary>

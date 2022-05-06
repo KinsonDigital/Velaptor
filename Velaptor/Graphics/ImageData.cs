@@ -86,7 +86,7 @@ namespace Velaptor.Graphics
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
-        /// <returns><see langword="true"/> if both are equal.</returns>
+        /// <returns><c>true</c> if both are equal.</returns>
         public static bool operator ==(ImageData left, ImageData right) => left.Equals(right);
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Velaptor.Graphics
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
-        /// <returns><see langword="true"/> if both are not equal.</returns>
+        /// <returns><c>true</c> if both are not equal.</returns>
         public static bool operator !=(ImageData left, ImageData right) => !(left == right);
 
         /// <summary>

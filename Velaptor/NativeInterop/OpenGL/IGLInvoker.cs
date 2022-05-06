@@ -452,7 +452,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// </param>
         /// <param name="normalized">
         ///     For glVertexAttribPointer, specifies whether or not fixed-point data values should be
-        ///     normalized <see langword="true"/> or converted directly as fixed-point values <see langword="false"/> when they
+        ///     normalized <c>true</c> or converted directly as fixed-point values <c>false</c> when they
         ///     are accessed.
         /// </param>
         /// <param name="stride">

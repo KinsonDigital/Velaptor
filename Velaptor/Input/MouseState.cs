@@ -29,7 +29,7 @@ namespace Velaptor.Input
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
-        /// <returns><see langword="true"/> if the operands are equal.</returns>
+        /// <returns><c>true</c> if the operands are equal.</returns>
         public static bool operator ==(MouseState left, MouseState right) => left.Equals(right);
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Velaptor.Input
         /// </summary>
         /// <param name="left">The left side of the operator.</param>
         /// <param name="right">The right side of the operator.</param>
-        /// <returns><see langword="true"/> if the operands are not equal.</returns>
+        /// <returns><c>true</c> if the operands are not equal.</returns>
         public static bool operator !=(MouseState left, MouseState right) => !left.Equals(right);
 
         /// <summary>
@@ -95,37 +95,37 @@ namespace Velaptor.Input
         /// <summary>
         /// Gets or sets a value indicating whether or not the left mouse button is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is down.</returns>
+        /// <returns><c>true</c> if the button is down.</returns>
         public bool IsLeftButtonDown() => this.isLeftButtonDown;
 
         /// <summary>
         /// Returns a value indicating whether or not the left mouse button is in the up position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is up.</returns>
+        /// <returns><c>true</c> if the button is up.</returns>
         public bool IsLeftButtonUp() => !IsLeftButtonDown();
 
         /// <summary>
         /// Gets or sets a value indicating whether or not the middle mouse button is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is down.</returns>
+        /// <returns><c>true</c> if the button is down.</returns>
         public bool IsMiddleButtonDown() => this.isMiddleButtonDown;
 
         /// <summary>
         /// Returns a value indicating whether or not the middle mouse button is in the up position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is up.</returns>
+        /// <returns><c>true</c> if the button is up.</returns>
         public bool IsMiddleButtonUp() => !IsMiddleButtonDown();
 
         /// <summary>
         /// Gets or sets a value indicating whether or not the right mouse button is in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is down.</returns>
+        /// <returns><c>true</c> if the button is down.</returns>
         public bool IsRightButtonDown() => this.isRightButtonDown;
 
         /// <summary>
         /// Returns a value indicating whether or not the right mouse button is in the up position.
         /// </summary>
-        /// <returns><see langword="true"/> if the button is up.</returns>
+        /// <returns><c>true</c> if the button is up.</returns>
         public bool IsRightButtonUp() => !IsRightButtonDown();
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Velaptor.Input
         /// is in the down or up position.
         /// </summary>
         /// <param name="mouseButton">The button state to retrieve.</param>
-        /// <returns><see langword="true"/> if the button is down.</returns>
+        /// <returns><c>true</c> if the button is down.</returns>
         public bool GetButtonState(MouseButton mouseButton)
             => mouseButton switch
             {
