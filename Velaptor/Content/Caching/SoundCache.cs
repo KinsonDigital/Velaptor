@@ -27,7 +27,6 @@ namespace Velaptor.Content.Caching
     {
         private const string OggFileExtension = ".ogg";
         private const string Mp3FileExtension = ".mp3";
-        private const string NullParamExceptionMsg = "The parameter must not be null.";
         private readonly ConcurrentDictionary<string, ISound> sounds = new ();
         private readonly ISoundFactory soundFactory;
         private readonly IFile file;
@@ -61,7 +60,13 @@ namespace Velaptor.Content.Caching
             this.file = file;
             this.path = path;
 
-            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
+                _ => ShutDown(),
+                onCompleted: () =>
+                {
+                    this.shutDownUnsubscriber?.Dispose();
+                }));
+
             this.disposeSoundsReactable = disposeSoundsReactable;
         }
 
@@ -174,8 +179,6 @@ namespace Velaptor.Content.Caching
                     this.disposeSoundsReactable.PushNotification(new DisposeSoundData(sound.Id));
                 }
             }
-
-            this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }

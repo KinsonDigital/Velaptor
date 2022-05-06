@@ -34,6 +34,7 @@ namespace VelaptorTests.Content.Caching
         private readonly Mock<IPath> mockPath;
         private readonly Mock<IReactable<DisposeSoundData>> mockDisposeSoundReactable;
         private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
+        private IReactor<ShutDownData>? shutDownReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundCacheTests"/> class.
@@ -53,6 +54,17 @@ namespace VelaptorTests.Content.Caching
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
             this.mockShutDownUnsubscriber.Name = nameof(this.mockShutDownUnsubscriber);
+            this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
+                .Returns(this.mockShutDownUnsubscriber.Object)
+                .Callback<IReactor<ShutDownData>>(reactor =>
+                {
+                    if (reactor is null)
+                    {
+                        Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
+                    }
+
+                    this.shutDownReactor = reactor;
+                });
 
             this.mockDisposeSoundReactable = new Mock<IReactable<DisposeSoundData>>();
             this.mockDisposeSoundReactable.Name = nameof(this.mockDisposeSoundReactable);
@@ -322,8 +334,6 @@ namespace VelaptorTests.Content.Caching
         public void ShutDownNotification_WhenReceived_DisposesOfSounds()
         {
             // Arrange
-            IReactor<ShutDownData>? shutDownReactor = null;
-
             var mockSoundA = new Mock<ISound>();
             mockSoundA.SetupGet(p => p.Id).Returns(11u);
             mockSoundA.Name = nameof(mockSoundA);
@@ -332,8 +342,8 @@ namespace VelaptorTests.Content.Caching
             mockSoundB.SetupGet(p => p.Id).Returns(22u);
             mockSoundB.Name = nameof(mockSoundB);
 
-            var soundPathA = $"{SoundDirPath}soundA{OggFileExtension}";
-            var soundPathB = $"{SoundDirPath}soundB{OggFileExtension}";
+            const string soundPathA = $"{SoundDirPath}soundA{OggFileExtension}";
+            const string soundPathB = $"{SoundDirPath}soundB{OggFileExtension}";
 
             this.mockSoundFactory.Setup(m => m.Create(soundPathA))
                 .Returns(mockSoundA.Object);
@@ -347,26 +357,14 @@ namespace VelaptorTests.Content.Caching
             this.mockFile.Setup(m => m.Exists(soundPathA)).Returns(true);
             this.mockFile.Setup(m => m.Exists(soundPathB)).Returns(true);
 
-            this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
-                .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IReactor<ShutDownData>>(reactor =>
-                {
-                    if (reactor is null)
-                    {
-                        Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
-                    }
-
-                    shutDownReactor = reactor;
-                });
-
             var cache = CreateCache();
 
             cache.GetItem(soundPathA);
             cache.GetItem(soundPathB);
 
             // Act
-            shutDownReactor?.OnNext(default);
-            shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
 
             // Assert
             this.mockDisposeSoundReactable
@@ -375,7 +373,21 @@ namespace VelaptorTests.Content.Caching
             this.mockDisposeSoundReactable
                 .Verify(m =>
                     m.PushNotification(new DisposeSoundData(22u)), Times.Once);
-            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        }
+        #endregion
+
+        #region Indirect Internal Tests
+        [Fact]
+        public void ShutDownReactable_WhenNotificationsEnded_DisposesOfUnsubscriber()
+        {
+            // Arrange
+            var unused = CreateCache();
+
+            // Act
+            this.shutDownReactor.OnCompleted();
+
+            // Assert
+            this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         }
         #endregion
 
