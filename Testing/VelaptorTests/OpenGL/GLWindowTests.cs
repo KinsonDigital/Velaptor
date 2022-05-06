@@ -1133,6 +1133,9 @@ namespace VelaptorTests.OpenGL
             window.Show();
 
             // Assert
+            this.mockContextReactable.VerifyOnce(m => m.PushNotification(It.IsAny<GLContextData>(), false));
+            this.mockContextReactable.VerifyOnce(m => m.EndNotifications());
+
             this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyDown += It.IsAny<Action<IKeyboard, Key, int>>());
             this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyUp += It.IsAny<Action<IKeyboard, Key, int>>());
 
@@ -1145,9 +1148,11 @@ namespace VelaptorTests.OpenGL
             this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutput));
             this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutputSynchronous));
             this.mockGL.VerifyAddOnce(e => e.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>());
+
             this.mockGLInitReactable.VerifyOnce(m
                 => m.PushNotification(default, true));
             this.mockGLInitReactable.VerifyOnce(m => m.EndNotifications());
+
             Assert.True(initializeInvoked, $"The action '{nameof(IWindowActions)}.{nameof(IWindowActions.Initialize)}' must be invoked");
         }
 

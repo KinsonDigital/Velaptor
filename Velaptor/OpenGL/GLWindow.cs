@@ -341,6 +341,7 @@ namespace Velaptor.OpenGL
         private void Init(uint width, uint height)
         {
             this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
+            this.glContextReactable.EndNotifications();
 
             this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
             this.glInputContext = this.nativeInputFactory.CreateInput();
