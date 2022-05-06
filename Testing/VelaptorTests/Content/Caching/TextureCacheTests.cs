@@ -43,6 +43,7 @@ namespace VelaptorTests.Content.Caching
         private readonly Mock<IReactable<DisposeTextureData>> mockDisposeTextureReactable;
         private readonly ImageData textureImageData;
         private readonly ImageData fontImageData;
+        private IReactor<ShutDownData>? shutDownReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureCacheTests"/> class.
@@ -96,8 +97,19 @@ namespace VelaptorTests.Content.Caching
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.fontFilePath))
                 .Returns(FontName);
 
-            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
+            this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
+                .Returns(this.mockShutDownUnsubscriber.Object)
+                .Callback<IReactor<ShutDownData>>(reactor =>
+                {
+                    if (reactor is null)
+                    {
+                        Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
+                    }
+
+                    this.shutDownReactor = reactor;
+                });
 
             this.mockDisposeTextureReactable = new Mock<IReactable<DisposeTextureData>>();
         }
@@ -508,8 +520,6 @@ namespace VelaptorTests.Content.Caching
         public void ShutDownNotification_WhenReceived_DisposesOfTextures()
         {
             // Arrange
-            IReactor<ShutDownData>? shutDownReactor = null;
-
             var mockTextureA = new Mock<ITexture>();
             mockTextureA.SetupGet(p => p.Id).Returns(11u);
             mockTextureA.Name = nameof(mockTextureA);
@@ -518,8 +528,8 @@ namespace VelaptorTests.Content.Caching
             mockTextureB.SetupGet(p => p.Id).Returns(22u);
             mockTextureB.Name = nameof(mockTextureB);
 
-            var texturePathA = $"{TextureDirPath}textureA{TextureExtension}";
-            var texturePathB = $"{TextureDirPath}textureB{TextureExtension}";
+            const string texturePathA = $"{TextureDirPath}textureA{TextureExtension}";
+            const string texturePathB = $"{TextureDirPath}textureB{TextureExtension}";
 
             this.mockPath.Setup(m => m.GetExtension(texturePathA)).Returns(TextureExtension);
             this.mockPath.Setup(m => m.GetExtension(texturePathB)).Returns(TextureExtension);
@@ -530,25 +540,13 @@ namespace VelaptorTests.Content.Caching
             MockTextureCreation(mockTextureA.Object, "textureA", texturePathA);
             MockTextureCreation(mockTextureB.Object, "textureB", texturePathB);
 
-            this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
-                .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IReactor<ShutDownData>>(reactor =>
-                {
-                    if (reactor is null)
-                    {
-                        Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
-                    }
-
-                    shutDownReactor = reactor;
-                });
-
             var cache = CreateCache();
             cache.GetItem(texturePathA);
             cache.GetItem(texturePathB);
 
             // Act
-            shutDownReactor?.OnNext(default);
-            shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
 
             // Assert
             this.mockDisposeTextureReactable
@@ -557,7 +555,21 @@ namespace VelaptorTests.Content.Caching
             this.mockDisposeTextureReactable
                 .Verify(m =>
                     m.PushNotification(new DisposeTextureData(22u)), Times.Once);
-            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        }
+        #endregion
+
+        #region Indirect Internal Tests
+        [Fact]
+        public void ShutDownReactable_WhenNotificationsEnded_DisposesOfUnsubscriber()
+        {
+            // Arrange
+            var unused = CreateCache();
+
+            // Act
+            this.shutDownReactor.OnCompleted();
+
+            // Assert
+            this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         }
         #endregion
 
