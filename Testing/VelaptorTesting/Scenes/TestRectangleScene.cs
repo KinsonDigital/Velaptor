@@ -156,7 +156,7 @@ namespace VelaptorTesting.Scenes
 
             this.btnSolidFillClr = new Button
             {
-                Text = "Solid Fill Clr: Red",
+                Text = "Solid Fill Clr: Blue",
                 Name = nameof(this.btnSolidFillClr),
             };
             this.btnSolidFillClr.Click += (_, _) =>
