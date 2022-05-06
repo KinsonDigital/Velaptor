@@ -1311,6 +1311,11 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             Assert.True(uninitializeInvoked);
+
+            this.mockMouseBtnReactable.VerifyOnce(m => m.EndNotifications());
+            this.mockMousePosReactable.VerifyOnce(m => m.EndNotifications());
+            this.mockMouseWheelReactable.VerifyOnce(m => m.EndNotifications());
+
             this.mockShutDownReactable.Verify(m => m.PushNotification(default, true), Times.Once);
             this.mockShutDownReactable.VerifyOnce(m => m.EndNotifications());
         }

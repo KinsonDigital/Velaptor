@@ -409,6 +409,9 @@ namespace Velaptor.OpenGL
             Uninitialize?.Invoke();
 
             this.keyboardReactable.EndNotifications();
+            this.mouseBtnReactable.EndNotifications();
+            this.mousePosReactable.EndNotifications();
+            this.mouseWheelReactable.EndNotifications();
 
             this.shutDownReactable.PushNotification(default, true);
             this.shutDownReactable.EndNotifications();
