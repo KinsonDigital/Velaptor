@@ -16,7 +16,7 @@ namespace Velaptor.Reactables
     internal class MouseWheelReactable : Reactable<(MouseScrollDirection, int)>
     {
         /// <summary>
-        /// Sends a push notification to signal a change to the mouse wheel.
+        /// Sends a push notification to signal a change to the state of the mouse wheel.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
         /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the reactors after the notification has been pushed.</param>
