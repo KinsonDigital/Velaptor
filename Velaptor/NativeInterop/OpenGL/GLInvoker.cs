@@ -66,7 +66,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <summary>
         /// Finalizes an instance of the <see cref="GLInvoker"/> class.
         /// </summary>
-        ~GLInvoker() => Dispose(false);
+        ~GLInvoker() => Dispose();
 
         /// <inheritdoc/>
         public event EventHandler<GLErrorEventArgs>? GLError;
@@ -493,16 +493,6 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
-        private void Dispose(bool disposing)
-        {
             if (this.isDisposed)
             {
                 return;
@@ -510,6 +500,7 @@ namespace Velaptor.NativeInterop.OpenGL
 
             debugCallback = null;
             this.isDisposed = true;
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
