@@ -995,6 +995,23 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
+        public void Show_WhenInvoked_SubscribesToEvents()
+        {
+            // Arrange
+            var window = CreateWindow();
+
+            // Act
+            window.Show();
+
+            // Assert
+            this.mockSilkWindow.VerifyAddOnce(e => e.Load += It.IsAny<Action>());
+            this.mockSilkWindow.VerifyAddOnce(e => e.Closing += It.IsAny<Action>());
+            this.mockSilkWindow.VerifyAddOnce(e => e.Resize += It.IsAny<Action<Vector2D<int>>>());
+            this.mockSilkWindow.VerifyAddOnce(e => e.Update += It.IsAny<Action<double>>());
+            this.mockSilkWindow.VerifyAddOnce(e => e.Render += It.IsAny<Action<double>>());
+        }
+
+        [Fact]
         public void Show_WhenInvoked_SetsUpOpenGLErrorCallback()
         {
             // Arrange
@@ -1116,6 +1133,14 @@ namespace VelaptorTests.OpenGL
             window.Show();
 
             // Assert
+            this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyDown += It.IsAny<Action<IKeyboard, Key, int>>());
+            this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyUp += It.IsAny<Action<IKeyboard, Key, int>>());
+
+            this.mockSilkMouse.VerifyAddOnce(m => m.MouseDown += It.IsAny<Action<IMouse, SilkMouseButton>>());
+            this.mockSilkMouse.VerifyAddOnce(m => m.MouseUp += It.IsAny<Action<IMouse, SilkMouseButton>>());
+            this.mockSilkMouse.VerifyAddOnce(m => m.MouseMove += It.IsAny<Action<IMouse, SysVector2>>());
+            this.mockSilkMouse.VerifyAddOnce(m => m.Scroll += It.IsAny<Action<IMouse, ScrollWheel>>());
+
             this.mockGL.VerifyOnce(m => m.SetupErrorCallback());
             this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutput));
             this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutputSynchronous));
