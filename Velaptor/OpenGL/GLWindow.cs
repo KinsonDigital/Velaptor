@@ -392,6 +392,7 @@ namespace Velaptor.OpenGL
              *and the related GLFW window has been created and is ready to go.
              */
             this.glInitReactable.PushNotification(default, true);
+            this.glInitReactable.EndNotifications();
 
             Initialized = true;
 

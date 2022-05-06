@@ -1153,6 +1153,7 @@ namespace VelaptorTests.OpenGL
             this.mockGL.VerifyAddOnce(e => e.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>());
             this.mockGLInitReactable.VerifyOnce(m
                 => m.PushNotification(default, true));
+            this.mockGLInitReactable.VerifyOnce(m => m.EndNotifications());
             Assert.True(initializeInvoked, $"The action '{nameof(IWindowActions)}.{nameof(IWindowActions.Initialize)}' must be invoked");
         }
 
