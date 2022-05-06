@@ -508,11 +508,6 @@ namespace Velaptor.NativeInterop.OpenGL
                 return;
             }
 
-            if (disposing)
-            {
-                this.glContextUnsubscriber.Dispose();
-            }
-
             debugCallback = null;
             this.isDisposed = true;
         }
