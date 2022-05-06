@@ -13,6 +13,6 @@ namespace VelaptorTests.Fakes
     /// <typeparam name="T">The type of notification to set.</typeparam>
     public class ReactableFake<T> : Reactable<T>
     {
-        public override void PushNotification(T data, bool unsubscribeAfterProcessing = false) => throw new NotImplementedException();
+        public override void PushNotification(T data) => throw new NotImplementedException();
     }
 }

@@ -1133,7 +1133,7 @@ namespace VelaptorTests.OpenGL
             window.Show();
 
             // Assert
-            this.mockContextReactable.VerifyOnce(m => m.PushNotification(It.IsAny<GLContextData>(), false));
+            this.mockContextReactable.VerifyOnce(m => m.PushNotification(It.IsAny<GLContextData>()));
             this.mockContextReactable.VerifyOnce(m => m.EndNotifications());
 
             this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyDown += It.IsAny<Action<IKeyboard, Key, int>>());
@@ -1150,7 +1150,7 @@ namespace VelaptorTests.OpenGL
             this.mockGL.VerifyAddOnce(e => e.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>());
 
             this.mockGLInitReactable.VerifyOnce(m
-                => m.PushNotification(default, true));
+                => m.PushNotification(default));
             this.mockGLInitReactable.VerifyOnce(m => m.EndNotifications());
 
             Assert.True(initializeInvoked, $"The action '{nameof(IWindowActions)}.{nameof(IWindowActions.Initialize)}' must be invoked");
@@ -1191,7 +1191,7 @@ namespace VelaptorTests.OpenGL
             // Assert
             Assert.False(windowUpdateInvoked, $"{nameof(GLWindow.Update)} should not of been invoked during window shutdown.");
             this.mockMouseWheelReactable.VerifyNever(m
-                => m.PushNotification(It.IsAny<(MouseScrollDirection, int)>(), It.IsAny<bool>()));
+                => m.PushNotification(It.IsAny<(MouseScrollDirection, int)>()));
         }
 
         [Fact]
@@ -1219,7 +1219,7 @@ namespace VelaptorTests.OpenGL
             // Assert
             Assert.True(windowUpdateInvoked, $"{nameof(GLWindow.Update)} was not invoked.");
             this.mockMouseWheelReactable.VerifyOnce(m
-                => m.PushNotification(expectedWheelData, false));
+                => m.PushNotification(expectedWheelData));
         }
 
         [Fact]
@@ -1315,7 +1315,7 @@ namespace VelaptorTests.OpenGL
             this.mockMousePosReactable.VerifyOnce(m => m.EndNotifications());
             this.mockMouseWheelReactable.VerifyOnce(m => m.EndNotifications());
 
-            this.mockShutDownReactable.Verify(m => m.PushNotification(default, true), Times.Once);
+            this.mockShutDownReactable.Verify(m => m.PushNotification(default), Times.Once);
             this.mockShutDownReactable.VerifyOnce(m => m.EndNotifications());
         }
 
@@ -1335,7 +1335,7 @@ namespace VelaptorTests.OpenGL
                 0);
 
             // Assert
-            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState, false));
+            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState));
         }
 
         [Fact]
@@ -1354,7 +1354,7 @@ namespace VelaptorTests.OpenGL
                 0);
 
             // Assert
-            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState, false));
+            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState));
         }
 
         [Fact]
@@ -1373,7 +1373,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockMouseBtnReactable.VerifyOnce(m
-                => m.PushNotification(expectedButtonState, false));
+                => m.PushNotification(expectedButtonState));
         }
 
         [Fact]
@@ -1392,7 +1392,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockMouseBtnReactable.VerifyOnce(m
-                => m.PushNotification(expectedButtonState, false));
+                => m.PushNotification(expectedButtonState));
         }
 
         [Theory]
@@ -1416,7 +1416,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockMouseWheelReactable.VerifyOnce(m
-                => m.PushNotification(expectedMouseWheelState, false));
+                => m.PushNotification(expectedMouseWheelState));
         }
 
         [Fact]
@@ -1435,7 +1435,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockMousePosReactable.VerifyOnce(m
-                => m.PushNotification(expectedMousePosition, false));
+                => m.PushNotification(expectedMousePosition));
         }
 
         [Fact]

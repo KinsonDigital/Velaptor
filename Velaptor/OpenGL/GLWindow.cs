@@ -392,7 +392,7 @@ namespace Velaptor.OpenGL
              * The context of initialized here is that the OpenGL context is set
              *and the related GLFW window has been created and is ready to go.
              */
-            this.glInitReactable.PushNotification(default, true);
+            this.glInitReactable.PushNotification(default);
             this.glInitReactable.EndNotifications();
 
             Initialized = true;
@@ -414,7 +414,7 @@ namespace Velaptor.OpenGL
             this.mousePosReactable.EndNotifications();
             this.mouseWheelReactable.EndNotifications();
 
-            this.shutDownReactable.PushNotification(default, true);
+            this.shutDownReactable.PushNotification(default);
             this.shutDownReactable.EndNotifications();
 
             this.afterUnloadAction?.Invoke();

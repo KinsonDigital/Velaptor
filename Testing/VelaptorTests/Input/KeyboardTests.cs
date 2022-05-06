@@ -49,8 +49,8 @@ namespace VelaptorTests.Input
                     reactor = reactorObj;
                 });
             this.mockKeyboardReactable.Setup(m
-                    => m.PushNotification(It.IsAny<(KeyCode key, bool isDown)>(), false))
-                .Callback<(KeyCode key, bool isDown), bool>((data, _) =>
+                    => m.PushNotification(It.IsAny<(KeyCode key, bool isDown)>()))
+                .Callback<(KeyCode key, bool isDown)>((data) =>
                 {
                     reactor.OnNext(data);
                 });

@@ -269,9 +269,6 @@ namespace Velaptor.OpenGL.Buffers
             GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(this.ebo);
 
-            // this.glInitUnsubscriber.Dispose(); // TODO: Remove
-            // this.shutDownUnsubscriber.Dispose();
-
             this.isDisposed = true;
         }
     }

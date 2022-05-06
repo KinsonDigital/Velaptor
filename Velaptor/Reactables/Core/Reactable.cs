@@ -41,7 +41,7 @@ namespace Velaptor.Reactables.Core
         }
 
         /// <inheritdoc/>
-        public abstract void PushNotification(TData data, bool unsubscribeAfterProcessing = false);
+        public abstract void PushNotification(TData data);
 
         /// <inheritdoc/>
         public void EndNotifications()

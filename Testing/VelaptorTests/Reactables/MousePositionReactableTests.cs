@@ -15,10 +15,8 @@ namespace VelaptorTests.Reactables
     public class MousePositionReactableTests
     {
         #region Method Tests
-        [Theory]
-        [InlineData(false, 1)]
-        [InlineData(true, 0)]
-        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
+        [Fact]
+        public void PushNotification_WhenInvoked_SendsPushNotification()
         {
             // Arrange
             var reactor = new Mock<IReactor<(int x, int y)>>();
@@ -29,11 +27,10 @@ namespace VelaptorTests.Reactables
             var data = (11, 22);
 
             // Act
-            reactable.PushNotification(data, unsubscribe);
+            reactable.PushNotification(data);
 
             // Assert
             reactor.Verify(m => m.OnNext(data), Times.Once());
-            Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion
     }

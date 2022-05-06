@@ -296,7 +296,7 @@ namespace VelaptorTests.Content.Caching
             Assert.Equal(0, cache.TotalCachedItems);
             this.mockDisposeSoundReactable
                 .Verify(m
-                    => m.PushNotification(new DisposeSoundData(123u), false), Times.Once);
+                    => m.PushNotification(new DisposeSoundData(123u)), Times.Once);
         }
 
         [Fact]
@@ -315,7 +315,7 @@ namespace VelaptorTests.Content.Caching
             // Assert
             this.mockDisposeSoundReactable
                 .Verify(m
-                    => m.PushNotification(new DisposeSoundData(123u), false), Times.Never);
+                    => m.PushNotification(new DisposeSoundData(123u)), Times.Never);
         }
 
         [Fact]
@@ -371,10 +371,10 @@ namespace VelaptorTests.Content.Caching
             // Assert
             this.mockDisposeSoundReactable
                 .Verify(m =>
-                    m.PushNotification(new DisposeSoundData(11u), false), Times.Once);
+                    m.PushNotification(new DisposeSoundData(11u)), Times.Once);
             this.mockDisposeSoundReactable
                 .Verify(m =>
-                    m.PushNotification(new DisposeSoundData(22u), false), Times.Once);
+                    m.PushNotification(new DisposeSoundData(22u)), Times.Once);
             this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion

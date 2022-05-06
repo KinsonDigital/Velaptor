@@ -20,12 +20,11 @@ namespace Velaptor.Reactables
         /// Sends a push notification to dispose of a texture.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the reactors after the notification has been pushed.</param>
         [SuppressMessage(
             "ReSharper",
             "ForCanBeConvertedToForeach",
             Justification = "Required for proper reactable operation.")]
-        public override void PushNotification(DisposeTextureData data, bool unsubscribeAfterProcessing = false)
+        public override void PushNotification(DisposeTextureData data)
         {
             /* Work from the end to the beginning of the list
                just in case the reactable is disposed(removed)
@@ -34,11 +33,6 @@ namespace Velaptor.Reactables
             for (var i = Reactors.Count - 1; i >= 0; i--)
             {
                 Reactors[i].OnNext(data);
-            }
-
-            if (unsubscribeAfterProcessing)
-            {
-                UnsubscribeAll();
             }
         }
     }

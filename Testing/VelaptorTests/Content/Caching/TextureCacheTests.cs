@@ -479,7 +479,7 @@ namespace VelaptorTests.Content.Caching
             Assert.Equal(0, cache.TotalCachedItems);
             this.mockDisposeTextureReactable
                 .Verify(m
-                    => m.PushNotification(new DisposeTextureData(123u), false), Times.Once);
+                    => m.PushNotification(new DisposeTextureData(123u)), Times.Once);
         }
 
         [Fact]
@@ -501,7 +501,7 @@ namespace VelaptorTests.Content.Caching
             // Assert
             this.mockDisposeTextureReactable
                 .Verify(m
-                    => m.PushNotification(new DisposeTextureData(123u), false), Times.Never);
+                    => m.PushNotification(new DisposeTextureData(123u)), Times.Never);
         }
 
         [Fact]
@@ -553,10 +553,10 @@ namespace VelaptorTests.Content.Caching
             // Assert
             this.mockDisposeTextureReactable
                 .Verify(m =>
-                    m.PushNotification(new DisposeTextureData(11u), false), Times.Once);
+                    m.PushNotification(new DisposeTextureData(11u)), Times.Once);
             this.mockDisposeTextureReactable
                 .Verify(m =>
-                    m.PushNotification(new DisposeTextureData(22u), false), Times.Once);
+                    m.PushNotification(new DisposeTextureData(22u)), Times.Once);
             this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
         }
         #endregion
