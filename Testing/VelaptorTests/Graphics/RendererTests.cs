@@ -57,6 +57,7 @@ namespace VelaptorTests.Graphics
 
         private List<GlyphMetrics> allGlyphMetrics = new ();
         private IReactor<GLInitData>? glInitReactor;
+        private IReactor<ShutDownData>? shutDownReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RendererTests"/> class.
@@ -93,7 +94,7 @@ namespace VelaptorTests.Graphics
                 {
                     if (reactor is null)
                     {
-                        Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
+                        Assert.True(false, "GL Init reactable subscription failed.  Reactor is null.");
                     }
 
                     this.glInitReactor = reactor;
@@ -101,6 +102,17 @@ namespace VelaptorTests.Graphics
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
             this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
+            this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
+                .Returns(this.mockShutDownUnsubscriber.Object)
+                .Callback<IReactor<ShutDownData>>((reactor) =>
+                {
+                    if (reactor is null)
+                    {
+                        Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
+                    }
+
+                    this.shutDownReactor = reactor;
+                });
 
             var mockFontTextureAtlas = new Mock<ITexture>();
             mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -1342,17 +1354,15 @@ namespace VelaptorTests.Graphics
         public void WithShutDownNotification_DisposesOfRenderer()
         {
             // Arrange
-            IReactor<ShutDownData>? shutDownReactor = null;
-
             this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
                 .Returns(this.mockShutDownUnsubscriber.Object)
-                .Callback<IReactor<ShutDownData>>(reactor => shutDownReactor = reactor);
+                .Callback<IReactor<ShutDownData>>(reactor => this.shutDownReactor = reactor);
 
             CreateRenderer();
 
             // Act
-            shutDownReactor?.OnNext(default);
-            shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
 
             // Assert
             this.mockBatchServiceManager.Verify(m => m.Dispose(), Times.Once);
@@ -1362,8 +1372,34 @@ namespace VelaptorTests.Graphics
                 VerifyRemove(e => e.FontGlyphBatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
             this.mockBatchServiceManager.
                 VerifyRemove(e => e.RectBatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-            this.mockGLInitUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        }
+        #endregion
+
+        #region Indirect Tests
+        [Fact]
+        public void GlInitReactable_WhenCompleted_DisposesOfSubscription()
+        {
+            // Arrange
+            var unused = CreateRenderer();
+
+            // Act
+            this.glInitReactor.OnCompleted();
+
+            // Assert
+            this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
+        }
+
+        [Fact]
+        public void ShutDownReactable_WhenCompleted_DisposesOfSubscription()
+        {
+            // Arrange
+            var unused = CreateRenderer();
+
+            // Act
+            this.shutDownReactor.OnCompleted();
+
+            // Assert
+            this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         }
         #endregion
 
