@@ -1312,6 +1312,7 @@ namespace VelaptorTests.OpenGL
             // Assert
             Assert.True(uninitializeInvoked);
             this.mockShutDownReactable.Verify(m => m.PushNotification(default, true), Times.Once);
+            this.mockShutDownReactable.VerifyOnce(m => m.EndNotifications());
         }
 
         [Fact]

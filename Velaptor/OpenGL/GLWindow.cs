@@ -409,7 +409,10 @@ namespace Velaptor.OpenGL
             Uninitialize?.Invoke();
 
             this.keyboardReactable.EndNotifications();
+
             this.shutDownReactable.PushNotification(default, true);
+            this.shutDownReactable.EndNotifications();
+
             this.afterUnloadAction?.Invoke();
         }
 
