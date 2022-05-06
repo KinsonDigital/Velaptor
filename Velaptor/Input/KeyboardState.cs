@@ -176,9 +176,10 @@ namespace Velaptor.Input
         /// <summary>
         /// Returns all of the keys that are in the down position.
         /// </summary>
-        /// <returns>A list of the currently pressed keys.</returns>
+        /// <returns>A list of the keys that are currently in the down position.</returns>
         public KeyCode[] GetDownKeys()
         {
+            IsRightAltKeyDown();
             InitKeys();
 
             var downKeys = new List<KeyCode>();
@@ -197,7 +198,7 @@ namespace Velaptor.Input
         /// <summary>
         /// Gets a value indicating whether or not any keys are in the down position.
         /// </summary>
-        /// <returns><see langword="true"/> if any keys on the keyboard in pressed in the down position.</returns>
+        /// <returns><see langword="true"/> if any keys on the keyboard are in the down position.</returns>
         public bool AnyKeysDown()
         {
             InitKeys();
@@ -209,7 +210,7 @@ namespace Velaptor.Input
         /// Returns a value indicating whether or not any of the given <paramref name="keys"/> are in the down position.
         /// </summary>
         /// <param name="keys">The list of key codes to check.</param>
-        /// <returns><see langword="true"/> if any of the given <paramref name="keys"/> are pressed in the down position.</returns>
+        /// <returns><see langword="true"/> if any of the given <paramref name="keys"/> are in the down position.</returns>
         public bool AnyKeysDown(IEnumerable<KeyCode> keys)
         {
             InitKeys();
@@ -231,7 +232,7 @@ namespace Velaptor.Input
         /// Returns a value indicating whether or not the given <paramref name="key"/> is in the down position.
         /// </summary>
         /// <param name="key">The key to check.</param>
-        /// <returns><see langword="true"/> if the given <paramref name="key"/> is pressed in the down position.</returns>
+        /// <returns><see langword="true"/> if the given <paramref name="key"/> is in the down position.</returns>
         public bool IsKeyDown(KeyCode key)
         {
             InitKeys();
@@ -252,8 +253,8 @@ namespace Velaptor.Input
         }
 
         /// <summary>
-        /// Returns a value indicating whether or not any of the standard number keys
-        /// above the letter keys on the keyboard are in the down position.
+        /// Returns a value indicating whether or not any of the standard number keys,
+        /// above the letter keys, are in the down position.
         /// </summary>
         /// <returns><see langword="true"/> if any of the standard number keys are in the down position.</returns>
         public bool AnyStandardNumberKeysDown()

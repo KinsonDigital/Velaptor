@@ -503,7 +503,7 @@ namespace Velaptor.OpenGL
             => this.keyboardReactable.PushNotification(((KeyCode)key, false));
 
         /// <summary>
-        /// Invoked when any of the mouse buttons are pressed into the down position over the window.
+        /// Invoked when any of the mouse buttons are in the down position over the window.
         /// </summary>
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
