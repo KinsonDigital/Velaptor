@@ -1013,37 +1013,6 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
-        public void Show_WhenUpdatingFrameWhileShuttingDown_DoesNotInvokeUpdateEvent()
-        {
-            // Arrange
-            var updateInvoked = false;
-            var window = CreateWindow();
-            window.Update += _ => updateInvoked = true;
-
-            // Act
-            window.Show();
-
-            // Assert
-            Assert.False(updateInvoked, $"The '{nameof(GLWindow)}.{nameof(GLWindow.Update)}' action should not be invoked.");
-        }
-
-        [Fact]
-        public void Show_WhenRenderingFrameWhileShuttingDown_DoesNotInvokeRenderEvent()
-        {
-            // Arrange
-            var renderInvoked = false;
-            var window = CreateWindow();
-
-            window.Draw += _ => renderInvoked = true;
-
-            // Act
-            window.Show();
-
-            // Assert
-            Assert.False(renderInvoked, $"The '{nameof(GLWindow)}.{nameof(GLWindow.Draw)}' action should not be invoked.");
-        }
-
-        [Fact]
         public async void ShowAsync_WhenInvoked_StartsInternalShowTask()
         {
             // Arrange
