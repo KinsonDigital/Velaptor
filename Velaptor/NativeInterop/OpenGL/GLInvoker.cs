@@ -500,7 +500,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
+        /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)

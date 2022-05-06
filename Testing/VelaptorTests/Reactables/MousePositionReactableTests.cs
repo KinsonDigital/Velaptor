@@ -1,4 +1,4 @@
-﻿// <copyright file="RemoveBatchItemReactableTests.cs" company="KinsonDigital">
+﻿// <copyright file="MousePositionReactableTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,13 +7,12 @@ namespace VelaptorTests.Reactables
     using Moq;
     using Velaptor.Reactables;
     using Velaptor.Reactables.Core;
-    using Velaptor.Reactables.ReactableData;
     using Xunit;
 
     /// <summary>
-    /// Tests the <see cref="RemoveBatchItemReactable"/> class.
+    /// Tests the <see cref="MousePositionReactable"/> class.
     /// </summary>
-    public class RemoveBatchItemReactableTests
+    public class MousePositionReactableTests
     {
         #region Method Tests
         [Theory]
@@ -22,18 +21,18 @@ namespace VelaptorTests.Reactables
         public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
         {
             // Arrange
-            var reactor = new Mock<IReactor<RemoveBatchItemData>>();
+            var reactor = new Mock<IReactor<(int x, int y)>>();
 
-            var reactable = new RemoveBatchItemReactable();
+            var reactable = new MousePositionReactable();
             reactable.Subscribe(reactor.Object);
 
+            var data = (11, 22);
+
             // Act
-            var data = new RemoveBatchItemData(123u);
             reactable.PushNotification(data, unsubscribe);
 
             // Assert
             reactor.Verify(m => m.OnNext(data), Times.Once());
-
             Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion

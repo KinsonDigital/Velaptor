@@ -62,7 +62,7 @@ namespace Velaptor.OpenGL
         public uint TextureId;
 
         /// <summary>
-        /// Returns a value indicating if the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left operand compared with the right operand.</param>
         /// <param name="right">The right operand compared with the left operand.</param>
@@ -70,7 +70,7 @@ namespace Velaptor.OpenGL
         public static bool operator ==(TextureBatchItem left, TextureBatchItem right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating if the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left operand compared with the right operand.</param>
         /// <param name="right">The right operand compared with the left operand.</param>

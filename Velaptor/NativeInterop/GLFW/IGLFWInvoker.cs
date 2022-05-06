@@ -40,10 +40,10 @@ namespace Velaptor.NativeInterop.GLFW
         /// </para>
         /// <para>
         /// Additional calls to this function after successful initialization
-        /// but before termination will return <see langword="true"/> immediately.
+        /// but before termination will return <c>true</c> immediately.
         /// </para>
         /// </summary>
-        /// <returns><see langword="true"/> if successful, or <see langword="false"/> if an error occurred.</returns>
+        /// <returns><c>true</c> if successful, or <c>false</c> if an error occurred.</returns>
         /// <remarks>
         /// <para>
         /// OS X: This function will change the current directory of the application

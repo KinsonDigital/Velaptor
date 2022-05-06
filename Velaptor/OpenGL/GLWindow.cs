@@ -43,17 +43,19 @@ namespace Velaptor.OpenGL
     internal sealed class GLWindow : VelaptorIWindow
     {
         private readonly IWindowFactory windowFactory;
-        private readonly IInputFactory inputFactory;
+        private readonly INativeInputFactory nativeInputFactory;
         private readonly IGLInvoker gl;
         private readonly IGLFWInvoker glfw;
         private readonly ISystemMonitorService systemMonitorService;
         private readonly IPlatform platform;
         private readonly ITaskService taskService;
         private readonly IRenderer renderer;
-        private readonly IKeyboardInput<KeyCode, KeyboardState> keyboardInput;
-        private readonly IMouseInput<VelaptorMouseButton, MouseState> mouseInput;
         private readonly IReactable<GLInitData> glInitReactable;
         private readonly IReactable<GLContextData> glContextReactable;
+        private readonly IReactable<(KeyCode key, bool isDown)> keyboardReactable;
+        private readonly IReactable<(int x, int y)> mousePosReactable;
+        private readonly IReactable<(VelaptorMouseButton button, bool isDown)> mouseBtnReactable;
+        private readonly IReactable<(MouseScrollDirection scrollDirection, int wheelValue)> mouseWheelReactable;
         private readonly IReactable<ShutDownData> shutDownReactable;
         private SilkIWindow glWindow = null!;
         private IInputContext glInputContext = null!;
@@ -68,7 +70,7 @@ namespace Velaptor.OpenGL
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <param name="windowFactory">Creates a window object.</param>
-        /// <param name="inputFactory">Creates an input object.</param>
+        /// <param name="nativeInputFactory">Creates a native input object.</param>
         /// <param name="glInvoker">Invokes OpenGL functions.</param>
         /// <param name="glfwInvoker">Invokes GLFW functions.</param>
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
@@ -76,16 +78,18 @@ namespace Velaptor.OpenGL
         /// <param name="taskService">Runs asynchronous tasks.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="renderer">Renders textures and primitives.</param>
-        /// <param name="keyboardInput">Holds the state of the keyboard.</param>
-        /// <param name="mouseInput">Holds the state of the mouse.</param>
         /// <param name="glContextReactable">Subscribed to for OpenGL related push notifications.</param>
         /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
+        /// <param name="keyboardReactable">Provides updates to the state of the keyboard.</param>
+        /// <param name="mousePosReactable">Used to send push notifications of the position of the mouse.</param>
+        /// <param name="mouseBtnReactable">Used to send push notifications of the state of the mouse buttons.</param>
+        /// <param name="mouseWheelReactable">Used to send push notifications of the state of the mouse wheel.</param>
         /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
         public GLWindow(
             uint width,
             uint height,
             IWindowFactory windowFactory,
-            IInputFactory inputFactory,
+            INativeInputFactory nativeInputFactory,
             IGLInvoker glInvoker,
             IGLFWInvoker glfwInvoker,
             ISystemMonitorService systemMonitorService,
@@ -93,14 +97,16 @@ namespace Velaptor.OpenGL
             ITaskService taskService,
             IContentLoader contentLoader,
             IRenderer renderer,
-            IKeyboardInput<KeyCode, KeyboardState> keyboardInput,
-            IMouseInput<VelaptorMouseButton, MouseState> mouseInput,
             IReactable<GLContextData> glContextReactable,
             IReactable<GLInitData> glInitReactable,
+            IReactable<(KeyCode key, bool isDown)> keyboardReactable,
+            IReactable<(int x, int y)> mousePosReactable,
+            IReactable<(VelaptorMouseButton button, bool isDown)> mouseBtnReactable,
+            IReactable<(MouseScrollDirection scrollDirection, int wheelValue)> mouseWheelReactable,
             IReactable<ShutDownData> shutDownReactable)
         {
             EnsureThat.ParamIsNotNull(windowFactory);
-            EnsureThat.ParamIsNotNull(inputFactory);
+            EnsureThat.ParamIsNotNull(nativeInputFactory);
             EnsureThat.ParamIsNotNull(glInvoker);
             EnsureThat.ParamIsNotNull(glfwInvoker);
             EnsureThat.ParamIsNotNull(systemMonitorService);
@@ -108,14 +114,16 @@ namespace Velaptor.OpenGL
             EnsureThat.ParamIsNotNull(taskService);
             EnsureThat.ParamIsNotNull(contentLoader);
             EnsureThat.ParamIsNotNull(renderer);
-            EnsureThat.ParamIsNotNull(keyboardInput);
-            EnsureThat.ParamIsNotNull(mouseInput);
             EnsureThat.ParamIsNotNull(glContextReactable);
             EnsureThat.ParamIsNotNull(glInitReactable);
+            EnsureThat.ParamIsNotNull(keyboardReactable);
+            EnsureThat.ParamIsNotNull(mousePosReactable);
+            EnsureThat.ParamIsNotNull(mouseBtnReactable);
+            EnsureThat.ParamIsNotNull(mouseWheelReactable);
             EnsureThat.ParamIsNotNull(shutDownReactable);
 
             this.windowFactory = windowFactory;
-            this.inputFactory = inputFactory;
+            this.nativeInputFactory = nativeInputFactory;
             this.gl = glInvoker;
             this.glfw = glfwInvoker;
             this.systemMonitorService = systemMonitorService;
@@ -124,11 +132,12 @@ namespace Velaptor.OpenGL
             ContentLoader = contentLoader;
             this.renderer = renderer;
 
-            this.keyboardInput = keyboardInput;
-            this.mouseInput = mouseInput;
-
             this.glInitReactable = glInitReactable;
             this.glContextReactable = glContextReactable;
+            this.keyboardReactable = keyboardReactable;
+            this.mousePosReactable = mousePosReactable;
+            this.mouseBtnReactable = mouseBtnReactable;
+            this.mouseWheelReactable = mouseWheelReactable;
             this.shutDownReactable = shutDownReactable;
 
             SetupWidthHeightPropCaches(width <= 0u ? 1u : width, height <= 0u ? 1u : height);
@@ -334,7 +343,7 @@ namespace Velaptor.OpenGL
             this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
 
             this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
-            this.glInputContext = this.inputFactory.CreateInput();
+            this.glInputContext = this.nativeInputFactory.CreateInput();
 
             if (this.glInputContext.Keyboards.Count <= 0)
             {
@@ -397,9 +406,9 @@ namespace Velaptor.OpenGL
             this.isShuttingDown = true;
 
             Uninitialize?.Invoke();
-            this.shutDownReactable.PushNotification(default, true);
-            this.shutDownReactable.Dispose();
 
+            this.keyboardReactable.EndNotifications();
+            this.shutDownReactable.PushNotification(default, true);
             this.afterUnloadAction?.Invoke();
         }
 
@@ -437,8 +446,7 @@ namespace Velaptor.OpenGL
             };
 
             Update?.Invoke(frameTime);
-            this.mouseInput.SetScrollWheelSpeed(0);
-            this.mouseInput.SetScrollWheelDirection(MouseScrollDirection.None);
+            this.mouseWheelReactable.PushNotification((MouseScrollDirection.None, 0));
         }
 
         /// <summary>
@@ -479,10 +487,11 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Invoked when any keyboard input key transitions from the up position to the down position.
         /// </summary>
-        /// <param name="keyboard">The system keyboardInput.</param>
+        /// <param name="keyboard">The system keyboard input.</param>
         /// <param name="key">The key that was pushed down.</param>
         /// <param name="arg3">Additional argument from OpenGL.</param>
-        private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, true);
+        private void GLKeyboardInput_KeyDown(IKeyboard keyboard, Key key, int arg3)
+            => this.keyboardReactable.PushNotification(((KeyCode)key, true));
 
         /// <summary>
         /// Invoked when any keyboard input key transitions from the down position to the up position.
@@ -490,21 +499,24 @@ namespace Velaptor.OpenGL
         /// <param name="keyboard">The system keyboardInput.</param>
         /// <param name="key">The key that was released.</param>
         /// <param name="arg3">Additional argument from OpenGL.</param>
-        private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3) => this.keyboardInput.SetState((KeyCode)key, false);
+        private void GLKeyboardInput_KeyUp(IKeyboard keyboard, Key key, int arg3)
+            => this.keyboardReactable.PushNotification(((KeyCode)key, false));
 
         /// <summary>
-        /// Invoked when any of the mouse buttons are pressed into the down position over the window.
+        /// Invoked when any of the mouse buttons are in the down position over the window.
         /// </summary>
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
-        private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, true);
+        private void GLMouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
+            => this.mouseBtnReactable.PushNotification(((VelaptorMouseButton)button, true));
 
         /// <summary>
         /// Invoked when any of the mouse buttons are released from the down position into the up position over the window.
         /// </summary>
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="button">The button that was pushed down.</param>
-        private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button) => this.mouseInput.SetState((VelaptorMouseButton)button, false);
+        private void GLMouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
+            => this.mouseBtnReactable.PushNotification(((VelaptorMouseButton)button, false));
 
         /// <summary>
         /// Invoked when there is mouse scroll wheel input.
@@ -513,8 +525,6 @@ namespace Velaptor.OpenGL
         /// <param name="wheelData">Positional data about the mouse scroll wheel.</param>
         private void GLMouseInput_MouseScroll(IMouse mouse, ScrollWheel wheelData)
         {
-            this.mouseInput.SetScrollWheelSpeed((int)wheelData.Y);
-
             var wheelDirection = wheelData.Y switch
             {
                 > 0 => MouseScrollDirection.ScrollUp,
@@ -522,7 +532,7 @@ namespace Velaptor.OpenGL
                 _ => MouseScrollDirection.None
             };
 
-            this.mouseInput.SetScrollWheelDirection(wheelDirection);
+            this.mouseWheelReactable.PushNotification((wheelDirection, (int)wheelData.Y));
         }
 
         /// <summary>
@@ -531,10 +541,7 @@ namespace Velaptor.OpenGL
         /// <param name="mouse">The system mouse object.</param>
         /// <param name="position">The position of the mouse input.</param>
         private void GLMouseMove_MouseMove(IMouse mouse, Vector2 position)
-        {
-            this.mouseInput.SetXPos((int)position.X);
-            this.mouseInput.SetYPos((int)position.Y);
-        }
+            => this.mousePosReactable.PushNotification(((int)position.X, (int)position.Y));
 
         /// <summary>
         /// Invoked when an OpenGL error occurs.
@@ -544,7 +551,7 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>
         /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
+        /// <param name="disposing">Disposes managed resources when <c>true</c>.</param>
         private void Dispose(bool disposing)
         {
             if (this.isDisposed)
@@ -557,6 +564,9 @@ namespace Velaptor.OpenGL
                 CachedStringProps.Clear();
                 CachedIntProps.Clear();
                 CachedBoolProps.Clear();
+
+                this.keyboardReactable.Dispose();
+                this.shutDownReactable.Dispose();
 
                 this.gl.GLError -= GL_GLError;
 

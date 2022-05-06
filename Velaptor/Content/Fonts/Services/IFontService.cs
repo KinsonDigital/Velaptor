@@ -59,10 +59,10 @@ namespace Velaptor.Content.Fonts.Services
         void SetFontSize(IntPtr facePtr, uint sizeInPoints);
 
         /// <summary>
-        /// Returns a value indicating if the face uses kerning between two glyphs of the same face.
+        /// Returns a value indicating whether or not the face uses kerning between two glyphs of the same face.
         /// </summary>
         /// <param name="facePtr">The pointer to the font face.</param>
-        /// <returns><see langword="true"/> if the face uses kerning.</returns>
+        /// <returns><c>true</c> if the face uses kerning.</returns>
         bool HasKerning(IntPtr facePtr);
 
         /// <summary>

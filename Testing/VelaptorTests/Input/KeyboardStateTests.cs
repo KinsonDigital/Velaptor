@@ -238,7 +238,7 @@ namespace VelaptorTests.Input
             state.SetKeyState(KeyCode.LeftShift, true);
 
             // Act
-            var actual = state.IsLeftShiftDown();
+            var actual = state.IsLeftShiftKeyDown();
 
             // Assert
             Assert.True(actual);
@@ -252,7 +252,7 @@ namespace VelaptorTests.Input
             state.SetKeyState(KeyCode.RightShift, true);
 
             // Act
-            var actual = state.IsRightShiftDown();
+            var actual = state.IsRightShiftKeyDown();
 
             // Assert
             Assert.True(actual);
@@ -266,7 +266,7 @@ namespace VelaptorTests.Input
             state.SetKeyState(KeyCode.LeftControl, true);
 
             // Act
-            var actual = state.IsLeftCtrlDown();
+            var actual = state.IsLeftCtrlKeyDown();
 
             // Assert
             Assert.True(actual);
@@ -280,7 +280,7 @@ namespace VelaptorTests.Input
             state.SetKeyState(KeyCode.RightControl, true);
 
             // Act
-            var actual = state.IsRightCtrlDown();
+            var actual = state.IsRightCtrlKeyDown();
 
             // Assert
             Assert.True(actual);
@@ -294,7 +294,7 @@ namespace VelaptorTests.Input
             state.SetKeyState(KeyCode.LeftAlt, true);
 
             // Act
-            var actual = state.IsLeftAltDown();
+            var actual = state.IsLeftAltKeyDown();
 
             // Assert
             Assert.True(actual);
@@ -308,7 +308,7 @@ namespace VelaptorTests.Input
             state.SetKeyState(KeyCode.RightAlt, true);
 
             // Act
-            var actual = state.IsRightAltDown();
+            var actual = state.IsRightAltKeyDown();
 
             // Assert
             Assert.True(actual);
@@ -358,10 +358,9 @@ namespace VelaptorTests.Input
         public void AnyKeysDown_WhenCheckingCertainKeysAndAtLeastOneOfThemIsDown_ReturnsTrue()
         {
             // Arrange
-            var keyboard = new Keyboard();
             var downKeys = new[] { KeyCode.H, KeyCode.I };
 
-            var state = keyboard.GetState();
+            var state = default(KeyboardState);
             state.SetKeyState(KeyCode.H, true);
 
             // Act
@@ -426,7 +425,7 @@ namespace VelaptorTests.Input
             state.SetKeyState(key, expected);
 
             // Act
-            var actual = state.IsAnyShiftKeyDown();
+            var actual = state.AnyShiftKeysDown();
 
             // Assert
             Assert.Equal(expected, actual);
@@ -442,7 +441,23 @@ namespace VelaptorTests.Input
             state.SetKeyState(key, expected);
 
             // Act
-            var actual = state.IsAnyCtrlKeyDown();
+            var actual = state.AnyCtrlKeysDown();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(KeyCode.LeftAlt, true)]
+        [InlineData(KeyCode.RightAlt, true)]
+        public void IsAnyAltKeyDown_WhenInvoked_ReturnsCorrectResult(KeyCode key, bool expected)
+        {
+            // Arrange
+            var state = default(KeyboardState);
+            state.SetKeyState(key, expected);
+
+            // Act
+            var actual = state.AnyAltKeysDown();
 
             // Assert
             Assert.Equal(expected, actual);

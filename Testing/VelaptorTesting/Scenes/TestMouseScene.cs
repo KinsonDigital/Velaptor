@@ -7,6 +7,7 @@ namespace VelaptorTesting.Scenes
     using System.Drawing;
     using Velaptor;
     using Velaptor.Content;
+    using Velaptor.Factories;
     using Velaptor.Input;
     using Velaptor.UI;
     using VelaptorTesting.Core;
@@ -16,7 +17,7 @@ namespace VelaptorTesting.Scenes
     /// </summary>
     public class TestMouseScene : SceneBase
     {
-        private readonly Mouse mouse;
+        private readonly IAppInput<MouseState> mouse;
         private Label? mouseInfoLabel;
         private MouseState currentMouseState;
         private int mouseWheelSpeed;
@@ -27,8 +28,8 @@ namespace VelaptorTesting.Scenes
         /// </summary>
         /// <param name="contentLoader">Loads content for the scene.</param>
         public TestMouseScene(IContentLoader contentLoader)
-            : base(contentLoader) =>
-                this.mouse = new Mouse();
+            : base(contentLoader)
+            => this.mouse = AppInputFactory.CreateMouse();
 
         /// <inheritdoc cref="IScene.LoadContent"/>
         public override void LoadContent()

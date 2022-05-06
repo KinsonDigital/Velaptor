@@ -9,6 +9,7 @@ namespace VelaptorTesting.Scenes
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Input;
     using VelaptorTesting.Core;
@@ -19,7 +20,7 @@ namespace VelaptorTesting.Scenes
     public class TestNonAnimatedGraphicsScene : SceneBase
     {
         private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
-        private readonly Keyboard keyboard;
+        private readonly IAppInput<KeyboardState> keyboard;
         private readonly int windowHalfWidth;
         private readonly int windowHalfHeight;
         private IAtlasData? mainAtlas;
@@ -38,7 +39,7 @@ namespace VelaptorTesting.Scenes
         public TestNonAnimatedGraphicsScene(IContentLoader contentLoader)
             : base(contentLoader)
         {
-            this.keyboard = new Keyboard();
+            this.keyboard = AppInputFactory.CreateKeyboard();
             this.windowHalfWidth = (int)MainWindow.WindowWidth / 2;
             this.windowHalfHeight = (int)MainWindow.WindowHeight / 2;
         }

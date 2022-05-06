@@ -76,8 +76,8 @@ namespace Velaptor
 
             SetupContent();
 
-            IoCContainer.Register<IKeyboardInput<KeyCode, KeyboardState>, Keyboard>(Lifestyle.Singleton);
-            IoCContainer.Register<IMouseInput<MouseButton, MouseState>, Mouse>(Lifestyle.Singleton);
+            IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
+            IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
             IoCContainer.Register<IFontMetaDataParser, FontMetaDataParser>(Lifestyle.Singleton);
 
             isInitialized = true;
@@ -115,7 +115,10 @@ namespace Velaptor
             IoCContainer.Register<IReactable<GLContextData>, OpenGLContextReactable>(Lifestyle.Singleton);
             IoCContainer.Register<IReactable<DisposeTextureData>, DisposeTexturesReactable>(Lifestyle.Singleton);
             IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
-            IoCContainer.Register<IReactable<RemoveBatchItemData>, RemoveBatchItemReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<(KeyCode key, bool isDown)>, KeyboardStateReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<(int, int)>, MousePositionReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<(MouseButton, bool)>, MouseButtonReactable>(Lifestyle.Singleton);
+            IoCContainer.Register<IReactable<(MouseScrollDirection, int)>, MouseWheelReactable>(Lifestyle.Singleton);
         }
 
         /// <summary>
@@ -133,7 +136,7 @@ namespace Velaptor
         private static void SetupFactories()
         {
             IoCContainer.Register<IWindowFactory, SilkWindowFactory>(Lifestyle.Singleton);
-            IoCContainer.Register<IInputFactory, InputFactory>(Lifestyle.Singleton);
+            IoCContainer.Register<INativeInputFactory, NativeInputFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ISoundFactory, SoundFactory>(Lifestyle.Singleton);
             IoCContainer.Register<ITextureFactory, TextureFactory>(Lifestyle.Singleton);
             IoCContainer.Register<IAtlasDataFactory, AtlasDataFactory>(Lifestyle.Singleton);

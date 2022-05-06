@@ -22,6 +22,11 @@ namespace VelaptorTests.Helpers
         private const string TableFlip = "(╯'□')╯︵┻━┻  ";
 
         /// <summary>
+        /// Fails the test with a message that the unit test is not implemented or needs rework.
+        /// </summary>
+        public static void TestNotImplemented() => Assert.True(false, "Test Not Implemented Or Needs Rework");
+
+        /// <summary>
         /// Verifies that the exact exception type (not a derived exception type) is thrown and that
         /// the exception message matches the given <paramref name="expectedMessage"/>.
         /// </summary>
@@ -238,12 +243,12 @@ namespace VelaptorTests.Helpers
         }
 
         /// <summary>
-        /// Asserts that all of the given <paramref name="items"/> are <see langword="true"/> which is dictated
+        /// Asserts that all of the given <paramref name="items"/> are <c>true</c> which is dictated
         /// by the given <paramref name="arePredicate"/> predicate.
         /// </summary>
         /// <typeparam name="T">The type of item in the list of items.</typeparam>
         /// <param name="items">The list of items to assert.</param>
-        /// <param name="arePredicate">Fails the assertion when returning <see langword="false"/>.</param>
+        /// <param name="arePredicate">Fails the assertion when returning <c>false</c>.</param>
         public static void AllItemsAre<T>(IEnumerable<T> items, Predicate<T> arePredicate)
         {
             if (arePredicate is null)
@@ -362,9 +367,9 @@ namespace VelaptorTests.Helpers
         /// Verifies that an expression is true.
         /// </summary>
         /// <param name="condition">The condition to be inspected.</param>
-        /// <param name="message">The message to be shown when the condition is <see langword="false"/>.</param>
-        /// <param name="expected">The expected message to display if the condition is <see langword="false"/>.</param>
-        /// <param name="actual">The actual message to display if the condition is <see langword="false"/>.</param>
+        /// <param name="message">The message to be shown when the condition is <c>false</c>.</param>
+        /// <param name="expected">The expected message to display if the condition is <c>false</c>.</param>
+        /// <param name="actual">The actual message to display if the condition is <c>false</c>.</param>
         public static void True(bool condition, string message, string expected = "", string actual = "")
         {
             XunitException assertException;
@@ -521,6 +526,14 @@ namespace VelaptorTests.Helpers
                 throw new AssertActualExpectedException(expectedStr, actualStr, $"{TableFlip}{message}");
             }
         }
+
+        /// <summary>
+        /// Verifies that an object reference is not null and shows the given <paramref name="message"/> if the assertion fails.
+        /// </summary>
+        /// <param name="obj">The object to be validated.</param>
+        /// <param name="message">The message to display if the assertion fails.</param>
+        /// <exception cref="T:Xunit.Sdk.NotNullException">Thrown when the object is not null.</exception>
+        public static void NotNullWithMessage(object obj, string message) => Assert.True(obj != null, message);
 
         /// <summary>
         /// Verifies whether or not the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.

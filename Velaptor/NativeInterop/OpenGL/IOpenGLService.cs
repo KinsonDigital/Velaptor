@@ -117,17 +117,17 @@ namespace Velaptor.NativeInterop.OpenGL
         void UnbindTexture2D();
 
         /// <summary>
-        /// Returns a value indicating if the program linking process was successful.
+        /// Returns a value indicating whether or not the program linking process was successful.
         /// </summary>
         /// <param name="programId">The ID of the program to check.</param>
-        /// <returns><see langword="true"/> if the linking was successful.</returns>
+        /// <returns><c>true</c> if the linking was successful.</returns>
         bool ProgramLinkedSuccessfully(uint programId);
 
         /// <summary>
-        /// Returns a value indicating if the shader was compiled successfully.
+        /// Returns a value indicating whether or not the shader was compiled successfully.
         /// </summary>
         /// <param name="shaderId">The ID of the shader to check.</param>
-        /// <returns><see langword="true"/> if the shader compiled successfully.</returns>
+        /// <returns><c>true</c> if the shader compiled successfully.</returns>
         bool ShaderCompiledSuccessfully(uint shaderId);
 
         /// <summary>

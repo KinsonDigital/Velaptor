@@ -33,21 +33,21 @@ namespace Velaptor.OpenGL.GPUData
         public TextureVertexData Vertex4;
 
         /// <summary>
-        /// Returns a value indicating if the left and right operands of an equals comparison
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
         /// operation is equal.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if the 2 operands are equal.</returns>
+        /// <returns><c>true</c> if the 2 operands are equal.</returns>
         public static bool operator ==(TextureQuadData left, TextureQuadData right) => left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating if the left and right operands of a not equals comparison
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
         /// operation is not equal.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if the 2 operands are equal.</returns>
+        /// <returns><c>true</c> if the 2 operands are equal.</returns>
         public static bool operator !=(TextureQuadData left, TextureQuadData right) => !(left == right);
 
         /// <summary>
