@@ -25,6 +25,8 @@ namespace Velaptor.NativeInterop.OpenGL
     [ExcludeFromCodeCoverage]
     internal class GLInvoker : IGLInvoker
     {
+        private const int API_ID_RECOMPILE_FRAGMENT_SHADER = 2;
+        private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
         private static readonly Queue<string> OpenGLCallStack = new ();
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
@@ -524,7 +526,13 @@ namespace Velaptor.NativeInterop.OpenGL
             errorMessage += $"\n\tLength: {length}";
             errorMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
 
-            if (severity != GLEnum.DebugSeverityNotification && id != 131218)
+            // Ignore warnings about shader recompilation
+            if (id is API_ID_RECOMPILE_VERTEX_SHADER or API_ID_RECOMPILE_FRAGMENT_SHADER)
+            {
+                return;
+            }
+
+            if (severity != GLEnum.DebugSeverityNotification)
             {
                 this.GLError?.Invoke(this, new GLErrorEventArgs(errorMessage));
             }
