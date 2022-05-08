@@ -506,6 +506,34 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <summary>
+        /// Prints a warning to the console in yellow.
+        /// </summary>
+        /// <param name="warningMsg">The warning message.</param>
+        private static void PrintWarningToConsole(string warningMsg)
+        {
+#if DEBUG
+            var prevClr = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"OpenGL Warning: {warningMsg}");
+            Console.ForegroundColor = prevClr;
+#endif
+        }
+
+        /// <summary>
+        /// Prints an error to the console in red.
+        /// </summary>
+        /// <param name="errorMsg">The error message.</param>
+        private static void PrintErrorToConsole(string errorMsg)
+        {
+#if DEBUG
+            var prevClr = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine($"OpenGL Error: {errorMsg}");
+            Console.ForegroundColor = prevClr;
+#endif
+        }
+
+        /// <summary>
         /// Invoked when there is an OpenGL related error.
         /// </summary>
         /// <param name="source">The debug source.</param>
@@ -517,14 +545,14 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="userParam">The OpenGL parameter related to the error.</param>
         private void DebugCallback(GLEnum source, GLEnum type, int id, GLEnum severity, int length, nint message, nint userParam)
         {
-            var errorMessage = Marshal.PtrToStringAnsi(message);
+            var openGLMessage = Marshal.PtrToStringAnsi(message);
 
-            errorMessage += $"\n\tSrc: {source}";
-            errorMessage += $"\n\tType: {type}";
-            errorMessage += $"\n\tID: {id}";
-            errorMessage += $"\n\tSeverity: {severity}";
-            errorMessage += $"\n\tLength: {length}";
-            errorMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
+            openGLMessage += $"\n\tSrc: {source}";
+            openGLMessage += $"\n\tType: {type}";
+            openGLMessage += $"\n\tID: {id}";
+            openGLMessage += $"\n\tSeverity: {severity}";
+            openGLMessage += $"\n\tLength: {length}";
+            openGLMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
 
             // Ignore warnings about shader recompilation
             if (id is API_ID_RECOMPILE_VERTEX_SHADER or API_ID_RECOMPILE_FRAGMENT_SHADER)
@@ -532,9 +560,17 @@ namespace Velaptor.NativeInterop.OpenGL
                 return;
             }
 
-            if (severity != GLEnum.DebugSeverityNotification)
+            if (severity == GLEnum.NoError)
             {
-                this.GLError?.Invoke(this, new GLErrorEventArgs(errorMessage));
+                PrintWarningToConsole(openGLMessage);
+            }
+            else
+            {
+                if (severity != GLEnum.DebugSeverityNotification)
+                {
+                    PrintErrorToConsole(openGLMessage);
+                    this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
+                }
             }
         }
 
