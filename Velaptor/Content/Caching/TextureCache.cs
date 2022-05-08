@@ -80,7 +80,13 @@ namespace Velaptor.Content.Caching
             this.fontAtlasService = fontAtlasService;
             this.fontMetaDataParser = fontMetaDataParser;
             this.path = path;
-            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
+                _ => ShutDown(),
+                onCompleted: () =>
+                {
+                    this.shutDownUnsubscriber?.Dispose();
+                }));
+
             this.disposeTexturesReactable = disposeTexturesReactable;
         }
 
@@ -286,8 +292,6 @@ namespace Velaptor.Content.Caching
                     this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
                 }
             }
-
-            this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }

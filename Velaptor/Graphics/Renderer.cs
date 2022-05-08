@@ -98,9 +98,17 @@ namespace Velaptor.Graphics
                     this.cachedClearColor.IsCaching = false;
 
                     Init();
+                }, onCompleted: () =>
+                {
+                    this.glInitUnsubscriber?.Dispose();
                 }));
 
-            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
+                _ => ShutDown(),
+                onCompleted: () =>
+                {
+                    this.shutDownUnsubscriber?.Dispose();
+                }));
 
             SetupPropertyCaches();
         }
@@ -385,8 +393,6 @@ namespace Velaptor.Graphics
             this.batchServiceManager.RectBatchFilled -= RectBatchService_BatchFilled;
             this.batchServiceManager.Dispose();
             this.cachedUIntProps.Clear();
-            this.glInitUnsubscriber.Dispose();
-            this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }

@@ -18,8 +18,7 @@ namespace Velaptor.Reactables
         /// Sends a push notification to signal a change to the position of the mouse.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">If true, unsubscribes all of the reactors after the notification has been pushed.</param>
-        public override void PushNotification((int x, int y) data, bool unsubscribeAfterProcessing = false)
+        public override void PushNotification((int x, int y) data)
         {
             /* Work from the end to the beginning of the list
                just in case the reactable is disposed(removed)
@@ -28,11 +27,6 @@ namespace Velaptor.Reactables
             for (var i = Reactors.Count - 1; i >= 0; i--)
             {
                 Reactors[i].OnNext(data);
-            }
-
-            if (unsubscribeAfterProcessing)
-            {
-                UnsubscribeAll();
             }
         }
     }

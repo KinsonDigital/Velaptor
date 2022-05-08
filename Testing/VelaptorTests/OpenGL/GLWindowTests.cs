@@ -995,6 +995,23 @@ namespace VelaptorTests.OpenGL
         }
 
         [Fact]
+        public void Show_WhenInvoked_SubscribesToEvents()
+        {
+            // Arrange
+            var window = CreateWindow();
+
+            // Act
+            window.Show();
+
+            // Assert
+            this.mockSilkWindow.VerifyAddOnce(e => e.Load += It.IsAny<Action>());
+            this.mockSilkWindow.VerifyAddOnce(e => e.Closing += It.IsAny<Action>());
+            this.mockSilkWindow.VerifyAddOnce(e => e.Resize += It.IsAny<Action<Vector2D<int>>>());
+            this.mockSilkWindow.VerifyAddOnce(e => e.Update += It.IsAny<Action<double>>());
+            this.mockSilkWindow.VerifyAddOnce(e => e.Render += It.IsAny<Action<double>>());
+        }
+
+        [Fact]
         public void Show_WhenInvoked_SetsUpOpenGLErrorCallback()
         {
             // Arrange
@@ -1010,37 +1027,6 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockGL.VerifyAdd(i => i.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>(), Times.Once());
-        }
-
-        [Fact]
-        public void Show_WhenUpdatingFrameWhileShuttingDown_DoesNotInvokeUpdateEvent()
-        {
-            // Arrange
-            var updateInvoked = false;
-            var window = CreateWindow();
-            window.Update += _ => updateInvoked = true;
-
-            // Act
-            window.Show();
-
-            // Assert
-            Assert.False(updateInvoked, $"The '{nameof(GLWindow)}.{nameof(GLWindow.Update)}' action should not be invoked.");
-        }
-
-        [Fact]
-        public void Show_WhenRenderingFrameWhileShuttingDown_DoesNotInvokeRenderEvent()
-        {
-            // Arrange
-            var renderInvoked = false;
-            var window = CreateWindow();
-
-            window.Draw += _ => renderInvoked = true;
-
-            // Act
-            window.Show();
-
-            // Assert
-            Assert.False(renderInvoked, $"The '{nameof(GLWindow)}.{nameof(GLWindow.Draw)}' action should not be invoked.");
         }
 
         [Fact]
@@ -1147,12 +1133,26 @@ namespace VelaptorTests.OpenGL
             window.Show();
 
             // Assert
+            this.mockContextReactable.VerifyOnce(m => m.PushNotification(It.IsAny<GLContextData>()));
+            this.mockContextReactable.VerifyOnce(m => m.EndNotifications());
+
+            this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyDown += It.IsAny<Action<IKeyboard, Key, int>>());
+            this.mockSilkKeyboard.VerifyAddOnce(m => m.KeyUp += It.IsAny<Action<IKeyboard, Key, int>>());
+
+            this.mockSilkMouse.VerifyAddOnce(m => m.MouseDown += It.IsAny<Action<IMouse, SilkMouseButton>>());
+            this.mockSilkMouse.VerifyAddOnce(m => m.MouseUp += It.IsAny<Action<IMouse, SilkMouseButton>>());
+            this.mockSilkMouse.VerifyAddOnce(m => m.MouseMove += It.IsAny<Action<IMouse, SysVector2>>());
+            this.mockSilkMouse.VerifyAddOnce(m => m.Scroll += It.IsAny<Action<IMouse, ScrollWheel>>());
+
             this.mockGL.VerifyOnce(m => m.SetupErrorCallback());
             this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutput));
             this.mockGL.VerifyOnce(m => m.Enable(GLEnableCap.DebugOutputSynchronous));
             this.mockGL.VerifyAddOnce(e => e.GLError += It.IsAny<EventHandler<GLErrorEventArgs>>());
+
             this.mockGLInitReactable.VerifyOnce(m
-                => m.PushNotification(default, true));
+                => m.PushNotification(default));
+            this.mockGLInitReactable.VerifyOnce(m => m.EndNotifications());
+
             Assert.True(initializeInvoked, $"The action '{nameof(IWindowActions)}.{nameof(IWindowActions.Initialize)}' must be invoked");
         }
 
@@ -1191,7 +1191,7 @@ namespace VelaptorTests.OpenGL
             // Assert
             Assert.False(windowUpdateInvoked, $"{nameof(GLWindow.Update)} should not of been invoked during window shutdown.");
             this.mockMouseWheelReactable.VerifyNever(m
-                => m.PushNotification(It.IsAny<(MouseScrollDirection, int)>(), It.IsAny<bool>()));
+                => m.PushNotification(It.IsAny<(MouseScrollDirection, int)>()));
         }
 
         [Fact]
@@ -1219,7 +1219,7 @@ namespace VelaptorTests.OpenGL
             // Assert
             Assert.True(windowUpdateInvoked, $"{nameof(GLWindow.Update)} was not invoked.");
             this.mockMouseWheelReactable.VerifyOnce(m
-                => m.PushNotification(expectedWheelData, false));
+                => m.PushNotification(expectedWheelData));
         }
 
         [Fact]
@@ -1310,7 +1310,13 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             Assert.True(uninitializeInvoked);
-            this.mockShutDownReactable.Verify(m => m.PushNotification(default, true), Times.Once);
+
+            this.mockMouseBtnReactable.VerifyOnce(m => m.EndNotifications());
+            this.mockMousePosReactable.VerifyOnce(m => m.EndNotifications());
+            this.mockMouseWheelReactable.VerifyOnce(m => m.EndNotifications());
+
+            this.mockShutDownReactable.Verify(m => m.PushNotification(default), Times.Once);
+            this.mockShutDownReactable.VerifyOnce(m => m.EndNotifications());
         }
 
         [Fact]
@@ -1329,7 +1335,7 @@ namespace VelaptorTests.OpenGL
                 0);
 
             // Assert
-            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState, false));
+            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState));
         }
 
         [Fact]
@@ -1348,7 +1354,7 @@ namespace VelaptorTests.OpenGL
                 0);
 
             // Assert
-            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState, false));
+            this.mockKeyboardReactable.VerifyOnce(m => m.PushNotification(expectedKeyState));
         }
 
         [Fact]
@@ -1367,7 +1373,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockMouseBtnReactable.VerifyOnce(m
-                => m.PushNotification(expectedButtonState, false));
+                => m.PushNotification(expectedButtonState));
         }
 
         [Fact]
@@ -1386,7 +1392,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockMouseBtnReactable.VerifyOnce(m
-                => m.PushNotification(expectedButtonState, false));
+                => m.PushNotification(expectedButtonState));
         }
 
         [Theory]
@@ -1410,7 +1416,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockMouseWheelReactable.VerifyOnce(m
-                => m.PushNotification(expectedMouseWheelState, false));
+                => m.PushNotification(expectedMouseWheelState));
         }
 
         [Fact]
@@ -1429,7 +1435,7 @@ namespace VelaptorTests.OpenGL
 
             // Assert
             this.mockMousePosReactable.VerifyOnce(m
-                => m.PushNotification(expectedMousePosition, false));
+                => m.PushNotification(expectedMousePosition));
         }
 
         [Fact]

@@ -341,6 +341,7 @@ namespace Velaptor.OpenGL
         private void Init(uint width, uint height)
         {
             this.glContextReactable.PushNotification(new GLContextData(this.glWindow));
+            this.glContextReactable.EndNotifications();
 
             this.glWindow.Size = new Vector2D<int>((int)width, (int)height);
             this.glInputContext = this.nativeInputFactory.CreateInput();
@@ -391,7 +392,8 @@ namespace Velaptor.OpenGL
              * The context of initialized here is that the OpenGL context is set
              *and the related GLFW window has been created and is ready to go.
              */
-            this.glInitReactable.PushNotification(default, true);
+            this.glInitReactable.PushNotification(default);
+            this.glInitReactable.EndNotifications();
 
             Initialized = true;
 
@@ -408,7 +410,13 @@ namespace Velaptor.OpenGL
             Uninitialize?.Invoke();
 
             this.keyboardReactable.EndNotifications();
-            this.shutDownReactable.PushNotification(default, true);
+            this.mouseBtnReactable.EndNotifications();
+            this.mousePosReactable.EndNotifications();
+            this.mouseWheelReactable.EndNotifications();
+
+            this.shutDownReactable.PushNotification(default);
+            this.shutDownReactable.EndNotifications();
+
             this.afterUnloadAction?.Invoke();
         }
 

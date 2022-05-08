@@ -26,8 +26,7 @@ namespace Velaptor.Reactables.Core
         /// Pushes a single notification with the given <paramref name="data"/>.
         /// </summary>
         /// <param name="data">The data to send with the push notification.</param>
-        /// <param name="unsubscribeAfterProcessing">Unsubscribes all of the reactors after the notification has been pushed.</param>
-        void PushNotification(T data, bool unsubscribeAfterProcessing = false);
+        void PushNotification(T data);
 
         /// <summary>
         /// Ends notifications by invoking <see cref="Reactor{T}.OnCompleted"/> to all subscribed <see cref="IReactor{T}"/>s.

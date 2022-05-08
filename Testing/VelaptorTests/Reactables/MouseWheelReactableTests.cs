@@ -16,10 +16,8 @@ namespace VelaptorTests.Reactables
     public class MouseWheelReactableTests
     {
         #region Method Tests
-        [Theory]
-        [InlineData(false, 1)]
-        [InlineData(true, 0)]
-        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
+        [Fact]
+        public void PushNotification_WhenInvoked_SendsPushNotification()
         {
             // Arrange
             var reactor = new Mock<IReactor<(MouseScrollDirection, int)>>();
@@ -30,11 +28,10 @@ namespace VelaptorTests.Reactables
             var data = (MouseScrollDirection.ScrollDown, 123);
 
             // Act
-            reactable.PushNotification(data, unsubscribe);
+            reactable.PushNotification(data);
 
             // Assert
             reactor.Verify(m => m.OnNext(data), Times.Once());
-            Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion
     }
