@@ -560,7 +560,7 @@ namespace VelaptorTests.Content.Caching
 
         #region Indirect Internal Tests
         [Fact]
-        public void ShutDownReactable_WhenNotificationsEnded_DisposesOfUnsubscriber()
+        public void ShutDownReactable_WhenNotificationsEnd_DisposesOfUnsubscriber()
         {
             // Arrange
             var unused = CreateCache();
