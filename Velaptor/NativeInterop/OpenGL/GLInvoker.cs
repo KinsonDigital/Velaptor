@@ -25,8 +25,13 @@ namespace Velaptor.NativeInterop.OpenGL
     [ExcludeFromCodeCoverage]
     internal class GLInvoker : IGLInvoker
     {
+        // ReSharper disable InconsistentNaming
+#pragma warning disable SA1310
         private const int API_ID_RECOMPILE_FRAGMENT_SHADER = 2;
         private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
+#pragma warning restore SA1310
+
+        // ReSharper restore InconsistentNaming
         private static readonly Queue<string> OpenGLCallStack = new ();
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
