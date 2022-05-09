@@ -21,6 +21,7 @@
         "msbuild",
         "Nuget",
         "nupkg",
+        "Reactable",
         "releasetype",
         "releasetypes",
         "runsettings",
