@@ -21,6 +21,8 @@
         "msbuild",
         "Nuget",
         "nupkg",
+        "releasetype",
+        "releasetypes",
         "runsettings",
         "SDLC",
         "Simplelnjector",
