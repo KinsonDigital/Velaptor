@@ -1,0 +1,62 @@
+name: 🚀 Release To Do List
+description: Create a to do list for performing a release
+title: "🚀Release <release number here> ToDo"
+body:
+- type: textarea
+  attributes:
+    label: Items Released
+    placeholder: |
+      Create a list of all the items being released.
+      Example:
+      - #123
+      - #456
+    description: The list of issues that are getting released.
+  validations:
+    required: true
+    render: markdown
+
+- type: dropdown
+  id: releasetypes
+  attributes:
+    label: Choose the type of release.
+    description: What kind of release is this?
+    options:
+      - Preview Release
+      - QA Preview Release
+      - QA Production Release
+      - Production Release
+      - Hot Fix Release
+  validations:
+    required: true
+
+- type: checkboxes
+  attributes:
+    label: Perform Release To Do List
+    description: Complete the following items to perform a release.
+    options:
+    - label: QA Testing finished and all tests pass.
+    - label: Branch used for release has been checked out locally and all unit tests have passed.
+    - label: Version in project file updated.  (Update <Version/> and <FileVersion/> tags)
+    - label: Release notes created and added to the correct release branch.
+    - label: The release displayed in [GitHub Releases](https://github.com/KinsonDigital/Velaptor/releases) has been verified to be correct.
+
+- type: checkboxes
+  attributes:
+    label: Post Release To Do List
+    description: Complete/verify that release announcements have been performed.
+    options:
+    - label: Update issue title by replacing the '**_\<release number here\>_**' with the release number.
+    - label: Correct **_release_** label added to the issue.
+    - label: Announcement of release on [Twitter](https://twitter.com/KDCoder) verified. (Announcement should be performed automatically with the release)
+    - label: Performed announcement on [Ko-Fi](https://ko-fi.com/kinsondigital) website.
+    - label: Performed announcement on [GitHub Discussions Board.](https://github.com/KinsonDigital/Velaptor/discussions/133)
+    - label: Performed announcement on Discord channel.
+
+- type: checkboxes
+  id: terms
+  attributes:
+    label: Code of Conduct
+    description: By submitting this issue, you agree to follow our [Code of Conduct](../../code_of_conduct.md)
+    options:
+      - label: I agree to follow this project's Code of Conduct
+        required: true
