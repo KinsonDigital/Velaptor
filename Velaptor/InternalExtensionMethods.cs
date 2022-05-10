@@ -69,7 +69,7 @@ namespace Velaptor
         /// is only a root drive path with no directories or file names.
         /// </summary>
         /// <param name="fileOrDirPath">The path to check.</param>
-        /// <returns><see langword="true"/> if there are no directories and is just a root drive.</returns>
+        /// <returns><c>true</c> if there are no directories and is just a root drive.</returns>
         public static bool OnlyContainsDrive(this string fileOrDirPath)
         {
             if (string.IsNullOrEmpty(fileOrDirPath))
@@ -185,10 +185,10 @@ namespace Velaptor
         ///     for the lifetime of the container. It can't be used for selecting a type based
         ///     on runtime conditions.
         /// </param>
-        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <remarks>
         ///     This method uses the container's LifestyleSelectionBehavior to select the exact
-        ///     lifestyle for the specified type. By default this will be Transient.
+        ///     lifestyle for the specified type. By default this will be transient.
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
@@ -213,7 +213,7 @@ namespace Velaptor
         /// <typeparam name="TService">The interface or base type that can be used to retrieve the instances.</typeparam>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
-        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <remarks>
         ///     This method uses the container's LifestyleSelectionBehavior to select the exact
         ///     lifestyle for the specified type. By default this will be Transient.
@@ -239,7 +239,7 @@ namespace Velaptor
         /// </summary>
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
-        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="InvalidOperationException">Thrown when this container instance is locked and cannot be altered.</exception>
         [ExcludeFromCodeCoverage]
@@ -268,7 +268,7 @@ namespace Velaptor
         /// <typeparam name="TService">The interface or base type that can be used to retrieve instances.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
         /// <param name="instanceCreator">The delegate that allows building or creating new instances.</param>
-        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <exception cref="T:System.InvalidOperationException">
         /// Thrown when this container instance is locked and cannot be altered, or when the
         /// <typeparamref name="TService" /> has already been registered.</exception>
@@ -295,7 +295,7 @@ namespace Velaptor
         /// <typeparam name="TImplementation">The concrete type that will be registered.</typeparam>
         /// <param name="container">The container that the registration applies to.</param>
         /// <param name="lifestyle">The lifestyle that specifies how the returned instance will be cached.</param>
-        /// <param name="suppressDisposal"><see langword="true"/> to ignore dispose warnings if the original code invokes dispose.</param>
+        /// <param name="suppressDisposal"><c>true</c> to ignore dispose warnings if the original code invokes dispose.</param>
         /// <remarks>
         ///     This method uses the container's LifestyleSelectionBehavior to select the exact
         ///     lifestyle for the specified type. By default this will be Transient.
@@ -923,12 +923,10 @@ namespace Velaptor
         /// <typeparam name="T">The type of items in the <paramref name="queue"/>.</typeparam>
         public static void DequeueWhile<T>(this Queue<T> queue, Predicate<T> untilPredicate)
         {
-            if (queue.Count <= 0)
-            {
-                return;
-            }
+            var maxIterations = queue.Count + 1;
+            var currentIteration = 0;
 
-            while (true)
+            while (currentIteration < maxIterations)
             {
                 if (queue.Count <= 0)
                 {
@@ -936,9 +934,13 @@ namespace Velaptor
                 }
 
                 var peekedItem = queue.Peek();
-                untilPredicate(peekedItem);
 
-                queue.Dequeue();
+                if (untilPredicate(peekedItem))
+                {
+                    queue.Dequeue();
+                }
+
+                currentIteration += 1;
             }
         }
     }

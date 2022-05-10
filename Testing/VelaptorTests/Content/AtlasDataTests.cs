@@ -26,7 +26,7 @@ namespace VelaptorTests.Content
         private readonly string atlasImagePath = $"{DirPath}{AtlasName}{TextureExtension}";
         private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPath> mockPath;
-        private readonly AtlasSubTextureData[] spriteData;
+        private readonly AtlasSubTextureData[] subTextureData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasDataTests"/> class.
@@ -39,7 +39,7 @@ namespace VelaptorTests.Content
             this.mockPath.Setup(m => m.GetDirectoryName(DirPath)).Returns(DirPath);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(AtlasName))
                 .Returns(AtlasName);
-            this.spriteData = new[]
+            this.subTextureData = new[]
             {
                 new AtlasSubTextureData() // First frame of Animating sub texture
                 {
@@ -357,6 +357,6 @@ namespace VelaptorTests.Content
         /// </summary>
         /// <returns>The instance to test.</returns>
         private AtlasData CreateAtlasData(string? atlasName = null)
-            => new (this.mockTextureCache.Object, this.mockPath.Object, this.spriteData, DirPath, atlasName ?? AtlasName);
+            => new (this.mockTextureCache.Object, this.mockPath.Object, this.subTextureData, DirPath, atlasName ?? AtlasName);
     }
 }

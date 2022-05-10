@@ -15,6 +15,7 @@ namespace Velaptor.Reactables.Core
         private readonly Action<T>? onNext;
         private readonly Action? onCompleted;
         private readonly Action<Exception>? onError;
+        private bool completed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Reactor{T}"/> class.
@@ -30,10 +31,27 @@ namespace Velaptor.Reactables.Core
         }
 
         /// <inheritdoc />
-        public void OnNext(T value) => this.onNext?.Invoke(value);
+        public void OnNext(T value)
+        {
+            if (this.completed)
+            {
+                return;
+            }
+
+            this.onNext?.Invoke(value);
+        }
 
         /// <inheritdoc />
-        public void OnCompleted() => this.onCompleted?.Invoke();
+        public void OnCompleted()
+        {
+            if (this.completed)
+            {
+                return;
+            }
+
+            this.onCompleted?.Invoke();
+            this.completed = true;
+        }
 
         /// <inheritdoc />
         public void OnError(Exception error) => this.onError?.Invoke(error);

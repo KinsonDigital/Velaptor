@@ -9,6 +9,7 @@ namespace VelaptorTesting.Scenes
     using Velaptor;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Input;
     using VelaptorTesting.Core;
@@ -19,7 +20,7 @@ namespace VelaptorTesting.Scenes
     public class TestNonAnimatedGraphicsScene : SceneBase
     {
         private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
-        private readonly Keyboard keyboard;
+        private readonly IAppInput<KeyboardState> keyboard;
         private readonly int windowHalfWidth;
         private readonly int windowHalfHeight;
         private IAtlasData? mainAtlas;
@@ -38,7 +39,7 @@ namespace VelaptorTesting.Scenes
         public TestNonAnimatedGraphicsScene(IContentLoader contentLoader)
             : base(contentLoader)
         {
-            this.keyboard = new Keyboard();
+            this.keyboard = AppInputFactory.CreateKeyboard();
             this.windowHalfWidth = (int)MainWindow.WindowWidth / 2;
             this.windowHalfHeight = (int)MainWindow.WindowHeight / 2;
         }
@@ -135,7 +136,7 @@ namespace VelaptorTesting.Scenes
         }
 
         /// <inheritdoc cref="IDrawable.Render"/>
-        public override void Render(ISpriteBatch spriteBatch)
+        public override void Render(IRenderer renderer)
         {
             var posX = this.windowHalfWidth - (this.octagonData.Bounds.Width / 2);
             var posY = this.windowHalfHeight - (this.octagonData.Bounds.Height / 2);
@@ -143,9 +144,9 @@ namespace VelaptorTesting.Scenes
             var instructionsX = (int)(this.textSize.Width / 2) + 25;
             var instructionsY = (int)(this.textSize.Height / 2) + 25;
 
-            spriteBatch.Render(this.font, this.instructions, instructionsX, instructionsY);
+            renderer.Render(this.font, this.instructions, instructionsX, instructionsY);
 
-            spriteBatch.Render(
+            renderer.Render(
                 this.mainAtlas.Texture,
                 this.octagonData.Bounds,
                 new Rectangle(posX, posY, (int)this.mainAtlas.Width, (int)this.mainAtlas.Height),
@@ -154,7 +155,7 @@ namespace VelaptorTesting.Scenes
                 Color.White,
                 this.renderEffects);
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <inheritdoc cref="SceneBase.Dispose(bool)"/>

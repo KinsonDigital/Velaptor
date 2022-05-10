@@ -16,10 +16,8 @@ namespace VelaptorTests.Reactables
     public class DisposeTexturesReactableTests
     {
         #region Method Tests
-        [Theory]
-        [InlineData(false, 1)]
-        [InlineData(true, 0)]
-        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
+        [Fact]
+        public void PushNotification_WhenInvoked_SendsPushNotification()
         {
             // Arrange
             var reactor = new Mock<IReactor<DisposeTextureData>>();
@@ -28,11 +26,10 @@ namespace VelaptorTests.Reactables
             reactable.Subscribe(reactor.Object);
 
             // Act
-            reactable.PushNotification(new DisposeTextureData(123u), unsubscribe);
+            reactable.PushNotification(new DisposeTextureData(123u));
 
             // Assert
             reactor.Verify(m => m.OnNext(new DisposeTextureData(123u)), Times.Once());
-            Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion
     }

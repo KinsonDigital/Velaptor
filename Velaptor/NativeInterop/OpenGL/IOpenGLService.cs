@@ -117,17 +117,17 @@ namespace Velaptor.NativeInterop.OpenGL
         void UnbindTexture2D();
 
         /// <summary>
-        /// Returns a value indicating if the program linking process was successful.
+        /// Returns a value indicating whether or not the program linking process was successful.
         /// </summary>
         /// <param name="programId">The ID of the program to check.</param>
-        /// <returns><see langword="true"/> if the linking was successful.</returns>
+        /// <returns><c>true</c> if the linking was successful.</returns>
         bool ProgramLinkedSuccessfully(uint programId);
 
         /// <summary>
-        /// Returns a value indicating if the shader was compiled successfully.
+        /// Returns a value indicating whether or not the shader was compiled successfully.
         /// </summary>
         /// <param name="shaderId">The ID of the shader to check.</param>
-        /// <returns><see langword="true"/> if the shader compiled successfully.</returns>
+        /// <returns><c>true</c> if the shader compiled successfully.</returns>
         bool ShaderCompiledSuccessfully(uint shaderId);
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="bufferId">The ID of the buffer object.</param>
         /// <param name="label">The label to give the buffer object.</param>
         /// <param name="bufferType">The type of buffer.</param>
-        void LabelBuffer(uint bufferId, string label, BufferType bufferType);
+        void LabelBuffer(uint bufferId, string label, OpenGLBufferType bufferType);
 
         /// <summary>
         /// Labels a texture with the given <paramref name="textureId"/> with the given <paramref name="label"/>.

@@ -10,6 +10,7 @@ namespace VelaptorTesting.Core
     using System.Drawing;
     using System.Linq;
     using Velaptor;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Input;
     using Velaptor.UI;
@@ -22,8 +23,8 @@ namespace VelaptorTesting.Core
         private readonly List<IScene> scenes = new ();
         private readonly Button nextButton;
         private readonly Button previousButton;
-        private readonly Keyboard keyboard;
-        private ISpriteBatch spriteBatch;
+        private readonly IAppInput<KeyboardState> keyboard;
+        private IRenderer renderer;
         private int currentSceneIndex;
         private bool isDisposed;
         private bool isLoaded;
@@ -33,10 +34,10 @@ namespace VelaptorTesting.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneManager"/> class.
         /// </summary>
-        /// <param name="spriteBatch">Renders all of the scenes.</param>
-        public SceneManager(ISpriteBatch spriteBatch)
+        /// <param name="renderer">Renders all of the scenes.</param>
+        public SceneManager(IRenderer renderer)
         {
-            this.spriteBatch = spriteBatch;
+            this.renderer = renderer;
 
             this.nextButton = new Button { Text = "-->" };
             this.nextButton.Click += (_, _) => NextScene();
@@ -44,7 +45,7 @@ namespace VelaptorTesting.Core
             this.previousButton = new Button { Text = "<--" };
             this.previousButton.Click += (_, _) => PreviousScene();
 
-            this.keyboard = new Keyboard();
+            this.keyboard = AppInputFactory.CreateKeyboard();
         }
 
         /// <summary>
@@ -233,16 +234,16 @@ namespace VelaptorTesting.Core
                 return;
             }
 
-            this.spriteBatch.Clear();
-            this.spriteBatch.BeginBatch();
+            this.renderer.Clear();
+            this.renderer.Begin();
 
-            this.scenes[this.currentSceneIndex].Render(this.spriteBatch);
+            this.scenes[this.currentSceneIndex].Render(this.renderer);
 
             // Render the scene manager UI on top of all other textures
-            this.nextButton.Render(this.spriteBatch);
-            this.previousButton.Render(this.spriteBatch);
+            this.nextButton.Render(this.renderer);
+            this.previousButton.Render(this.renderer);
 
-            this.spriteBatch.EndBatch();
+            this.renderer.End();
         }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -277,7 +278,7 @@ namespace VelaptorTesting.Core
 
             this.scenes.Clear();
 
-            this.spriteBatch = null;
+            this.renderer = null;
             this.previousButton.UnloadContent();
             this.nextButton.UnloadContent();
         }

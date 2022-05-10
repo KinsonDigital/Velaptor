@@ -16,10 +16,8 @@ namespace VelaptorTests.Reactables
     public class DisposeSoundsReactableTests
     {
         #region Method Tests
-        [Theory]
-        [InlineData(false, 1)]
-        [InlineData(true, 0)]
-        public void PushNotification_WhenInvoked_SendsPushNotification(bool unsubscribe, int expected)
+        [Fact]
+        public void PushNotification_WhenInvoked_SendsPushNotification()
         {
             // Arrange
             var reactor = new Mock<IReactor<DisposeSoundData>>();
@@ -29,11 +27,10 @@ namespace VelaptorTests.Reactables
 
             // Act
             var soundData = new DisposeSoundData(123u);
-            reactable.PushNotification(soundData, unsubscribe);
+            reactable.PushNotification(soundData);
 
             // Assert
             reactor.Verify(m => m.OnNext(soundData), Times.Once());
-            Assert.Equal(expected, reactable.Reactors.Count);
         }
         #endregion
     }

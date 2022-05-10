@@ -36,7 +36,7 @@ Contains Bug Fix(es)
 </details>
 
 
-<details open><summary>💣Breaking Change(s)💣</summary>
+<details open><summary>🧨Breaking Change(s)🧨</summary>
 
 Any changes, including behavioral, that prevent a library user's application from compiling or behaving correctly.
 Refer to this [link](https://docs.microsoft.com/en-us/dotnet/core/compatibility/#modifications-to-the-public-contract) for more information.

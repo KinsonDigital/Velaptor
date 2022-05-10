@@ -182,9 +182,9 @@ namespace Velaptor.Content
             }
 
             var rawData = this.file.ReadAllText(atlasDataFilePath);
-            var atlasSpriteData = this.jsonService.Deserialize<AtlasSubTextureData[]>(rawData);
+            var subTextureData = this.jsonService.Deserialize<AtlasSubTextureData[]>(rawData);
 
-            if (atlasSpriteData is null)
+            if (subTextureData is null)
             {
                 throw new LoadContentException($"There was an issue deserializing the JSON atlas data file at '{atlasDataFilePath}'.");
             }
@@ -193,7 +193,7 @@ namespace Velaptor.Content
                 ? name
                 : contentNameOrPath;
 
-            return this.atlasDataFactory.Create(atlasSpriteData, dirPath, atlasName);
+            return this.atlasDataFactory.Create(subTextureData, dirPath, atlasName);
         }
 
         /// <inheritdoc/>

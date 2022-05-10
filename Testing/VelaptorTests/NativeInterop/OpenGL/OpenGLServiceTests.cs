@@ -388,21 +388,21 @@ namespace VelaptorTests.NativeInterop.OpenGL
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
-                service.LabelBuffer(It.IsAny<uint>(), It.IsAny<string>(), (BufferType)123);
+                service.LabelBuffer(It.IsAny<uint>(), It.IsAny<string>(), (OpenGLBufferType)123);
             }, exceptionMsg);
         }
 
         [Theory]
-        [InlineData("", (int)BufferType.VertexBufferObject, "NOT SET VBO")]
-        [InlineData(null, (int)BufferType.VertexBufferObject, "NOT SET VBO")]
-        [InlineData("test-label", (int)BufferType.VertexBufferObject, "test-label VBO")]
-        [InlineData("", (int)BufferType.IndexArrayObject, "NOT SET EBO")]
-        [InlineData(null, (int)BufferType.IndexArrayObject, "NOT SET EBO")]
-        [InlineData("test-label", (int)BufferType.IndexArrayObject, "test-label EBO")]
+        [InlineData("", (int)OpenGLBufferType.VertexBufferObject, "NOT SET VBO")]
+        [InlineData(null, (int)OpenGLBufferType.VertexBufferObject, "NOT SET VBO")]
+        [InlineData("test-label", (int)OpenGLBufferType.VertexBufferObject, "test-label VBO")]
+        [InlineData("", (int)OpenGLBufferType.IndexArrayObject, "NOT SET EBO")]
+        [InlineData(null, (int)OpenGLBufferType.IndexArrayObject, "NOT SET EBO")]
+        [InlineData("test-label", (int)OpenGLBufferType.IndexArrayObject, "test-label EBO")]
         public void LabelBuffer_WhenInvoked_LabelsVertexArray(string label, int bufferTypeNumericalValue, string expected)
         {
             // Arrange
-            var bufferType = (BufferType)bufferTypeNumericalValue;
+            var bufferType = (OpenGLBufferType)bufferTypeNumericalValue;
             var service = CreateService();
 
             // Act

@@ -5,8 +5,8 @@
 namespace VelaptorTests.Input
 {
     using System.Drawing;
+    using Velaptor.Exceptions;
     using Velaptor.Input;
-    using Velaptor.Input.Exceptions;
     using VelaptorTests.Helpers;
     using Xunit;
 
@@ -60,6 +60,158 @@ namespace VelaptorTests.Input
         }
 
         [Fact]
+        public void IsButtonDown_WithInvalidParamValue_ThrowsException()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
+            {
+                state.IsButtonDown((MouseButton)1234);
+            }, "The enum 'Velaptor.Input.MouseButton' is invalid because it is out of range.");
+        }
+
+        [Fact]
+        public void IsButtonDown_WithLeftButtonDown_ReturnsCorrectResult()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            state.SetButtonState(MouseButton.LeftButton, true);
+            state.SetButtonState(MouseButton.MiddleButton, false);
+            state.SetButtonState(MouseButton.RightButton, false);
+
+            // Act
+            var actualLeft = state.IsButtonDown(MouseButton.LeftButton);
+            var actualMiddle = state.IsButtonDown(MouseButton.MiddleButton);
+            var actualRight = state.IsButtonDown(MouseButton.RightButton);
+
+            // Assert
+            Assert.True(actualLeft);
+            Assert.False(actualMiddle);
+            Assert.False(actualRight);
+        }
+
+        [Fact]
+        public void IsButtonDown_WithMiddleButtonDown_ReturnsCorrectResult()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            state.SetButtonState(MouseButton.LeftButton, false);
+            state.SetButtonState(MouseButton.MiddleButton, true);
+            state.SetButtonState(MouseButton.RightButton, false);
+
+            // Act
+            var actualLeft = state.IsButtonDown(MouseButton.LeftButton);
+            var actualMiddle = state.IsButtonDown(MouseButton.MiddleButton);
+            var actualRight = state.IsButtonDown(MouseButton.RightButton);
+
+            // Assert
+            Assert.False(actualLeft);
+            Assert.True(actualMiddle);
+            Assert.False(actualRight);
+        }
+
+        [Fact]
+        public void IsButtonDown_WithRightButtonDown_ReturnsCorrectResult()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            state.SetButtonState(MouseButton.LeftButton, false);
+            state.SetButtonState(MouseButton.MiddleButton, false);
+            state.SetButtonState(MouseButton.RightButton, true);
+
+            // Act
+            var actualLeft = state.IsButtonDown(MouseButton.LeftButton);
+            var actualMiddle = state.IsButtonDown(MouseButton.MiddleButton);
+            var actualRight = state.IsButtonDown(MouseButton.RightButton);
+
+            // Assert
+            Assert.False(actualLeft);
+            Assert.False(actualMiddle);
+            Assert.True(actualRight);
+        }
+
+        [Fact]
+        public void IsButtonUp_WithInvalidParamValue_ThrowsException()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
+            {
+                state.IsButtonUp((MouseButton)1234);
+            }, "The enum 'Velaptor.Input.MouseButton' is invalid because it is out of range.");
+        }
+
+        [Fact]
+        public void IsButtonUp_WithLeftButtonDown_ReturnsCorrectResult()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            state.SetButtonState(MouseButton.LeftButton, false);
+            state.SetButtonState(MouseButton.MiddleButton, true);
+            state.SetButtonState(MouseButton.RightButton, true);
+
+            // Act
+            var actualLeft = state.IsButtonUp(MouseButton.LeftButton);
+            var actualMiddle = state.IsButtonUp(MouseButton.MiddleButton);
+            var actualRight = state.IsButtonUp(MouseButton.RightButton);
+
+            // Assert
+            Assert.True(actualLeft);
+            Assert.False(actualMiddle);
+            Assert.False(actualRight);
+        }
+
+        [Fact]
+        public void IsButtonUp_WithMiddleButtonDown_ReturnsCorrectResult()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            state.SetButtonState(MouseButton.LeftButton, true);
+            state.SetButtonState(MouseButton.MiddleButton, false);
+            state.SetButtonState(MouseButton.RightButton, true);
+
+            // Act
+            var actualLeft = state.IsButtonUp(MouseButton.LeftButton);
+            var actualMiddle = state.IsButtonUp(MouseButton.MiddleButton);
+            var actualRight = state.IsButtonUp(MouseButton.RightButton);
+
+            // Assert
+            Assert.False(actualLeft);
+            Assert.True(actualMiddle);
+            Assert.False(actualRight);
+        }
+
+        [Fact]
+        public void IsButtonUp_WithRightButtonDown_ReturnsCorrectResult()
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            state.SetButtonState(MouseButton.LeftButton, true);
+            state.SetButtonState(MouseButton.MiddleButton, true);
+            state.SetButtonState(MouseButton.RightButton, false);
+
+            // Act
+            var actualLeft = state.IsButtonDown(MouseButton.LeftButton);
+            var actualMiddle = state.IsButtonDown(MouseButton.MiddleButton);
+            var actualRight = state.IsButtonDown(MouseButton.RightButton);
+
+            // Assert
+            Assert.True(actualLeft);
+            Assert.True(actualMiddle);
+            Assert.False(actualRight);
+        }
+
+        [Fact]
         public void SetScrollWheelValue_WhenInvoked_SetsValue()
         {
             // Arrange
@@ -92,6 +244,40 @@ namespace VelaptorTests.Input
             Assert.Equal(expectedLeft, actualLeft);
             Assert.Equal(expectedMiddle, actualMiddle);
             Assert.Equal(expectedRight, actualRight);
+        }
+
+        [Theory]
+        [InlineData(MouseButton.LeftButton, true)]
+        [InlineData(MouseButton.MiddleButton, true)]
+        [InlineData(MouseButton.RightButton, true)]
+        public void AnyButtonsDown_WhenInvoked_ReturnsTrue(MouseButton button, bool expected)
+        {
+            // Arrange
+            var state = default(MouseState);
+
+            state.SetButtonState(button, expected);
+
+            // Act
+            var actual = state.AnyButtonsDown();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void AnyButtonsDown_WithNoButtonsDown_ReturnsFalse()
+        {
+            // Arrange
+            var state = default(MouseState);
+            state.SetButtonState(MouseButton.LeftButton, false);
+            state.SetButtonState(MouseButton.MiddleButton, false);
+            state.SetButtonState(MouseButton.RightButton, false);
+
+            // Act
+            var actual = state.AnyButtonsDown();
+
+            // Assert
+            Assert.False(actual);
         }
 
         [Fact]
@@ -193,19 +379,6 @@ namespace VelaptorTests.Input
 
             // Assert
             Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void GetButtonState_WithInvalidState_ThrowsException()
-        {
-            // Arrange
-            var state = default(MouseState);
-
-            // Act & Assert
-            AssertExtensions.ThrowsWithMessage<InvalidInputException>(() =>
-            {
-                state.SetButtonState((MouseButton)123, true);
-            }, "Invalid Mouse Input");
         }
 
         [Theory]

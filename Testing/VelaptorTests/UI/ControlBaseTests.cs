@@ -7,6 +7,7 @@ namespace VelaptorTests.UI
     using System;
     using System.Collections.Generic;
     using System.Drawing;
+    using Moq;
     using Velaptor.Input;
     using Velaptor.UI;
     using VelaptorTests.Fakes;
@@ -18,10 +19,12 @@ namespace VelaptorTests.UI
     /// </summary>
     public class ControlBaseTests
     {
+        private readonly Mock<IAppInput<MouseState>> mockMouseInput;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ControlBaseTests"/> class.
         /// </summary>
-        public ControlBaseTests() => ClearMouseState();
+        public ControlBaseTests() => this.mockMouseInput = new Mock<IAppInput<MouseState>>();
 
         /// <summary>
         /// Gets the mouse test data.
@@ -41,7 +44,7 @@ namespace VelaptorTests.UI
         public void Name_WithDefaultValue_ReturnsCorrectResult()
         {
             // Act
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Arrange
             var actual = ctrlBase.Name;
@@ -54,7 +57,7 @@ namespace VelaptorTests.UI
         public void Name_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
             ctrlBase.Name = "test-name";
 
             // Arrange
@@ -69,7 +72,7 @@ namespace VelaptorTests.UI
         {
             // Arrange
             var expected = new Point(11, 22);
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
             ctrlBase.Position = new Point(11, 22);
 
             // Act
@@ -84,7 +87,7 @@ namespace VelaptorTests.UI
         {
             // Arrange
             const int expected = 11;
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
             ctrlBase.Left = 11;
 
             // Act
@@ -101,7 +104,7 @@ namespace VelaptorTests.UI
         {
             // Arrange
             const int expected = 30;
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
             ctrlBase.Width = 20u;
 
             // Act
@@ -119,7 +122,7 @@ namespace VelaptorTests.UI
         {
             // Arrange
             const int expected = 20;
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Act
             ctrlBase.Top = 20;
@@ -134,7 +137,7 @@ namespace VelaptorTests.UI
         {
             // Arrange
             const int expected = 30;
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
             ctrlBase.Height = 20;
             ctrlBase.Bottom = 30;
 
@@ -151,7 +154,7 @@ namespace VelaptorTests.UI
         public void Width_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Act
             ctrlBase.Width = 11;
@@ -165,7 +168,7 @@ namespace VelaptorTests.UI
         public void Height_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Act
             ctrlBase.Height = 11;
@@ -179,7 +182,7 @@ namespace VelaptorTests.UI
         public void Visible_WhenGettingDefaultValue_ReturnsTrue()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Act
             var actual = ctrlBase.Visible;
@@ -192,7 +195,7 @@ namespace VelaptorTests.UI
         public void Visible_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Act
             ctrlBase.Visible = false;
@@ -206,7 +209,7 @@ namespace VelaptorTests.UI
         public void Enabled_WhenGettingDefaultValue_ReturnsTrue()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Act
             var actual = ctrlBase.Enabled;
@@ -219,7 +222,7 @@ namespace VelaptorTests.UI
         public void Enabled_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Act
             ctrlBase.Enabled = false;
@@ -233,7 +236,7 @@ namespace VelaptorTests.UI
         public void MouseDownColor_WhenGettingDefaultValue_ReturnsCorrectResult()
         {
             // Arrange
-            var control = new ControlBaseFake();
+            var control = CreateBase();
 
             // Act
             var actual = control.MouseDownColor;
@@ -246,7 +249,7 @@ namespace VelaptorTests.UI
         public void MouseHoverColor_WhenGettingDefaultValue_ReturnsCorrectResult()
         {
             // Arrange
-            var control = new ControlBaseFake();
+            var control = CreateBase();
 
             // Act
             var actual = control.MouseHoverColor;
@@ -259,7 +262,7 @@ namespace VelaptorTests.UI
         public void MouseDownColor_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var control = new ControlBaseFake();
+            var control = CreateBase();
 
             // Act
             control.MouseDownColor = Color.FromArgb(11, 22, 33, 44);
@@ -273,7 +276,7 @@ namespace VelaptorTests.UI
         public void MouseHoverColor_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            var control = new ControlBaseFake();
+            var control = CreateBase();
 
             // Act
             control.MouseHoverColor = Color.FromArgb(11, 22, 33, 44);
@@ -289,7 +292,7 @@ namespace VelaptorTests.UI
         public void LoadContent_WhenInvokedBeforeAndAfterLoadingContent_SetContentAsLoaded()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var ctrlBase = CreateBase();
 
             // Act
             var beforeLoad = ctrlBase.IsLoaded;
@@ -312,16 +315,19 @@ namespace VelaptorTests.UI
             byte blue)
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
-            ctrlBase.Position = new Point(50, 50);
-            ctrlBase.Width = 100;
-            ctrlBase.Height = 100;
+            var ctrlBase = new ControlBaseFake(this.mockMouseInput.Object)
+            {
+                Position = new Point(50, 50),
+                Width = 100,
+                Height = 100,
+            };
 
-            var mouse = new Mouse();
+            var mouseState = default(MouseState);
+            mouseState.SetPosition(xPos, yPos);
+            mouseState.SetButtonState(MouseButton.LeftButton, mouseDown);
 
-            mouse.SetXPos(xPos);
-            mouse.SetYPos(yPos);
-            IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = mouseDown;
+            this.mockMouseInput.Setup(m => m.GetState())
+                .Returns(mouseState);
 
             ctrlBase.LoadContent();
 
@@ -336,19 +342,22 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Update_WhenMouseMovesOverCtrl_InvokesMouseMoveEvent()
+        public void Update_WhenMouseMovesOverCtrl_RaisesMouseMoveEvent()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var mouseStateWhenNotOverControl = default(MouseState);
+            mouseStateWhenNotOverControl.SetPosition(75, 75);
+
+            var mouseStateWhenOverControl = default(MouseState);
+            mouseStateWhenOverControl.SetPosition(80, 80);
+
+            // Set the mouse position before moving it over the control
+            this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseStateWhenNotOverControl);
+
+            var ctrlBase = CreateBase();
             ctrlBase.Position = new Point(50, 50);
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
-
-            // Set previous mouse position
-            var mouse = new Mouse();
-
-            mouse.SetXPos(75);
-            mouse.SetYPos(75);
 
             ctrlBase.LoadContent();
 
@@ -356,8 +365,7 @@ namespace VelaptorTests.UI
             ctrlBase.Update(default);
 
             // Set current mouse position
-            mouse.SetXPos(80);
-            mouse.SetYPos(80);
+            this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseStateWhenOverControl);
 
             // Assert
             Assert.Raises<MousePositionEventArgs>(
@@ -370,19 +378,19 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Update_WithMouseButtonDownAndOverCtrl_InvokesMouseDownEvent()
+        public void Update_WithMouseButtonDownAndOverCtrl_RaisesMouseDownEvent()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var mouseState = default(MouseState);
+            mouseState.SetPosition(75, 75);
+            mouseState.SetButtonState(MouseButton.LeftButton, true);
+
+            this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
+
+            var ctrlBase = CreateBase();
             ctrlBase.Position = new Point(50, 50);
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
-
-            var mouse = new Mouse();
-            mouse.SetXPos(75);
-            mouse.SetYPos(75);
-
-            IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             ctrlBase.LoadContent();
 
@@ -400,10 +408,19 @@ namespace VelaptorTests.UI
         }
 
         [Fact]
-        public void Update_WithMouseButtonDownThenUpOverCtrl_InvokesMouseUpAndClickEvent()
+        public void Update_WithMouseButtonDownThenUpOverCtrl_RaisesMouseUpAndClickEvent()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var mouseButtonDownOverControlState = default(MouseState);
+            mouseButtonDownOverControlState.SetPosition(75, 75);
+            mouseButtonDownOverControlState.SetButtonState(MouseButton.LeftButton, true);
+            var mouseButtonUpOverControlState = default(MouseState);
+            mouseButtonUpOverControlState.SetPosition(75, 75);
+            mouseButtonUpOverControlState.SetButtonState(MouseButton.LeftButton, false);
+
+            this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseButtonDownOverControlState);
+
+            var ctrlBase = CreateBase();
             ctrlBase.Position = new Point(50, 50);
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
@@ -423,20 +440,13 @@ namespace VelaptorTests.UI
             ctrlBase.Click += CtrlClicked;
             ctrlBase.MouseUp += MouseUp;
 
-            var mouse = new Mouse();
-            mouse.SetXPos(75);
-            mouse.SetYPos(75);
-
             ctrlBase.LoadContent();
-
-            // Set left mouse button down
-            IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             // Act
             ctrlBase.Update(default);
 
             // Set left mouse button as up which is a full click
-            IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = false;
+            this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseButtonUpOverControlState);
 
             // Assert
             Assert.Raises<EventArgs>(
@@ -452,16 +462,16 @@ namespace VelaptorTests.UI
         public void Update_WhenContentIsNotLoaded_DoesNotUpdateCtrl()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var mouseState = default(MouseState);
+            mouseState.SetPosition(75, 75);
+            mouseState.SetButtonState(MouseButton.LeftButton, true);
+
+            this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
+
+            var ctrlBase = CreateBase();
             ctrlBase.Position = new Point(50, 50);
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
-
-            var mouse = new Mouse();
-            mouse.SetXPos(75);
-            mouse.SetYPos(75);
-
-            IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             // Act & Assert
             AssertExtensions.DoesNotRaise<EventArgs>(
@@ -474,17 +484,17 @@ namespace VelaptorTests.UI
         public void Update_WhenDisabled_DoesNotUpdateCtrl()
         {
             // Arrange
-            var ctrlBase = new ControlBaseFake();
+            var mouseState = default(MouseState);
+            mouseState.SetPosition(75, 75);
+            mouseState.SetButtonState(MouseButton.LeftButton, true);
+
+            this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
+
+            var ctrlBase = CreateBase();
             ctrlBase.Enabled = false;
             ctrlBase.Position = new Point(50, 50);
             ctrlBase.Width = 100;
             ctrlBase.Height = 100;
-
-            var mouse = new Mouse();
-            mouse.SetXPos(75);
-            mouse.SetYPos(75);
-
-            IMouseInput<MouseButton, MouseState>.InputStates[MouseButton.LeftButton] = true;
 
             ctrlBase.LoadContent();
 
@@ -499,7 +509,7 @@ namespace VelaptorTests.UI
         public void UnloadContent_WhenInvoked_SetsControlAsUnloaded()
         {
             // Arrange
-            var control = new ControlBaseFake();
+            var control = CreateBase();
 
             // Act
             control.UnloadContent();
@@ -511,15 +521,10 @@ namespace VelaptorTests.UI
         #endregion
 
         /// <summary>
-        /// Clears the state for the mouse for testing purposes.
+        /// Creates a new instance of <see cref="ControlBase"/> for the purpose of testing.
         /// </summary>
-        private static void ClearMouseState()
-        {
-            IMouseInput<MouseButton, MouseState>.InputStates.Clear();
-            var mouse = new Mouse();
-            mouse.SetXPos(0);
-            mouse.SetYPos(0);
-            mouse.SetScrollWheelSpeed(0);
-        }
+        /// <returns>The instance to test.</returns>
+        private ControlBaseFake CreateBase()
+            => new ControlBaseFake(this.mockMouseInput.Object);
     }
 }

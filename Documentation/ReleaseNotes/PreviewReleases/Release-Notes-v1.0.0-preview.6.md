@@ -16,7 +16,7 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Breaking Changes 💣</h2>
+<h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
 1. Refactored name of the `Observable` class to `Reactor`
     - This was done due to prevent naming clashes in the future with `System.IObservable<T>`, `System.IObserver` types.  This was discovered when creating the new type `IReactor`.  Originally the name was `Velaptor.Observables.Core.IObservable<T>`.  This was the same name as `System.IObservable<T>` and was causing too many uses of `using alias` across the code base to prevent naming clashes between **Velaptor** and **.NET**.

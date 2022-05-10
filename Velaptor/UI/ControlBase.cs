@@ -9,6 +9,7 @@ namespace Velaptor.UI
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using Velaptor.Content;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Input;
 
@@ -19,7 +20,7 @@ namespace Velaptor.UI
     /// </summary>
     public abstract class ControlBase : IControl
     {
-        private readonly Mouse mouse;
+        private readonly IAppInput<MouseState> mouse;
         private MouseState currentMouseState;
         private MouseState previousMouseState;
         private Point currentMousePos;
@@ -28,7 +29,14 @@ namespace Velaptor.UI
         /// <summary>
         /// Initializes a new instance of the <see cref="ControlBase"/> class.
         /// </summary>
-        protected ControlBase() => this.mouse = new Mouse();
+        /// <param name="mouse">The system mouse.</param>
+        internal ControlBase(IAppInput<MouseState> mouse) => this.mouse = mouse;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ControlBase"/> class.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        protected ControlBase() => this.mouse = AppInputFactory.CreateMouse();
 
         /// <inheritdoc cref="IControl.Click"/>
         public event EventHandler<EventArgs>? Click;
@@ -190,9 +198,9 @@ namespace Velaptor.UI
         /// <summary>
         /// Renders the control to the screen.
         /// </summary>
-        /// <param name="spriteBatch">Renders the control.</param>
+        /// <param name="renderer">Renders the control.</param>
         [ExcludeFromCodeCoverage]
-        public virtual void Render(ISpriteBatch spriteBatch)
+        public virtual void Render(IRenderer renderer)
         {
         }
 

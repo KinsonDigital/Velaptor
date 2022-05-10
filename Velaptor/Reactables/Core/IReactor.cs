@@ -21,6 +21,9 @@ namespace Velaptor.Reactables.Core
         /// <summary>
         /// Notifies the reactor that the provider has finished sending push-based notifications.
         /// </summary>
+        /// <remarks>
+        ///     Will not be invoked more than once.
+        /// </remarks>
         public void OnCompleted();
 
         /// <summary>

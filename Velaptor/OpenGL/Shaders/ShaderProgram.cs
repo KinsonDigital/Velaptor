@@ -18,7 +18,7 @@ namespace Velaptor.OpenGL.Shaders
     // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc/>
-    [SpriteBatchSize(ISpriteBatch.BatchSize)]
+    [BatchSize(IRenderer.BatchSize)]
     internal abstract class ShaderProgram : IShaderProgram
     {
         private readonly IShaderLoaderService<uint> shaderLoaderService;
@@ -266,7 +266,7 @@ namespace Velaptor.OpenGL.Shaders
                     case ShaderNameAttribute nameAttribute:
                         Name = nameAttribute.Name;
                         break;
-                    case SpriteBatchSizeAttribute sizeAttribute:
+                    case BatchSizeAttribute sizeAttribute:
                         this.batchSize = sizeAttribute.BatchSize;
                         break;
                 }

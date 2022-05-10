@@ -18,16 +18,16 @@ namespace VelaptorTesting
         private static IWindow? window;
         private static MainWindow? gameWindow;
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            window = WindowFactory.CreateWindow(1500, 800);
+            window = App.CreateWindow(1500, 800);
             gameWindow = new MainWindow(window);
 
             if (HasDebugConsole())
             {
                 Console.WriteLine("Velaptor Starting . . .");
 
-                gameWindow.ShowAsync(() =>
+                await gameWindow.ShowAsync(() =>
                 {
                     var command = string.Empty;
                     Console.WriteLine("Velaptor Running");

@@ -18,17 +18,14 @@ namespace Velaptor.Factories
     /// Creates instance of type <see cref="IShaderProgram"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal static class ShaderFactory
+    internal sealed class ShaderFactory : IShaderFactory
     {
         private static IShaderProgram? textureShader;
         private static IShaderProgram? fontShader;
         private static IShaderProgram? rectShader;
 
-        /// <summary>
-        /// Creates a shader for rendering textures.
-        /// </summary>
-        /// <returns>The shader program.</returns>
-        public static IShaderProgram CreateTextureShader()
+        /// <inheritdoc/>
+        public IShaderProgram CreateTextureShader()
         {
             if (textureShader is not null)
             {
@@ -46,11 +43,8 @@ namespace Velaptor.Factories
             return textureShader;
         }
 
-        /// <summary>
-        /// Creates a shader for rendering text using a font.
-        /// </summary>
-        /// <returns>The shader program.</returns>
-        public static IShaderProgram CreateFontShader()
+        /// <inheritdoc/>
+        public IShaderProgram CreateFontShader()
         {
             if (fontShader is not null)
             {
@@ -68,11 +62,8 @@ namespace Velaptor.Factories
             return fontShader;
         }
 
-        /// <summary>
-        /// Creates a shader for rendering rectangles.
-        /// </summary>
-        /// <returns>The shader program.</returns>
-        public static IShaderProgram CreateRectShader()
+        /// <inheritdoc/>
+        public IShaderProgram CreateRectShader()
         {
             if (rectShader is not null)
             {

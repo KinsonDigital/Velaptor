@@ -19,20 +19,14 @@ namespace Velaptor.Factories
     /// Creates singleton instances of <see cref="TextureGPUBuffer"/> and <see cref="FontGPUBuffer"/>.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal static class GPUBufferFactory
+    internal sealed class GPUBufferFactory : IGPUBufferFactory
     {
-        private static IGPUBuffer<SpriteBatchItem>? textureBuffer;
+        private static IGPUBuffer<TextureBatchItem>? textureBuffer;
         private static IGPUBuffer<FontGlyphBatchItem>? fontBuffer;
         private static IGPUBuffer<RectShape>? rectBuffer;
 
-        /// <summary>
-        /// Creates an instance of the <see cref="TextureGPUBuffer"/> class.
-        /// </summary>
-        /// <returns>A GPU buffer class.</returns>
-        /// <remarks>
-        ///     The instance is a singleton.  Every call to this method will return the same instance.
-        /// </remarks>
-        public static IGPUBuffer<SpriteBatchItem> CreateTextureGPUBuffer()
+        /// <inheritdoc/>
+        public IGPUBuffer<TextureBatchItem> CreateTextureGPUBuffer()
         {
             if (textureBuffer is not null)
             {
@@ -49,14 +43,8 @@ namespace Velaptor.Factories
             return textureBuffer;
         }
 
-        /// <summary>
-        /// Creates an instance of the <see cref="FontGPUBuffer"/> class.
-        /// </summary>
-        /// <returns>A GPU buffer class.</returns>
-        /// <remarks>
-        ///     The instance is a singleton.  Every call to this method will return the same instance.
-        /// </remarks>
-        public static IGPUBuffer<FontGlyphBatchItem> CreateFontGPUBuffer()
+        /// <inheritdoc/>
+        public IGPUBuffer<FontGlyphBatchItem> CreateFontGPUBuffer()
         {
             if (fontBuffer is not null)
             {
@@ -73,14 +61,8 @@ namespace Velaptor.Factories
             return fontBuffer;
         }
 
-        /// <summary>
-        /// Creates an instance of the <see cref="RectGPUBuffer"/> class.
-        /// </summary>
-        /// <returns>A GPU buffer class.</returns>
-        /// <remarks>
-        ///     The instance is a singleton.  Every call to this method will return the same instance.
-        /// </remarks>
-        public static IGPUBuffer<RectShape> CreateRectGPUBuffer()
+        /// <inheritdoc/>
+        public IGPUBuffer<RectShape> CreateRectGPUBuffer()
         {
             if (rectBuffer is not null)
             {

@@ -106,19 +106,19 @@ namespace Velaptor.Hardware
         public float VerticalDPI => GetPlatformDefaultDpi() * VerticalScale;
 
         /// <summary>
-        /// Returns a value indicating if the left operand is equal to the right operand.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if both operands are equal.</returns>
+        /// <returns><c>true</c> if both operands are equal.</returns>
         public static bool operator ==(SystemMonitor? left, SystemMonitor right) => left is not null && left.Equals(right);
 
         /// <summary>
-        /// Returns a value indicating if the left operand is not equal to the right operand.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/> if both operands are not equal.</returns>
+        /// <returns><c>true</c> if both operands are not equal.</returns>
         public static bool operator !=(SystemMonitor left, SystemMonitor right) => !(left == right);
 
         /// <inheritdoc/>

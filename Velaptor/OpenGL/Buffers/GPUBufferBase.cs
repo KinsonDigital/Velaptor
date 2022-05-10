@@ -52,8 +52,19 @@ namespace Velaptor.OpenGL.Buffers
             GL = gl ?? throw new ArgumentNullException(nameof(gl), "The parameter must not be null.");
             OpenGLService = openGLService ?? throw new ArgumentNullException(nameof(openGLService), "The parameter must not be null.");
 
-            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
-            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => ShutDown()));
+            this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
+                _ => Init(),
+                onCompleted: () =>
+                {
+                    this.glInitUnsubscriber?.Dispose();
+                }));
+
+            this.shutDownUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(
+                _ => ShutDown(),
+                onCompleted: () =>
+                {
+                    this.shutDownUnsubscriber?.Dispose();
+                }));
 
             ProcessCustomAttributes();
         }
@@ -76,7 +87,7 @@ namespace Velaptor.OpenGL.Buffers
         public SizeU ViewPortSize { get; set; }
 
         /// <summary>
-        /// Gets the size of the sprite batch.
+        /// Gets the size of the batch.
         /// </summary>
         protected internal uint BatchSize { get; private set; } = 100;
 
@@ -167,11 +178,11 @@ namespace Velaptor.OpenGL.Buffers
 
             VBO = GL.GenBuffer();
             OpenGLService.BindVBO(VBO);
-            OpenGLService.LabelBuffer(VBO, Name, BufferType.VertexBufferObject);
+            OpenGLService.LabelBuffer(VBO, Name, OpenGLBufferType.VertexBufferObject);
 
             this.ebo = GL.GenBuffer();
             OpenGLService.BindEBO(this.ebo);
-            OpenGLService.LabelBuffer(this.ebo, Name, BufferType.IndexArrayObject);
+            OpenGLService.LabelBuffer(this.ebo, Name, OpenGLBufferType.IndexArrayObject);
 
             OpenGLService.BeginGroup($"Setup {Name} Data");
             OpenGLService.BeginGroup($"Upload {Name} Vertex Data");
@@ -234,7 +245,7 @@ namespace Velaptor.OpenGL.Buffers
             {
                 switch (attribute)
                 {
-                    case SpriteBatchSizeAttribute sizeAttribute:
+                    case BatchSizeAttribute sizeAttribute:
                         BatchSize = sizeAttribute.BatchSize;
                         break;
                     case GPUBufferNameAttribute nameAttribute:
@@ -257,9 +268,6 @@ namespace Velaptor.OpenGL.Buffers
             GL.DeleteVertexArray(VAO);
             GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(this.ebo);
-
-            this.glInitUnsubscriber.Dispose();
-            this.shutDownUnsubscriber.Dispose();
 
             this.isDisposed = true;
         }

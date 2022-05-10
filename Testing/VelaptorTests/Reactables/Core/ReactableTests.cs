@@ -5,6 +5,7 @@
 namespace VelaptorTests.Reactables.Core
 {
     using System;
+    using Moq;
     using Velaptor.Reactables.Core;
     using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
@@ -56,6 +57,25 @@ namespace VelaptorTests.Reactables.Core
             Assert.NotNull(actual);
             Assert.IsType<ReactorUnsubscriber<bool>>(actual);
             Assert.Same(reactor, actual.Reactor);
+        }
+
+        [Fact]
+        public void EndNotifications_WhenInvoked_CompletesAllReactors()
+        {
+            // Arrange
+            var reactable = CreateReactable<bool>();
+            var mockReactorA = new Mock<IReactor<bool>>();
+            var mockReactorB = new Mock<IReactor<bool>>();
+
+            reactable.Subscribe(mockReactorA.Object);
+            reactable.Subscribe(mockReactorB.Object);
+
+            // Act
+            reactable.EndNotifications();
+            reactable.EndNotifications();
+
+            // Assert
+            mockReactorA.VerifyOnce(m => m.OnCompleted());
         }
 
         [Fact]

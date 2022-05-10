@@ -25,8 +25,8 @@ namespace Velaptor.OpenGL.Buffers
     /// Updates texture data in the GPU buffer.
     /// </summary>
     [GPUBufferName("Texture")]
-    [SpriteBatchSize(ISpriteBatch.BatchSize)]
-    internal class TextureGPUBuffer : GPUBufferBase<SpriteBatchItem>
+    [BatchSize(IRenderer.BatchSize)]
+    internal class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     {
         private const string BufferNotInitMsg = "The texture buffer has not been initialized.";
 
@@ -50,7 +50,7 @@ namespace Velaptor.OpenGL.Buffers
         }
 
         /// <inheritdoc/>
-        protected internal override void UploadVertexData(SpriteBatchItem textureQuad, uint batchIndex)
+        protected internal override void UploadVertexData(TextureBatchItem textureQuad, uint batchIndex)
         {
             if (IsInitialized is false)
             {

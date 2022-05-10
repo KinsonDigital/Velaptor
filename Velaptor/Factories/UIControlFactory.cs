@@ -7,27 +7,39 @@ namespace Velaptor.Factories
     // ReSharper disable RedundantNameQualifier
     using System.Diagnostics.CodeAnalysis;
     using Velaptor.Content.Fonts;
+    using Velaptor.Input;
     using Velaptor.UI;
 
     // ReSharper restore RedundantNameQualifier
 
-    /// <summary>
-    /// Generates UI controls.
-    /// </summary>
+    /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    // TODO: Left as internal to prevent user from using this clas until it is finished
-    internal static class UIControlFactory
+    public class UIControlFactory : IUIControlFactory
     {
-        /// <summary>
-        /// Creates a new <see cref="Label"/> control to display text.
-        /// </summary>
-        /// <param name="labelText">The text to display in the label.</param>
-        /// <returns>The label to render.</returns>
-        public static Label CreateLabel(string labelText)
+        /// <inheritdoc/>
+        public Label CreateLabel(string labelText)
         {
             var label = new Label(
                 ContentLoaderFactory.CreateContentLoader(),
-                IoC.Container.GetInstance<IFont>()) { Text = labelText };
+                IoC.Container.GetInstance<IFont>(),
+                IoC.Container.GetInstance<IAppInput<MouseState>>())
+            {
+                Text = labelText,
+            };
+
+            return label;
+        }
+
+        /// <inheritdoc/>
+        public Label CreateLabel(string labelText, IFont font)
+        {
+            var label = new Label(
+                ContentLoaderFactory.CreateContentLoader(),
+                font,
+                IoC.Container.GetInstance<IAppInput<MouseState>>())
+            {
+                Text = labelText,
+            };
 
             return label;
         }

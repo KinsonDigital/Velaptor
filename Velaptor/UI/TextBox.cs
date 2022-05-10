@@ -42,7 +42,7 @@ namespace Velaptor.UI
         {
             this.contentLoader = contentLoader;
 
-            this.text = new Label(contentLoader, null)
+            this.text = new Label(contentLoader, null, null)
             {
                 Position = Point.Empty,
                 Text = "Textbox Text",
@@ -101,14 +101,14 @@ namespace Velaptor.UI
         }
 
         /// <inheritdoc/>
-        public override void Render(ISpriteBatch spriteBatch)
+        public override void Render(IRenderer renderer)
         {
             if (IsLoaded is false || Visible is false)
             {
                 return;
             }
 
-            this.text.Render(spriteBatch);
+            this.text.Render(renderer);
         }
 
         /// <summary>

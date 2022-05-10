@@ -25,6 +25,13 @@ namespace Velaptor.NativeInterop.OpenGL
     [ExcludeFromCodeCoverage]
     internal class GLInvoker : IGLInvoker
     {
+        // ReSharper disable InconsistentNaming
+#pragma warning disable SA1310
+        private const int API_ID_RECOMPILE_FRAGMENT_SHADER = 2;
+        private const int API_ID_RECOMPILE_VERTEX_SHADER = 131218;
+#pragma warning restore SA1310
+
+        // ReSharper restore InconsistentNaming
         private static readonly Queue<string> OpenGLCallStack = new ();
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
@@ -66,7 +73,7 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <summary>
         /// Finalizes an instance of the <see cref="GLInvoker"/> class.
         /// </summary>
-        ~GLInvoker() => Dispose(false);
+        ~GLInvoker() => Dispose();
 
         /// <inheritdoc/>
         public event EventHandler<GLErrorEventArgs>? GLError;
@@ -493,28 +500,42 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <inheritdoc cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// <inheritdoc cref="IDisposable.Dispose"/>
-        /// </summary>
-        /// <param name="disposing">Disposes managed resources when <see langword="true"/>.</param>
-        private void Dispose(bool disposing)
-        {
             if (this.isDisposed)
             {
                 return;
             }
 
-            if (disposing)
-            {
-                this.glContextUnsubscriber.Dispose();
-            }
-
             debugCallback = null;
             this.isDisposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Prints a warning to the console in yellow.
+        /// </summary>
+        /// <param name="warningMsg">The warning message.</param>
+        private static void PrintWarningToConsole(string warningMsg)
+        {
+#if DEBUG
+            var prevClr = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"OpenGL Warning: {warningMsg}");
+            Console.ForegroundColor = prevClr;
+#endif
+        }
+
+        /// <summary>
+        /// Prints an error to the console in red.
+        /// </summary>
+        /// <param name="errorMsg">The error message.</param>
+        private static void PrintErrorToConsole(string errorMsg)
+        {
+#if DEBUG
+            var prevClr = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine($"OpenGL Error: {errorMsg}");
+            Console.ForegroundColor = prevClr;
+#endif
         }
 
         /// <summary>
@@ -529,18 +550,32 @@ namespace Velaptor.NativeInterop.OpenGL
         /// <param name="userParam">The OpenGL parameter related to the error.</param>
         private void DebugCallback(GLEnum source, GLEnum type, int id, GLEnum severity, int length, nint message, nint userParam)
         {
-            var errorMessage = Marshal.PtrToStringAnsi(message);
+            var openGLMessage = Marshal.PtrToStringAnsi(message);
 
-            errorMessage += $"\n\tSrc: {source}";
-            errorMessage += $"\n\tType: {type}";
-            errorMessage += $"\n\tID: {id}";
-            errorMessage += $"\n\tSeverity: {severity}";
-            errorMessage += $"\n\tLength: {length}";
-            errorMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
+            openGLMessage += $"\n\tSrc: {source}";
+            openGLMessage += $"\n\tType: {type}";
+            openGLMessage += $"\n\tID: {id}";
+            openGLMessage += $"\n\tSeverity: {severity}";
+            openGLMessage += $"\n\tLength: {length}";
+            openGLMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
 
-            if (severity != GLEnum.DebugSeverityNotification && id != 131218)
+            // Ignore warnings about shader recompilation
+            if (id is API_ID_RECOMPILE_VERTEX_SHADER or API_ID_RECOMPILE_FRAGMENT_SHADER)
             {
-                this.GLError?.Invoke(this, new GLErrorEventArgs(errorMessage));
+                return;
+            }
+
+            if (severity == GLEnum.NoError)
+            {
+                PrintWarningToConsole(openGLMessage);
+            }
+            else
+            {
+                if (severity != GLEnum.DebugSeverityNotification)
+                {
+                    PrintErrorToConsole(openGLMessage);
+                    this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
+                }
             }
         }
 

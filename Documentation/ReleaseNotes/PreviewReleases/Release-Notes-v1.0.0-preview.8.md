@@ -66,7 +66,7 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Breaking Changes 💣</h2>
+<h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
 1. Changed the order of rendering from textures, text, then rectangle primitives to textures, rectangle primitives, then text.
 2. Changed the behavior of the `RectShape.BorderThickness` and `RectShape.CornerRadius` properties.

@@ -28,6 +28,7 @@ namespace Velaptor.UI
         private const uint DefaultButtonHeight = 50;
         private const uint HorizontalMargin = 10;
         private IContentLoader contentLoader = null!;
+        private IUIControlFactory controlFactory = null!;
         private string cachedText = string.Empty;
         private uint cachedAutoSizeOffWidth;
         private uint cachedAutoSizeOffHeight;
@@ -131,18 +132,20 @@ namespace Velaptor.UI
         /// Initializes a new instance of the <see cref="Button"/> class.
         /// </summary>
         /// <param name="contentLoader">Loads various kinds of content.</param>
-        /// <param name="label">The label of the button.</param>
+        /// <param name="controlFactory">Creates UI controls.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown if the any of the parameters below are null:
         ///     <list type="bullet">
         ///         <item><paramref name="contentLoader"/></item>
         ///     </list>
         /// </exception>
-        internal Button(IContentLoader contentLoader, Label? label)
+        internal Button(IContentLoader contentLoader, IUIControlFactory controlFactory)
         {
-            EnsureThat.ParamIsNotNull(contentLoader);
+            EnsureThat.ParamIsNotNull(contentLoader); // TODO: Check for unit test
+            EnsureThat.ParamIsNotNull(controlFactory); // TODO: Check for unit test
+
             this.contentLoader = contentLoader;
-            Label = label;
+            this.controlFactory = controlFactory;
         }
 
         /// <summary>
@@ -325,16 +328,24 @@ namespace Velaptor.UI
                 return;
             }
 
-            Label ??= new Label(this.contentLoader, this.contentLoader.LoadFont(DefaultRegularFont, 12));
+            Label ??= this.controlFactory.CreateLabel(this.cachedText, this.contentLoader.LoadFont(DefaultRegularFont, 12));
 
-            Label.LoadContent();
-            Label.Text = this.cachedText;
+            Label?.LoadContent();
 
-            // Update the enabled status of the label to match the button.
-            // If the enabled value was set before the content was loaded,
-            // it will "cache" the value until the content is loaded
-            Label.Enabled = base.Enabled;
-            Label.Position = Position;
+            /* Update the enabled status of the label to match the button.
+             * If the enabled value was set before the content was loaded,
+             * it will "cache" the value until the content is loaded
+            */
+            if (Label is not null)
+            {
+                Label.Enabled = base.Enabled;
+                Label.Position = Position;
+
+                /* Set the text to the cached text value if was set previously
+                 * This occurs when the text of the button was set before load content was invoked
+                 */
+                Label.Text = string.IsNullOrEmpty(this.cachedText) ? string.Empty : this.cachedText;
+            }
 
             base.LoadContent();
         }
@@ -353,7 +364,7 @@ namespace Velaptor.UI
         }
 
         /// <inheritdoc cref="IDrawable.Render"/>
-        public override void Render(ISpriteBatch spriteBatch)
+        public override void Render(IRenderer renderer)
         {
             if (IsLoaded is false || Visible is false)
             {
@@ -376,7 +387,7 @@ namespace Velaptor.UI
             buttonFace.Width = Width;
             buttonFace.Height = Height;
             buttonFace.CornerRadius = CornerRadius;
-            spriteBatch.Render(buttonFace);
+            renderer.Render(buttonFace);
 
             if (BorderVisible)
             {
@@ -389,7 +400,7 @@ namespace Velaptor.UI
                 buttonBorder.Height = Height;
                 buttonBorder.CornerRadius = CornerRadius;
 
-                spriteBatch.Render(buttonBorder);
+                renderer.Render(buttonBorder);
             }
 
             var textToWide = Label?.Width > Width;
@@ -412,10 +423,10 @@ namespace Velaptor.UI
                     textToRender = new string(charsToRender);
                 }
 
-                Label?.Render(spriteBatch, textToRender);
+                Label?.Render(renderer, textToRender);
             }
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <summary>
@@ -439,9 +450,11 @@ namespace Velaptor.UI
         /// <summary>
         /// Initializes the <see cref="Button"/>.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         private void Init()
         {
             this.contentLoader = ContentLoaderFactory.CreateContentLoader();
+            this.controlFactory = new UIControlFactory();
             Width = DefaultButtonWidth;
             Height = DefaultButtonHeight;
             MouseHoverColor = FaceColor.IncreaseBrightness(HoverBrightness);

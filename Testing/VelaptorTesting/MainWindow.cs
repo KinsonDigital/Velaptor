@@ -37,15 +37,15 @@ namespace VelaptorTesting
 
             WindowWidth = Width;
             WindowHeight = Height;
-            var spriteBatch = SpriteBatchFactory.CreateSpriteBatch(Width, Height);
-            spriteBatch.ClearColor = Color.FromArgb(255, 42, 42, 46);
+            var renderer = RendererFactory.CreateRenderer(Width, Height);
+            renderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
             window.WinResize = (size) =>
             {
-                spriteBatch.RenderSurfaceWidth = size.Width;
-                spriteBatch.RenderSurfaceHeight = size.Height;
+                renderer.RenderSurfaceWidth = size.Width;
+                renderer.RenderSurfaceHeight = size.Height;
             };
 
-            this.sceneManager = new SceneManager(spriteBatch);
+            this.sceneManager = new SceneManager(renderer);
 
             var testRenderTextScene = new TestRenderTextScene(contentLoader)
             {

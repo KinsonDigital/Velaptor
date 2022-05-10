@@ -13,7 +13,9 @@ namespace VelaptorTests.UI
     using Moq;
     using Velaptor.Content;
     using Velaptor.Content.Fonts;
+    using Velaptor.Factories;
     using Velaptor.Graphics;
+    using Velaptor.Input;
     using Velaptor.UI;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -28,6 +30,7 @@ namespace VelaptorTests.UI
         private readonly Mock<IContentLoader> mockContentLoader;
         private readonly Mock<ITexture> mockTexture;
         private readonly Mock<IFont> mockFont;
+        private readonly Mock<IUIControlFactory> mockControlFactory;
         private readonly Label label;
 
         /// <summary>
@@ -69,7 +72,13 @@ namespace VelaptorTests.UI
             this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman", 12))
                 .Returns(this.mockFont.Object);
 
-            this.label = new Label(this.mockContentLoader.Object, this.mockFont.Object);
+            var mockMouse = new Mock<IAppInput<MouseState>>();
+
+            this.label = new Label(this.mockContentLoader.Object, this.mockFont.Object, mockMouse.Object);
+
+            this.mockControlFactory = new Mock<IUIControlFactory>();
+            this.mockControlFactory.Setup(m => m.CreateLabel(It.IsAny<string>(), It.IsAny<IFont>()))
+                .Returns(this.label);
         }
 
         #region Constructor Tests
@@ -79,24 +88,14 @@ namespace VelaptorTests.UI
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new Button(null, this.label);
+                _ = new Button(null, this.mockControlFactory.Object);
             }, "The parameter must not be null. (Parameter 'contentLoader')");
-        }
-
-        [Fact]
-        public void Ctor2Args_WithContentLoaderAndLabelParams_LabelPropertyNotNull()
-        {
-            // Arrange & Act
-            var button = new Button(this.mockContentLoader.Object, this.label);
-
-            // Assert
-            Assert.NotNull(button.Label);
         }
         #endregion
 
         #region Prop Tests
         [Fact]
-        public void Position_WhenSettingValue_ReturnsCorrectValue()
+        public void Position_WhenSettingValue_ReturnsCorrectResult()
         {
             // Arrange
             var expected = new Point(11, 22);
@@ -165,6 +164,7 @@ namespace VelaptorTests.UI
             this.mockFont.Setup(m => m.Measure(It.IsAny<string>())).Returns(new SizeF(30, 40));
             this.label.AutoSize = true;
             var button = CreateButton();
+            button.LoadContent();
             button.AutoSize = autoSize;
 
             // Act
@@ -346,7 +346,7 @@ namespace VelaptorTests.UI
             this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12))
                 .Returns(this.mockFont.Object);
 
-            var button = new Button(this.mockContentLoader.Object, null);
+            var button = CreateButton();
             button.Text = "test-value";
             button.Enabled = false;
             button.Position = new Point(11, 22);
@@ -393,15 +393,15 @@ namespace VelaptorTests.UI
         public void Render_WithNoLoadedContentAndVisible_DoesNotRender()
         {
             // Arrange
-            var mockSpriteBatch = new Mock<ISpriteBatch>();
+            var mockRenderer = new Mock<IRenderer>();
             var button = CreateButton();
             button.Visible = true;
 
             // Act
-            button.Render(mockSpriteBatch.Object);
+            button.Render(mockRenderer.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m =>
+            mockRenderer.Verify(m =>
                 m.Render(It.IsAny<ITexture>(),
                              It.IsAny<int>(),
                              It.IsAny<int>(),
@@ -412,16 +412,16 @@ namespace VelaptorTests.UI
         public void Render_WithLoadedContentAndInvisible_DoesNotRender()
         {
             // Arrange
-            var mockSpriteBatch = new Mock<ISpriteBatch>();
+            var mockRenderer = new Mock<IRenderer>();
             var button = CreateButton();
             button.Visible = false;
             button.LoadContent();
 
             // Act
-            button.Render(mockSpriteBatch.Object);
+            button.Render(mockRenderer.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m =>
+            mockRenderer.Verify(m =>
                 m.Render(It.IsAny<ITexture>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
@@ -432,7 +432,7 @@ namespace VelaptorTests.UI
         public void Render_WithNullTexture_DoesNotRender()
         {
             // Arrange
-            var mockSpriteBatch = new Mock<ISpriteBatch>();
+            var mockRenderer = new Mock<IRenderer>();
 
             this.mockContentLoader.Setup(m => m.LoadTexture(TextureName))
                 .Returns(() =>
@@ -448,10 +448,10 @@ namespace VelaptorTests.UI
             button.LoadContent();
 
             // Act
-            button.Render(mockSpriteBatch.Object);
+            button.Render(mockRenderer.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m =>
+            mockRenderer.Verify(m =>
                 m.Render(It.IsAny<ITexture>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
@@ -464,8 +464,8 @@ namespace VelaptorTests.UI
             // Arrange
             var actual = default(RectShape);
 
-            var mockSpriteBatch = new Mock<ISpriteBatch>();
-            mockSpriteBatch.Setup(m => m.Render(It.IsAny<RectShape>()))
+            var mockRenderer = new Mock<IRenderer>();
+            mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>()))
                 .Callback<RectShape>((rectangle) =>
                 {
                     // Only capture the button face rectangle
@@ -488,10 +488,10 @@ namespace VelaptorTests.UI
             button.LoadContent();
 
             // Act
-            button.Render(mockSpriteBatch.Object);
+            button.Render(mockRenderer.Object);
 
             // Assert
-            mockSpriteBatch.Verify(m => m.Render(actual), Times.Once);
+            mockRenderer.Verify(m => m.Render(actual), Times.Once);
 
             // Assert that the values of the rectangle were set correctly
             AssertExtensions.TypeMemberEquals(
@@ -574,8 +574,6 @@ namespace VelaptorTests.UI
         /// </summary>
         /// <returns>The button instance to test.</returns>
         private Button CreateButton()
-        {
-            return new Button(this.mockContentLoader.Object, this.label);
-        }
+            => new (this.mockContentLoader.Object, this.mockControlFactory.Object);
     }
 }

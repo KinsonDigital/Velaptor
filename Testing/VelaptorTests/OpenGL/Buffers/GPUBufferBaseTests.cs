@@ -33,6 +33,7 @@ namespace VelaptorTests.OpenGL.Buffers
         private bool vertexBufferCreated;
         private bool indexBufferCreated;
         private IReactor<GLInitData>? glInitReactor;
+        private IReactor<ShutDownData>? shutDownReactor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBufferBaseTests"/> class.
@@ -75,8 +76,19 @@ namespace VelaptorTests.OpenGL.Buffers
                     this.glInitReactor = reactor;
                 });
 
-            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
+            this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
+            this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
+                .Returns(this.mockShutDownUnsubscriber.Object)
+                .Callback<IReactor<ShutDownData>>((reactor) =>
+                {
+                    if (reactor is null)
+                    {
+                        Assert.True(false, "Shut down reactable subscription failed.  Reactor is null.");
+                    }
+
+                    this.shutDownReactor = reactor;
+                });
         }
 
         #region Constructor Tests
@@ -196,7 +208,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
             this.mockGLService.Verify(m => m.BindVBO(VertexBufferId), Times.Once);
             this.mockGLService.Verify(m => m.UnbindVBO(), Times.Once);
-            this.mockGLService.Verify(m => m.LabelBuffer(VertexBufferId, BufferName, BufferType.VertexBufferObject));
+            this.mockGLService.Verify(m => m.LabelBuffer(VertexBufferId, BufferName, OpenGLBufferType.VertexBufferObject));
         }
 
         [Fact]
@@ -213,7 +225,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.mockGL.Verify(m => m.GenBuffer(), Times.AtLeastOnce);
             this.mockGLService.Verify(m => m.BindEBO(IndexBufferId), Times.Once);
             this.mockGLService.Verify(m => m.UnbindEBO(), Times.Once);
-            this.mockGLService.Verify(m => m.LabelBuffer(IndexBufferId, BufferName, BufferType.IndexArrayObject));
+            this.mockGLService.Verify(m => m.LabelBuffer(IndexBufferId, BufferName, OpenGLBufferType.IndexArrayObject));
         }
 
         [Fact]
@@ -226,7 +238,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.glInitReactor.OnNext(default);
 
             // Assert
-            Assert.True(unused.GenerateDataInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.GenerateData)}'() has not been invoked.");
+            Assert.True(unused.GenerateDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
         }
 
         [Fact]
@@ -239,7 +251,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.glInitReactor.OnNext(default);
 
             // Assert
-            Assert.True(unused.GenerateIndicesInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.GenerateData)}'() has not been invoked.");
+            Assert.True(unused.GenerateIndicesInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.GenerateData)}'() has not been invoked.");
         }
 
         [Fact]
@@ -284,7 +296,7 @@ namespace VelaptorTests.OpenGL.Buffers
             this.glInitReactor.OnNext(default);
 
             // Assert
-            Assert.True(unused.SetupVAOInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.SetupVAO)}'() has not been invoked.");
+            Assert.True(unused.SetupVAOInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.SetupVAO)}'() has not been invoked.");
         }
 
         [Fact]
@@ -340,13 +352,13 @@ namespace VelaptorTests.OpenGL.Buffers
         {
             // Arrange
             var buffer = CreateBuffer();
-            var batchItem = default(SpriteBatchItem);
+            var batchItem = default(TextureBatchItem);
 
             // Act
             buffer.UploadData(batchItem, 0u);
 
             // Assert
-            Assert.True(buffer.PrepareForUseInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.PrepareForUpload)}'() has not been invoked.");
+            Assert.True(buffer.PrepareForUseInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.PrepareForUpload)}'() has not been invoked.");
         }
 
         [Fact]
@@ -354,21 +366,19 @@ namespace VelaptorTests.OpenGL.Buffers
         {
             // Arrange
             var buffer = CreateBuffer();
-            var batchItem = default(SpriteBatchItem);
+            var batchItem = default(TextureBatchItem);
 
             // Act
             buffer.UploadData(batchItem, 0u);
 
             // Assert
-            Assert.True(buffer.UpdateVertexDataInvoked, $"The method '{nameof(GPUBufferBase<SpriteBatchItem>.UploadVertexData)}'() has not been invoked.");
+            Assert.True(buffer.UpdateVertexDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.UploadVertexData)}'() has not been invoked.");
         }
 
         [Fact]
         public void WithShutDownNotification_DisposesOfBuffer()
         {
             // Arrange
-            IReactor<ShutDownData>? shutDownReactor = null;
-
             this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
                 .Returns(this.mockShutDownUnsubscriber.Object)
                 .Callback<IReactor<ShutDownData>>((reactor) =>
@@ -378,7 +388,7 @@ namespace VelaptorTests.OpenGL.Buffers
                         Assert.True(false, "Shutdown reactable subscription failed.  Reactor is null.");
                     }
 
-                    shutDownReactor = reactor;
+                    this.shutDownReactor = reactor;
                 });
 
             CreateBuffer();
@@ -386,15 +396,41 @@ namespace VelaptorTests.OpenGL.Buffers
             this.glInitReactor.OnNext(default);
 
             // Act
-            shutDownReactor?.OnNext(default);
-            shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
+            this.shutDownReactor?.OnNext(default);
 
             // Assert
             this.mockGL.Verify(m => m.DeleteVertexArray(VertexArrayId), Times.Once());
             this.mockGL.Verify(m => m.DeleteBuffer(VertexBufferId), Times.Once());
             this.mockGL.Verify(m => m.DeleteBuffer(IndexBufferId), Times.Once());
-            this.mockGLInitUnsubscriber.Verify(m => m.Dispose(), Times.Once);
-            this.mockShutDownUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+        }
+        #endregion
+
+        #region Indirect Tests
+        [Fact]
+        public void InitReactable_WhenOnCompletedExecutes_DisposesOfSubscription()
+        {
+            // Arrange
+            var unused = CreateBuffer();
+
+            // Act
+            this.glInitReactor.OnCompleted();
+
+            // Assert
+            this.mockGLInitUnsubscriber.VerifyOnce(m => m.Dispose());
+        }
+
+        [Fact]
+        public void ShutDownReactable_WhenOnCompletedExecutes_DisposesOfSubscription()
+        {
+            // Arrange
+            var unused = CreateBuffer();
+
+            // Act
+            this.shutDownReactor.OnCompleted();
+
+            // Assert
+            this.mockShutDownUnsubscriber.VerifyOnce(m => m.Dispose());
         }
         #endregion
 

@@ -15,6 +15,7 @@ namespace Velaptor.UI
     using Velaptor.Factories;
     using Velaptor.Graphics;
     using Velaptor.Guards;
+    using Velaptor.Input;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -44,19 +45,20 @@ namespace Velaptor.UI
         /// </summary>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="font">The type of font to render the text.</param>
+        /// <param name="mouse">Used to get the state of the mouse.</param>
         /// <exception cref="ArgumentNullException">
         ///     Thrown if the any of the parameters below are null:
         ///     <list type="bullet">
         ///         <item><paramref name="contentLoader"/></item>
         ///     </list>
         /// </exception>
-        internal Label(IContentLoader contentLoader, IFont font)
+        internal Label(IContentLoader contentLoader, IFont font, IAppInput<MouseState> mouse)
+            : base(mouse)
         {
             EnsureThat.ParamIsNotNull(contentLoader);
             EnsureThat.ParamIsNotNull(font);
-            this.contentLoader =
-                contentLoader ??
-                throw new ArgumentNullException(nameof(contentLoader), "The parameter must not be null.");
+
+            this.contentLoader = contentLoader;
             Font = font;
         }
 
@@ -190,24 +192,24 @@ namespace Velaptor.UI
         /// <summary>
         /// Renders the <see cref="Label"/>.
         /// </summary>
-        /// <param name="spriteBatch">Renders textures, primitives, and text.</param>
-        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="spriteBatch"/> is null.</exception>
-        public override void Render(ISpriteBatch spriteBatch)
+        /// <param name="renderer">Renders textures, primitives, and text.</param>
+        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="renderer"/> is null.</exception>
+        public override void Render(IRenderer renderer)
         {
-            Render(spriteBatch, this.labelText);
+            Render(renderer, this.labelText);
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <summary>
         /// Renders the <see cref="Label"/>.
         /// </summary>
-        /// <param name="spriteBatch">Renders textures, primitives, and text.</param>
+        /// <param name="renderer">Renders textures, primitives, and text.</param>
         /// <param name="text">The text to render.</param>
-        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="spriteBatch"/> is null.</exception>
-        internal void Render(ISpriteBatch spriteBatch, string text)
+        /// <exception cref="ArgumentNullException">Invoked if the <paramref name="renderer"/> is null.</exception>
+        internal void Render(IRenderer renderer, string text)
         {
-            EnsureThat.ParamIsNotNull(spriteBatch);
+            EnsureThat.ParamIsNotNull(renderer);
 
             if (IsLoaded is false || Visible is false)
             {
@@ -216,7 +218,7 @@ namespace Velaptor.UI
 
             if (string.IsNullOrEmpty(text) is false)
             {
-                spriteBatch.Render(
+                renderer.Render(
                     Font,
                     text,
                     Position.X,
@@ -226,7 +228,7 @@ namespace Velaptor.UI
                     Enabled ? Color : this.disabledColor);
             }
 
-            base.Render(spriteBatch);
+            base.Render(renderer);
         }
 
         /// <summary>

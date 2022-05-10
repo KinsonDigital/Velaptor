@@ -14,7 +14,7 @@ namespace VelaptorTests.Fakes
     /// <summary>
     /// Used to test the abstract class <see cref="GPUBufferBase{TData}"/>.
     /// </summary>
-    internal class GPUBufferFake : GPUBufferBase<SpriteBatchItem>
+    internal class GPUBufferFake : GPUBufferBase<TextureBatchItem>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBufferFake"/> class for the purpose of testing.
@@ -71,7 +71,7 @@ namespace VelaptorTests.Fakes
         /// </summary>
         /// <param name="data">The fake data to use for the test.</param>
         /// <param name="batchIndex">The fake batch index to use for the text.</param>
-        protected internal override void UploadVertexData(SpriteBatchItem data, uint batchIndex)
+        protected internal override void UploadVertexData(TextureBatchItem data, uint batchIndex)
             => UpdateVertexDataInvoked = true;
 
         /// <summary>

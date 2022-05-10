@@ -23,7 +23,7 @@ namespace Velaptor
         public TimeSpan ElapsedTime { get; set; }
 
         /// <summary>
-        /// Returns true if the left operator is equal to the right operator.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
@@ -31,7 +31,7 @@ namespace Velaptor
         public static bool operator ==(FrameTime left, FrameTime right) => left.Equals(right);
 
         /// <summary>
-        /// Returns true if the left operator is not equal to the right operator.
+        /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
         /// </summary>
         /// <param name="left">The left operator.</param>
         /// <param name="right">The right operator.</param>
