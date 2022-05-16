@@ -6,7 +6,7 @@
 <h1 style="font-weight:bold" align="center">Preview Release Pull Request</h1>
 <h2 style="font-weight:bold" align="center">✅Code Review Checklist✅</h2>
 
-- [ ] The **_head(source)_** branch for this pull request is a **_preview_** branch with the following example syntax.
+- [ ] The **_head(source)_** branch for this pull request is a **_preview_** branch with the correct naming syntax in the following example.
   - A **_head(source)_** branch is the branch being merged into a target branch.
     <details closed><summary>Example</summary>
 
@@ -16,7 +16,7 @@
       ```
     </details>
 
-- [ ] The **_base(target)_** branch for this pull request is a **_release_** branch with the following example syntax.
+- [ ] The **_base(target)_** branch for this pull request is a **_release_** branch with the correct naming syntax in the following example.
   - A **_base(target)_** branch is the branch that is a source branch being merged into it.
     <details closed><summary>Example</summary>
 
@@ -26,7 +26,7 @@
       ```
     </details>
 
-- [ ] The **_head(source)_** branch for this pull request is created from a **_release_** branch with the following example syntax.
+- [ ] The **_head(source)_** branch for this pull request is created from a **_release_** branch with the correct naming syntax in the following example.
   <details closed><summary>Example</summary>
 
     ``` xml
