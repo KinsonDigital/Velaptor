@@ -23,7 +23,7 @@
 - [ ] Associated issue exists and is linked to this pull request.
   - One issue per pull request.
 
-- [ ] The labels attached to the PR match the labels attached to the associated issue.
+- [ ] The labels attached to this PR match the labels attached to the associated issue.
 
 - [ ] My code follows the coding style of this project.
   - The style is enforced by the *.editorconfig* files in the project and displayed as warnings.  If there is an edge case with a coding style that should be ignored or changed, reach out, and let's discuss it.
