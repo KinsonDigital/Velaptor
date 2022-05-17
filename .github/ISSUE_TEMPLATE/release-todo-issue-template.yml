@@ -1,6 +1,6 @@
 name: 🚀 Release To Do List
-description: Produce a release
-title: "🚀Release <release number here> ToDo"
+description: Used to perform a release
+title: "🚀🚀Release To <release type here> - <release number here>"
 body:
 - type: textarea
   attributes:
@@ -21,10 +21,12 @@ body:
     description: Complete the following items to perform a release.
     options:
     - label: Manual QA Testing completed.
-    - label: Title updated by replacing the '**_\<release number here\>_**' with the release number.
-    - label: Add the appropriate to the **Issues Released** section above based on the issues being released.
-    - label: Add the appropriate label based on the type of release.
-    - label: Add the appropriate labels to reflect the type of changes going out in this release.  Refer to each issue for label reference.
+    - label: Title updated by replacing the `**_\<release type here\>_**` section with the type of release.
+    - label: Title updated by replacing the '**_\<release number here\>_**' section with the release number.
+    - label: Issues listed in the **Issues Released** section above for all issues being released.
+    - label: Appropriate release label added to this issue based on the type of release.
+    - label: Appropriate labels added to this issue to reflect the type of changes going in this release.  Refer to each issue for label reference.
+    - label: Correct release PR linked to this issue.
     - label: All unit tests have been ran and have passed locally. (Check out the appropriate release branch before running tests).
     - label: Version in project file updated.
     - label: Release notes created and added to the correct release branch.
@@ -50,9 +52,9 @@ body:
     value: |
       <details closed><summary>Expand for more information about unit tests.</summary>
       
-      Reasons:
-        - Unit tests might pass locally but not in the CI environment during the status check process or vice-versa.
-        - Tests might pass on the developer's machine but not necessarily on the code reviewer's machine.
+      Reasons for local unit test execution:
+      - Unit tests might pass locally but not in the CI environment during the status check process or vice-versa.
+      - Tests might pass on the developer's machine but not necessarily on the code reviewer's machine.
       </details>
 
 # VERSION UPDATING
@@ -61,7 +63,7 @@ body:
     value: |
       <details closed><summary>Expand for more information about updating the version.</summary>
       
-      The version can be updated by setting the values of the `\<Version/\>` and `\<FileVersion/\>` XML tags in the project file.
+      The version can be updated by setting the values of the `<Version/>` and `<FileVersion/>` XML tags in the project file.
 
       ``` xml
       <!--Syntax for preview releases-->
@@ -98,8 +100,8 @@ body:
       
       The release notes go into a sub folder in the [Release Notes](../../Documentation/ReleaseNotes) folder.
       The type of release depends on where the release notes are stored.
-      - [Preview Release Notes](../../Documentation/ReleaseNotes/PreviewReleases) go into the `~/Documentation/ReleaseNotes/PreviewReleases` folder.
-      - [Production Release Notes](../../Documentation/ReleaseNotes/ProductionReleases) go into the `~/Documentation/ReleaseNotes/ProductionReleases` folder.
+      - **Preview Release Notes** go into the `~/Documentation/ReleaseNotes/PreviewReleases` folder.
+      - **Production Release Notes** go into the `~/Documentation/ReleaseNotes/ProductionReleases` folder.
 
       Also, any changes such as release notes and version updates should be committed to the release branch being released.
       </details>
@@ -108,13 +110,13 @@ body:
 - type: checkboxes
   attributes:
     label: Post Release To Do List
-    description: Complete/verify that release announcements have been performed.
+    description: Verify that release went smoothly.
     options:
-    - label: The release displayed in [GitHub Releases](https://github.com/KinsonDigital/Velaptor/releases) has been verified to be correct.    
+    - label: The release displayed in [GitHub Releases](https://github.com/KinsonDigital/Velaptor/releases) is correct.    
     - label: Announcement of release on [Twitter](https://twitter.com/KDCoder) verified. (Announcement should be performed automatically with the release)
-    - label: Performed announcement on [Ko-Fi](https://ko-fi.com/kinsondigital) website.
-    - label: Performed announcement on [GitHub Discussions Board.](https://github.com/KinsonDigital/Velaptor/discussions/133)
-    - label: Performed announcement on Discord channel.
+    - label: Announcement has been pushed to [Ko-Fi](https://ko-fi.com/kinsondigital).
+    - label: Announcement has been pushed to the [GitHub Discussions Board.](https://github.com/KinsonDigital/Velaptor/discussions/133)
+    - label: Announcement has been pushed to the Discord channel.
 
 # CODE OF CONDUCT
 - type: checkboxes
