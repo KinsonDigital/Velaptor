@@ -1,57 +1,122 @@
 name: 🚀 Release To Do List
-description: Create a to do list for performing a release
+description: Produce a release
 title: "🚀Release <release number here> ToDo"
 body:
 - type: textarea
   attributes:
-    label: Items Released
+    label: Issues Released
     placeholder: |
       Create a list of all the items being released.
       Example:
-      - #123
-      - #456
+      - #10
+      - #20
     description: The list of issues that are getting released.
   validations:
     required: true
     render: markdown
-
-- type: dropdown
-  id: releasetypes
-  attributes:
-    label: Choose the type of release.
-    description: What kind of release is this?
-    options:
-      - Preview Release
-      - QA Preview Release
-      - QA Production Release
-      - Production Release
-      - Hot Fix Release
-  validations:
-    required: true
 
 - type: checkboxes
   attributes:
     label: Perform Release To Do List
     description: Complete the following items to perform a release.
     options:
-    - label: QA Testing finished and all tests pass.
-    - label: Branch used for release has been checked out locally and all unit tests have passed.
-    - label: Version in project file updated.  (Update <Version/> and <FileVersion/> tags)
+    - label: Manual QA Testing completed.
+    - label: Title updated by replacing the '**_\<release number here\>_**' with the release number.
+    - label: Add the appropriate to the **Issues Released** section above based on the issues being released.
+    - label: Add the appropriate label based on the type of release.
+    - label: Add the appropriate labels to reflect the type of changes going out in this release.  Refer to each issue for label reference.
+    - label: All unit tests have been ran and have passed locally. (Check out the appropriate release branch before running tests).
+    - label: Version in project file updated.
     - label: Release notes created and added to the correct release branch.
-    - label: The release displayed in [GitHub Releases](https://github.com/KinsonDigital/Velaptor/releases) has been verified to be correct.
 
+# RELEASE TYPE LABELS
+- type: markdown
+  attributes:
+    value: |
+      <details closed><summary>Expand for more information about release labels.</summary>
+      
+      | Type Of Release       | Label Used                                                                             |
+      |-----------------------|----------------------------------------------------------------------------------------|
+      | QA Preview Release    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%9A%80QA%20Preview%20Release    |
+      | Preview Release       | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%9A%80Preview%20Release         |
+      | QA Production Release | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%9A%80QA%20Production%20Release |
+      | Production Release    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%9A%80Production%20Release      |
+      | Hot Fix Release       | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%9A%80Hot%20Fix%20Release       |
+      </details>
+
+# UNIT TEST VERIFICATION
+- type: markdown
+  attributes:
+    value: |
+      <details closed><summary>Expand for more information about unit tests.</summary>
+      
+      Reasons:
+        - Unit tests might pass locally but not in the CI environment during the status check process or vice-versa.
+        - Tests might pass on the developer's machine but not necessarily on the code reviewer's machine.
+      </details>
+
+# VERSION UPDATING
+- type: markdown
+  attributes:
+    value: |
+      <details closed><summary>Expand for more information about updating the version.</summary>
+      
+      The version can be updated by setting the values of the `\<Version/\>` and `\<FileVersion/\>` XML tags in the project file.
+
+      ``` xml
+      <!--Syntax for preview releases-->
+      <Version>1.2.3-preview.4</Version>
+      <FileVersion>1.2.3-preview.4</FileVersion>
+
+      <!--Syntax for production releases-->
+      <Version>1.2.3</Version>
+      <FileVersion>1.2.3</FileVersion>
+      ```
+      </details>
+
+# CHANGE TYPE LABELS
+- type: markdown
+  attributes:
+    value: |
+      <details closed><summary>Expand for more information about the different types of changes.</summary>
+      
+      | Types Of Changes    | Label                                                                                |
+      |---------------------|--------------------------------------------------------------------------------------|
+      | Bug Fixes           | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%90%9Bbug                     |
+      | Breaking Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%92%A3breaking%20changes      |
+      | Enhancement         | https://github.com/KinsonDigital/Velaptor/labels/enhancement                         |
+      | Workflow Changes    | https://github.com/KinsonDigital/Velaptor/labels/workflow                            |
+      | Code Doc Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%91documentation%2Fcode    |
+      | Product Doc Changes | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%9Ddocumentation%2Fproduct |
+      </details>
+
+# RELEASE NOTE INFO
+- type: markdown
+  attributes:
+    value: |
+      <details closed><summary>Expand for more information about release notes.</summary>
+      
+      The release notes go into a sub folder in the [Release Notes](../../Documentation/ReleaseNotes) folder.
+      The type of release depends on where the release notes are stored.
+      - [Preview Release Notes](../../Documentation/ReleaseNotes/PreviewReleases) go into the `~/Documentation/ReleaseNotes/PreviewReleases` folder.
+      - [Production Release Notes](../../Documentation/ReleaseNotes/ProductionReleases) go into the `~/Documentation/ReleaseNotes/ProductionReleases` folder.
+
+      Also, any changes such as release notes and version updates should be committed to the release branch being released.
+      </details>
+
+# POST RELEASE TODO LIST
 - type: checkboxes
   attributes:
     label: Post Release To Do List
     description: Complete/verify that release announcements have been performed.
     options:
-    - label: Update issue title by replacing the '**_\<release number here\>_**' with the release number.
-    - label: Correct **_release_** label added to the issue.
+    - label: The release displayed in [GitHub Releases](https://github.com/KinsonDigital/Velaptor/releases) has been verified to be correct.    
     - label: Announcement of release on [Twitter](https://twitter.com/KDCoder) verified. (Announcement should be performed automatically with the release)
     - label: Performed announcement on [Ko-Fi](https://ko-fi.com/kinsondigital) website.
     - label: Performed announcement on [GitHub Discussions Board.](https://github.com/KinsonDigital/Velaptor/discussions/133)
     - label: Performed announcement on Discord channel.
 
+# CODE OF CONDUCT
 - type: checkboxes
   id: terms
   attributes:
