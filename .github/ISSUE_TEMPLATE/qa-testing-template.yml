@@ -22,7 +22,7 @@ body:
       options:
       - label: I have linked all issues that are getting tested for this release.
         required: true
-      - label: The https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%A7%AAqa%20testing added to this issue.
+      - label: The https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%A7%AAqa%20testing label is added to this issue.
         required: true
 
   - type: input
@@ -50,8 +50,8 @@ body:
           - [ ] #20 Issue 2
           - [ ] #30 Issue 3
       description: |
-        A list of all of the issues that this QA testing card will be testing.
-        To create an issue item checkbox use this 👉🏼 - [ ] #10
+        A list of all the issues that this QA testing card will be testing.
+        To create an issue item checkbox use this syntax `- [ ] #10`
     validations:
       required: false
 
@@ -73,7 +73,7 @@ body:
           - #30 QA Testing Velaptor
       description: |
         A list of QA testing issues that are must be completed before this QA testing issue can be started.
-        To create a dependency, use this 👉🏼 - #10
+        To create a dependency, use this syntax `- #10`
     validations:
       required: false
 
