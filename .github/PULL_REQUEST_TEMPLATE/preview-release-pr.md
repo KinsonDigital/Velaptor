@@ -6,7 +6,7 @@
 <h1 style="font-weight:bold" align="center">Preview Release Pull Request</h1>
 <h2 style="font-weight:bold" align="center">✅Code Review Checklist✅</h2>
 
-- [ ] The **_head(source)_** branch for this pull request is a **_preview_** branch with the correct naming syntax in the following example.
+- [ ] The **_head(source)_** branch for this pull request is a **_preview_** branch, with the correct naming syntax, in the following example:
   - A **_head(source)_** branch is the branch being merged into a target branch.
     <details closed><summary>Example</summary>
 
@@ -16,8 +16,8 @@
       ```
     </details>
 
-- [ ] The **_base(target)_** branch for this pull request is a **_release_** branch with the correct naming syntax in the following example.
-  - A **_base(target)_** branch is the branch that is a source branch being merged into it.
+- [ ] The **_base(target)_** branch for this pull request is a **_release_** branch, with the correct naming syntax, in the following example:
+  - A **_base(target)_** branch is the branch that the **_head(source)_** branch is merging into.
     <details closed><summary>Example</summary>
 
       ``` xml
@@ -35,7 +35,7 @@
     ```
   </details>
 
-- [ ] Pull request title matches the example below with the correct version.
+- [ ] Pull request title matches the example below, using the correct version.
   <details closed><summary>Example</summary>
     
     ``` xml
@@ -44,6 +44,6 @@
     ```
   </details>
 
-- [ ] A https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%9A%80Preview%20Release label has been added to the this PR.
+- [ ] A https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%9A%80Preview%20Release label has been added to this PR.
 
 - [ ] A QA issue has been created and manual QA testing has been performed for the changes being released.
