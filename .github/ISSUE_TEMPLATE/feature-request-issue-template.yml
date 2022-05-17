@@ -1,6 +1,6 @@
 name: ✨ Feature Request
 description: File a feature request
-title: "✨<title>"
+title: "✨"
 labels: [enhancement]
 body:
 - type: checkboxes
@@ -8,7 +8,7 @@ body:
     label: I have done the items below . . .
     description: Please make sure to do the items below.
     options:
-    - label: I have updated the title by replacing the '**_\<title\>_**' section.
+    - label: I have updated the title without removing the ✨ emoji.
       required: true
 
 - type: checkboxes

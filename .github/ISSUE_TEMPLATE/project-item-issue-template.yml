@@ -1,19 +1,19 @@
 name: 🚧 Project Item
 description: Create an issue for a project.  (Mostly for project maintainers)
-title: "🚧<title>"
+title: "🚧"
 body:
 - type: checkboxes
   attributes:
     label: I have done the items below . . .
     description: Please make sure to do the items below.
     options:
-    - label: I have updated the title by replacing the '**_\<title\>_**' section.
+    - label: I have updated the title without removing the 🚧 emoji.
       required: true
 
 - type: textarea
   attributes:
     label: Description
-    description: A description of feature/change in the user's perspective
+    description: A description of the feature and/or change from the user's perspective.
   validations:
     required: true
 
@@ -21,11 +21,9 @@ body:
   attributes:
     label: Acceptance Criteria
     description: |
-      The list of items and checkboxes of things that need to be finished for the definition of done.
-      Add more items as needed . . .
+      The list of items that need to be completed to satisfy the definition of done.
     value: |
       **This issue is finished when:**
-      - [ ] Code documentation added if required
       - [ ] Unit tests added
       - [ ] All unit tests pass
   validations:
@@ -35,25 +33,25 @@ body:
 - type: checkboxes
   attributes:
     label: ToDo Items
-    description: Complete the following items before asking for a PR review
+    description: Complete the following items before requesting a PR review.
     options:
-    - label: Draft pull request created and linked to this issue
-    - label: Priority label added to issue (**_low priority_**, **_medium priority_**, or **_high priority_**)
-    - label: Issue linked to the proper project
-    - label: Issue linked to proper milestone
+    - label: Priority label added to issue (**_low priority_**, **_medium priority_**, or **_high priority_**).
+    - label: Issue linked to the correct project.
+    - label: Issue linked to the correct milestone.
+    - label: Draft pull request created and linked to this issue.
 
 - type: textarea
   attributes:
     label: Issue Dependencies
     placeholder: |
-      No Issue Dependencies
+      No Issue Dependencies Added.
       Example:
         - #10 Create new class
         - #20 Add unit tests to service
         - #30 Cleanup code in UI
     description: |
-      A list of issues that are dependencies of this issue and need to be finishes first
-      Use the '#\<number\>' syntax to link to an issue
+      A list of issues that are dependencies of this issue and need to be finished first.
+      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 
@@ -61,14 +59,14 @@ body:
   attributes:
     label: Related Work
     placeholder: |
-      No Related Work Items Added
+      No Related Work Items Added.
       Example:
         - #10 Create new class
         - #20 Add unit tests to service
         - #30 Cleanup code in UI
     description: |
-      A list of issues that are related to this issue but that is not a dependency
-      Use the '#\<number\>' syntax to link to an issue
+      A list of issues related to this issue but are not a dependency.
+      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 
@@ -76,7 +74,7 @@ body:
   id: terms
   attributes:
     label: Code of Conduct
-    description: By submitting this issue, you agree to follow our [Code of Conduct](../../code_of_conduct.md)
+    description: By submitting this issue, you agree to follow our [Code of Conduct](../../code_of_conduct.md).
     options:
-      - label: I agree to follow this project's Code of Conduct
+      - label: I agree to follow this project's Code of Conduct.
         required: true
