@@ -31,7 +31,7 @@ body:
       label: Version Of Velaptor Being Tested
       description: |
         Enter the version of **_Velaptor_** that is being tested.  This is the upcoming version that will be released.
-        Version Format: v<major.minor.patch>[-preview-<prev-num>]
+        Version Format: v<major.minor.patch>[-preview.<prev-num>]
         Examples:
           v1.0.0
           v1.2.3-preview.4
@@ -72,7 +72,7 @@ body:
           - #20 QA Testing Velaptor
           - #30 QA Testing Velaptor
       description: |
-        A list of QA testing issues that are must be completed before this QA testing issue can be started.
+        A list of QA testing issues that must be completed before this QA testing issue can be started.
         To create a dependency, use this syntax `- #10`
     validations:
       required: false
