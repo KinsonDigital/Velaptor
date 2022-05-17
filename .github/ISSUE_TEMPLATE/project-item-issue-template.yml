@@ -13,7 +13,7 @@ body:
 - type: textarea
   attributes:
     label: Description
-    description: A description of the feature and/or change in the user's perspective.
+    description: A description of the feature and/or change from the user's perspective.
   validations:
     required: true
 
@@ -51,7 +51,7 @@ body:
         - #30 Cleanup code in UI
     description: |
       A list of issues that are dependencies of this issue and need to be finished first.
-      Use the '#\<issue-number\>' syntax to link to an issue.
+      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 
@@ -66,7 +66,7 @@ body:
         - #30 Cleanup code in UI
     description: |
       A list of issues related to this issue but are not a dependency.
-      Use the '#\<issue-number\>' syntax to link to an issue.
+      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 
