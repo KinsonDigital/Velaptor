@@ -10,7 +10,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thoroughly test Velaptor by using the **Velaptor Testing Application**.
+        Thoroughly test **_Velaptor_** by using the **_Velaptor Testing Application_**.
 
   - type: markdown
     attributes:
@@ -30,7 +30,7 @@ body:
     attributes:
       label: Version Of Velaptor Being Tested
       description: |
-        Enter the version of **Velaptor** that is being tested.  This is the upcoming version that will be released.
+        Enter the version of **_Velaptor_** that is being tested.  This is the upcoming version that will be released.
         Version Format: v<major.minor.patch>[-preview-<prev-num>]
         Examples:
           v1.0.0
