@@ -36,9 +36,23 @@ body:
     - label: Manual release to **_preview_** or **_production_** executed depending on the type of release.  Refer to the release execution section below.
 
 
+# POST-RELEASE TODO LIST
+- type: checkboxes
+  attributes:
+    label: Post-Release To Do List
+    description: Verify that release went smoothly.
+    options:
+    - label: The release displayed in [GitHub Releases](https://github.com/KinsonDigital/Velaptor/releases) is correct.    
+    - label: The [nuget package](https://www.nuget.org/packages/KinsonDigital.Velaptor/) has been successfully deployed to the public repository.
+    - label: Announcement of release on [Twitter](https://twitter.com/KDCoder) verified. (Announcement should be performed automatically with the release)
+    - label: Announcement has been pushed to [Ko-Fi](https://ko-fi.com/kinsondigital).
+    - label: Announcement has been pushed to the correct [GitHub Release Discussion Board](https://github.com/KinsonDigital/Velaptor/discussions/categories/releases).
+    - label: Announcement has been pushed to the Discord channel.
+
+
 - type: textarea
   attributes:
-    label: "Additional information below:"
+    label: "Additional Information:"
     description: DO NOT CHANGE ANYTHING BELOW!!
     value: |
       **_<details closed><summary>Release Labels</summary>_**
@@ -122,20 +136,6 @@ body:
   validations:
     required: true
     render: markdown
-
-
-# POST-RELEASE TODO LIST
-- type: checkboxes
-  attributes:
-    label: Post-Release To Do List
-    description: Verify that release went smoothly.
-    options:
-    - label: The release displayed in [GitHub Releases](https://github.com/KinsonDigital/Velaptor/releases) is correct.    
-    - label: The [nuget package](https://www.nuget.org/packages/KinsonDigital.Velaptor/) has been successfully deployed to the public repository.
-    - label: Announcement of release on [Twitter](https://twitter.com/KDCoder) verified. (Announcement should be performed automatically with the release)
-    - label: Announcement has been pushed to [Ko-Fi](https://ko-fi.com/kinsondigital).
-    - label: Announcement has been pushed to the correct [GitHub Release Discussion Board](https://github.com/KinsonDigital/Velaptor/discussions/categories/releases).
-    - label: Announcement has been pushed to the Discord channel.
 
 
 # CODE OF CONDUCT
