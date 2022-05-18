@@ -54,6 +54,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IssueTemplates", "IssueTemp
 		.github\ISSUE_TEMPLATE\bug-issue-template.yml = .github\ISSUE_TEMPLATE\bug-issue-template.yml
 		.github\ISSUE_TEMPLATE\feature-request-issue-template.yml = .github\ISSUE_TEMPLATE\feature-request-issue-template.yml
 		.github\ISSUE_TEMPLATE\project-item-issue-template.yml = .github\ISSUE_TEMPLATE\project-item-issue-template.yml
+		.github\ISSUE_TEMPLATE\qa-testing-template.yml = .github\ISSUE_TEMPLATE\qa-testing-template.yml
+		.github\ISSUE_TEMPLATE\release-todo-issue-template.yml = .github\ISSUE_TEMPLATE\release-todo-issue-template.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{15894CC9-D3C9-4B03-9F44-61D34AEDEEB0}"
