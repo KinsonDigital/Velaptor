@@ -1,0 +1,26 @@
+name: ✔Unit Testing Status Check
+
+
+on:
+  pull_request:
+    types: [ synchronize ]
+    paths:
+      - ".github/**"
+      - 'Documentation/**'
+      - '.editorconfig'
+      - '*.runsettings'
+      - '.gitattributes'
+      - '.gitignore'
+      - '*.md'
+      - '*.yml'
+      - '.vscode/**'
+      - '*.sln'
+      - '*.csproj'
+
+
+jobs:
+  Unit_Testing_Status_Check:
+    name: Unit Testing Status Check
+    runs-on: windows-latest
+    steps:
+      - run: 'Write-Host "No unit testing required."'
