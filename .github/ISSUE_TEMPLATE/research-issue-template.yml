@@ -1,5 +1,5 @@
 name: 🔬 Research Item
-description: Create an issue to perform some research.
+description: Create an issue to perform research.
 labels: ["🔬 research"]
 title: "🔬"
 body:
@@ -36,7 +36,7 @@ body:
     value: |
       **This issue is finished when:**
       - [ ] https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%94%AC%20research label added to this issue.
-      - [ ] Research complete and issues created if required
+      - [ ] Research complete and issues created (if needed).
       - [ ] If any issues were created, issues are added to the _**Related Work**_ section below.
   validations:
     required: true
@@ -61,7 +61,7 @@ body:
         - #20 Add unit tests to service
         - #30 Cleanup code in UI
     description: |
-      A list of issues that are dependencies of this issue and need to be finished first.
+      A list of dependencies that need to be finished first.
       Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
@@ -76,7 +76,7 @@ body:
         - #20 Add unit tests to service
         - #30 Cleanup code in UI
     description: |
-      A list of issues related to this issue but are not a dependency.
+      A list of related issues that are not a dependency.
       Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
