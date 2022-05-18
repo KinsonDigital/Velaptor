@@ -37,7 +37,7 @@ body:
       **This issue is finished when:**
       - [ ] https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%94%AC%20research label added to this issue.
       - [ ] Research complete and issues created (if needed).
-      - [ ] If any issues were created, issues are added to the _**Related Work**_ section below.
+      - [ ] If any issues were created, they have been added to the _**Related Work**_ section below.
   validations:
     required: true
     render: markdown
