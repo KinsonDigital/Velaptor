@@ -9,9 +9,6 @@ on:
   workflow_dispatch:
   pull_request:
     types: [ synchronize ]
-    branches: [
-      develop # Feature branch pull requests
-    ]
     paths-ignore:
       - ".github/**"
       - 'Documentation/**'

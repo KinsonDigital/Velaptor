@@ -8,10 +8,6 @@ env:
 on:
   pull_request:
     types: [ synchronize ]
-    branches: [
-      develop, # QA Releases (Target Branch)
-      master # Production Releases (Target Branch)
-    ]
     paths-ignore:
       - ".github/**"
       - 'Documentation/**'
