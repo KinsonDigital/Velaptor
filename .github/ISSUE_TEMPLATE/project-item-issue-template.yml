@@ -1,5 +1,5 @@
 name: 🚧 Project Item
-description: Create an issue for a project.  (Mostly for project maintainers)
+description: Create an issue for a project.  (Project maintainers only)
 title: "🚧<title>"
 body:
 - type: checkboxes
