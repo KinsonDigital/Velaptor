@@ -1,0 +1,105 @@
+name: 🔬 Research Item
+description: Create an issue to perform research.
+labels: ["🔬 research"]
+title: "🔬"
+body:
+- type: checkboxes
+  attributes:
+    label: I have done the items below . . .
+    description: Please make sure to do the items below.
+    options:
+    - label: I have updated the title without removing the 🔬 emoji.
+      required: true
+
+- type: textarea
+  attributes:
+    label: What To Research
+    description: A description of the research to perform.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Research Results
+    description: All of the research results.
+    placeholder: |
+      This can be notes, links to resources, file attachments, and images.
+      Anything required to collect the research results goes here.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Acceptance Criteria
+    description: |
+      The list of items that need to be completed to satisfy the definition of done.
+    value: |
+      **This issue is finished when:**
+      - [ ] https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%94%AC%20research label added to this issue.
+      - [ ] Research complete and issues created (if needed).
+      - [ ] If any issues were created, they have been added to the _**Related Work**_ section below.
+  validations:
+    required: true
+    render: markdown
+
+- type: checkboxes
+  attributes:
+    label: ToDo Items
+    description: Complete the following items before requesting a PR review.
+    options:
+    - label: Priority label added to this issue.  Refer to the _**Priority Type Labels**_ section below.
+    - label: Issue linked to the correct project.
+    - label: Issue linked to the correct milestone.
+
+- type: textarea
+  attributes:
+    label: Issue Dependencies
+    placeholder: |
+      No Issue Dependencies Added.
+      Example:
+        - #10 Create new class
+        - #20 Add unit tests to service
+        - #30 Cleanup code in UI
+    description: |
+      A list of dependencies that need to be finished first.
+      Use the '#\<issue-number\>' syntax to link an issue.
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Related Work
+    placeholder: |
+      No Related Work Items Added.
+      Example:
+        - #10 Create new class
+        - #20 Add unit tests to service
+        - #30 Cleanup code in UI
+    description: |
+      A list of related issues that are not a dependency.
+      Use the '#\<issue-number\>' syntax to link an issue.
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: "Additional Information:"
+    description: DO NOT CHANGE ANYTHING BELOW!!
+    value: |
+      **_<details closed><summary>Priority Type Labels</summary>_**
+      
+      | Priority Type       | Label                                                              |
+      |---------------------|--------------------------------------------------------------------|
+      | Low Priority        | https://github.com/KinsonDigital/Velaptor/labels/low%20priority    |
+      | Medium Priority     | https://github.com/KinsonDigital/Velaptor/labels/medium%20priority |
+      | High Priority       | https://github.com/KinsonDigital/Velaptor/labels/high%20priority   |
+      </details>
+
+- type: checkboxes
+  id: terms
+  attributes:
+    label: Code of Conduct
+    description: By submitting this issue, you agree to follow our [Code of Conduct](../../code_of_conduct.md).
+    options:
+      - label: I agree to follow this project's Code of Conduct.
+        required: true
