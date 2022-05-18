@@ -1,5 +1,5 @@
 name: 🚧 Project Item
-description: Create an issue for a project.  (Mostly for project maintainers)
+description: Create an issue for a project.  (Project maintainers only)
 title: "🚧"
 body:
 - type: checkboxes
@@ -35,7 +35,8 @@ body:
     label: ToDo Items
     description: Complete the following items before requesting a PR review.
     options:
-    - label: Priority label added to issue (**_low priority_**, **_medium priority_**, or **_high priority_**).
+    - label: Priority label added to this issue.  Refer to the _**Priority Type Labels**_ section below.
+    - label: Change type labels added to this issue.  Refer to the _**Change Type Labels**_ section below.
     - label: Issue linked to the correct project.
     - label: Issue linked to the correct milestone.
     - label: Draft pull request created and linked to this issue.
@@ -69,6 +70,32 @@ body:
       Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
+
+- type: textarea
+  attributes:
+    label: "Additional Information:"
+    description: DO NOT CHANGE ANYTHING BELOW!!
+    value: |
+      **_<details closed><summary>Change Type Labels</summary>_**
+      
+      | Change Type         | Label                                                                                |
+      |---------------------|--------------------------------------------------------------------------------------|
+      | Bug Fixes           | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%90%9Bbug                     |
+      | Breaking Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%92%A3breaking%20changes      |
+      | Enhancement         | https://github.com/KinsonDigital/Velaptor/labels/enhancement                         |
+      | Workflow Changes    | https://github.com/KinsonDigital/Velaptor/labels/workflow                            |
+      | Code Doc Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%91documentation%2Fcode    |
+      | Product Doc Changes | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%9Ddocumentation%2Fproduct |
+      </details>
+
+      **_<details closed><summary>Priority Type Labels</summary>_**
+      
+      | Priority Type       | Label                                                              |
+      |---------------------|--------------------------------------------------------------------|
+      | Low Priority        | https://github.com/KinsonDigital/Velaptor/labels/low%20priority    |
+      | Medium Priority     | https://github.com/KinsonDigital/Velaptor/labels/medium%20priority |
+      | High Priority       | https://github.com/KinsonDigital/Velaptor/labels/high%20priority   |
+      </details>
 
 - type: checkboxes
   id: terms
