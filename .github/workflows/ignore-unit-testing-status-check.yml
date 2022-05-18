@@ -23,4 +23,5 @@ jobs:
     name: Unit Testing Status Check
     runs-on: windows-latest
     steps:
-      - run: 'Write-Host "No unit testing required."'
+    - name: Execute Unit Tests
+      run: 'Write-Host "No unit testing required."'

@@ -23,4 +23,5 @@ jobs:
     name: Build Status Check
     runs-on: windows-latest
     steps:
-      - run: 'Write-Host "No build required."'
+    - name: Build Project
+      run: 'Write-Host "No build required."'
