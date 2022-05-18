@@ -10,12 +10,6 @@ on:
   workflow_dispatch:
   pull_request:
     types: [ synchronize ]
-    branches: [
-      develop, # Development branch
-      release/v*.*.*, # Release Branches
-      preview/v*.*.*-preview.*, # Preview Branches
-      master # Production Branch
-    ]
     paths-ignore:
       - ".github/**"
       - 'Documentation/**'
