@@ -1,10 +1,10 @@
 <h1 align="center">Branching</h1>
 
-**Velaptor** uses a more complicated branching model. But with this comes more control of the SDLC (Software Development Life Cycle).  This branching model allows for a clear purpose for adding features, bug fixes, preview releases, qa releases and standard releases.
+**Velaptor** uses a more complicated branching model, but it gives you more control of the SDLC (Software Development Life Cycle).  This branching model allows for a clear purpose for adding features, bug fixes, preview releases, qa releases and standard releases.
 
 As a standard contributor though, all you have to worry about is simply creating <span style="color: #66B2FF;font-weight:bold">feature</span> branches and creating pull requests to merge those branches into the <span style="color: #FFB366;font-weight:bold">develop</span> branch.  The rest is taken care of by a solid CI/CD system as well as the maintainers of the project.  Only the organization owner and designated team members will manage the release process.  So contributing is very easy!!🥳
 
-**NOTE:** Like everything in software, things are always subject to change.  The branching model is not except from this.  If too many issues or complications occur with the current branching model and/or release process, it will be changed accordingly.
+**NOTE:** Like everything in software, everything is subject to change, including the branching model.  If too many issues or complications occur with the current branching model and/or release process, it will be changed accordingly.
 
 ---
 
@@ -13,7 +13,7 @@ As a standard contributor though, all you have to worry about is simply creating
 
 <h3 align="center" style="color: #82B366;font-weight:bold">Master Branch</h3>
 
-Long living branch that represents stable production versions of **Velaptor**.
+Long living branch that represents stable production versions of **Velaptor**:
 - **Branch Syntax:** master
 - **Branches That Can Merge Into Master:**
   - <span style="color: #00CCCC;font-weight:bold">release</span> branches via pull request
@@ -27,7 +27,7 @@ Long living branch that represents stable production versions of **Velaptor**.
 
 <h3 align="center" style="color: #FFB366;font-weight:bold">Develop Branch</h3>
 
-Long living branch that represents the most current development being worked on.
+Long living branch that represents the most current development in progress:
 - **Branch Syntax:** develop
 - **Branches That Can Merge Into Develop Branch:**
   - <span style="color: #66B2FF;font-weight:bold">feature</span> branches via pull requests
@@ -41,7 +41,7 @@ Long living branch that represents the most current development being worked on.
 
 <h3 align="center" style="color: #66B2FF;font-weight:bold">Feature Branches</h3>
 
-This branch is where a developer's work will be performed and will be merged back into the <span style="color: #FFB366;font-weight:bold">develop</span> branch via a pull request.
+This branch is where a developer's work will be performed and will be merged back into the <span style="color: #FFB366;font-weight:bold">develop</span> branch via a pull request:
 - **Branch Syntax:** feature/\<issue id\>-\<description\>
   - Example: feature/123-my-branch
 - **Branches That Can Merge Into Feature Branches:** None
@@ -55,7 +55,9 @@ This branch is where a developer's work will be performed and will be merged bac
 
 <h3 align="center" style="color: #B84949;font-weight:bold">Hotfix Branches</h3>
 
-This branch is where urgent bug fixes or changes will be performed.  This should be carefully reviewed and only done when something with the software is considered **broken** and/or **unusable**.  Changes to this branch should be absolutely minimal to achieve the desired fix.  Changes to this branch should be merged directly into the <span style="color: #82B366;font-weight:bold">master</span> branch via a pull request.
+This branch is where urgent bug fixes or changes will be performed:
+
+- **NOTE:** This should be carefully reviewed and only done when something with the software is considered **broken** and/or **unusable**.  Changes to this branch should be absolutely minimal to achieve the required change.  Changes to this branch should be merged directly into the <span style="color: #82B366;font-weight:bold">master</span> branch via a pull request.
 - **Branch Syntax:** hotfix/\<issue id\>-\<description\>
   - Example: hotfix/123-my-hotfix
 - **Branches That Can Merge Into Hotfix Branches:** none
@@ -69,7 +71,7 @@ This branch is where urgent bug fixes or changes will be performed.  This should
 
 <h3 align="center" style="color: #00CCCC;font-weight:bold">Release Branches</h3> 
 
-Represents an arbitrary amount of <span style="color: #66B2FF;font-weight:bold">features</span> and/or bug fixes to be released as a <span style="color: #82B366;font-weight:bold">production</span> or <span style="color: #CC99FF;font-weight:bold">preview</span> release.
+Represents an arbitrary amount of <span style="color: #66B2FF;font-weight:bold">features</span> and/or bug fixes to be released as a <span style="color: #82B366;font-weight:bold">production</span> or <span style="color: #CC99FF;font-weight:bold">preview</span> release:
 - **Branch Syntax:** release/v\<major\>.\<minor\>.\<patch\>
   - Example: release/v1.2.3
 - **Branches That Can Merge Into Release Branches:**
@@ -90,7 +92,8 @@ Represents an arbitrary amount of <span style="color: #66B2FF;font-weight:bold">
 
 <h3 align="center" style="color: #CC99FF;font-weight:bold">Preview Branches</h3>
 
-Holds minimal changes for the purpose of making an upcoming production release more stable.  Things such as refactoring, bug fixes, and changes related to serving the main purpose of the upcoming release.  Changes such as introducing additional major features outside of the changes in the upcoming release are not allowed.  This gives the chance for users to use the software and give feedback about any major issues before a stable production release is performed.  These kinds of changes are not performed on the <span style="color: #CC99FF;font-weight:bold">preview</span> directly but done by using <span style="color: #9E269E;font-weight:bold">preview feature</span> branches.
+Holds minimal changes for the purpose of making an upcoming production release more stable.
+- **NOTE:** This is for such things as refactoring, bug fixes, and changes related to serving the main purpose of making an upcoming release more stable and to give users the chance to utilize the software before a major release.  Changes such as introducing major features outside of the changes in the upcoming release are not allowed.  This gives the chance for users to use the software and give feedback about any major issues before a stable production release is performed.  These kinds of changes are not performed on the <span style="color: #CC99FF;font-weight:bold">preview</span> directly but done by using <span style="color: #9E269E;font-weight:bold">preview feature</span> branches.
 - **Branch Syntax:** preview/v\<major\>.\<minor\>.\<patch\>-preview.\<prev number\>
   - Example: preview/v1.2.3-preview.4
 - **Branches That Can Merge Into Preview Branches:** <span style="color: #9E269E;font-weight:bold">preview feature</span> branches
@@ -105,7 +108,7 @@ Holds minimal changes for the purpose of making an upcoming production release m
 
 <h3 align="center" style="color: #9E269E;font-weight:bold">Preview Feature Branches</h3>
 
-This branch is where a developer's work will be performed and merged back into a <span style="color: #CC99FF;font-weight:bold">preview</span> branch via a pull request.  This provides the ability to add changes for a preview release.
+This branch is where a developer's work will be performed when implementing features/changes for a <span style="color: #CC99FF;font-weight:bold">preview</span> branch via a pull request, providing the ability to add changes for a preview release.
 - **Branch Syntax:** preview/feature/\<issue id\>-\<description\>
   - Example: preview/feature/123-my-branch
 - **Branches That Can Merge Into Preview Feature Branches:** none
