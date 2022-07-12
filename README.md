@@ -11,8 +11,8 @@
 ## **Releases**
 
 ![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Production%20Release?label=Production%20Release%20%F0%9F%9A%80&logo=GitHub&style=flat)
-
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kinsondigital/velaptor/%F0%9F%9A%80Preview%20Release?color=%23238636&label=Preview%20Release%20%F0%9F%9A%80&logo=github)
+
 ![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/kinsondigital.velaptor?label=Latest%20Release&logo=nuget)
 </div>
 
@@ -21,12 +21,6 @@
 ## **Status**
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kinsondigital/velaptor/%E2%9C%94Unit%20Testing%20Status%20Check?color=%23238636&label=Unit%20Tests)
 ![](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor/master?label=Code%20Coverage&logo=CodeCov&style=flat)
-
-![GitHub issues](https://img.shields.io/github/issues-raw/kinsondigital/velaptor?color=%23238636&label=Open%20Issues)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/kinsondigital/velaptor?color=%23238636&label=Open%20Pull%20Requests)
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed-raw/kinsondigital/velaptor?color=%238957E5&label=Closed%20Pull%20Requests)
-
-
 ![GitHub issues by-label](https://img.shields.io/github/issues/kinsondigital/velaptor/good%20first%20issue?color=%23238636&label=Good%20First%20Issues)
 </div>
 
@@ -66,7 +60,8 @@ https://user-images.githubusercontent.com/85414302/150527337-6d872768-73dc-4603-
 <h2 style="font-weight:bold" align="center">🔧Maintainers</h2>
 
 We currently have the following maintainers:
-- [Calvin Wilkinson](https://twitter.com/KDCoder) [<img src="https://about.twitter.com/etc/designs/about2-twitter/public/img/favicon.ico" alt="Follow Calvin Wilkinson on Twitter" width="16" />](https://twitter.com/KDCoder) (GitHub Organization/Project Owner)
+- [Calvin Wilkinson](https://twitter.com/KDCoder) [<img src="https://about.twitter.com/etc/designs/about2-twitter/public/img/favicon.ico" alt="Follow Calvin Wilkinson on Twitter" width="16" />](https://twitter.com/KDCoder) (GitHub Organization / Owner)
+- [Kristen Wilkinson](https://twitter.com/kswilky) [<img src="https://about.twitter.com/etc/designs/about2-twitter/public/img/favicon.ico" alt="Follow Calvin Wilkinson on Twitter" width="16" />](https://twitter.com/KDCoder) (GitHub Organization / Documentation Maintainer / Tester)
 
 <h2 style="font-weight:bold" align="center">📄Documentation</h2>
 
