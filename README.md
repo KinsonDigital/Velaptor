@@ -8,17 +8,34 @@
 
 <div align="center">
 
-![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Preview%20Release?label=QA%20Release%20%F0%9F%9A%80&logo=GitHub&style=plastic)
-![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Preview%20Release?label=Preview%20Release%20%F0%9F%9A%80&logo=GitHub&style=plastic)
-![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Production%20Release?label=Production%20Release%20%F0%9F%9A%80&logo=GitHub&style=plastic)
+## **Releases**
 
-![](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor/master?label=Code%20Coverage&logo=CodeCov&style=plastic)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?style=plastic)](code_of_conduct.md)
+![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Production%20Release?label=Production%20Release%20%F0%9F%9A%80&logo=GitHub&style=flat)
 
-![](https://img.shields.io/nuget/v/KinsonDigital.Velaptor?logo=nuget&style=plastic)
-![Twitter URL](https://img.shields.io/twitter/url?label=Follow%20@KDCoder&logo=twitter&style=plastic&url=https%3A%2F%2Ftwitter.com%2FKDCoder)
-[![Join our Discord](https://img.shields.io/badge/chat%20on-discord-7289DA?style=plastic)](https://discord.gg/qewu6fNgv7)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kinsondigital/velaptor/%F0%9F%9A%80Preview%20Release?color=%23238636&label=Preview%20Release%20%F0%9F%9A%80&logo=github)
+![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/kinsondigital.velaptor?label=Latest%20Release&logo=nuget)
+</div>
 
+<div align="center">
+
+## **Status**
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kinsondigital/velaptor/%E2%9C%94Unit%20Testing%20Status%20Check?color=%23238636&label=Unit%20Tests)
+![](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor/master?label=Code%20Coverage&logo=CodeCov&style=flat)
+
+![GitHub issues](https://img.shields.io/github/issues-raw/kinsondigital/velaptor?color=%23238636&label=Open%20Issues)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/kinsondigital/velaptor?color=%23238636&label=Open%20Pull%20Requests)
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed-raw/kinsondigital/velaptor?color=%238957E5&label=Closed%20Pull%20Requests)
+
+
+![GitHub issues by-label](https://img.shields.io/github/issues/kinsondigital/velaptor/good%20first%20issue?color=%23238636&label=Good%20First%20Issues)
+</div>
+
+<div align="center">
+
+## **Social**
+
+![Discord](https://img.shields.io/discord/481597721199902720?color=%23575CCB&label=discord&logo=discord&logoColor=white)
+![Twitter URL](https://img.shields.io/twitter/url?color=%235c5c5c&label=Follow%20%40KDCoder&logo=twitter&url=https%3A%2F%2Ftwitter.com%2FKDCoder)
 </div>
 
 <h2 style="font-weight:bold" align="center" >!! NOTICE !!</h2>
@@ -44,6 +61,10 @@ One of the goals of this library is to make sure that the it is easy to use.  Ev
 Loaded content such as images and sounds are cached for reuse and performance reasons.  If the same content is loaded from disk after it has already been loaded, the same image content will be used for rendering.  This is the same for sounds and texture atlas data.  Custom content loading will not come with caching and will have to be added.
 
 ### Feature Demo Application
+[![Watch the video](../Velaptor/Documentation/DemoVideo.mp4)]
+
+![asdf](../Velaptor/Documentation/DemoVideo.mp4)
+
 https://user-images.githubusercontent.com/85414302/150527337-6d872768-73dc-4603-82e8-37c691c78d4d.mp4
 
 <h2 style="font-weight:bold" align="center">🔧Maintainers</h2>
@@ -93,5 +114,11 @@ If you have any questions, contact a project maintainer.
 
 <h2 style="font-weight:bold" align="center">Licensing And Governance</h2>
 
-**Velaptor** is distributed under the very permissive MIT license and all dependencies are distributed under MIT-compatible licenses.
-This project has adopted the code of conduct defined by the [Contributor Covenant](http://contributor-covenant.org/) to clarify expected behavior in our community.
+<div align="center">
+
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?style=flat)](code_of_conduct.md)
+![GitHub](https://img.shields.io/github/license/kinsondigital/velaptor)
+</dic>
+
+**Velaptor** is distributed under the very permissive **MIT license** and all dependencies are distributed under MIT-compatible licenses.
+This project has adopted the code of conduct defined by the **Contributor Covenant** to clarify expected behavior in our community.
