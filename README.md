@@ -4,9 +4,9 @@
   
 </h2>
 
-<h1 style="font-weight:bold" align="center">Velaptor</h1>
+<h1 style="border:0;font-weight:bold" align="center">Velaptor</h1>
 
-<div align="center">
+<div align="center" style="border:0">
 
 ## **Releases**
 
@@ -16,7 +16,7 @@
 ![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/kinsondigital.velaptor?label=Latest%20Release&logo=nuget)
 </div>
 
-<div align="center">
+<div align="center" style="border:0">
 
 ## **Status**
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kinsondigital/velaptor/%E2%9C%94Unit%20Testing%20Status%20Check?color=%23238636&label=Unit%20Tests)
@@ -24,7 +24,7 @@
 ![GitHub issues by-label](https://img.shields.io/github/issues/kinsondigital/velaptor/good%20first%20issue?color=%23238636&label=Good%20First%20Issues)
 </div>
 
-<div align="center">
+<div align="center" style="border:0">
 
 ## **Social**
 
@@ -32,15 +32,15 @@
 ![Twitter URL](https://img.shields.io/twitter/url?color=%235c5c5c&label=Follow%20%40KDCoder&logo=twitter&url=https%3A%2F%2Ftwitter.com%2FKDCoder)
 </div>
 
-<h2 style="font-weight:bold" align="center" >!! NOTICE !!</h2>
+<h2 style="font-weight:bold;border:0" align="center" >!! NOTICE !!</h2>
 
-This library is still under development and is not at v1.0.0 yet!!  All of the major features are there though so we encourage you to use it and report back any issues and improvements you may have.  That is what open source is all about.
+This library is still under development and is not at v1.0.0 yet!!  All of the major features are there though so we encourage you to use it and report back any issues and improvements you may have.  That is what open source is all about!!
 
-<h2 style="font-weight:bold" align="center">📖 About Velaptor</h2>
+<h2 style="font-weight:bold;border:0" align="center">📖 About Velaptor</h2>
 
-Velaptor is a 2D game development framework written in modern C# that strives to be simple and easy to use.  Game development can be difficult.  This is why using a framework that takes care of all of the lower level, more complicated things to creating a game can help!!  Things such as playing sound, loading graphics, managing content, multi-platform, and dealing with input are just some of the things that a game framework can provide.  This way you can just concentrate on developing your game or multi-media application.
+Velaptor is a 2D game development framework written in modern C# that strives to be simple and easy to use.  Game development can be difficult.  This is why using a framework that takes care of all of the lower level, more complicated things for creating a game can help!!  Things such as playing sound, loading graphics, managing content, multi-platform, and dealing with input are just some of the things that a game framework can provide.  This way you can just concentrate on developing your game or multi-media application.
 
-<h2 style="font-weight:bold" align="center">✨Features</h2>
+<h2 style="font-weight:bold;border:0" align="center">✨Features</h2>
 
 ### Cross-Platform
 We strive for **Velaptor** to be a cross platform library by running under **.NET v5.0**.  There are plans for this library to continually be updated as we approach **.NET 6.0** and beyond.
@@ -52,22 +52,22 @@ One of the goals of this library is to make sure that the it is easy to use.  Ev
 **Velaptor** has the ability to load texture atlas image and JSON data for texture atlas type rendering as well as single image content and sound content.  The content loading system is flexible and has an API that has the ability to be extended to load custom content for your media applications and games.
 
 ### Content Caching
-Loaded content such as images and sounds are cached for reuse and performance reasons.  If the same content is loaded from disk after it has already been loaded, the same image content will be used for rendering.  This is the same for sounds and texture atlas data.  Custom content loading will not come with caching and will have to be added.
+Loaded content such as images and sounds are cached for performance reasons.  If the same content attempting to be loaded from disk after it has already been loaded, that same content will be used from memory instead of being reloaded.  This is the same for sounds and texture atlas data.  Custom content loading will not come with caching and will have to be added manually.
 
 ### Feature Demo Application
 https://user-images.githubusercontent.com/85414302/150527337-6d872768-73dc-4603-82e8-37c691c78d4d.mp4
 
-<h2 style="font-weight:bold" align="center">🔧Maintainers</h2>
+<h2 style="font-weight:bold;border:0" align="center">🔧Maintainers</h2>
 
 We currently have the following maintainers:
 - [Calvin Wilkinson](https://twitter.com/KDCoder) [<img src="https://about.twitter.com/etc/designs/about2-twitter/public/img/favicon.ico" alt="Follow Calvin Wilkinson on Twitter" width="16" />](https://twitter.com/KDCoder) (GitHub Organization / Owner)
 - [Kristen Wilkinson](https://twitter.com/kswilky) [<img src="https://about.twitter.com/etc/designs/about2-twitter/public/img/favicon.ico" alt="Follow Calvin Wilkinson on Twitter" width="16" />](https://twitter.com/KDCoder) (GitHub Organization / Documentation Maintainer / Tester)
 
-<h2 style="font-weight:bold" align="center">📄Documentation</h2>
+<h2 style="font-weight:bold;border:0" align="center">📄Documentation</h2>
 
 - Goto the [Table Of Contents](./Documentation/TableOfContents.md) for instructions on various things such as the branching, release process, environment setup and more.
 
-<h2 style="font-weight:bold" align="center">🙏🏼Contributing</h2>
+<h2 style="font-weight:bold;border:0" align="center">🙏🏼Contributing</h2>
 
 **Velaptor** encourages and uses [Early Pull Requests](https://medium.com/practical-blend/pull-request-first-f6bb667a9b6). Please don't wait until you're finished with your work before creating a PR.
 
@@ -86,7 +86,7 @@ We currently have the following maintainers:
 
 If you have any questions, contact a project maintainer.
 
-<h2 style="font-weight:bold" align="center">Practices</h2>
+<h2 style="font-weight:bold;border:0" align="center">Practices</h2>
 
 - The code base is highly tested using unit testing while maintaining a high level of code coverage.  Manual testing is performed using the included testing application built specifically for manually testing the library.  When contributing, make sure to add or adjust the unit tests appropriately regarding your changes and perform manual testing.
 - We use a combination of [StyleCop](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) and [Microsoft.CodeAnalysis.NetAnalyzers](https://github.com/dotnet/roslyn-analyzers) libraries for maintaining coding standards.
@@ -96,14 +96,14 @@ If you have any questions, contact a project maintainer.
   - [Branching Diagram (GitHub Dark Mode)](./Documentation/Images/BranchingDiagram-DarkMode.png)
   - [Branching Diagram (GitHub Light Mode)](./Documentation/Images/BranchingDiagram-LightMode.png)
 
-<h2 style="font-weight:bold" align="center">Further Resources</h2>
+<h2 style="font-weight:bold;border:0" align="center">Further Resources</h2>
 
 - The sample project named **VelaptorTesting** can be found in the [Testing Folder](https://github.com/KinsonDigital/Velaptor/tree/preview/master/Testing/VelaptorTesting)
   - This is a sample project for the purpose to do manual testing of the library as well as to help understand how to use the library.
 - [CASL](https://github.com/KinsonDigital/CASL) is used for audio.
 - Powered by [Silk.NET](https://github.com/dotnet/Silk.NET).
 
-<h2 style="font-weight:bold" align="center">Licensing And Governance</h2>
+<h2 style="font-weight:bold;border:0" align="center">Licensing And Governance</h2>
 
 <div align="center">
 
