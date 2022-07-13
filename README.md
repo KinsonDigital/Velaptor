@@ -1,32 +1,26 @@
-<h2 align="center">
+<div align="center">
     <a href="#"><img align="center" src="./Documentation/Images/velaptor-logo.png" height="96"></a>
     <br />
   
-</h2>
+</div>
 
 <h1 style="border:0;font-weight:bold" align="center">Velaptor</h1>
 
-<div align="center" style="border:0">
-
-## **Releases**
+<div align="center">
 
 ![](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Production%20Release?label=Production%20Release%20%F0%9F%9A%80&logo=GitHub&style=flat)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kinsondigital/velaptor/%F0%9F%9A%80Preview%20Release?color=%23238636&label=Preview%20Release%20%F0%9F%9A%80&logo=github)
-
 ![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/kinsondigital.velaptor?label=Latest%20Release&logo=nuget)
 </div>
 
-<div align="center" style="border:0">
+<div align="center">
 
-## **Status**
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kinsondigital/velaptor/%E2%9C%94Unit%20Testing%20Status%20Check?color=%23238636&label=Unit%20Tests)
 ![](https://img.shields.io/codecov/c/github/KinsonDigital/Velaptor/master?label=Code%20Coverage&logo=CodeCov&style=flat)
 ![GitHub issues by-label](https://img.shields.io/github/issues/kinsondigital/velaptor/good%20first%20issue?color=%23238636&label=Good%20First%20Issues)
 </div>
 
-<div align="center" style="border:0">
-
-## **Social**
+<div align="center">
 
 ![Discord](https://img.shields.io/discord/481597721199902720?color=%23575CCB&label=discord&logo=discord&logoColor=white)
 ![Twitter URL](https://img.shields.io/twitter/url?color=%235c5c5c&label=Follow%20%40KDCoder&logo=twitter&url=https%3A%2F%2Ftwitter.com%2FKDCoder)
