@@ -72,7 +72,7 @@ As with all software, including releases, there is always a chance for issues an
 
 <h2 style="font-weight:bold" align="center">Nuget/Library Updates 📦</h2>
 
-1. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Updated nuget package **Microsoft.CodeAnalysis.NetAnalyzers** from **_5.0.3_** to **_v6.0.0_**
+1. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Updated nuget package **Microsoft.CodeAnalysis.NetAnalyzers** from **v_5.0.3_** to **_v6.0.0_**
 
 ---
 
