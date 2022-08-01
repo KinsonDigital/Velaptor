@@ -48,7 +48,7 @@
 - [ ] My code follows the coding style of this project.
   - The style is enforced by the **_.editorconfig_** files in the project and displayed as warnings.  If there is an edge case, reach out and let's discuss it.
 
-- [ ] A ![preview-label](https://user-images.githubusercontent.com/85414302/150838564-33f6044b-55f9-4dd9-8783-1d739de9d92f.png) label has been added to the pull request.
+- [ ] A [![preview-label](https://user-images.githubusercontent.com/85414302/150838564-33f6044b-55f9-4dd9-8783-1d739de9d92f.png)](https://github.com/KinsonDigital/Velaptor/labels/preview) label has been added to the pull request.
 
 - [ ] I have manually tested my code changes to the best of my ability.
 
