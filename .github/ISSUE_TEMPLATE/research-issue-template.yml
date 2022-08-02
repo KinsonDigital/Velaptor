@@ -1,6 +1,6 @@
 name: 🔬 Research Item
 description: Create an issue to perform research.
-labels: ["🔬 research"]
+labels: ["🔬research"]
 title: "🔬"
 body:
 - type: checkboxes
@@ -35,7 +35,7 @@ body:
       The list of items that need to be completed to satisfy the definition of done.
     value: |
       **This issue is finished when:**
-      - [ ] https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%94%AC%20research label added to this issue.
+      - [ ] https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%94%ACresearch label added to this issue.
       - [ ] Research complete and issues created (if needed).
       - [ ] If any issues were created, they have been added to the _**Related Work**_ section below.
   validations:

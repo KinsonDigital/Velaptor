@@ -81,7 +81,7 @@ body:
       | Change Type         | Label                                                                                |
       |---------------------|--------------------------------------------------------------------------------------|
       | Bug Fixes           | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%90%9Bbug                     |
-      | Breaking Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%92%A3breaking%20changes      |
+      | Breaking Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%A7%A8breaking%20changes      |
       | Enhancement         | https://github.com/KinsonDigital/Velaptor/labels/enhancement                         |
       | Workflow Changes    | https://github.com/KinsonDigital/Velaptor/labels/workflow                            |
       | Code Doc Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%91documentation%2Fcode    |
