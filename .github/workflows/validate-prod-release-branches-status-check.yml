@@ -1,100 +1,100 @@
-name: ✔Validate Production Release Branches Status Check
+# name: ✔Validate Production Release Branches Status Check
 
 
-env:
-  PROJECT_NAME: Velaptor
+# env:
+#   PROJECT_NAME: Velaptor
 
 
-on:
-  pull_request:
-    types: [ synchronize ]
-    paths-ignore:
-      - ".github/**"
-      - 'Documentation/**'
-      - '.editorconfig'
-      - '*.runsettings'
-      - '.gitattributes'
-      - '.gitignore'
-      - '*.md'
-      - '*.yml'
-      - '.vscode/**'
-      - '*.sln'
-      - '*.csproj'
+# on:
+#   pull_request:
+#     types: [ synchronize ]
+#     paths-ignore:
+#       - ".github/**"
+#       - 'Documentation/**'
+#       - '.editorconfig'
+#       - '*.runsettings'
+#       - '.gitattributes'
+#       - '.gitignore'
+#       - '*.md'
+#       - '*.yml'
+#       - '.vscode/**'
+#       - '*.sln'
+#       - '*.csproj'
 
 
-jobs:
-  Validate_Production_Release_Branches:
-    name: Validate Production Release Branches
-    runs-on: windows-latest
-    steps:
-    - name: Validate Production Release Branches
-      run: |
-        [string]$srcBranch = "${{ github.head_ref }}";
-        [string]$targetBranch = "${{ github.base_ref }}";
-        [string[]]$validNumChars = @( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+# jobs:
+#   Validate_Production_Release_Branches:
+#     name: Validate Production Release Branches
+#     runs-on: windows-latest
+#     steps:
+#     - name: Validate Production Release Branches
+#       run: |
+#         [string]$srcBranch = "${{ github.head_ref }}";
+#         [string]$targetBranch = "${{ github.base_ref }}";
+#         [string[]]$validNumChars = @( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 
-        # If merging from a release branch into a release branch
-        if ($srcBranch.StartsWith("release/v") -and `
-            $srcBranch.Split(".").Length -eq 3 -and `
-            (($targetBranch -eq "develop") -or ($targetBranch -eq "master"))) {
-          Write-Host "Source Release Branch: $srcBranch";
-          Write-Host "Target Branch: $targetBranch";
+#         # If merging from a release branch into a release branch
+#         if ($srcBranch.StartsWith("release/v") -and `
+#             $srcBranch.Split(".").Length -eq 3 -and `
+#             (($targetBranch -eq "develop") -or ($targetBranch -eq "master"))) {
+#           Write-Host "Source Release Branch: $srcBranch";
+#           Write-Host "Target Branch: $targetBranch";
 
-          [string]$issueNumSection = $srcBranch.Split("/v")[1];
-          [string]$majorNum = $issueNumSection.Split(".")[0];
-          [string]$minorNum = $issueNumSection.Split(".")[1];
-          [string]$patchNum = $issueNumSection.Split(".")[2];
-          [string]$numType = "NOT SET";
-          [string]$hasFailed = $false;
+#           [string]$issueNumSection = $srcBranch.Split("/v")[1];
+#           [string]$majorNum = $issueNumSection.Split(".")[0];
+#           [string]$minorNum = $issueNumSection.Split(".")[1];
+#           [string]$patchNum = $issueNumSection.Split(".")[2];
+#           [string]$numType = "NOT SET";
+#           [string]$hasFailed = $false;
 
-          Write-Host "Release Branch Major Num: $majorNum";
-          Write-Host "Release Branch Minor Num: $minorNum";
-          Write-Host "Release Branch Patch Num: $patchNum";
+#           Write-Host "Release Branch Major Num: $majorNum";
+#           Write-Host "Release Branch Minor Num: $minorNum";
+#           Write-Host "Release Branch Patch Num: $patchNum";
 
-          # If the major number is not a number
-          foreach ($digit in $srcMajorNum.ToCharArray()) {
-            if ($validNumChars.Contains($digit.ToString()) -ne $true) {
-              $numType = "major";
-              $hasFailed = $true;
-              break;
-            }
-          }
+#           # If the major number is not a number
+#           foreach ($digit in $srcMajorNum.ToCharArray()) {
+#             if ($validNumChars.Contains($digit.ToString()) -ne $true) {
+#               $numType = "major";
+#               $hasFailed = $true;
+#               break;
+#             }
+#           }
 
-          # If the minor number is not a number
-          foreach ($digit in $srcMinorNum.ToCharArray()) {
-            if ($validNumChars.Contains($digit.ToString()) -ne $true) {
-              $numType = "minor";
-              $hasFailed = $true;
-              break;
-            }	
-          }
+#           # If the minor number is not a number
+#           foreach ($digit in $srcMinorNum.ToCharArray()) {
+#             if ($validNumChars.Contains($digit.ToString()) -ne $true) {
+#               $numType = "minor";
+#               $hasFailed = $true;
+#               break;
+#             }	
+#           }
 
-          # If the patch number is not a number
-          foreach ($digit in $srcPatchNum.ToCharArray()) {
-            if ($validNumChars.Contains($digit.ToString()) -ne $true) {
-              $numType = "patch";
-              $hasFailed = $true;
-              break;
-            }	
-          }
+#           # If the patch number is not a number
+#           foreach ($digit in $srcPatchNum.ToCharArray()) {
+#             if ($validNumChars.Contains($digit.ToString()) -ne $true) {
+#               $numType = "patch";
+#               $hasFailed = $true;
+#               break;
+#             }	
+#           }
 
-          if ($hasFailed -eq $true) {
-              Write-Host "The $numType number in the version section must be a numerical character.";
-              Write-Host "Release Branch Syntax: release/v*.*.*";
-              Write-Host "`tExample: release/v1.2.3";
-              exit 1; # Fail;
-          }
+#           if ($hasFailed -eq $true) {
+#               Write-Host "The $numType number in the version section must be a numerical character.";
+#               Write-Host "Release Branch Syntax: release/v*.*.*";
+#               Write-Host "`tExample: release/v1.2.3";
+#               exit 1; # Fail;
+#           }
 
-          Write-Host "Source and target branches valid!!";
-        } else {
-          Write-Host "The source and/or target branch syntax is incorrect.";
-          Write-Host "";
-          Write-Host "The source branch must follow the syntax 'release/v*.*.*'";
-          Write-Host "`tExample: release/v1.2.3";
-          Write-Host "The target branch must be equal to 'master' or 'develop'";
-          Write-Host "";
-          Write-Host "Source Release Branch: $srcBranch";
-          Write-Host "Target Branch: $targetBranch";
+#           Write-Host "Source and target branches valid!!";
+#         } else {
+#           Write-Host "The source and/or target branch syntax is incorrect.";
+#           Write-Host "";
+#           Write-Host "The source branch must follow the syntax 'release/v*.*.*'";
+#           Write-Host "`tExample: release/v1.2.3";
+#           Write-Host "The target branch must be equal to 'master' or 'develop'";
+#           Write-Host "";
+#           Write-Host "Source Release Branch: $srcBranch";
+#           Write-Host "Target Branch: $targetBranch";
 
-          exit 1; # Fail
-        }
+#           exit 1; # Fail
+#         }
