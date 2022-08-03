@@ -1,182 +1,182 @@
-name: ✔Validate Preview Release Branches Status Check
+# name: ✔Validate Preview Release Branches Status Check
 
 
-env:
-  PROJECT_NAME: Velaptor
+# env:
+#   PROJECT_NAME: Velaptor
 
 
-on:
-  workflow_dispatch:
-  pull_request:
-    types: [ synchronize ]
-    paths-ignore:
-      - ".github/**"
-      - 'Documentation/**'
-      - '.editorconfig'
-      - '*.runsettings'
-      - '.gitattributes'
-      - '.gitignore'
-      - '*.md'
-      - '*.yml'
-      - '.vscode/**'
-      - '*.sln'
-      - '*.csproj'
+# on:
+#   workflow_dispatch:
+#   pull_request:
+#     types: [ synchronize ]
+#     paths-ignore:
+#       - ".github/**"
+#       - 'Documentation/**'
+#       - '.editorconfig'
+#       - '*.runsettings'
+#       - '.gitattributes'
+#       - '.gitignore'
+#       - '*.md'
+#       - '*.yml'
+#       - '.vscode/**'
+#       - '*.sln'
+#       - '*.csproj'
 
 
-jobs:
-  Validate_Preview_Release_Branches:
-    name: Validate Preview Release Branches
-    runs-on: windows-latest
-    steps:
-    # TODO: Need to replace this with the validate branch custom GitHub action once it is built
-    - name: Validate Preview & Release Branches
-      run: |
-        [string]$srcBranch = "${{ github.head_ref }}";
-        [string]$targetBranch = "${{ github.base_ref }}";
-        [string[]]$validNumChars = @( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+# jobs:
+#   Validate_Preview_Release_Branches:
+#     name: Validate Preview Release Branches
+#     runs-on: windows-latest
+#     steps:
+#     # TODO: Need to replace this with the validate branch custom GitHub action once it is built
+#     - name: Validate Preview & Release Branches
+#       run: |
+#         [string]$srcBranch = "${{ github.head_ref }}";
+#         [string]$targetBranch = "${{ github.base_ref }}";
+#         [string[]]$validNumChars = @( "0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 
-        # If merging from a preview branch into a release branch
-        if ($srcBranch.StartsWith("preview/v") -and `
-            $srcBranch.Contains("-preview.") -and `
-            $srcBranch.Split(".").Length -eq 4 -and ` # 4 Total periods
-            $targetBranch.StartsWith("release/v")) {
-          Write-Host "Source Preview Branch: $srcBranch";
-          Write-Host "Target Release Branch: $targetBranch";
-          Write-Host "";
+#         # If merging from a preview branch into a release branch
+#         if ($srcBranch.StartsWith("preview/v") -and `
+#             $srcBranch.Contains("-preview.") -and `
+#             $srcBranch.Split(".").Length -eq 4 -and ` # 4 Total periods
+#             $targetBranch.StartsWith("release/v")) {
+#           Write-Host "Source Preview Branch: $srcBranch";
+#           Write-Host "Target Release Branch: $targetBranch";
+#           Write-Host "";
 
-          [string]$srcBranchSections = $srcBranch.Split("-")[0];
-          $srcBranchSections = $srcBranchSections.Split("/v")[1];
+#           [string]$srcBranchSections = $srcBranch.Split("-")[0];
+#           $srcBranchSections = $srcBranchSections.Split("/v")[1];
 
-          [string]$srcMajorNum = $srcBranchSections.Split(".")[0];
-          [string]$srcMinorNum = $srcBranchSections.Split(".")[1];
-          [string]$srcPatchNum = $srcBranchSections.Split(".")[2];
-          [string]$srcPrevNum = $srcBranch.Split("-")[1];
-          $srcPrevNum = $srcPrevNum.Split(".")[1];
+#           [string]$srcMajorNum = $srcBranchSections.Split(".")[0];
+#           [string]$srcMinorNum = $srcBranchSections.Split(".")[1];
+#           [string]$srcPatchNum = $srcBranchSections.Split(".")[2];
+#           [string]$srcPrevNum = $srcBranch.Split("-")[1];
+#           $srcPrevNum = $srcPrevNum.Split(".")[1];
 
-          [string]$numType = "NOT SET";
-          [string]$hasFailed = $false;
+#           [string]$numType = "NOT SET";
+#           [string]$hasFailed = $false;
 
-          Write-Host "Preview Branch Sections:";
-          Write-Host `t"Preview Branch Major Num: $srcMajorNum";
-          Write-Host `t"Preview Branch Minor Num: $srcMinorNum";
-          Write-Host `t"Preview Branch Patch Num: $srcPatchNum";
-          Write-Host `t"Preview Branch Preview Num: $srcPrevNum";
-          Write-Host "";
+#           Write-Host "Preview Branch Sections:";
+#           Write-Host `t"Preview Branch Major Num: $srcMajorNum";
+#           Write-Host `t"Preview Branch Minor Num: $srcMinorNum";
+#           Write-Host `t"Preview Branch Patch Num: $srcPatchNum";
+#           Write-Host `t"Preview Branch Preview Num: $srcPrevNum";
+#           Write-Host "";
 
-          # If the src preview branch major number is not a number
-          foreach ($digit in $srcMajorNum.ToCharArray()) {
-            if ($validNumChars.Contains($digit.ToString()) -eq $false) {
-              $numType = "major";
-              $hasFailed = $true;
-              break;
-            }
-          }
+#           # If the src preview branch major number is not a number
+#           foreach ($digit in $srcMajorNum.ToCharArray()) {
+#             if ($validNumChars.Contains($digit.ToString()) -eq $false) {
+#               $numType = "major";
+#               $hasFailed = $true;
+#               break;
+#             }
+#           }
           
-          # If the src preview branch minor number is not a number
-          if ($hasFailed -eq $false) {
-            foreach ($digit in $srcMinorNum.ToCharArray()) {
-              if ($validNumChars.Contains($digit.ToString()) -eq $false) {
-                $numType = "minor";
-                $hasFailed = $true;
-                break;
-              }
-            }
-          }
+#           # If the src preview branch minor number is not a number
+#           if ($hasFailed -eq $false) {
+#             foreach ($digit in $srcMinorNum.ToCharArray()) {
+#               if ($validNumChars.Contains($digit.ToString()) -eq $false) {
+#                 $numType = "minor";
+#                 $hasFailed = $true;
+#                 break;
+#               }
+#             }
+#           }
 
-          # If the src preview branch patch number is not a number
-          if ($hasFailed -eq $false) {
-            foreach ($digit in $srcPatchNum.ToCharArray()) {
-              if ($validNumChars.Contains($digit.ToString()) -eq $false) {
-                $numType = "patch";
-                $hasFailed = $true;
-                break;
-              }
-            }
-          }
+#           # If the src preview branch patch number is not a number
+#           if ($hasFailed -eq $false) {
+#             foreach ($digit in $srcPatchNum.ToCharArray()) {
+#               if ($validNumChars.Contains($digit.ToString()) -eq $false) {
+#                 $numType = "patch";
+#                 $hasFailed = $true;
+#                 break;
+#               }
+#             }
+#           }
 
-          # If the src preview branch preview number is not a number
-          if ($hasFailed -eq $false) {
-            foreach ($digit in $srcPrevNum.ToCharArray()) {
-              if ($validNumChars.Contains($digit.ToString()) -eq $false) {
-                $numType = "preview";
-                $hasFailed = $true;
-                break;
-              }
-            }
-          }
+#           # If the src preview branch preview number is not a number
+#           if ($hasFailed -eq $false) {
+#             foreach ($digit in $srcPrevNum.ToCharArray()) {
+#               if ($validNumChars.Contains($digit.ToString()) -eq $false) {
+#                 $numType = "preview";
+#                 $hasFailed = $true;
+#                 break;
+#               }
+#             }
+#           }
 
-          if ($hasFailed -eq $true) {
-            Write-Host ""
-            Write-Host "The $numType number in the version section of the source branch must be a numerical character.";
-            Write-Host "Source Preview Branch Syntax: preview/v*.*.*-preview.*";
-            Write-Host "`tExample: preview/v1.2.3-preview.4";
-            exit 1; # Fail;
-          }
+#           if ($hasFailed -eq $true) {
+#             Write-Host ""
+#             Write-Host "The $numType number in the version section of the source branch must be a numerical character.";
+#             Write-Host "Source Preview Branch Syntax: preview/v*.*.*-preview.*";
+#             Write-Host "`tExample: preview/v1.2.3-preview.4";
+#             exit 1; # Fail;
+#           }
 
-          [string]$targetBranchSections = $targetBranch.Split("/v")[1];
-          [string]$targetMajorNum = $targetBranchSections.Split(".")[0];
-          [string]$targetMinorNum = $targetBranchSections.Split(".")[1];
-          [string]$targetPatchNum = $targetBranchSections.Split(".")[2];
+#           [string]$targetBranchSections = $targetBranch.Split("/v")[1];
+#           [string]$targetMajorNum = $targetBranchSections.Split(".")[0];
+#           [string]$targetMinorNum = $targetBranchSections.Split(".")[1];
+#           [string]$targetPatchNum = $targetBranchSections.Split(".")[2];
 
-          Write-Host "Preview Branch Sections:";
-          Write-Host `t"Release Branch Major Num: $targetMajorNum";
-          Write-Host `t"Release Branch Minor Num: $targetMinorNum";
-          Write-Host `t"Release Branch Patch Num: $targetPatchNum";
+#           Write-Host "Preview Branch Sections:";
+#           Write-Host `t"Release Branch Major Num: $targetMajorNum";
+#           Write-Host `t"Release Branch Minor Num: $targetMinorNum";
+#           Write-Host `t"Release Branch Patch Num: $targetPatchNum";
 
-          # If the target release branch major number is not a number
-          if ($hasFailed -eq $false) {
-            foreach ($digit in $targetMajorNum.ToCharArray()) {
-              if ($validNumChars.Contains($digit.ToString()) -eq $false) {
-                $numType = "major";
-                $hasFailed = $true;
-                break;
-              }
-            }
-          }
+#           # If the target release branch major number is not a number
+#           if ($hasFailed -eq $false) {
+#             foreach ($digit in $targetMajorNum.ToCharArray()) {
+#               if ($validNumChars.Contains($digit.ToString()) -eq $false) {
+#                 $numType = "major";
+#                 $hasFailed = $true;
+#                 break;
+#               }
+#             }
+#           }
 
-          # If the target release branch minor number is not a number
-          if ($hasFailed -eq $false) {
-            foreach ($digit in $targetMinorNum.ToCharArray()) {
-              if ($validNumChars.Contains($digit.ToString()) -eq $false) {
-                $numType = "minor";
-                $hasFailed = $true;
-                break;
-              }
-            }
-          }
+#           # If the target release branch minor number is not a number
+#           if ($hasFailed -eq $false) {
+#             foreach ($digit in $targetMinorNum.ToCharArray()) {
+#               if ($validNumChars.Contains($digit.ToString()) -eq $false) {
+#                 $numType = "minor";
+#                 $hasFailed = $true;
+#                 break;
+#               }
+#             }
+#           }
 
-          # If the target release branch patch number is not a number
-          if ($hasFailed -eq $false) {
-            foreach ($digit in $targetPatchNum.ToCharArray()) {
-              if ($validNumChars.Contains($digit.ToString()) -eq $false) {
-                $numType = "patch";
-                $hasFailed = $true;
-                break;
-              }
-            }
-          }
+#           # If the target release branch patch number is not a number
+#           if ($hasFailed -eq $false) {
+#             foreach ($digit in $targetPatchNum.ToCharArray()) {
+#               if ($validNumChars.Contains($digit.ToString()) -eq $false) {
+#                 $numType = "patch";
+#                 $hasFailed = $true;
+#                 break;
+#               }
+#             }
+#           }
 
-          if ($hasFailed -eq $true) {
-            Write-Host ""
-            Write-Host "The $numType number in the version section of the target branch must be a numerical character.";
-            Write-Host "Target Release Branch Syntax: release/v*.*.*";
-            Write-Host "`tExample: release/v1.2.3";
-            exit 1; # Fail;
-          }
+#           if ($hasFailed -eq $true) {
+#             Write-Host ""
+#             Write-Host "The $numType number in the version section of the target branch must be a numerical character.";
+#             Write-Host "Target Release Branch Syntax: release/v*.*.*";
+#             Write-Host "`tExample: release/v1.2.3";
+#             exit 1; # Fail;
+#           }
 
-          Write-Host "";
-          Write-Host "Source and target branches valid!!";
-        } else {
-          # If the src branch is not preview and the target branch is not release
-          Write-Host "The source and/or target branch syntax is incorrect.";
-          Write-Host "";
-          Write-Host "The source branch must follow the syntax 'preview/v*.*.*-preview.*'";
-          Write-Host "`tExample: preview/v1.2.3-preview.4";
-          Write-Host "The target branch must follow the syntax 'release/v*.*.*'";
-          Write-Host "`tExample: release/v1.2.3";
-          Write-Host "";
-          Write-Host "Source Preview Branch: $srcBranch";
-          Write-Host "Target Release Branch: $targetBranch";
+#           Write-Host "";
+#           Write-Host "Source and target branches valid!!";
+#         } else {
+#           # If the src branch is not preview and the target branch is not release
+#           Write-Host "The source and/or target branch syntax is incorrect.";
+#           Write-Host "";
+#           Write-Host "The source branch must follow the syntax 'preview/v*.*.*-preview.*'";
+#           Write-Host "`tExample: preview/v1.2.3-preview.4";
+#           Write-Host "The target branch must follow the syntax 'release/v*.*.*'";
+#           Write-Host "`tExample: release/v1.2.3";
+#           Write-Host "";
+#           Write-Host "Source Preview Branch: $srcBranch";
+#           Write-Host "Target Release Branch: $targetBranch";
 
-          exit 1; # Fail
-        }
+#           exit 1; # Fail
+#         }
