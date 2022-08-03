@@ -23,4 +23,4 @@ Velaptor Release Checker Release Notes - [add-prod-release-here]</h1>
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
-<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
+<h5 align="center">(Includes anything that does not fit into the categories above)</h5>

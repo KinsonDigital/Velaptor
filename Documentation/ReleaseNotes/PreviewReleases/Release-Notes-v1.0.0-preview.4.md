@@ -2,7 +2,10 @@
 
 <h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
 
-As with all software, there is always a chance for issues and bugs to exist with all releases.  It is also common to sometimes miss changes in the release notes when the amount of changes are large.  This is even more common in preview releases.
+<div algn="center">
+
+As with all software, there is always a chance for issues and bugs, especially for preview releases, which is why your input is greatly appreciated. 🙏🏼
+</div>
 
 ---
 
@@ -76,7 +79,7 @@ As with all software, there is always a chance for issues and bugs to exist with
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
-<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
+<h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
 1. Improved texture rendering performance
 2. Improved text rendering performance

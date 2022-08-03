@@ -2,7 +2,10 @@
 
 <h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
 
-As with all software, including releases, there is always a chance for issues and bugs.  It is also common to miss changes in the release notes when there are many.  This is even more common in preview releases.
+<div algn="center">
+
+As with all software, there is always a chance for issues and bugs, especially for preview releases, which is why your input is greatly appreciated. 🙏🏼
+</div>
 
 ---
 
@@ -11,14 +14,14 @@ As with all software, including releases, there is always a chance for issues an
 1. [#75](https://github.com/KinsonDigital/Velaptor/issues/75) - Add ability to render rectangles to the scene with the various attributes below:
    - Solid/filled rectangles
    - Empty rectangles
-   - Ability to change the fill color of a filled rectangle
-   - Ability to change the border color of an empty rectangle
-   - Ability to have a horizontal color gradient with a start and end color
+   - Change the fill color of a filled rectangle
+   - Change the border color of an empty rectangle
+   - Add a horizontal color gradient with a start and end color
      - This can be applied to filled and empty rectangles
-   - Ability to have a vertical color gradient with a start and end color
+   - Add a vertical color gradient with a start and end color
      - This can be applied to filled and empty rectangles
-   - Ability to change the border thickness of an empty rectangle
-   - Ability to set radius of each corner independently
+   - Change the border thickness of an empty rectangle
+   - Set the radius of each corner independently
      - This can be applied to filled and empty rectangles
 2. [#131](https://github.com/KinsonDigital/Velaptor/issues/131) - Loading sounds cannot be cached to greatly improve sound loading performance.
 3. [#128](https://github.com/KinsonDigital/Velaptor/issues/128) - Loading sounds can now be loaded via a fully qualified file path.  This means you do not have to only load sounds from the content system!!
@@ -32,7 +35,7 @@ As with all software, including releases, there is always a chance for issues an
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
-<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
+<h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
 1. [#153](https://github.com/KinsonDigital/Velaptor/issues/153) - Improved constructor argument null checks by implementing a guarding pattern.
    - This resulted in null checks that were not being performed previously.

@@ -6,7 +6,7 @@ Velaptor Release Checker Release Notes - [add-prev-release-here]
 
 <div algn="center">
 
-As with all software, there is always a chance for issues and bugs, especially for preview releases.  Which is why your input is greatly appreciated. 🙏🏼
+As with all software, there is always a chance for issues and bugs, especially for preview releases, which is why your input is greatly appreciated. 🙏🏼
 </div>
 
 ---
@@ -33,4 +33,4 @@ As with all software, there is always a chance for issues and bugs, especially f
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
-<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
+<h5 align="center">(Includes anything that does not fit into the categories above)</h5>

@@ -2,14 +2,17 @@
 
 <h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
 
-As with all software, there is always a chance for issues and bugs to exist with all releases.  It is also common to sometimes miss changes in the release notes when the amount of changes are large.  This is even more common in preview releases.
+<div algn="center">
+
+As with all software, there is always a chance for issues and bugs, especially for preview releases, which is why your input is greatly appreciated. 🙏🏼
+</div>
 
 ---
 
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
-1. Greatly improved the testing application to help improve the process of manual testing
-2. Created scene management system with various scenes for the testing application
+1. Greatly improved the process of the manual testing application.
+2. Created scene management system for the testing application.
    - Added a scene to test text rendering
    - Added a scene to test mouse functionality
    - Added a scene to test keyboard functionality
@@ -101,9 +104,9 @@ As with all software, there is always a chance for issues and bugs to exist with
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
-<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
+<h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
 1. Cleanup and refactoring of inline XML code documentation throughout entire library.
-2. Refactoring to help aline code base with coding standards
-3. Increased code coverage
-4. Miscellaneous cleanup and refactoring to meet coding standards
+2. Refactoring to help align code base with coding standards.
+3. Increased code coverage.
+4. Miscellaneous cleanup and refactoring to meet coding standards.
