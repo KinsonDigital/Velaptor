@@ -6,7 +6,7 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">New 🎉</h2>
+<h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Added a new method named `EndNotifications()` to `IReactable<TData>` interface and `Reactable<TData>` class to end notifications to subscribed `IReactor` implementations.
    - Before there was no way for the `Reactor.OnCompleted()` method implementation to be invoked.  When invoking the `IReactable<TData>.EndNotifications()` method, all subscribed `IReactor<T>` implementations will be completed.
@@ -45,6 +45,7 @@ As with all software, including releases, there is always a chance for issues an
 ---
 
 <h2 style="font-weight:bold" align="center">Internal Changes ⚙️</h2>
+<h5 align="center">(Changes that do not affect users.  Not breaking changes, new features, or bug fixes.)</h5>
 
 1. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Refactored `TextureBatchService` class to `TextureBatchingService`.
 2. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Refactored `RectBatchService` class to `RectBatchingService`.
@@ -76,6 +77,7 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Other 👏</h2>
+<h2 style="font-weight:bold" align="center">Other 🪧</h2>
+<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
 
 1. [#254](https://github.com/KinsonDigital/Velaptor/issues/254) - Created new issue template for performing releases

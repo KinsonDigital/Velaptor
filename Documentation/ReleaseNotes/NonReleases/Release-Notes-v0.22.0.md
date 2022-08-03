@@ -1,6 +1,6 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.22.0</span>
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Changed the <span style='font-weight: bold; color: khaki'>Sound </span> class to take in a full file path to the sound content instead of just a sound name
    * Before this used a content source to resolve where the sound content was located
@@ -12,7 +12,7 @@
    * <span style='font-weight: bold; color: khaki'>AtlasContentSource </span> class has been changed to <span style='font-weight: bold; color: khaki'>AtlasJSONDataPathResolver</span>
    * <span style='font-weight: bold; color: khaki'>SoundContentSource </span> class has been changed to <span style='font-weight: bold; color: khaki'>SoundPathResolver</span>
 
-### **New** 🎉
+### **New** ✨
 
 1. Added the following methods to the <span style='font-weight: bold; color: khaki'>ContentLoaderFactory </span> class to create different kinds of content loaders
    * <span style='font-weight: bold; color: khaki'>CreateTextureLoader()</span>
@@ -33,7 +33,7 @@
 9. Made <span style='font-weight: bold; color: khaki'>MapValue() </span> overloads public to the library API for library users to use
    * These extension methods can be used map a value from one range to another
 
-### **Tech Debt/Cleanup** 🧹
+### **Tech Debt/Cleanup** 🧽
 
 1. Removed **VelcroPhysics.dll** library
 2. Removed the following classes/types

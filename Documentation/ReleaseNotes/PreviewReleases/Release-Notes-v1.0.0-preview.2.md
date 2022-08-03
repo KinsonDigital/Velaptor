@@ -6,7 +6,7 @@ As with all software, there is always a chance for issues and bugs to exist with
 
 ---
 
-<h2 style="font-weight:bold" align="center">New 🎉</h2>
+<h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. Created a new exception class that would be thrown if a keyboard was not detected in the system.
    - The name of the new exception class is _`NoKeyboardException`_
@@ -28,7 +28,8 @@ As with all software, there is always a chance for issues and bugs to exist with
 
 ---
 
-<h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
+<h2 style="font-weight:bold" align="center">Other 🪧</h2>
+<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
 
 1. Implemented major performance improvements related to loading font content
 2. Improved PR templates for maintainers and contributors

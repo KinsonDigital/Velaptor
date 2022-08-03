@@ -6,7 +6,7 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">New 🎉</h2>
+<h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. Implemented specialized version of the .NET observable interfaces. This replaces the use of `System.IObservable` and `System.IObserver`.
     - This gives the ability to add features to the observable pattern.
@@ -41,13 +41,9 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
+<h2 style="font-weight:bold" align="center">Other 🪧</h2>
+<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
 
 1. Greatly improved the branching diagram to help contributors understand the Git branching process.
 2. Updated documentation to point to the new branching diagram.
-
----
-
-<h2 style="font-weight:bold" align="center">Other 👏</h2>
-
-1. Added a new discord badge to README file to join the discord server.
+3. Added a new discord badge to README file to join the discord server.

@@ -1,6 +1,6 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.20.1</span> - <span style="color:indianred;font-weight:bold">(Hot Fix)</span>
 
-### **New** 🎉
+### **New** ✨
 
 1. Changed the window to be displayed in the center of the screen horizontally and vertically by default
 

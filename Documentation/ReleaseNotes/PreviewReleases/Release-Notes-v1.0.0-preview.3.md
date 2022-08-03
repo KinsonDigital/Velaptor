@@ -6,7 +6,7 @@ As with all software, there is always a chance for issues and bugs to exist with
 
 ---
 
-<h2 style="font-weight:bold" align="center">New 🎉</h2>
+<h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. Greatly improved the testing application to help improve the process of manual testing
 2. Created scene management system with various scenes for the testing application
@@ -91,13 +91,6 @@ As with all software, there is always a chance for issues and bugs to exist with
 
 ---
 
-<h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
-
-1. Cleanup and refactoring of inline XML code documentation throughout entire library.
-2. Refactoring to help aline code base with coding standards
-
----
-
 <h2 style="font-weight:bold" align="center">CI/CD 🚀</h2>
 
 1. Created workflow to automatically add triage labels to new and reopened issues
@@ -107,7 +100,10 @@ As with all software, there is always a chance for issues and bugs to exist with
 
 ---
 
-<h2 style="font-weight:bold" align="center">Other 👏</h2>
+<h2 style="font-weight:bold" align="center">Other 🪧</h2>
+<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
 
-1. Increased code coverage
-2. Miscellaneous cleanup and refactoring to meet coding standards
+1. Cleanup and refactoring of inline XML code documentation throughout entire library.
+2. Refactoring to help aline code base with coding standards
+3. Increased code coverage
+4. Miscellaneous cleanup and refactoring to meet coding standards

@@ -6,7 +6,7 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">New 🎉</h2>
+<h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. Added exception named `LoadTextureException` that will be thrown if something goes wrong when attempting to load textures.
 2. Added exception named `LoadAtlasException` that will be thrown if something goes wrong when attempting to load texture atlas data.
@@ -108,14 +108,10 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
+<h2 style="font-weight:bold" align="center">Other 🪧</h2>
+<h5 align="center">(Includes anything that does not fit in any of the categories above)</h5>
 
 1. Changed the `Label` class to use the newly implemented default font system as a default font.
 2. Improved how content is managed increasing testability, stability and performance.
-
----
-
-<h2 style="font-weight:bold" align="center">Other 👏</h2>
-
-1. Lots of improvements to documentation related to grammar, spelling and clarity.
+3. Lots of improvements to documentation related to grammar, spelling and clarity.
     - This is all due to the hard work of my beautiful wife [@kselena](https://github.com/kselena/kselena)!!  Thanks babe!! 😚
