@@ -1,4 +1,6 @@
-<h1 align="center" style='color:mediumseagreen;font-weight:bold'>Velaptor Preview Release Notes - v1.0.0-preview.8</h1>
+<h1 align="center" style='color:mediumseagreen;font-weight:bold'>
+   Velaptor Preview Release Notes - v1.0.0-preview.8
+</h1>
 
 <h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
 
