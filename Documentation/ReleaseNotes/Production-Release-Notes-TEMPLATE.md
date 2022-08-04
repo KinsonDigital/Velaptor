@@ -1,5 +1,6 @@
 <h1 align="center" style='color:mediumseagreen;font-weight:bold'>
-Velaptor Release Checker Release Notes - [add-prod-release-here]</h1>
+    Velaptor Production Release Notes - [add-prod-release-here]
+</h1>
 
 <h2 style="font-weight:bold" align="center">New Features✨</h2>
 

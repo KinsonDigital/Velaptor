@@ -1,8 +1,8 @@
 <h1 align="center" style='color:mediumseagreen;font-weight:bold'>
-Velaptor Release Checker Release Notes - [add-prev-release-here]
+    Velaptor Preview Release Notes - [add-prev-release-here]
 </h1>
 
-<h2 align="center" style='font-weight:bold'>Quick <h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
+<h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
 
 <div algn="center">
 
