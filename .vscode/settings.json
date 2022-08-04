@@ -21,6 +21,7 @@
         "msbuild",
         "Nuget",
         "nupkg",
+        "prereleases",
         "Reactable",
         "releasetype",
         "releasetypes",
