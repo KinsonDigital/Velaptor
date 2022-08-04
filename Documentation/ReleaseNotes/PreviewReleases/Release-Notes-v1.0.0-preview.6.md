@@ -23,8 +23,8 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
-1. Refactored name of the `Observable` class to `Reactor`
-    - This was done due to prevent naming clashes in the future with `System.IObservable<T>`, `System.IObserver` types.  This was discovered when creating the new type `IReactor`.  Originally the name was `Velaptor.Observables.Core.IObservable<T>`.  This was the same name as `System.IObservable<T>` and was causing too many uses of `using alias` across the code base to prevent naming clashes between **Velaptor** and **.NET**.
+1. Refactored name of the `Observable` class to `Reactor`.
+    - This was done due to prevent naming clashes in the future with `System.IObservable<T>`, `System.IObserver` types.  It was discovered when creating the new type `IReactor`.  Originally the name was `Velaptor.Observables.Core.IObservable<T>`.  The same name existed as `System.IObservable<T>` and caused too many uses of `using alias` across the code base to prevent naming clashes between **Velaptor** and **.NET**.
     - The new name `Reactor` means that it reacts to push notifications for the purpose of **_reactive_** programming.
 2. Change the scope of the methods below for the `Window` class from `public` to `protected`:
     - `OnLoad()`

@@ -28,13 +28,13 @@ As with all software, there is always a chance for issues and bugs, especially f
 8. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added new `System.Drawing.Color` extension method named `IncreaseBrightness()` to increase the brightness of the color.
 9. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added new `System.Drawing.Color` extension method named `DecreaseBrightness()` to decrease the brightness of the color.
 10. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Changed the `ControlBase.Width` and `ControlBase.Height` property setters from `protected internal` to `public`.
-11. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added property named `AutoSize` to the `Label` control.
+11. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added `AutoSize` property to the `Label` control.
    - When set to `true`, the label's `Width` and `Height` will automatically be set based on the width and height of the rendered text.  When set to `false`, `Width` and `Height` are independent of the rendered text size.
 12. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added new property named `AutoSize` to the `Button` control.
    - When set to `true`, the button's `Width` and `Height` will automatically be set based on the width and height of the button text.  When set to `false`, `Width` and `Height` are independent of the button text size.
 13. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added new method to the `IFont` interface and `Font` class that returns the bounds of each character of some given text relative to a position.
 14. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added the ability to add a `Label` to a `Button`.  This can be done by sending in a `Label` instance into the `Button` constructor.
-15. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added additional constructors to the `Button` class to improve the ease of use when creating new buttons.  List of new constructors listed below.
+15. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added additional constructors to the `Button` class to improve the ease of use when creating new buttons.  List of new constructors listed below:
     - `Button(Label label)`
     - `Button(uint width, uint height)`
     - `Button(uint width, uint height, Label label)`

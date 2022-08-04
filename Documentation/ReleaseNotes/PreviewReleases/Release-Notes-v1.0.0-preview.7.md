@@ -13,18 +13,18 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
-1. [#75](https://github.com/KinsonDigital/Velaptor/issues/75) - Add ability to render rectangles to the scene with the various attributes below:
-   - Solid/filled rectangles
-   - Empty rectangles
-   - Change the fill color of a filled rectangle
-   - Change the border color of an empty rectangle
-   - Add a horizontal color gradient with a start and end color
-     - This can be applied to filled and empty rectangles
-   - Add a vertical color gradient with a start and end color
-     - This can be applied to filled and empty rectangles
-   - Change the border thickness of an empty rectangle
-   - Set the radius of each corner independently
-     - This can be applied to filled and empty rectangles
+1. [#75](https://github.com/KinsonDigital/Velaptor/issues/75) - Added ability to render rectangles to the scene with the various attributes below:
+   - Solid/filled rectangles.
+   - Empty rectangles.
+   - Changed the fill color of a filled rectangle.
+   - Changed the border color of an empty rectangle.
+   - Added a horizontal color gradient with a start and end color.
+     - This can be applied to filled and empty rectangles.
+   - Added a vertical color gradient with a start and end color.
+     - This can be applied to filled and empty rectangles.
+   - Changed the border thickness of an empty rectangle.
+   - Set the radius of each corner independently.
+     - This can be applied to filled and empty rectangles.
 2. [#131](https://github.com/KinsonDigital/Velaptor/issues/131) - Loading sounds cannot be cached to greatly improve sound loading performance.
 3. [#128](https://github.com/KinsonDigital/Velaptor/issues/128) - Loading sounds can now be loaded via a fully qualified file path.  This means you do not have to only load sounds from the content system!!
 

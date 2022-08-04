@@ -68,19 +68,19 @@ As with all software, there is always a chance for issues and bugs, especially f
 11. Removed the `TextureType` enumeration.
 12. Removed the `TextureCreationSource` enumeration.
 13. Refactored `IContent` interface property `Path` to `FilePath` to better describe what kind of path it is.
-    - This effects the `IContent` types below.
+    - This effects the `IContent` types below:
       - `AtlasData`
       - `Texture`
       - `Font`
       - `Sound`
 14. Made API changes to the `IContentLoader` and `ContentLoader` types.  This was done due to extra font features needing more control over the font loading process.  This lead to using generics causing some issues with needing that finer control. 
     - Removed methods `Load<T>()` and `Unload<T>` and replaced with respective methods to load each type of content.
-    - Added the methods below to load the respective types of content.
+    - Added the methods to load the respective types of content below:
       - `LoadTexture()`
       - `LoadSound()`
       - `LoadAtlas()`
       - `LoadFont`
-    - Added the methods below to unload the respective types of content.
+    - Added the methods to unload the respective types of content below:
       - `UnloadTexture()`
       - `UnloadSound()`
       - `UnloadAtlas()`
@@ -91,7 +91,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 17. Changed the `GPUBufferBase<TData>` type from `public` to `internal`.
     - These types are not meant to be part of the public facing API.
 18. Change all of the resolve types below from `public` to `internal`.
-    - These types are not meant to be part of the public facing API.
+    - These types are not meant to be part of the public facing API:
       - `ContentPathResolver`
       - `FontPathResolver`
       - `ContentFontPathResolver`
@@ -104,7 +104,7 @@ As with all software, there is always a chance for issues and bugs, especially f
     - These types were not meant to be part of the public facing API.
 20. Changed readonly struct `ImageData` constructor parameter `pixels` from non-nullable to nullable. 
 21. Changed the scope of the `Window.Dispose(bool disposing)` method from `protected` to `private`.
-22. Removed the `IContent.IsPooled` property.  This property does not suite its purpose or intent anymore due to the improvements of the content caching system.
+22. Removed the `IContent.IsPooled` property.  This property does not suit its purpose or intent anymore due to the improvements of the content caching system.
     - Removed the other implementations of the `IsPooled` property for the other `IContent` implementation classes.  All other references and related code also cleaned up and removed.
       - `ITexture` interface and `Texture` class.
       - `ISound` interface and `Sound` class.

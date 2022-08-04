@@ -6,7 +6,7 @@
 
 ### **Changes**
 
-2. Refactored code according to **Microsoft's** FxCop analyzers as well as setting up code base to use nullable references
+2. Refactored code according to **Microsoft's** FxCop analyzers and set up the code base to use nullable references
    * This greatly improves the code base to account for null reference exceptions as well as following better coding standards
 
 ### **Other** 🪧
