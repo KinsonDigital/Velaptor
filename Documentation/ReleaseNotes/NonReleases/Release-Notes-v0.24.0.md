@@ -1,6 +1,6 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.24.0</span>
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Moved the following types from the <span style='font-weight: bold; color: khaki'>Velaptor.Desktop</span> namespace to the <span style='font-weight: bold; color: khaki'>Velaptor.UI</span> namespace
    * NOTE: The types below were all of the types in the <span style='font-weight: bold; color: khaki'>Velaptor.Desktop</span> namespace.  The namespace has been removed entirely
@@ -16,7 +16,7 @@
 
 1. Improved audio device management and how audio is played
 
-### **Tech Debt/Cleanup** 🧹
+### **Tech Debt/Cleanup** 🧽
 
 1. Refactored code to meet coding standards
 2. Cleaned up <span style='font-weight: bold; color: dodgerblue'>YAML</span> files for build pipeline

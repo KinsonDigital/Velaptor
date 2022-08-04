@@ -1,6 +1,6 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.11.0</span>
 
-### **Other** 👏
+### **Other** 🪧
 
 1. Added rules to **editorconfig** files in solution to improve coding standards
 2. Adjusted **editorconfig** solution setup

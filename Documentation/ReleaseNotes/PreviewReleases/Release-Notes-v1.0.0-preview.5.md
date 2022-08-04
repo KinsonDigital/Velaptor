@@ -1,12 +1,17 @@
-<h1 align="center" style='color:mediumseagreen;font-weight:bold'>Velaptor Preview Release Notes - v1.0.0-preview.5</h1>
+<h1 align="center" style='color:mediumseagreen;font-weight:bold'>
+    Velaptor Preview Release Notes - v1.0.0-preview.5
+</h1>
 
 <h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
 
-As with all software, including releases, there is always a chance for issues and bugs.  It is also common to miss changes in the release notes when there are many.  This is even more common in preview releases.
+<div algn="center">
+
+As with all software, there is always a chance for issues and bugs, especially for preview releases, which is why your input is greatly appreciated. 🙏🏼
+</div>
 
 ---
 
-<h2 style="font-weight:bold" align="center">New 🎉</h2>
+<h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. Added exception named `LoadTextureException` that will be thrown if something goes wrong when attempting to load textures.
 2. Added exception named `LoadAtlasException` that will be thrown if something goes wrong when attempting to load texture atlas data.
@@ -63,19 +68,19 @@ As with all software, including releases, there is always a chance for issues an
 11. Removed the `TextureType` enumeration.
 12. Removed the `TextureCreationSource` enumeration.
 13. Refactored `IContent` interface property `Path` to `FilePath` to better describe what kind of path it is.
-    - This effects the `IContent` types below.
+    - This effects the `IContent` types below:
       - `AtlasData`
       - `Texture`
       - `Font`
       - `Sound`
 14. Made API changes to the `IContentLoader` and `ContentLoader` types.  This was done due to extra font features needing more control over the font loading process.  This lead to using generics causing some issues with needing that finer control. 
     - Removed methods `Load<T>()` and `Unload<T>` and replaced with respective methods to load each type of content.
-    - Added the methods below to load the respective types of content.
+    - Added the methods to load the respective types of content below:
       - `LoadTexture()`
       - `LoadSound()`
       - `LoadAtlas()`
       - `LoadFont`
-    - Added the methods below to unload the respective types of content.
+    - Added the methods to unload the respective types of content below:
       - `UnloadTexture()`
       - `UnloadSound()`
       - `UnloadAtlas()`
@@ -86,7 +91,7 @@ As with all software, including releases, there is always a chance for issues an
 17. Changed the `GPUBufferBase<TData>` type from `public` to `internal`.
     - These types are not meant to be part of the public facing API.
 18. Change all of the resolve types below from `public` to `internal`.
-    - These types are not meant to be part of the public facing API.
+    - These types are not meant to be part of the public facing API:
       - `ContentPathResolver`
       - `FontPathResolver`
       - `ContentFontPathResolver`
@@ -99,7 +104,7 @@ As with all software, including releases, there is always a chance for issues an
     - These types were not meant to be part of the public facing API.
 20. Changed readonly struct `ImageData` constructor parameter `pixels` from non-nullable to nullable. 
 21. Changed the scope of the `Window.Dispose(bool disposing)` method from `protected` to `private`.
-22. Removed the `IContent.IsPooled` property.  This property does not suite its purpose or intent anymore due to the improvements of the content caching system.
+22. Removed the `IContent.IsPooled` property.  This property does not suit its purpose or intent anymore due to the improvements of the content caching system.
     - Removed the other implementations of the `IsPooled` property for the other `IContent` implementation classes.  All other references and related code also cleaned up and removed.
       - `ITexture` interface and `Texture` class.
       - `ISound` interface and `Sound` class.
@@ -108,14 +113,10 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
+<h2 style="font-weight:bold" align="center">Other 🪧</h2>
+<h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
 1. Changed the `Label` class to use the newly implemented default font system as a default font.
 2. Improved how content is managed increasing testability, stability and performance.
-
----
-
-<h2 style="font-weight:bold" align="center">Other 👏</h2>
-
-1. Lots of improvements to documentation related to grammar, spelling and clarity.
+3. Lots of improvements to documentation related to grammar, spelling and clarity.
     - This is all due to the hard work of my beautiful wife [@kselena](https://github.com/kselena/kselena)!!  Thanks babe!! 😚
