@@ -4,7 +4,7 @@ title: "🚧"
 body:
 - type: checkboxes
   attributes:
-    label: Complete Items Below
+    label: Complete The Item Below
     options:
     - label: I have updated the title without removing the 🚧 emoji.
       required: true
@@ -43,13 +43,11 @@ body:
   attributes:
     label: Issue Dependencies
     placeholder: |
-      No Issue Dependencies Added.
       Example:
         - #10
         - #20
     description: |
       A list of issues that are dependencies of this issue and need to be completed first.
-      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 
@@ -57,13 +55,11 @@ body:
   attributes:
     label: Related Work
     placeholder: |
-      No Related Work Items Added.
       Example:
         - #10 
         - #20
     description: |
       A list of issues related to this issue but are not a dependency.
-      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 

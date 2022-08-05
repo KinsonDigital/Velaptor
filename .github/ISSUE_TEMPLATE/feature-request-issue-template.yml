@@ -5,17 +5,17 @@ labels: [✨new feature]
 body:
 - type: checkboxes
   attributes:
-    label: Complete Items Below
+    label: Complete The Items Below
     options:
     - label: I have updated the title without removing the ✨ emoji.
       required: true
-    - label: I searched whether or not a feature requests already exists.
+    - label: I searched whether or not a feature request already exists.
       required: true
 
 - type: textarea
   attributes:
     label: Feature Request Purpose
-    description: A clear and concise description of the problem that your feature request solves (ie. I'm frustrated when [...] or I would like to improve [...]).
+    description: A clear and concise description of the problem that your feature request solves (i.e. I'm frustrated when [...] or I would like to improve [...]).
   validations:
     required: false
 

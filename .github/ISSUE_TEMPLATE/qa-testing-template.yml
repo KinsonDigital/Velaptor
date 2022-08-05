@@ -3,17 +3,9 @@ description: Test functionality (Project maintainers only).
 title: "🧪QA Testing"
 labels: ["🧪qa testing"]
 body:
-  - type: markdown
-    attributes:
-      value: "## Description:"
-
-  - type: markdown
-    attributes:
-      value: Manually test the software.
-
   - type: checkboxes
     attributes:
-      label: Complete Item Below
+      label: Complete The Item Below
       options:
       - label: I have linked all issues that will be tested for this release.
         required: true
@@ -23,11 +15,8 @@ body:
     attributes:
       label: Version Being Tested
       description: |
-        Add the version that will be tested for release.
         Version Format: v<major.minor.patch>[-preview.<prev-num>]
-        Examples:
-          v1.0.0
-          v1.2.3-preview.4
+        Examples: v1.0.0 or v1.2.3-preview.4
     validations:
       required: true
 

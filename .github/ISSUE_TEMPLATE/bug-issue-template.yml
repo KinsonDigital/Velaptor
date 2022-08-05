@@ -5,7 +5,7 @@ labels: [bug, ⚕️NEEDS TRIAGE]
 body:
 - type: checkboxes
   attributes:
-    label: Complete Items Below
+    label: Complete The Items Below
     options:
     - label: I have updated the title without removing the 🐛 emoji.
       required: true
