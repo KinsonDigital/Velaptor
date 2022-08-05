@@ -23,7 +23,7 @@ body:
       Example:
         - [ ] Item 1 complete
         - [ ] Item 2 complete
-    description: The list of items that needs to be completed to satisfy the definition of done.
+    description: The items to complete in order to satisfy the Definition of Done.
   validations:
     required: true
     render: markdown

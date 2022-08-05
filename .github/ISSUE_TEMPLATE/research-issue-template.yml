@@ -32,7 +32,7 @@ body:
 - type: textarea
   attributes:
     label: Acceptance Criteria
-    description: The list of items that need to be completed to satisfy the definition of done.
+    description: The items to complete in order to satisfy the Definition of Done.
     value: |
       **This issue is finished when:**
       - [ ] Research complete and issues created (if needed).
