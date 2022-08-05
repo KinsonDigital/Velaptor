@@ -1,22 +1,15 @@
 name: 🐛 Bug
-description: File a bug
+description: File a bug.
 title: "🐛"
 labels: [bug, ⚕️NEEDS TRIAGE]
 body:
 - type: checkboxes
   attributes:
-    label: I have done the items below . . .
-    description: Please make sure to do the items below.
+    label: Complete Items Below
     options:
     - label: I have updated the title without removing the 🐛 emoji.
       required: true
-
-- type: checkboxes
-  attributes:
-    label: Is there an existing issue for this?
-    description: Please search to see if an issue already exists for the bug you encountered.
-    options:
-    - label: I have searched the existing issues
+    - label: I searched whether or not an issue already exists for the bug I encountered.
       required: true
 
 - type: textarea
@@ -36,43 +29,42 @@ body:
 - type: textarea
   attributes:
     label: Steps To Reproduce
-    description: Steps to reproduce the behavior.
+    description: List out the steps taken to reproduce the issue.
     placeholder: |
       1. In this environment...
       2. With this config...
       3. Run '...'
       4. See error...
   validations:
-    required: false
+    required: true
 
 - type: checkboxes
   attributes:
-    label: Operating System
-    description: Which operating system have you seen the bug occur on?
+    label: Operating System(s)
+    description: Which operating system(s) does the bug occur?
     options:
     - label: Windows
     - label: Linux
     - label: Android
     - label: Mac OS
     - label: iOS
+    - label: Other
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: OS Version
+    description: If you know what OS version the bug occurred on, enter it here.
+    placeholder: v1.2.3
   validations:
     required: false
 
 - type: textarea
   attributes:
-    label: If you know what OS version the bug occurred on, enter the OS version here.
-    description: Enter operating system version here.
-    placeholder: os version
-  validations:
-    required: false
-
-- type: textarea
-  attributes:
-    label: Anything else?
-    description: |
-      Links? References? Anything that will give us more context about the issue you are encountering!
-      
-      Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
+    label: Anything Else
+    description: Links? References? Please provide anything that will give us more context about the issue you encountered. 
+    placeholder: "Tip: You can drag and drop files here (i.e. images, log files etc.)." 
   validations:
     required: false
 
