@@ -1,12 +1,15 @@
 name: 🔬 Research Item
-description: Create an issue to perform research.
+description: Create an issue to perform research (Project maintainers only).
 labels: ["🔬research"]
 title: "🔬"
 body:
+- type: markdown
+  attributes:
+    value: "‼️NOTE‼️: Pull requests are not required or used for research issues."
+
 - type: checkboxes
   attributes:
-    label: I have done the items below . . .
-    description: Please make sure to do the items below.
+    label: Complete The Item Below
     options:
     - label: I have updated the title without removing the 🔬 emoji.
       required: true
@@ -14,28 +17,24 @@ body:
 - type: textarea
   attributes:
     label: What To Research
-    description: A description of the research to perform.
+    description: A detailed description of the research to perform.
   validations:
     required: true
 
 - type: textarea
   attributes:
     label: Research Results
-    description: All of the research results.
-    placeholder: |
-      This can be notes, links to resources, file attachments, and images.
-      Anything required to collect the research results goes here.
+    description: This can be notes, links to resources, etc.
+    placeholder: "Tip: You can drag and drop files here." 
   validations:
-    required: true
+    required: false
 
 - type: textarea
   attributes:
     label: Acceptance Criteria
-    description: |
-      The list of items that need to be completed to satisfy the definition of done.
+    description: The items to complete in order to satisfy the Definition of Done.
     value: |
       **This issue is finished when:**
-      - [ ] https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%94%ACresearch label added to this issue.
       - [ ] Research complete and issues created (if needed).
       - [ ] If any issues were created, they have been added to the _**Related Work**_ section below.
   validations:
@@ -45,24 +44,19 @@ body:
 - type: checkboxes
   attributes:
     label: ToDo Items
-    description: Complete the following items before requesting a PR review.
     options:
     - label: Priority label added to this issue.  Refer to the _**Priority Type Labels**_ section below.
     - label: Issue linked to the correct project.
-    - label: Issue linked to the correct milestone.
 
 - type: textarea
   attributes:
     label: Issue Dependencies
     placeholder: |
-      No Issue Dependencies Added.
       Example:
-        - #10 Create new class
-        - #20 Add unit tests to service
-        - #30 Cleanup code in UI
+        - #10
+        - #20
     description: |
       A list of dependencies that need to be finished first.
-      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 
@@ -70,14 +64,11 @@ body:
   attributes:
     label: Related Work
     placeholder: |
-      No Related Work Items Added.
       Example:
-        - #10 Create new class
-        - #20 Add unit tests to service
-        - #30 Cleanup code in UI
+        - #10
+        - #20
     description: |
       A list of related issues that are not a dependency.
-      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 

@@ -13,7 +13,7 @@
 
 - [ ] The **_head(source)_** branch for this pull request is created from a **_development_** branch with the name **_develop_**.
 
-💡For more information on branching, refer to the projects [branching documentation](../../Documentation/Branching.md).
+💡For more information on branching, refer to the project's [branching documentation](../../Documentation/Branching.md).
 
 - [ ] The **_base(target)_** branch for this pull request is a **_development_** branch with the name **_develop_**.
   - A **_base(target)_** branch is the branch that the **_head(source)_** branch is merging into.
@@ -33,5 +33,4 @@
 - [ ] All tests passed locally.
   - This is required because unit tests might pass locally but not in the CI environment during the status check process or vice-versa.
   - Tests might pass on the developer's machine but not necessarily on the code reviewer's machine.
-  - This does not mean that the tests pass in both the local and CI environment.
   - Status checks run for this pull request when merging into the **_develop_** branch.  These status checks run every time a change is pushed to the pull request.  These checks validate version syntax, tagging, builds, unit tests, and more.

@@ -1,12 +1,12 @@
 ## <span style='color:mediumseagreen;font-weight:bold'>Velaptor Release Notes - v0.27.0</span>
 
-### **New** 🎉
+### **New** ✨
 
 1. Exposed internal struct type `SpriteBatchItem`
    * This was exposed just in case a library user wanted to use this
 2. Added a new extension method named `MapValue` to the `byte` data type to allow the user to map a `byte` value to another range where the start and stop values of the range are of the type `float`
 
-### **Changes** ✨
+### **Changes**
 
 1. Updated the **feature to develop** PR template to not include the card type in the PR title
 2. Update code documentation throughout the library related to explanations of true and false values
@@ -24,7 +24,7 @@
 
 1. Updated the nuget package **System.IO.Abstractions** from **v13.2.28** to **v13.2.29**
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Updated all solution projects to **NET 5.0**!!
 2. Added `IDisposable` interface to the `IContent` interface to enforce disposable of content types

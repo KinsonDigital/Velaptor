@@ -1,11 +1,11 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.9.0</span>
 
-### **New** 🎉
+### **New** ✨
 
 1. Got the **Keyboard** functionality working.  Now the keyboard can be used!!
 2. Got the **Mouse** functionality working.  Now the mouse can be used!!
 
-### **Changes** ✨
+### **Changes**
 
 1. Removed old **SDL** related code from library/project/solution
 2. Refactored code to prevent **OpenGL** related code from being exposed to the public API of the Velaptor library
