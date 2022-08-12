@@ -17,6 +17,7 @@
       Example: v1.2.3.preview.1 is not allowed
     -->
     <AssemblyVersion>1.0.0</AssemblyVersion>
+    <ApplicationIcon>velaptor-logo.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PackageId>KinsonDigital.Velaptor</PackageId>
@@ -37,6 +38,20 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="velaptor-logo.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\Documentation\Images\velaptor-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="OpenGL\shader.frag" />
