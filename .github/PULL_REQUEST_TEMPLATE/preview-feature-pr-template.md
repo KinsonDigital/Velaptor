@@ -34,6 +34,8 @@
 
 💡For more information on branching, refer to the project's [branching documentation](../../Documentation/Branching.md).
 
+- [ ] A [![preview-label](https://user-images.githubusercontent.com/85414302/150838564-33f6044b-55f9-4dd9-8783-1d739de9d92f.png)](https://github.com/KinsonDigital/Velaptor/labels/preview) label has been added to the pull request.
+
 - [ ] Associated issue exists and is linked to this pull request.
   - One issue per pull request.
 
