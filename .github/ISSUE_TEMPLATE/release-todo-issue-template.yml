@@ -21,8 +21,8 @@ body:
     label: Perform Release ToDo List
     description: Complete the following items to perform a release.
     options:
-    - label: "Title updated by replacing the '**_\<TODO: release type here\>_**' section with the type of release."
-    - label: "Title updated by replacing the '**_\<TODO: release version number here\>_**' section with the version number."
+    - label: "Title updated by replacing the '**_<TODO: release type here>_**' section with the type of release."
+    - label: "Title updated by replacing the '**_<TODO: release version number here>_**' section with the version number."
     - label: Appropriate release label added to this issue.  Refer to the _**Release Labels**_ section below.
     - label: Release PR linked to this issue.
     - label: Manual QA Testing completed.
