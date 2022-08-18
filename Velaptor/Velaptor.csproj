@@ -16,82 +16,75 @@
       Visual Studio does not allow the preview syntax for this tag
       Example: v1.2.3.preview.1 is not allowed
     -->
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PackageId>KinsonDigital.Velaptor</PackageId>
-    <Authors>Calvin Wilkinson</Authors>
-    <Company>Kinson Digital</Company>
-    <Product>Velaptor</Product>
-    <Description>2D game or application development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
-    <Copyright>Copyright ©2022 Kinson Digital</Copyright>
-    <PackageTags>velaptor raptor 2D game games framework</PackageTags>
-    <Configurations>Debug;Release</Configurations>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
-
-
-  <ItemGroup>
-    <None Remove="OpenGL\shader.frag" />
-    <None Remove="OpenGL\shader.vert" />
-    <None Remove="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="OpenGL\ShaderCode\texture.frag">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OpenGL\ShaderCode\texture.vert">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <None Remove="OpenGL\Shaders\font.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\font.frag" />
-    <None Remove="OpenGL\Shaders\font.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\font.vert" />
-    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
-    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf" />
-    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
-    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
-    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
-    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
-    <None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
-    <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
-    <None Remove="OpenGL\ShaderCode\rect.vert" />
-    <None Remove="OpenGL\ShaderCode\rect.frag" />
-    <None Remove="OpenGL\ShaderCode\rectangle.frag" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.frag" />
-    <None Remove="OpenGL\ShaderCode\rectangle.vert" />
-    <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.vert" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FreeTypeSharp" Version="1.1.3" />
-    <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.10" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="MP3Sharp" Version="1.0.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NVorbis" Version="0.10.3" />
-    <PackageReference Include="Silk.NET" Version="2.6.0" />
-    <PackageReference Include="SimpleInjector" Version="5.3.2" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.0.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="System.IO.Abstractions" Version="13.2.43" />
-  </ItemGroup>
-
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<PackageId>KinsonDigital.Velaptor</PackageId>
+		<Authors>Calvin Wilkinson</Authors>
+		<Company>Kinson Digital</Company>
+		<Product>Velaptor</Product>
+		<Description>2D game or application development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
+		<Copyright>Copyright ©2022 Kinson Digital</Copyright>
+		<PackageTags>velaptor raptor 2D game games framework</PackageTags>
+		<Configurations>Debug;Release</Configurations>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>TRACE</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="OpenGL\shader.frag"/>
+		<None Remove="OpenGL\shader.vert"/>
+		<None Remove="stylecop.json"/>
+	</ItemGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="stylecop.json"/>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="OpenGL\ShaderCode\texture.frag">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="OpenGL\ShaderCode\texture.vert">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<None Remove="OpenGL\Shaders\font.frag"/>
+		<EmbeddedResource Include="OpenGL\ShaderCode\font.frag"/>
+		<None Remove="OpenGL\Shaders\font.vert"/>
+		<EmbeddedResource Include="OpenGL\ShaderCode\font.vert"/>
+		<None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf"/>
+		<EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Regular.ttf"/>
+		<None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf"/>
+		<EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf"/>
+		<None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf"/>
+		<EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf"/>
+		<None Remove="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf"/>
+		<EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf"/>
+		<None Remove="OpenGL\ShaderCode\rect.vert"/>
+		<None Remove="OpenGL\ShaderCode\rect.frag"/>
+		<None Remove="OpenGL\ShaderCode\rectangle.frag"/>
+		<EmbeddedResource Include="OpenGL\ShaderCode\rectangle.frag"/>
+		<None Remove="OpenGL\ShaderCode\rectangle.vert"/>
+		<EmbeddedResource Include="OpenGL\ShaderCode\rectangle.vert"/>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FreeTypeSharp" Version="1.1.3"/>
+		<PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.10"/>
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="MP3Sharp" Version="1.0.5"/>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+		<PackageReference Include="NVorbis" Version="0.10.4"/>
+		<PackageReference Include="Silk.NET" Version="2.6.0"/>
+		<PackageReference Include="SimpleInjector" Version="5.3.2"/>
+		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3"/>
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.IO.Abstractions" Version="13.2.43"/>
+	</ItemGroup>
 </Project>
