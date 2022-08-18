@@ -1,6 +1,6 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.15.0</span>
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Improved how content is used and managed
    * Removed <span style='font-weight: bold; color: khaki'>Window </span> class constructor dependency of the type <span style='font-weight: bold; color: khaki'>IContentLoader</span>
@@ -13,7 +13,7 @@
      2. <span style='font-weight: bold; color: khaki'>ISound</span>
      3. <span style='font-weight: bold; color: khaki'>IAtlasRegionRectangle</span>
 
-### **New** 🎉
+### **New** ✨
 
 1. Created new <span style='font-weight: bold; color: khaki'>IPlatform </span> type with associated implementation type <span style='font-weight: bold; color: khaki'>Platform </span> to detect which platform the code is running on
    * Implemented use of <span style='font-weight: bold; color: khaki'>IPlatform </span> type into the 

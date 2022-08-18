@@ -1,41 +1,22 @@
 name: 🧪QA Testing
-description: Test some functionality
-title: "🧪QA Testing Velaptor"
+description: Test functionality (Project maintainers only).
+title: "🧪QA Testing"
 labels: ["🧪qa testing"]
 body:
-  - type: markdown
-    attributes:
-      value: "## Description:"
-
-  - type: markdown
-    attributes:
-      value: |
-        Thoroughly test **_Velaptor_** by using the **_Velaptor Testing Application_**.
-
-  - type: markdown
-    attributes:
-      value: "---"
-
   - type: checkboxes
     attributes:
-      label: "To Do List:"
+      label: Complete The Item Below
       options:
-      - label: I have linked all issues that are getting tested for this release.
-        required: true
-      - label: The https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%A7%AAqa%20testing label is added to this issue.
+      - label: I have linked all issues that will be tested for this release.
         required: true
 
   - type: input
     id: version
     attributes:
-      label: Version Of Velaptor Being Tested
+      label: Version Being Tested
       description: |
-        Enter the version of **_Velaptor_** that is being tested.  This is the upcoming version that will be released.
         Version Format: v<major.minor.patch>[-preview.<prev-num>]
-        Examples:
-          v1.0.0
-          v1.2.3-preview.4
-      placeholder: "Enter Version Here"
+        Examples: v1.0.0 or v1.2.3-preview.4
     validations:
       required: true
 
@@ -43,15 +24,11 @@ body:
     id: test-list
     attributes:
       label: Issues To Test
+      description: A list of all the issues that will be tested.
       placeholder: |
-        List out issues that will be tested.
         Example:
-          - [ ] #10 Issue 1
-          - [ ] #20 Issue 2
-          - [ ] #30 Issue 3
-      description: |
-        A list of all the issues that this QA testing card will be testing.
-        To create an issue item checkbox use this syntax `- [ ] #10`
+          - [ ] #10
+          - [ ] #20
     validations:
       required: false
 
@@ -59,21 +36,17 @@ body:
     id: extra-info
     attributes:
       label: Relevant Information
-      description: Please enter any testing related information here.
+      description: Please enter ANY testing related information here.
 
   - type: textarea
     id: dependencies
     attributes:
       label: QA Testing Dependencies
+      description: A list of QA testing issues that must be completed before this QA testing issue can be started.
       placeholder: |
-        No QA Testing Dependencies
         Example:
-          - #10 QA Testing Velaptor
-          - #20 QA Testing Velaptor
-          - #30 QA Testing Velaptor
-      description: |
-        A list of QA testing issues that must be completed before this QA testing issue can be started.
-        To create a dependency, use this syntax `- #10`
+          - #10 
+          - #20 
     validations:
       required: false
 

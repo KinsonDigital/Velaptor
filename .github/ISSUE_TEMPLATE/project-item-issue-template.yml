@@ -1,11 +1,10 @@
 name: 🚧 Project Item
-description: Create an issue for a project.  (Project maintainers only)
+description: Create an issue for a project (Project maintainers only).
 title: "🚧"
 body:
 - type: checkboxes
   attributes:
-    label: I have done the items below . . .
-    description: Please make sure to do the items below.
+    label: Complete The Item Below
     options:
     - label: I have updated the title without removing the 🚧 emoji.
       required: true
@@ -13,19 +12,18 @@ body:
 - type: textarea
   attributes:
     label: Description
-    description: A description of the feature and/or change from the user's perspective.
+    description: A description of the feature and/or change.
   validations:
     required: true
 
 - type: textarea
   attributes:
     label: Acceptance Criteria
-    description: |
-      The list of items that need to be completed to satisfy the definition of done.
-    value: |
-      **This issue is finished when:**
-      - [ ] Unit tests added
-      - [ ] All unit tests pass
+    placeholder: |
+      Example:
+        - [ ] Item 1 complete
+        - [ ] Item 2 complete
+    description: The items to complete in order to satisfy the Definition of Done.
   validations:
     required: true
     render: markdown
@@ -35,24 +33,21 @@ body:
     label: ToDo Items
     description: Complete the following items before requesting a PR review.
     options:
-    - label: Priority label added to this issue.  Refer to the _**Priority Type Labels**_ section below.
     - label: Change type labels added to this issue.  Refer to the _**Change Type Labels**_ section below.
-    - label: Issue linked to the correct project.
-    - label: Issue linked to the correct milestone.
-    - label: Draft pull request created and linked to this issue.
+    - label: Priority label added to this issue.  Refer to the _**Priority Type Labels**_ section below.
+    - label: Issue linked to the correct project _(if required)_.
+    - label: Issue linked to the correct milestone _(if required)_.
+    - label: Draft pull request created and linked to this issue _(only required with code changes)_.
 
 - type: textarea
   attributes:
     label: Issue Dependencies
     placeholder: |
-      No Issue Dependencies Added.
       Example:
-        - #10 Create new class
-        - #20 Add unit tests to service
-        - #30 Cleanup code in UI
+        - #10
+        - #20
     description: |
-      A list of issues that are dependencies of this issue and need to be finished first.
-      Use the '#\<issue-number\>' syntax to link an issue.
+      A list of issues that are dependencies of this issue and need to be completed first.
   validations:
     required: false
 
@@ -60,14 +55,11 @@ body:
   attributes:
     label: Related Work
     placeholder: |
-      No Related Work Items Added.
       Example:
-        - #10 Create new class
-        - #20 Add unit tests to service
-        - #30 Cleanup code in UI
+        - #10 
+        - #20
     description: |
       A list of issues related to this issue but are not a dependency.
-      Use the '#\<issue-number\>' syntax to link an issue.
   validations:
     required: false
 
@@ -82,7 +74,7 @@ body:
       |---------------------|--------------------------------------------------------------------------------------|
       | Bug Fixes           | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%90%9Bbug                     |
       | Breaking Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%A7%A8breaking%20changes      |
-      | Enhancement         | https://github.com/KinsonDigital/Velaptor/labels/enhancement                         |
+      | New Feature         | https://github.com/KinsonDigital/Velaptor/labels/%E2%9C%A8new%20feature              |
       | Workflow Changes    | https://github.com/KinsonDigital/Velaptor/labels/workflow                            |
       | Code Doc Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%91documentation%2Fcode    |
       | Product Doc Changes | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%9Ddocumentation%2Fproduct |

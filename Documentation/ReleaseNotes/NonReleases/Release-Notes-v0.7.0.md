@@ -1,6 +1,6 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.7.0</span>
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Changed the visible scope of all **SDL** implementation classes from **public** to **internal**
 
@@ -8,7 +8,7 @@
 
 1. Updated nuget package **SDLCore** from **v0.1.0** to **v0.1.1**
 
-### **Other** 👏
+### **Other** 🪧
 
 1. Changed how **SDL** files are dealt with in the build and nuget packaging process
    * Removes dependency on the native **SDL** libraries in **Velaptor** code base and relies on **SDLCore** nuget package native **SDL** libraries

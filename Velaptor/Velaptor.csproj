@@ -16,6 +16,7 @@
       Visual Studio does not allow the preview syntax for this tag
       Example: v1.2.3.preview.1 is not allowed
     -->
+    
 		<AssemblyVersion>1.0.0</AssemblyVersion>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -68,6 +69,7 @@
 		<None Remove="OpenGL\ShaderCode\rectangle.vert"/>
 		<EmbeddedResource Include="OpenGL\ShaderCode\rectangle.vert"/>
 	</ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="FreeTypeSharp" Version="1.1.3"/>
 		<PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.10"/>
@@ -87,4 +89,5 @@
 		</PackageReference>
 		<PackageReference Include="System.IO.Abstractions" Version="13.2.43"/>
 	</ItemGroup>
+
 </Project>

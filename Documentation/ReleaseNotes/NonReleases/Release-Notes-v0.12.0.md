@@ -1,6 +1,6 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.12.0</span>
 
-### **Changes** ✨
+### **Changes**
 
 1. Changed the nuget package setup to properly include native **OpenAL** runtime libraries
 
@@ -11,11 +11,11 @@
 3. Updated **Microsoft.NET.Test.Sdk** from **v16.7.0** to **v16.7.1**
 4. Updated **Moq** from **v4.14.5** to **v4.14.7**
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Refactored **KeyCode** enumeration to match closer to **OpenTK** version
 
-### **Other** 👏
+### **Other** 🪧
 
 1. Changed **OpenGL** shader source code files to embedded resources
    * This means that the source code is embedded into the assembly itself and loaded during runtime to be sent to the GPU

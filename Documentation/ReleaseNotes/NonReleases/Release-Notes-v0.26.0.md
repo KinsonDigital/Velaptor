@@ -1,6 +1,6 @@
 ## <span style='color:mediumseagreen;font-weight:bold'>Velaptor Release Notes - v0.26.0</span>
 
-### **New** 🎉
+### **New** ✨
 
 1. Exposed internal helper methods below for users to take advantage of
    * `RotateAround()`
@@ -47,7 +47,7 @@
     * `Observer`
     * `ObserverUnsubscriber`
 
-### **Changes** ✨
+### **Changes**
 
 1. Incoming content name processing related to file extensions changed for abstract class `ContentPathResolver`
     * This class does not check for and remove file extensions anymore. This responsibility is now on the implementation of types of `ContentPathResolver`
@@ -68,7 +68,7 @@
 5. Updated nuget package **SixLabors.ImageSharp** from **v1.0.2** to **v1.0.3**
 6. Updated nuget package **System.IO.Abstractions** from **v12.2.24** to **v13.2.28**
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Renamed interface `IImageFileService` to `IImageService`
     * Returns a new type named `ImageData` to represent the pixel data as well as width and height of an image
