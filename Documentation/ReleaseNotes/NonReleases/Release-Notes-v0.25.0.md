@@ -1,6 +1,6 @@
 ## <span style='color:mediumseagreen;font-weight:bold'>Velaptor Release Notes - v0.25.0</span>
 
-### **New** 🎉
+### **New** ✨
 
 1. Added the ability to apply render effects to a texture being rendered
    * Added a render effect to flip the texture horizontally

@@ -1,12 +1,12 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.16.0</span>
 
-### **New** 🎉
+### **New** ✨
 
 1. Added the ability for the abstract <span style='font-weight: bold; color: khaki'>Window </span> class to allow for automatic buffer clearing
    * Setting the <span style='font-weight: bold; color: khaki'>AutoClearBuffer </span> property to true will automatically clear the buffer before rendering
    * If the <span style='font-weight: bold; color: khaki'>AutoClearBuffer </span> property is set to false, the buffer has to be cleared manually.  This can be done by using the <span style='font-weight: bold; color: khaki'>SpriteBatch.Clear() </span> method
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Moved the following types to to a new namespace with the name <span style='font-weight: bold; color: khaki'>Velaptor.Desktop`
    * <span style='font-weight: bold; color: khaki'>IWindow</span>

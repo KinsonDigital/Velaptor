@@ -1,6 +1,6 @@
 name: 🚀 Release To Do List
-description: Used to perform a release
-title: "🚀Release To <release type here> - <release number here>"
+description: Used to perform a release (Project maintainers only).
+title: "🚀Release To <TODO: release type here> - <TODO: release version number here>"
 body:
 - type: textarea
   attributes:
@@ -10,7 +10,7 @@ body:
       Example:
       - #10
       - #20
-    description: The list of issues that are getting released.
+    description: The list of issues that will be released.
   validations:
     required: true
     render: markdown
@@ -18,28 +18,26 @@ body:
 
 - type: checkboxes
   attributes:
-    label: Perform Release To Do List
+    label: Perform Release ToDo List
     description: Complete the following items to perform a release.
     options:
+    - label: "Title updated by replacing the '**_<TODO: release type here>_**' section with the type of release."
+    - label: "Title updated by replacing the '**_<TODO: release version number here>_**' section with the version number."
+    - label: Appropriate release label added to this issue.  Refer to the _**Release Labels**_ section below.
+    - label: Release PR linked to this issue.
     - label: Manual QA Testing completed.
-    - label: Title updated by replacing the '**_\<release type here\>_**' section with the type of release.
-    - label: Title updated by replacing the '**_\<release number here\>_**' section with the release number.
-    - label: Issues listed in the **_Issues Released_** section above for all issues being released.
-    - label: All issues in the _**Issues Released**_ section are closed and all tasks are complete.
-    - label: Appropriate release label added to this issue.  Refer to the release label section below.
-    - label: Appropriate non-release labels added to reflect the type of changes being released.   Refer to the type of changes section below.
-    - label: Correct release PR linked to this issue.
+    - label: All issues listed in the **_Issues Released_** section above.
+    - label: All issues in the _**Issues Released**_ section are closed and all issue tasks are complete.
     - label: All unit tests have been executed locally and have passed. (Check out the appropriate release branch before running tests).
-    - label: Version in project file updated.
-    - label: Release notes created and added.
-    - label: All changes made directly on the release branch.
-    - label: Manual release to **_preview_** or **_production_** executed depending on the type of release.  Refer to the release execution section below.
+    - label: Version in project file updated (All changes made directly on the release branch).
+    - label: Release notes created and added (All changes made directly on the release branch).
+    - label: Release to **_preview_** or **_production_** complete.  Refer to the release execution section below.
 
 
 # POST-RELEASE TODO LIST
 - type: checkboxes
   attributes:
-    label: Post-Release To Do List
+    label: Post-Release ToDo List
     description: Verify that release went smoothly.
     options:
     - label: The release displayed in [GitHub Releases](https://github.com/KinsonDigital/Velaptor/releases) is correct.    
@@ -92,20 +90,6 @@ body:
 
       ---
 
-      **_<details closed><summary>Change Type Labels</summary>_**
-      
-      | Change Type         | Label                                                                                |
-      |---------------------|--------------------------------------------------------------------------------------|
-      | Bug Fixes           | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%90%9Bbug                     |
-      | Breaking Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%92%A3breaking%20changes      |
-      | Enhancement         | https://github.com/KinsonDigital/Velaptor/labels/enhancement                         |
-      | Workflow Changes    | https://github.com/KinsonDigital/Velaptor/labels/workflow                            |
-      | Code Doc Changes    | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%91documentation%2Fcode    |
-      | Product Doc Changes | https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%93%9Ddocumentation%2Fproduct |
-      </details>
-
-      ---
-
       **_<details closed><summary>Release Notes</summary>_**
 
       The release notes go into the appropriate folder:
@@ -130,8 +114,8 @@ body:
       **_<details closed><summary>Release Execution</summary>_**
 
       The release is performed by running one of the release workflows below:
-      - Preview Release
-      - Production Release
+      - [Preview Release](https://github.com/KinsonDigital/Velaptor/actions/workflows/preview-release.yml)
+      - [Production Release](https://github.com/KinsonDigital/Velaptor/actions/workflows/qa-prod-releases.yml)
       </details>
   validations:
     required: true
