@@ -74,7 +74,7 @@ We currently have the following maintainers:
 3. Add an empty commit to the new feature branch to start your work off.
    * Use this git command: `git commit --allow-empty -m "start work for issue #<issue-number-here>"`.
    * Example: `git commit --allow-empty -m "start work for issue #123"`.
-4. Once you've pushed a commit, open a [**draft pull request**](https://github.blog/2019-02-14-introducing-draft-pull-requests/). Do this **before** you actually start working.
+4. Once you've pushed a commit, open a [**draft pull request**](https://github.blog/2019-02-14-introducing-draft-pull-requests/). Do this **before** you start working.
 5. Make your commits in small, incremental steps with clear descriptions.
 6. All unit tests must pass before a PR will be completed.
 7. Make sure that the code follows the the coding standards.
