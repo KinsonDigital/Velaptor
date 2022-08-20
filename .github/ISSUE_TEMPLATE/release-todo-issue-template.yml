@@ -31,8 +31,8 @@ body:
     - label: All unit tests have been executed locally and have passed. (Check out the appropriate release branch before running tests).
     - label: Version in project file updated (All changes made directly on the release branch).
     - label: Release notes created and added (All changes made directly on the release branch).
-    - label: Release to **_preview_** or **_production_** complete.  Refer to the release execution section below.
-
+    - label: Pull request has been approved and merged into a release branch before performing the release. (Releases are performed on release branches, not preview release branches.)
+    - label: Release to **_preview_** or **_production_** complete.  Refer to the **_Release Execution_** section below.
 
 # POST-RELEASE TODO LIST
 - type: checkboxes
