@@ -34,6 +34,7 @@ body:
     - label: Pull request has been approved and merged into a release branch before performing the release. (Releases are performed on release branches, not preview release branches.)
     - label: Release to **_preview_** or **_production_** complete.  Refer to the **_Release Execution_** section below.
 
+
 # POST-RELEASE TODO LIST
 - type: checkboxes
   attributes:
