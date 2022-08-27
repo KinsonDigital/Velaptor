@@ -21,6 +21,9 @@
 
 - [ ] The **_head(source)_** branch for this pull request is created from a **_development_** branch with the name **_develop_**.
 
+- [ ] Associated issue exists and is linked to this pull request.
+  - One issue per pull request.
+
 - [ ] Pull request title matches the example below, using the correct version.
   <details closed><summary>Example</summary>
     
@@ -31,5 +34,9 @@
   </details>
 
 - [ ] A https://github.com/KinsonDigital/Velaptor/labels/%F0%9F%9A%80Production%20Release label has been added to this PR.
+
+- [ ] Project assigned matches the project of the associated issue.
+
+- [ ] Milestone assigned matches the milestone of the associated issue.
 
 - [ ] A QA issue has been created and manual QA testing has been performed for the changes being released.

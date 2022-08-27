@@ -43,6 +43,10 @@
 
 - [ ] The labels attached to this PR match the labels attached to the associated issue.
 
+- [ ] Project assigned matches the project of the associated issue.
+
+- [ ] Milestone assigned matches the milestone of the associated issue.
+
 - [ ] My code follows the coding style of this project.
   - The style is enforced by the **_.editorconfig_** files in the project and displayed as warnings.  If there is an edge case, reach out and let's discuss it.
 
