@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
-    <Configurations>Release;Debug-Console;Debug-Win</Configurations>
+    <Configurations>Release;Debug-Console;Debug</Configurations>
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
     <RootNamespace>VelaptorTesting</RootNamespace>
@@ -12,11 +12,6 @@
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug-Console' ">
     <OutputType>Exe</OutputType>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug-Win' ">
-    <OutputType>WinExe</OutputType>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
@@ -76,8 +71,5 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(TargetDir)runtimes\win-x64\native\soft_oal.dll&quot; &quot;$(TargetDir)soft_oal.dll&quot; /Y" />
-  </Target>
+  
 </Project>
