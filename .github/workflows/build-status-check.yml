@@ -16,6 +16,7 @@ on:
   pull_request:
     branches:
     - workflow-testing-target
+    # TODO: Need to add all of the relevant branches that PRs will merge into
     
 
 jobs:
@@ -42,45 +43,40 @@ jobs:
       run: Write-Host "::set-output name=sdk-version::${{ env.NET_SDK_VERSION }}";
 
 
-  # build_main_project:
-  #   name: Build Velaptor
-  #   needs: collect-data
-  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-  #   with:
-  #     project-name: ${{ needs.collect-data.outputs.proj-name }}
-  #     build-config: ${{ needs.collect-data.outputs.build-config }}
-  #     net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
-  #     os: windows-latest
-
-
-  # build_test_project:
-  #   name: Build Velaptor Test
-  #   needs: collect-data
-  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-  #   with:
-  #     project-name: ${{ needs.collect-data.outputs.proj-name }}Tests
-  #     build-config: ${{ needs.collect-data.outputs.build-config }}
-  #     net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
-  #     os: ubuntu-latest
-
-
-  # build_qa_testing_project_windows:
-  #   name: Build Velaptor QA Testing On Windows
-  #   needs: collect-data
-  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-  #   with:
-  #     project-name: ${{ needs.collect-data.outputs.proj-name }}Testing
-  #     build-config: Debug-Win
-  #     net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
-  #     os: windows-latest
-
-
-  build_qa_testing_project_ubuntu:
-    name: Build Velaptor QA Testing On Ubuntu
+  build_main_project:
+    name: Build Velaptor
     needs: collect-data
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/matrix-build-csharp-project.yml@v3.1.0-beta
+    with:
+      project-name: ${{ needs.collect-data.outputs.proj-name }}
+      build-config: ${{ needs.collect-data.outputs.build-config }}
+      net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
+
+
+  build_test_project:
+    name: Build Velaptor Test
+    needs: collect-data
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/matrix-build-csharp-project.yml@v3.1.0-beta
+    with:
+      project-name: ${{ needs.collect-data.outputs.proj-name }}Tests
+      build-config: ${{ needs.collect-data.outputs.build-config }}
+      net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
+
+
+  build_qa_testing_project_windows:
+    name: Build Velaptor QA Testing On Windows
+    needs: collect-data
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/matrix-build-csharp-project.yml@v3.1.0-beta
     with:
       project-name: ${{ needs.collect-data.outputs.proj-name }}Testing
-      build-config: Debug-Linux
+      build-config: ${{ needs.collect-data.outputs.build-config }}
       net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
-      os: ubuntu-latest
