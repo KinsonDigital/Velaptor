@@ -46,10 +46,10 @@ jobs:
   build_main_project:
     name: Build Velaptor
     needs: collect-data
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-    uses: KinsonDigital/Infrastructure/.github/workflows/matrix-build-csharp-project.yml@v3.1.0-beta
+    # strategy:
+    #   matrix:
+    #     os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
     with:
       project-name: ${{ needs.collect-data.outputs.proj-name }}
       build-config: ${{ needs.collect-data.outputs.build-config }}
