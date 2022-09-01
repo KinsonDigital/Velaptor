@@ -215,7 +215,7 @@ namespace VelaptorTesting
         /// <returns>True if using a debug console.</returns>
         private static bool HasDebugConsole()
         {
-#if DEBUG_CONSOLE
+#if DEBUG_CONSOLE || RELEASE_CONSOLE
             return true;
 #else
             return false;

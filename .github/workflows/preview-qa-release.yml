@@ -106,13 +106,15 @@ jobs:
     - name: Build
       run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
         -c Debug `
-        --no-restore
+        --no-restore `
+        -a win-x64
 
     - name: Execute Unit Tests
       run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" `
         -c Debug `
         --collect:"XPlat Code Coverage" `
-        --no-restore
+        --no-restore `
+        -a win-x64
 
     - name: Publish Code Coverage Results
       uses: codecov/codecov-action@v1.5.2
@@ -162,9 +164,10 @@ jobs:
     - name: Build Testing App
       run: |
         dotnet publish "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Testing/${{ env.PROJECT_NAME }}Testing.csproj" `
-          -c Debug-Win `
+          -c Debug `
           -o "${{ github.workspace }}/Testing/PreviewQARelease/" `
           --no-restore `
+          -a win-x64
 
     - name: Package Testing App
       run: |

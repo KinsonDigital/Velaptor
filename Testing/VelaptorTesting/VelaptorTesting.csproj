@@ -2,26 +2,25 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
-    <Configurations>Release;Debug-Console;Debug-Win</Configurations>
+    <Configurations>Release;Debug-Console;Debug;Release-Console</Configurations>
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
     <RootNamespace>VelaptorTesting</RootNamespace>
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug-Console' ">
+    <Platforms>x64</Platforms>
     <OutputType>Exe</OutputType>
-    <Optimize>false</Optimize>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug-Win' ">
-    <OutputType>WinExe</OutputType>
-    <Optimize>false</Optimize>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <OutputPath>bin\x64\Debug\</OutputPath>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputType>WinExe</OutputType>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Console|x64' ">
+    <OutputPath>bin\x64\Debug-Console\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release-Console|x64' ">
+    <OutputPath>bin\x64\Release-Console\</OutputPath>
     <Optimize>true</Optimize>
   </PropertyGroup>
 

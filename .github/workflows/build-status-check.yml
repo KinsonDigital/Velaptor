@@ -53,4 +53,5 @@ jobs:
       if: ${{ github.base_ref != 'master' }}
       run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
         -c ${{ env.BUILD_CONFIG }} `
-        --no-restore
+        --no-restore `
+        -a win-x64

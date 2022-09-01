@@ -37,16 +37,16 @@ Velaptor is a 2D game development framework written in modern C# that strives to
 <h2 style="font-weight:bold;border:0" align="center">✨Features</h2>
 
 ### **Cross-Platform**
-We strive for **Velaptor** to be a cross platform library by running under **.NET v5.0**.  There are plans for this library to continually be updated as we approach **.NET 6.0** and beyond.
+We strive for **Velaptor** to be a cross platform library by running under **.NET v6.0+**.
 
 ### **Easy To Use**
-One of the goals of this library is to make sure that the it is easy to use.  Everything from naming, documentation and the usability of the how API needs to be simple and easy.
+One of the goals of this library is to make sure that the it is easy to use.  Everything from naming, documentation and usability of the API will be first class citizens.
 
 ### **Flexible Content Loading System**
-**Velaptor** has the ability to load texture atlas images and JSON data for texture atlas type rendering as well as single image and sound content.  The content loading system is flexible and has an API with the ability to be extended to load custom content for your media applications and games.
+**Velaptor** has the ability to load texture atlas data for texture atlas type rendering as well as single image and sound content.  The content loading system is flexible and has an API with the ability to be extended to load custom content for your media applications and games.
 
 ### **Content Caching**
-Loaded content such as images and sounds are cached for performance reasons.  If the same content is attempting to be loaded from disk after it has already been loaded, that same content will be used from memory instead of being reloaded.  Sounds and texture atlas data have the same functionality.  Custom content loading will not come with caching and will have to be added manually.
+Loaded content such as images and sounds are cached for performance reasons.  If the same content is attempting to be loaded from its source after it has already been loaded, that same content will be used from memory instead of being reloaded. You can also load content by building your own content loader. 
 
 ### **Feature Demo Application**
 https://user-images.githubusercontent.com/85414302/150527337-6d872768-73dc-4603-82e8-37c691c78d4d.mp4
