@@ -47,9 +47,9 @@ jobs:
     name: Collect Status Check Data
     runs-on: ubuntu-latest
     outputs:
-      build-config: ${{ steps.get-build-config.outputs.build-config }}
-      sdk-version: ${{ steps.get-sdk-version.outputs.sdk-version }}
       proj-name: ${{ env.PROJECT_NAME }}
+      build-config: ${{ steps.get-build-config.outputs.build-config }}
+      sdk-version: ${{ env.NET_SDK_VERSION }}
     steps:
     - name: Get Build Config
       id: get-build-config
@@ -59,10 +59,12 @@ jobs:
             ("${{ github.ref }}" -like "*pull*" -and "${{ github.base_ref }}" -eq "master"))
         {
             Write-Host "::set-output name=build-config::Release";
+            Write-Host "Build Config: Release";
         }
         else
         {
             Write-Host "::set-output name=build-config::Debug";
+            Write-Host "Build Config: Debug";
         }
 
 
