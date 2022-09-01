@@ -71,40 +71,40 @@ jobs:
   build_main_project:
     name: Build Velaptor
     needs: collect_data
-    # strategy:
-    #   matrix:
-    #     os: [windows-latest, ubuntu-latest]
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
     uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
     with:
       project-name: ${{ needs.collect_data.outputs.proj-name }}
       build-config: ${{ needs.collect_data.outputs.build-config }}
       net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
-      os: "ubuntu-latest" # ${{ matrix.os }}
+      os: ${{ matrix.os }}
 
 
-  # build_test_project:
-  #   name: Build Velaptor Test
-  #   needs: collect_data
-  #   strategy:
-  #     matrix:
-  #       os: [windows-latest, ubuntu-latest]
-  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-  #   with:
-  #     project-name: ${{ needs.collect_data.outputs.proj-name }}Tests
-  #     build-config: ${{ needs.collect_data.outputs.build-config }}
-  #     net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
-  #     os: ${{ matrix.os }}
+  build_test_project:
+    name: Build Velaptor Test
+    needs: collect_data
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+    with:
+      project-name: ${{ needs.collect_data.outputs.proj-name }}Tests
+      build-config: ${{ needs.collect_data.outputs.build-config }}
+      net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
+      os: ${{ matrix.os }}
 
 
-  # build_qa_testing_project:
-  #   name: Build Velaptor QA Testing
-  #   needs: collect_data
-  #   strategy:
-  #     matrix:
-  #       os: [windows-latest, ubuntu-latest]
-  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-  #   with:
-  #     project-name: ${{ needs.collect_data.outputs.proj-name }}Testing
-  #     build-config: ${{ needs.collect_data.outputs.build-config }}
-  #     net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
-  #     os: ${{ matrix.os }}
+  build_qa_testing_project:
+    name: Build Velaptor QA Testing
+    needs: collect_data
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+    with:
+      project-name: ${{ needs.collect_data.outputs.proj-name }}Testing
+      build-config: ${{ needs.collect_data.outputs.build-config }}
+      net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
+      os: ${{ matrix.os }}
