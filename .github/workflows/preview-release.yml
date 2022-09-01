@@ -132,14 +132,14 @@ jobs:
     - name: Build
       run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
         -c ${{ env.BUILD_CONFIG }} `
-        --no-restore
+        --no-restore `
         -a win-x64
 
     - name: Execute Unit Tests
       run: dotnet test "${{ github.workspace }}/Testing/${{ env.PROJECT_NAME }}Tests/${{ env.PROJECT_NAME }}Tests.csproj" `
         -c ${{ env.BUILD_CONFIG }} `
         --collect:"XPlat Code Coverage" `
-        --no-restore
+        --no-restore `
         -a win-x64
 
     - name: Publish Code Coverage Results
