@@ -38,48 +38,39 @@ jobs:
           Write-Host "Pull Request Destination Branch: ${{ github.base_ref }}";
         }
 
-  # collect_data:
-  #   name: Collect Status Check Data
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Get Build Config
-  #     run: |
-  #       $branchName = "N/A";
+  collect_data:
+    name: Collect Status Check Data
+    runs-on: ubuntu-latest
+    outputs:
+      build-config: ${{ steps.get-build-config.outputs.build-config }}
+    steps:
+    - name: Get Build Config
+      id: get-build-config
+      run: |
+        # If the workflow is a master branch for manual runs or pull request changes
+        if (("${{ github.ref }}" -like "*heads*" -and "${{ github.ref }}".TrimStart("refs/heads/") -eq "master") -or
+            ("${{ github.ref }}" -like "*pull*" -and "${{ github.base_ref }}" -eq "master"))
+        {
+            Write-Host "::set-output name=build-config::Release";
+        }
+        else
+        {
+            Write-Host "::set-output name=build-config::Debug";
+        }
 
-  #       # If the trigger was 
-  #       if ("${{ github.ref }}" -like "*heads*")
 
-  #       # If the destination branch that the pull request is merging into is master, do a release build
-  #       if ("${{ github.base_ref }}" -eq "master")
-  #       {
-  #           # Save the environment variable
-  #           echo "BUILD_CONFIG=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-  #       }
-  #       else
-  #       { # Any other branch than master, do a debug build
-  #           echo "BUILD_CONFIG=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-  #       }
-
-  #   - name: Setup .NET SDK
-  #     uses: actions/setup-dotnet@v1
-  #     with:
-  #       dotnet-version: ${{ env.NET_SDK_VERSION }}
-
-  #   - name: Restore Dependencies
-  #     run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
-
-  # build_main_project:
-  #   name: Build Velaptor
-  #   needs: collect_data
-  #   strategy:
-  #     matrix:
-  #       os: [windows-latest, ubuntu-latest]
-  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-  #   with:
-  #     project-name: ${{ needs.collect_data.outputs.proj-name }}
-  #     build-config: ${{ needs.collect_data.outputs.build-config }}
-  #     net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
-  #     os: ${{ matrix.os }}
+  build_main_project:
+    name: Build Velaptor
+    needs: collect_data
+    # strategy:
+    #   matrix:
+    #     os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+    with:
+      project-name: ${{ needs.collect_data.outputs.proj-name }}
+      build-config: ${{ needs.collect_data.outputs.build-config }}
+      net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
+      os: "ubuntu-latest" # ${{ matrix.os }}
 
 
   # build_test_project:
