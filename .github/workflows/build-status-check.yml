@@ -80,6 +80,7 @@ jobs:
       build-config: ${{ needs.collect_data.outputs.build-config }}
       net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
       os: ${{ matrix.os }}
+      arch: x64
 
 
   build_test_project:
@@ -94,6 +95,7 @@ jobs:
       build-config: ${{ needs.collect_data.outputs.build-config }}
       net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
       os: ${{ matrix.os }}
+      arch: x64
 
 
   build_qa_testing_project:
@@ -108,3 +110,4 @@ jobs:
       build-config: ${{ needs.collect_data.outputs.build-config }}
       net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
       os: ${{ matrix.os }}
+      arch: x64
