@@ -30,19 +30,26 @@ jobs:
     - name: Print Info
       run: |
         Write-Host "Trigger Event Type: ${{ github.event_name }}";
-        Write-Host "Branch: ${{ github.ref }}";
 
         if ("${{ github.event_name }}" -like "pull_request*")
         {
           Write-Host "Pull Request Source Branch: ${{ github.head_ref }}";
           Write-Host "Pull Request Destination Branch: ${{ github.base_ref }}";
         }
+        elseif ("${{ github.event_name }}" -eq "workflow_dispatch")
+        {
+          $branch = "${{ github.ref }}".TrimStart("refs/heads/");
+          Write-Host "Manual Trigger Branch: $branch";
+        }
+
 
   collect_data:
     name: Collect Status Check Data
     runs-on: ubuntu-latest
     outputs:
       build-config: ${{ steps.get-build-config.outputs.build-config }}
+      sdk-version: ${{ steps.get-sdk-version.outputs.sdk-version }}
+      proj-name: ${{ env.PROJECT_NAME }}
     steps:
     - name: Get Build Config
       id: get-build-config
