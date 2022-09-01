@@ -1,6 +1,11 @@
 name: ✔Build Status Check
 
 
+defaults:
+  run:
+    shell: pwsh
+
+
 env:
   PROJECT_NAME: Velaptor
   NET_SDK_VERSION: 6.0.101
@@ -10,73 +15,96 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-    - workflow-testing-target
-    # TODO: Need to add all of the relevant branches that PRs will merge into
-    
+    - master
+    - develop
+    - release/v*.*.*
+    - preview/v*.*.*-preview.*
+    - 342-workflow-testing # TODO: DELETE THIS
 
 
 jobs:
-  Build_Status_Check:
-    name: Build Status Check
-    runs-on: windows-latest
+  print_info:
+    name: Print Info
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Set Build Config Variable
+    - name: Print Info
       run: |
-        # If the destination branch that the pull request is merging into is master, do a release build
-        if ( "${{ github.base_ref }}" -eq "master") {
-            # Save the environment variable
-            echo "BUILD_CONFIG=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-        } else { # Any other branch than master, do a debug build
-            echo "BUILD_CONFIG=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+        Write-Host "Trigger Event Type: ${{ github.event_name }}";
+        Write-Host "Branch: ${{ github.ref }}";
+
+        if ("${{ github.event_name }}" -like "pull_request*")
+        {
+          Write-Host "Pull Request Source Branch: ${{ github.head_ref }}";
+          Write-Host "Pull Request Destination Branch: ${{ github.base_ref }}";
         }
 
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.NET_SDK_VERSION }}
+  # collect_data:
+  #   name: Collect Status Check Data
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Get Build Config
+  #     run: |
+  #       $branchName = "N/A";
 
-    - name: Restore Dependencies
-      run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
+  #       # If the trigger was 
+  #       if ("${{ github.ref }}" -like "*heads*")
 
-  build_main_project:
-    name: Build Velaptor
-    needs: collect-data
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-    with:
-      project-name: ${{ needs.collect-data.outputs.proj-name }}
-      build-config: ${{ needs.collect-data.outputs.build-config }}
-      net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
-      os: ${{ matrix.os }}
+  #       # If the destination branch that the pull request is merging into is master, do a release build
+  #       if ("${{ github.base_ref }}" -eq "master")
+  #       {
+  #           # Save the environment variable
+  #           echo "BUILD_CONFIG=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+  #       }
+  #       else
+  #       { # Any other branch than master, do a debug build
+  #           echo "BUILD_CONFIG=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+  #       }
+
+  #   - name: Setup .NET SDK
+  #     uses: actions/setup-dotnet@v1
+  #     with:
+  #       dotnet-version: ${{ env.NET_SDK_VERSION }}
+
+  #   - name: Restore Dependencies
+  #     run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
+
+  # build_main_project:
+  #   name: Build Velaptor
+  #   needs: collect_data
+  #   strategy:
+  #     matrix:
+  #       os: [windows-latest, ubuntu-latest]
+  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+  #   with:
+  #     project-name: ${{ needs.collect_data.outputs.proj-name }}
+  #     build-config: ${{ needs.collect_data.outputs.build-config }}
+  #     net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
+  #     os: ${{ matrix.os }}
 
 
-  build_test_project:
-    name: Build Velaptor Test
-    needs: collect-data
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-    with:
-      project-name: ${{ needs.collect-data.outputs.proj-name }}Tests
-      build-config: ${{ needs.collect-data.outputs.build-config }}
-      net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
-      os: ${{ matrix.os }}
+  # build_test_project:
+  #   name: Build Velaptor Test
+  #   needs: collect_data
+  #   strategy:
+  #     matrix:
+  #       os: [windows-latest, ubuntu-latest]
+  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+  #   with:
+  #     project-name: ${{ needs.collect_data.outputs.proj-name }}Tests
+  #     build-config: ${{ needs.collect_data.outputs.build-config }}
+  #     net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
+  #     os: ${{ matrix.os }}
 
 
-  build_qa_testing_project:
-    name: Build Velaptor QA Testing
-    needs: collect-data
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
-    with:
-      project-name: ${{ needs.collect-data.outputs.proj-name }}Testing
-      build-config: ${{ needs.collect-data.outputs.build-config }}
-      net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
-      os: ${{ matrix.os }}
+  # build_qa_testing_project:
+  #   name: Build Velaptor QA Testing
+  #   needs: collect_data
+  #   strategy:
+  #     matrix:
+  #       os: [windows-latest, ubuntu-latest]
+  #   uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+  #   with:
+  #     project-name: ${{ needs.collect_data.outputs.proj-name }}Testing
+  #     build-config: ${{ needs.collect_data.outputs.build-config }}
+  #     net-sdk-version: ${{ needs.collect_data.outputs.sdk-version }}
+  #     os: ${{ matrix.os }}
