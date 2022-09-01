@@ -9,19 +9,10 @@ env:
 on:
   workflow_dispatch:
   pull_request:
-    types: [ synchronize ]
-    paths-ignore:
-      - ".github/**"
-      - 'Documentation/**'
-      - '.editorconfig'
-      - '*.runsettings'
-      - '.gitattributes'
-      - '.gitignore'
-      - '*.md'
-      - '*.yml'
-      - '.vscode/**'
-      - '*.sln'
-      - '*.csproj'
+    branches:
+    - workflow-testing-target
+    # TODO: Need to add all of the relevant branches that PRs will merge into
+    
 
 
 jobs:
@@ -49,9 +40,43 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
 
-    - name: Build Project
-      if: ${{ github.base_ref != 'master' }}
-      run: dotnet build "${{ github.workspace }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" `
-        -c ${{ env.BUILD_CONFIG }} `
-        --no-restore `
-        -a win-x64
+  build_main_project:
+    name: Build Velaptor
+    needs: collect-data
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+    with:
+      project-name: ${{ needs.collect-data.outputs.proj-name }}
+      build-config: ${{ needs.collect-data.outputs.build-config }}
+      net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
+      os: ${{ matrix.os }}
+
+
+  build_test_project:
+    name: Build Velaptor Test
+    needs: collect-data
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+    with:
+      project-name: ${{ needs.collect-data.outputs.proj-name }}Tests
+      build-config: ${{ needs.collect-data.outputs.build-config }}
+      net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
+      os: ${{ matrix.os }}
+
+
+  build_qa_testing_project:
+    name: Build Velaptor QA Testing
+    needs: collect-data
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    uses: KinsonDigital/Infrastructure/.github/workflows/build-csharp-project.yml@v3.1.0-beta
+    with:
+      project-name: ${{ needs.collect-data.outputs.proj-name }}Testing
+      build-config: ${{ needs.collect-data.outputs.build-config }}
+      net-sdk-version: ${{ needs.collect-data.outputs.sdk-version }}
+      os: ${{ matrix.os }}
