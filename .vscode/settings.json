@@ -22,6 +22,7 @@
         "Nuget",
         "nupkg",
         "prereleases",
+        "pwsh",
         "Reactable",
         "releasetype",
         "releasetypes",
