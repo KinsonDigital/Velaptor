@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{DA2AB7CF-A778-416B-BFBF-1E27CC23855C}"
 	ProjectSection(SolutionItems) = preProject
 		Testing\.editorconfig = Testing\.editorconfig
-		Velaptor\OpenGL\TextureGPUBuffer.cs = Velaptor\OpenGL\TextureGPUBuffer.cs
 		Testing\Velaptor.runsettings = Testing\Velaptor.runsettings
 	EndProjectSection
 EndProject
