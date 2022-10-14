@@ -1,4 +1,4 @@
-// <copyright file="TestMouseScene.cs" company="KinsonDigital">
+﻿// <copyright file="TestMouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -20,7 +20,6 @@ namespace VelaptorTesting.Scenes
         private readonly IAppInput<MouseState> mouse;
         private Label? mouseInfoLabel;
         private MouseState currentMouseState;
-        private int mouseWheelSpeed;
         private MouseScrollDirection scrollDirection;
 
         /// <summary>
@@ -61,11 +60,9 @@ namespace VelaptorTesting.Scenes
 
             if (this.currentMouseState.GetScrollWheelValue() != 0)
             {
-                this.mouseWheelSpeed = this.currentMouseState.GetScrollWheelValue();
                 this.scrollDirection = this.currentMouseState.GetScrollDirection();
             }
 
-            mouseInfo += $"\nMouse Scroll Speed: {this.mouseWheelSpeed}";
             mouseInfo += $"\nMouse Scroll Direction: {this.scrollDirection}";
 
             this.mouseInfoLabel.Text = mouseInfo;
