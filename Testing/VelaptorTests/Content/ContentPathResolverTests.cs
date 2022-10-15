@@ -124,8 +124,10 @@ namespace VelaptorTests.Content
             }, "The string parameter must not be null or empty. (Parameter 'contentName')");
         }
 
-        [Fact]
-        public void ResolveFilePath_WhenContentNameEndsWithDirSeparator_ThrowsException()
+        [Theory]
+        [InlineData(@"content.png\")]
+        [InlineData("content.png/")]
+        public void ResolveFilePath_WhenContentNameEndsWithDirSeparator_ThrowsException(string contentName)
         {
             // Arrange
             var resolver = new ContentPathResolverFake();
@@ -133,8 +135,8 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
-                resolver.ResolveFilePath($@"{ContentName}\");
-            }, $@"The '{ContentName}\' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
+                resolver.ResolveFilePath($@"{contentName}");
+            }, $@"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
         }
         #endregion
     }
