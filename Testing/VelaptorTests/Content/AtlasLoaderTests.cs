@@ -1,4 +1,4 @@
-﻿// <copyright file="AtlasLoaderTests.cs" company="KinsonDigital">
+// <copyright file="AtlasLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -29,8 +29,8 @@ namespace VelaptorTests.Content
         private const string DirPath = @"C:\Content\Atlas\";
         private const string AtlasContentName = "test-atlas";
         private const string FakeJSONData = "fake-json-data";
-        private readonly string atlasImageFilePath = $"{DirPath}{AtlasContentName}{TextureExtension}";
-        private readonly string atlasDataFilePath = $"{DirPath}{AtlasContentName}{AtlasDataExtension}";
+        private const string AtlasImageFilePath = $"{DirPath}{AtlasContentName}{TextureExtension}";
+        private const string AtlasDataFilePath = $"{DirPath}{AtlasContentName}{AtlasDataExtension}";
         private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IAtlasDataFactory> mockAtlasDataFactory;
         private readonly Mock<IPathResolver> mockAtlasPathResolver;
@@ -52,14 +52,14 @@ namespace VelaptorTests.Content
             this.mockJSONService = new Mock<IJSONService>();
 
             this.mockFile = new Mock<IFile>();
-            this.mockFile.Setup(m => m.ReadAllText(this.atlasDataFilePath))
+            this.mockFile.Setup(m => m.ReadAllText(AtlasDataFilePath))
                 .Returns(FakeJSONData);
-            this.mockFile.Setup(m => m.Exists(this.atlasDataFilePath)).Returns(true);
-            this.mockFile.Setup(m => m.Exists(this.atlasImageFilePath)).Returns(true);
+            this.mockFile.Setup(m => m.Exists(AtlasDataFilePath)).Returns(true);
+            this.mockFile.Setup(m => m.Exists(AtlasImageFilePath)).Returns(true);
 
             this.mockPath = new Mock<IPath>();
-            this.mockPath.Setup(m => m.GetDirectoryName(this.atlasImageFilePath)).Returns(DirPath);
-            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.atlasImageFilePath)).Returns(AtlasContentName);
+            this.mockPath.Setup(m => m.GetDirectoryName(AtlasImageFilePath)).Returns(DirPath);
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(AtlasImageFilePath)).Returns(AtlasContentName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(AtlasContentName)).Returns(AtlasContentName);
         }
 
@@ -205,12 +205,12 @@ namespace VelaptorTests.Content
             MockAtlasDataFactory(mockAtlasData.Object, atlasData, DirPath, $"{AtlasContentName}");
 
             // Act
-            var actual = loader.Load(this.atlasImageFilePath);
+            var actual = loader.Load(AtlasImageFilePath);
 
             // Assert
-            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.atlasImageFilePath), Times.Once);
-            this.mockPath.Verify(m => m.GetDirectoryName(this.atlasImageFilePath), Times.Once);
-            this.mockFile.Verify(m => m.ReadAllText(this.atlasDataFilePath), Times.Once());
+            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(AtlasImageFilePath), Times.Once);
+            this.mockPath.Verify(m => m.GetDirectoryName(AtlasImageFilePath), Times.Once);
+            this.mockFile.Verify(m => m.ReadAllText(AtlasDataFilePath), Times.Once());
             this.mockJSONService.Verify(m => m.Deserialize<AtlasSubTextureData[]>(FakeJSONData), Times.Once);
             this.mockAtlasDataFactory.Verify(m => m.Create(atlasData, DirPath, $"{AtlasContentName}"));
             Assert.Same(mockAtlasData.Object, actual);
@@ -222,7 +222,7 @@ namespace VelaptorTests.Content
             // Arrange
             const string dirPath = @"C:\app-dir\content\atlas\";
             const string contentName = "missing-json-file";
-            var invalidFilePath = $"{dirPath}{contentName}{AtlasDataExtension}";
+            const string invalidFilePath = $"{dirPath}{contentName}{AtlasDataExtension}";
             var loader = CreateLoader();
 
             var expected = $"The atlas data directory '{dirPath}' does not contain the";
@@ -247,8 +247,8 @@ namespace VelaptorTests.Content
             const string dirPath = @"C:\app-dir\content\atlas\";
             const string jsonContentName = "missing-file";
             const string imageContentName = "missing-file";
-            var validJSONFilePath = $"{dirPath}{jsonContentName}{AtlasDataExtension}";
-            var invalidImageFilePath = $"{dirPath}{imageContentName}{TextureExtension}";
+            const string validJSONFilePath = $"{dirPath}{jsonContentName}{AtlasDataExtension}";
+            const string invalidImageFilePath = $"{dirPath}{imageContentName}{TextureExtension}";
             var loader = CreateLoader();
 
             var expected = $"The atlas data directory '{dirPath}' does not contain the";
@@ -284,7 +284,7 @@ namespace VelaptorTests.Content
             // Assert
             this.mockPath.Verify(m => m.GetFileNameWithoutExtension(AtlasContentName), Times.Once);
             this.mockAtlasPathResolver.Verify(m => m.ResolveDirPath(), Times.Once);
-            this.mockFile.Verify(m => m.ReadAllText(this.atlasDataFilePath), Times.Once());
+            this.mockFile.Verify(m => m.ReadAllText(AtlasDataFilePath), Times.Once());
             this.mockJSONService.Verify(m => m.Deserialize<AtlasSubTextureData[]>(FakeJSONData), Times.Once);
             this.mockAtlasDataFactory.Verify(m => m.Create(atlasData, DirPath, AtlasContentName));
             Assert.Same(mockAtlasData.Object, actual);
@@ -303,7 +303,7 @@ namespace VelaptorTests.Content
             AssertExtensions.ThrowsWithMessage<LoadContentException>(() =>
             {
                 loader.Load(AtlasContentName);
-            }, $"There was an issue deserializing the JSON atlas data file at '{this.atlasDataFilePath}'.");
+            }, $"There was an issue deserializing the JSON atlas data file at '{AtlasDataFilePath}'.");
         }
 
         [Fact]
