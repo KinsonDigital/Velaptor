@@ -18,6 +18,7 @@ namespace Velaptor.Content.Fonts
     /// </summary>
     internal class ContentFontPathResolver : ContentPathResolver
     {
+        private const char CrossPlatDirSeparatorChar = '/';
         private const string FileExtension = ".ttf";
         private readonly IDirectory directory;
 
@@ -47,7 +48,7 @@ namespace Velaptor.Content.Fonts
             var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
                          where string.Compare(
                              f,
-                             $"{contentDirPath}{contentName}{FileExtension}",
+                             $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}",
                              StringComparison.OrdinalIgnoreCase) == 0
                          select f).ToArray();
 
