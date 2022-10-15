@@ -1,4 +1,4 @@
-// <copyright file="AtlasLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="AtlasLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -26,11 +26,11 @@ namespace VelaptorTests.Content
     {
         private const string TextureExtension = ".png";
         private const string AtlasDataExtension = ".json";
-        private const string DirPath = @"C:\Content\Atlas\";
+        private const string DirPath = @"C:/Content/Atlas";
         private const string AtlasContentName = "test-atlas";
         private const string FakeJSONData = "fake-json-data";
-        private const string AtlasImageFilePath = $"{DirPath}{AtlasContentName}{TextureExtension}";
-        private const string AtlasDataFilePath = $"{DirPath}{AtlasContentName}{AtlasDataExtension}";
+        private const string AtlasImageFilePath = $"{DirPath}/{AtlasContentName}{TextureExtension}";
+        private const string AtlasDataFilePath = $"{DirPath}/{AtlasContentName}{AtlasDataExtension}";
         private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IAtlasDataFactory> mockAtlasDataFactory;
         private readonly Mock<IPathResolver> mockAtlasPathResolver;
@@ -187,7 +187,7 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<LoadAtlasException>(() =>
             {
-                loader.Load($"{DirPath}{AtlasContentName}{extension}");
+                loader.Load($"{DirPath}/{AtlasContentName}{extension}");
             }, "When performing full content file path loads, the files must be a '.png' or '.json' extension.");
         }
 
@@ -220,13 +220,13 @@ namespace VelaptorTests.Content
         public void Load_WhenAtlasJSONDataFileDoNotExist_ThrowsException()
         {
             // Arrange
-            const string dirPath = @"C:\app-dir\content\atlas\";
+            const string dirPath = @"C:/app-dir/content/atlas";
             const string contentName = "missing-json-file";
-            const string invalidFilePath = $"{dirPath}{contentName}{AtlasDataExtension}";
+            const string invalidFilePath = $"{dirPath}/{contentName}{AtlasDataExtension}";
             var loader = CreateLoader();
 
             var expected = $"The atlas data directory '{dirPath}' does not contain the";
-            expected += $" required '{dirPath}{contentName}{AtlasDataExtension}' atlas data file.";
+            expected += $" required '{dirPath}/{contentName}{AtlasDataExtension}' atlas data file.";
 
             this.mockFile.Setup(m => m.Exists(invalidFilePath)).Returns(false);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension(invalidFilePath)).Returns(contentName);
@@ -244,15 +244,15 @@ namespace VelaptorTests.Content
         public void Load_WhenAtlasImageDataFileDoNotExist_ThrowsException()
         {
             // Arrange
-            const string dirPath = @"C:\app-dir\content\atlas\";
+            const string dirPath = @"C:/app-dir/content/atlas";
             const string jsonContentName = "missing-file";
             const string imageContentName = "missing-file";
-            const string validJSONFilePath = $"{dirPath}{jsonContentName}{AtlasDataExtension}";
-            const string invalidImageFilePath = $"{dirPath}{imageContentName}{TextureExtension}";
+            const string validJSONFilePath = $"{dirPath}/{jsonContentName}{AtlasDataExtension}";
+            const string invalidImageFilePath = $"{dirPath}/{imageContentName}{TextureExtension}";
             var loader = CreateLoader();
 
             var expected = $"The atlas data directory '{dirPath}' does not contain the";
-            expected += $" required '{dirPath}{imageContentName}{TextureExtension}' atlas image file.";
+            expected += $" required '{dirPath}/{imageContentName}{TextureExtension}' atlas image file.";
 
             this.mockFile.Setup(m => m.Exists(validJSONFilePath)).Returns(true);
             this.mockFile.Setup(m => m.Exists(invalidImageFilePath)).Returns(false);
@@ -310,9 +310,9 @@ namespace VelaptorTests.Content
         public void Load_WithDirPath_ThrowsException()
         {
             // Arrange
-            var expected = $"Directory paths not allowed when loading texture atlas data.\n";
-            expected += "Relative and fully qualified directory paths not valid.\n";
-            expected += "The path must be a fully qualified file path or content item name\n";
+            var expected = $"Directory paths not allowed when loading texture atlas data.{Environment.NewLine}";
+            expected += $"Relative and fully qualified directory paths not valid.{Environment.NewLine}";
+            expected += $"The path must be a fully qualified file path or content item name{Environment.NewLine}";
             expected += @"located in the application's './Content/Atlas' directory.";
             var mockAtlasData = new Mock<IAtlasData>();
 

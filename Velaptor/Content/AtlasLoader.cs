@@ -24,6 +24,8 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class AtlasLoader : ILoader<IAtlasData>
     {
+        private const char WinDirSeparatorChar = '\\';
+        private const char CrossPlatDirSeparatorChar = '/';
         private const string TextureExtension = ".png";
         private const string AtlasDataExtension = ".json";
         private readonly IItemCache<string, ITexture> textureCache;
@@ -101,14 +103,14 @@ namespace Velaptor.Content
         /// Valid Values:
         /// <list type="bullet">
         ///     <item>MyAtlas</item>
-        ///     <item>C:\Atlas\MyAtlas.png</item>
-        ///     <item>C:\Atlas\MyAtlas.json</item>
+        ///     <item>C:/Atlas/MyAtlas.png</item>
+        ///     <item>C:/Atlas/MyAtlas.json</item>
         /// </list>
         ///
         /// Invalid Values:
         /// <list type="bullet">
-        ///     <item>C:\Atlas\MyAtlas</item>
-        ///     <item>C:\Atlas\MyAtlas.txt</item>
+        ///     <item>C:/Atlas/MyAtlas</item>
+        ///     <item>C:/Atlas/MyAtlas.txt</item>
         /// </list>
         /// </remarks>
         public IAtlasData Load(string contentNameOrPath)
@@ -139,15 +141,16 @@ namespace Velaptor.Content
 
                 name = this.path.GetFileNameWithoutExtension(contentNameOrPath);
 
-                dirPath = $@"{this.path.GetDirectoryName(contentNameOrPath).TrimEnd('\\')}\";
+                dirPath = this.path.GetDirectoryName(contentNameOrPath)
+                    .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimEnd(CrossPlatDirSeparatorChar);
             }
             else
             {
                 if (contentNameOrPath.HasValidFullDirPathSyntax() || contentNameOrPath.HasValidUNCPathSyntax())
                 {
-                    var exceptionMsg = "Directory paths not allowed when loading texture atlas data.\n";
-                    exceptionMsg += "Relative and fully qualified directory paths not valid.\n";
-                    exceptionMsg += "The path must be a fully qualified file path or content item name\n";
+                    var exceptionMsg = $"Directory paths not allowed when loading texture atlas data.{Environment.NewLine}";
+                    exceptionMsg += $"Relative and fully qualified directory paths not valid.{Environment.NewLine}";
+                    exceptionMsg += $"The path must be a fully qualified file path or content item name{Environment.NewLine}";
                     exceptionMsg += @"located in the application's './Content/Atlas' directory.";
 
                     throw new LoadAtlasException(exceptionMsg);
@@ -161,22 +164,22 @@ namespace Velaptor.Content
                 dirPath = this.atlasDataPathResolver.ResolveDirPath();
             }
 
-            var atlasDataFilePath = $"{dirPath}{name}{AtlasDataExtension}";
+            var atlasDataFilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{name}{AtlasDataExtension}";
 
             if (this.file.Exists(atlasDataFilePath) is false)
             {
                 var exceptionMsg = $"The atlas data directory '{dirPath}' does not contain the";
-                exceptionMsg += $" required '{dirPath}{name}{AtlasDataExtension}' atlas data file.";
+                exceptionMsg += $" required '{atlasDataFilePath}' atlas data file.";
 
                 throw new LoadAtlasException(exceptionMsg);
             }
 
-            var atlasImageFilePath = $"{dirPath}{name}{TextureExtension}";
+            var atlasImageFilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{name}{TextureExtension}";
 
             if (this.file.Exists(atlasImageFilePath) is false)
             {
                 var exceptionMsg = $"The atlas data directory '{dirPath}' does not contain the";
-                exceptionMsg += $" required '{dirPath}{name}{TextureExtension}' atlas image file.";
+                exceptionMsg += $" required '{atlasImageFilePath}' atlas image file.";
 
                 throw new LoadAtlasException(exceptionMsg);
             }
