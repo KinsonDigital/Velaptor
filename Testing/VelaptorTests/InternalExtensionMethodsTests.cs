@@ -1,4 +1,4 @@
-﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -110,11 +110,16 @@ namespace VelaptorTests
         [InlineData("", "")]
         [InlineData(".txt", "")]
         [InlineData("test-dir", "test-dir")]
-        [InlineData(@"C:\", @"C:\")]
+        [InlineData(@"C:\", @"C:/")]
+        [InlineData(@"C:/", @"C:/")]
         [InlineData(@"C:\temp", @"temp")]
+        [InlineData(@"C:/temp", @"temp")]
         [InlineData(@"C:\temp\", @"temp")]
-        [InlineData(@"C:\test-file.txt", @"C:\")]
+        [InlineData(@"C:/temp/", @"temp")]
+        [InlineData(@"C:\test-file.txt", @"C:/")]
+        [InlineData(@"C:/test-file.txt", @"C:/")]
         [InlineData(@"C:\temp\test-file.txt", @"temp")]
+        [InlineData(@"C:/temp/test-file.txt", @"temp")]
         public void GetLastDirName_WhenInvoked_ReturnsCorrectResult(string value, string expected)
         {
             // Act

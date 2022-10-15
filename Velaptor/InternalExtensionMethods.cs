@@ -31,6 +31,9 @@ namespace Velaptor
     /// </summary>
     internal static class InternalExtensionMethods
     {
+        private const char WinDirSeparatorChar = '\\';
+        private const char CrossPlatDirSeparatorChar = '/';
+
         /// <summary>
         /// Determines whether or not this string instance starts with the specified character.
         /// </summary>
@@ -121,8 +124,10 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath)
+                ? Path.GetDirectoryName(fileOrDirPath) ?? string.Empty
                 : fileOrDirPath;
+
+            onlyDirPath = onlyDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
             if (string.IsNullOrEmpty(onlyDirPath))
             {
@@ -134,12 +139,10 @@ namespace Velaptor
             {
                 var sections = onlyDirPath.Split(':', StringSplitOptions.RemoveEmptyEntries);
 
-                return sections[^1] == Path.DirectorySeparatorChar.ToString()
-                    ? onlyDirPath
-                    : sections[^1].TrimStart(Path.DirectorySeparatorChar);
+                return $"{sections[0]}:{CrossPlatDirSeparatorChar}";
             }
 
-            var dirNames = onlyDirPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+            var dirNames = onlyDirPath.Split(CrossPlatDirSeparatorChar, StringSplitOptions.RemoveEmptyEntries);
 
             return dirNames[^1];
         }
