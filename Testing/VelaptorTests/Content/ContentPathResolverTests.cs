@@ -24,7 +24,7 @@ namespace VelaptorTests.Content
             .Replace('\\', '/');
 
         /// <summary>
-        /// Gets test data for the <see cref="RootDirectory_WhenSettingValue_ReturnsCorrectResult"/> test.
+        /// Gets test data for the <see cref="RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult"/> test.
         /// </summary>
         public static IEnumerable<object[]> ContentRootPaths =>
             new List<object[]>

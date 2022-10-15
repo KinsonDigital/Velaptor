@@ -195,7 +195,7 @@ namespace VelaptorTests.Services
             // Act
             var flippedImage = service.FlipHorizontally(comparisonSample);
 
-            TestHelpers.SaveImageForTest(flippedImage, nameof(FlipHorizontally_WhenInvoked_FlipsImageVertically));
+            TestHelpers.SaveImageForTest(flippedImage);
 
             // Assert
             // Check that all pixels in the top left section are red
