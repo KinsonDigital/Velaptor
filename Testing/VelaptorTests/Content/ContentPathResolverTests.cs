@@ -94,21 +94,20 @@ namespace VelaptorTests.Content
             Assert.Equal(ContentName, actual);
         }
 
-        [Fact]
-        public void ResolveDirPath_WhenInvoked_ResolvesContentDirPath()
+        [Theory]
+        [InlineData(@"C:\temp\my-content\")]
+        public void ResolveDirPath_WhenInvoked_ResolvesContentDirPath(string rootDirPath)
         {
             // Arrange
-            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
-            // ReSharper restore UseObjectOrCollectionInitializer
-            resolver.RootDirectoryPath = @"C:\temp\my-content\";
+            resolver.RootDirectoryPath = rootDirPath;
             resolver.ContentDirectoryName = "test-content";
 
             // Act
             var actual = resolver.ResolveDirPath();
 
             // Assert
-            Assert.Equal(@"C:\temp\my-content\test-content\", actual);
+            Assert.Equal(@"C:/temp/my-content/test-content", actual);
         }
 
         [Fact]

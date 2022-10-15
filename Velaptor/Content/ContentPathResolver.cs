@@ -76,7 +76,7 @@ namespace Velaptor.Content
         }
 
         /// <inheritdoc/>
-        public string ResolveDirPath() => $@"{this.contentRootDirectory}{this.contentDirName}\";
+        public string ResolveDirPath() => $@"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}";
 
         /// <summary>
         /// Gets the directory path of the content.
