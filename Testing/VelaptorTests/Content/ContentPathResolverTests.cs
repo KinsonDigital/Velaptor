@@ -50,18 +50,24 @@ namespace VelaptorTests.Content
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void FileDirectoryName_WhenSettingWithDirectoryPath_CorrectlySetsResult()
+        [Theory]
+        [InlineData(@"C:\temp\test-dir-name", "test-dir-name")]
+        [InlineData(@"C:\temp\test-dir-name\", "test-dir-name")]
+        [InlineData(@"C:/temp/test-dir-name", "test-dir-name")]
+        [InlineData(@"C:/temp/test-dir-name/", "test-dir-name")]
+        public void ContentDirectoryName_WhenSettingWithDirectoryPath_CorrectlySetsResult(
+            string contentDirName,
+            string expected)
         {
             // Arrange
             var resolver = new ContentPathResolverFake();
 
             // Act
-            resolver.ContentDirectoryName = @"C:\temp\test-dir-name";
+            resolver.ContentDirectoryName = contentDirName;
             var actual = resolver.ContentDirectoryName;
 
             // Assert
-            Assert.Equal("test-dir-name", actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
