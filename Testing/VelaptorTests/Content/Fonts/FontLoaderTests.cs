@@ -429,8 +429,8 @@ namespace VelaptorTests.Content.Fonts
             const string invalidMetaData = "size-12";
 
             var expected = $"The metadata '{invalidMetaData}' is invalid when loading '{contentName}'.";
-            expected += "\n\tExpected MetaData Syntax: size:<font-size>";
-            expected += "\n\tExample: size:12";
+            expected += $"{Environment.NewLine}\tExpected MetaData Syntax: size:<font-size>";
+            expected += $"{Environment.NewLine}\tExample: size:12";
 
             this.mockFontMetaDataParser.Setup(m => m.Parse(contentName))
                 .Returns(new FontMetaDataParseResult(
@@ -597,8 +597,8 @@ namespace VelaptorTests.Content.Fonts
             const string invalidMetaData = "size-12";
 
             var expected = $"The metadata '{invalidMetaData}' is invalid when unloading '{contentName}'.";
-            expected += "\n\tExpected MetaData Syntax: size:<font-size>";
-            expected += "\n\tExample: size:12";
+            expected += $"{Environment.NewLine}\tExpected MetaData Syntax: size:<font-size>";
+            expected += $"{Environment.NewLine}\tExample: size:12";
 
             this.mockFontMetaDataParser.Setup(m => m.Parse(contentName))
                 .Returns(new FontMetaDataParseResult(
@@ -624,8 +624,8 @@ namespace VelaptorTests.Content.Fonts
 
             var expected = "When unloading fonts, the name of or the full file path of the font";
             expected += " must be supplied with valid metadata syntax.";
-            expected += $"\n\tExpected MetaData Syntax: size:<font-size>";
-            expected += "\n\tExample: size:12";
+            expected += $"{Environment.NewLine}\tExpected MetaData Syntax: size:<font-size>";
+            expected += $"{Environment.NewLine}\tExample: size:12";
 
             this.mockFontMetaDataParser.Setup(m => m.Parse(contentName))
                 .Returns(new FontMetaDataParseResult(

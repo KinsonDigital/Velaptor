@@ -203,7 +203,7 @@ namespace VelaptorTests.Content.Caching
             const string invalidExtension = ".txt";
             var soundFilePath = $"{dirPath}{soundName}{invalidExtension}";
             var exceptionMsg = $"Sound file type '{invalidExtension}' is not supported.";
-            exceptionMsg += $"\nSupported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
+            exceptionMsg += $"{Environment.NewLine}Supported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
 
             this.mockPath.Setup(m => m.GetExtension(soundFilePath)).Returns(invalidExtension);
 

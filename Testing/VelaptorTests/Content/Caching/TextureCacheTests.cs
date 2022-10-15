@@ -452,8 +452,8 @@ namespace VelaptorTests.Content.Caching
         {
             // Arrange
             var expected = "Font file paths must include metadata.";
-            expected += $"\nFont Content Path MetaData Syntax: <file-path>|size:<font-size>";
-            expected += @"\nExample: C:\Windows\Fonts\my-font.ttf|size:12";
+            expected += $"{Environment.NewLine}Font Content Path MetaData Syntax: <file-path>|size:<font-size>";
+            expected += $"{Environment.NewLine}Example: C:/Windows/Fonts/my-font.ttf|size:12";
 
             MockTextureParseResult();
 

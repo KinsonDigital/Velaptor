@@ -306,8 +306,9 @@ namespace Velaptor.Graphics
             var originalY = (float)y;
             var characterY = (float)y;
 
-            text = text.TrimEnd('\n');
-            var lines = text.Split('\n').TrimAllEnds();
+            text = text.TrimNewLineFromEnd();
+
+            var lines = text.Split(Environment.NewLine).TrimAllEnds();
 
             var lineSpacing = font.LineSpacing.ApplySize(normalizedSize);
             var textSize = font.Measure(text).ApplySize(normalizedSize);

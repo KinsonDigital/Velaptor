@@ -465,7 +465,7 @@ namespace VelaptorTests.Content.Fonts
         public void Measure_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            const string text = "hello\nworld";
+            var text = $"hello{Environment.NewLine}world";
 
             this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12)).Returns(2f);
             this.mockFontService.Setup(m => m.HasKerning(this.facePtr)).Returns(true);

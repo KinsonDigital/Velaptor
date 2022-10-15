@@ -148,6 +148,25 @@ namespace Velaptor
         }
 
         /// <summary>
+        /// Trims any newline characters from the end of the <c>string</c>.
+        /// </summary>
+        /// <param name="value">The string to trim.</param>
+        /// <returns>Returns the string with all new line characters removed from the end.</returns>
+        public static string TrimNewLineFromEnd(this string value)
+        {
+            const char newLine = '\n';
+            const char carriageReturn = '\r';
+
+            while (value.EndsWith(newLine) || value.EndsWith(carriageReturn))
+            {
+                value = value.TrimEnd(newLine);
+                value = value.TrimEnd(carriageReturn);
+            }
+
+            return value;
+        }
+
+        /// <summary>
         /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
         /// </summary>
         /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>

@@ -60,7 +60,7 @@ namespace Velaptor.NativeInterop.OpenGL
                         var exceptionMessage =
                             $"The parameter '{nameof(data)}' of the '{nameof(Reactor<object>.OnNext)}()' action delegate must be of type '{nameof(IWindow)}'.";
                         exceptionMessage +=
-                            $"\n\t{nameof(OpenGLContextReactable)} subscription location: {nameof(GLInvoker)}.Ctor()";
+                            $"{Environment.NewLine}\t{nameof(OpenGLContextReactable)} subscription location: {nameof(GLInvoker)}.Ctor()";
 
                         throw new Exception(exceptionMessage);
                     }
@@ -552,12 +552,12 @@ namespace Velaptor.NativeInterop.OpenGL
         {
             var openGLMessage = Marshal.PtrToStringAnsi(message);
 
-            openGLMessage += $"\n\tSrc: {source}";
-            openGLMessage += $"\n\tType: {type}";
-            openGLMessage += $"\n\tID: {id}";
-            openGLMessage += $"\n\tSeverity: {severity}";
-            openGLMessage += $"\n\tLength: {length}";
-            openGLMessage += $"\n\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
+            openGLMessage += $"{Environment.NewLine}\tSrc: {source}";
+            openGLMessage += $"{Environment.NewLine}\tType: {type}";
+            openGLMessage += $"{Environment.NewLine}\tID: {id}";
+            openGLMessage += $"{Environment.NewLine}\tSeverity: {severity}";
+            openGLMessage += $"{Environment.NewLine}\tLength: {length}";
+            openGLMessage += $"{Environment.NewLine}\tUser Param: {Marshal.PtrToStringAnsi(userParam)}";
 
             // Ignore warnings about shader recompilation
             if (id is API_ID_RECOMPILE_VERTEX_SHADER or API_ID_RECOMPILE_FRAGMENT_SHADER)

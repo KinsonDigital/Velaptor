@@ -132,6 +132,23 @@ namespace VelaptorTests
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [InlineData("test\n")]
+        [InlineData("test\r")]
+        [InlineData("test\n\r")]
+        [InlineData("test\r\n")]
+        public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string value)
+        {
+            // Arrange
+            const string expected = "test";
+
+            // Act
+            var actual = value.TrimNewLineFromEnd();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
         [Fact]
         public void ToReadOnlyCollection_WithNullIEnumerableItems_ReturnsEmptyReadOnlyCollection()
         {

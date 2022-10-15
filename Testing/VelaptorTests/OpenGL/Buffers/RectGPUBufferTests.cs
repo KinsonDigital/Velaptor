@@ -84,7 +84,7 @@ namespace VelaptorTests.OpenGL.Buffers
                     $"1 time in the '{nameof(GPUBufferBase<RectShape>.UploadVertexData)}()' method.",
                     "3 times in the private '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
             };
-            var failMessage = string.Join("\n", executionLocations);
+            var failMessage = string.Join(Environment.NewLine, executionLocations);
 
             var rect = default(RectShape);
 
@@ -109,7 +109,7 @@ namespace VelaptorTests.OpenGL.Buffers
                 $"1 time in the private '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
                 $"1 time in the '{nameof(GPUBufferBase<RectShape>.UploadVertexData)}()' method.",
             };
-            var failMessage = string.Join("\n", executionLocations);
+            var failMessage = string.Join("{Environment.NewLine}", executionLocations);
 
             var rect = default(RectShape);
 
@@ -407,7 +407,7 @@ namespace VelaptorTests.OpenGL.Buffers
                 $"1 time in the '{nameof(RectGPUBuffer.PrepareForUpload)}()' method.",
                 $"1 time in the '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
             };
-            var failMessage = string.Join("\n", executionLocations);
+            var failMessage = string.Join(Environment.NewLine, executionLocations);
 
             var buffer = CreateBuffer();
 

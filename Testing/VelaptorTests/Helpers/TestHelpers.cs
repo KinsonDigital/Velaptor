@@ -110,8 +110,8 @@ namespace VelaptorTests.Helpers
                 (location.Y < 0 && location.Y > dest.Height))
             {
                 var exMsg = "The location to draw is outside of the bounds of the destination image.";
-                exMsg += $"\n\tDestination Size: W:{dest.Width}, H: {dest.Height}";
-                exMsg += $"\n\tDestination Location: X:{location.X}, Y: {location.Y}";
+                exMsg += $"{Environment.NewLine}\tDestination Size: W:{dest.Width}, H: {dest.Height}";
+                exMsg += $"{Environment.NewLine}\tDestination Location: X:{location.X}, Y: {location.Y}";
 
                 throw new ArgumentException(exMsg, nameof(location));
             }

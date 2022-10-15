@@ -769,7 +769,7 @@ namespace VelaptorTests.Graphics
         public void RenderFont_WhenRenderingMultilineText_ConvertsEachLineToGlyphMetrics()
         {
             // Arrange
-            const string renderText = "hello\nworld";
+            var renderText = $"hello{Environment.NewLine}world";
 
             MockFontMetrics();
             MockToGlyphMetrics("hello");
@@ -842,7 +842,7 @@ namespace VelaptorTests.Graphics
 
             const string line1 = "hello";
             const string line2 = "world";
-            const string renderText = $"{line1}\n{line2}";
+            var renderText = $"{line1}{Environment.NewLine}{line2}";
             var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
@@ -883,7 +883,7 @@ namespace VelaptorTests.Graphics
 
             const string line1 = "hello";
             const string line2 = "world";
-            const string renderText = $"{line1}\n{line2}";
+            var renderText = $"{line1}{Environment.NewLine}{line2}";
             var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
@@ -923,7 +923,7 @@ namespace VelaptorTests.Graphics
 
             const string line1 = "hello";
             const string line2 = "world";
-            const string renderText = $"{line1}\n{line2}";
+            var renderText = $"{line1}{Environment.NewLine}{line2}";
             var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
@@ -966,7 +966,7 @@ namespace VelaptorTests.Graphics
 
             const string line1 = "hello";
             const string line2 = "world";
-            const string renderText = $"{line1}\n{line2}";
+            var renderText = $"{line1}{Environment.NewLine}{line2}";
             var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
@@ -1008,7 +1008,7 @@ namespace VelaptorTests.Graphics
 
             const string line1 = "hello";
             const string line2 = "world";
-            const string renderText = $"{line1}\n{line2}";
+            var renderText = $"{line1}{Environment.NewLine}{line2}";
             var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
@@ -1050,7 +1050,7 @@ namespace VelaptorTests.Graphics
 
             const string line1 = "hello";
             const string line2 = "world";
-            const string renderText = $"{line1}\n{line2}";
+            var renderText = $"{line1}{Environment.NewLine}{line2}";
             var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
@@ -1091,7 +1091,7 @@ namespace VelaptorTests.Graphics
 
             const string line1 = "hello";
             const string line2 = "world";
-            const string renderText = $"{line1}\n{line2}";
+            var renderText = $"{line1}{Environment.NewLine}{line2}";
             var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();
@@ -1134,7 +1134,7 @@ namespace VelaptorTests.Graphics
 
             const string line1 = "hello";
             const string line2 = "world";
-            const string renderText = $"{line1}\n{line2}";
+            var renderText = $"{line1}{Environment.NewLine}{line2}";
             var totalGlyphs = line1.Length + line2.Length;
 
             MockFontMetrics();

@@ -204,8 +204,8 @@ namespace Velaptor.Content.Caching
                     if (fileExtension == FontFileExtension)
                     {
                         var exceptionMsg = "Font file paths must include metadata.";
-                        exceptionMsg += "\nFont Content Path MetaData Syntax: <file-path>|size:<font-size>";
-                        exceptionMsg += @"\nExample: C:\Windows\Fonts\my-font.ttf|size:12";
+                        exceptionMsg += $"{Environment.NewLine}Font Content Path MetaData Syntax: <file-path>|size:<font-size>";
+                        exceptionMsg += $"{Environment.NewLine}Example: C:/Windows/Fonts/my-font.ttf|size:12";
 
                         throw new CachingMetaDataException(exceptionMsg);
                     }

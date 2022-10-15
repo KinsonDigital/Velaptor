@@ -131,7 +131,7 @@ namespace Velaptor.Content.Caching
             if (extension != OggFileExtension && extension != Mp3FileExtension)
             {
                 var exceptionMsg = $"Sound file type '{extension}' is not supported.";
-                exceptionMsg += $"\nSupported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
+                exceptionMsg += $"{Environment.NewLine}Supported file types are '{OggFileExtension}' and '{Mp3FileExtension}'.";
 
                 throw new LoadSoundException(exceptionMsg);
             }

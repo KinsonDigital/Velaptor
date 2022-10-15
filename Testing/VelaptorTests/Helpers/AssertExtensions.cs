@@ -108,14 +108,14 @@ namespace VelaptorTests.Helpers
             {
                 Assert.True(
                 false,
-                $"{TableFlip}Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
+                $"{TableFlip}Both lists must be null or not null to be equal.{Environment.NewLine}The '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
             }
 
             if (expectedItems is not null && actualItems is null)
             {
                 Assert.True(
                 false,
-                $"{TableFlip}Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
+                $"{TableFlip}Both lists must be null or not null to be equal.{Environment.NewLine}The '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
             }
 
             var expected = expectedItems as T[] ?? expectedItems.ToArray();
@@ -138,7 +138,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.{Environment.NewLine}The expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
                 if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
@@ -146,13 +146,13 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.{Environment.NewLine}The expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
 
                 if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
                 {
                     throw new AssertActualExpectedException(
-                        expectedArrayItems[i] + "\n------------------------------------------------------------------------------------------------------------------------",
+                        expectedArrayItems[i] + $"{Environment.NewLine}------------------------------------------------------------------------------------------------------------------------",
                         actualArrayItems[i],
                         $"{TableFlip}The expected and actual items at index '{i}' are not equal.");
                 }
@@ -185,14 +185,14 @@ namespace VelaptorTests.Helpers
             {
                 Assert.True(
                 false,
-                $"{TableFlip}Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
+                $"{TableFlip}Both lists must be null or not null to be equal.{Environment.NewLine}The '{nameof(expectedItems)}' is null and the '{nameof(actualItems)}' is not null.");
             }
 
             if (expectedItems is not null && actualItems is null)
             {
                 Assert.True(
                 false,
-                $"{TableFlip}Both lists must be null or not null to be equal.\nThe '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
+                $"{TableFlip}Both lists must be null or not null to be equal.{Environment.NewLine}The '{nameof(expectedItems)}' is not null and the '{nameof(actualItems)}' is null.");
             }
 
             var expected = expectedItems as T[] ?? expectedItems.ToArray();
@@ -215,7 +215,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
+                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.{Environment.NewLine}The expected item at index '{i}' is null and the actual item at index '{i}' is not null.");
                 }
 
                 if (expectedArrayItems[i] is not null && actualArrayItems[i] is null)
@@ -223,7 +223,7 @@ namespace VelaptorTests.Helpers
                     throw new AssertActualExpectedException(
                         expectedArrayItems[i],
                         actualArrayItems[i],
-                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.\n\nThe expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
+                        $"{TableFlip}Both the expected and actual items must both be null or not null to be equal.{Environment.NewLine}The expected item at index '{i}' is not null and the actual item at index '{i}' is null.");
                 }
 
                 if (expectedArrayItems[i].Equals(actualArrayItems[i]) is false)
@@ -377,20 +377,20 @@ namespace VelaptorTests.Helpers
             if (!string.IsNullOrEmpty(expected) && string.IsNullOrEmpty(actual))
             {
                 assertException = new XunitException(
-                    $"Message: {message}\n" +
+                    $"Message: {message}{Environment.NewLine}" +
                     $"Expected: {expected}");
             }
             else if (string.IsNullOrEmpty(expected) && !string.IsNullOrEmpty(actual))
             {
                 assertException = new XunitException(
-                    $"Message: {message}\n" +
-                    $"Actual: {actual}\n");
+                    $"Message: {message}{Environment.NewLine}" +
+                    $"Actual: {actual}{Environment.NewLine}");
             }
             else if (!string.IsNullOrEmpty(expected) && !string.IsNullOrEmpty(actual))
             {
                 assertException = new XunitException(
-                    $"Message: {message}\n" +
-                    $"Expected: {expected}\n" +
+                    $"Message: {message}{Environment.NewLine}" +
+                    $"Expected: {expected}{Environment.NewLine}" +
                     $"Actual:   {actual}");
             }
             else
@@ -604,7 +604,7 @@ namespace VelaptorTests.Helpers
             }
             catch (Exception ex)
             {
-                Assert.Equal("(No event was raised)\r\nEventArgs\r\n(No event was raised)", ex.Message);
+                Assert.Equal($"(No event was raised){Environment.NewLine}EventArgs{Environment.NewLine}(No event was raised)", ex.Message);
             }
         }
     }

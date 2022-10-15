@@ -187,8 +187,9 @@ namespace Velaptor.Content.Fonts
 
             var leftCharacterIndex = 0u;
 
-            text = text.TrimEnd('\n');
-            var lines = text.Split('\n').TrimAllEnds();
+            text = text.TrimNewLineFromEnd();
+
+            var lines = text.Split(Environment.NewLine).TrimAllEnds();
 
             SizeF MeasureLine(IEnumerable<GlyphMetrics> charMetrics)
             {

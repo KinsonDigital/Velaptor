@@ -4,6 +4,7 @@
 
 namespace VelaptorTesting.Scenes
 {
+    using System;
     using System.Drawing;
     using Velaptor;
     using Velaptor.Content;
@@ -54,16 +55,16 @@ namespace VelaptorTesting.Scenes
             this.currentMouseState = this.mouse.GetState();
 
             var mouseInfo = $"Mouse Position: {this.currentMouseState.GetX()}, {this.currentMouseState.GetY()}";
-            mouseInfo += $"\nMouse Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
-            mouseInfo += $"\nMouse Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
-            mouseInfo += $"\nMouse Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
+            mouseInfo += $"{Environment.NewLine}Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
+            mouseInfo += $"{Environment.NewLine}Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
+            mouseInfo += $"{Environment.NewLine}Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
 
             if (this.currentMouseState.GetScrollWheelValue() != 0)
             {
                 this.scrollDirection = this.currentMouseState.GetScrollDirection();
             }
 
-            mouseInfo += $"\nMouse Scroll Direction: {this.scrollDirection}";
+            mouseInfo += $"{Environment.NewLine}Mouse Scroll Direction: {this.scrollDirection}";
 
             this.mouseInfoLabel.Text = mouseInfo;
 
