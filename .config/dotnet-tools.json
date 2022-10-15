@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "kinsondigital.cicd": {
+      "version": "1.0.0-preview.11",
+      "commands": [
+        "cicd"
+      ]
+    }
+  }
+}

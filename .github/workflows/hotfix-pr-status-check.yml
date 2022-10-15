@@ -1,0 +1,36 @@
+name: ✅Hot Fix PR Status Check
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  pull_request:
+    branches:
+      - master
+
+
+jobs:
+  hot_fix_pr_status_check:
+    if: contains(github.ref, 'refs/pull') && startsWith(github.head_ref, 'hotfix/')
+    name: Hot Fix PR Status Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Restore DotNet Tools
+      run: dotnet tool restore
+
+    - name: Get Pull Request Number
+      id: get-pr-number
+      run: |
+        $pullRequestNumber = "${{ github.ref }}".Replace("refs/pull/", "").Replace("/merge", "");
+        Write-Host "Pull Request Number: $pullRequestNumber";
+        Write-Host "::set-output name=pr-number::$pullRequestNumber";
+
+    - name: Run Build Status Check
+      run: dotnet cicd HotFixPRStatusCheck --pull-request-number ${{ steps.get-pr-number.outputs.pr-number }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
