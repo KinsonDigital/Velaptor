@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable UseObjectOrCollectionInitializer
 namespace VelaptorTests.Content
 {
     using System;
@@ -39,9 +40,7 @@ namespace VelaptorTests.Content
         public void RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult(string rootDirectory, string expected)
         {
             // Arrange
-            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
-            // ReSharper restore UseObjectOrCollectionInitializer
 
             // Act
             resolver.RootDirectoryPath = rootDirectory;
@@ -55,9 +54,7 @@ namespace VelaptorTests.Content
         public void FileDirectoryName_WhenSettingWithDirectoryPath_CorrectlySetsResult()
         {
             // Arrange
-            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
-            // ReSharper restore UseObjectOrCollectionInitializer
 
             // Act
             resolver.ContentDirectoryName = @"C:\temp\test-dir-name";
