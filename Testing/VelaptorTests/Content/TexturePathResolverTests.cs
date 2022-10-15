@@ -28,13 +28,13 @@ namespace VelaptorTests.Content
         /// </summary>
         public TexturePathResolverTests()
         {
-            this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-            this.atlasContentDir = $@"{this.baseDir}Content\Graphics\";
-            this.contentFilePath = $"{this.atlasContentDir}{ContentName}.png";
+            this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+                .Replace('\\', '/');
+            this.atlasContentDir = $@"{this.baseDir}/Content/Graphics";
+            this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.png";
         }
 
         #region Constructor Tests
-
         [Fact]
         public void Ctor_WithNullDirectoryParam_ThrowsException()
         {
@@ -71,8 +71,8 @@ namespace VelaptorTests.Content
                 {
                     return new[]
                     {
-                        $"{this.baseDir}other-file-A.png",
-                        $"{this.baseDir}other-file-B.txt",
+                        $"{this.baseDir}/other-file-A.png",
+                        $"{this.baseDir}/other-file-B.txt",
                     };
                 });
 
@@ -98,7 +98,7 @@ namespace VelaptorTests.Content
                 {
                     return new[]
                     {
-                        $"{this.atlasContentDir}other-file.png",
+                        $"{this.atlasContentDir}/other-file.png",
                         this.contentFilePath,
                     };
                 });

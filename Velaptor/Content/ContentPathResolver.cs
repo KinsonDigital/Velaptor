@@ -82,6 +82,6 @@ namespace Velaptor.Content
         /// Gets the directory path of the content.
         /// </summary>
         /// <returns>The full directory path to the content directory.</returns>
-        protected string GetContentDirPath() => $@"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}{CrossPlatDirSeparatorChar}";
+        protected string GetContentDirPath() => $@"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}";
     }
 }
