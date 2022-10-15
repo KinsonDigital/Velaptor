@@ -1,4 +1,4 @@
-﻿// <copyright file="ContentPathResolverTests.cs" company="KinsonDigital">
+// <copyright file="ContentPathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,7 +19,8 @@ namespace VelaptorTests.Content
     public class ContentPathResolverTests
     {
         private const string ContentName = "test-content.png";
-        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+            .Replace('\\', '/');
 
         /// <summary>
         /// Gets test data for the <see cref="RootDirectory_WhenSettingValue_ReturnsCorrectResult"/> test.
@@ -27,15 +28,15 @@ namespace VelaptorTests.Content
         public static IEnumerable<object[]> ContentRootPaths =>
             new List<object[]>
             {
-                new object[] { null, @$"{BaseDir}Content\" },
-                new object[] { @"C:\base-content\", @"C:\base-content\" },
-                new object[] { @"C:\base-content", @"C:\base-content\" },
+                new object[] { null, @$"{BaseDir}/Content" },
+                new object[] { @"C:\base-content\", @"C:/base-content" },
+                new object[] { @"C:\base-content", @"C:/base-content" },
             };
 
         #region Prop Tests
         [Theory]
         [MemberData(nameof(ContentRootPaths))]
-        public void RootDirectory_WhenSettingValue_ReturnsCorrectResult(string rootDirectory, string expected)
+        public void RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult(string rootDirectory, string expected)
         {
             // Arrange
             // ReSharper disable UseObjectOrCollectionInitializer

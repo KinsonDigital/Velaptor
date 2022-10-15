@@ -1,4 +1,4 @@
-﻿// <copyright file="ContentPathResolver.cs" company="KinsonDigital">
+// <copyright file="ContentPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,29 +13,34 @@ namespace Velaptor.Content
     /// </summary>
     internal abstract class ContentPathResolver : IPathResolver
     {
-        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
-        private string contentRootDirectory = @$"{BaseDir}Content{Path.DirectorySeparatorChar}";
+        private const char WinDirSeparatorChar = '\\';
+        private const char CrossPlatDirSeparatorChar = '/';
+        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+            .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+        private string rootDirPath = @$"{BaseDir}{CrossPlatDirSeparatorChar}Content";
         private string contentDirName = string.Empty;
 
         /// <inheritdoc/>
         public string RootDirectoryPath
         {
-            get => this.contentRootDirectory;
+            get => this.rootDirPath;
             set
             {
+                value = string.IsNullOrEmpty(value)
+                    ? string.Empty
+                    : value;
+
                 var isNullOrEmpty = string.IsNullOrEmpty(value);
 
+                value = value.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimEnd(CrossPlatDirSeparatorChar);
                 value = isNullOrEmpty ? BaseDir : value;
-
-                // If the value ends with a backslash, leave as is, else add one
-                value = value.EndsWith(Path.DirectorySeparatorChar) ? value : $@"{value}{Path.DirectorySeparatorChar}";
 
                 if (isNullOrEmpty)
                 {
                     return;
                 }
 
-                this.contentRootDirectory = value;
+                this.rootDirPath = value;
             }
         }
 
