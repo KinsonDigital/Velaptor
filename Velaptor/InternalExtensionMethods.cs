@@ -86,7 +86,7 @@ namespace Velaptor
 
             var noExtension = !Path.HasExtension(fileOrDirPath);
             var onlySingleColon = onlyDirPath.Count(c => c == ':') == 1;
-            var onlySinglePathSeparator = onlyDirPath.Count(c => c == '\\') == 1;
+            var onlySinglePathSeparator = onlyDirPath.Count(c => c is WinDirSeparatorChar or CrossPlatDirSeparatorChar) == 1;
             var correctLen = onlyDirPath.Length == 3;
 
             return noExtension &&
