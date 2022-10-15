@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.OpenGL
 {
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
     using Velaptor.Graphics;
@@ -336,15 +337,15 @@ namespace VelaptorTests.OpenGL
         {
             // Arrange
             var expected = "Font Batch Item Values:";
-            expected += "\r\nSrc Rect: {X=7,Y=8,Width=9,Height=10}";
-            expected += "\r\nDest Rect: {X=3,Y=4,Width=5,Height=6}";
-            expected += "\r\nSize: 2";
-            expected += "\r\nAngle: 1";
-            expected += "\r\nTint Clr: {A=12,R=13,G=14,B=15}";
-            expected += "\r\nEffects: None";
-            expected += "\r\nView Port Size: {W=16,H=17}";
-            expected += "\r\nTexture ID: 11";
-            expected += "\r\nGlyph: V";
+            expected += $"{Environment.NewLine}Src Rect: {{X=7,Y=8,Width=9,Height=10}}";
+            expected += $"{Environment.NewLine}Dest Rect: {{X=3,Y=4,Width=5,Height=6}}";
+            expected += $"{Environment.NewLine}Size: 2";
+            expected += $"{Environment.NewLine}Angle: 1";
+            expected += $"{Environment.NewLine}Tint Clr: {{A=12,R=13,G=14,B=15}}";
+            expected += $"{Environment.NewLine}Effects: None";
+            expected += $"{Environment.NewLine}View Port Size: {{W=16,H=17}}";
+            expected += $"{Environment.NewLine}Texture ID: 11";
+            expected += $"{Environment.NewLine}Glyph: V";
 
             var batchItem = default(FontGlyphBatchItem);
             batchItem.Angle = 1;
