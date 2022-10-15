@@ -1,4 +1,4 @@
-// <copyright file="ContentPathResolver.cs" company="KinsonDigital">
+﻿// <copyright file="ContentPathResolver.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -82,6 +82,6 @@ namespace Velaptor.Content
         /// Gets the directory path of the content.
         /// </summary>
         /// <returns>The full directory path to the content directory.</returns>
-        protected string GetContentDirPath() => $@"{this.contentRootDirectory}{this.contentDirName}{Path.DirectorySeparatorChar}";
+        protected string GetContentDirPath() => $@"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}{CrossPlatDirSeparatorChar}";
     }
 }
