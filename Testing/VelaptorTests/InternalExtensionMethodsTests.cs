@@ -149,6 +149,27 @@ namespace VelaptorTests
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [InlineData(@"test\")]
+        [InlineData(@"test\\")]
+        [InlineData(@"test/")]
+        [InlineData(@"test//")]
+        [InlineData(@"test\/")]
+        [InlineData(@"test\\//")]
+        [InlineData(@"test/\")]
+        [InlineData(@"test//\\")]
+        public void TrimDirSeparatorFromEnd_WhenInvoked_ReturnsCorrectResult(string value)
+        {
+            // Arrange
+            const string expected = "test";
+
+            // Act
+            var actual = value.TrimDirSeparatorFromEnd();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
         [Fact]
         public void ToReadOnlyCollection_WithNullIEnumerableItems_ReturnsEmptyReadOnlyCollection()
         {

@@ -167,6 +167,25 @@ namespace Velaptor
         }
 
         /// <summary>
+        /// Trims any directory separator characters from the end of the <c>string</c>.
+        /// </summary>
+        /// <param name="value">The string to trim.</param>
+        /// <returns>Returns the string with all directory separator characters removed from the end.</returns>
+        public static string TrimDirSeparatorFromEnd(this string value)
+        {
+            const char backSlash = '\\';
+            const char forwardSlash = '/';
+
+            while (value.EndsWith(backSlash) || value.EndsWith(forwardSlash))
+            {
+                value = value.TrimEnd(backSlash);
+                value = value.TrimEnd(forwardSlash);
+            }
+
+            return value;
+        }
+
+        /// <summary>
         /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
         /// </summary>
         /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
