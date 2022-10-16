@@ -20,9 +20,9 @@ namespace VelaptorTests.Content
     public class TextureLoaderTests
     {
         private const string TextureExtension = ".png";
-        private const string TextureDirPath = @"C:\textures\";
+        private const string TextureDirPath = @"C:/textures";
         private const string TextureFileName = "test-texture";
-        private readonly string textureFilePath = $"{TextureDirPath}{TextureFileName}{TextureExtension}";
+        private readonly string textureFilePath = $"{TextureDirPath}/{TextureFileName}{TextureExtension}";
         private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IFile> mockFile;
@@ -168,7 +168,7 @@ namespace VelaptorTests.Content
         {
             // Arrange
             const string extension = ".txt";
-            var filePathWithInvalidExtension = $"{TextureDirPath}{TextureFileName}{extension}";
+            const string filePathWithInvalidExtension = $"{TextureDirPath}/{TextureFileName}{extension}";
             this.mockFile.Setup(m => m.Exists(filePathWithInvalidExtension)).Returns(true);
             this.mockPath.Setup(m => m.GetExtension(filePathWithInvalidExtension)).Returns(extension);
 
