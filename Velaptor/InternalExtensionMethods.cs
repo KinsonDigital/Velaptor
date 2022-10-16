@@ -124,27 +124,17 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath)?.Replace('\\', '/') ?? string.Empty
-                : fileOrDirPath.Replace('\\', '/');
-
-            onlyDirPath = onlyDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+                ? Path.GetDirectoryName(fileOrDirPath)?.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar) ?? string.Empty
+                : fileOrDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
             if (string.IsNullOrEmpty(onlyDirPath))
             {
                 return string.Empty;
             }
 
-            // If the directory path is just a root drive path
-            if (onlyDirPath.OnlyContainsDrive())
-            {
-                var sections = onlyDirPath.Split(':', StringSplitOptions.RemoveEmptyEntries);
+            var dirName = new DirectoryInfo(onlyDirPath).Name.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
-                return $"{sections[0]}:{CrossPlatDirSeparatorChar}";
-            }
-
-            var dirNames = onlyDirPath.Split(CrossPlatDirSeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-
-            return dirNames[^1];
+            return dirName;
         }
 
         /// <summary>
