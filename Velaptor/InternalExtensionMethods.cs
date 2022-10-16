@@ -435,6 +435,21 @@ namespace Velaptor
         }
 
         /// <summary>
+        /// Returns the normalized versions of the given <paramref name="paths"/>.
+        /// </summary>
+        /// <param name="paths">The list of paths to normalize.</param>
+        /// <returns>Normalized paths.</returns>
+        /// <remarks>
+        ///     A normalized path is a path that has all of it's directory separators all the same to the value of <c>'/'</c>.
+        /// </remarks>
+        public static ReadOnlyCollection<string> NormalizePaths(this IEnumerable<string> paths) =>
+            paths.Select(p => p.Contains(WinDirSeparatorChar)
+                    ? p.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar)
+                    : p)
+                .ToArray()
+                .ToReadOnlyCollection();
+
+        /// <summary>
         /// Updates the <see cref="RectVertexData.VertexPos"/> using the given <paramref name="vertexNumber"/> for the given <paramref name="gpuData"/>.
         /// </summary>
         /// <param name="gpuData">The GPU data to update.</param>
