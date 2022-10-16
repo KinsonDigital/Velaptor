@@ -18,6 +18,7 @@ namespace Velaptor.Content
     /// </summary>
     internal class TexturePathResolver : ContentPathResolver
     {
+        private const char CrossPlatDirSeparatorChar = '/';
         private const string FileExtension = ".png";
         private readonly IDirectory directory;
 
@@ -52,13 +53,13 @@ namespace Velaptor.Content
             var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
                          where string.Compare(
                              f,
-                             $"{contentDirPath}{contentName}{FileExtension}",
+                             $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}",
                              StringComparison.OrdinalIgnoreCase) == 0
                          select f).ToArray();
 
             if (files.Length <= 0)
             {
-                throw new FileNotFoundException($"The texture image file '{contentDirPath}{contentName}{FileExtension}' does not exist.");
+                throw new FileNotFoundException($"The texture image file '{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}' does not exist.");
             }
 
             return files[0];

@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Services
 {
+    using System;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -44,19 +45,19 @@ namespace VelaptorTests.Services
             var actual = parser.Parse(stringToParse);
 
             var failureMsg = "Expected Results:";
-            failureMsg +=  $"\n\tContains Metadata: {containsMetaData}";
-            failureMsg += $"\n\tIs Valid: {isValid}";
-            failureMsg += $"\n\tMetadata Prefix: {metaDataPrefix}";
-            failureMsg += $"\n\tMetadata: {(string.IsNullOrEmpty(metaData) ? "Null Or Empty" : metaData)}";
-            failureMsg += $"\n\tFont Size: {fontSize}";
+            failureMsg +=  $"{Environment.NewLine}Contains Metadata: {containsMetaData}";
+            failureMsg += $"{Environment.NewLine}Is Valid: {isValid}";
+            failureMsg += $"{Environment.NewLine}Metadata Prefix: {metaDataPrefix}";
+            failureMsg += $"{Environment.NewLine}Metadata: {(string.IsNullOrEmpty(metaData) ? "Null Or Empty" : metaData)}";
+            failureMsg += $"{Environment.NewLine}Font Size: {fontSize}";
 
-            failureMsg += "\nActual Results:";
-            failureMsg +=  $"\n\tContains Metadata: {actual.ContainsMetaData}";
-            failureMsg += $"\n\tIs Valid: {actual.IsValid}";
-            failureMsg += $"\n\tMetadata Prefix: {actual.MetaDataPrefix}";
-            failureMsg += $"\n\tMetadata: {(string.IsNullOrEmpty(actual.MetaData) ? "Null Or Empty" : actual.MetaData)}";
-            failureMsg += $"\n\tFont Size: {actual.FontSize}";
-            failureMsg += "\n------------------------------------------------------------------------------------------";
+            failureMsg += $"{Environment.NewLine}Actual Results:";
+            failureMsg += $"{Environment.NewLine}Contains Metadata: {actual.ContainsMetaData}";
+            failureMsg += $"{Environment.NewLine}Is Valid: {actual.IsValid}";
+            failureMsg += $"{Environment.NewLine}Metadata Prefix: {actual.MetaDataPrefix}";
+            failureMsg += $"{Environment.NewLine}Metadata: {(string.IsNullOrEmpty(actual.MetaData) ? "Null Or Empty" : actual.MetaData)}";
+            failureMsg += $"{Environment.NewLine}Font Size: {actual.FontSize}";
+            failureMsg += $"{Environment.NewLine}------------------------------------------------------------------------------------------";
 
             // Assert
             AssertExtensions.EqualWithMessage(containsMetaData, actual.ContainsMetaData, failureMsg);

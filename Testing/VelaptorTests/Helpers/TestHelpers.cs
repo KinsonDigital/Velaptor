@@ -21,8 +21,9 @@ namespace VelaptorTests.Helpers
     public static class TestHelpers
     {
         private const string TestResultDirName = "ImageTestResults";
-        private static readonly string BasePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-        private static readonly string TestResultDirPath = @$"{BasePath}{TestResultDirName}\";
+        private static readonly string BasePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+            .Replace('\\', '/');
+        private static readonly string TestResultDirPath = @$"{BasePath}/{TestResultDirName}";
 
         /// <summary>
         /// Returns the directory path to the test result directory.
@@ -110,8 +111,8 @@ namespace VelaptorTests.Helpers
                 (location.Y < 0 && location.Y > dest.Height))
             {
                 var exMsg = "The location to draw is outside of the bounds of the destination image.";
-                exMsg += $"\n\tDestination Size: W:{dest.Width}, H: {dest.Height}";
-                exMsg += $"\n\tDestination Location: X:{location.X}, Y: {location.Y}";
+                exMsg += $"{Environment.NewLine}\tDestination Size: W:{dest.Width}, H: {dest.Height}";
+                exMsg += $"{Environment.NewLine}\tDestination Location: X:{location.X}, Y: {location.Y}";
 
                 throw new ArgumentException(exMsg, nameof(location));
             }

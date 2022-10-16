@@ -297,7 +297,7 @@ namespace VelaptorTests.OpenGL.Shaders
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.glInitReactor.OnNext(default);
-            }, $"Error compiling vertex shader '{ShaderName}' with shader ID '{VertexShaderId}'.\nVertex Shader Compile Error");
+            }, $"Error compiling vertex shader '{ShaderName}' with shader ID '{VertexShaderId}'.{Environment.NewLine}Vertex Shader Compile Error");
         }
 
         [Fact]
@@ -315,7 +315,7 @@ namespace VelaptorTests.OpenGL.Shaders
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.glInitReactor.OnNext(default);
-            }, $"Error compiling fragment shader '{ShaderName}' with shader ID '{FragShaderId}'.\nFragment Shader Compile Error");
+            }, $"Error compiling fragment shader '{ShaderName}' with shader ID '{FragShaderId}'.{Environment.NewLine}Fragment Shader Compile Error");
         }
 
         [Fact]
@@ -333,7 +333,7 @@ namespace VelaptorTests.OpenGL.Shaders
             AssertExtensions.ThrowsWithMessage<Exception>(() =>
             {
                 this.glInitReactor.OnNext(default);
-            }, $"Error linking shader with ID '{ShaderProgramId}'\nProgram Linking Error");
+            }, $"Error linking shader with ID '{ShaderProgramId}'{Environment.NewLine}Program Linking Error");
         }
 
         [Fact]

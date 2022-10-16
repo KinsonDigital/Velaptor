@@ -19,11 +19,11 @@ namespace VelaptorTests.Content
     /// </summary>
     public class AtlasDataTests
     {
-        private const string DirPath = @"C:\Content\Atlas\";
+        private const string DirPath = @"C:/Content/Atlas";
         private const string AtlasName = "test-atlas";
         private const string TextureExtension = ".png";
         private const string JSONFileExtension = ".json";
-        private readonly string atlasImagePath = $"{DirPath}{AtlasName}{TextureExtension}";
+        private const string AtlasImagePath = $"{DirPath}/{AtlasName}{TextureExtension}";
         private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPath> mockPath;
         private readonly AtlasSubTextureData[] subTextureData;
@@ -195,7 +195,7 @@ namespace VelaptorTests.Content
             var actual = data.FilePath;
 
             // Assert
-            Assert.Equal($"{DirPath}{atlasName}{TextureExtension}", actual);
+            Assert.Equal($"{DirPath}/{atlasName}{TextureExtension}", actual);
         }
 
         [Theory]
@@ -213,7 +213,7 @@ namespace VelaptorTests.Content
             var actual = data.AtlasDataFilePath;
 
             // Assert
-            Assert.Equal($"{DirPath}{atlasName}{JSONFileExtension}", actual);
+            Assert.Equal($"{DirPath}/{atlasName}{JSONFileExtension}", actual);
         }
 
         [Fact]
@@ -222,7 +222,7 @@ namespace VelaptorTests.Content
             // Arrange
             var mockTexture = new Mock<ITexture>();
             mockTexture.SetupGet(p => p.Width).Returns(123);
-            this.mockTextureCache.Setup(m => m.GetItem(this.atlasImagePath))
+            this.mockTextureCache.Setup(m => m.GetItem(AtlasImagePath))
                 .Returns(mockTexture.Object);
 
             var data = CreateAtlasData();
@@ -240,7 +240,7 @@ namespace VelaptorTests.Content
             // Arrange
             var mockTexture = new Mock<ITexture>();
             mockTexture.SetupGet(p => p.Height).Returns(123);
-            this.mockTextureCache.Setup(m => m.GetItem(this.atlasImagePath))
+            this.mockTextureCache.Setup(m => m.GetItem(AtlasImagePath))
                 .Returns(mockTexture.Object);
 
             var data = CreateAtlasData();

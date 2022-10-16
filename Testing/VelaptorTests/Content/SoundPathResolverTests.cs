@@ -28,9 +28,10 @@ namespace VelaptorTests.Content
         /// </summary>
         public SoundPathResolverTests()
         {
-            this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-            this.atlasContentDir = $@"{this.baseDir}Content\Sounds\";
-            this.contentFilePath = $"{this.atlasContentDir}{ContentName}";
+            this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+                .Replace('\\', '/');
+            this.atlasContentDir = $@"{this.baseDir}/Content/Sounds";
+            this.contentFilePath = $"{this.atlasContentDir}/{ContentName}";
         }
 
         #region Constructor Tests
@@ -70,8 +71,8 @@ namespace VelaptorTests.Content
                 {
                     return new[]
                     {
-                        $"{this.baseDir}other-file-A.png",
-                        $"{this.baseDir}other-file-B.txt",
+                        $"{this.baseDir}/other-file-A.png",
+                        $"{this.baseDir}/other-file-B.txt",
                     };
                 });
 
@@ -101,7 +102,7 @@ namespace VelaptorTests.Content
                 {
                     return new[]
                     {
-                        $"{this.atlasContentDir}other-file.txt",
+                        $"{this.atlasContentDir}/other-file.txt",
                         $"{this.contentFilePath}{actualFileExtension}",
                         $"{this.contentFilePath}.mp3",
                     };

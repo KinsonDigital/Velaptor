@@ -4,6 +4,7 @@
 
 namespace VelaptorTesting.Scenes
 {
+    using System;
     using System.Collections.Generic;
     using System.Drawing;
     using Velaptor;
@@ -56,12 +57,12 @@ namespace VelaptorTesting.Scenes
             var textLines = new List<string>
             {
                     "Use arrow keys to flip the texture horizontally and vertically.",
-                    "\nLeft: Flip Horizontally",
+                    $"{Environment.NewLine}Left: Flip Horizontally",
                     "Right: Flip Horizontally",
                     "Up: Flip Vertically",
                     "Down: Flip Vertically",
             };
-            this.instructions = string.Join("\n", textLines);
+            this.instructions = string.Join(Environment.NewLine, textLines);
 
             this.textSize = this.font.Measure(this.instructions);
 

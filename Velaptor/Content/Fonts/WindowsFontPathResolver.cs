@@ -6,7 +6,6 @@ namespace Velaptor.Content.Fonts
 {
     // ReSharper disable RedundantNameQualifier
     using System;
-    using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
     using Velaptor.Guards;
@@ -18,6 +17,7 @@ namespace Velaptor.Content.Fonts
     /// </summary>
     internal class WindowsFontPathResolver : IPathResolver
     {
+        private const char CrossPlatDirSeparatorChar = '/';
         private const string FileExtension = ".ttf";
         private readonly IDirectory directory;
 
@@ -32,7 +32,7 @@ namespace Velaptor.Content.Fonts
         }
 
         /// <inheritdoc/>
-        public string RootDirectoryPath => @"C:\Windows\";
+        public string RootDirectoryPath => $"C:{CrossPlatDirSeparatorChar}Windows";
 
         /// <inheritdoc/>
         public string ContentDirectoryName => "Fonts";
@@ -42,16 +42,16 @@ namespace Velaptor.Content.Fonts
         {
             if (string.IsNullOrEmpty(contentName))
             {
-                throw new ArgumentNullException(nameof(contentName), $"The string parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(contentName), "The string parameter must not be null or empty.");
             }
 
-            if (contentName.EndsWith(Path.DirectorySeparatorChar))
+            if (contentName.EndsWith(CrossPlatDirSeparatorChar))
             {
                 throw new ArgumentException($"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension.", nameof(contentName));
             }
 
-            var contentDirPath = $@"{RootDirectoryPath}{ContentDirectoryName}\";
-            var fullContentPath = $"{contentDirPath}{contentName}{FileExtension}";
+            var contentDirPath = $@"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
+            var fullContentPath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}";
             var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
                               where string.Compare(
                                   f,
@@ -63,6 +63,6 @@ namespace Velaptor.Content.Fonts
         }
 
         /// <inheritdoc/>
-        public string ResolveDirPath() => $@"{RootDirectoryPath}{ContentDirectoryName}\";
+        public string ResolveDirPath() => $@"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
     }
 }

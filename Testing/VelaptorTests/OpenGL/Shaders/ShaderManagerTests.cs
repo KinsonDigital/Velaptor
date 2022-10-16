@@ -107,7 +107,7 @@ namespace VelaptorTests.OpenGL.Shaders
             AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
                 manager.GetShaderName((ShaderType)1234);
-            }, $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType')\r\nActual value was 1234.");
+            }, $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType'){Environment.NewLine}Actual value was 1234.");
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace VelaptorTests.OpenGL.Shaders
             AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
                 manager.Use((ShaderType)1234);
-            }, $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType')\r\nActual value was 1234.");
+            }, $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType'){Environment.NewLine}Actual value was 1234.");
         }
         #endregion
 

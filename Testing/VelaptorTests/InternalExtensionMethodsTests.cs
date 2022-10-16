@@ -1,4 +1,4 @@
-﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -93,9 +93,12 @@ namespace VelaptorTests
         [Theory]
         [InlineData("", false)]
         [InlineData(@"C:\", true)]
+        [InlineData(@"C:/", true)]
         [InlineData(@"C:", false)]
         [InlineData(@"C\", false)]
+        [InlineData(@"C/", false)]
         [InlineData(@"C:\test-file.txt", false)]
+        [InlineData(@"C:/test-file.txt", false)]
         public void OnlyContainsDrive_WhenInvoked_ReturnsCorrectResult(string value, bool expected)
         {
             // Act
@@ -105,20 +108,86 @@ namespace VelaptorTests
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
+        [TheoryForWindows]
         [InlineData(null, "")]
         [InlineData("", "")]
         [InlineData(".txt", "")]
         [InlineData("test-dir", "test-dir")]
-        [InlineData(@"C:\", @"C:\")]
-        [InlineData(@"C:\temp", @"temp")]
-        [InlineData(@"C:\temp\", @"temp")]
-        [InlineData(@"C:\test-file.txt", @"C:\")]
-        [InlineData(@"C:\temp\test-file.txt", @"temp")]
-        public void GetLastDirName_WhenInvoked_ReturnsCorrectResult(string value, string expected)
+        [InlineData(@"C:\", "C:/")]
+        [InlineData("C:/", "C:/")]
+        [InlineData(@"C:\temp", "temp")]
+        [InlineData("C:/temp", "temp")]
+        [InlineData(@"C:\temp\", "temp")]
+        [InlineData("C:/temp/", "temp")]
+        [InlineData(@"C:\test-file.txt", "C:/")]
+        [InlineData("C:/test-file.txt", "C:/")]
+        [InlineData(@"C:\temp\test-file.txt", "temp")]
+        [InlineData("C:/temp/test-file.txt", "temp")]
+        [InlineData("C:/temp/extra-dir/test-file.txt", "extra-dir")]
+        public void GetLastDirName_WhenRunningOnWindows_ReturnsCorrectResult(string value, string expected)
         {
             // Act
             var actual = value.GetLastDirName();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [TheoryForLinux]
+        [InlineData(null, "")]
+        [InlineData("", "")]
+        [InlineData(".txt", "")]
+        [InlineData("test-dir", "test-dir")]
+        [InlineData("/home/user-dir", "user-dir")]
+        [InlineData("/home/user-dir/test-file.txt", "user-dir")]
+        [InlineData("/home/test-file.text", "home")]
+        [InlineData("/test-file.txt", "/")]
+        [InlineData(@"\home\user-dir", "user-dir")]
+        [InlineData(@"\home\user-dir\test-file.txt", "user-dir")]
+        [InlineData(@"\home\test-file.text", "home")]
+        [InlineData(@"\test-file.txt", "/")]
+        public void GetLastDirName_WhenRunningOnLinux_ReturnsCorrectResult(string value, string expected)
+        {
+            // Act
+            var actual = value.GetLastDirName();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("test\n")]
+        [InlineData("test\r")]
+        [InlineData("test\n\r")]
+        [InlineData("test\r\n")]
+        public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string value)
+        {
+            // Arrange
+            const string expected = "test";
+
+            // Act
+            var actual = value.TrimNewLineFromEnd();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(@"test\")]
+        [InlineData(@"test\\")]
+        [InlineData(@"test/")]
+        [InlineData(@"test//")]
+        [InlineData(@"test\/")]
+        [InlineData(@"test\\//")]
+        [InlineData(@"test/\")]
+        [InlineData(@"test//\\")]
+        public void TrimDirSeparatorFromEnd_WhenInvoked_ReturnsCorrectResult(string value)
+        {
+            // Arrange
+            const string expected = "test";
+
+            // Act
+            var actual = value.TrimDirSeparatorFromEnd();
 
             // Assert
             Assert.Equal(expected, actual);

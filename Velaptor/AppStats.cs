@@ -4,6 +4,7 @@
 
 namespace Velaptor
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
@@ -34,7 +35,7 @@ namespace Velaptor
             {
                 if (frame == largestFrame)
                 {
-                    result += $"Frame: {frame} | Glyph: {glyph} | Texture ID: {textureId} | Render Size: {renderSize} | Source Rect: {srcRect}\n";
+                    result += $"Frame: {frame} | Glyph: {glyph} | Texture ID: {textureId} | Render Size: {renderSize} | Source Rect: {srcRect}{Environment.NewLine}";
                 }
             }
 
@@ -51,7 +52,7 @@ namespace Velaptor
 
             foreach (var loadedFont in LoadedFonts)
             {
-                result += $"Font File: {loadedFont.fontFileName} | Font Size: {loadedFont.fontSize}\n";
+                result += $"Font File: {loadedFont.fontFileName} | Font Size: {loadedFont.fontSize}{Environment.NewLine}";
             }
 
             return result;

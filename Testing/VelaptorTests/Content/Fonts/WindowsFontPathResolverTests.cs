@@ -46,7 +46,7 @@ namespace VelaptorTests.Content.Fonts
             var actual = resolver.RootDirectoryPath;
 
             // Assert
-            Assert.Equal(@"C:\Windows\", actual);
+            Assert.Equal(@"C:/Windows", actual);
         }
 
         [Fact]
@@ -88,24 +88,24 @@ namespace VelaptorTests.Content.Fonts
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
-                resolver.ResolveFilePath(@"test-content\");
-            }, @"The 'test-content\' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
+                resolver.ResolveFilePath(@"test-content/");
+            }, @"The 'test-content/' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
         }
 
         [Fact]
         public void ResolveFilePath_WhenInvoking_ReturnsCorrectResolvedFilePath()
         {
             // Arrange
-            const string rootDir = @"C:\Windows\";
+            const string rootDir = @"C:/Windows";
             const string contentDirName = "Fonts";
             const string contentName = "test-content";
             const string extension = ".ttf";
-            var fullContentDirPath = $@"{rootDir}{contentDirName}\";
-            var expected = $@"{fullContentDirPath}{contentName}{extension}";
+            const string fullContentDirPath = $@"{rootDir}/{contentDirName}";
+            const string expected = $@"{fullContentDirPath}/{contentName}{extension}";
 
             var files = new[]
             {
-                $"{fullContentDirPath}other-file.txt",
+                $"{fullContentDirPath}/other-file.txt",
                 expected,
             };
 
@@ -125,7 +125,7 @@ namespace VelaptorTests.Content.Fonts
         public void ResolveDirPath_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            const string expected = @"C:\Windows\Fonts\";
+            const string expected = "C:/Windows/Fonts";
             var resolver = CreateResolver();
 
             // Act
@@ -140,6 +140,6 @@ namespace VelaptorTests.Content.Fonts
         /// Creates a new instance of <see cref="WindowsFontPathResolver"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private WindowsFontPathResolver CreateResolver() => new WindowsFontPathResolver(this.mockDirectory.Object);
+        private WindowsFontPathResolver CreateResolver() => new (this.mockDirectory.Object);
     }
 }

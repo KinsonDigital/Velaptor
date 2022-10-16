@@ -28,9 +28,10 @@ namespace VelaptorTests.Content
         /// </summary>
         public AtlasJSONDataPathResolverTests()
         {
-            this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-            this.atlasContentDir = $@"{this.baseDir}Content\Atlas\";
-            this.contentFilePath = $"{this.atlasContentDir}{ContentName}.json";
+            this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+                .Replace('\\', '/');
+            this.atlasContentDir = $@"{this.baseDir}/Content/Atlas";
+            this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.json";
         }
 
         #region Constructor Tests
@@ -70,8 +71,8 @@ namespace VelaptorTests.Content
                 {
                     return new[]
                     {
-                        $"{this.baseDir}other-file-A.json",
-                        $"{this.baseDir}other-file-B.txt",
+                        $"{this.baseDir}/other-file-A.json",
+                        $"{this.baseDir}/other-file-B.txt",
                     };
                 });
 
@@ -97,7 +98,7 @@ namespace VelaptorTests.Content
                 {
                     return new[]
                     {
-                        $"{this.atlasContentDir}other-file.json",
+                        $"{this.atlasContentDir}/other-file.json",
                         this.contentFilePath,
                     };
                 });

@@ -1,7 +1,8 @@
-﻿// <copyright file="ContentPathResolverTests.cs" company="KinsonDigital">
+// <copyright file="ContentPathResolverTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable UseObjectOrCollectionInitializer
 namespace VelaptorTests.Content
 {
     using System;
@@ -19,28 +20,27 @@ namespace VelaptorTests.Content
     public class ContentPathResolverTests
     {
         private const string ContentName = "test-content.png";
-        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+            .Replace('\\', '/');
 
         /// <summary>
-        /// Gets test data for the <see cref="RootDirectory_WhenSettingValue_ReturnsCorrectResult"/> test.
+        /// Gets test data for the <see cref="RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult"/> test.
         /// </summary>
         public static IEnumerable<object[]> ContentRootPaths =>
             new List<object[]>
             {
-                new object[] { null, @$"{BaseDir}Content\" },
-                new object[] { @"C:\base-content\", @"C:\base-content\" },
-                new object[] { @"C:\base-content", @"C:\base-content\" },
+                new object[] { null, @$"{BaseDir}/Content" },
+                new object[] { @"C:\base-content\", @"C:/base-content" },
+                new object[] { @"C:\base-content", @"C:/base-content" },
             };
 
         #region Prop Tests
         [Theory]
         [MemberData(nameof(ContentRootPaths))]
-        public void RootDirectory_WhenSettingValue_ReturnsCorrectResult(string rootDirectory, string expected)
+        public void RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult(string rootDirectory, string expected)
         {
             // Arrange
-            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
-            // ReSharper restore UseObjectOrCollectionInitializer
 
             // Act
             resolver.RootDirectoryPath = rootDirectory;
@@ -50,20 +50,24 @@ namespace VelaptorTests.Content
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void FileDirectoryName_WhenSettingWithDirectoryPath_CorrectlySetsResult()
+        [Theory]
+        [InlineData(@"C:\temp\test-dir-name", "test-dir-name")]
+        [InlineData(@"C:\temp\test-dir-name\", "test-dir-name")]
+        [InlineData(@"C:/temp/test-dir-name", "test-dir-name")]
+        [InlineData(@"C:/temp/test-dir-name/", "test-dir-name")]
+        public void ContentDirectoryName_WhenSettingWithDirectoryPath_CorrectlySetsResult(
+            string contentDirName,
+            string expected)
         {
             // Arrange
-            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
-            // ReSharper restore UseObjectOrCollectionInitializer
 
             // Act
-            resolver.ContentDirectoryName = @"C:\temp\test-dir-name";
+            resolver.ContentDirectoryName = contentDirName;
             var actual = resolver.ContentDirectoryName;
 
             // Assert
-            Assert.Equal("test-dir-name", actual);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -93,21 +97,20 @@ namespace VelaptorTests.Content
             Assert.Equal(ContentName, actual);
         }
 
-        [Fact]
-        public void ResolveDirPath_WhenInvoked_ResolvesContentDirPath()
+        [Theory]
+        [InlineData(@"C:\temp\my-content\")]
+        public void ResolveDirPath_WhenInvoked_ResolvesContentDirPath(string rootDirPath)
         {
             // Arrange
-            // ReSharper disable UseObjectOrCollectionInitializer
             var resolver = new ContentPathResolverFake();
-            // ReSharper restore UseObjectOrCollectionInitializer
-            resolver.RootDirectoryPath = @"C:\temp\my-content\";
+            resolver.RootDirectoryPath = rootDirPath;
             resolver.ContentDirectoryName = "test-content";
 
             // Act
             var actual = resolver.ResolveDirPath();
 
             // Assert
-            Assert.Equal(@"C:\temp\my-content\test-content\", actual);
+            Assert.Equal(@"C:/temp/my-content/test-content", actual);
         }
 
         [Fact]
@@ -123,8 +126,10 @@ namespace VelaptorTests.Content
             }, "The string parameter must not be null or empty. (Parameter 'contentName')");
         }
 
-        [Fact]
-        public void ResolveFilePath_WhenContentNameEndsWithDirSeparator_ThrowsException()
+        [Theory]
+        [InlineData(@"content.png\")]
+        [InlineData("content.png/")]
+        public void ResolveFilePath_WhenContentNameEndsWithDirSeparator_ThrowsException(string contentName)
         {
             // Arrange
             var resolver = new ContentPathResolverFake();
@@ -132,8 +137,8 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
-                resolver.ResolveFilePath($@"{ContentName}\");
-            }, $@"The '{ContentName}\' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
+                resolver.ResolveFilePath($@"{contentName}");
+            }, $@"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
         }
         #endregion
     }

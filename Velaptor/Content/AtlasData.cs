@@ -21,6 +21,7 @@ namespace Velaptor.Content
     /// </summary>
     public sealed class AtlasData : IAtlasData
     {
+        private const char CrossPlatDirSeparatorChar = '/';
         private const string AtlasDataExtension = ".json";
         private const string TextureExtension = ".png";
         private readonly AtlasSubTextureData[] subTexturesData;
@@ -76,9 +77,11 @@ namespace Velaptor.Content
 
             atlasName = path.GetFileNameWithoutExtension(atlasName);
 
+            dirPath = dirPath.TrimDirSeparatorFromEnd();
+
             Name = atlasName;
-            FilePath = $"{dirPath}{atlasName}{TextureExtension}";
-            AtlasDataFilePath = $"{dirPath}{atlasName}{AtlasDataExtension}";
+            FilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{atlasName}{TextureExtension}";
+            AtlasDataFilePath = $"{dirPath}{CrossPlatDirSeparatorChar}{atlasName}{AtlasDataExtension}";
             Texture = textureCache.GetItem(FilePath);
         }
 

@@ -186,8 +186,8 @@ namespace Velaptor.Content.Fonts
                 else
                 {
                     var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when loading '{contentWithMetaData}'.";
-                    exceptionMsg += $"\n\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
-                    exceptionMsg += "\n\tExample: size:12";
+                    exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
+                    exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
                     throw new CachingMetaDataException(exceptionMsg);
                 }
             }
@@ -250,8 +250,8 @@ namespace Velaptor.Content.Fonts
                 else
                 {
                     var exceptionMsg = $"The metadata '{parseResult.MetaData}' is invalid when unloading '{contentWithMetaData}'.";
-                    exceptionMsg += $"\n\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
-                    exceptionMsg += "\n\tExample: size:12";
+                    exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
+                    exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
                     throw new CachingMetaDataException(exceptionMsg);
                 }
             }
@@ -259,8 +259,8 @@ namespace Velaptor.Content.Fonts
             {
                 var exceptionMsg = "When unloading fonts, the name of or the full file path of the font";
                 exceptionMsg += " must be supplied with valid metadata syntax.";
-                exceptionMsg += $"\n\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
-                exceptionMsg += "\n\tExample: size:12";
+                exceptionMsg += $"{Environment.NewLine}\tExpected MetaData Syntax: {ExpectedMetaDataSyntax}";
+                exceptionMsg += $"{Environment.NewLine}\tExample: size:12";
 
                 throw new CachingMetaDataException(exceptionMsg);
             }
@@ -271,7 +271,7 @@ namespace Velaptor.Content.Fonts
         /// </summary>
         private void SetupDefaultFonts()
         {
-            var rootDirPath = $"{this.fontPathResolver.RootDirectoryPath.TrimEnd('\\').TrimEnd('/')}{this.path.AltDirectorySeparatorChar}";
+            var rootDirPath = $"{this.fontPathResolver.RootDirectoryPath.TrimDirSeparatorFromEnd()}{this.path.AltDirectorySeparatorChar}";
             var contentDirName = this.fontPathResolver.ContentDirectoryName;
             var fontContentDirPath = $"{rootDirPath}{contentDirName}{this.path.AltDirectorySeparatorChar}";
 

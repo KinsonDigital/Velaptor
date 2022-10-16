@@ -93,7 +93,7 @@ namespace VelaptorTests.OpenGL.Buffers
             AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
                 manager.SetViewPortSize((VelaptorBufferType)1234, It.IsAny<SizeU>());
-            }, $"The enum '{nameof(VelaptorBufferType)}' value is invalid. (Parameter 'bufferType')\r\nActual value was 1234.");
+            }, $"The enum '{nameof(VelaptorBufferType)}' value is invalid. (Parameter 'bufferType'){Environment.NewLine}Actual value was 1234.");
         }
 
         [Fact]

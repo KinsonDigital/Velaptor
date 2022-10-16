@@ -381,8 +381,8 @@ namespace VelaptorTests.NativeInterop.OpenGL
         public void LabelBuffer_WithInvalidBufferType_ThrowsException()
         {
             // Arrange
-            const string exceptionMsg =
-                "Exception of type 'System.ArgumentOutOfRangeException' was thrown. (Parameter 'bufferType')\r\nActual value was 123.";
+            var exceptionMsg = "Exception of type 'System.ArgumentOutOfRangeException' was thrown. ";
+            exceptionMsg += $"(Parameter 'bufferType'){Environment.NewLine}Actual value was 123.";
             var service = CreateService();
 
             // Act & Assert

@@ -90,7 +90,7 @@ namespace Velaptor.Content
                 return mp3Files[0];
             }
 
-            throw new FileNotFoundException($"The sound file '{contentDirPath}{contentName}' does not exist.");
+            throw new FileNotFoundException($"The sound file '{contentDirPath}/{contentName}' does not exist.");
         }
     }
 }

@@ -25,8 +25,8 @@ namespace VelaptorTesting.Scenes
         private const float AngularVelocity = 10f;
         private const float SizeChangeAmount = 0.5f;
         private const string SingleLineText = "Change me using the buttons to the left.";
-        private const string MultiLineText = "Change me using\nthe buttons to the left.";
         private readonly Point windowCenter;
+        private readonly string multiLineText = $"Change me using{Environment.NewLine}the buttons to the left.";
         private IFont? textFont;
         private Button? btnRotateCW;
         private Button? btnRotateCCW;
@@ -294,7 +294,7 @@ namespace VelaptorTesting.Scenes
 
             renderer.Render(
                 this.textFont,
-                this.isMultiLine ? MultiLineText : SingleLineText,
+                this.isMultiLine ? this.multiLineText : SingleLineText,
                 xPos,
                 yPos,
                 this.renderSize,

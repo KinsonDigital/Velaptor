@@ -31,6 +31,9 @@ namespace Velaptor
     /// </summary>
     internal static class InternalExtensionMethods
     {
+        private const char WinDirSeparatorChar = '\\';
+        private const char CrossPlatDirSeparatorChar = '/';
+
         /// <summary>
         /// Determines whether or not this string instance starts with the specified character.
         /// </summary>
@@ -78,12 +81,12 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath) !
-                : fileOrDirPath;
+                ? Path.GetDirectoryName(fileOrDirPath)?.Replace('\\', '/') ?? string.Empty
+                : fileOrDirPath.Replace('\\', '/');
 
             var noExtension = !Path.HasExtension(fileOrDirPath);
             var onlySingleColon = onlyDirPath.Count(c => c == ':') == 1;
-            var onlySinglePathSeparator = onlyDirPath.Count(c => c == '\\') == 1;
+            var onlySinglePathSeparator = onlyDirPath.Count(c => c is CrossPlatDirSeparatorChar) == 1;
             var correctLen = onlyDirPath.Length == 3;
 
             return noExtension &&
@@ -120,28 +123,58 @@ namespace Velaptor
                 return string.Empty;
             }
 
+            fileOrDirPath = fileOrDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath)
-                : fileOrDirPath;
+                ? Path.GetDirectoryName(fileOrDirPath)?.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar) ?? string.Empty
+                : fileOrDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
             if (string.IsNullOrEmpty(onlyDirPath))
             {
                 return string.Empty;
             }
 
-            // If the directory path is just a root drive path
-            if (onlyDirPath.OnlyContainsDrive())
-            {
-                var sections = onlyDirPath.Split(':', StringSplitOptions.RemoveEmptyEntries);
+            var dirName = new DirectoryInfo(onlyDirPath).Name.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
-                return sections[^1] == Path.DirectorySeparatorChar.ToString()
-                    ? onlyDirPath
-                    : sections[^1].TrimStart(Path.DirectorySeparatorChar);
+            return dirName;
+        }
+
+        /// <summary>
+        /// Trims any newline characters from the end of the <c>string</c>.
+        /// </summary>
+        /// <param name="value">The string to trim.</param>
+        /// <returns>Returns the string with all new line characters removed from the end.</returns>
+        public static string TrimNewLineFromEnd(this string value)
+        {
+            const char newLine = '\n';
+            const char carriageReturn = '\r';
+
+            while (value.EndsWith(newLine) || value.EndsWith(carriageReturn))
+            {
+                value = value.TrimEnd(newLine);
+                value = value.TrimEnd(carriageReturn);
             }
 
-            var dirNames = onlyDirPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+            return value;
+        }
 
-            return dirNames[^1];
+        /// <summary>
+        /// Trims any directory separator characters from the end of the <c>string</c>.
+        /// </summary>
+        /// <param name="value">The string to trim.</param>
+        /// <returns>Returns the string with all directory separator characters removed from the end.</returns>
+        public static string TrimDirSeparatorFromEnd(this string value)
+        {
+            const char backSlash = '\\';
+            const char forwardSlash = '/';
+
+            while (value.EndsWith(backSlash) || value.EndsWith(forwardSlash))
+            {
+                value = value.TrimEnd(backSlash);
+                value = value.TrimEnd(forwardSlash);
+            }
+
+            return value;
         }
 
         /// <summary>
