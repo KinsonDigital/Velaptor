@@ -28,7 +28,7 @@ namespace Velaptor.NativeInterop.GLFW
         /// Initializes a new instance of the <see cref="GLFWMonitors"/> class.
         /// </summary>
         /// <param name="glfwInvoker">Used to make calls to GLFW.</param>
-        /// <param name="platform">The current platform.</param>
+        /// <param name="platform">Provides information about the current platform.</param>
         public GLFWMonitors(IGLFWInvoker glfwInvoker, IPlatform platform)
         {
             EnsureThat.ParamIsNotNull(glfwInvoker);
