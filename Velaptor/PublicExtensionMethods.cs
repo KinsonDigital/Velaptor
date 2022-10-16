@@ -20,6 +20,8 @@ namespace Velaptor
     /// </summary>
     public static class PublicExtensionMethods
     {
+        private const char WinDirSeparatorChar = '\\';
+        private const char CrossPlatDirSeparatorChar = '/';
         private static readonly char[] Letters;
 
         /// <summary>
@@ -492,9 +494,9 @@ namespace Velaptor
                 return false;
             }
 
-            path = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            path = path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
-            if (path.Contains(Path.AltDirectorySeparatorChar) is false)
+            if (path.Contains(CrossPlatDirSeparatorChar) is false)
             {
                 return false;
             }

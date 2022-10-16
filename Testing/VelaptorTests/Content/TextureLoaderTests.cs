@@ -22,7 +22,7 @@ namespace VelaptorTests.Content
         private const string TextureExtension = ".png";
         private const string TextureDirPath = @"C:/textures";
         private const string TextureFileName = "test-texture";
-        private readonly string textureFilePath = $"{TextureDirPath}/{TextureFileName}{TextureExtension}";
+        private const string TextureFilePath = $"{TextureDirPath}/{TextureFileName}{TextureExtension}";
         private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly Mock<IPathResolver> mockTexturePathResolver;
         private readonly Mock<IFile> mockFile;
@@ -35,15 +35,15 @@ namespace VelaptorTests.Content
         {
             this.mockTexturePathResolver = new Mock<IPathResolver>();
             this.mockTexturePathResolver.Setup(m => m.ResolveFilePath(TextureFileName))
-                .Returns(this.textureFilePath);
+                .Returns(TextureFilePath);
 
             this.mockTextureCache = new Mock<IItemCache<string, ITexture>>();
 
             this.mockFile = new Mock<IFile>();
-            this.mockFile.Setup(m => m.Exists(this.textureFilePath)).Returns(true);
+            this.mockFile.Setup(m => m.Exists(TextureFilePath)).Returns(true);
 
             this.mockPath = new Mock<IPath>();
-            this.mockPath.Setup(m => m.GetExtension(this.textureFilePath)).Returns(TextureExtension);
+            this.mockPath.Setup(m => m.GetExtension(TextureFilePath)).Returns(TextureExtension);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}")).Returns(TextureFileName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{TextureFileName}{TextureExtension}")).Returns(TextureFileName);
         }
@@ -112,13 +112,13 @@ namespace VelaptorTests.Content
         {
             // Arrange
             var mockTexture = new Mock<ITexture>();
-            this.mockTextureCache.Setup(m => m.GetItem(this.textureFilePath))
+            this.mockTextureCache.Setup(m => m.GetItem(TextureFilePath))
                 .Returns(mockTexture.Object);
 
             var loader = CreateLoader();
 
             // Act
-            var actual = loader.Load(this.textureFilePath);
+            var actual = loader.Load(TextureFilePath);
 
             // Assert
             Assert.NotNull(actual);
@@ -133,7 +133,7 @@ namespace VelaptorTests.Content
             // Arrange
             var mockTexture = new Mock<ITexture>();
 
-            this.mockTextureCache.Setup(m => m.GetItem(this.textureFilePath))
+            this.mockTextureCache.Setup(m => m.GetItem(TextureFilePath))
                 .Returns(mockTexture.Object);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}")).Returns(contentName);
             this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
@@ -159,8 +159,8 @@ namespace VelaptorTests.Content
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
             {
-                loader.Load(this.textureFilePath);
-            }, $"The texture file '{this.textureFilePath}' does not exist.");
+                loader.Load(TextureFilePath);
+            }, $"The texture file '{TextureFilePath}' does not exist.");
         }
 
         [Fact]
@@ -188,10 +188,10 @@ namespace VelaptorTests.Content
             var loader = CreateLoader();
 
             // Act
-            loader.Unload(this.textureFilePath);
+            loader.Unload(TextureFilePath);
 
             // Assert
-            this.mockTextureCache.Verify(m => m.Unload(this.textureFilePath), Times.Once);
+            this.mockTextureCache.Verify(m => m.Unload(TextureFilePath), Times.Once);
         }
         #endregion
 
