@@ -142,7 +142,7 @@ namespace Velaptor.Content
                 name = this.path.GetFileNameWithoutExtension(contentNameOrPath);
 
                 dirPath = this.path.GetDirectoryName(contentNameOrPath)
-                    .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimEnd(CrossPlatDirSeparatorChar);
+                    .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimDirSeparatorFromEnd();
             }
             else
             {

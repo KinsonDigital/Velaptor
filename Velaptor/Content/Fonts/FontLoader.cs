@@ -271,7 +271,7 @@ namespace Velaptor.Content.Fonts
         /// </summary>
         private void SetupDefaultFonts()
         {
-            var rootDirPath = $"{this.fontPathResolver.RootDirectoryPath.TrimEnd('\\').TrimEnd('/')}{this.path.AltDirectorySeparatorChar}";
+            var rootDirPath = $"{this.fontPathResolver.RootDirectoryPath.TrimDirSeparatorFromEnd()}{this.path.AltDirectorySeparatorChar}";
             var contentDirName = this.fontPathResolver.ContentDirectoryName;
             var fontContentDirPath = $"{rootDirPath}{contentDirName}{this.path.AltDirectorySeparatorChar}";
 

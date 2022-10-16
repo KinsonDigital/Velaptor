@@ -32,7 +32,7 @@ namespace Velaptor.Content
 
                 var isNullOrEmpty = string.IsNullOrEmpty(value);
 
-                value = value.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimEnd(CrossPlatDirSeparatorChar);
+                value = value.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimDirSeparatorFromEnd();
                 value = isNullOrEmpty ? BaseDir : value;
 
                 if (isNullOrEmpty)
