@@ -123,6 +123,8 @@ namespace Velaptor
                 return string.Empty;
             }
 
+            fileOrDirPath = fileOrDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
                 ? Path.GetDirectoryName(fileOrDirPath)?.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar) ?? string.Empty
                 : fileOrDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
