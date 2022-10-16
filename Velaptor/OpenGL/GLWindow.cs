@@ -74,7 +74,7 @@ namespace Velaptor.OpenGL
         /// <param name="glInvoker">Invokes OpenGL functions.</param>
         /// <param name="glfwInvoker">Invokes GLFW functions.</param>
         /// <param name="systemMonitorService">Manages the systems monitors/screens.</param>
-        /// <param name="platform">Information about the platform that is running the application.</param>
+        /// <param name="platform">Provides information about the current platform.</param>
         /// <param name="taskService">Runs asynchronous tasks.</param>
         /// <param name="contentLoader">Loads various kinds of content.</param>
         /// <param name="renderer">Renders textures and primitives.</param>

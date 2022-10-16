@@ -29,7 +29,7 @@ namespace Velaptor.Hardware
         /// <summary>
         /// Initializes a new instance of the <see cref="SystemMonitor"/> class.
         /// </summary>
-        /// <param name="platform">The current platform.</param>
+        /// <param name="platform">Provides information about the current platform.</param>
         /// <exception cref="ArgumentNullException">
         ///     Occurs if the <paramref name="platform"/> parameter is null.
         /// </exception>

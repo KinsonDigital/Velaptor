@@ -887,6 +887,24 @@ namespace VelaptorTests
             Assert.All(actual, i => Assert.Equal("item", i));
         }
 
+        [Theory]
+        [InlineData(@"C:\dir1\dir2", "C:/dir1/dir2")]
+        [InlineData(@"C:\dir1\dir2\", "C:/dir1/dir2/")]
+        [InlineData("C:/dir1/dir2", "C:/dir1/dir2")]
+        [InlineData("C:/dir1/dir2/", "C:/dir1/dir2/")]
+        public void NormalizePaths_WhenInvoked_ReturnsCorrectResult(string path, string expected)
+        {
+            // Arrange
+            var paths = new[] { path };
+
+            // Act
+            var actual = paths.NormalizePaths();
+
+            // Assert
+            Assert.Single(actual);
+            Assert.Equal(expected, actual[0]);
+        }
+
         [Fact]
         public void ToVector2_WhenInvoked_ReturnsCorrectResult()
         {

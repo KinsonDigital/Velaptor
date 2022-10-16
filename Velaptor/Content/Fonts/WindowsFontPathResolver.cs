@@ -8,6 +8,7 @@ namespace Velaptor.Content.Fonts
     using System;
     using System.IO.Abstractions;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
@@ -25,9 +26,19 @@ namespace Velaptor.Content.Fonts
         /// Initializes a new instance of the <see cref="WindowsFontPathResolver"/> class.
         /// </summary>
         /// <param name="directory">Processes directories.</param>
-        public WindowsFontPathResolver(IDirectory directory)
+        /// <param name="platform">Provides information about the current platform.</param>
+        public WindowsFontPathResolver(IDirectory directory, IPlatform platform)
         {
             EnsureThat.ParamIsNotNull(directory);
+            EnsureThat.ParamIsNotNull(platform);
+
+            // This should only be running if on windows.  If not windows, throw an exception.
+            if (platform.CurrentPlatform != OSPlatform.Windows)
+            {
+                throw new PlatformNotSupportedException(
+                    $"The '{nameof(WindowsFontPathResolver)}' can only be used on the 'Windows' platform.");
+            }
+
             this.directory = directory;
         }
 
@@ -52,7 +63,11 @@ namespace Velaptor.Content.Fonts
 
             var contentDirPath = $@"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
             var fullContentPath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}";
-            var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
+
+            var possibleFiles = this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
+                .NormalizePaths();
+
+            var files = (from f in possibleFiles
                               where string.Compare(
                                   f,
                                   fullContentPath,

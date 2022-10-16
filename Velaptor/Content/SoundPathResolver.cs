@@ -59,8 +59,11 @@ namespace Velaptor.Content
 
             var contentDirPath = GetContentDirPath();
 
+            var possibleFiles = this.directory.GetFiles(contentDirPath)
+                .NormalizePaths();
+
             // Check if there are any files that match the name
-            var files = this.directory.GetFiles(contentDirPath)
+            var files = possibleFiles
                         .Where(f =>
                         {
                             var fileNameNoExt = Path.GetFileNameWithoutExtension(f);

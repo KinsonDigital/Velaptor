@@ -46,7 +46,7 @@ namespace Velaptor.Content.Fonts
         /// </param>
         /// <param name="file">Performs file type operations.</param>
         /// <param name="directory">Performs directory type operations.</param>
-        /// <param name="platform">Gets information about the current platform.</param>
+        /// <param name="platform">Provides information about the current platform.</param>
         public FontPathResolver(
             IPathResolver contentFontPathResolver,
             IPathResolver windowsFontPathResolver,
