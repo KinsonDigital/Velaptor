@@ -195,7 +195,7 @@ namespace VelaptorTests.Content
             var actual = data.FilePath;
 
             // Assert
-            Assert.Equal($"{DirPath}{atlasName}{TextureExtension}", actual);
+            Assert.Equal($"{DirPath}/{atlasName}{TextureExtension}", actual);
         }
 
         [Theory]
@@ -213,7 +213,7 @@ namespace VelaptorTests.Content
             var actual = data.AtlasDataFilePath;
 
             // Assert
-            Assert.Equal($"{DirPath}{atlasName}{JSONFileExtension}", actual);
+            Assert.Equal($"{DirPath}/{atlasName}{JSONFileExtension}", actual);
         }
 
         [Fact]
