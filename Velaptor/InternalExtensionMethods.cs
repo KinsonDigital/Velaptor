@@ -81,12 +81,12 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath) !
-                : fileOrDirPath;
+                ? Path.GetDirectoryName(fileOrDirPath)?.Replace('\\', '/') ?? string.Empty
+                : fileOrDirPath.Replace('\\', '/');
 
             var noExtension = !Path.HasExtension(fileOrDirPath);
             var onlySingleColon = onlyDirPath.Count(c => c == ':') == 1;
-            var onlySinglePathSeparator = onlyDirPath.Count(c => c is WinDirSeparatorChar or CrossPlatDirSeparatorChar) == 1;
+            var onlySinglePathSeparator = onlyDirPath.Count(c => c is CrossPlatDirSeparatorChar) == 1;
             var correctLen = onlyDirPath.Length == 3;
 
             return noExtension &&
@@ -124,8 +124,8 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath) ?? string.Empty
-                : fileOrDirPath;
+                ? Path.GetDirectoryName(fileOrDirPath)?.Replace('\\', '/') ?? string.Empty
+                : fileOrDirPath.Replace('\\', '/');
 
             onlyDirPath = onlyDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
