@@ -23,15 +23,15 @@ namespace VelaptorTests.Content.Caching
     {
         private const int FontSize = 12;
         private const string TextureExtension = ".png";
-        private const string TextureDirPath = @"C:\textures\";
+        private const string TextureDirPath = @"C:/textures";
         private const string TextureName = "text-texture";
         private const string FontTextureAtlasPrefix = "FontAtlasTexture";
-        private const string FontDirPath = @"C:\fonts\";
+        private const string FontDirPath = @"C:/fonts";
         private const string FontName = "test-font";
         private const string FontExtension = ".ttf";
+        private const string TextureFilePath = $"{TextureDirPath}/{TextureName}{TextureExtension}";
+        private const string FontFilePath = $"{FontDirPath}/{FontName}{FontExtension}";
         private readonly string fontAtlasTextureName = $"{FontTextureAtlasPrefix}|{FontName}|size:{FontSize}";
-        private readonly string textureFilePath = $"{TextureDirPath}{TextureName}{TextureExtension}";
-        private readonly string fontFilePath = $"{FontDirPath}{FontName}{FontExtension}";
         private readonly string fontFilePathWithMetaData;
         private readonly Mock<IImageService> mockImageService;
         private readonly Mock<ITextureFactory> mockTextureFactory;
@@ -50,20 +50,20 @@ namespace VelaptorTests.Content.Caching
         /// </summary>
         public TextureCacheTests()
         {
-            this.fontFilePathWithMetaData = $"{this.fontFilePath}|size:{FontSize}";
+            this.fontFilePathWithMetaData = $"{FontFilePath}|size:{FontSize}";
 
             this.textureImageData = new ImageData(new Color[1, 2], 1, 2);
             this.fontImageData = new ImageData(new Color[2, 1], 2, 1);
 
             this.mockImageService = new Mock<IImageService>();
-            this.mockImageService.Setup(m => m.Load(this.textureFilePath))
+            this.mockImageService.Setup(m => m.Load(TextureFilePath))
                 .Returns(this.textureImageData);
             this.mockImageService.Setup(m => m.FlipVertically(this.fontImageData))
                 .Returns(this.fontImageData);
 
             this.mockFontAtlasService = new Mock<IFontAtlasService>();
             this.mockFontAtlasService.Setup(m =>
-                    m.CreateFontAtlas(this.fontFilePath, FontSize))
+                    m.CreateFontAtlas(FontFilePath, FontSize))
                 .Returns((this.fontImageData, Array.Empty<GlyphMetrics>()));
 
             var mockRegularTexture = new Mock<ITexture>();
@@ -73,28 +73,28 @@ namespace VelaptorTests.Content.Caching
 
             // Mock the return of a regular texture if the texture content was a texture file
             this.mockTextureFactory.Setup(m =>
-                    m.Create(TextureName, this.textureFilePath, this.textureImageData))
+                    m.Create(TextureName, TextureFilePath, this.textureImageData))
                 .Returns(mockRegularTexture.Object);
 
             // Mock the return of a font texture atlas if the texture content was a font file
             this.mockTextureFactory.Setup(m =>
-                    m.Create(this.fontAtlasTextureName, this.fontFilePath, this.fontImageData))
+                    m.Create(this.fontAtlasTextureName, FontFilePath, this.fontImageData))
                 .Returns(mockFontAtlasTexture.Object);
 
             this.mockFontMetaDataParser = new Mock<IFontMetaDataParser>();
 
             this.mockPath = new Mock<IPath>();
             // Mock getting extension for full texture file path
-            this.mockPath.Setup(m => m.GetExtension(this.textureFilePath)).Returns(TextureExtension);
+            this.mockPath.Setup(m => m.GetExtension(TextureFilePath)).Returns(TextureExtension);
             // Mock getting extension for full font file path
-            this.mockPath.Setup(m => m.GetExtension(this.fontFilePath)).Returns(FontExtension);
+            this.mockPath.Setup(m => m.GetExtension(FontFilePath)).Returns(FontExtension);
 
             // Mock the process of getting the texture name
-            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.textureFilePath))
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(TextureFilePath))
                 .Returns(TextureName);
 
             // Mock the process of getting the font name
-            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(this.fontFilePath))
+            this.mockPath.Setup(m => m.GetFileNameWithoutExtension(FontFilePath))
                 .Returns(FontName);
 
             this.mockShutDownUnsubscriber = new Mock<IDisposable>();
@@ -241,7 +241,7 @@ namespace VelaptorTests.Content.Caching
         {
             // Arrange
             var cache = CreateCache();
-            cache.GetItem(this.textureFilePath);
+            cache.GetItem(TextureFilePath);
 
             // Act
             var actual = cache.TotalCachedItems;
@@ -255,14 +255,14 @@ namespace VelaptorTests.Content.Caching
         {
             // Arrange
             var cache = CreateCache();
-            cache.GetItem(this.textureFilePath);
+            cache.GetItem(TextureFilePath);
 
             // Act
             var actual = cache.CacheKeys;
 
             // Assert
             Assert.Single(actual);
-            Assert.Equal(this.textureFilePath, actual[0]);
+            Assert.Equal(TextureFilePath, actual[0]);
         }
         #endregion
 
@@ -286,7 +286,7 @@ namespace VelaptorTests.Content.Caching
         public void GetItem_WhenFileIsNotATextureOrFontWithNoMetaData_ThrowsException()
         {
             // Arrange
-            var invalidFileType = $"{TextureDirPath}{TextureName}.txt";
+            var invalidFileType = $"{TextureDirPath}/{TextureName}.txt";
             this.mockPath.Setup(m => m.GetExtension(invalidFileType)).Returns(".txt");
             this.mockFontMetaDataParser.Setup(m => m.Parse(invalidFileType))
                 .Returns(() => new FontMetaDataParseResult(
@@ -310,7 +310,7 @@ namespace VelaptorTests.Content.Caching
             // Arrange
             const string extension = ".txt";
             const string metaData = "|size:12";
-            var nonFontFilePath = $"{FontDirPath}{FontName}{extension}";
+            var nonFontFilePath = $"{FontDirPath}/{FontName}{extension}";
             var nonFontFilePathWithMetaData = $"{nonFontFilePath}{metaData}";
 
             this.mockPath.Setup(m => m.GetExtension(nonFontFilePath)).Returns(extension);
@@ -358,7 +358,7 @@ namespace VelaptorTests.Content.Caching
         {
             // Arrange
             const string metaData = "|size12";
-            var fullFilePath = $"{FontDirPath}{FontName}{FontExtension}{metaData}";
+            var fullFilePath = $"{FontDirPath}/{FontName}{FontExtension}{metaData}";
             this.mockPath.Setup(m => m.GetExtension(fullFilePath)).Returns(FontExtension);
             this.mockFontMetaDataParser.Setup(m => m.Parse(fullFilePath))
                 .Returns(() => new FontMetaDataParseResult(
@@ -406,16 +406,16 @@ namespace VelaptorTests.Content.Caching
             var cache = CreateCache();
 
             // Act
-            var actualA = cache.GetItem(this.textureFilePath);
-            var actualB = cache.GetItem(this.textureFilePath);
+            var actualA = cache.GetItem(TextureFilePath);
+            var actualB = cache.GetItem(TextureFilePath);
 
             // Assert
-            this.mockFontMetaDataParser.Verify(m => m.Parse(this.textureFilePath), Times.Exactly(2));
-            this.mockPath.Verify(m => m.GetExtension(this.textureFilePath), Times.Exactly(2));
-            this.mockImageService.Verify(m => m.Load(this.textureFilePath), Times.Once);
-            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.textureFilePath), Times.Exactly(2));
+            this.mockFontMetaDataParser.Verify(m => m.Parse(TextureFilePath), Times.Exactly(2));
+            this.mockPath.Verify(m => m.GetExtension(TextureFilePath), Times.Exactly(2));
+            this.mockImageService.Verify(m => m.Load(TextureFilePath), Times.Once);
+            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(TextureFilePath), Times.Exactly(2));
             this.mockTextureFactory.Verify(m =>
-                m.Create(TextureName, this.textureFilePath, this.textureImageData), Times.Once);
+                m.Create(TextureName, TextureFilePath, this.textureImageData), Times.Once);
 
             Assert.Same(actualA, actualB);
         }
@@ -433,16 +433,16 @@ namespace VelaptorTests.Content.Caching
 
             // Assert
             this.mockFontMetaDataParser.Verify(m => m.Parse(this.fontFilePathWithMetaData), Times.Exactly(2));
-            this.mockPath.Verify(m => m.GetExtension(this.fontFilePath), Times.Exactly(2));
+            this.mockPath.Verify(m => m.GetExtension(FontFilePath), Times.Exactly(2));
 
             this.mockFontAtlasService.Verify(m =>
-                m.CreateFontAtlas(this.fontFilePath, FontSize), Times.Once);
+                m.CreateFontAtlas(FontFilePath, FontSize), Times.Once);
 
             this.mockImageService.Verify(m => m.FlipVertically(this.fontImageData), Times.Once);
-            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(this.fontFilePath), Times.Exactly(2));
+            this.mockPath.Verify(m => m.GetFileNameWithoutExtension(FontFilePath), Times.Exactly(2));
 
             this.mockTextureFactory.Verify(m =>
-                m.Create(this.fontAtlasTextureName, this.fontFilePath, this.fontImageData), Times.Once);
+                m.Create(this.fontAtlasTextureName, FontFilePath, this.fontImageData), Times.Once);
 
             Assert.Same(actualA, actualB);
         }
@@ -462,7 +462,7 @@ namespace VelaptorTests.Content.Caching
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
             {
-                cache.GetItem(this.fontFilePath);
+                cache.GetItem(FontFilePath);
             }, expected);
         }
 
@@ -477,15 +477,15 @@ namespace VelaptorTests.Content.Caching
             MockTextureCreation(mockTexture.Object);
 
             var cache = CreateCache();
-            var unused = cache.GetItem(this.textureFilePath);
+            var unused = cache.GetItem(TextureFilePath);
 
             // Act
-            cache.Unload(this.textureFilePath);
+            cache.Unload(TextureFilePath);
 
             // Assert
             AssertExtensions.DoesNotThrowNullReference(() =>
             {
-                cache.Unload(this.textureFilePath);
+                cache.Unload(TextureFilePath);
             });
 
             Assert.Equal(0, cache.TotalCachedItems);
@@ -505,7 +505,7 @@ namespace VelaptorTests.Content.Caching
             MockTextureCreation(mockTexture.Object);
 
             var cache = CreateCache();
-            cache.GetItem(this.textureFilePath);
+            cache.GetItem(TextureFilePath);
 
             // Act
             cache.Unload("non-existing-texture");
@@ -528,8 +528,8 @@ namespace VelaptorTests.Content.Caching
             mockTextureB.SetupGet(p => p.Id).Returns(22u);
             mockTextureB.Name = nameof(mockTextureB);
 
-            const string texturePathA = $"{TextureDirPath}textureA{TextureExtension}";
-            const string texturePathB = $"{TextureDirPath}textureB{TextureExtension}";
+            const string texturePathA = $"{TextureDirPath}/textureA{TextureExtension}";
+            const string texturePathB = $"{TextureDirPath}/textureB{TextureExtension}";
 
             this.mockPath.Setup(m => m.GetExtension(texturePathA)).Returns(TextureExtension);
             this.mockPath.Setup(m => m.GetExtension(texturePathB)).Returns(TextureExtension);
@@ -591,7 +591,7 @@ namespace VelaptorTests.Content.Caching
         /// </summary>
         private void MockTextureParseResult()
         {
-            this.mockFontMetaDataParser.Setup(m => m.Parse(this.textureFilePath))
+            this.mockFontMetaDataParser.Setup(m => m.Parse(TextureFilePath))
                 .Returns(() => new FontMetaDataParseResult(
                     false,
                     true,
@@ -609,7 +609,7 @@ namespace VelaptorTests.Content.Caching
                 .Returns(() => new FontMetaDataParseResult(
                     true,
                     true,
-                    this.fontFilePath,
+                    FontFilePath,
                     $"size:{FontSize}",
                     FontSize));
         }
@@ -620,7 +620,7 @@ namespace VelaptorTests.Content.Caching
         private void MockImageData()
         {
             var imageData = new ImageData(new Color[3, 1], 3, 1);
-            this.mockImageService.Setup(m => m.Load(this.textureFilePath))
+            this.mockImageService.Setup(m => m.Load(TextureFilePath))
                 .Returns(imageData);
         }
 
@@ -633,7 +633,7 @@ namespace VelaptorTests.Content.Caching
         private void MockTextureCreation(ITexture texture, string? textureName = null, string? filePath = null)
         {
             var name = textureName ?? TextureName;
-            var path = filePath ?? this.textureFilePath;
+            var path = filePath ?? TextureFilePath;
 
             this.mockTextureFactory.Setup(m => m.Create(name, path, It.IsAny<ImageData>()))
                 .Returns(texture);
