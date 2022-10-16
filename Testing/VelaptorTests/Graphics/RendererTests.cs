@@ -30,7 +30,7 @@ namespace VelaptorTests.Graphics
     public class RendererTests
     {
         private const string GlyphTestDataFileName = "glyph-test-data.json";
-        private const string BatchTestDataDirPath = @"BatchItemTestData\";
+        private const string BatchTestDataDirPath = "BatchItemTestData";
         private const uint TextureShaderId = 1111u;
         private const uint FontShaderId = 2222u;
         private const uint RectShaderId = 3333u;
