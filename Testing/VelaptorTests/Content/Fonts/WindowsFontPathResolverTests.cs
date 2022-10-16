@@ -124,9 +124,8 @@ namespace VelaptorTests.Content.Fonts
         [Fact]
         public void ResolveDirPath_WhenInvoked_ReturnsCorrectResult()
         {
-            const string expected = "C:/Windows/Fonts";
-
             // Arrange
+            const string expected = "C:/Windows/Fonts";
             var resolver = CreateResolver();
 
             // Act
