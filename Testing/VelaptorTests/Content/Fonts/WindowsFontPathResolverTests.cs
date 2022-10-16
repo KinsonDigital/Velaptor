@@ -6,7 +6,9 @@ namespace VelaptorTests.Content.Fonts
 {
     using System;
     using System.IO.Abstractions;
+    using System.Runtime.InteropServices;
     using Moq;
+    using Velaptor;
     using Velaptor.Content.Fonts;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -17,11 +19,18 @@ namespace VelaptorTests.Content.Fonts
     public class WindowsFontPathResolverTests
     {
         private readonly Mock<IDirectory> mockDirectory;
+        private readonly Mock<IPlatform> mockPlatform;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsFontPathResolverTests"/> class.
         /// </summary>
-        public WindowsFontPathResolverTests() => this.mockDirectory = new Mock<IDirectory>();
+        public WindowsFontPathResolverTests()
+        {
+            this.mockDirectory = new Mock<IDirectory>();
+
+            this.mockPlatform = new Mock<IPlatform>();
+            this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
+        }
 
         #region Constructor Tests
         [Fact]
@@ -30,8 +39,35 @@ namespace VelaptorTests.Content.Fonts
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new WindowsFontPathResolver(null);
+                _ = new WindowsFontPathResolver(
+                    null,
+                    this.mockPlatform.Object);
             }, "The parameter must not be null. (Parameter 'directory')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPlatformParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new WindowsFontPathResolver(
+                    this.mockDirectory.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'platform')");
+        }
+
+        [Fact]
+        public void Ctor_WhenNotOnWindowsPlatform_ThrowsException()
+        {
+            // Arrange
+            this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Linux);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<PlatformNotSupportedException>(() =>
+            {
+                _ = CreateResolver();
+            }, $"The '{nameof(WindowsFontPathResolver)}' can only be used on the 'Windows' platform.");
         }
         #endregion
 
@@ -140,6 +176,6 @@ namespace VelaptorTests.Content.Fonts
         /// Creates a new instance of <see cref="WindowsFontPathResolver"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private WindowsFontPathResolver CreateResolver() => new (this.mockDirectory.Object);
+        private WindowsFontPathResolver CreateResolver() => new (this.mockDirectory.Object, this.mockPlatform.Object);
     }
 }
