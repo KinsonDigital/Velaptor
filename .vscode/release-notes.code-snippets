@@ -21,7 +21,7 @@
 		"scope": "markdown",
 		"prefix": "issue-link",
 		"body": [
-			"[#${1:Issue #}](https://github.com/KinsonDigital/CICD/issues/${1:Issue #}) - "
+			"[#${1:Issue #}](https://github.com/KinsonDigital/Velaptor/issues/${1:Issue #}) - "
 		],
 		"description": "Link to the issue"
 	},
@@ -29,7 +29,7 @@
 		"scope": "markdown",
 		"prefix": "issue-link-oc",
 		"body": [
-			"[#${1:Issue #}](https://github.com/KinsonDigital/CICD/issues/${1:Issue #}) ([$3🙏🏼](https://github.com/$3)) - "
+			"[#${1:Issue #}](https://github.com/KinsonDigital/Velaptor/issues/${1:Issue #}) ([$3🙏🏼](https://github.com/$3)) - "
 		],
 		"description": "Link to the issue with outside contributor"
 	},
