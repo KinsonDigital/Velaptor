@@ -210,7 +210,7 @@ namespace VelaptorTests.Services
             AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
                 manager.GetBatchSize((BatchServiceType)1234);
-            }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType')\r\nActual value was 1234.");
+            }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType'){Environment.NewLine}Actual value was 1234.");
         }
 
         [Theory]
@@ -244,7 +244,7 @@ namespace VelaptorTests.Services
             AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
                 manager.SetBatchSize((BatchServiceType)1234, It.IsAny<uint>());
-            }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType')\r\nActual value was 1234.");
+            }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType'){Environment.NewLine}Actual value was 1234.");
 
             // Assert
             this.mockTextureBatchingService.VerifySet(p => p.BatchSize = It.IsAny<uint>(), Times.Never);
@@ -296,7 +296,7 @@ namespace VelaptorTests.Services
             AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
                 manager.EmptyBatch((BatchServiceType)1234);
-            }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType')\r\nActual value was 1234.");
+            }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType'){Environment.NewLine}Actual value was 1234.");
         }
 
         [Fact]
@@ -472,7 +472,7 @@ namespace VelaptorTests.Services
             AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
             {
                 manager.EndBatch((BatchServiceType)1234);
-            }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType')\r\nActual value was 1234.");
+            }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType'){Environment.NewLine}Actual value was 1234.");
         }
 
         [Fact]

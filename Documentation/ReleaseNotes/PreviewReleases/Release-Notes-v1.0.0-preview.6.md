@@ -1,12 +1,17 @@
-<h1 align="center" style='color:mediumseagreen;font-weight:bold'>Velaptor Preview Release Notes - v1.0.0-preview.6</h1>
+<h1 align="center" style='color:mediumseagreen;font-weight:bold'>
+    Velaptor Preview Release Notes - v1.0.0-preview.6
+</h1>
 
 <h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
 
-As with all software, including releases, there is always a chance for issues and bugs.  It is also common to miss changes in the release notes when there are many.  This is even more common in preview releases.
+<div algn="center">
+
+As with all software, there is always a chance for issues and bugs, especially for preview releases, which is why your input is greatly appreciated. 🙏🏼
+</div>
 
 ---
 
-<h2 style="font-weight:bold" align="center">New 🎉</h2>
+<h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. Implemented specialized version of the .NET observable interfaces. This replaces the use of `System.IObservable` and `System.IObserver`.
     - This gives the ability to add features to the observable pattern.
@@ -18,8 +23,8 @@ As with all software, including releases, there is always a chance for issues an
 
 <h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
-1. Refactored name of the `Observable` class to `Reactor`
-    - This was done due to prevent naming clashes in the future with `System.IObservable<T>`, `System.IObserver` types.  This was discovered when creating the new type `IReactor`.  Originally the name was `Velaptor.Observables.Core.IObservable<T>`.  This was the same name as `System.IObservable<T>` and was causing too many uses of `using alias` across the code base to prevent naming clashes between **Velaptor** and **.NET**.
+1. Refactored name of the `Observable` class to `Reactor`.
+    - This was done due to prevent naming clashes in the future with `System.IObservable<T>`, `System.IObserver` types.  It was discovered when creating the new type `IReactor`.  Originally the name was `Velaptor.Observables.Core.IObservable<T>`.  The same name existed as `System.IObservable<T>` and caused too many uses of `using alias` across the code base to prevent naming clashes between **Velaptor** and **.NET**.
     - The new name `Reactor` means that it reacts to push notifications for the purpose of **_reactive_** programming.
 2. Change the scope of the methods below for the `Window` class from `public` to `protected`:
     - `OnLoad()`
@@ -41,13 +46,9 @@ As with all software, including releases, there is always a chance for issues an
 
 ---
 
-<h2 style="font-weight:bold" align="center">Improvements 🌟</h2>
+<h2 style="font-weight:bold" align="center">Other 🪧</h2>
+<h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
 1. Greatly improved the branching diagram to help contributors understand the Git branching process.
 2. Updated documentation to point to the new branching diagram.
-
----
-
-<h2 style="font-weight:bold" align="center">Other 👏</h2>
-
-1. Added a new discord badge to README file to join the discord server.
+3. Added a new discord badge to README file to join the discord server.

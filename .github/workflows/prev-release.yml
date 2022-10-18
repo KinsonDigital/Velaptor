@@ -1,0 +1,31 @@
+name: 🚀Preview Release
+
+
+defaults:
+  run:
+    shell: pwsh
+
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  preview_release:
+    name: Preview Release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Restore DotNet Tools
+      run: dotnet tool restore
+
+    - name: Run Preview Release
+      run: dotnet cicd PreviewRelease
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NugetOrgApiKey: ${{ secrets.NUGET_ORG_API_KEY }}
+        TwitterConsumerApiKey: ${{ secrets.TWITTER_CONSUMER_API_KEY }}
+        TwitterConsumerApiSecret: ${{ secrets.TWITTER_CONSUMER_API_SECRET }}
+        TwitterAccessToken: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+        TwitterAccessTokenSecret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}

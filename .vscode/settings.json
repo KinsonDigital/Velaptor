@@ -1,10 +1,13 @@
 {
     "cSpell.words": [
         "Analyers",
+        "andymckay",
         "backticks",
         "CASL",
+        "cicd",
         "cobertura",
         "codecov",
+        "CODEOWNERS",
         "dodgerblue",
         "editorconfig",
         "ethomson",
@@ -21,6 +24,8 @@
         "msbuild",
         "Nuget",
         "nupkg",
+        "prereleases",
+        "pwsh",
         "Reactable",
         "releasetype",
         "releasetypes",
@@ -33,6 +38,7 @@
         "Unloadable",
         "unmanaged",
         "Velaptor",
+        "Vorbis",
         "xunit"
     ]
 }

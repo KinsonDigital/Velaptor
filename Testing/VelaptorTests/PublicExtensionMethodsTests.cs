@@ -7,7 +7,6 @@ namespace VelaptorTests
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
-    using System.IO;
     using System.Linq;
     using System.Numerics;
     using Velaptor;
@@ -21,7 +20,7 @@ namespace VelaptorTests
     [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Allowed for unit test classes.")]
     public class PublicExtensionMethodsTests
     {
-        private static readonly char DirSeparator = Path.AltDirectorySeparatorChar;
+        private const char CrossPlatDirSeparatorChar = '/';
         private readonly char[] letters;
         private readonly char[] nonLetters;
 
@@ -66,19 +65,19 @@ namespace VelaptorTests
         /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidFullFilePathSyntax"/>() method.
         /// </summary>
         /// <returns>The test data.</returns>
-        public static IEnumerable<object[]> IsValidFilePathTestData()
+        public static IEnumerable<object[]> HasValidFullFilePathSyntaxTestData()
         {
             yield return new object[] { "C:windows", false };
-            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}test-file", false };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", false };
             yield return new object[] { string.Empty, false };
             yield return new object[] { null, false };
-            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}", false };
-            yield return new object[] { $@"C:{DirSeparator}", false };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", false };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}", false };
             yield return new object[] { "non-path-value", false };
-            yield return new object[] { $@"{DirSeparator}test-dir{DirSeparator}", false };
-            yield return new object[] { $@"test-dir{DirSeparator}", false };
+            yield return new object[] { $@"{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", false };
+            yield return new object[] { $@"test-dir{CrossPlatDirSeparatorChar}", false };
             yield return new object[] { @"C:\test-dir\test-file.txt", true };
-            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}test-file.txt", true };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", true };
         }
 
         /// <summary>
@@ -88,15 +87,15 @@ namespace VelaptorTests
         public static IEnumerable<object[]> IsInvalidFilePathTestData()
         {
             yield return new object[] { $@"C:\test-dir\test-file.txt", false };
-            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}test-file.txt", false };
-            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}test-file", true };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", false };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", true };
             yield return new object[] { string.Empty, true };
             yield return new object[] { null, true };
-            yield return new object[] { $@"C:{DirSeparator}test-dir{DirSeparator}", true };
-            yield return new object[] { $@"C:{DirSeparator}", true };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", true };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}", true };
             yield return new object[] { "non-path-value", true };
-            yield return new object[] { $@"{DirSeparator}test-dir{DirSeparator}", true };
-            yield return new object[] { $@"test-dir{DirSeparator}", true };
+            yield return new object[] { $@"{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", true };
+            yield return new object[] { $@"test-dir{CrossPlatDirSeparatorChar}", true };
             yield return new object[] { "C:windows", true };
         }
 
@@ -116,7 +115,7 @@ namespace VelaptorTests
             yield return new object[] { "windowsC:system32", false };
             yield return new object[] { $@"C:\Windows\System32", true };
             yield return new object[] { @"C:windows", true };
-            yield return new object[] { $@"C:{DirSeparator}Windows{DirSeparator}System32", true };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
         }
 
         /// <summary>
@@ -128,12 +127,12 @@ namespace VelaptorTests
             yield return new object[] { string.Empty, false };
             yield return new object[] { null, false };
             yield return new object[] { $@"\Windows\System32", false };
-            yield return new object[] { $@"{DirSeparator}Windows{DirSeparator}System32", false };
+            yield return new object[] { $@"{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", false };
             yield return new object[] { "C:Windows", false };
-            yield return new object[] { $@"{DirSeparator}WindowsC:", false };
-            yield return new object[] { $@"C:{DirSeparator}Windows{DirSeparator}System32{DirSeparator}fake-file.txt", false };
-            yield return new object[] { $@"C:{DirSeparator}Windows{DirSeparator}System32", true };
-            yield return new object[] { $@"C:{DirSeparator}Windows{DirSeparator}System32{DirSeparator}", true };
+            yield return new object[] { $@"{CrossPlatDirSeparatorChar}WindowsC:", false };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}fake-file.txt", false };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
+            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}", true };
         }
 
         /// <summary>
@@ -145,8 +144,8 @@ namespace VelaptorTests
             yield return new object[] { string.Empty, false };
             yield return new object[] { null, false };
             yield return new object[] { $@"\\", false };
-            yield return new object[] { $@"{DirSeparator}{DirSeparator}", false };
-            yield return new object[] { $@"{DirSeparator}{DirSeparator}directory", true };
+            yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false };
+            yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true };
         }
         #endregion
 
@@ -466,7 +465,7 @@ namespace VelaptorTests
         }
 
         [Theory]
-        [MemberData(nameof(IsValidFilePathTestData))]
+        [MemberData(nameof(HasValidFullFilePathSyntaxTestData))]
         public void HasValidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
         {
             // Act

@@ -12,6 +12,6 @@
    * This was a very large code refactor
 3. Added unit tests to increase code coverage
 
-### **Other** 👏
+### **Other** 🪧
 
 1. Fixed various failing unit tests

@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{DA2AB7CF-A778-416B-BFBF-1E27CC23855C}"
 	ProjectSection(SolutionItems) = preProject
 		Testing\.editorconfig = Testing\.editorconfig
-		Velaptor\OpenGL\TextureGPUBuffer.cs = Velaptor\OpenGL\TextureGPUBuffer.cs
 		Testing\Velaptor.runsettings = Testing\Velaptor.runsettings
 	EndProjectSection
 EndProject
@@ -72,29 +71,36 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EnvironmentalSetup", "Envir
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Release|Any CPU = Release|Any CPU
-		Debug-Console|Any CPU = Debug-Console|Any CPU
-		Debug-Win|Any CPU = Debug-Win|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+		Debug-Console|x64 = Debug-Console|x64
+		Release-Console|x64 = Release-Console|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Debug-Console|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Debug-Console|Any CPU.Build.0 = Debug|Any CPU
-		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Debug-Win|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Debug-Win|Any CPU.Build.0 = Debug|Any CPU
-		{63793161-2B97-4875-8633-DD6B51DACD77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63793161-2B97-4875-8633-DD6B51DACD77}.Release|Any CPU.Build.0 = Release|Any CPU
-		{63793161-2B97-4875-8633-DD6B51DACD77}.Debug-Console|Any CPU.ActiveCfg = Debug-Console|Any CPU
-		{63793161-2B97-4875-8633-DD6B51DACD77}.Debug-Console|Any CPU.Build.0 = Debug-Console|Any CPU
-		{63793161-2B97-4875-8633-DD6B51DACD77}.Debug-Win|Any CPU.ActiveCfg = Debug-Win|Any CPU
-		{63793161-2B97-4875-8633-DD6B51DACD77}.Debug-Win|Any CPU.Build.0 = Debug-Win|Any CPU
-		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Debug-Console|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Debug-Console|Any CPU.Build.0 = Debug|Any CPU
-		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Debug-Win|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Debug-Win|Any CPU.Build.0 = Debug|Any CPU
+		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Debug|x64.ActiveCfg = Debug|x64
+		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Debug|x64.Build.0 = Debug|x64
+		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Release|x64.ActiveCfg = Release|x64
+		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Release|x64.Build.0 = Release|x64
+		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Debug-Console|x64.ActiveCfg = Debug|x64
+		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Debug-Console|x64.Build.0 = Debug|x64
+		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Release-Console|x64.ActiveCfg = Release|x64
+		{E1625351-56F0-4058-A3F2-ACF009187CFC}.Release-Console|x64.Build.0 = Release|x64
+		{63793161-2B97-4875-8633-DD6B51DACD77}.Debug|x64.ActiveCfg = Debug|x64
+		{63793161-2B97-4875-8633-DD6B51DACD77}.Debug|x64.Build.0 = Debug|x64
+		{63793161-2B97-4875-8633-DD6B51DACD77}.Release|x64.ActiveCfg = Release|x64
+		{63793161-2B97-4875-8633-DD6B51DACD77}.Release|x64.Build.0 = Release|x64
+		{63793161-2B97-4875-8633-DD6B51DACD77}.Debug-Console|x64.ActiveCfg = Debug-Console|x64
+		{63793161-2B97-4875-8633-DD6B51DACD77}.Debug-Console|x64.Build.0 = Debug-Console|x64
+		{63793161-2B97-4875-8633-DD6B51DACD77}.Release-Console|x64.ActiveCfg = Release-Console|x64
+		{63793161-2B97-4875-8633-DD6B51DACD77}.Release-Console|x64.Build.0 = Release-Console|x64
+		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Debug|x64.ActiveCfg = Debug|x64
+		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Debug|x64.Build.0 = Debug|x64
+		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release|x64.ActiveCfg = Release|x64
+		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release|x64.Build.0 = Release|x64
+		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Debug-Console|x64.ActiveCfg = Debug|x64
+		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Debug-Console|x64.Build.0 = Debug|x64
+		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release-Console|x64.ActiveCfg = Release|x64
+		{C6AFDF55-196C-41D6-9174-0A03A934586F}.Release-Console|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

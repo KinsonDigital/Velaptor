@@ -160,7 +160,7 @@ namespace Velaptor.OpenGL.Shaders
             if (!string.IsNullOrWhiteSpace(infoLog))
             {
                 // TODO: Create custom compile shader exception
-                throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.\n{infoLog}");
+                throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.{Environment.NewLine}{infoLog}");
             }
 
             OpenGLService.EndGroup();
@@ -180,7 +180,7 @@ namespace Velaptor.OpenGL.Shaders
             if (!string.IsNullOrWhiteSpace(infoLog))
             {
                 // TODO: Create custom compile shader exception
-                throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.\n{infoLog}");
+                throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.{Environment.NewLine}{infoLog}");
             }
 
             OpenGLService.EndGroup();
@@ -208,7 +208,7 @@ namespace Velaptor.OpenGL.Shaders
             var status = GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus);
             if (status == 0)
             {
-                throw new Exception($"Error linking shader with ID '{ShaderId}'\n{GL.GetProgramInfoLog(ShaderId)}");
+                throw new Exception($"Error linking shader with ID '{ShaderId}'{Environment.NewLine}{GL.GetProgramInfoLog(ShaderId)}");
             }
 
             OpenGLService.EndGroup();

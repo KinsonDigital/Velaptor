@@ -1,9 +1,10 @@
-// <copyright file="TestMouseScene.cs" company="KinsonDigital">
+﻿// <copyright file="TestMouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 namespace VelaptorTesting.Scenes
 {
+    using System;
     using System.Drawing;
     using Velaptor;
     using Velaptor.Content;
@@ -20,7 +21,6 @@ namespace VelaptorTesting.Scenes
         private readonly IAppInput<MouseState> mouse;
         private Label? mouseInfoLabel;
         private MouseState currentMouseState;
-        private int mouseWheelSpeed;
         private MouseScrollDirection scrollDirection;
 
         /// <summary>
@@ -55,18 +55,16 @@ namespace VelaptorTesting.Scenes
             this.currentMouseState = this.mouse.GetState();
 
             var mouseInfo = $"Mouse Position: {this.currentMouseState.GetX()}, {this.currentMouseState.GetY()}";
-            mouseInfo += $"\nMouse Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
-            mouseInfo += $"\nMouse Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
-            mouseInfo += $"\nMouse Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
+            mouseInfo += $"{Environment.NewLine}Left Button: {(this.currentMouseState.IsLeftButtonDown() ? "Down" : "Up")}";
+            mouseInfo += $"{Environment.NewLine}Right Button: {(this.currentMouseState.IsRightButtonDown() ? "Down" : "Up")}";
+            mouseInfo += $"{Environment.NewLine}Middle Button: {(this.currentMouseState.IsMiddleButtonDown() ? "Down" : "Up")}";
 
             if (this.currentMouseState.GetScrollWheelValue() != 0)
             {
-                this.mouseWheelSpeed = this.currentMouseState.GetScrollWheelValue();
                 this.scrollDirection = this.currentMouseState.GetScrollDirection();
             }
 
-            mouseInfo += $"\nMouse Scroll Speed: {this.mouseWheelSpeed}";
-            mouseInfo += $"\nMouse Scroll Direction: {this.scrollDirection}";
+            mouseInfo += $"{Environment.NewLine}Mouse Scroll Direction: {this.scrollDirection}";
 
             this.mouseInfoLabel.Text = mouseInfo;
 

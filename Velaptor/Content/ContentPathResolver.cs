@@ -13,29 +13,34 @@ namespace Velaptor.Content
     /// </summary>
     internal abstract class ContentPathResolver : IPathResolver
     {
-        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
-        private string contentRootDirectory = @$"{BaseDir}Content{Path.DirectorySeparatorChar}";
+        private const char WinDirSeparatorChar = '\\';
+        private const char CrossPlatDirSeparatorChar = '/';
+        private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+            .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+        private string rootDirPath = @$"{BaseDir}{CrossPlatDirSeparatorChar}Content";
         private string contentDirName = string.Empty;
 
         /// <inheritdoc/>
         public string RootDirectoryPath
         {
-            get => this.contentRootDirectory;
+            get => this.rootDirPath;
             set
             {
+                value = string.IsNullOrEmpty(value)
+                    ? string.Empty
+                    : value;
+
                 var isNullOrEmpty = string.IsNullOrEmpty(value);
 
+                value = value.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar).TrimDirSeparatorFromEnd();
                 value = isNullOrEmpty ? BaseDir : value;
-
-                // If the value ends with a backslash, leave as is, else add one
-                value = value.EndsWith(Path.DirectorySeparatorChar) ? value : $@"{value}{Path.DirectorySeparatorChar}";
 
                 if (isNullOrEmpty)
                 {
                     return;
                 }
 
-                this.contentRootDirectory = value;
+                this.rootDirPath = value;
             }
         }
 
@@ -62,7 +67,7 @@ namespace Velaptor.Content
                 throw new ArgumentNullException(nameof(contentName), $"The string parameter must not be null or empty.");
             }
 
-            if (contentName.EndsWith(Path.DirectorySeparatorChar))
+            if (contentName.EndsWith(WinDirSeparatorChar) || contentName.EndsWith(CrossPlatDirSeparatorChar))
             {
                 throw new ArgumentException($"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension.", nameof(contentName));
             }
@@ -71,12 +76,12 @@ namespace Velaptor.Content
         }
 
         /// <inheritdoc/>
-        public string ResolveDirPath() => $@"{this.contentRootDirectory}{this.contentDirName}\";
+        public string ResolveDirPath() => $@"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}";
 
         /// <summary>
         /// Gets the directory path of the content.
         /// </summary>
         /// <returns>The full directory path to the content directory.</returns>
-        protected string GetContentDirPath() => $@"{this.contentRootDirectory}{this.contentDirName}{Path.DirectorySeparatorChar}";
+        protected string GetContentDirPath() => $@"{this.rootDirPath}{CrossPlatDirSeparatorChar}{this.contentDirName}";
     }
 }

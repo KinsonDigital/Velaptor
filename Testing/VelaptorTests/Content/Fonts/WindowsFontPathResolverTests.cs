@@ -6,7 +6,9 @@ namespace VelaptorTests.Content.Fonts
 {
     using System;
     using System.IO.Abstractions;
+    using System.Runtime.InteropServices;
     using Moq;
+    using Velaptor;
     using Velaptor.Content.Fonts;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -17,11 +19,18 @@ namespace VelaptorTests.Content.Fonts
     public class WindowsFontPathResolverTests
     {
         private readonly Mock<IDirectory> mockDirectory;
+        private readonly Mock<IPlatform> mockPlatform;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsFontPathResolverTests"/> class.
         /// </summary>
-        public WindowsFontPathResolverTests() => this.mockDirectory = new Mock<IDirectory>();
+        public WindowsFontPathResolverTests()
+        {
+            this.mockDirectory = new Mock<IDirectory>();
+
+            this.mockPlatform = new Mock<IPlatform>();
+            this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Windows);
+        }
 
         #region Constructor Tests
         [Fact]
@@ -30,8 +39,35 @@ namespace VelaptorTests.Content.Fonts
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
             {
-                _ = new WindowsFontPathResolver(null);
+                _ = new WindowsFontPathResolver(
+                    null,
+                    this.mockPlatform.Object);
             }, "The parameter must not be null. (Parameter 'directory')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullPlatformParam_ThrowsException()
+        {
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+            {
+                _ = new WindowsFontPathResolver(
+                    this.mockDirectory.Object,
+                    null);
+            }, "The parameter must not be null. (Parameter 'platform')");
+        }
+
+        [Fact]
+        public void Ctor_WhenNotOnWindowsPlatform_ThrowsException()
+        {
+            // Arrange
+            this.mockPlatform.SetupGet(p => p.CurrentPlatform).Returns(OSPlatform.Linux);
+
+            // Act & Assert
+            AssertExtensions.ThrowsWithMessage<PlatformNotSupportedException>(() =>
+            {
+                _ = CreateResolver();
+            }, $"The '{nameof(WindowsFontPathResolver)}' can only be used on the 'Windows' platform.");
         }
         #endregion
 
@@ -46,7 +82,7 @@ namespace VelaptorTests.Content.Fonts
             var actual = resolver.RootDirectoryPath;
 
             // Assert
-            Assert.Equal(@"C:\Windows\", actual);
+            Assert.Equal(@"C:/Windows", actual);
         }
 
         [Fact]
@@ -88,24 +124,24 @@ namespace VelaptorTests.Content.Fonts
             // Act & Assert
             AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
             {
-                resolver.ResolveFilePath(@"test-content\");
-            }, @"The 'test-content\' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
+                resolver.ResolveFilePath(@"test-content/");
+            }, @"The 'test-content/' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
         }
 
         [Fact]
         public void ResolveFilePath_WhenInvoking_ReturnsCorrectResolvedFilePath()
         {
             // Arrange
-            const string rootDir = @"C:\Windows\";
+            const string rootDir = @"C:/Windows";
             const string contentDirName = "Fonts";
             const string contentName = "test-content";
             const string extension = ".ttf";
-            var fullContentDirPath = $@"{rootDir}{contentDirName}\";
-            var expected = $@"{fullContentDirPath}{contentName}{extension}";
+            const string fullContentDirPath = $@"{rootDir}/{contentDirName}";
+            const string expected = $@"{fullContentDirPath}/{contentName}{extension}";
 
             var files = new[]
             {
-                $"{fullContentDirPath}other-file.txt",
+                $"{fullContentDirPath}/other-file.txt",
                 expected,
             };
 
@@ -125,7 +161,7 @@ namespace VelaptorTests.Content.Fonts
         public void ResolveDirPath_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            const string expected = @"C:\Windows\Fonts\";
+            const string expected = "C:/Windows/Fonts";
             var resolver = CreateResolver();
 
             // Act
@@ -140,6 +176,6 @@ namespace VelaptorTests.Content.Fonts
         /// Creates a new instance of <see cref="WindowsFontPathResolver"/> for the purpose of testing.
         /// </summary>
         /// <returns>The instance to test.</returns>
-        private WindowsFontPathResolver CreateResolver() => new WindowsFontPathResolver(this.mockDirectory.Object);
+        private WindowsFontPathResolver CreateResolver() => new (this.mockDirectory.Object, this.mockPlatform.Object);
     }
 }

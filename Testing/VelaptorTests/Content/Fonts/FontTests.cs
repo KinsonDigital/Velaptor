@@ -28,7 +28,7 @@ namespace VelaptorTests.Content.Fonts
     public class FontTests : IDisposable
     {
         private const char InvalidCharacter = '□';
-        private const string DirPath = @"C:\test-dir\fonts\";
+        private const string DirPath = @"C:/test-dir/fonts";
         private const string FontName = "test-font";
         private const string FontExtension = ".ttf";
         private readonly string fontFilePath;
@@ -38,7 +38,8 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<ITexture> mockTexture;
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
         private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
-        private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\SampleTestData\";
+        private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+            .Replace('\\', '/') + "/SampleTestData";
         private Dictionary<char, GlyphMetrics> glyphMetrics = new ();
 
         /// <summary>
@@ -46,10 +47,10 @@ namespace VelaptorTests.Content.Fonts
         /// </summary>
         public FontTests()
         {
-            this.fontFilePath = $"{DirPath}{FontName}{FontExtension}";
+            this.fontFilePath = $"{DirPath}/{FontName}{FontExtension}";
 
             const string glyphTestDataFileName = "glyph-test-data.json";
-            var glyphMetricFilePath = $"{this.sampleTestDataDirPath}{glyphTestDataFileName}";
+            var glyphMetricFilePath = $"{this.sampleTestDataDirPath}/{glyphTestDataFileName}";
             var glyphMetricData = File.ReadAllText(glyphMetricFilePath);
 
             var glyphMetricItems = JsonConvert.DeserializeObject<GlyphMetrics[]>(glyphMetricData);
@@ -465,7 +466,7 @@ namespace VelaptorTests.Content.Fonts
         public void Measure_WhenInvoked_ReturnsCorrectResult()
         {
             // Arrange
-            const string text = "hello\nworld";
+            var text = $"hello{Environment.NewLine}world";
 
             this.mockFontService.Setup(m => m.GetFontScaledLineSpacing(this.facePtr, 12)).Returns(2f);
             this.mockFontService.Setup(m => m.HasKerning(this.facePtr)).Returns(true);

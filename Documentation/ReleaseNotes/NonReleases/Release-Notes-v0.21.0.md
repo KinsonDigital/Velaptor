@@ -1,6 +1,6 @@
 ## <span style="color:mediumseagreen;font-weight:bold">Velaptor Release Notes - v0.21.0</span>
 
-### **Breaking Changes** 💣
+### **Breaking Changes** 🧨
 
 1. Changed <span style='font-weight: bold; color: khaki'>Keyboard </span> class from static to non static
    * Implemented new <span style='font-weight: bold; color: khaki'>IKeyboard </span> interface that the <span style='font-weight: bold; color: khaki'>Keyboard </span> class inherits from.  This makes the keyboard functionality much more testable and able to be injected using a DI container

@@ -29,10 +29,11 @@ namespace VelaptorTests.Content.Fonts
         public ContentFontPathResolverTests()
         {
             this.mockDirectory = new Mock<IDirectory>();
-            var baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
-            var baseContentDir = $@"{baseDir}Content\";
-            this.atlasContentDir = $@"{baseContentDir}Fonts\";
-            this.contentFilePath = $"{this.atlasContentDir}{ContentName}.ttf";
+            var baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+                .Replace('\\', '/');
+            var baseContentDir = $@"{baseDir}/Content";
+            this.atlasContentDir = $@"{baseContentDir}/Fonts";
+            this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.ttf";
         }
 
         #region Constructor Tests
@@ -73,7 +74,7 @@ namespace VelaptorTests.Content.Fonts
                 {
                     return new[]
                     {
-                        $"{this.atlasContentDir}other-file.txt",
+                        $"{this.atlasContentDir}/other-file.txt",
                         this.contentFilePath,
                     };
                 });

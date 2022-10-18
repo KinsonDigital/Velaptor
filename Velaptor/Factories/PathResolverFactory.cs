@@ -101,6 +101,8 @@ namespace Velaptor.Factories
         /// <returns>The resolver instance.</returns>
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Left internal for future access")]
         internal static IPathResolver CreateWindowsFontPathResolver() =>
-            windowsFontPathResolver ??= new WindowsFontPathResolver(IoC.Container.GetInstance<IDirectory>());
+            windowsFontPathResolver ??= new WindowsFontPathResolver(
+                IoC.Container.GetInstance<IDirectory>(),
+                IoC.Container.GetInstance<IPlatform>());
     }
 }

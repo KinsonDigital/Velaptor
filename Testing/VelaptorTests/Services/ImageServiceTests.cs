@@ -28,7 +28,8 @@ namespace VelaptorTests.Services
     {
         private const string TestAssetDirName = "TestAssets";
         private const string TestImageFileName = "TestCompareImage.png";
-        private readonly string basePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\";
+        private readonly string basePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+            .Replace('\\', '/');
         private readonly string testAssetFilePath;
         private readonly Mock<IFile> mockFile;
         private Image<Rgba32> testCompareImage;
@@ -38,7 +39,7 @@ namespace VelaptorTests.Services
         /// </summary>
         public ImageServiceTests()
         {
-            this.testAssetFilePath = $@"{this.basePath}{TestAssetDirName}\{TestImageFileName}";
+            this.testAssetFilePath = $@"{this.basePath}/{TestAssetDirName}/{TestImageFileName}";
 
             TestHelpers.SetupTestResultDirPath();
 
@@ -195,7 +196,7 @@ namespace VelaptorTests.Services
             // Act
             var flippedImage = service.FlipHorizontally(comparisonSample);
 
-            TestHelpers.SaveImageForTest(flippedImage, nameof(FlipHorizontally_WhenInvoked_FlipsImageVertically));
+            TestHelpers.SaveImageForTest(flippedImage);
 
             // Assert
             // Check that all pixels in the top left section are red

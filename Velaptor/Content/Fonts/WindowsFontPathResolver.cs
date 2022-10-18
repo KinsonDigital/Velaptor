@@ -6,9 +6,9 @@ namespace Velaptor.Content.Fonts
 {
     // ReSharper disable RedundantNameQualifier
     using System;
-    using System.IO;
     using System.IO.Abstractions;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using Velaptor.Guards;
 
     // ReSharper restore RedundantNameQualifier
@@ -18,6 +18,7 @@ namespace Velaptor.Content.Fonts
     /// </summary>
     internal class WindowsFontPathResolver : IPathResolver
     {
+        private const char CrossPlatDirSeparatorChar = '/';
         private const string FileExtension = ".ttf";
         private readonly IDirectory directory;
 
@@ -25,14 +26,24 @@ namespace Velaptor.Content.Fonts
         /// Initializes a new instance of the <see cref="WindowsFontPathResolver"/> class.
         /// </summary>
         /// <param name="directory">Processes directories.</param>
-        public WindowsFontPathResolver(IDirectory directory)
+        /// <param name="platform">Provides information about the current platform.</param>
+        public WindowsFontPathResolver(IDirectory directory, IPlatform platform)
         {
             EnsureThat.ParamIsNotNull(directory);
+            EnsureThat.ParamIsNotNull(platform);
+
+            // This should only be running if on windows.  If not windows, throw an exception.
+            if (platform.CurrentPlatform != OSPlatform.Windows)
+            {
+                throw new PlatformNotSupportedException(
+                    $"The '{nameof(WindowsFontPathResolver)}' can only be used on the 'Windows' platform.");
+            }
+
             this.directory = directory;
         }
 
         /// <inheritdoc/>
-        public string RootDirectoryPath => @"C:\Windows\";
+        public string RootDirectoryPath => $"C:{CrossPlatDirSeparatorChar}Windows";
 
         /// <inheritdoc/>
         public string ContentDirectoryName => "Fonts";
@@ -42,17 +53,21 @@ namespace Velaptor.Content.Fonts
         {
             if (string.IsNullOrEmpty(contentName))
             {
-                throw new ArgumentNullException(nameof(contentName), $"The string parameter must not be null or empty.");
+                throw new ArgumentNullException(nameof(contentName), "The string parameter must not be null or empty.");
             }
 
-            if (contentName.EndsWith(Path.DirectorySeparatorChar))
+            if (contentName.EndsWith(CrossPlatDirSeparatorChar))
             {
                 throw new ArgumentException($"The '{contentName}' cannot end with a folder.  It must end with a file name with or without the extension.", nameof(contentName));
             }
 
-            var contentDirPath = $@"{RootDirectoryPath}{ContentDirectoryName}\";
-            var fullContentPath = $"{contentDirPath}{contentName}{FileExtension}";
-            var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
+            var contentDirPath = $@"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
+            var fullContentPath = $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}";
+
+            var possibleFiles = this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
+                .NormalizePaths();
+
+            var files = (from f in possibleFiles
                               where string.Compare(
                                   f,
                                   fullContentPath,
@@ -63,6 +78,6 @@ namespace Velaptor.Content.Fonts
         }
 
         /// <inheritdoc/>
-        public string ResolveDirPath() => $@"{RootDirectoryPath}{ContentDirectoryName}\";
+        public string ResolveDirPath() => $@"{RootDirectoryPath}{CrossPlatDirSeparatorChar}{ContentDirectoryName}";
     }
 }

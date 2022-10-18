@@ -18,6 +18,7 @@ namespace Velaptor.Content
     /// </summary>
     internal class AtlasJSONDataPathResolver : ContentPathResolver
     {
+        private const char CrossPlatDirSeparatorChar = '/';
         private const string FileExtension = ".json";
         private readonly IDirectory directory;
 
@@ -48,17 +49,20 @@ namespace Velaptor.Content
 
             var contentDirPath = GetContentDirPath();
 
+            var possibleFiles = this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
+                .NormalizePaths();
+
             // Check if there are any files that match the name
-            var files = (from f in this.directory.GetFiles(contentDirPath, $"*{FileExtension}")
+            var files = (from f in possibleFiles
                          where string.Compare(
                              f,
-                             $"{contentDirPath}{contentName}{FileExtension}",
+                             $"{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}",
                              StringComparison.OrdinalIgnoreCase) == 0
                          select f).ToArray();
 
             if (files.Length <= 0)
             {
-                throw new FileNotFoundException($"The texture atlas data file '{contentDirPath}{contentName}{FileExtension}' does not exist.");
+                throw new FileNotFoundException($"The texture atlas data file '{contentDirPath}{CrossPlatDirSeparatorChar}{contentName}{FileExtension}' does not exist.");
             }
 
             return files[0];

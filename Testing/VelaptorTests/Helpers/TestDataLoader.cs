@@ -15,8 +15,12 @@ namespace VelaptorTests.Helpers
     /// </summary>
     public static class TestDataLoader
     {
+        private const char WinDirSeparatorChar = '\\';
+        private const char CrossPlatDirSeparatorChar = '/';
         private const string TestDataFolderName = "SampleTestData";
-        private static readonly string RootDirPath = @$"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\{TestDataFolderName}\";
+        private static readonly string RootDirPath = @$"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
+            .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar) +
+                                                     $"{CrossPlatDirSeparatorChar}{TestDataFolderName}{CrossPlatDirSeparatorChar}";
 
         /// <summary>
         /// Loads JSON formatted test data and returns it as type a list of type <typeparamref name="T"/>.
@@ -37,7 +41,7 @@ namespace VelaptorTests.Helpers
         /// </remarks>
         public static T[] LoadTestData<T>(string? relativeDirPath, string fileName)
         {
-            const string loadTestDataPrefix = "Loading test data error:\n\t";
+            var loadTestDataPrefix = $"Loading test data error:{Environment.NewLine}\t";
 
             relativeDirPath = string.IsNullOrEmpty(relativeDirPath)
                 ? string.Empty
@@ -53,8 +57,8 @@ namespace VelaptorTests.Helpers
                 Assert.True(false, $"{loadTestDataPrefix}The file name '{fileName}' must be a file name with an extension.");
             }
 
-            relativeDirPath = relativeDirPath.Replace(@"\\", @"\");
-            relativeDirPath = relativeDirPath.TrimStart('\\');
+            relativeDirPath = relativeDirPath.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+            relativeDirPath = relativeDirPath.TrimStart(CrossPlatDirSeparatorChar);
 
             relativeDirPath = Path.HasExtension(relativeDirPath)
                 ? Path.GetDirectoryName(relativeDirPath)
@@ -63,16 +67,16 @@ namespace VelaptorTests.Helpers
             // Add a directory separator if one does not exist
             relativeDirPath = Path.EndsInDirectorySeparator(relativeDirPath)
                 ? relativeDirPath
-                : @$"{relativeDirPath}\";
+                : @$"{relativeDirPath}";
 
-            var fullDirPath = $"{RootDirPath}{relativeDirPath}";
+            var fullDirPath = $"{RootDirPath}{CrossPlatDirSeparatorChar}{relativeDirPath}";
 
             if (Directory.Exists(fullDirPath) is false)
             {
                 Assert.True(false, $"{loadTestDataPrefix}The directory path '{fullDirPath}' does not exist.");
             }
 
-            var fullTestDataFilePath = $"{fullDirPath}{fileName}".Replace($@"\\", @"\");
+            var fullTestDataFilePath = $"{fullDirPath}{CrossPlatDirSeparatorChar}{fileName}";
 
             if (File.Exists(fullTestDataFilePath) is false)
             {
