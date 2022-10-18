@@ -83,4 +83,4 @@ As with all software, there is always a chance for issues and bugs, especially f
 11. [#240](https://github.com/KinsonDigital/Velaptor/issues/240) - Added a CODEOWNERS file to the repository for the project maintainers [@CalvinWilkinson](https://github.com/CalvinWilkinson/CalvinWilkinson) and [@kselena](https://github.com/kselena/kselena).
 12. [#222](https://github.com/KinsonDigital/Velaptor/issues/222) - Removed the **Mouse Scroll Speed** label from the mouse testing screen in the **Velaptor Testing** application.
     - The mouse scroll event behavior has been changed which does not fit within the context of the label.
-13. [#280](https://github.com/KinsonDigital/CICD/issues/280) - Updated the **_Velaptor.runsettings_** file to exclude the **_VelaptorTesting_** used for manual QA testing from unit test code coverage results.
+13. [#280](https://github.com/KinsonDigital/Velaptor/issues/280) - Updated the **_Velaptor.runsettings_** file to exclude the **_VelaptorTesting_** used for manual QA testing from unit test code coverage results.
