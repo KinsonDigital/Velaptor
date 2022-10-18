@@ -75,11 +75,4 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
-  <Target Name="CopyOpenALLibrary" AfterTargets="Build">
-    <Copy 
-      SourceFiles="$(TargetDir)runtimes\win-x64\native\soft_oal.dll"
-      DestinationFolder="$(TargetDir)"
-      SkipUnchangedFiles="false"/>
-  </Target>
 </Project>
