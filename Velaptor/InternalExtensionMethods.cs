@@ -178,6 +178,17 @@ namespace Velaptor
         }
 
         /// <summary>
+        /// Converts the given <paramref name="path"/> to a cross platform path.
+        /// </summary>
+        /// <param name="path">The file or directory path.</param>
+        /// <returns>The cross platform version of the <paramref name="path"/>.</returns>
+        /// <returns>
+        ///     This just takes all '\' characters and changes them to '/' characters.
+        ///     The '/' directory separator is valid on windows and linux systems.
+        /// </returns>
+        public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+
+        /// <summary>
         /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
         /// </summary>
         /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
