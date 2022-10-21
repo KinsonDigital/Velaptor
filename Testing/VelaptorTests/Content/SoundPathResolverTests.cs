@@ -9,6 +9,7 @@ namespace VelaptorTests.Content
     using System.IO.Abstractions;
     using System.Reflection;
     using Moq;
+    using Velaptor;
     using Velaptor.Content;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -29,7 +30,7 @@ namespace VelaptorTests.Content
         public SoundPathResolverTests()
         {
             this.baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
-                .Replace('\\', '/');
+                .ToCrossPlatPath();
             this.atlasContentDir = $@"{this.baseDir}/Content/Sounds";
             this.contentFilePath = $"{this.atlasContentDir}/{ContentName}";
         }

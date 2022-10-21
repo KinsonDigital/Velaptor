@@ -81,8 +81,8 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath)?.Replace('\\', '/') ?? string.Empty
-                : fileOrDirPath.Replace('\\', '/');
+                ? Path.GetDirectoryName(fileOrDirPath)?.ToCrossPlatPath() ?? string.Empty
+                : fileOrDirPath.ToCrossPlatPath();
 
             var noExtension = !Path.HasExtension(fileOrDirPath);
             var onlySingleColon = onlyDirPath.Count(c => c == ':') == 1;
