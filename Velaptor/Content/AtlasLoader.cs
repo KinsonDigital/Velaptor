@@ -57,7 +57,7 @@ namespace Velaptor.Content
         /// <param name="atlasDataFactory">Generates <see cref="IAtlasData"/> instances.</param>
         /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
         /// <param name="jsonService">Provides JSON related services.</param>
-        /// <param name="file">Used to load the texture atlas.</param>
+        /// <param name="file">Performs operations with files.</param>
         /// <param name="path">Processes directory and file paths.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.

@@ -76,8 +76,8 @@ namespace Velaptor.Content.Fonts
         /// <param name="textureCache">Caches textures for later use to improve performance.</param>
         /// <param name="fontFactory">Generates new <see cref="IFont"/> instances.</param>
         /// <param name="fontMetaDataParser">Parses metadata from strings.</param>
-        /// <param name="directory">Manages and deals with directories.</param>
-        /// <param name="file">Performs file related operations.</param>
+        /// <param name="directory">Processes directories.</param>
+        /// <param name="file">Performs operations with files.</param>
         /// <param name="fileStream">Provides a stream to a file for file operations.</param>
         /// <param name="path">Processes directory and file paths.</param>
         /// <exception cref="ArgumentNullException">
