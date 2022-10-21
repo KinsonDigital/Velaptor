@@ -10,12 +10,12 @@ namespace Velaptor.Services;
 internal interface IAppSettingsService
 {
     /// <summary>
-    /// Gets the width of the game window.
+    /// Gets the width of the window.
     /// </summary>
     uint WindowWidth { get; }
 
     /// <summary>
-    /// Gets the height of the game window.
+    /// Gets the height of the window.
     /// </summary>
     uint WindowHeight { get; }
 }

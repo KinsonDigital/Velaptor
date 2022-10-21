@@ -58,7 +58,7 @@ namespace Velaptor.Services
 
                 if (doesNotExist)
                 {
-                    return 0;
+                    return DefaultWidth;
                 }
 
                 var isParsed = uint.TryParse(setting.Value, out var width);
@@ -78,7 +78,7 @@ namespace Velaptor.Services
 
                 if (doesNotExist)
                 {
-                    return 0;
+                    return DefaultHeight;
                 }
 
                 var isParsed = uint.TryParse(setting.Value, out var height);
