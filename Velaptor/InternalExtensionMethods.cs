@@ -183,8 +183,8 @@ namespace Velaptor
         /// <param name="path">The file or directory path.</param>
         /// <returns>The cross platform version of the <paramref name="path"/>.</returns>
         /// <returns>
-        ///     This just takes all '\' characters and changes them to '/' characters.
-        ///     The '/' directory separator is valid on windows and linux systems.
+        ///     This changes all '\' characters to '/' characters.
+        ///     The '/' directory separator is valid on Windows and Linux systems.
         /// </returns>
         public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 

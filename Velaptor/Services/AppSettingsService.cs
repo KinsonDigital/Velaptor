@@ -114,7 +114,7 @@ namespace Velaptor.Services
         }
 
         /// <summary>
-        /// Creates default settings and an associated file to store them.
+        /// Creates default settings and an associated file for storage.
         /// </summary>
         private void CreateSettings()
         {

@@ -5,7 +5,7 @@
 namespace Velaptor.Services;
 
 /// <summary>
-/// Provides management of application settings.
+/// Provides application settings management.
 /// </summary>
 internal interface IAppSettingsService
 {

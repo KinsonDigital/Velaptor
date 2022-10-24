@@ -42,7 +42,7 @@ namespace Velaptor.Content.Caching
         /// <param name="file">Performs operations with files.</param>
         /// <param name="path">Provides path related services.</param>
         /// <param name="disposeSoundsReactable">Sends push notifications to dispose of sounds.</param>
-        /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
+        /// <param name="shutDownReactable">Sends a push notification that the application is shutting down.</param>
         public SoundCache(
             ISoundFactory soundFactory,
             IFile file,
