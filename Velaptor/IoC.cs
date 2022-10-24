@@ -150,6 +150,7 @@ namespace Velaptor
         /// </summary>
         private static void SetupServices()
         {
+            IoCContainer.Register<IAppSettingsService, AppSettingsService>(Lifestyle.Singleton);
             IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService<string>, TextResourceLoaderService>(Lifestyle.Singleton);
             IoCContainer.Register<ITemplateProcessorService, ShaderTemplateProcessorService>(Lifestyle.Singleton);

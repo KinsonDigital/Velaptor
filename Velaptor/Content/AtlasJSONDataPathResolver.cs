@@ -25,7 +25,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasJSONDataPathResolver"/> class.
         /// </summary>
-        /// <param name="directory">Manages directories.</param>
+        /// <param name="directory">Performs operations with directories.</param>
         public AtlasJSONDataPathResolver(IDirectory directory)
         {
             EnsureThat.ParamIsNotNull(directory);

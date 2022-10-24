@@ -45,7 +45,7 @@ namespace Velaptor.Services
         /// <param name="fontService">Provides extensions/helpers to <c>FreeType</c> library functionality.</param>
         /// <param name="imageService">Manages image data.</param>
         /// <param name="systemMonitorService">Provides information about the system monitors.</param>
-        /// <param name="file">Performs file operations.</param>
+        /// <param name="file">Performs operations with files.</param>
         public FontAtlasService(
             IFontService fontService,
             IImageService imageService,

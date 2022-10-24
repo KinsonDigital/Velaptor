@@ -27,7 +27,7 @@ namespace Velaptor.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageService"/> class.
         /// </summary>
-        /// <param name="file">Performs file related operations.</param>
+        /// <param name="file">Performs operations with files.</param>
         public ImageService(IFile file)
         {
             EnsureThat.ParamIsNotNull(file);
