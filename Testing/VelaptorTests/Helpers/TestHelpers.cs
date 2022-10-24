@@ -1,4 +1,4 @@
-﻿// <copyright file="TestHelpers.cs" company="KinsonDigital">
+// <copyright file="TestHelpers.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,6 +13,7 @@ namespace VelaptorTests.Helpers
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
+    using Velaptor;
     using Velaptor.Graphics;
     using NETColor = System.Drawing.Color;
     using NETPoint = System.Drawing.Point;
@@ -22,7 +23,7 @@ namespace VelaptorTests.Helpers
     {
         private const string TestResultDirName = "ImageTestResults";
         private static readonly string BasePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
-            .Replace('\\', '/');
+            .ToCrossPlatPath();
         private static readonly string TestResultDirPath = @$"{BasePath}/{TestResultDirName}";
 
         /// <summary>

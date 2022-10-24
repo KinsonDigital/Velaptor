@@ -81,8 +81,8 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath)?.Replace('\\', '/') ?? string.Empty
-                : fileOrDirPath.Replace('\\', '/');
+                ? Path.GetDirectoryName(fileOrDirPath)?.ToCrossPlatPath() ?? string.Empty
+                : fileOrDirPath.ToCrossPlatPath();
 
             var noExtension = !Path.HasExtension(fileOrDirPath);
             var onlySingleColon = onlyDirPath.Count(c => c == ':') == 1;
@@ -176,6 +176,17 @@ namespace Velaptor
 
             return value;
         }
+
+        /// <summary>
+        /// Converts the given <paramref name="path"/> to a cross platform path.
+        /// </summary>
+        /// <param name="path">The file or directory path.</param>
+        /// <returns>The cross platform version of the <paramref name="path"/>.</returns>
+        /// <returns>
+        ///     This changes all '\' characters to '/' characters.
+        ///     The '/' directory separator is valid on Windows and Linux systems.
+        /// </returns>
+        public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
         /// <summary>
         /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.

@@ -25,7 +25,7 @@ namespace Velaptor.Content
         /// <summary>
         /// Initializes a new instance of the <see cref="TexturePathResolver"/> class.
         /// </summary>
-        /// /// <param name="directory">Manages directories.</param>
+        /// <param name="directory">Performs operations with directories.</param>
         public TexturePathResolver(IDirectory directory)
         {
             EnsureThat.ParamIsNotNull(directory);
