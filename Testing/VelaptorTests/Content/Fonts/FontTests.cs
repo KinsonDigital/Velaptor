@@ -12,6 +12,7 @@ namespace VelaptorTests.Content.Fonts
     using System.Reflection;
     using Moq;
     using Newtonsoft.Json;
+    using Velaptor;
     using Velaptor.Content;
     using Velaptor.Content.Caching;
     using Velaptor.Content.Exceptions;
@@ -39,7 +40,7 @@ namespace VelaptorTests.Content.Fonts
         private readonly Mock<IFontAtlasService> mockFontAtlasService;
         private readonly Mock<IItemCache<string, ITexture>> mockTextureCache;
         private readonly string sampleTestDataDirPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
-            .Replace('\\', '/') + "/SampleTestData";
+            .ToCrossPlatPath() + "/SampleTestData";
         private Dictionary<char, GlyphMetrics> glyphMetrics = new ();
 
         /// <summary>

@@ -9,6 +9,7 @@ namespace VelaptorTests.Content.Fonts
     using System.IO.Abstractions;
     using System.Reflection;
     using Moq;
+    using Velaptor;
     using Velaptor.Content.Fonts;
     using VelaptorTests.Helpers;
     using Xunit;
@@ -30,7 +31,7 @@ namespace VelaptorTests.Content.Fonts
         {
             this.mockDirectory = new Mock<IDirectory>();
             var baseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
-                .Replace('\\', '/');
+                .ToCrossPlatPath();
             var baseContentDir = $@"{baseDir}/Content";
             this.atlasContentDir = $@"{baseContentDir}/Fonts";
             this.contentFilePath = $"{this.atlasContentDir}/{ContentName}.ttf";

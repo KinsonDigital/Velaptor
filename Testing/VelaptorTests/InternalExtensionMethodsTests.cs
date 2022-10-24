@@ -10,6 +10,7 @@ namespace VelaptorTests
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Numerics;
+    using FluentAssertions;
     using Moq;
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
@@ -191,6 +192,18 @@ namespace VelaptorTests
 
             // Assert
             Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(@"C:\dir-1\dir-2", "C:/dir-1/dir-2")]
+        [InlineData(@"C:\dir-1\dir-2\", "C:/dir-1/dir-2/")]
+        public void ToCrossPlatPath_WhenInvoked_ReturnsCorrectResult(string path, string expected)
+        {
+            // Act
+            var actual = path.ToCrossPlatPath();
+
+            // Assert
+            actual.Should().Be(expected);
         }
 
         [Fact]

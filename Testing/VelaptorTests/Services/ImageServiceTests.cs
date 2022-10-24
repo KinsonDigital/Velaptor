@@ -13,6 +13,7 @@ namespace VelaptorTests.Services
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.PixelFormats;
     using SixLabors.ImageSharp.Processing;
+    using Velaptor;
     using Velaptor.Graphics;
     using Velaptor.Services;
     using VelaptorTests.Helpers;
@@ -29,7 +30,7 @@ namespace VelaptorTests.Services
         private const string TestAssetDirName = "TestAssets";
         private const string TestImageFileName = "TestCompareImage.png";
         private readonly string basePath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
-            .Replace('\\', '/');
+            .ToCrossPlatPath();
         private readonly string testAssetFilePath;
         private readonly Mock<IFile> mockFile;
         private Image<Rgba32> testCompareImage;

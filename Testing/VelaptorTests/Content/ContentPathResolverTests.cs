@@ -9,6 +9,7 @@ namespace VelaptorTests.Content
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using Velaptor;
     using Velaptor.Content;
     using VelaptorTests.Fakes;
     using VelaptorTests.Helpers;
@@ -21,7 +22,7 @@ namespace VelaptorTests.Content
     {
         private const string ContentName = "test-content.png";
         private static readonly string BaseDir = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
-            .Replace('\\', '/');
+            .ToCrossPlatPath();
 
         /// <summary>
         /// Gets test data for the <see cref="RootDirectoryPath_WhenSettingValue_ReturnsCorrectResult"/> test.

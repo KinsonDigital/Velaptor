@@ -47,7 +47,7 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="soundCache">Caches textures for later use.</param>
         /// <param name="soundPathResolver">Resolves the path to the sound content.</param>
-        /// <param name="file">Performs file related operations.</param>
+        /// <param name="file">Performs operations with files.</param>
         /// <param name="path">Processes directory and file paths.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.

@@ -20,7 +20,7 @@ namespace VelaptorTesting
 
         public static async Task Main(string[] args)
         {
-            window = App.CreateWindow(1500, 800);
+            window = App.CreateWindow(); // Window width and height are loaded from the app settings file
             gameWindow = new MainWindow(window);
 
             if (HasDebugConsole())
