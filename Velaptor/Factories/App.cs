@@ -34,7 +34,7 @@ namespace Velaptor.Factories
         {
             var appSettings = IoC.Container.GetInstance<IAppSettingsService>();
 
-            return CreateWindow(appSettings.WindowWidth, appSettings.WindowHeight);
+            return CreateWindow(appSettings.Settings.WindowWidth, appSettings.Settings.WindowHeight);
         }
 
         /// <summary>
@@ -43,8 +43,9 @@ namespace Velaptor.Factories
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <returns>A Velaptor framework window implementation.</returns>
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API for library users.")]
         public static IWindow CreateWindow(uint width, uint height)
-                => new GLWindow(
+            => new GLWindow(
                 width,
                 height,
                 IoC.Container.GetInstance<IWindowFactory>(),
