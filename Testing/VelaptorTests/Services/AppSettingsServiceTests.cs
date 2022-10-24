@@ -5,25 +5,22 @@
 namespace VelaptorTests.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.IO.Abstractions;
     using System.Text.Json;
     using FluentAssertions;
     using Moq;
+    using Velaptor;
     using Velaptor.Exceptions;
     using Velaptor.Services;
     using Xunit;
 
     public class AppSettingsServiceTests
     {
-        private const uint DefaultWidth = 1500;
-        private const uint DefaultHeight = 800;
         private const string AppSettingsFileName = "app-settings.json";
         private const string BaseDirPath = "C:/velaptor";
         private const string SettingsFilePath = $"{BaseDirPath}/{AppSettingsFileName}";
         private readonly Mock<IJSONService> mockJsonService;
         private readonly Mock<IDirectory> mockDirService;
-        private readonly string defaultSettingsData = $"[{{\"Key\":\"WindowWidth\",\"Value\":\"{DefaultWidth}\"}},{{\"Key\":\"WindowHeight\",\"Value\":\"{DefaultHeight}\"}}]";
         private readonly Mock<IFile> mockFileService;
 
         /// <summary>
@@ -38,10 +35,6 @@ namespace VelaptorTests.Services
 
             this.mockFileService = new Mock<IFile>();
             this.mockFileService.Setup(m => m.Exists(It.IsAny<string>())).Returns(true);
-            this.mockFileService.Setup(m => m.ReadAllText(It.IsAny<string>()))
-                .Returns<string>(_ => this.defaultSettingsData);
-
-            MockSettingsReturned(DefaultWidth, DefaultHeight);
         }
 
         #region Constructor Tests
@@ -103,11 +96,6 @@ namespace VelaptorTests.Services
         public void Ctor_WhenSettingsFileDoesNotExist_CreatesSettingsFileWithDefaultValues()
         {
             // Arrange
-            var expectedSettings = new KeyValuePair<string, string>[]
-            {
-                new (nameof(IAppSettingsService.WindowWidth), DefaultWidth.ToString()),
-                new (nameof(IAppSettingsService.WindowHeight), DefaultHeight.ToString()),
-            };
             this.mockFileService.Setup(m => m.Exists(It.IsAny<string>())).Returns(false);
             this.mockJsonService.Setup(m => m.Serialize(It.IsAny<object?>()))
                 .Returns("test-data");
@@ -117,7 +105,7 @@ namespace VelaptorTests.Services
 
             // Assert
             this.mockFileService.Verify(m => m.Exists(SettingsFilePath), Times.Once);
-            this.mockJsonService.Verify(m => m.Serialize(expectedSettings), Times.Once);
+            this.mockJsonService.Verify(m => m.Serialize(It.IsAny<AppSettings>()), Times.Once);
             this.mockFileService.Verify(m => m.WriteAllText(SettingsFilePath, "test-data"), Times.Once);
         }
 
@@ -128,7 +116,7 @@ namespace VelaptorTests.Services
             var expected = $"There was an issue loading the application settings at the path '{SettingsFilePath}'.";
             expected += $"{Environment.NewLine}The file could be corrupt.";
 
-            this.mockJsonService.Setup(m => m.Deserialize<KeyValuePair<string, string>[]>(It.IsAny<string>()))
+            this.mockJsonService.Setup(m => m.Deserialize<AppSettings>(It.IsAny<string>()))
                 .Throws<JsonException>();
 
             // Act
@@ -141,42 +129,17 @@ namespace VelaptorTests.Services
         #endregion
 
         #region Prop Tests
-        [Theory]
-        [InlineData("WindowWidth", 100u)]
-        [InlineData("WrongWidthPropName", 1500u)]
-        public void WindowWidth_WhenGettingValue_ReturnsCorrectResult(
-            string settingName,
-            uint expected)
+        [Fact]
+        public void Settings_WhenGettingValue_ReturnsCorrectResult()
         {
             // Arrange
-            MockSettingsReturned(expected, DefaultHeight, widthSettingName: settingName);
-
             var sut = CreateService();
 
             // Act
-            var actual = sut.WindowWidth;
+            var actual = sut.Settings;
 
             // Assert
-            actual.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("WindowHeight", 100u)]
-        [InlineData("WrongHeightPropName", 800u)]
-        public void WindowHeight_WhenGettingValue_ReturnsCorrectResult(
-            string settingName,
-            uint expected)
-        {
-            // Arrange
-            MockSettingsReturned(DefaultWidth, expected, heightSettingName: settingName);
-
-            var sut = CreateService();
-
-            // Act
-            var actual = sut.WindowHeight;
-
-            // Assert
-            actual.Should().Be(expected);
+            actual.Should().NotBeNull();
         }
         #endregion
 
@@ -186,28 +149,5 @@ namespace VelaptorTests.Services
         /// <returns>The instance to test.</returns>
         private AppSettingsService CreateService()
             => new (this.mockJsonService.Object, this.mockDirService.Object, this.mockFileService.Object);
-
-        private void MockSettingsReturned(uint width, uint height, string widthSettingName = "", string heightSettingName = "")
-        {
-            widthSettingName = string.IsNullOrEmpty(widthSettingName)
-                ? nameof(IAppSettingsService.WindowWidth)
-                : widthSettingName;
-
-            heightSettingName = string.IsNullOrEmpty(heightSettingName)
-                ? nameof(IAppSettingsService.WindowHeight)
-                : heightSettingName;
-
-            var settingsData = $"[{{\"Key\":\"{widthSettingName}\",\"Value\":\"{width}\"}},{{\"Key\":\"{heightSettingName}\",\"Value\":\"{height}\"}}]";
-
-            this.mockFileService.Setup(m => m.ReadAllText(It.IsAny<string>()))
-                .Returns<string>(_ => settingsData);
-
-            this.mockJsonService.Setup(m => m.Deserialize<KeyValuePair<string, string>[]>(It.IsAny<string>()))
-                .Returns<string>(_ => new KeyValuePair<string, string>[]
-                {
-                    new (widthSettingName, width.ToString()),
-                    new (heightSettingName, height.ToString()),
-                });
-        }
     }
 }
