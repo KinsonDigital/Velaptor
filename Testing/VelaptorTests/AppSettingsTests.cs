@@ -6,6 +6,7 @@ namespace VelaptorTests
 {
     using FluentAssertions;
     using Velaptor;
+    using VelaptorTests.Helpers;
     using Xunit;
 
     /// <summary>
@@ -32,6 +33,46 @@ namespace VelaptorTests
 
             // Act & Assert
             settings.WindowHeight.Should().Be(800);
+        }
+
+        [FactForDebug]
+        public void LoggingEnabled_WhenGettingValueInDebugMode_ReturnsTrue()
+        {
+            // Arrange
+            var settings = new AppSettings();
+
+            // Act & Assert
+            settings.LoggingEnabled.Should().BeTrue();
+        }
+
+        [FactForRelease]
+        public void LoggingEnabled_WhenGettingValueInReleaseMode_ReturnsTrue()
+        {
+            // Arrange
+            var settings = new AppSettings();
+
+            // Act & Assert
+            settings.LoggingEnabled.Should().BeFalse();
+        }
+
+        [Fact]
+        public void ConsoleLoggingEnabled_WhenGettingValue_ReturnsTrue()
+        {
+            // Arrange
+            var settings = new AppSettings();
+
+            // Act & Assert
+            settings.ConsoleLoggingEnabled.Should().BeTrue();
+        }
+
+        [Fact]
+        public void FileLoggingEnabled_WhenGettingValue_ReturnsTrue()
+        {
+            // Arrange
+            var settings = new AppSettings();
+
+            // Act & Assert
+            settings.FileLoggingEnabled.Should().BeTrue();
         }
         #endregion
     }
