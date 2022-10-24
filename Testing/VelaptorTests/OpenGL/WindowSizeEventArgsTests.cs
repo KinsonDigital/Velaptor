@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.OpenGL
 {
+    using FluentAssertions;
     using Velaptor.OpenGL;
     using Xunit;
 
@@ -17,15 +18,16 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WhenInvoked_SetsProperties()
         {
             // Arrange
-            var eventArgs = new WindowSizeEventArgs(123, 456);
+            (var heightArg, var widthArg) = (123, 456);
+            var eventArgs = new WindowSizeEventArgs(widthArg, heightArg);
 
             // Act
             var actualWidth = eventArgs.Width;
             var actualHeight = eventArgs.Height;
 
             // Assert
-            Assert.Equal(123, actualWidth);
-            Assert.Equal(456, actualHeight);
+            actualHeight.Should().Be(heightArg);
+            actualWidth.Should().Be(widthArg);
         }
         #endregion
     }
