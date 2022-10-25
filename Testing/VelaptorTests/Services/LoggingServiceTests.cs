@@ -383,7 +383,7 @@ namespace VelaptorTests.Services
                 this.mockEventLoggerService.Object);
 
         /// <summary>
-        /// Verifies that no logging methods for the file logger was invoked.
+        /// Verifies that logging methods for the file logger were not invoked.
         /// </summary>
         private void VerifyFileLogs(Times times)
         {
@@ -394,7 +394,7 @@ namespace VelaptorTests.Services
         }
 
         /// <summary>
-        /// Verifies that no logging methods for the console logger was invoked.
+        /// Verifies that logging methods for the console logger were not invoked.
         /// </summary>
         private void VerifyConsoleLogs(Times times)
         {
