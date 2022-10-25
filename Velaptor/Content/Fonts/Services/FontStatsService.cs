@@ -13,7 +13,7 @@ namespace Velaptor.Content.Fonts.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc cref="IFontStatsService"/>
-    internal class FontStatsService : IFontStatsService
+    internal sealed class FontStatsService : IFontStatsService
     {
         private const string FontFileExtension = ".ttf";
         private readonly Dictionary<string, FontStats> contentFontStatsCache = new ();

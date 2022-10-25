@@ -13,7 +13,7 @@ namespace Velaptor.Reactables
     /// <summary>
     /// Creates a reactable to send push notifications to signal changes to the state of the mouse buttons.
     /// </summary>
-    internal class MouseButtonReactable : Reactable<(MouseButton button, bool isDown)>
+    internal sealed class MouseButtonReactable : Reactable<(MouseButton button, bool isDown)>
     {
         /// <summary>
         /// Sends a push notification to signal  change to the state of a mouse button.

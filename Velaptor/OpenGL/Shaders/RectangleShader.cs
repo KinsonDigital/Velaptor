@@ -17,7 +17,7 @@ namespace Velaptor.OpenGL.Shaders
     /// A rectangle shader used to render 2D rectangles.
     /// </summary>
     [ShaderName("Rectangle")]
-    internal class RectangleShader : ShaderProgram
+    internal sealed class RectangleShader : ShaderProgram
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RectangleShader"/> class.

@@ -16,7 +16,7 @@ namespace Velaptor.Content.Fonts.Services
     /// Loads embedded font file resources.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class EmbeddedFontResourceService : IEmbeddedResourceLoaderService<Stream?>
+    internal sealed class EmbeddedFontResourceService : IEmbeddedResourceLoaderService<Stream?>
     {
         private const string FontResourcePath = "Velaptor.Content.Fonts.EmbeddedResources.";
 

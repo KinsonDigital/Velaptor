@@ -16,7 +16,7 @@ namespace Velaptor.NativeInterop.OpenGL
     /// <summary>
     /// Provides OpenGL helper methods to improve OpenGL related operations.
     /// </summary>
-    internal class OpenGLService : IOpenGLService
+    internal sealed class OpenGLService : IOpenGLService
     {
         private readonly IGLInvoker glInvoker;
 

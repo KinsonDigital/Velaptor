@@ -9,7 +9,7 @@ namespace Velaptor.Factories
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    internal class NativeInputFactory : INativeInputFactory
+    internal sealed class NativeInputFactory : INativeInputFactory
     {
         private readonly IWindowFactory windowFactory;
 

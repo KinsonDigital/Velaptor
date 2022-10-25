@@ -26,7 +26,7 @@ namespace Velaptor.OpenGL.Buffers
     /// </summary>
     [GPUBufferName("Texture")]
     [BatchSize(IRenderer.BatchSize)]
-    internal class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
+    internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
     {
         private const string BufferNotInitMsg = "The texture buffer has not been initialized.";
 

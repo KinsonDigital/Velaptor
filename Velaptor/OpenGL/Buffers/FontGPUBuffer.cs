@@ -24,7 +24,7 @@ namespace Velaptor.OpenGL.Buffers
     /// </summary>
     [GPUBufferName("Font")]
     [BatchSize(IRenderer.BatchSize)]
-    internal class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
+    internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
     {
         private const string BufferNotInitMsg = "The font buffer has not been initialized.";
 

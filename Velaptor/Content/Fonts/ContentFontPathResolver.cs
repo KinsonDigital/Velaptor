@@ -16,7 +16,7 @@ namespace Velaptor.Content.Fonts
     /// <summary>
     /// Resolves paths to font content.
     /// </summary>
-    internal class ContentFontPathResolver : ContentPathResolver
+    internal sealed class ContentFontPathResolver : ContentPathResolver
     {
         private const char CrossPlatDirSeparatorChar = '/';
         private const string FileExtension = ".ttf";

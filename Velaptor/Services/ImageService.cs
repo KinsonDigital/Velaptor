@@ -20,7 +20,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Saves, loads and manages image files.
     /// </summary>
-    internal class ImageService : IImageService
+    internal sealed class ImageService : IImageService
     {
         private readonly IFile file;
 
