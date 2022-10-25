@@ -25,7 +25,7 @@ namespace Velaptor.Content.Fonts
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentFontPathResolver"/> class.
         /// </summary>
-        /// <param name="directory">Processes directories.</param>
+        /// <param name="directory">Performs operations with directories.</param>
         public ContentFontPathResolver(IDirectory directory)
         {
             EnsureThat.ParamIsNotNull(directory);
