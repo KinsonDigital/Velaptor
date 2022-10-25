@@ -187,6 +187,44 @@ namespace VelaptorTests
         }
 
         [Theory]
+        [InlineData("${{TEST_VAR}}", "}}", ' ', "${{TEST_VAR}}")]
+        [InlineData("${{TEST_VAR }}", "}}", ' ', "${{TEST_VAR}}")]
+        [InlineData("${{TEST_VAR    }}", "}}", ' ', "${{TEST_VAR}}")]
+        [InlineData("${{TEST_VAR~}}", "}}", '~', "${{TEST_VAR}}")]
+        [InlineData("${{TEST_VAR~~}}", "}}", '~', "${{TEST_VAR}}")]
+        public void TrimLeftOf_WhenInvoked_ReturnsCorrectResult(
+            string content,
+            string value,
+            char trimChar,
+            string expected)
+        {
+            // Arrange & Act
+            var actual = content.TrimLeftOf(value, trimChar);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("${{TEST_VAR}}", "${{", ' ', "${{TEST_VAR}}")]
+        [InlineData("${{ TEST_VAR}}", "${{", ' ', "${{TEST_VAR}}")]
+        [InlineData("${{    TEST_VAR}}", "${{", ' ', "${{TEST_VAR}}")]
+        [InlineData("${{~TEST_VAR}}", "${{", '~', "${{TEST_VAR}}")]
+        [InlineData("${{~~TEST_VAR}}", "${{", '~', "${{TEST_VAR}}")]
+        public void TrimRightOf_WhenInvoked_ReturnsCorrectResult(
+            string content,
+            string value,
+            char trimChar,
+            string expected)
+        {
+            // Arrange & Act
+            var actual = content.TrimRightOf(value, trimChar);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
         [InlineData("", false)]
         [InlineData(@"C:\", true)]
         [InlineData(@"C:/", true)]

@@ -12,6 +12,7 @@ namespace Velaptor
     using System.IO;
     using System.Linq;
     using System.Numerics;
+    using System.Text;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
     using SixLabors.ImageSharp;
@@ -66,6 +67,50 @@ namespace Velaptor
         /// <returns><c>true</c> if <paramref name="value"/> matches the end of this instance; otherwise, <c>false</c>.</returns>
         [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Kept for future development.")]
         public static bool DoesNotEndWith(this string stringToCheck, string value) => !stringToCheck.EndsWith(value);
+
+        /// <summary>
+        /// Removes all occurrences of the given <paramref name="trimChar"/> from the left
+        /// side of all occurrences of the given <paramref name="value"/>, inside of this string.
+        /// </summary>
+        /// <param name="content">The string data containing the values to trim.</param>
+        /// <param name="value">The value to trim the characters from.</param>
+        /// <param name="trimChar">The character to trim off the <paramref name="value"/>.</param>
+        /// <returns>
+        ///     The content with all occurrences of the <paramref name="value"/> trimmed.
+        /// </returns>
+        public static string TrimLeftOf(this string content, string value, char trimChar)
+        {
+            var result = new StringBuilder(content);
+
+            while (result.ToString().Contains($"{trimChar}{value}"))
+            {
+                result.Replace($"{trimChar}{value}", value);
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Removes all occurrences of the given <paramref name="trimChar"/> from the right
+        /// side of all occurrences of the given <paramref name="value"/>, inside of this string.
+        /// </summary>
+        /// <param name="content">The string data containing the values to trim.</param>
+        /// <param name="value">The value to trim the characters from.</param>
+        /// <param name="trimChar">The character to trim off the <paramref name="value"/>.</param>
+        /// <returns>
+        ///     The content with all occurrences of the <paramref name="value"/> trimmed.
+        /// </returns>
+        public static string TrimRightOf(this string content, string value, char trimChar)
+        {
+            var result = new StringBuilder(content);
+
+            while (result.ToString().Contains($"{value}{trimChar}"))
+            {
+                result.Replace($"{value}{trimChar}", value);
+            }
+
+            return result.ToString();
+        }
 
         /// <summary>
         /// Returns a value indicating whether or not the given file or directory path
