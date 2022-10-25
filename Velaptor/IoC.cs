@@ -150,6 +150,13 @@ namespace Velaptor
         /// </summary>
         private static void SetupServices()
         {
+            IoCContainer.Register<IConsoleService, ConsoleService>(Lifestyle.Singleton);
+            IoCContainer.Register<IDateTimeService, DateTimeService>(Lifestyle.Singleton);
+            IoCContainer.Register<IConsoleLoggerService, ConsoleLoggerService>(Lifestyle.Singleton);
+            IoCContainer.Register<IFileLoggerService, FileLoggerService>(Lifestyle.Singleton);
+            IoCContainer.Register<IEventLoggerService, EventLoggerService>(Lifestyle.Singleton);
+            IoCContainer.Register<ILoggingService, LoggingService>(Lifestyle.Singleton);
+
             IoCContainer.Register<IAppSettingsService, AppSettingsService>(Lifestyle.Singleton);
             IoCContainer.Register<IImageService, ImageService>(Lifestyle.Singleton);
             IoCContainer.Register<IEmbeddedResourceLoaderService<string>, TextResourceLoaderService>(Lifestyle.Singleton);
