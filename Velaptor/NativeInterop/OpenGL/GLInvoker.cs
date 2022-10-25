@@ -546,7 +546,7 @@ namespace Velaptor.NativeInterop.OpenGL
 
             if (severity == GLEnum.NoError)
             {
-                this.loggingServ1ice.Warning(openGLMessage);
+                this.loggingService.Warning(openGLMessage);
             }
             else
             {
