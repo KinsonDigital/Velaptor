@@ -9,7 +9,7 @@ namespace Velaptor.OpenGL.Services
     /// <summary>
     /// Processes template variables in textual data.
     /// </summary>
-    public interface ITemplateProcessorService
+    internal interface ITemplateProcessorService
     {
         /// <summary>
         /// Finds all occurrences of the given variable names in the given <paramref name="variables"/> and
