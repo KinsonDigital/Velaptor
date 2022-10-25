@@ -23,6 +23,9 @@ namespace VelaptorTests.Services
         private readonly Mock<IDateTimeService> mockDateTimeService;
         private readonly Mock<IAppSettingsService> mockAppSettingService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventLoggerServiceTests"/> class.
+        /// </summary>
         public EventLoggerServiceTests()
         {
             this.mockDir = new Mock<IDirectory>();

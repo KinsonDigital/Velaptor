@@ -4,6 +4,8 @@
 
 namespace VelaptorTests.Services
 {
+    using System;
+    using FluentAssertions;
     using Moq;
     using Serilog;
     using Velaptor;
@@ -43,6 +45,82 @@ namespace VelaptorTests.Services
         }
 
         #region Constructor Tests
+
+        [Fact]
+        public void Ctor_WithNullAppSettingsServiceParam_ThrowsException()
+        {
+            // Arrange & Act
+            var act = () =>
+            {
+                _ = new LoggingService(
+                    null,
+                    this.mockConsoleLoggerService.Object,
+                    this.mockFileLoggerService.Object,
+                    this.mockEventLoggerService.Object);
+            };
+
+            // Assert
+            act.Should()
+                .Throw<ArgumentNullException>()
+                .WithMessage("The parameter must not be null. (Parameter 'appSettingsService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullConsoleLoggerServiceParam_ThrowsException()
+        {
+            // Arrange & Act
+            var act = () =>
+            {
+                _ = new LoggingService(
+                    this.mockAppSettingsService.Object,
+                    null,
+                    this.mockFileLoggerService.Object,
+                    this.mockEventLoggerService.Object);
+            };
+
+            // Assert
+            act.Should()
+                .Throw<ArgumentNullException>()
+                .WithMessage("The parameter must not be null. (Parameter 'consoleLoggerService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullFileLoggerServiceParam_ThrowsException()
+        {
+            // Arrange & Act
+            var act = () =>
+            {
+                _ = new LoggingService(
+                    this.mockAppSettingsService.Object,
+                    this.mockConsoleLoggerService.Object,
+                    null,
+                    this.mockEventLoggerService.Object);
+            };
+
+            // Assert
+            act.Should()
+                .Throw<ArgumentNullException>()
+                .WithMessage("The parameter must not be null. (Parameter 'fileLoggerService')");
+        }
+
+        [Fact]
+        public void Ctor_WithNullEventLoggerServiceParam_ThrowsException()
+        {
+            // Arrange & Act
+            var act = () =>
+            {
+                _ = new LoggingService(
+                    this.mockAppSettingsService.Object,
+                    this.mockConsoleLoggerService.Object,
+                    this.mockFileLoggerService.Object,
+                    null);
+            };
+
+            // Assert
+            act.Should()
+                .Throw<ArgumentNullException>()
+                .WithMessage("The parameter must not be null. (Parameter 'eventLoggerService')");
+        }
         #endregion
 
         #region Method Tests
