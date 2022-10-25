@@ -17,7 +17,7 @@ namespace Velaptor.Reactables.Core
     /// <typeparam name="T">
     ///     The type of data that is pushed to all of the subscribed <see cref="Reactor{T}"/>s.
     /// </typeparam>
-    public class ReactorUnsubscriber<T> : IDisposable
+    internal class ReactorUnsubscriber<T> : IDisposable
     {
         private readonly List<IReactor<T>> reactors;
         private bool isDisposed;
