@@ -13,7 +13,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Gets information about all of the monitors in the system.
     /// </summary>
-    public interface ISystemMonitorService
+    internal interface ISystemMonitorService
     {
         /// <summary>
         /// Gets a list of all of the monitors in the system.
