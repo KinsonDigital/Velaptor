@@ -14,7 +14,7 @@ namespace Velaptor.Reactables
     /// <summary>
     /// Creates an reactable to send push notification that OpenGL is initialized.
     /// </summary>
-    internal class OpenGLInitReactable : Reactable<GLInitData>
+    internal sealed class OpenGLInitReactable : Reactable<GLInitData>
     {
         /// <summary>
         /// Sends a push notification that OpenGL has been initialized.

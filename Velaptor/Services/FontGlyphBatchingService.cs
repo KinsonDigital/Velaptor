@@ -15,7 +15,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Manages the process of batching up glyphs to be rendered.
     /// </summary>
-    internal class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
+    internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
     {
         private SortedDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)> batchItems = new ();
         private uint currentBatchIndex;

@@ -24,7 +24,7 @@ namespace Velaptor.NativeInterop.OpenGL
     /// Invokes OpenGL calls.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class GLInvoker : IGLInvoker
+    internal sealed class GLInvoker : IGLInvoker
     {
         // ReSharper disable InconsistentNaming
 #pragma warning disable SA1310

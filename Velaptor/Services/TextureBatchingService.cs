@@ -16,7 +16,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Manages the process of batching up the rendering of <see cref="ITexture"/>s.
     /// </summary>
-    internal class TextureBatchingService : IBatchingService<TextureBatchItem>
+    internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem>
     {
         private SortedDictionary<uint, (bool shouldRender, TextureBatchItem item)> batchItems = new ();
         private uint currentBatchIndex;

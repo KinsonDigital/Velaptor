@@ -13,7 +13,7 @@ namespace Velaptor.OpenGL.Buffers
     // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc/>
-    internal class BufferManager : IBufferManager
+    internal sealed class BufferManager : IBufferManager
     {
         private readonly IGPUBuffer<TextureBatchItem> textureBuffer;
         private readonly IGPUBuffer<FontGlyphBatchItem> fontGlyphBuffer;

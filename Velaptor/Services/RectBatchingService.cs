@@ -15,7 +15,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Manages the process of batching the rendering of rectangles.
     /// </summary>
-    internal class RectBatchingService : IBatchingService<RectShape>
+    internal sealed class RectBatchingService : IBatchingService<RectShape>
     {
         private SortedDictionary<uint, (bool shouldRender, RectShape item)> batchItems = new ();
         private uint currentBatchIndex;

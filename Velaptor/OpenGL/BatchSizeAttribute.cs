@@ -10,7 +10,7 @@ namespace Velaptor.OpenGL
     /// Represents the size of a batch.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    internal class BatchSizeAttribute : Attribute
+    internal sealed class BatchSizeAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BatchSizeAttribute"/> class.

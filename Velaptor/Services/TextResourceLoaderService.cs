@@ -18,7 +18,7 @@ namespace Velaptor.Services
     /// Loads embedded text file resources.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class TextResourceLoaderService : IEmbeddedResourceLoaderService<string>
+    internal sealed class TextResourceLoaderService : IEmbeddedResourceLoaderService<string>
     {
         /// <summary>
         /// Loads embedded text file resources that match the given <param name="name"></param>.

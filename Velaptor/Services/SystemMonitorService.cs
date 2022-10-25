@@ -18,7 +18,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Gets information about all of the monitors in the system.
     /// </summary>
-    public class SystemMonitorService : ISystemMonitorService
+    internal sealed class SystemMonitorService : ISystemMonitorService
     {
         private readonly IMonitors? monitors;
 

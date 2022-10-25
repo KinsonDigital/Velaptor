@@ -17,7 +17,7 @@ namespace Velaptor.OpenGL.Shaders
     /// A texture shader used to render 2D textures.
     /// </summary>
     [ShaderName("Texture")]
-    internal class TextureShader : ShaderProgram
+    internal sealed class TextureShader : ShaderProgram
     {
         private int mainTextureUniformLocation = -1;
 

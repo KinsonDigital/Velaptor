@@ -7,7 +7,7 @@ namespace Velaptor.Services
     using System.Linq;
 
     /// <inheritdoc/>
-    internal class FontMetaDataParser : IFontMetaDataParser
+    internal sealed class FontMetaDataParser : IFontMetaDataParser
     {
         /// <inheritdoc/>
         public FontMetaDataParseResult Parse(string stringToParse)

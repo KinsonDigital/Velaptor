@@ -13,7 +13,7 @@ namespace Velaptor.OpenGL.Services
     /// Processes template variables in shader source code by finding
     /// variable template injection syntax and replacing them with variable values.
     /// </summary>
-    internal class ShaderTemplateProcessorService : ITemplateProcessorService
+    internal sealed class ShaderTemplateProcessorService : ITemplateProcessorService
     {
         private const string InjectionStart = "${{";
         private const string InjectionStop = "}}";
