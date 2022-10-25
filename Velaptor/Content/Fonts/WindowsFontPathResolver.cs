@@ -25,7 +25,7 @@ namespace Velaptor.Content.Fonts
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsFontPathResolver"/> class.
         /// </summary>
-        /// <param name="directory">Processes directories.</param>
+        /// <param name="directory">Performs operations with directories.</param>
         /// <param name="platform">Provides information about the current platform.</param>
         public WindowsFontPathResolver(IDirectory directory, IPlatform platform)
         {
