@@ -14,34 +14,31 @@ namespace Velaptor
         /// <summary>
         /// Gets the width of the application window.
         /// </summary>
-        public uint WindowWidth => 1500;
+        public uint WindowWidth { get; init; } = 1500;
 
         /// <summary>
         /// Gets the height of the application window.
         /// </summary>
-        public uint WindowHeight => 800;
+        public uint WindowHeight { get; init; } = 800;
 
         /// <summary>
         /// Gets a value indicating whether or not all logging is enabled.
         /// </summary>
-        public bool LoggingEnabled
-        {
 #if DEBUG
-            get => true;
+        public bool LoggingEnabled { get; init; } = true;
 #else
-            get => false;
+        public bool LoggingEnabled { get; init; } = false;
 #endif
-        }
 
         /// <summary>
         /// Gets a value indicating whether or not logging to the console is enabled.
         /// </summary>
-        public bool ConsoleLoggingEnabled => true;
+        public bool ConsoleLoggingEnabled { get; init; } = true;
 
         /// <summary>
         /// Gets a value indicating whether or not logging to a file is enabled.
         /// </summary>
-        public bool FileLoggingEnabled => true;
+        public bool FileLoggingEnabled { get; init; } = true;
 #pragma warning restore CA1822
     }
 }
