@@ -18,16 +18,15 @@ namespace VelaptorTests.OpenGL
         public void Ctor_WhenInvoked_SetsProperties()
         {
             // Arrange
-            (var heightArg, var widthArg) = (123, 456);
-            var eventArgs = new WindowSizeEventArgs(widthArg, heightArg);
+            var eventArgs = new WindowSizeEventArgs(123, 456);
 
             // Act
             var actualWidth = eventArgs.Width;
             var actualHeight = eventArgs.Height;
 
             // Assert
-            actualHeight.Should().Be(heightArg);
-            actualWidth.Should().Be(widthArg);
+            actualWidth.Should().Be(123);
+            actualHeight.Should().Be(456);
         }
         #endregion
     }
