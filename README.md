@@ -67,32 +67,19 @@ We currently have the following maintainers:
 
 <h2 style="font-weight:bold;border:0" align="center">🙏🏼Contributing</h2>
 
-**Velaptor** encourages and uses [Early Pull Requests](https://medium.com/practical-blend/pull-request-first-f6bb667a9b6). Please don't wait until you're finished with your work before creating a PR.
-
-1. Fork the repository.
-2. Create a feature branch following the feature branch section in the documentation [here](./Documentation/Branching.md).
-3. Add an empty commit to the new feature branch to start your work off.
-   * Use this git command: `git commit --allow-empty -m "start work for issue #<issue-number-here>"`.
-   * Example: `git commit --allow-empty -m "start work for issue #123"`.
-4. Once you've pushed a commit, open a [**draft pull request**](https://github.blog/2019-02-14-introducing-draft-pull-requests/). Do this **before** you start working.
-5. Make your commits in small, incremental steps with clear descriptions.
-6. All unit tests must pass before a PR will be completed.
-7. Make sure that the code follows the the coding standards.
-   * Pay attention to the warnings in **Visual Studio**!!
-   * Refer to the *.editorconfig* files in the code base for rules.
-8. Tag a maintainer when you're done and ask for a review!
-
-If you have any questions, please reach out to a project maintainer.
+To learn how to contribute to the project, go [here](./Documentation/HowToContribute.md).
 
 <h2 style="font-weight:bold;border:0" align="center">Practices</h2>
 
-- The code base is highly tested by using unit tests while maintaining a high level of code coverage.  Manual testing is performed using the included testing application built specifically for manually testing the library.  When contributing, make sure to add or adjust the unit tests appropriately regarding your changes and perform manual testing.
+- The code base is highly tested with using unit tests and has a high level of code coverage.  Manual testing is performed using the included testing application built specifically for manually testing the library.  When contributing, make sure to add or adjust the unit tests appropriately regarding your changes and perform manual testing.
 - We use a combination of [StyleCop](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) and [Microsoft.CodeAnalysis.NetAnalyzers](https://github.com/dotnet/roslyn-analyzers) libraries for maintaining coding standards.
    - We understand that there are some exceptions to the rule and not all coding standards fit every situation.  In these scenarios, contact a maintainer and lets discuss it!!  Warnings can always be suppressed if need be.
 - We use [semantic versioning 2.0](https://semver.org/) for versioning.
-- Branching model below.
-  - [Branching Diagram (GitHub Dark Mode)](./Documentation/Images/BranchingDiagram-DarkMode.png)
-  - [Branching Diagram (GitHub Light Mode)](./Documentation/Images/BranchingDiagram-LightMode.png)
+
+<h2 style="font-weight:bold;border:0" align="center">Funding</h2>
+
+**Velaptor** and all of the [KinsonDigital](https://github.com/KinsonDigital) organization projects require significant effort to maintain, as such we greatly appreciate any financial support you are able to provide!
+This helps ensure the long term viability of all the projects in the organization, and to help support the developers who maintain **Velaptor** in their free time. [Calvin Wilkinson](https://github.com/sponsors/KinsonDigital) is accepting GitHub Sponsorships.
 
 <h2 style="font-weight:bold;border:0" align="center">Further Resources</h2>
 
@@ -100,6 +87,7 @@ If you have any questions, please reach out to a project maintainer.
   - This is a sample project for the purpose of performing manual testing of the library as well as understanding how to use it.
 - [CASL](https://github.com/KinsonDigital/CASL) is used for audio.
 - Powered by [Silk.NET](https://github.com/dotnet/Silk.NET).
+- Come chat with us on [discord](https://discord.gg/qewu6fNgv7)!
 
 <h2 style="font-weight:bold;border:0" align="center">Licensing And Governance</h2>
 

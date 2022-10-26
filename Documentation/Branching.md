@@ -50,7 +50,7 @@ Short living branch where a developer's work will be performed and merged back i
 - **Environment:** none
 - **CI/CD:**
   - Build and unit test status checks are automatically run for each change to the pull request.
-  - All status checks must pass for a pull request to be completed.
+  - All status checks must pass before a pull request will be completed.
 
 
 <h3 align="left" style="color: #B84949;font-weight:bold">Hotfix Branches</h3>
@@ -66,7 +66,7 @@ Short lived branch where urgent bug fixes or changes will be performed:
 - **Environment:** none
 - **CI/CD:**
   - Build and unit test status checks are automatically run for each change to the pull request.
-  - All status checks must pass for a pull request to be completed.
+  - All status checks must pass before a pull request will be completed.
 
 
 <h3 align="left" style="color: #00CCCC;font-weight:bold">Release Branches</h3> 
@@ -84,7 +84,7 @@ Represents <span style="color: #66B2FF;font-weight:bold">features</span> and/or 
   - Can be used for preview releases.
   - Preview releases are only done manually.
   - Build, unit test, and version validation status checks are automatically run for each change to the pull request.
-  - All status checks must pass for a pull request to be completed.
+  - All status checks must pass before a pull request will be completed.
   - When a release is performed, 2 pull requests are created.  One for a merge into the <span style="color: #FFB366;font-weight:bold">develop</span> branch and one for a merge into the <span style="color: #82B366;font-weight:bold">master</span> branch.
   - Upon merging into the <span style="color: #FFB366;font-weight:bold">develop</span> (QA) branch, a QA release will be automatically performed.
   - Upon merging into the <span style="color: #82B366;font-weight:bold">master</span> (Production) branch, a production release will be automatically performed.
@@ -104,12 +104,12 @@ Holds minimal changes for the purpose of upcoming production release stability.
 - **CI/CD:**
   - The major, minor, and patch numbers of the preview branch and the release branch it was created from, must match. 
   - Build, unit test, and version validation status checks are automatically run for each change to the pull request.
-  - All status checks must pass for a pull request to be completed.
+  - All status checks must pass before a pull request will be completed.
 
 
 <h3 align="left" style="color: #9E269E;font-weight:bold">Preview Feature Branches</h3>
 
-Where a developer's work will be performed when implementing features/changes for a <span style="color: #CC99FF;font-weight:bold">preview</span> branch via a pull request.
+Where a developer's work will be performed when implementing changes for a <span style="color: #CC99FF;font-weight:bold">preview</span> branch via a pull request.
 - **Branch Syntax:** preview/feature/\<issue id\>-\<description\>
   - Example: preview/feature/123-my-branch
 - **Branches That Can Merge Into Preview Feature Branches:** none
@@ -118,7 +118,7 @@ Where a developer's work will be performed when implementing features/changes fo
 - **Environment:** none
 - **CI/CD:**
   - Build and unit test status checks are automatically run for each change to the pull request.
-  - All status checks must pass for a pull request to be completed.
+  - All status checks must pass before a pull request will be completed.
 
 ---
 
