@@ -12,7 +12,7 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// Holds timing information about a single frame during a frame loop event.
     /// </summary>
-    internal class FrameTimeEventArgs : EventArgs
+    internal sealed class FrameTimeEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FrameTimeEventArgs"/> class.

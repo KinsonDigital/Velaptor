@@ -17,7 +17,7 @@ namespace Velaptor.OpenGL.Shaders
     /// A shader used to render text of a particular font.
     /// </summary>
     [ShaderName("Font")]
-    internal class FontShader : ShaderProgram
+    internal sealed class FontShader : ShaderProgram
     {
         private int fontTextureUniformLocation = -1;
 

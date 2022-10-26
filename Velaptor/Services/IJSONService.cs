@@ -7,7 +7,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Performs JSON services.
     /// </summary>
-    public interface IJSONService
+    internal interface IJSONService
     {
         /// <summary>
         /// Serializes the specified object to a JSON string.

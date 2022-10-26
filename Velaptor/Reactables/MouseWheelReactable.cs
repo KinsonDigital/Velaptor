@@ -13,7 +13,7 @@ namespace Velaptor.Reactables
     /// <summary>
     /// Creates a reactable to send push notifications to signal that the state of the mouse wheel has changed.
     /// </summary>
-    internal class MouseWheelReactable : Reactable<(MouseScrollDirection, int)>
+    internal sealed class MouseWheelReactable : Reactable<(MouseScrollDirection, int)>
     {
         /// <summary>
         /// Sends a push notification to signal a change to the state of the mouse wheel.

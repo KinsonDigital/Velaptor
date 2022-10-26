@@ -14,7 +14,7 @@ namespace Velaptor.NativeInterop.GLFW
     /// <summary>
     /// Holds GLFW related error information.
     /// </summary>
-    internal class GLFWErrorEventArgs : EventArgs
+    internal sealed class GLFWErrorEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWErrorEventArgs"/> class.

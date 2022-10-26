@@ -14,7 +14,7 @@ namespace Velaptor.Reactables
     /// <summary>
     /// Creates a reactable to send push notifications to signal a sound needs to be disposed.
     /// </summary>
-    internal class DisposeSoundsReactable : Reactable<DisposeSoundData>
+    internal sealed class DisposeSoundsReactable : Reactable<DisposeSoundData>
     {
         /// <summary>
         /// Sends a push notification to dispose of a sound.

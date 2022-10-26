@@ -23,7 +23,7 @@ namespace Velaptor.Content.Caching
     /// <summary>
     /// Caches <see cref="ISound"/> objects for retrieval at a later time.
     /// </summary>
-    internal class SoundCache : IItemCache<string, ISound>
+    internal sealed class SoundCache : IItemCache<string, ISound>
     {
         private const string OggFileExtension = ".ogg";
         private const string Mp3FileExtension = ".mp3";

@@ -173,3 +173,5 @@ dotnet_diagnostic.SA1011.severity = none
 
 # SA0001: XML comment analysis is disabled due to project configuration
 dotnet_diagnostic.SA0001.severity = none
+
+dotnet_diagnostic.CA1852.severity = warning

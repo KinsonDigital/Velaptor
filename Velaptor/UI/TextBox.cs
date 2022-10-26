@@ -18,7 +18,7 @@ namespace Velaptor.UI
     /// </summary>
     [ExcludeFromCodeCoverage] // TODO: Remove this once implementation is being worked on
     // TODO: Left as internal to prevent library users from using the control until it is ready
-    internal class TextBox : ControlBase
+    internal sealed class TextBox : ControlBase
     {
         private const int LEFTMARGIN = 5;
         private const int RIGHTMARGIN = 5;

@@ -12,7 +12,7 @@ namespace Velaptor.Reactables
     /// <summary>
     /// Creates a reactable to send push notifications to signal that the position of the mouse has changed.
     /// </summary>
-    internal class MousePositionReactable : Reactable<(int x, int y)>
+    internal sealed class MousePositionReactable : Reactable<(int x, int y)>
     {
         /// <summary>
         /// Sends a push notification to signal a change to the position of the mouse.

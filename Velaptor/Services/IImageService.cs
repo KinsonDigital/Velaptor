@@ -13,7 +13,7 @@ namespace Velaptor.Services
     /// <summary>
     /// Saves, loads and manages image files.
     /// </summary>
-    public interface IImageService
+    internal interface IImageService
     {
         /// <summary>
         /// Loads an image file at the given <paramref name="filePath"/>.

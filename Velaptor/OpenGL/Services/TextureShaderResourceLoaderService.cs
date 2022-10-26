@@ -18,7 +18,7 @@ namespace Velaptor.OpenGL.Services
     /// Loads the source code for the vertex and fragment shaders for rendering 2D textures.
     /// </summary>
     /// <remarks>These are loaded from the embedded library resources.</remarks>
-    internal class TextureShaderResourceLoaderService : IShaderLoaderService<uint>
+    internal sealed class TextureShaderResourceLoaderService : IShaderLoaderService<uint>
     {
         private const string BatchSizeVarName = "BATCH_SIZE";
         private const string VertShaderFileExtension = ".vert";

@@ -15,7 +15,7 @@ namespace Velaptor.Input
     /// <summary>
     /// Provides functionality for the keyboard.
     /// </summary>
-    internal class Keyboard : IAppInput<KeyboardState>
+    internal sealed class Keyboard : IAppInput<KeyboardState>
     {
         private readonly Dictionary<KeyCode, bool> keyStates = new ();
         private readonly IDisposable keyboardStateUnsubscriber;

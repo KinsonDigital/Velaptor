@@ -13,7 +13,7 @@ namespace Velaptor.Input
     /// <summary>
     /// Gets or sets the state of the mouse.
     /// </summary>
-    internal class Mouse : IAppInput<MouseState>
+    internal sealed class Mouse : IAppInput<MouseState>
     {
         private readonly IDisposable mousePosUnsubscriber;
         private readonly IDisposable mouseButtonUnsubscriber;

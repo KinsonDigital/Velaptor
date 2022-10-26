@@ -14,7 +14,7 @@ namespace Velaptor.Reactables
     /// <summary>
     /// Creates a reactable to send push notifications to signal a texture needs to be disposed.
     /// </summary>
-    internal class DisposeTexturesReactable : Reactable<DisposeTextureData>
+    internal sealed class DisposeTexturesReactable : Reactable<DisposeTextureData>
     {
         /// <summary>
         /// Sends a push notification to dispose of a texture.
