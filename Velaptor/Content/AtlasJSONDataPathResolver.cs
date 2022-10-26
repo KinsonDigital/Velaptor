@@ -16,7 +16,7 @@ namespace Velaptor.Content
     /// <summary>
     /// Resolves paths to atlas data content.
     /// </summary>
-    internal class AtlasJSONDataPathResolver : ContentPathResolver
+    internal sealed class AtlasJSONDataPathResolver : ContentPathResolver
     {
         private const char CrossPlatDirSeparatorChar = '/';
         private const string FileExtension = ".json";

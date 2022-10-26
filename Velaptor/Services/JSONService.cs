@@ -11,7 +11,7 @@ namespace Velaptor.Services
     /// Performs JSON services.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class JSONService : IJSONService
+    internal sealed class JSONService : IJSONService
     {
         /// <inheritdoc/>
         public string Serialize(object? value) => JsonConvert.SerializeObject(value, Formatting.Indented);

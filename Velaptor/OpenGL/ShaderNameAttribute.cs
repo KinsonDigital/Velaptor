@@ -14,7 +14,7 @@ namespace Velaptor.OpenGL
     /// Represents the name of a shader.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    internal class ShaderNameAttribute : Attribute
+    internal sealed class ShaderNameAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderNameAttribute"/> class.

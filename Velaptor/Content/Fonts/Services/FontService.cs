@@ -25,7 +25,7 @@ namespace Velaptor.Content.Fonts.Services
     /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class FontService : IFontService
+    internal sealed class FontService : IFontService
     {
         private readonly IFreeTypeInvoker freeTypeInvoker;
         private readonly ISystemMonitorService sysMonitorService;

@@ -20,7 +20,7 @@ namespace Velaptor.Content.Factories
     /// Creates sounds based on the sound file at a location.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class SoundFactory : ISoundFactory
+    internal sealed class SoundFactory : ISoundFactory
     {
         private static readonly Dictionary<uint, string> Sounds = new ();
         private readonly IDisposable disposeSoundUnsubscriber;

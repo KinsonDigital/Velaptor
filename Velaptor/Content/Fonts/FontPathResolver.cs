@@ -26,7 +26,7 @@ namespace Velaptor.Content.Fonts
     ///     Other systems will be supported in a future releases.
     /// </para>
     /// </remarks>
-    internal class FontPathResolver : IPathResolver
+    internal sealed class FontPathResolver : IPathResolver
     {
         private const string OnlyWindowsSupportMessage = "Currently loading system fonts is only supported on Windows.";
         private readonly IPlatform platform;
@@ -45,7 +45,7 @@ namespace Velaptor.Content.Fonts
         /// Resolves the path to the Windows system fonts directory.
         /// </param>
         /// <param name="file">Performs operations with files.</param>
-        /// <param name="directory">Processes directories.</param>
+        /// <param name="directory">Performs operations with directories.</param>
         /// <param name="platform">Provides information about the current platform.</param>
         public FontPathResolver(
             IPathResolver contentFontPathResolver,

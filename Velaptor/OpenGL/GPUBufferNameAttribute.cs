@@ -14,7 +14,7 @@ namespace Velaptor.OpenGL
     /// Represents the name of a buffer.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    internal class GPUBufferNameAttribute : Attribute
+    internal sealed class GPUBufferNameAttribute : Attribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBufferNameAttribute"/> class.

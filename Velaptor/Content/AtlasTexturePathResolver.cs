@@ -9,7 +9,7 @@ namespace Velaptor.Content
     /// <summary>
     /// Resolves paths to atlas texture content.
     /// </summary>
-    internal class AtlasTexturePathResolver : TexturePathResolver
+    internal sealed class AtlasTexturePathResolver : TexturePathResolver
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AtlasTexturePathResolver"/> class.

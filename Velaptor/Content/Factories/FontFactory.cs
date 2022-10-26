@@ -19,7 +19,7 @@ namespace Velaptor.Content.Factories
     /// Generates <see cref="IFont"/> instances.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class FontFactory : IFontFactory
+    internal sealed class FontFactory : IFontFactory
     {
         private readonly IFontService fontService;
         private readonly IFontStatsService fontStatsService;
