@@ -14,12 +14,12 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. [#247](https://github.com/KinsonDigital/Velaptor/issues/247) - Created a logging system for logging various information.
-   - Automatically creates 2 different types of logs in a **_logs_** directory in the same directory as the application.
-   - Standard logs for logging misc. info, warnings, and errors are logged into a text file that is prefixed with **_logs-_** and ending with a date in the format _yyyyMMdd_.
+   - Automatically creates 2 different types of log files in a **_logs_** directory inside the same directory as the application.
+   - Standard logs for logging miscellaneous information, warnings, and errors are logged into a text file that is prefixed with **_logs-_** and end with a date in the following format; _yyyyMMdd_.
    - Each day will have a log file.
-   - An event log file for logging events only is logged into a text file that is prefixed with **_event-logs-_** and ends with a date with the format _yyyyMMdd_.
-   - Logging settings are set in the app settings file named **_app-settings.json_** which is located in the same directory as the application.
-   - Use the settings below to set up the type of logging behavior.  
+   - An event log file is logged into a text file that is prefixed with **_event-logs-_** and ends with a date in the following format; _yyyyMMdd_.
+   - Logging settings are located in the file named **_app-settings.json_** which is located in the application's directory.
+   - Set up the type of logging behavior using the settings below:
      These can be set to `true` or `false` to enable and disable them.
      - LoggingEnabled
      - ConsoleLoggingEnabled
@@ -33,12 +33,12 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
 
-1. [#373](https://github.com/KinsonDigital/Velaptor/issues/373) - Refactored the classes below to `internal` that were not meant to be part of the public API.
+1. [#373](https://github.com/KinsonDigital/Velaptor/issues/373) - Refactored the following classes, that were not meant to be part of the public API, to `internal`:
    - `ReactorUnsubscriber`
    - `ImageService`
    - `JSONService`
    - `SystemMonitorService`
-2. [#373](https://github.com/KinsonDigital/Velaptor/issues/373) - Refactored the interfaces below to `internal` that were not meant to be part of the public API.
+2. [#373](https://github.com/KinsonDigital/Velaptor/issues/373) - Refactored the following interfaces, that were not meant to be part of the public API, to `internal`:
    - `ITemplateProcessorService`
    - `IFontAtlasService`
    - `IImageService`
@@ -60,7 +60,7 @@ As with all software, there is always a chance for issues and bugs, especially f
    - `FactForDebugAttribute`
    - `FactForReleaseAttribute`
 2. [#247](https://github.com/KinsonDigital/Velaptor/issues/247) - Set up the **OpenGL** error callback system to take advantage of the new logging feature.
-3. [#373](https://github.com/KinsonDigital/Velaptor/issues/373) - Set many internal classes to sealed to achieve a closed by default coding practice.
+3. [#373](https://github.com/KinsonDigital/Velaptor/issues/373) - Set many internal classes to `sealed` in order to achieve a "closed by default" coding practice.
 
 ---
 
