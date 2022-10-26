@@ -17,7 +17,7 @@ namespace Velaptor.Content.Factories
     /// Generates <see cref="IAtlasData"/> instances.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class AtlasDataFactory : IAtlasDataFactory
+    internal sealed class AtlasDataFactory : IAtlasDataFactory
     {
         /// <inheritdoc/>
         public IAtlasData Create(IEnumerable<AtlasSubTextureData> atlasSubTextureData, string dirPath, string atlasName)

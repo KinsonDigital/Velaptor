@@ -45,7 +45,7 @@ namespace Velaptor.Content
         /// </summary>
         /// <param name="textureCache">Caches textures for later use to improve performance.</param>
         /// <param name="texturePathResolver">Resolves paths to texture content.</param>
-        /// <param name="file">Performs file related operations.</param>
+        /// <param name="file">Performs operations with files.</param>
         /// <param name="path">Processes directory and fle paths.</param>
         /// <exception cref="ArgumentNullException">
         ///     Invoked when any of the parameters are null.

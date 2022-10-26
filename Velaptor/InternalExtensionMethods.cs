@@ -12,6 +12,7 @@ namespace Velaptor
     using System.IO;
     using System.Linq;
     using System.Numerics;
+    using System.Text;
     using SimpleInjector;
     using SimpleInjector.Diagnostics;
     using SixLabors.ImageSharp;
@@ -68,6 +69,50 @@ namespace Velaptor
         public static bool DoesNotEndWith(this string stringToCheck, string value) => !stringToCheck.EndsWith(value);
 
         /// <summary>
+        /// Removes all occurrences of the given <paramref name="trimChar"/> from the left
+        /// side of all occurrences of the given <paramref name="value"/>, inside of this string.
+        /// </summary>
+        /// <param name="content">The string data containing the values to trim.</param>
+        /// <param name="value">The value to trim the characters from.</param>
+        /// <param name="trimChar">The character to trim off the <paramref name="value"/>.</param>
+        /// <returns>
+        ///     The content with all occurrences of the <paramref name="value"/> trimmed.
+        /// </returns>
+        public static string TrimLeftOf(this string content, string value, char trimChar)
+        {
+            var result = new StringBuilder(content);
+
+            while (result.ToString().Contains($"{trimChar}{value}"))
+            {
+                result.Replace($"{trimChar}{value}", value);
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Removes all occurrences of the given <paramref name="trimChar"/> from the right
+        /// side of all occurrences of the given <paramref name="value"/>, inside of this string.
+        /// </summary>
+        /// <param name="content">The string data containing the values to trim.</param>
+        /// <param name="value">The value to trim the characters from.</param>
+        /// <param name="trimChar">The character to trim off the <paramref name="value"/>.</param>
+        /// <returns>
+        ///     The content with all occurrences of the <paramref name="value"/> trimmed.
+        /// </returns>
+        public static string TrimRightOf(this string content, string value, char trimChar)
+        {
+            var result = new StringBuilder(content);
+
+            while (result.ToString().Contains($"{value}{trimChar}"))
+            {
+                result.Replace($"{value}{trimChar}", value);
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
         /// Returns a value indicating whether or not the given file or directory path
         /// is only a root drive path with no directories or file names.
         /// </summary>
@@ -81,8 +126,8 @@ namespace Velaptor
             }
 
             var onlyDirPath = Path.HasExtension(fileOrDirPath)
-                ? Path.GetDirectoryName(fileOrDirPath)?.Replace('\\', '/') ?? string.Empty
-                : fileOrDirPath.Replace('\\', '/');
+                ? Path.GetDirectoryName(fileOrDirPath)?.ToCrossPlatPath() ?? string.Empty
+                : fileOrDirPath.ToCrossPlatPath();
 
             var noExtension = !Path.HasExtension(fileOrDirPath);
             var onlySingleColon = onlyDirPath.Count(c => c == ':') == 1;
@@ -140,6 +185,217 @@ namespace Velaptor
         }
 
         /// <summary>
+        /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
+        /// is a fully qualified path.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if valid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>null</c> will return <c>false</c>.</item>
+        ///     <item><c>null</c> or <c>empty</c> will returns <c>false</c>.</item>
+        ///     <item>
+        ///         Start with a drive letter.
+        ///         <para>Value of <c>C:/</c> will return <c>true</c>.</para>
+        ///     </item>
+        ///     <item>
+        ///         Contains at least 1 directory.
+        ///         <para>will return <c>true</c>: C:/my-directory</para>
+        ///     </item>
+        ///     <item>
+        ///         Must contain a file name with file extension.
+        ///         <list type="bullet">
+        ///             <item>Value of <c>C:/my-directory/my-file.txt</c> will return <c>true</c>.</item>
+        ///             <item>Value of <c>C:/my-directory/my-file</c> will return <c>false</c></item>
+        ///             <item>Value of <c>C:/my-directory/.txt</c> will return <c>false</c></item>
+        ///         </list>
+        ///     </item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the path exists.  It is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasValidFullFilePathSyntax(this string path)
+        {
+            // Must not be null or empty
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
+            // Must have a drive letter
+            if (path.Contains(':') is false && path.DoesNotStartWith(':'))
+            {
+                return false;
+            }
+
+            path = path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
+
+            if (path.Contains(CrossPlatDirSeparatorChar) is false)
+            {
+                return false;
+            }
+
+            // Must have a directory path
+            if (string.IsNullOrEmpty(Path.GetDirectoryName(path)))
+            {
+                return false;
+            }
+
+            // Must have a file name with an extension
+            return !string.IsNullOrEmpty(Path.GetFileName(path)) && !string.IsNullOrEmpty(Path.GetExtension(path));
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <see langword="string"/> <paramref name="path"/>
+        /// is an invalid, fully qualified path.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if invalid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>null</c> will return <c>true</c>.</item>
+        ///     <item><c>null</c> or <c>empty</c> will returns <c>true</c>.</item>
+        ///     <item>
+        ///         Start with a drive letter
+        ///         <para>Value of <c>C:/</c> will return <c>false</c>.</para>
+        ///     </item>
+        ///     <item>
+        ///         Contains at least 1 directory
+        ///         <para>will return <c>false</c>: C:/my-directory</para>
+        ///     </item>
+        ///     <item>
+        ///         Must contain a file name with a file extension.
+        ///         <list type="bullet">
+        ///             <item>Value of <c>C:/my-directory/my-file.txt</c> will return <c>false</c>.</item>
+        ///             <item>Value of <c>C:/my-directory/my-file</c> will return <c>true</c></item>
+        ///             <item>Value of <c>C:/my-directory/.txt</c> will return <c>true</c></item>
+        ///         </list>
+        ///     </item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the path exists.  This is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasInvalidFullFilePathSyntax(this string path) => !HasValidFullFilePathSyntax(path);
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <paramref name="path"/> is a valid drive.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns>True if <paramref name="path"/> contains a valid drive.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>C:/my-dir</c> will return <c>true</c>.</item>
+        ///     <item>Value of <c>C:my-dir</c> will return <c>true</c>.</item>
+        ///     <item>Value of <c>C/my-dir/my-file.txt</c> will return <c>false</c>.</item>
+        ///     <item>Value of <c>//my-dir</c> will return <c>false</c>.</item>
+        ///     <item>Value of <c>./my-dir</c> will return <c>false</c>.</item>
+        ///     <item>Value of <c>../my-dir</c> will return <c>false</c>.</item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the drive exists.  It is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasValidDriveSyntax(this string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
+            if (path.Length < 2)
+            {
+                return false;
+            }
+
+            if (path.Contains(':') is false)
+            {
+                return false;
+            }
+
+            if (path.StartsWith(':'))
+            {
+                return false;
+            }
+
+            return !path[0].IsNotLetter() && path[1].IsNotLetter();
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <paramref name="dirPath"/> is valid.
+        /// </summary>
+        /// <param name="dirPath">The directory path to check.</param>
+        /// <returns>True if the <paramref name="dirPath"/> is valid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>C:/my-dir</c> will return <c>true</c>.</item>
+        ///     <item>Value of <c>C:/my-dir/</c> will return <c>true</c>.</item>
+        ///     <item>Value of <c>C:/my-dir/my-file.txt</c> will return <c>false</c>.</item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the directory path exists.  It is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasValidFullDirPathSyntax(this string dirPath)
+        {
+            if (string.IsNullOrEmpty(dirPath))
+            {
+                return false;
+            }
+
+            if (dirPath.HasValidDriveSyntax() is false)
+            {
+                return false;
+            }
+
+            dirPath = dirPath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            if (dirPath.Any(c => c == Path.AltDirectorySeparatorChar) is false)
+            {
+                return false;
+            }
+
+            return !Path.HasExtension(dirPath);
+        }
+
+        /// <summary>
+        /// Returns a value indicating whether or not the given <paramref name="path"/> is valid.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns>True if the <paramref name="path"/> is valid.</returns>
+        /// <example>
+        /// <list type="number">
+        ///     <item>Value of <c>C:/Windows</c> will return <c>false</c>.</item>
+        ///     <item>Value of <c>//my-share</c> will return <c>true</c>.</item>
+        /// </list>
+        /// </example>
+        /// <remarks>
+        ///     This does not check if the UNC directory path exists.  It is for valid path syntax checks only.
+        /// </remarks>
+        public static bool HasValidUNCPathSyntax(this string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
+            if (path.Length < 3)
+            {
+                return false;
+            }
+
+            path = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+            if (path.DoesNotStartWith($@"{Path.AltDirectorySeparatorChar}{Path.AltDirectorySeparatorChar}"))
+            {
+                return false;
+            }
+
+            return path.Contains(':') is false;
+        }
+
+        /// <summary>
         /// Trims any newline characters from the end of the <c>string</c>.
         /// </summary>
         /// <param name="value">The string to trim.</param>
@@ -176,6 +432,17 @@ namespace Velaptor
 
             return value;
         }
+
+        /// <summary>
+        /// Converts the given <paramref name="path"/> to a cross platform path.
+        /// </summary>
+        /// <param name="path">The file or directory path.</param>
+        /// <returns>The cross platform version of the <paramref name="path"/>.</returns>
+        /// <returns>
+        ///     This changes all '\' characters to '/' characters.
+        ///     The '/' directory separator is valid on Windows and Linux systems.
+        /// </returns>
+        public static string ToCrossPlatPath(this string path) => path.Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar);
 
         /// <summary>
         /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.

@@ -16,6 +16,7 @@
         "GLFW",
         "GLSL",
         "Hori",
+        "IJSON",
         "indianred",
         "Kinson",
         "kinsondigital",
@@ -37,6 +38,7 @@
         "stylecop",
         "Unloadable",
         "unmanaged",
+        "Unsubscriber",
         "Velaptor",
         "Vorbis",
         "xunit"

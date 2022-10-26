@@ -17,7 +17,7 @@ namespace Velaptor.Reactables.Core
     /// <typeparam name="T">
     ///     The type of data that is pushed to all of the subscribed <see cref="Reactor{T}"/>s.
     /// </typeparam>
-    public class ReactorUnsubscriber<T> : IDisposable
+    internal sealed class ReactorUnsubscriber<T> : IDisposable
     {
         private readonly List<IReactor<T>> reactors;
         private bool isDisposed;
@@ -46,11 +46,7 @@ namespace Velaptor.Reactables.Core
         public int TotalReactors => this.reactors.Count;
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => Dispose(true);
 
         /// <summary>
         /// <inheritdoc cref="IDisposable.Dispose"/>

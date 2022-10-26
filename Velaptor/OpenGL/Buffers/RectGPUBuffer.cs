@@ -24,7 +24,7 @@ namespace Velaptor.OpenGL.Buffers
     /// </summary>
     [GPUBufferName("Rectangle")]
     [BatchSize(IRenderer.BatchSize)]
-    internal class RectGPUBuffer : GPUBufferBase<RectShape>
+    internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     {
         private const string BufferNotInitMsg = "The rectangle buffer has not been initialized.";
 

@@ -19,7 +19,7 @@ namespace Velaptor.Content.Factories
     /// <summary>
     /// Creates <see cref="ITexture"/> objects for rendering.
     /// </summary>
-    internal class TextureFactory : ITextureFactory
+    internal sealed class TextureFactory : ITextureFactory
     {
         private readonly IGLInvoker gl;
         private readonly IOpenGLService mockGLService;

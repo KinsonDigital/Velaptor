@@ -16,6 +16,7 @@ namespace Velaptor.NativeInterop.OpenGL
     using Velaptor.Reactables;
     using Velaptor.Reactables.Core;
     using Velaptor.Reactables.ReactableData;
+    using Velaptor.Services;
 
     // ReSharper restore RedundantNameQualifier
 
@@ -23,7 +24,7 @@ namespace Velaptor.NativeInterop.OpenGL
     /// Invokes OpenGL calls.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class GLInvoker : IGLInvoker
+    internal sealed class GLInvoker : IGLInvoker
     {
         // ReSharper disable InconsistentNaming
 #pragma warning disable SA1310
@@ -35,6 +36,7 @@ namespace Velaptor.NativeInterop.OpenGL
         private static readonly Queue<string> OpenGLCallStack = new ();
         private static DebugProc? debugCallback;
         private readonly IDisposable glContextUnsubscriber;
+        private readonly ILoggingService loggingService;
         private bool isDisposed;
 
         // ReSharper disable once MemberInitializerValueIgnored
@@ -47,8 +49,10 @@ namespace Velaptor.NativeInterop.OpenGL
         ///     The OpenGL context reactable to subscribe to get a push notification
         ///     that the OpenGL context has been created.
         /// </param>
-        public GLInvoker(IReactable<GLContextData> glContextReactable)
-            => this.glContextUnsubscriber = glContextReactable.Subscribe(new Reactor<GLContextData>(
+        /// <param name="loggingService">Logs messages to the console and files.</param>
+        public GLInvoker(IReactable<GLContextData> glContextReactable, ILoggingService loggingService)
+        {
+            this.glContextUnsubscriber = glContextReactable.Subscribe(new Reactor<GLContextData>(
                 onNext: data =>
                 {
                     if (data.Data is IWindow window)
@@ -69,6 +73,9 @@ namespace Velaptor.NativeInterop.OpenGL
                 {
                     this.glContextUnsubscriber?.Dispose();
                 }));
+
+            this.loggingService = loggingService;
+        }
 
         /// <summary>
         /// Finalizes an instance of the <see cref="GLInvoker"/> class.
@@ -511,34 +518,6 @@ namespace Velaptor.NativeInterop.OpenGL
         }
 
         /// <summary>
-        /// Prints a warning to the console in yellow.
-        /// </summary>
-        /// <param name="warningMsg">The warning message.</param>
-        private static void PrintWarningToConsole(string warningMsg)
-        {
-#if DEBUG
-            var prevClr = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"OpenGL Warning: {warningMsg}");
-            Console.ForegroundColor = prevClr;
-#endif
-        }
-
-        /// <summary>
-        /// Prints an error to the console in red.
-        /// </summary>
-        /// <param name="errorMsg">The error message.</param>
-        private static void PrintErrorToConsole(string errorMsg)
-        {
-#if DEBUG
-            var prevClr = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"OpenGL Error: {errorMsg}");
-            Console.ForegroundColor = prevClr;
-#endif
-        }
-
-        /// <summary>
         /// Invoked when there is an OpenGL related error.
         /// </summary>
         /// <param name="source">The debug source.</param>
@@ -567,13 +546,13 @@ namespace Velaptor.NativeInterop.OpenGL
 
             if (severity == GLEnum.NoError)
             {
-                PrintWarningToConsole(openGLMessage);
+                this.loggingService.Warning(openGLMessage);
             }
             else
             {
                 if (severity != GLEnum.DebugSeverityNotification)
                 {
-                    PrintErrorToConsole(openGLMessage);
+                    this.loggingService.Error(openGLMessage);
                     this.GLError?.Invoke(this, new GLErrorEventArgs(openGLMessage));
                 }
             }

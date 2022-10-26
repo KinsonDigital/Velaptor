@@ -23,7 +23,7 @@ namespace Velaptor.Content.Caching
     /// <summary>
     /// Caches <see cref="ISound"/> objects for retrieval at a later time.
     /// </summary>
-    internal class SoundCache : IItemCache<string, ISound>
+    internal sealed class SoundCache : IItemCache<string, ISound>
     {
         private const string OggFileExtension = ".ogg";
         private const string Mp3FileExtension = ".mp3";
@@ -39,10 +39,10 @@ namespace Velaptor.Content.Caching
         /// Initializes a new instance of the <see cref="SoundCache"/> class.
         /// </summary>
         /// <param name="soundFactory">Creates <see cref="ISound"/> objects.</param>
-        /// <param name="file">Performs file related operations.</param>
+        /// <param name="file">Performs operations with files.</param>
         /// <param name="path">Provides path related services.</param>
         /// <param name="disposeSoundsReactable">Sends push notifications to dispose of sounds.</param>
-        /// <param name="shutDownReactable">Sends a push notifications that the application is shutting down.</param>
+        /// <param name="shutDownReactable">Sends a push notification that the application is shutting down.</param>
         public SoundCache(
             ISoundFactory soundFactory,
             IFile file,

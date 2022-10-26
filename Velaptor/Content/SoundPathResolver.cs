@@ -16,14 +16,14 @@ namespace Velaptor.Content
     /// <summary>
     /// Resolves paths to sound content.
     /// </summary>
-    internal class SoundPathResolver : ContentPathResolver
+    internal sealed class SoundPathResolver : ContentPathResolver
     {
         private readonly IDirectory directory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SoundPathResolver"/> class.
         /// </summary>
-        /// <param name="directory">Manages directories.</param>
+        /// <param name="directory">Performs operations with directories.</param>
         public SoundPathResolver(IDirectory directory)
         {
             EnsureThat.ParamIsNotNull(directory);

@@ -9,7 +9,7 @@ namespace Velaptor.Factories
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    internal class SilkWindowFactory : IWindowFactory
+    internal sealed class SilkWindowFactory : IWindowFactory
     {
         private static IWindow? window;
 
