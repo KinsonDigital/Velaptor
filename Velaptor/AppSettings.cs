@@ -24,7 +24,7 @@ namespace Velaptor
         /// <summary>
         /// Gets a value indicating whether or not all logging is enabled.
         /// </summary>
-#if DEBUG
+#if DEBUG || DEBUG_CONSOLE
         public bool LoggingEnabled { get; init; } = true;
 #else
         public bool LoggingEnabled { get; init; } = false;
