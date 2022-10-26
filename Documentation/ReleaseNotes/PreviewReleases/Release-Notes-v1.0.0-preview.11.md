@@ -15,9 +15,9 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 1. [#247](https://github.com/KinsonDigital/Velaptor/issues/247) - Created a logging system for logging various information.
    - Automatically creates 2 different types of log files in a **_logs_** directory inside the same directory as the application.
-   - Standard logs for logging miscellaneous information, warnings, and errors are logged into a text file that is prefixed with **_logs-_** and end with a date in the following format; _yyyyMMdd_.
+   - Standard logs for logging miscellaneous information, warnings, and errors are logged into a text file that is prefixed with **_logs-_** and end with a date in the following format: _yyyyMMdd_.
    - Each day will have a log file.
-   - An event log file is logged into a text file that is prefixed with **_event-logs-_** and ends with a date in the following format; _yyyyMMdd_.
+   - An event log file is logged into a text file that is prefixed with **_event-logs-_** and ends with a date in the following format: _yyyyMMdd_.
    - Logging settings are located in the file named **_app-settings.json_** which is located in the application's directory.
    - Set up the type of logging behavior using the settings below:
      These can be set to `true` or `false` to enable and disable them.
