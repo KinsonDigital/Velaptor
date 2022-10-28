@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.OpenGL
 {
+    using FluentAssertions;
     using Velaptor.OpenGL;
     using Xunit;
 
@@ -24,8 +25,8 @@ namespace VelaptorTests.OpenGL
             var actualHeight = eventArgs.Height;
 
             // Assert
-            Assert.Equal(123, actualWidth);
-            Assert.Equal(456, actualHeight);
+            actualWidth.Should().Be(123);
+            actualHeight.Should().Be(456);
         }
         #endregion
     }
