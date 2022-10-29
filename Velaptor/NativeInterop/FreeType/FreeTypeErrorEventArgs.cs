@@ -13,7 +13,7 @@ namespace Velaptor.NativeInterop.FreeType
     /// <summary>
     /// Occurs when there is an error message related to the <c>FreeType</c> font library.
     /// </summary>
-    internal class FreeTypeErrorEventArgs : EventArgs
+    internal sealed class FreeTypeErrorEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FreeTypeErrorEventArgs"/> class.

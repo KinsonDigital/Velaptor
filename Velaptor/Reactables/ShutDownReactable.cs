@@ -13,7 +13,7 @@ namespace Velaptor.Reactables
     /// <summary>
     /// Creates a reactable to send push notifications to signal that the application is shutting down.
     /// </summary>
-    internal class ShutDownReactable : Reactable<ShutDownData>
+    internal sealed class ShutDownReactable : Reactable<ShutDownData>
     {
         /// <summary>
         /// Sends a push notification to signal application shutdown.

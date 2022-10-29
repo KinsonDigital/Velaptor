@@ -14,7 +14,7 @@ namespace Velaptor.Services
     // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc />
-    internal class BatchServiceManager : IBatchServiceManager
+    internal sealed class BatchServiceManager : IBatchServiceManager
     {
         private readonly IBatchingService<TextureBatchItem> textureBatchingService;
         private readonly IBatchingService<FontGlyphBatchItem> fontGlyphBatchingService;

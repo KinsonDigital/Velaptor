@@ -17,7 +17,7 @@ namespace Velaptor.NativeInterop.FreeType
     ///     For more information and documentation, refer to the https://www.freetype.org/ website.
     /// </remarks>
     [ExcludeFromCodeCoverage]
-    internal class FreeTypeInvoker : IFreeTypeInvoker
+    internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     {
         /// <inheritdoc/>
         public event EventHandler<FreeTypeErrorEventArgs>? OnError;

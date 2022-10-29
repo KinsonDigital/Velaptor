@@ -10,7 +10,7 @@ namespace Velaptor.NativeInterop.GLFW
     /// <summary>
     /// Holds GLFW monitor changed event information.
     /// </summary>
-    internal class GLFWMonitorChangedEventArgs : EventArgs
+    internal sealed class GLFWMonitorChangedEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GLFWMonitorChangedEventArgs"/> class.

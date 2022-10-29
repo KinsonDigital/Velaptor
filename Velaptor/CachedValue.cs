@@ -14,7 +14,7 @@ namespace Velaptor
     /// Caches a value as long as caching is turned on.
     /// </summary>
     /// <typeparam name="T">The type of value to cache.</typeparam>
-    internal class CachedValue<T>
+    internal sealed class CachedValue<T>
     {
         private readonly Func<T> getterWhenNotCaching;
         private readonly Action<T> setterWhenNotCaching;

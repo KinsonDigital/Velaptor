@@ -13,7 +13,7 @@ namespace Velaptor.Reactables
     /// <summary>
     /// Creates a reactable to send push notifications of OpenGL events.
     /// </summary>
-    internal class OpenGLContextReactable : Reactable<GLContextData>
+    internal sealed class OpenGLContextReactable : Reactable<GLContextData>
     {
         /// <summary>
         /// Sends a push notification that the OpenGL context has been created.

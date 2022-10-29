@@ -20,7 +20,6 @@ namespace VelaptorTests
     [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1514:Element documentation header should be preceded by blank line", Justification = "Allowed for unit test classes.")]
     public class PublicExtensionMethodsTests
     {
-        private const char CrossPlatDirSeparatorChar = '/';
         private readonly char[] letters;
         private readonly char[] nonLetters;
 
@@ -59,95 +58,6 @@ namespace VelaptorTests
 
             this.nonLetters = result.ToArray();
         }
-
-        #region Unit Test Data
-        /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidFullFilePathSyntax"/>() method.
-        /// </summary>
-        /// <returns>The test data.</returns>
-        public static IEnumerable<object[]> HasValidFullFilePathSyntaxTestData()
-        {
-            yield return new object[] { "C:windows", false };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", false };
-            yield return new object[] { string.Empty, false };
-            yield return new object[] { null, false };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", false };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}", false };
-            yield return new object[] { "non-path-value", false };
-            yield return new object[] { $@"{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", false };
-            yield return new object[] { $@"test-dir{CrossPlatDirSeparatorChar}", false };
-            yield return new object[] { @"C:\test-dir\test-file.txt", true };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", true };
-        }
-
-        /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasInvalidFullFilePathSyntax"/>() method.
-        /// </summary>
-        /// <returns>The test data.</returns>
-        public static IEnumerable<object[]> IsInvalidFilePathTestData()
-        {
-            yield return new object[] { $@"C:\test-dir\test-file.txt", false };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file.txt", false };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}test-file", true };
-            yield return new object[] { string.Empty, true };
-            yield return new object[] { null, true };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", true };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}", true };
-            yield return new object[] { "non-path-value", true };
-            yield return new object[] { $@"{CrossPlatDirSeparatorChar}test-dir{CrossPlatDirSeparatorChar}", true };
-            yield return new object[] { $@"test-dir{CrossPlatDirSeparatorChar}", true };
-            yield return new object[] { "C:windows", true };
-        }
-
-        /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidDriveSyntax"/>() method.
-        /// </summary>
-        /// <returns>The test data.</returns>
-        public static IEnumerable<object[]> ContainsValidDriveTestData()
-        {
-            yield return new object[] { string.Empty, false };
-            yield return new object[] { null, false };
-            yield return new object[] { "windows", false };
-            yield return new object[] { ":", false };
-            yield return new object[] { "C", false };
-            yield return new object[] { ":C", false };
-            yield return new object[] { "1:", false };
-            yield return new object[] { "windowsC:system32", false };
-            yield return new object[] { $@"C:\Windows\System32", true };
-            yield return new object[] { @"C:windows", true };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
-        }
-
-        /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidFullDirPathSyntax"/>() method.
-        /// </summary>
-        /// <returns>The test data.</returns>
-        public static IEnumerable<object[]> IsFullyQualifiedDirPathTestData()
-        {
-            yield return new object[] { string.Empty, false };
-            yield return new object[] { null, false };
-            yield return new object[] { $@"\Windows\System32", false };
-            yield return new object[] { $@"{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", false };
-            yield return new object[] { "C:Windows", false };
-            yield return new object[] { $@"{CrossPlatDirSeparatorChar}WindowsC:", false };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}fake-file.txt", false };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32", true };
-            yield return new object[] { $@"C:{CrossPlatDirSeparatorChar}Windows{CrossPlatDirSeparatorChar}System32{CrossPlatDirSeparatorChar}", true };
-        }
-
-        /// <summary>
-        /// Provides unit test data for the <see cref="PublicExtensionMethods.HasValidUNCPathSyntax"/>() method.
-        /// </summary>
-        /// <returns>The test data.</returns>
-        public static IEnumerable<object[]> IsUNCPathTestData()
-        {
-            yield return new object[] { string.Empty, false };
-            yield return new object[] { null, false };
-            yield return new object[] { $@"\\", false };
-            yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false };
-            yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true };
-        }
-        #endregion
 
         #region Method Tests
         [Fact]
@@ -464,28 +374,6 @@ namespace VelaptorTests
             Assert.Equal(123u, actual.CharIndex);
         }
 
-        [Theory]
-        [MemberData(nameof(HasValidFullFilePathSyntaxTestData))]
-        public void HasValidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
-        {
-            // Act
-            var actual = path.HasValidFullFilePathSyntax();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(IsInvalidFilePathTestData))]
-        public void HasInvalidFullFilePathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
-        {
-            // Act
-            var actual = path.HasInvalidFullFilePathSyntax();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
         [Fact]
         public void IsLetter_WithLetters_ReturnsTrue()
         {
@@ -514,39 +402,6 @@ namespace VelaptorTests
             {
                 Assert.True(character.IsNotLetter());
             });
-        }
-
-        [Theory]
-        [MemberData(nameof(ContainsValidDriveTestData))]
-        public void HasValidDriveSyntax_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
-        {
-            // Act
-            var actual = dirPath.HasValidDriveSyntax();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(IsFullyQualifiedDirPathTestData))]
-        public void HasValidFullDirPathSyntax_WhenInvoked_ReturnsCorrectResult(string dirPath, bool expected)
-        {
-            // Act
-            var actual = dirPath.HasValidFullDirPathSyntax();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(IsUNCPathTestData))]
-        public void HasValidUNCPathSyntax_WhenInvoked_ReturnsCorrectResult(string path, bool expected)
-        {
-            // Act
-            var actual = path.HasValidUNCPathSyntax();
-
-            // Assert
-            Assert.Equal(expected, actual);
         }
 
         [Theory]

@@ -13,7 +13,7 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// Holds information about OpenGL errors that occur.
     /// </summary>
-    internal class GLErrorEventArgs : EventArgs
+    internal sealed class GLErrorEventArgs : EventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GLErrorEventArgs"/> class.

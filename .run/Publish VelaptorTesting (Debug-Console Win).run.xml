@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Publish VelaptorTesting (Debug-Console Win)" type="DotNetFolderPublish" factoryName="Publish to folder">
-    <riderPublish configuration="Debug-Console" delete_existing_files="true" platform="x64" runtime="win-x64" target_folder="$PROJECT_DIR$/Testing/VelaptorTesting/bin/x64/Debug-Console" target_framework="net6.0" uuid_high="7167814575349778549" uuid_low="-8776427795810431625" />
+    <riderPublish configuration="Debug-Console" delete_existing_files="true" platform="x64" runtime="win-x64" target_folder="$PROJECT_DIR$/Testing/VelaptorTesting/bin/x64/Debug-Console/publish" target_framework="net6.0" uuid_high="7167814575349778549" uuid_low="-8776427795810431625" />
     <method v="2">
       <option name="Build Solution" enabled="true" />
     </method>

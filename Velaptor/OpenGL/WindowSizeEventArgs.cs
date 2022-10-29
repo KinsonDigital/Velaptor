@@ -7,7 +7,7 @@ namespace Velaptor.OpenGL
     /// <summary>
     /// Holds information about an event when a window resizes.
     /// </summary>
-    internal class WindowSizeEventArgs
+    internal sealed class WindowSizeEventArgs
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowSizeEventArgs"/> class.

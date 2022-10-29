@@ -12,7 +12,7 @@ namespace Velaptor.OpenGL.Shaders
     // ReSharper restore RedundantNameQualifier
 
     /// <inheritdoc/>
-    internal class ShaderManager : IShaderManager
+    internal sealed class ShaderManager : IShaderManager
     {
         private readonly IShaderProgram textureShader;
         private readonly IShaderProgram fontShader;
