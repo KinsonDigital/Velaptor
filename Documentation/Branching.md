@@ -1,6 +1,6 @@
 <h1 align="center">Branching</h1>
 
-**Velaptor** uses a more complicated branching model, but it gives you more control of the SDLC (Software Development Life Cycle).  This branching model allows a clear purpose for adding features, bug fixes, preview releases, QA releases and standard releases.
+**Velaptor** uses a more complicated branching model, but it gives you more control of the SDLC (Software Development Life Cycle).  This branching model allows a clear purpose for adding features, bug fixes, preview releases, QA releases, and standard releases.
 
 As a standard contributor, all you have to worry about is creating <span style="color: #66B2FF;font-weight:bold">feature</span> branches and creating pull requests to merge those branches into the <span style="color: #FFB366;font-weight:bold">develop</span> branch.  The rest is taken care of by a solid CI/CD system as well as the maintainers of the project.  Only the organization owner and designated team members will manage the release process.  So, contributing is very easy!!🥳
 
@@ -20,6 +20,7 @@ Long living branch that represents stable production versions of **Velaptor**:
 - **Created From:** none
 - **Merges Into:** none
 - **Environment:** Production
+- **Required Casing:** all lowercase
 - **CI/CD:**
   - Upon pull request completion, the <span style="color: #00CCCC;font-weight:bold">release</span> branches are merged into the <span style="color: #82B366;font-weight:bold">master</span> branch and are automatically built, tested, and released to production as a nuget package.
   - The testing application is attached as an artifact to the <span style="color: #00CCCC;font-weight:bold">release</span> branch for the purpose of testing.
@@ -34,6 +35,7 @@ Long living branch that represents the most current development in progress:
 - **Created From:** none
 - **Merges Into:** none
 - **Environment:** QA
+- **Required Casing:** all lowercase
 - **CI/CD:**
   - Automatically built, tested, and deployed as a QA release upon pull request completion.
   - The testing application is attached as an artifact to the QA release for the purpose of testing.
@@ -48,6 +50,7 @@ Short living branch where a developer's work will be performed and merged back i
 - **Created From:** <span style="color: #FFB366;font-weight:bold">develop</span>
 - **Merges Into:** <span style="color: #FFB366;font-weight:bold">develop</span>
 - **Environment:** none
+- **Required Casing:** all lowercase
 - **CI/CD:**
   - Build and unit test status checks are automatically run for each change to the pull request.
   - All status checks must pass before a pull request will be completed.
@@ -55,7 +58,7 @@ Short living branch where a developer's work will be performed and merged back i
 
 <h3 align="left" style="color: #B84949;font-weight:bold">Hotfix Branches</h3>
 
-Short lived branch where urgent bug fixes or changes will be performed:
+Short living branch where urgent bug fixes or changes will be performed:
 
 **_NOTE_:** Hotfix branches should be carefully reviewed and only performed when the software is considered **broken** and/or **unusable**.  Changes to this branch should be absolutely minimal and merged directly into the <span style="color: #82B366;font-weight:bold">master</span> branch via a pull request.
 - **Branch Syntax:** hotfix/\<issue id\>-\<description\>
@@ -64,6 +67,7 @@ Short lived branch where urgent bug fixes or changes will be performed:
 - **Created From:** <span style="color: #82B366;font-weight:bold">master</span>
 - **Merges Into:** <span style="color: #82B366;font-weight:bold">master</span>
 - **Environment:** none
+- **Required Casing:** all lowercase
 - **CI/CD:**
   - Build and unit test status checks are automatically run for each change to the pull request.
   - All status checks must pass before a pull request will be completed.
@@ -79,6 +83,7 @@ Represents <span style="color: #66B2FF;font-weight:bold">features</span> and/or 
 - **Created From:** <span style="color: #FFB366;font-weight:bold">develop</span> branch
 - **Merged Into:** <span style="color: #FFB366;font-weight:bold">develop</span> and <span style="color: #82B366;font-weight:bold">master</span> branches
 - **Environment:** none
+- **Required Casing:** all lowercase
 - **CI/CD:**
   - Can be a major, minor, or patch release.
   - Can be used for preview releases.
@@ -92,15 +97,16 @@ Represents <span style="color: #66B2FF;font-weight:bold">features</span> and/or 
 
 <h3 align="left" style="color: #CC99FF;font-weight:bold">Preview Branches</h3>
 
-Holds minimal changes for the purpose of upcoming production release stability.
+Holds minimal changes for upcoming production release stability.
 
-**_NOTE_:** Used for refactoring, bug fixes, and changes related to making an upcoming release more stable and to give users the chance to utilize the software and provide feedback before a major release.  Introducing major features outside of the changes in the upcoming release are not allowed. These kinds of changes are performed on the <span style="color: #CC99FF;font-weight:bold">preview</span> branch by using <span style="color: #9E269E;font-weight:bold">preview feature</span> branches.
+**_NOTE_:** Used for refactoring, bug fixes, and changes related to making an upcoming release more stable and to give users the chance to utilize the software and provide feedback before a major release.  Introducing major features outside of the changes in the upcoming release is not allowed. These kinds of changes are performed on the <span style="color: #CC99FF;font-weight:bold">preview</span> branch by using <span style="color: #9E269E;font-weight:bold">preview feature</span> branches.
 - **Branch Syntax:** preview/v\<major\>.\<minor\>.\<patch\>-preview.\<prev number\>
   - Example: preview/v1.2.3-preview.4
 - **Branches That Can Merge Into Preview Branches:** <span style="color: #9E269E;font-weight:bold">preview feature</span> branches
 - **Created From:** <span style="color: #00CCCC;font-weight:bold">release</span> branches
 - **Merged Into:** <span style="color: #00CCCC;font-weight:bold">release</span> branches
 - **Environment:** none
+- **Required Casing:** all lowercase
 - **CI/CD:**
   - The major, minor, and patch numbers of the preview branch and the release branch it was created from, must match. 
   - Build, unit test, and version validation status checks are automatically run for each change to the pull request.
@@ -116,6 +122,7 @@ Where a developer's work will be performed when implementing changes for a <span
 - **Created From:** <span style="color: #CC99FF;font-weight:bold">preview</span> branches
 - **Merged Into:** <span style="color: #CC99FF;font-weight:bold">preview</span> branches
 - **Environment:** none
+- **Required Casing:** all lowercase
 - **CI/CD:**
   - Build and unit test status checks are automatically run for each change to the pull request.
   - All status checks must pass before a pull request will be completed.
