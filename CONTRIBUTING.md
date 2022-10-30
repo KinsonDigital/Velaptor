@@ -1,8 +1,6 @@
 <h1 style="border:0;font-weight:bold" align="center">Contribution Guide</h1>
 
-Hello!!  Thanks for your interest in contributing to **Velaptor**!!  Any help you can provide is greatly appreciated.  We are always looking for ways to make the contribution process as simple and as straightforward as possible. In addition, we want to make sure that the required workflow and development process restrictions are followed to ensure high software quality.
-
-If you have any ideas and/or comments on how to simplify the process for outside contributions, please don't hesitate to contact one of the project maintainers.
+Hello!!  Thanks for your interest in contributing to **Velaptor**!!  Any help you can provide is greatly appreciated.  We are always looking for ways to make the contribution process as simple and as straightforward as possible. In addition, we want to make sure that the required workflow and development process restrictions are followed to ensure high software quality. If you have any ideas and/or comments on how to simplify the process for outside contributions, please don't hesitate to contact one of the project maintainers.
 
 You can contribute to **Velaptor** with issues and PRs. Creating GitHub issues for problems you encounter is a great way to contribute. Contributing code is also greatly appreciated.
 
