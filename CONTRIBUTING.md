@@ -28,7 +28,7 @@ The **Velaptor** team will merge changes that improve the library significantly.
 - **DO** use the comment sections in the issues and pull requests for conversations that are relevant and very specific to the issue.  The community cannot follow the issue and PR details if ALL of the conversation is all in discord. Use your best judgement.
 - **DON'T** start working on a pull request until you get confirmation from a project maintainer and the issue is assigned to you.  You do not want to end up doing a bunch of work for nothing just to find out that you are not allowed to work on the issue.
 - **DON'T** make PRs that don't directly affect the end user, such as style changes. These are best done as part of a PR related to the area in question. Documentation is fine (and encouraged!), as this is useful to the end user.
-- **DON'T** commit code you didn't write without following its own license and following our guidelines in the Contributor License Agreement. If you are unable to license some code, don't commit it.
+- **DON'T** commit code you didn't write without following its own license and without following our guidelines in the Contributor License Agreement. If you are unable to license code, don't commit it.
 - **DON'T** surprise us with big pull requests or big API changes without talking to us first!
 - **DON'T** make PRs for legal or administrative documents, such as the license, file headers, or code of conduct. If something is off, let us know and we will look into changing it.
 
