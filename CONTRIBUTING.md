@@ -34,7 +34,7 @@ The **Velaptor** team will merge changes that improve the library significantly.
 
 <h2 style="border:0;font-weight:bold" align="center">Breaking Changes</h2>
 
-Contributions must maintain API signature and behavioral compatibility. Contributions that include breaking changes will be rejected, however, there are exceptions. For example, if the contribution is made against a major/breaking version branch (such as 2.0 instead of master).  Breaking changes are subject to the team's approval. At risk of sounding like a broken record, talk to us about your idea first!
+Contributions must maintain API signature and behavioral compatibility. Contributions that include breaking changes will be rejected, however, there are exceptions. One example would be if the contribution is made against a major/breaking version branch (such as 2.0 instead of master).  Breaking changes are subject to the team's approval. At risk of sounding like a broken record, talk to us about your idea first!
 
 <h2 style="border:0;font-weight:bold" align="center">Branching</h2>
 
