@@ -60,7 +60,7 @@ Short living branch where a developer's work will be performed and merged back i
 
 Short living branch where urgent bug fixes or changes will be performed:
 
-**_NOTE_:** Hotfix branches should be carefully reviewed and only performed when the software is considered **broken** and/or **unusable**.  Changes to this branch should be absolutely minimal and merged directly into the <span style="color: #82B366;font-weight:bold">master</span> branch via a pull request.
+**_NOTE_:** Hotfix branches should be carefully reviewed and only used when the software is considered **broken** and/or **unusable**.  Changes to this branch should be absolutely minimal and merged directly into the <span style="color: #82B366;font-weight:bold">master</span> branch via a pull request.
 - **Branch Syntax:** hotfix/\<issue id\>-\<description\>
   - Example: hotfix/123-my-hotfix
 - **Branches That Can Merge Into Hotfix Branches:** none
