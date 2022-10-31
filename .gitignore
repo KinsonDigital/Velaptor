@@ -351,7 +351,3 @@ MigrationBackup/
 
 # Ignore secrets file used for CICD build system
 local-secrets.json
-
-# Ignore Visual Studio Code files
-.vscode/launch.json
-.vscode/tasks.json
