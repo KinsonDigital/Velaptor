@@ -14,7 +14,7 @@ namespace Velaptor.OpenGL
         /// </summary>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
-        public WindowSizeEventArgs(int width, int height)
+        public WindowSizeEventArgs(uint width, uint height)
         {
             Width = width;
             Height = height;
@@ -23,11 +23,11 @@ namespace Velaptor.OpenGL
         /// <summary>
         /// Gets the width of the window.
         /// </summary>
-        public int Width { get; }
+        public uint Width { get; }
 
         /// <summary>
         /// Gets the height of the window.
         /// </summary>
-        public int Height { get; }
+        public uint Height { get; }
     }
 }
