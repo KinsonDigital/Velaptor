@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.OpenGL
 {
+    using FluentAssertions;
     using Velaptor.OpenGL;
     using Xunit;
 
