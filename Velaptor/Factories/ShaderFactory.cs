@@ -2,83 +2,79 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories
+using System.Diagnostics.CodeAnalysis;
+using Velaptor.NativeInterop.OpenGL;
+using Velaptor.OpenGL.Services;
+using Velaptor.OpenGL.Shaders;
+using Velaptor.Reactables.Core;
+using Velaptor.Reactables.ReactableData;
+
+namespace Velaptor.Factories;
+
+/// <summary>
+/// Creates instance of type <see cref="IShaderProgram"/>.
+/// </summary>
+[ExcludeFromCodeCoverage]
+internal sealed class ShaderFactory : IShaderFactory
 {
-    // ReSharper disable RedundantNameQualifier
-    using System.Diagnostics.CodeAnalysis;
-    using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.OpenGL.Services;
-    using Velaptor.OpenGL.Shaders;
-    using Velaptor.Reactables.Core;
-    using Velaptor.Reactables.ReactableData;
+    private static IShaderProgram? textureShader;
+    private static IShaderProgram? fontShader;
+    private static IShaderProgram? rectShader;
 
-    // ReSharper restore RedundantNameQualifier
-
-    /// <summary>
-    /// Creates instance of type <see cref="IShaderProgram"/>.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    internal sealed class ShaderFactory : IShaderFactory
+    /// <inheritdoc/>
+    public IShaderProgram CreateTextureShader()
     {
-        private static IShaderProgram? textureShader;
-        private static IShaderProgram? fontShader;
-        private static IShaderProgram? rectShader;
-
-        /// <inheritdoc/>
-        public IShaderProgram CreateTextureShader()
+        if (textureShader is not null)
         {
-            if (textureShader is not null)
-            {
-                return textureShader;
-            }
-
-            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
-            var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
-
-            textureShader = new TextureShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
-
             return textureShader;
         }
 
-        /// <inheritdoc/>
-        public IShaderProgram CreateFontShader()
+        var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
+        var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
+        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+        var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+
+        textureShader = new TextureShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
+
+        return textureShader;
+    }
+
+    /// <inheritdoc/>
+    public IShaderProgram CreateFontShader()
+    {
+        if (fontShader is not null)
         {
-            if (fontShader is not null)
-            {
-                return fontShader;
-            }
-
-            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
-            var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
-
-            fontShader = new FontShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
-
             return fontShader;
         }
 
-        /// <inheritdoc/>
-        public IShaderProgram CreateRectShader()
+        var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
+        var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
+        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+        var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+
+        fontShader = new FontShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
+
+        return fontShader;
+    }
+
+    /// <inheritdoc/>
+    public IShaderProgram CreateRectShader()
+    {
+        if (rectShader is not null)
         {
-            if (rectShader is not null)
-            {
-                return rectShader;
-            }
-
-            var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
-            var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
-            var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-            var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-            var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
-
-            rectShader = new RectangleShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
-
             return rectShader;
         }
+
+        var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
+        var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
+        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+        var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+
+        rectShader = new RectangleShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
+
+        return rectShader;
     }
 }

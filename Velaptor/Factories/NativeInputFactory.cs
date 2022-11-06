@@ -2,29 +2,28 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories
+using System.Diagnostics.CodeAnalysis;
+using Silk.NET.Input;
+
+namespace Velaptor.Factories;
+
+/// <inheritdoc/>
+[ExcludeFromCodeCoverage]
+internal sealed class NativeInputFactory : INativeInputFactory
 {
-    using System.Diagnostics.CodeAnalysis;
-    using Silk.NET.Input;
+    private readonly IWindowFactory windowFactory;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NativeInputFactory"/> class.
+    /// </summary>
+    /// <param name="windowFactory">Creates a window object.</param>
+    public NativeInputFactory(IWindowFactory windowFactory) => this.windowFactory = windowFactory;
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
-    internal sealed class NativeInputFactory : INativeInputFactory
+    public IInputContext CreateInput()
     {
-        private readonly IWindowFactory windowFactory;
+        var window = this.windowFactory.CreateSilkWindow();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NativeInputFactory"/> class.
-        /// </summary>
-        /// <param name="windowFactory">Creates a window object.</param>
-        public NativeInputFactory(IWindowFactory windowFactory) => this.windowFactory = windowFactory;
-
-        /// <inheritdoc/>
-        public IInputContext CreateInput()
-        {
-            var window = this.windowFactory.CreateSilkWindow();
-
-            return window.CreateInput();
-        }
+        return window.CreateInput();
     }
 }

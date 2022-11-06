@@ -2,30 +2,29 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories
+using System.Diagnostics.CodeAnalysis;
+using Silk.NET.Windowing;
+
+namespace Velaptor.Factories;
+
+/// <inheritdoc/>
+[ExcludeFromCodeCoverage]
+internal sealed class SilkWindowFactory : IWindowFactory
 {
-    using System.Diagnostics.CodeAnalysis;
-    using Silk.NET.Windowing;
+    private static IWindow? window;
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
-    internal sealed class SilkWindowFactory : IWindowFactory
+    public IWindow CreateSilkWindow()
     {
-        private static IWindow? window;
-
-        /// <inheritdoc/>
-        public IWindow CreateSilkWindow()
+        if (window is not null)
         {
-            if (window is not null)
-            {
-                return window;
-            }
-
-            var windowOptions = WindowOptions.Default;
-            windowOptions.ShouldSwapAutomatically = false;
-
-            window = Window.Create(windowOptions);
             return window;
         }
+
+        var windowOptions = WindowOptions.Default;
+        windowOptions.ShouldSwapAutomatically = false;
+
+        window = Window.Create(windowOptions);
+        return window;
     }
 }

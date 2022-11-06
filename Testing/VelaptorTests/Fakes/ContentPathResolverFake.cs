@@ -2,14 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Fakes
-{
-    using Velaptor.Content;
+using Velaptor.Content;
 
-    /// <summary>
-    /// Used to test the abstract <see cref="ContentPathResolver"/> class.
-    /// </summary>
-    internal class ContentPathResolverFake : ContentPathResolver
-    {
-    }
+namespace VelaptorTests.Fakes;
+
+/// <summary>
+/// Used to test the abstract <see cref="ContentPathResolver"/> class.
+/// </summary>
+internal class ContentPathResolverFake : ContentPathResolver
+{
 }

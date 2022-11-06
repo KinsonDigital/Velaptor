@@ -2,27 +2,23 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Reactables.ReactableData
-{
-    // ReSharper disable RedundantNameQualifier
-    using Velaptor.Reactables.Core;
+using Velaptor.Reactables.Core;
 
-    // ReSharper restore RedundantNameQualifier//
+namespace Velaptor.Reactables.ReactableData;
+
+/// <summary>
+/// Holds data for the <see cref="IReactable{T}"/> reactable.
+/// </summary>
+internal readonly struct GLContextData
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GLContextData"/> struct.
+    /// </summary>
+    /// <param name="data">The context data.</param>
+    public GLContextData(object data) => Data = data;
 
     /// <summary>
-    /// Holds data for the <see cref="IReactable{T}"/> reactable.
+    /// Gets the data.
     /// </summary>
-    internal readonly struct GLContextData
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GLContextData"/> struct.
-        /// </summary>
-        /// <param name="data">The context data.</param>
-        public GLContextData(object data) => Data = data;
-
-        /// <summary>
-        /// Gets the data.
-        /// </summary>
-        public object Data { get; }
-    }
+    public object Data { get; }
 }

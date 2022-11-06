@@ -1,34 +1,33 @@
-﻿// <copyright file="IText.cs" company="KinsonDigital">
+// <copyright file="IText.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor
+namespace Velaptor;
+
+using System.Drawing;
+
+/// <summary>
+/// Text that can be rendered to the graphics surface.
+/// </summary>
+public interface IText
 {
-    using System.Drawing;
+    /// <summary>
+    /// Gets the width of the text.
+    /// </summary>
+    int Width { get; }
 
     /// <summary>
-    /// Text that can be rendered to the graphics surface.
+    /// Gets the height of the text.
     /// </summary>
-    public interface IText
-    {
-        /// <summary>
-        /// Gets the width of the text.
-        /// </summary>
-        int Width { get; }
+    int Height { get; }
 
-        /// <summary>
-        /// Gets the height of the text.
-        /// </summary>
-        int Height { get; }
+    /// <summary>
+    /// Gets or sets the text.
+    /// </summary>
+    string Text { get; set; }
 
-        /// <summary>
-        /// Gets or sets the text.
-        /// </summary>
-        string Text { get; set; }
-
-        /// <summary>
-        /// Gets or sets the color of the text.
-        /// </summary>
-        Color Color { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the color of the text.
+    /// </summary>
+    Color Color { get; set; }
 }
