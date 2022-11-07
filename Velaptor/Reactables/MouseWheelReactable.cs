@@ -2,33 +2,29 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Reactables
+using Velaptor.Input;
+using Velaptor.Reactables.Core;
+
+namespace Velaptor.Reactables;
+
+/// <summary>
+/// Creates a reactable to send push notifications to signal that the state of the mouse wheel has changed.
+/// </summary>
+internal sealed class MouseWheelReactable : Reactable<(MouseScrollDirection, int)>
 {
-    // ReSharper disable RedundantNameQualifier
-    using Velaptor.Input;
-    using Velaptor.Reactables.Core;
-
-    // ReSharper restore RedundantNameQualifier
-
     /// <summary>
-    /// Creates a reactable to send push notifications to signal that the state of the mouse wheel has changed.
+    /// Sends a push notification to signal a change to the state of the mouse wheel.
     /// </summary>
-    internal sealed class MouseWheelReactable : Reactable<(MouseScrollDirection, int)>
+    /// <param name="data">The data to send with the push notification.</param>
+    public override void PushNotification((MouseScrollDirection, int) data)
     {
-        /// <summary>
-        /// Sends a push notification to signal a change to the state of the mouse wheel.
-        /// </summary>
-        /// <param name="data">The data to send with the push notification.</param>
-        public override void PushNotification((MouseScrollDirection, int) data)
+        /* Work from the end to the beginning of the list
+           just in case the reactable is disposed(removed)
+           in the OnNext() method.
+         */
+        for (var i = Reactors.Count - 1; i >= 0; i--)
         {
-            /* Work from the end to the beginning of the list
-               just in case the reactable is disposed(removed)
-               in the OnNext() method.
-             */
-            for (var i = Reactors.Count - 1; i >= 0; i--)
-            {
-                Reactors[i].OnNext(data);
-            }
+            Reactors[i].OnNext(data);
         }
     }
 }

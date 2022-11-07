@@ -2,46 +2,42 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories
-{
-    // ReSharper disable RedundantNameQualifier
-    using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Content.Fonts;
-    using Velaptor.Input;
-    using Velaptor.UI;
+using System.Diagnostics.CodeAnalysis;
+using Velaptor.Content.Fonts;
+using Velaptor.Input;
+using Velaptor.UI;
 
-    // ReSharper restore RedundantNameQualifier
+namespace Velaptor.Factories;
+
+/// <inheritdoc/>
+[ExcludeFromCodeCoverage]
+public class UIControlFactory : IUIControlFactory
+{
+    /// <inheritdoc/>
+    public Label CreateLabel(string labelText)
+    {
+        var label = new Label(
+            ContentLoaderFactory.CreateContentLoader(),
+            IoC.Container.GetInstance<IFont>(),
+            IoC.Container.GetInstance<IAppInput<MouseState>>())
+        {
+            Text = labelText,
+        };
+
+        return label;
+    }
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage]
-    public class UIControlFactory : IUIControlFactory
+    public Label CreateLabel(string labelText, IFont font)
     {
-        /// <inheritdoc/>
-        public Label CreateLabel(string labelText)
+        var label = new Label(
+            ContentLoaderFactory.CreateContentLoader(),
+            font,
+            IoC.Container.GetInstance<IAppInput<MouseState>>())
         {
-            var label = new Label(
-                ContentLoaderFactory.CreateContentLoader(),
-                IoC.Container.GetInstance<IFont>(),
-                IoC.Container.GetInstance<IAppInput<MouseState>>())
-            {
-                Text = labelText,
-            };
+            Text = labelText,
+        };
 
-            return label;
-        }
-
-        /// <inheritdoc/>
-        public Label CreateLabel(string labelText, IFont font)
-        {
-            var label = new Label(
-                ContentLoaderFactory.CreateContentLoader(),
-                font,
-                IoC.Container.GetInstance<IAppInput<MouseState>>())
-            {
-                Text = labelText,
-            };
-
-            return label;
-        }
+        return label;
     }
 }

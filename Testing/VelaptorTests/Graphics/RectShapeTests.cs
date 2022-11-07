@@ -3,463 +3,462 @@
 // </copyright>
 
 #pragma warning disable SA1129
-namespace VelaptorTests.Graphics
+// ReSharper disable UseObjectOrCollectionInitializer
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Numerics;
+using Velaptor.Graphics;
+using VelaptorTests.Helpers;
+using Xunit;
+
+namespace VelaptorTests.Graphics;
+
+/// <summary>
+/// Tests the <see cref="RectShape"/> struct.
+/// </summary>
+public class RectShapeTests
 {
-    // ReSharper disable UseObjectOrCollectionInitializer
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Drawing;
-    using System.Numerics;
-    using Velaptor.Graphics;
-    using VelaptorTests.Helpers;
-    using Xunit;
-
     /// <summary>
-    /// Tests the <see cref="RectShape"/> struct.
+    /// Provides test data for the <see cref="RectShape.IsEmpty"/> method unit test.
     /// </summary>
-    public class RectShapeTests
+    /// <returns>The data to use during the test.</returns>
+    public static IEnumerable<object[]> IsEmptyTestData()
     {
-        /// <summary>
-        /// Provides test data for the <see cref="RectShape.IsEmpty"/> method unit test.
-        /// </summary>
-        /// <returns>The data to use during the test.</returns>
-        public static IEnumerable<object[]> IsEmptyTestData()
+        yield return new object[]
         {
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                true, // EXPECTED
-            };
-            yield return new object[]
-            {
-                new Vector2(44, 44), // Position
-                1f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                44f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                44f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                1f, // Height
-                Color.FromArgb(44, 44, 44, 44), // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                true, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(44f, 44f, 44f, 44f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.Horizontal, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.FromArgb(44, 44, 44, 44), // Gradient Start
-                Color.Empty, // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.FromArgb(44, 44, 44, 44), // Gradient Stop
-                false, // EXPECTED
-            };
-            yield return new object[]
-            {
-                Vector2.Zero, // Position
-                1f, // Width
-                1f, // Height
-                Color.Empty, // Color
-                false, // IsFilled
-                1f, // Border Thickness
-                new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
-                ColorGradient.None, // Gradient Type
-                Color.Empty, // Gradient Start
-                Color.Empty, // Gradient Stop
-                true, // EXPECTED
-            };
-        }
-
-        #region Constructor Tests
-        [Fact]
-        [SuppressMessage(
-            "StyleCop.CSharp.ReadabilityRules",
-            "SA1129:Do not use default value type constructor",
-            Justification = "Unit test requires use of constructor.")]
-        public void Ctor_WhenInvoked_SetsDefaultValues()
+            Vector2.Zero, // Position
+            1f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            true, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange & Act
-            var rect = new RectShape();
-
-            // Assert
-            Assert.Equal(Vector2.Zero, rect.Position);
-            Assert.Equal(1f, rect.Width);
-            Assert.Equal(1f, rect.Height);
-            Assert.Equal(Color.White, rect.Color);
-            Assert.True(rect.IsFilled);
-            Assert.Equal(1f, rect.BorderThickness);
-            Assert.Equal(new CornerRadius(1f, 1f, 1f, 1f), rect.CornerRadius);
-            Assert.Equal(ColorGradient.None, rect.GradientType);
-            Assert.Equal(Color.White, rect.GradientStart);
-            Assert.Equal(Color.White, rect.GradientStop);
-        }
-        #endregion
-
-        #region Prop Tests
-        [Theory]
-        [InlineData(0, 1)]
-        [InlineData(-10f, 1)]
-        [InlineData(123, 123)]
-        public void Width_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
+            new Vector2(44, 44), // Position
+            1f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-
-            // Act
-            rect.Width = value;
-            var actual = rect.Width;
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [InlineData(0, 1)]
-        [InlineData(-10f, 1)]
-        [InlineData(123, 123)]
-        public void Height_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
+            Vector2.Zero, // Position
+            44f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-
-            // Act
-            rect.Height = value;
-            var actual = rect.Height;
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void HalfWidth_WhenGettingValue_ReturnsCorrectResult()
+            Vector2.Zero, // Position
+            1f, // Width
+            44f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-            rect.Width = 100;
-
-            // Act
-            var actual = rect.HalfWidth;
-
-            // Assert
-            Assert.Equal(50f, actual);
-        }
-
-        [Fact]
-        public void HalfHeight_WhenGettingValue_ReturnsCorrectResult()
+            Vector2.Zero, // Position
+            1f, // Width
+            1f, // Height
+            Color.FromArgb(44, 44, 44, 44), // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-            rect.Height = 100;
-
-            // Act
-            var actual = rect.HalfHeight;
-
-            // Assert
-            Assert.Equal(50f, actual);
-        }
-
-        [Fact]
-        public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
+            Vector2.Zero, // Position
+            1f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            true, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-
-            // Act
-            rect.BorderThickness = 123f;
-            var actual = rect.BorderThickness;
-
-            // Assert
-            Assert.Equal(123f, actual);
-        }
-
-        [Fact]
-        public void CornerRadius_WhenGettingDefaultValue_ReturnsCorrectResult()
+            Vector2.Zero, // Position
+            1f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(44f, 44f, 44f, 44f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-
-            // Act
-            var actual = rect.CornerRadius;
-
-            // Assert
-            AssertExtensions.EqualWithMessage(1f, actual.TopLeft, "The top left value is incorrect.");
-            AssertExtensions.EqualWithMessage(1f, actual.BottomLeft, "The bottom left value is incorrect.");
-            AssertExtensions.EqualWithMessage(1f, actual.BottomRight, "The bottom right value is incorrect.");
-            AssertExtensions.EqualWithMessage(1f, actual.TopRight, "The top right value is incorrect.");
-        }
-
-        [Fact]
-        public void CornerRadius_WhenInvoked_ReturnsCorrectResult()
+            Vector2.Zero, // Position
+            1f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.Horizontal, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-
-            // Act
-            rect.CornerRadius = new CornerRadius(11f, 22f, 33f, 44f);
-            var actual = rect.CornerRadius;
-
-            // Assert
-            AssertExtensions.EqualWithMessage(11f, actual.TopLeft, "The top left value is incorrect.");
-            AssertExtensions.EqualWithMessage(22f, actual.BottomLeft, "The bottom left value is incorrect.");
-            AssertExtensions.EqualWithMessage(33f, actual.BottomRight, "The bottom right value is incorrect.");
-            AssertExtensions.EqualWithMessage(44f, actual.TopRight, "The top right value is incorrect.");
-        }
-
-        [Fact]
-        public void Top_WhenSettingValue_ReturnsCorrectResult()
+            Vector2.Zero, // Position
+            1f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.FromArgb(44, 44, 44, 44), // Gradient Start
+            Color.Empty, // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-            rect.Position = new Vector2(100, 100);
-            rect.Width = 100;
-            rect.Height = 50;
-
-            // Act
-            rect.Top = 40f;
-            var actual = rect.Top;
-
-            // Assert
-            AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Top)} value incorrect.");
-            AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-            AssertExtensions.EqualWithMessage(65f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
-        }
-
-        [Fact]
-        public void Right_WhenSettingValue_ReturnsCorrectResult()
+            Vector2.Zero, // Position
+            1f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.FromArgb(44, 44, 44, 44), // Gradient Stop
+            false, // EXPECTED
+        };
+        yield return new object[]
         {
-            // Arrange
-            var rect = new RectShape();
-            rect.Position = new Vector2(200, 100);
-            rect.Width = 100;
-            rect.Height = 50;
-
-            // Act
-            rect.Right = 100f;
-            var actual = rect.Right;
-
-            // Assert
-            AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Right)} value incorrect.");
-            AssertExtensions.EqualWithMessage(50, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-            AssertExtensions.EqualWithMessage(100f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
-        }
-
-        [Fact]
-        public void Bottom_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var rect = new RectShape();
-            rect.Position = new Vector2(100, 100);
-            rect.Width = 100;
-            rect.Height = 50;
-
-            // Act
-            rect.Bottom = 40f;
-            var actual = rect.Bottom;
-
-            // Assert
-            AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Bottom)} value incorrect.");
-            AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-            AssertExtensions.EqualWithMessage(15f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
-        }
-
-        [Fact]
-        public void Left_WhenSettingValue_ReturnsCorrectResult()
-        {
-            // Arrange
-            var rect = new RectShape();
-            rect.Position = new Vector2(200, 100);
-            rect.Width = 100;
-            rect.Height = 50;
-
-            // Act
-            rect.Left = 100f;
-            var actual = rect.Left;
-
-            // Assert
-            AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Left)} value incorrect.");
-            AssertExtensions.EqualWithMessage(150, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
-            AssertExtensions.EqualWithMessage(100f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
-        }
-        #endregion
-
-        #region Method Tests
-        [Theory]
-        [MemberData(nameof(IsEmptyTestData))]
-        public void IsEmpty_WhenInvoked_ReturnsCorrectResult(
-            Vector2 position,
-            float width,
-            float height,
-            Color color,
-            bool isFilled,
-            float borderThickness,
-            CornerRadius cornerRadius,
-            ColorGradient gradientType,
-            Color gradientStart,
-            Color gradientStop,
-            bool expected)
-        {
-            // Arrange
-            var rect = new RectShape();
-            rect.Position = position;
-            rect.Width = width;
-            rect.Height = height;
-            rect.Color = color;
-            rect.IsFilled = isFilled;
-            rect.BorderThickness = borderThickness;
-            rect.CornerRadius = cornerRadius;
-            rect.GradientType = gradientType;
-            rect.GradientStart = gradientStart;
-            rect.GradientStop = gradientStop;
-
-            // Act
-            var actual = rect.IsEmpty();
-
-            // Assert
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Empty_WhenInvoked_EmptiesStruct()
-        {
-            // Arrange
-            var rect = new RectShape();
-            rect.Position = new Vector2(1, 2);
-            rect.Width = 3f;
-            rect.Height = 4f;
-            rect.Color = Color.FromArgb(5, 6, 7, 8);
-            rect.IsFilled = true;
-            rect.BorderThickness = 9f;
-            rect.CornerRadius = new CornerRadius(10, 11, 12, 13);
-            rect.GradientType = ColorGradient.Horizontal;
-            rect.GradientStart = Color.FromArgb(14, 15, 16, 17);
-            rect.GradientStop = Color.FromArgb(18, 19, 20, 21);
-
-            // Act
-            rect.Empty();
-
-            // Assert
-            Assert.Equal(Vector2.Zero, rect.Position);
-            Assert.Equal(1f, rect.Width);
-            Assert.Equal(1f, rect.Height);
-            Assert.Equal(Color.Empty, rect.Color);
-            Assert.False(rect.IsFilled);
-            Assert.Equal(0f, rect.BorderThickness);
-            Assert.Equal(new CornerRadius(0f, 0f, 0f, 0f), rect.CornerRadius);
-            Assert.Equal(ColorGradient.None, rect.GradientType);
-            Assert.Equal(Color.Empty, rect.GradientStart);
-            Assert.Equal(Color.Empty, rect.GradientStop);
-        }
-        #endregion
+            Vector2.Zero, // Position
+            1f, // Width
+            1f, // Height
+            Color.Empty, // Color
+            false, // IsFilled
+            1f, // Border Thickness
+            new CornerRadius(0f, 0f, 0f, 0f), // Corner Radius
+            ColorGradient.None, // Gradient Type
+            Color.Empty, // Gradient Start
+            Color.Empty, // Gradient Stop
+            true, // EXPECTED
+        };
     }
+
+    #region Constructor Tests
+    [Fact]
+    [SuppressMessage(
+        "StyleCop.CSharp.ReadabilityRules",
+        "SA1129:Do not use default value type constructor",
+        Justification = "Unit test requires use of constructor.")]
+    public void Ctor_WhenInvoked_SetsDefaultValues()
+    {
+        // Arrange & Act
+        var rect = new RectShape();
+
+        // Assert
+        Assert.Equal(Vector2.Zero, rect.Position);
+        Assert.Equal(1f, rect.Width);
+        Assert.Equal(1f, rect.Height);
+        Assert.Equal(Color.White, rect.Color);
+        Assert.True(rect.IsFilled);
+        Assert.Equal(1f, rect.BorderThickness);
+        Assert.Equal(new CornerRadius(1f, 1f, 1f, 1f), rect.CornerRadius);
+        Assert.Equal(ColorGradient.None, rect.GradientType);
+        Assert.Equal(Color.White, rect.GradientStart);
+        Assert.Equal(Color.White, rect.GradientStop);
+    }
+    #endregion
+
+    #region Prop Tests
+    [Theory]
+    [InlineData(0, 1)]
+    [InlineData(-10f, 1)]
+    [InlineData(123, 123)]
+    public void Width_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
+    {
+        // Arrange
+        var rect = new RectShape();
+
+        // Act
+        rect.Width = value;
+        var actual = rect.Width;
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
+    [InlineData(0, 1)]
+    [InlineData(-10f, 1)]
+    [InlineData(123, 123)]
+    public void Height_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
+    {
+        // Arrange
+        var rect = new RectShape();
+
+        // Act
+        rect.Height = value;
+        var actual = rect.Height;
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void HalfWidth_WhenGettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+        rect.Width = 100;
+
+        // Act
+        var actual = rect.HalfWidth;
+
+        // Assert
+        Assert.Equal(50f, actual);
+    }
+
+    [Fact]
+    public void HalfHeight_WhenGettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+        rect.Height = 100;
+
+        // Act
+        var actual = rect.HalfHeight;
+
+        // Assert
+        Assert.Equal(50f, actual);
+    }
+
+    [Fact]
+    public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+
+        // Act
+        rect.BorderThickness = 123f;
+        var actual = rect.BorderThickness;
+
+        // Assert
+        Assert.Equal(123f, actual);
+    }
+
+    [Fact]
+    public void CornerRadius_WhenGettingDefaultValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+
+        // Act
+        var actual = rect.CornerRadius;
+
+        // Assert
+        AssertExtensions.EqualWithMessage(1f, actual.TopLeft, "The top left value is incorrect.");
+        AssertExtensions.EqualWithMessage(1f, actual.BottomLeft, "The bottom left value is incorrect.");
+        AssertExtensions.EqualWithMessage(1f, actual.BottomRight, "The bottom right value is incorrect.");
+        AssertExtensions.EqualWithMessage(1f, actual.TopRight, "The top right value is incorrect.");
+    }
+
+    [Fact]
+    public void CornerRadius_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+
+        // Act
+        rect.CornerRadius = new CornerRadius(11f, 22f, 33f, 44f);
+        var actual = rect.CornerRadius;
+
+        // Assert
+        AssertExtensions.EqualWithMessage(11f, actual.TopLeft, "The top left value is incorrect.");
+        AssertExtensions.EqualWithMessage(22f, actual.BottomLeft, "The bottom left value is incorrect.");
+        AssertExtensions.EqualWithMessage(33f, actual.BottomRight, "The bottom right value is incorrect.");
+        AssertExtensions.EqualWithMessage(44f, actual.TopRight, "The top right value is incorrect.");
+    }
+
+    [Fact]
+    public void Top_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+        rect.Position = new Vector2(100, 100);
+        rect.Width = 100;
+        rect.Height = 50;
+
+        // Act
+        rect.Top = 40f;
+        var actual = rect.Top;
+
+        // Assert
+        AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Top)} value incorrect.");
+        AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+        AssertExtensions.EqualWithMessage(65f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+    }
+
+    [Fact]
+    public void Right_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+        rect.Position = new Vector2(200, 100);
+        rect.Width = 100;
+        rect.Height = 50;
+
+        // Act
+        rect.Right = 100f;
+        var actual = rect.Right;
+
+        // Assert
+        AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Right)} value incorrect.");
+        AssertExtensions.EqualWithMessage(50, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+        AssertExtensions.EqualWithMessage(100f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+    }
+
+    [Fact]
+    public void Bottom_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+        rect.Position = new Vector2(100, 100);
+        rect.Width = 100;
+        rect.Height = 50;
+
+        // Act
+        rect.Bottom = 40f;
+        var actual = rect.Bottom;
+
+        // Assert
+        AssertExtensions.EqualWithMessage(40f, actual, $"{nameof(RectShape.Bottom)} value incorrect.");
+        AssertExtensions.EqualWithMessage(100, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+        AssertExtensions.EqualWithMessage(15f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+    }
+
+    [Fact]
+    public void Left_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var rect = new RectShape();
+        rect.Position = new Vector2(200, 100);
+        rect.Width = 100;
+        rect.Height = 50;
+
+        // Act
+        rect.Left = 100f;
+        var actual = rect.Left;
+
+        // Assert
+        AssertExtensions.EqualWithMessage(100f, actual, $"{nameof(RectShape.Left)} value incorrect.");
+        AssertExtensions.EqualWithMessage(150, rect.Position.X, $"{nameof(RectShape.Position.X)} value incorrect.");
+        AssertExtensions.EqualWithMessage(100f, rect.Position.Y, $"{nameof(RectShape.Position.Y)} value incorrect.");
+    }
+    #endregion
+
+    #region Method Tests
+    [Theory]
+    [MemberData(nameof(IsEmptyTestData))]
+    public void IsEmpty_WhenInvoked_ReturnsCorrectResult(
+        Vector2 position,
+        float width,
+        float height,
+        Color color,
+        bool isFilled,
+        float borderThickness,
+        CornerRadius cornerRadius,
+        ColorGradient gradientType,
+        Color gradientStart,
+        Color gradientStop,
+        bool expected)
+    {
+        // Arrange
+        var rect = new RectShape();
+        rect.Position = position;
+        rect.Width = width;
+        rect.Height = height;
+        rect.Color = color;
+        rect.IsFilled = isFilled;
+        rect.BorderThickness = borderThickness;
+        rect.CornerRadius = cornerRadius;
+        rect.GradientType = gradientType;
+        rect.GradientStart = gradientStart;
+        rect.GradientStop = gradientStop;
+
+        // Act
+        var actual = rect.IsEmpty();
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Empty_WhenInvoked_EmptiesStruct()
+    {
+        // Arrange
+        var rect = new RectShape();
+        rect.Position = new Vector2(1, 2);
+        rect.Width = 3f;
+        rect.Height = 4f;
+        rect.Color = Color.FromArgb(5, 6, 7, 8);
+        rect.IsFilled = true;
+        rect.BorderThickness = 9f;
+        rect.CornerRadius = new CornerRadius(10, 11, 12, 13);
+        rect.GradientType = ColorGradient.Horizontal;
+        rect.GradientStart = Color.FromArgb(14, 15, 16, 17);
+        rect.GradientStop = Color.FromArgb(18, 19, 20, 21);
+
+        // Act
+        rect.Empty();
+
+        // Assert
+        Assert.Equal(Vector2.Zero, rect.Position);
+        Assert.Equal(1f, rect.Width);
+        Assert.Equal(1f, rect.Height);
+        Assert.Equal(Color.Empty, rect.Color);
+        Assert.False(rect.IsFilled);
+        Assert.Equal(0f, rect.BorderThickness);
+        Assert.Equal(new CornerRadius(0f, 0f, 0f, 0f), rect.CornerRadius);
+        Assert.Equal(ColorGradient.None, rect.GradientType);
+        Assert.Equal(Color.Empty, rect.GradientStart);
+        Assert.Equal(Color.Empty, rect.GradientStop);
+    }
+    #endregion
 }

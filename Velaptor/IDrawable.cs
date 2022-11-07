@@ -2,22 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor
+using Velaptor.Graphics;
+
+namespace Velaptor;
+
+/// <summary>
+/// Provides the ability for an object to be rendered.
+/// </summary>
+public interface IDrawable
 {
-    // ReSharper disable RedundantNameQualifier
-    using Velaptor.Graphics;
-
-    // ReSharper restore RedundantNameQualifier
-
     /// <summary>
-    /// Provides the ability for an object to be rendered.
+    /// Renders the object.
     /// </summary>
-    public interface IDrawable
-    {
-        /// <summary>
-        /// Renders the object.
-        /// </summary>
-        /// <param name="renderer">Renders textures, primitives, and text.</param>
-        void Render(IRenderer renderer);
-    }
+    /// <param name="renderer">Renders textures, primitives, and text.</param>
+    void Render(IRenderer renderer);
 }

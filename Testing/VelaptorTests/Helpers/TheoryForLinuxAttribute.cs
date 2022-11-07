@@ -2,30 +2,29 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Helpers
+using System.Runtime.InteropServices;
+using Xunit;
+
+namespace VelaptorTests.Helpers;
+
+/// <summary>
+/// <inheritdoc cref="TheoryAttribute"/>.
+/// <para>
+///     Test is only executed for the <c>Linux</c> platform.
+/// </para>
+/// </summary>
+public sealed class TheoryForLinuxAttribute : TheoryAttribute
 {
-    using System.Runtime.InteropServices;
-    using Xunit;
-
     /// <summary>
-    /// <inheritdoc cref="TheoryAttribute"/>.
-    /// <para>
-    ///     Test is only executed for the <c>Linux</c> platform.
-    /// </para>
+    /// Initializes a new instance of the <see cref="TheoryForLinuxAttribute"/> class.
     /// </summary>
-    public sealed class TheoryForLinuxAttribute : TheoryAttribute
+    public TheoryForLinuxAttribute()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TheoryForLinuxAttribute"/> class.
-        /// </summary>
-        public TheoryForLinuxAttribute()
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return;
-            }
-
-            Skip = $"Only executed on {OSPlatform.Linux}.";
+            return;
         }
+
+        Skip = $"Only executed on {OSPlatform.Linux}.";
     }
 }

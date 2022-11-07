@@ -2,26 +2,25 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Helpers
-{
-    using Xunit;
+using Xunit;
 
+namespace VelaptorTests.Helpers;
+
+/// <summary>
+/// <inheritdoc cref="FactAttribute"/>.
+/// <para>
+///     Only executed if the build is a <c>Debug</c> build.
+/// </para>
+/// </summary>
+public sealed class FactForDebugAttribute : FactAttribute
+{
     /// <summary>
-    /// <inheritdoc cref="FactAttribute"/>.
-    /// <para>
-    ///     Only executed if the build is a <c>Debug</c> build.
-    /// </para>
+    /// Initializes a new instance of the <see cref="FactForDebugAttribute"/> class.
     /// </summary>
-    public sealed class FactForDebugAttribute : FactAttribute
+    public FactForDebugAttribute()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FactForDebugAttribute"/> class.
-        /// </summary>
-        public FactForDebugAttribute()
-        {
 #if !DEBUG
             Skip = "Only executed with debug builds.";
 #endif
-        }
     }
 }
