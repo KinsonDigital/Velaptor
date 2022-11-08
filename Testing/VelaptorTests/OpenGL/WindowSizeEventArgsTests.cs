@@ -20,7 +20,7 @@ public class WindowSizeEventArgsTests
         // Arrange
         var eventArgs = new WindowSizeEventArgs(123u, 456u);
 
-            // Act
+        // Act
         var actualWidth = eventArgs.Width;
         var actualHeight = eventArgs.Height;
 
