@@ -20,14 +20,13 @@ internal sealed class WindowSizeEventArgs
         Height = height;
     }
 
-        /// <summary>
-        /// Gets the width of the window.
-        /// </summary>
-        public uint Width { get; }
+    /// <summary>
+    /// Gets the width of the window.
+    /// </summary>
+    public uint Width { get; }
 
-        /// <summary>
-        /// Gets the height of the window.
-        /// </summary>
-        public uint Height { get; }
-    }
+    /// <summary>
+    /// Gets the height of the window.
+    /// </summary>
+    public uint Height { get; }
 }

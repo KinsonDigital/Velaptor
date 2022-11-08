@@ -21,13 +21,12 @@ public class WindowSizeEventArgsTests
         var eventArgs = new WindowSizeEventArgs(123u, 456u);
 
             // Act
-            var actualWidth = eventArgs.Width;
-            var actualHeight = eventArgs.Height;
+        var actualWidth = eventArgs.Width;
+        var actualHeight = eventArgs.Height;
 
-            // Assert
-            actualWidth.Should().Be(123u);
-            actualHeight.Should().Be(456u);
-        }
-        #endregion
+        // Assert
+        actualWidth.Should().Be(123u);
+        actualHeight.Should().Be(456u);
     }
+    #endregion
 }
