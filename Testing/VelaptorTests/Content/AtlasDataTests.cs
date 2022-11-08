@@ -12,7 +12,6 @@ using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Graphics;
-using VelaptorTests.Helpers;
 using Xunit;
 
 /// <summary>
@@ -326,7 +325,7 @@ public class AtlasDataTests
         var actual = data.GetFrames("sub-texture");
 
         // Assert
-        Assert.Equal(expectedItems.Length, actual.Length);
+        actual.Length.Should().Be(expectedItems.Length);
 
         for (var i = 0; i < actual.Length; i++)
         {
