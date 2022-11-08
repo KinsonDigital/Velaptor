@@ -2,42 +2,41 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Input.Exceptions
+using System;
+
+namespace Velaptor.Input.Exceptions;
+
+/// <summary>
+/// Occurs when invalid input has occured.
+/// </summary>
+public class InvalidInputException : Exception
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
+    /// </summary>
+    public InvalidInputException()
+        : base($"Invalid Input")
+    {
+    }
 
     /// <summary>
-    /// Occurs when invalid input has occured.
+    /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
     /// </summary>
-    public class InvalidInputException : Exception
+    /// <param name="message">The message that describes the error.</param>
+    public InvalidInputException(string message)
+        : base(message)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
-        /// </summary>
-        public InvalidInputException()
-            : base($"Invalid Input")
-        {
-        }
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public InvalidInputException(string message)
-            : base(message)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        /// <param name="innerException">
-        ///     The <see cref="Exception"/> instance that caused the current exception.
-        /// </param>
-        public InvalidInputException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InvalidInputException"/> class.
+    /// </summary>
+    /// <param name="message">The message that describes the error.</param>
+    /// <param name="innerException">
+    ///     The <see cref="Exception"/> instance that caused the current exception.
+    /// </param>
+    public InvalidInputException(string message, Exception innerException)
+        : base(message, innerException)
+    {
     }
 }

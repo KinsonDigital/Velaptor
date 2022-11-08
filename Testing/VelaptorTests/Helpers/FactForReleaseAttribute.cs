@@ -2,26 +2,25 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Helpers
-{
-    using Xunit;
+using Xunit;
 
+namespace VelaptorTests.Helpers;
+
+/// <summary>
+/// <inheritdoc cref="FactAttribute"/>.
+/// <para>
+///     Only executed if the build is a <c>Debug</c> build.
+/// </para>
+/// </summary>
+public sealed class FactForReleaseAttribute : FactAttribute
+{
     /// <summary>
-    /// <inheritdoc cref="FactAttribute"/>.
-    /// <para>
-    ///     Only executed if the build is a <c>Debug</c> build.
-    /// </para>
+    /// Initializes a new instance of the <see cref="FactForReleaseAttribute"/> class.
     /// </summary>
-    public sealed class FactForReleaseAttribute : FactAttribute
+    public FactForReleaseAttribute()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FactForReleaseAttribute"/> class.
-        /// </summary>
-        public FactForReleaseAttribute()
-        {
 #if !RELEASE
-            Skip = "Only executed with release builds.";
+        Skip = "Only executed with release builds.";
 #endif
-        }
     }
 }

@@ -2,23 +2,22 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.NativeInterop.GLFW
+using Velaptor.NativeInterop.GLFW;
+using Xunit;
+
+namespace VelaptorTests.NativeInterop.GLFW;
+
+public class GLFWMonitorChangedEventArgsTests
 {
-    using Velaptor.NativeInterop.GLFW;
-    using Xunit;
-
-    public class GLFWMonitorChangedEventArgsTests
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WhenInvoked_SetsPropertyValue()
     {
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WhenInvoked_SetsPropertyValue()
-        {
-            // Arrange & Act
-            var eventArgs = new GLFWMonitorChangedEventArgs(true);
+        // Arrange & Act
+        var eventArgs = new GLFWMonitorChangedEventArgs(true);
 
-            // Assert
-            Assert.True(eventArgs.IsConnected);
-        }
-        #endregion
+        // Assert
+        Assert.True(eventArgs.IsConnected);
     }
+    #endregion
 }

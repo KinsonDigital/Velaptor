@@ -2,32 +2,31 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories
-{
-    // ReSharper disable RedundantNameQualifier
-    using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Input;
+namespace Velaptor.Factories;
 
-    // ReSharper restore RedundantNameQualifier
+
+using System.Diagnostics.CodeAnalysis;
+using Velaptor.Input;
+
+
+
+/// <summary>
+/// Generates input type objects for processing input such as the keyboard and mouse.
+/// </summary>
+[ExcludeFromCodeCoverage]
+public static class AppInputFactory
+{
+    /// <summary>
+    /// Creates a keyboard object.
+    /// </summary>
+    /// <returns>The keyboard singleton object.</returns>
+    public static IAppInput<KeyboardState> CreateKeyboard() =>
+        (UnitTestDetector.IsRunningFromUnitTest ? null : IoC.Container.GetInstance<IAppInput<KeyboardState>>()) !;
 
     /// <summary>
-    /// Generates input type objects for processing input such as the keyboard and mouse.
+    /// Creates a mouse object.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public static class AppInputFactory
-    {
-        /// <summary>
-        /// Creates a keyboard object.
-        /// </summary>
-        /// <returns>The keyboard singleton object.</returns>
-        public static IAppInput<KeyboardState> CreateKeyboard() =>
-            (UnitTestDetector.IsRunningFromUnitTest ? null : IoC.Container.GetInstance<IAppInput<KeyboardState>>()) !;
-
-        /// <summary>
-        /// Creates a mouse object.
-        /// </summary>
-        /// <returns>The keyboard singleton object.</returns>
-        public static IAppInput<MouseState> CreateMouse() =>
-            (UnitTestDetector.IsRunningFromUnitTest ? null : IoC.Container.GetInstance<IAppInput<MouseState>>()) !;
-    }
+    /// <returns>The keyboard singleton object.</returns>
+    public static IAppInput<MouseState> CreateMouse() =>
+        (UnitTestDetector.IsRunningFromUnitTest ? null : IoC.Container.GetInstance<IAppInput<MouseState>>()) !;
 }

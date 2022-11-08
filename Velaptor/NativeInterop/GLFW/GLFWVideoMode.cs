@@ -2,44 +2,43 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.NativeInterop.GLFW
+using System.Runtime.InteropServices;
+
+namespace Velaptor.NativeInterop.GLFW;
+
+/// <summary>
+/// The GLFW video mode.
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+internal struct GLFWVideoMode
 {
-    using System.Runtime.InteropServices;
+    /// <summary>
+    /// The width, in screen coordinates, of the GLFWVideoMode.
+    /// </summary>
+    public int Width;
 
     /// <summary>
-    /// The GLFW video mode.
+    /// The height, in screen coordinates, of the GLFWVideoMode.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct GLFWVideoMode
-    {
-        /// <summary>
-        /// The width, in screen coordinates, of the GLFWVideoMode.
-        /// </summary>
-        public int Width;
+    public int Height;
 
-        /// <summary>
-        /// The height, in screen coordinates, of the GLFWVideoMode.
-        /// </summary>
-        public int Height;
+    /// <summary>
+    /// The bit depth of the red channel of the GLFWVideoMode.
+    /// </summary>
+    public int RedBits;
 
-        /// <summary>
-        /// The bit depth of the red channel of the GLFWVideoMode.
-        /// </summary>
-        public int RedBits;
+    /// <summary>
+    /// The bit depth of the green channel of the GLFWVideoMode.
+    /// </summary>
+    public int GreenBits;
 
-        /// <summary>
-        /// The bit depth of the green channel of the GLFWVideoMode.
-        /// </summary>
-        public int GreenBits;
+    /// <summary>
+    /// The bit depth of the blue channel of the GLFWVideoMode.
+    /// </summary>
+    public int BlueBits;
 
-        /// <summary>
-        /// The bit depth of the blue channel of the GLFWVideoMode.
-        /// </summary>
-        public int BlueBits;
-
-        /// <summary>
-        /// The refresh rate, in Hz, of the GLFWVideoMode.
-        /// </summary>
-        public int RefreshRate;
-    }
+    /// <summary>
+    /// The refresh rate, in Hz, of the GLFWVideoMode.
+    /// </summary>
+    public int RefreshRate;
 }

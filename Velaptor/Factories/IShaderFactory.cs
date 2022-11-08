@@ -2,34 +2,30 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories
-{
-    // ReSharper disable RedundantNameQualifier
-    using Velaptor.OpenGL.Shaders;
+using Velaptor.OpenGL.Shaders;
 
-    // ReSharper restore RedundantNameQualifier
+namespace Velaptor.Factories;
+
+/// <summary>
+/// Creates different shaders.
+/// </summary>
+internal interface IShaderFactory
+{
+    /// <summary>
+    /// Creates a shader for rendering textures.
+    /// </summary>
+    /// <returns>The shader program.</returns>
+    IShaderProgram CreateTextureShader();
 
     /// <summary>
-    /// Creates different shaders.
+    /// Creates a shader for rendering text using a font.
     /// </summary>
-    internal interface IShaderFactory
-    {
-        /// <summary>
-        /// Creates a shader for rendering textures.
-        /// </summary>
-        /// <returns>The shader program.</returns>
-        IShaderProgram CreateTextureShader();
+    /// <returns>The shader program.</returns>
+    IShaderProgram CreateFontShader();
 
-        /// <summary>
-        /// Creates a shader for rendering text using a font.
-        /// </summary>
-        /// <returns>The shader program.</returns>
-        IShaderProgram CreateFontShader();
-
-        /// <summary>
-        /// Creates a shader for rendering rectangles.
-        /// </summary>
-        /// <returns>The shader program.</returns>
-        IShaderProgram CreateRectShader();
-    }
+    /// <summary>
+    /// Creates a shader for rendering rectangles.
+    /// </summary>
+    /// <returns>The shader program.</returns>
+    IShaderProgram CreateRectShader();
 }

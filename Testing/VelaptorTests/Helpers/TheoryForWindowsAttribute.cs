@@ -2,30 +2,29 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Helpers
+using System.Runtime.InteropServices;
+using Xunit;
+
+namespace VelaptorTests.Helpers;
+
+/// <summary>
+/// <inheritdoc cref="TheoryAttribute"/>.
+/// <para>
+///     Test is only executed for the <c>Windows</c> platform.
+/// </para>
+/// </summary>
+public sealed class TheoryForWindowsAttribute : TheoryAttribute
 {
-    using System.Runtime.InteropServices;
-    using Xunit;
-
     /// <summary>
-    /// <inheritdoc cref="TheoryAttribute"/>.
-    /// <para>
-    ///     Test is only executed for the <c>Windows</c> platform.
-    /// </para>
+    /// Initializes a new instance of the <see cref="TheoryForWindowsAttribute"/> class.
     /// </summary>
-    public sealed class TheoryForWindowsAttribute : TheoryAttribute
+    public TheoryForWindowsAttribute()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TheoryForWindowsAttribute"/> class.
-        /// </summary>
-        public TheoryForWindowsAttribute()
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return;
-            }
-
-            Skip = $"Only executed on {OSPlatform.Windows}.";
+            return;
         }
+
+        Skip = $"Only executed on {OSPlatform.Windows}.";
     }
 }

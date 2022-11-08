@@ -2,72 +2,68 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content.Factories
-{
-    // ReSharper disable RedundantNameQualifier
-    using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Content.Caching;
-    using Velaptor.Content.Fonts;
-    using Velaptor.Content.Fonts.Services;
-    using Velaptor.Graphics;
-    using Velaptor.Guards;
-    using Velaptor.Services;
+using System.Diagnostics.CodeAnalysis;
+using Velaptor.Content.Caching;
+using Velaptor.Content.Fonts;
+using Velaptor.Content.Fonts.Services;
+using Velaptor.Graphics;
+using Velaptor.Guards;
+using Velaptor.Services;
 
-    // ReSharper restore RedundantNameQualifier
+namespace Velaptor.Content.Factories;
+
+/// <summary>
+/// Generates <see cref="IFont"/> instances.
+/// </summary>
+[ExcludeFromCodeCoverage]
+internal sealed class FontFactory : IFontFactory
+{
+    private readonly IFontService fontService;
+    private readonly IFontStatsService fontStatsService;
+    private readonly IFontAtlasService fontAtlasService;
+    private readonly IItemCache<string, ITexture> textureCache;
 
     /// <summary>
-    /// Generates <see cref="IFont"/> instances.
+    /// Initializes a new instance of the <see cref="FontFactory"/> class.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    internal sealed class FontFactory : IFontFactory
+    /// <param name="fontService">Helper methods for <c>FreeType</c> like operations.</param>
+    /// <param name="fontStatsService">Provides font stat services.</param>
+    /// <param name="fontAtlasService">Provides services for building font atlas textures.</param>
+    /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
+    public FontFactory(
+        IFontService fontService,
+        IFontStatsService fontStatsService,
+        IFontAtlasService fontAtlasService,
+        IItemCache<string, ITexture> textureCache)
     {
-        private readonly IFontService fontService;
-        private readonly IFontStatsService fontStatsService;
-        private readonly IFontAtlasService fontAtlasService;
-        private readonly IItemCache<string, ITexture> textureCache;
+        EnsureThat.ParamIsNotNull(fontAtlasService);
+        EnsureThat.ParamIsNotNull(textureCache);
+        EnsureThat.ParamIsNotNull(fontService);
+        EnsureThat.ParamIsNotNull(fontStatsService);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FontFactory"/> class.
-        /// </summary>
-        /// <param name="fontService">Helper methods for <c>FreeType</c> like operations.</param>
-        /// <param name="fontStatsService">Provides font stat services.</param>
-        /// <param name="fontAtlasService">Provides services for building font atlas textures.</param>
-        /// <param name="textureCache">Creates and caches textures for later retrieval.</param>
-        public FontFactory(
-            IFontService fontService,
-            IFontStatsService fontStatsService,
-            IFontAtlasService fontAtlasService,
-            IItemCache<string, ITexture> textureCache)
-        {
-            EnsureThat.ParamIsNotNull(fontAtlasService);
-            EnsureThat.ParamIsNotNull(textureCache);
-            EnsureThat.ParamIsNotNull(fontService);
-            EnsureThat.ParamIsNotNull(fontStatsService);
-
-            this.fontAtlasService = fontAtlasService;
-            this.textureCache = textureCache;
-            this.fontService = fontService;
-            this.fontStatsService = fontStatsService;
-        }
-
-        /// <inheritdoc/>
-        public IFont Create(
-            ITexture textureAtlas,
-            string name,
-            string fontFilePath,
-            uint size,
-            bool isDefaultFont,
-            GlyphMetrics[] glyphMetrics) =>
-            new Font(
-                textureAtlas,
-                this.fontService,
-                this.fontStatsService,
-                this.fontAtlasService,
-                this.textureCache,
-                name,
-                fontFilePath,
-                size,
-                isDefaultFont,
-                glyphMetrics);
+        this.fontAtlasService = fontAtlasService;
+        this.textureCache = textureCache;
+        this.fontService = fontService;
+        this.fontStatsService = fontStatsService;
     }
+
+    /// <inheritdoc/>
+    public IFont Create(
+        ITexture textureAtlas,
+        string name,
+        string fontFilePath,
+        uint size,
+        bool isDefaultFont,
+        GlyphMetrics[] glyphMetrics) =>
+        new Font(
+            textureAtlas,
+            this.fontService,
+            this.fontStatsService,
+            this.fontAtlasService,
+            this.textureCache,
+            name,
+            fontFilePath,
+            size,
+            isDefaultFont,
+            glyphMetrics);
 }
