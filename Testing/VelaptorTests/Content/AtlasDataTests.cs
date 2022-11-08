@@ -1,4 +1,4 @@
-// <copyright file="AtlasDataTests.cs" company="KinsonDigital">
+﻿// <copyright file="AtlasDataTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -7,6 +7,7 @@ namespace VelaptorTests.Content;
 using System;
 using System.Drawing;
 using System.IO.Abstractions;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -66,8 +67,8 @@ public class AtlasDataTests
     [Fact]
     public void Ctor_WithNullTextureCache_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        Action action = () =>
         {
             var unused = new AtlasData(
                 null,
@@ -75,14 +76,18 @@ public class AtlasDataTests
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
                 "atlas-name");
-        }, "The parameters must not be null or empty. (Parameter 'textureCache')");
+        };
+
+        // Assert
+        action.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameters must not be null or empty. (Parameter 'textureCache')");
     }
 
     [Fact]
     public void Ctor_WithNullPath_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        Action action = () =>
         {
             var unused = new AtlasData(
                 this.mockTextureCache.Object,
@@ -90,14 +95,18 @@ public class AtlasDataTests
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
                 "atlas-name");
-        }, "The parameters must not be null or empty. (Parameter 'path')");
+        };
+
+        // Assert
+        action.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameters must not be null or empty. (Parameter 'path')");
     }
 
     [Fact]
     public void Ctor_WithNullSubTextureData_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        Action action = () =>
         {
             var unused = new AtlasData(
                 this.mockTextureCache.Object,
@@ -105,7 +114,10 @@ public class AtlasDataTests
                 null,
                 "dir-path",
                 "atlas-name");
-        }, "The parameters must not be null or empty. (Parameter 'atlasSubTextureData')");
+        };
+
+        action.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameters must not be null or empty. (Parameter 'atlasSubTextureData')");
     }
 
     [Theory]
@@ -113,8 +125,8 @@ public class AtlasDataTests
     [InlineData(null)]
     public void Ctor_WithNullOrEmptyDirPath_ThrowsException(string dirPath)
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        Action action = () =>
         {
             var unused = new AtlasData(
                 this.mockTextureCache.Object,
@@ -122,7 +134,11 @@ public class AtlasDataTests
                 Array.Empty<AtlasSubTextureData>(),
                 dirPath,
                 "atlas-name");
-        }, "The string parameter must not be null or empty. (Parameter 'dirPath')");
+        };
+
+        // Assert
+        action.Should().Throw<ArgumentNullException>()
+            .WithMessage("The string parameter must not be null or empty. (Parameter 'dirPath')");
     }
 
     [Theory]
@@ -130,8 +146,8 @@ public class AtlasDataTests
     [InlineData(null)]
     public void Ctor_WithNullOrEmptyAtlasName_ThrowsException(string atlasName)
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        Action action = () =>
         {
             var unused = new AtlasData(
                 this.mockTextureCache.Object,
@@ -139,7 +155,11 @@ public class AtlasDataTests
                 Array.Empty<AtlasSubTextureData>(),
                 "dir-path",
                 atlasName);
-        }, "The parameters must not be null or empty. (Parameter 'atlasName')");
+        };
+
+        // Assert
+        action.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameters must not be null or empty. (Parameter 'atlasName')");
     }
     #endregion
 
@@ -164,7 +184,7 @@ public class AtlasDataTests
         var actual = data.SubTextureNames;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Equal(expected);
     }
 
     [Fact]
@@ -177,7 +197,7 @@ public class AtlasDataTests
         var actual = data.Name;
 
         // Assert
-        Assert.Equal(AtlasName, actual);
+        actual.Should().Be(AtlasName);
     }
 
     [Theory]
@@ -195,7 +215,7 @@ public class AtlasDataTests
         var actual = data.FilePath;
 
         // Assert
-        Assert.Equal($"{DirPath}/{atlasName}{TextureExtension}", actual);
+        actual.Should().Be($"{DirPath}/{atlasName}{TextureExtension}");
     }
 
     [Theory]
@@ -213,7 +233,7 @@ public class AtlasDataTests
         var actual = data.AtlasDataFilePath;
 
         // Assert
-        Assert.Equal($"{DirPath}/{atlasName}{JSONFileExtension}", actual);
+        actual.Should().Be($"{DirPath}/{atlasName}{JSONFileExtension}");
     }
 
     [Fact]
@@ -231,7 +251,7 @@ public class AtlasDataTests
         var actual = data.Width;
 
         // Assert
-        Assert.Equal(123u, actual);
+        actual.Should().Be(123u);
     }
 
     [Fact]
@@ -249,7 +269,7 @@ public class AtlasDataTests
         var actual = data.Height;
 
         // Assert
-        Assert.Equal(123u, actual);
+        actual.Should().Be(123u);
     }
     #endregion
 
@@ -275,9 +295,9 @@ public class AtlasDataTests
         var actual = data[2];
 
         // Assert
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.FrameIndex, actual.FrameIndex);
-        Assert.Equal(expected.Bounds, actual.Bounds);
+        actual.Name.Should().Be(expected.Name);
+        actual.FrameIndex.Should().Be(expected.FrameIndex);
+        actual.Bounds.Should().Be(expected.Bounds);
     }
 
     [Fact]
@@ -310,9 +330,9 @@ public class AtlasDataTests
 
         for (var i = 0; i < actual.Length; i++)
         {
-            Assert.Equal(expectedItems[i].Name, actual[i].Name);
-            Assert.Equal(expectedItems[i].FrameIndex, actual[i].FrameIndex);
-            Assert.Equal(expectedItems[i].Bounds, actual[i].Bounds);
+            actual[i].Name.Should().Be(expectedItems[i].Name);
+            actual[i].FrameIndex.Should().Be(expectedItems[i].FrameIndex);
+            actual[i].Bounds.Should().Be(expectedItems[i].Bounds);
         }
     }
 
@@ -323,10 +343,10 @@ public class AtlasDataTests
         var data = CreateAtlasData();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<Exception>(() =>
-        {
-            data.GetFrame("missing-texture");
-        }, "The frame 'missing-texture' was not found in the atlas 'test-atlas'.");
+        Action action = () => data.GetFrame("missing-texture");
+
+        action.Should().Throw<Exception>()
+            .WithMessage("The frame 'missing-texture' was not found in the atlas 'test-atlas'.");
     }
 
     [Fact]
@@ -346,9 +366,9 @@ public class AtlasDataTests
         var actual = data.GetFrame("sub-texture");
 
         // Assert
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.FrameIndex, actual.FrameIndex);
-        Assert.Equal(expected.Bounds, actual.Bounds);
+        actual.Name.Should().Be(expected.Name);
+        actual.FrameIndex.Should().Be(expected.FrameIndex);
+        actual.Bounds.Should().Be(expected.Bounds);
     }
     #endregion
 
