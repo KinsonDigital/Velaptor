@@ -18,15 +18,15 @@ public class WindowSizeEventArgsTests
     public void Ctor_WhenInvoked_SetsProperties()
     {
         // Arrange
-        var eventArgs = new WindowSizeEventArgs(123, 456);
+        var eventArgs = new WindowSizeEventArgs(123u, 456u);
 
         // Act
         var actualWidth = eventArgs.Width;
         var actualHeight = eventArgs.Height;
 
         // Assert
-        actualWidth.Should().Be(123);
-        actualHeight.Should().Be(456);
+        actualWidth.Should().Be(123u);
+        actualHeight.Should().Be(456u);
     }
     #endregion
 }
