@@ -158,10 +158,10 @@ public class AtlasDataTests
             "sub-texture",
         };
 
-        var data = CreateAtlasData();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = data.SubTextureNames;
+        var actual = sut.SubTextureNames;
 
         // Assert
         Assert.Equal(expected, actual);
@@ -171,10 +171,10 @@ public class AtlasDataTests
     public void Name_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var data = CreateAtlasData();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = data.Name;
+        var actual = sut.Name;
 
         // Assert
         Assert.Equal(AtlasName, actual);
@@ -189,10 +189,10 @@ public class AtlasDataTests
         const string atlasName = "atlasWithExtension";
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
             .Returns(atlasName);
-        var data = CreateAtlasData($"{atlasName}{extension}");
+        var sut = CreateSystemUnderTest($"{atlasName}{extension}");
 
         // Act
-        var actual = data.FilePath;
+        var actual = sut.FilePath;
 
         // Assert
         Assert.Equal($"{DirPath}/{atlasName}{TextureExtension}", actual);
@@ -207,10 +207,10 @@ public class AtlasDataTests
         const string atlasName = "atlasWithExtension";
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{atlasName}{extension}"))
             .Returns(atlasName);
-        var data = CreateAtlasData($"{atlasName}{extension}");
+        var sut = CreateSystemUnderTest($"{atlasName}{extension}");
 
         // Act
-        var actual = data.AtlasDataFilePath;
+        var actual = sut.AtlasDataFilePath;
 
         // Assert
         Assert.Equal($"{DirPath}/{atlasName}{JSONFileExtension}", actual);
@@ -225,10 +225,10 @@ public class AtlasDataTests
         this.mockTextureCache.Setup(m => m.GetItem(AtlasImagePath))
             .Returns(mockTexture.Object);
 
-        var data = CreateAtlasData();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = data.Width;
+        var actual = sut.Width;
 
         // Assert
         Assert.Equal(123u, actual);
@@ -243,10 +243,10 @@ public class AtlasDataTests
         this.mockTextureCache.Setup(m => m.GetItem(AtlasImagePath))
             .Returns(mockTexture.Object);
 
-        var data = CreateAtlasData();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = data.Height;
+        var actual = sut.Height;
 
         // Assert
         Assert.Equal(123u, actual);
@@ -265,14 +265,14 @@ public class AtlasDataTests
             FrameIndex = 1,
         };
 
-        var data = CreateAtlasData();
+        var sut = CreateSystemUnderTest();
 
         // Act
         /* NOTE: In the constructor of this test, the items are added by frame index order 0, 1 then -1.
          * In the AtlasData ctor, it auto sorts the data by frame index from lowest to highest.  This is
          * why the last item in the list of data is the correct item
         */
-        var actual = data[2];
+        var actual = sut[2];
 
         // Assert
         Assert.Equal(expected.Name, actual.Name);
@@ -300,10 +300,10 @@ public class AtlasDataTests
             },
         };
 
-        var data = CreateAtlasData();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = data.GetFrames("sub-texture");
+        var actual = sut.GetFrames("sub-texture");
 
         // Assert
         Assert.Equal(expectedItems.Length, actual.Length);
@@ -320,12 +320,12 @@ public class AtlasDataTests
     public void GetFrame_WhenSubTextureIDDoesNotExist_ThrowsException()
     {
         // Arrange
-        var data = CreateAtlasData();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            data.GetFrame("missing-texture");
+            sut.GetFrame("missing-texture");
         }, "The frame 'missing-texture' was not found in the atlas 'test-atlas'.");
     }
 
@@ -340,10 +340,10 @@ public class AtlasDataTests
             Bounds = new Rectangle(11, 22, 33, 44),
         };
 
-        var data = CreateAtlasData();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = data.GetFrame("sub-texture");
+        var actual = sut.GetFrame("sub-texture");
 
         // Assert
         Assert.Equal(expected.Name, actual.Name);
@@ -356,6 +356,6 @@ public class AtlasDataTests
     /// Creates a new instance of <see cref="AtlasData"/> for testing purposes.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private AtlasData CreateAtlasData(string? atlasName = null)
+    private AtlasData CreateSystemUnderTest(string? atlasName = null)
         => new (this.mockTextureCache.Object, this.mockPath.Object, this.subTextureData, DirPath, atlasName ?? AtlasName);
 }

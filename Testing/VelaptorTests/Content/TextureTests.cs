@@ -170,7 +170,7 @@ public class TextureTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
         {
-            var unused = CreateTexture(true);
+            var unused = CreateSystemUnderTest(true);
         }, "The image data must not be empty. (Parameter 'imageData')");
     }
 
@@ -252,10 +252,10 @@ public class TextureTests
     public void Id_WhenCreatingTexture_ReturnsCorrectResult()
     {
         // Arrange
-        var texture = CreateTexture();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = texture.Id;
+        var actual = sut.Id;
 
         // Assert
         Assert.Equal(TextureId, actual);
@@ -265,10 +265,10 @@ public class TextureTests
     public void Name_WhenCreatingTexture_ReturnsCorrectResult()
     {
         // Arrange
-        var texture = CreateTexture();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = texture.Name;
+        var actual = sut.Name;
 
         // Assert
         Assert.Equal(TextureName, actual);
@@ -278,10 +278,10 @@ public class TextureTests
     public void Path_WhenCreatingTexture_ReturnsCorrectResult()
     {
         // Arrange
-        var texture = CreateTexture();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = texture.FilePath;
+        var actual = sut.FilePath;
 
         // Assert
         Assert.Equal(TexturePath, actual);
@@ -291,10 +291,10 @@ public class TextureTests
     public void Width_WhenCreatingTexture_ReturnsCorrectResult()
     {
         // Arrange
-        var texture = CreateTexture();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = texture.Width;
+        var actual = sut.Width;
 
         // Assert
         Assert.Equal(2u, actual);
@@ -304,10 +304,10 @@ public class TextureTests
     public void Height_WhenCreatingTexture_ReturnsCorrectResult()
     {
         // Arrange
-        var texture = CreateTexture();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = texture.Height;
+        var actual = sut.Height;
 
         // Assert
         Assert.Equal(3u, actual);
@@ -335,7 +335,7 @@ public class TextureTests
                 disposeReactor = reactor;
             });
 
-        CreateTexture();
+        CreateSystemUnderTest();
 
         // Act
         disposeReactor?.OnNext(new DisposeTextureData(456u));
@@ -365,7 +365,7 @@ public class TextureTests
                 disposeReactor = reactor;
             });
 
-        CreateTexture();
+        CreateSystemUnderTest();
 
         // Act
         disposeReactor?.OnNext(new DisposeTextureData(TextureId));
@@ -380,7 +380,7 @@ public class TextureTests
     /// Creates a texture for the purpose of testing.
     /// </summary>
     /// <returns>The texture instance to test.</returns>
-    private Texture CreateTexture(bool useEmptyData = false)
+    private Texture CreateSystemUnderTest(bool useEmptyData = false)
         => new (
             this.mockGL.Object,
             this.mockGLService.Object,

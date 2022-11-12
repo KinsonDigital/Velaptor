@@ -4,7 +4,6 @@
 
 namespace Velaptor.Content;
 
-
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
@@ -16,8 +15,6 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Guards;
 using Velaptor.Services;
-
-
 
 /// <summary>
 /// Loads atlas data.

@@ -71,10 +71,10 @@ public class ShaderManagerTests
     {
         // Arrange
         var shaderType = (ShaderType)shaderTypeValue;
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = manager.GetShaderId(shaderType);
+        var actual = sut.GetShaderId(shaderType);
 
         // Assert
         Assert.Equal(expected, actual);
@@ -88,10 +88,10 @@ public class ShaderManagerTests
     {
         // Arrange
         var shaderType = (ShaderType)shaderTypeValue;
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = manager.GetShaderName(shaderType);
+        var actual = sut.GetShaderName(shaderType);
 
         // Assert
         Assert.Equal(expected, actual);
@@ -101,12 +101,12 @@ public class ShaderManagerTests
     public void GetShaderName_WithInvalidShaderType_ThrowsException()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
         {
-            manager.GetShaderName((ShaderType)1234);
+            sut.GetShaderName((ShaderType)1234);
         }, $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType'){Environment.NewLine}Actual value was 1234.");
     }
 
@@ -114,10 +114,10 @@ public class ShaderManagerTests
     public void Use_WithTextureShaderType_UsesShader()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.Use(ShaderType.Texture);
+        sut.Use(ShaderType.Texture);
 
         // Assert
         this.mockTextureShader.VerifyOnce(m => m.Use());
@@ -129,10 +129,10 @@ public class ShaderManagerTests
     public void Use_WithFontShaderType_UsesShader()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.Use(ShaderType.Font);
+        sut.Use(ShaderType.Font);
 
         // Assert
         this.mockTextureShader.VerifyNever(m => m.Use());
@@ -144,10 +144,10 @@ public class ShaderManagerTests
     public void Use_WithRectangleShaderType_UsesShader()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.Use(ShaderType.Rectangle);
+        sut.Use(ShaderType.Rectangle);
 
         // Assert
         this.mockTextureShader.VerifyNever(m => m.Use());
@@ -159,12 +159,12 @@ public class ShaderManagerTests
     public void Use_WithInvalidShaderType_ThrowsException()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
         {
-            manager.Use((ShaderType)1234);
+            sut.Use((ShaderType)1234);
         }, $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType'){Environment.NewLine}Actual value was 1234.");
     }
     #endregion
@@ -173,5 +173,5 @@ public class ShaderManagerTests
     /// Creates a new instance of <see cref="ShaderManager"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private ShaderManager CreateManager() => new (this.mockShaderFactory.Object);
+    private ShaderManager CreateSystemUnderTest() => new (this.mockShaderFactory.Object);
 }

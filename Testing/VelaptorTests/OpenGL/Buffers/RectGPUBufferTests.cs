@@ -88,10 +88,10 @@ public class RectGPUBufferTests
 
         var rect = default(RectShape);
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        buffer.UploadVertexData(rect, 123);
+        sut.UploadVertexData(rect, 123);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Update Rectangle - BatchItem(123)"), Times.Once);
@@ -113,10 +113,10 @@ public class RectGPUBufferTests
 
         var rect = default(RectShape);
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        buffer.UploadVertexData(rect, 0);
+        sut.UploadVertexData(rect, 0);
 
         // Assert
         this.mockGLService.Verify(m => m.BindVBO(VBO),
@@ -166,10 +166,10 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        buffer.UploadVertexData(rect, 0);
+        sut.UploadVertexData(rect, 0);
 
         // Assert
         this.mockGL.Verify(m =>
@@ -187,12 +187,12 @@ public class RectGPUBufferTests
             GradientType = (ColorGradient)1234,
         };
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
         {
-            buffer.UploadVertexData(rect, 0);
+            sut.UploadVertexData(rect, 0);
         }, "The gradient type is invalid. (Parameter 'GradientType')");
     }
 
@@ -247,10 +247,10 @@ public class RectGPUBufferTests
             GradientStop = Color.FromArgb(17, 18, 19, 20),
         };
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        buffer.UploadVertexData(rect, 0);
+        sut.UploadVertexData(rect, 0);
 
         // Assert
         AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color
@@ -310,10 +310,10 @@ public class RectGPUBufferTests
             GradientStop = Color.FromArgb(18, 19, 20, 21),
         };
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        buffer.UploadVertexData(rect, 0);
+        sut.UploadVertexData(rect, 0);
 
         // Assert
         AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color | Grad Start
@@ -373,10 +373,10 @@ public class RectGPUBufferTests
             GradientStop = Color.FromArgb(18, 19, 20, 21),
         };
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        buffer.UploadVertexData(rect, 0);
+        sut.UploadVertexData(rect, 0);
 
         // Assert
         AssertExtensions.SectionEquals(expectedRawData, actualRawData, 6, 9); // Vertex 1 Color | Grad Start
@@ -389,12 +389,12 @@ public class RectGPUBufferTests
     public void PrepareForUpload_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer(false);
+        var sut = CreateSystemUnderTest(false);
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.PrepareForUpload();
+            sut.PrepareForUpload();
         }, "The rectangle buffer has not been initialized.");
     }
 
@@ -409,10 +409,10 @@ public class RectGPUBufferTests
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        buffer.PrepareForUpload();
+        sut.PrepareForUpload();
 
         // Assert
         this.mockGLService.Verify(m => m.BindVAO(VAO),
@@ -426,13 +426,13 @@ public class RectGPUBufferTests
         // Arrange
         var expected = TestDataLoader
             .LoadTestData<float>(string.Empty, $"{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}_TestData.json");
-        var buffer = CreateBuffer(false);
+        var sut = CreateSystemUnderTest(false);
 
         // Act
-        var actual = buffer.GenerateData();
+        var actual = sut.GenerateData();
 
         // Assert
-        Assert.Equal(1000u, buffer.BatchSize);
+        Assert.Equal(1000u, sut.BatchSize);
         Assert.Equal(expected, actual);
     }
 
@@ -465,10 +465,10 @@ public class RectGPUBufferTests
             (8u, "TopRightRadius"),
         };
 
-        var buffer = CreateBuffer(false);
+        var sut = CreateSystemUnderTest(false);
 
         // Act
-        buffer.SetupVAO();
+        sut.SetupVAO();
 
         // Assert
         Assert.All(paramData, data =>
@@ -497,13 +497,13 @@ public class RectGPUBufferTests
         // Arrange
         var expected = TestDataLoader
             .LoadTestData<uint>(string.Empty, $"{nameof(GenerateIndices_WhenInvoked_ReturnsCorrectResult)}_TestData.json");
-        var buffer = CreateBuffer(false);
+        var sut = CreateSystemUnderTest(false);
 
         // Act
-        var actual = buffer.GenerateIndices();
+        var actual = sut.GenerateIndices();
 
         // Assert
-        Assert.Equal(1000u, buffer.BatchSize);
+        Assert.Equal(1000u, sut.BatchSize);
         Assert.Equal(expected, actual);
     }
     #endregion
@@ -541,9 +541,9 @@ public class RectGPUBufferTests
     /// <summary>
     /// Creates a new instance of <see cref="RectGPUBuffer"/> class for the purpose of testing.
     /// </summary>
-    /// <param name="initialize">If true, will mock the initialization of the mocked buffer.</param>
+    /// <param name="initialize">If true, will mock the initialization of the mocked sut.</param>
     /// <returns>The instance to test.</returns>
-    private RectGPUBuffer CreateBuffer(bool initialize = true)
+    private RectGPUBuffer CreateSystemUnderTest(bool initialize = true)
     {
         var result = new RectGPUBuffer(
             this.mockGL.Object,

@@ -2,14 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services;
-
-
 using System;
 using System.IO.Abstractions;
 using Velaptor.Guards;
 
-
+namespace Velaptor.Services;
 
 /// <inheritdoc/>
 internal sealed class EventLoggerService : IEventLoggerService

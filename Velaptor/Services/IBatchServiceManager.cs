@@ -2,15 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services;
-
-
 using System;
 using System.Collections.ObjectModel;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 
-
+namespace Velaptor.Services;
 
 /// <summary>
 /// Manages batching service operations.

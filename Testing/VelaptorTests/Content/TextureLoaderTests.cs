@@ -115,10 +115,10 @@ public class TextureLoaderTests
         this.mockTextureCache.Setup(m => m.GetItem(TextureFilePath))
             .Returns(mockTexture.Object);
 
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = loader.Load(TextureFilePath);
+        var actual = sut.Load(TextureFilePath);
 
         // Assert
         Assert.NotNull(actual);
@@ -138,10 +138,10 @@ public class TextureLoaderTests
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}")).Returns(contentName);
         this.mockPath.Setup(m => m.GetFileNameWithoutExtension($"{contentName}{extension}")).Returns(contentName);
 
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = loader.Load($"{contentName}{extension}");
+        var actual = sut.Load($"{contentName}{extension}");
 
         // Assert
         Assert.NotNull(actual);
@@ -154,12 +154,12 @@ public class TextureLoaderTests
         // Arrange
         this.mockFile.Setup(m => m.Exists(It.IsAny<string>())).Returns(false);
 
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
         {
-            loader.Load(TextureFilePath);
+            sut.Load(TextureFilePath);
         }, $"The texture file '{TextureFilePath}' does not exist.");
     }
 
@@ -172,12 +172,12 @@ public class TextureLoaderTests
         this.mockFile.Setup(m => m.Exists(filePathWithInvalidExtension)).Returns(true);
         this.mockPath.Setup(m => m.GetExtension(filePathWithInvalidExtension)).Returns(extension);
 
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<LoadTextureException>(() =>
         {
-            loader.Load(filePathWithInvalidExtension);
+            sut.Load(filePathWithInvalidExtension);
         }, $"The file '{filePathWithInvalidExtension}' must be a texture file with the extension '{TextureExtension}'.");
     }
 
@@ -185,10 +185,10 @@ public class TextureLoaderTests
     public void Unload_WhenInvoked_UnloadsCachedTextures()
     {
         // Arrange
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.Unload(TextureFilePath);
+        sut.Unload(TextureFilePath);
 
         // Assert
         this.mockTextureCache.Verify(m => m.Unload(TextureFilePath), Times.Once);
@@ -199,7 +199,7 @@ public class TextureLoaderTests
     /// Creates a new instance of <see cref="TextureLoader"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureLoader CreateLoader()
+    private TextureLoader CreateSystemUnderTest()
         => new (this.mockTextureCache.Object,
             this.mockTexturePathResolver.Object,
             this.mockFile.Object,

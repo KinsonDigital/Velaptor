@@ -551,10 +551,10 @@ public class GLWindowTests
     public void Width_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow(100, 200);
+        var sut = CreateSystemUnderTest(100, 200);
 
         // Act
-        var actual = window.Width;
+        var actual = sut.Width;
 
         // Assert
         Assert.Equal(100u, actual);
@@ -565,14 +565,14 @@ public class GLWindowTests
     {
         // Arrange
         this.mockSilkWindow.SetupProperty(p => p.Size);
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
-        window.CachedUIntProps[nameof(window.Width)].IsCaching = false;
+        sut.CachedUIntProps[nameof(sut.Width)].IsCaching = false;
 
         // Act
-        window.Width = 111;
-        var actual = window.Width;
+        sut.Width = 111;
+        var actual = sut.Width;
 
         // Assert
         Assert.Equal(111u, actual);
@@ -582,10 +582,10 @@ public class GLWindowTests
     public void Height_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow(100, 200);
+        var sut = CreateSystemUnderTest(100, 200);
 
         // Act
-        var actual = window.Height;
+        var actual = sut.Height;
 
         // Assert
         Assert.Equal(200u, actual);
@@ -596,14 +596,14 @@ public class GLWindowTests
     {
         // Arrange
         this.mockSilkWindow.SetupProperty(p => p.Size);
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
-        window.CachedUIntProps[nameof(window.Height)].IsCaching = false;
+        sut.CachedUIntProps[nameof(sut.Height)].IsCaching = false;
 
         // Act
-        window.Height = 111;
-        var actual = window.Height;
+        sut.Height = 111;
+        var actual = sut.Height;
 
         // Assert
         Assert.Equal(111u, actual);
@@ -613,10 +613,10 @@ public class GLWindowTests
     public void Title_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = window.Title;
+        var actual = sut.Title;
 
         // Assert
         Assert.Equal("Velaptor Application", actual);
@@ -627,14 +627,14 @@ public class GLWindowTests
     {
         // Arrange
         this.mockSilkWindow.SetupProperty(p => p.Title);
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
-        window.CachedStringProps[nameof(window.Title)].IsCaching = false;
+        sut.CachedStringProps[nameof(sut.Title)].IsCaching = false;
 
         // Act
-        window.Title = "test-title";
-        var actual = window.Title;
+        sut.Title = "test-title";
+        var actual = sut.Title;
 
         // Assert
         Assert.Equal("test-title", actual);
@@ -655,10 +655,10 @@ public class GLWindowTests
                 Height = 1000,
             });
 
-        var window = CreateWindow(100, 200);
+        var sut = CreateSystemUnderTest(100, 200);
 
         // Act
-        var actual = window.Position;
+        var actual = sut.Position;
 
         // Assert
         Assert.Equal(new SysVector2(950, 400), actual);
@@ -679,10 +679,10 @@ public class GLWindowTests
                 Height = 1000,
             });
 
-        var window = CreateWindow(100, 200);
+        var sut = CreateSystemUnderTest(100, 200);
 
         // Act
-        var actual = window.Position;
+        var actual = sut.Position;
 
         // Assert
         Assert.Equal(new SysVector2(950, 400), actual);
@@ -693,14 +693,14 @@ public class GLWindowTests
     {
         // Arrange
         this.mockSilkWindow.SetupProperty(p => p.Position);
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
-        window.CachedPosition.IsCaching = false;
+        sut.CachedPosition.IsCaching = false;
 
         // Act
-        window.Position = new SysVector2(123, 456);
-        var actual = window.Position;
+        sut.Position = new SysVector2(123, 456);
+        var actual = sut.Position;
 
         // Assert
         Assert.Equal(new SysVector2(123, 456), actual);
@@ -710,10 +710,10 @@ public class GLWindowTests
     public void UpdateFrequency_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = window.UpdateFrequency;
+        var actual = sut.UpdateFrequency;
 
         // Assert
         Assert.Equal(60, actual);
@@ -724,14 +724,14 @@ public class GLWindowTests
     {
         // Arrange
         this.mockSilkWindow.SetupProperty(p => p.UpdatesPerSecond);
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
-        window.CachedIntProps[nameof(window.UpdateFrequency)].IsCaching = false;
+        sut.CachedIntProps[nameof(sut.UpdateFrequency)].IsCaching = false;
 
         // Act
-        window.UpdateFrequency = 30;
-        var actual = window.UpdateFrequency;
+        sut.UpdateFrequency = 30;
+        var actual = sut.UpdateFrequency;
 
         // Assert
         Assert.Equal(30, actual);
@@ -742,11 +742,11 @@ public class GLWindowTests
     {
         // Arrange
         var mockOtherContentLoader = new Mock<IContentLoader>();
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.ContentLoader = mockOtherContentLoader.Object;
-        var actual = window.ContentLoader;
+        sut.ContentLoader = mockOtherContentLoader.Object;
+        var actual = sut.ContentLoader;
 
         // Assert
         Assert.Same(mockOtherContentLoader.Object, actual);
@@ -756,10 +756,10 @@ public class GLWindowTests
     public void MouseCursorVisible_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = window.MouseCursorVisible;
+        var actual = sut.MouseCursorVisible;
 
         // Assert
         Assert.True(actual);
@@ -770,14 +770,14 @@ public class GLWindowTests
     {
         // Arrange
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
-        window.CachedBoolProps[nameof(window.MouseCursorVisible)].IsCaching = false;
+        sut.CachedBoolProps[nameof(sut.MouseCursorVisible)].IsCaching = false;
 
         // Act
-        window.MouseCursorVisible = false;
-        var actual = window.MouseCursorVisible;
+        sut.MouseCursorVisible = false;
+        var actual = sut.MouseCursorVisible;
 
         // Assert
         Assert.False(actual);
@@ -789,13 +789,13 @@ public class GLWindowTests
         // Arrange
         this.mockSilkWindow.SetupGet(p => p.WindowState).Returns((WindowState)1234);
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
         {
-            _ = window.WindowState;
+            _ = sut.WindowState;
         }, "The enum 'Silk.NET.Windowing.WindowState' is invalid because it is out of range.");
     }
 
@@ -804,13 +804,13 @@ public class GLWindowTests
     {
         // Arrange
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
         {
-            window.WindowState = (StateOfWindow)1234;
+            sut.WindowState = (StateOfWindow)1234;
         }, "The enum 'Velaptor.StateOfWindow' is invalid because it is out of range.");
     }
 
@@ -818,10 +818,10 @@ public class GLWindowTests
     public void WindowState_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = window.WindowState;
+        var actual = sut.WindowState;
 
         // Assert
         Assert.Equal(StateOfWindow.Normal, actual);
@@ -832,50 +832,50 @@ public class GLWindowTests
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public void WindowState_WhenSettingValueAndNotCaching_ReturnsCorrectResult(int windowStateValue)
+    public void WindowState_WhenSettingValueAndNotCaching_ReturnsCorrectResult(int sutStateValue)
     {
         // Arrange
-        var windowState = (StateOfWindow)windowStateValue;
+        var sutState = (StateOfWindow)sutStateValue;
         this.mockSilkWindow.SetupProperty(p => p.WindowState);
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
-        window.CachedWindowState.IsCaching = false;
+        sut.CachedWindowState.IsCaching = false;
 
         // Act
-        window.WindowState = windowState;
-        var actual = window.WindowState;
+        sut.WindowState = sutState;
+        var actual = sut.WindowState;
 
         // Assert
-        Assert.Equal(windowState, actual);
+        Assert.Equal(sutState, actual);
     }
 
     [Fact]
     public void Initialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
         var initAction = new Action(() => { });
 
         // Act
-        window.Initialize = initAction;
+        sut.Initialize = initAction;
 
         // Assert
-        Assert.Equal(initAction, window.Initialize);
+        Assert.Equal(initAction, sut.Initialize);
     }
 
     [Fact]
     public void Uninitialize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
         var unInitAction = new Action(() => { });
 
         // Act
-        window.Uninitialize = unInitAction;
+        sut.Uninitialize = unInitAction;
 
         // Assert
-        Assert.Equal(unInitAction, window.Uninitialize);
+        Assert.Equal(unInitAction, sut.Uninitialize);
     }
 
     [Fact]
@@ -883,13 +883,13 @@ public class GLWindowTests
     {
         // Arrange
         MockWindowLoadEvent();
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.Show();
+        sut.Show();
 
         // Assert
-        Assert.True(window.Initialized);
+        Assert.True(sut.Initialized);
     }
 
     [Fact]
@@ -898,13 +898,13 @@ public class GLWindowTests
         // Arrange
         this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
         {
-            _ = window.TypeOfBorder;
+            _ = sut.TypeOfBorder;
         }, "The enum 'Silk.NET.Windowing.WindowBorder' is invalid because it is out of range.");
     }
 
@@ -914,13 +914,13 @@ public class GLWindowTests
         // Arrange
         this.mockSilkWindow.SetupGet(p => p.WindowBorder).Returns((SilkWindowBorder)1234);
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<EnumOutOfRangeException>(() =>
         {
-            window.TypeOfBorder = (VelaptorWindowBorder)1234;
+            sut.TypeOfBorder = (VelaptorWindowBorder)1234;
         }, "The enum 'Velaptor.WindowBorder' is invalid because it is out of range.");
     }
 
@@ -928,10 +928,10 @@ public class GLWindowTests
     public void TypeOfBorder_WhenCachingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = window.TypeOfBorder;
+        var actual = sut.TypeOfBorder;
 
         // Assert
         Assert.Equal(Velaptor.WindowBorder.Resizable, actual);
@@ -941,23 +941,23 @@ public class GLWindowTests
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(2)]
-    public void TypeOfBorder_WhenSettingValueAndNotCaching_ReturnsCorrectResult(int windowBorderValue)
+    public void TypeOfBorder_WhenSettingValueAndNotCaching_ReturnsCorrectResult(int sutBorderValue)
     {
         // Arrange
-        var windowBorder = (VelaptorWindowBorder)windowBorderValue;
+        var sutBorder = (VelaptorWindowBorder)sutBorderValue;
         this.mockSilkWindow.SetupProperty(p => p.WindowBorder);
 
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
-        window.CachedTypeOfBorder.IsCaching = false;
+        sut.CachedTypeOfBorder.IsCaching = false;
 
         // Act
-        window.TypeOfBorder = windowBorder;
-        var actual = window.TypeOfBorder;
+        sut.TypeOfBorder = sutBorder;
+        var actual = sut.TypeOfBorder;
 
         // Assert
-        Assert.Equal(windowBorder, actual);
+        Assert.Equal(sutBorder, actual);
     }
     #endregion
 
@@ -969,12 +969,12 @@ public class GLWindowTests
         this.mockSilkInputContext.Setup(p => p.Keyboards)
             .Returns(Array.Empty<IKeyboard>().ToReadOnlyCollection());
         MockWindowLoadEvent();
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<NoKeyboardException>(() =>
         {
-            window.Show();
+            sut.Show();
         }, "Input Exception: No connected keyboards available.");
     }
 
@@ -985,12 +985,12 @@ public class GLWindowTests
         this.mockSilkInputContext.Setup(p => p.Mice)
             .Returns(Array.Empty<IMouse>().ToReadOnlyCollection());
         MockWindowLoadEvent();
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<NoMouseException>(() =>
         {
-            window.Show();
+            sut.Show();
         }, "Input Exception: No connected mice available.");
     }
 
@@ -998,10 +998,10 @@ public class GLWindowTests
     public void Show_WhenInvoked_SubscribesToEvents()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.Show();
+        sut.Show();
 
         // Assert
         this.mockSilkWindow.VerifyAddOnce(e => e.Load += It.IsAny<Action>());
@@ -1016,8 +1016,8 @@ public class GLWindowTests
     {
         // Arrange
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
@@ -1039,10 +1039,10 @@ public class GLWindowTests
                 action();
             });
 
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        await window.ShowAsync();
+        await sut.ShowAsync();
 
         // Assert
         this.mockTaskService.Verify(m => m.Start(), Times.Once());
@@ -1059,10 +1059,10 @@ public class GLWindowTests
         this.mockTaskService.Setup(m => m.Start())
             .Callback(() => taskServiceStartInvoked = true);
 
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        await window.ShowAsync(() => { });
+        await sut.ShowAsync(() => { });
 
         // Assert
         Assert.True(taskServiceSetActionInvoked,
@@ -1082,16 +1082,16 @@ public class GLWindowTests
             });
 
         var afterUnloadExecuted = false;
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
-        await window.ShowAsync(null, () => afterUnloadExecuted = true);
-        window.Close();
+        await sut.ShowAsync(null, () => afterUnloadExecuted = true);
+        sut.Close();
 
         // Assert
         Assert.True(afterUnloadExecuted,
-            $"The 'afterUnload` parameter must be executed after the window unloads.");
+            $"The 'afterUnload` parameter must be executed after the sut unloads.");
     }
 
     [Fact]
@@ -1099,12 +1099,12 @@ public class GLWindowTests
     {
         // Arrange
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
-        window.Dispose();
-        window.Dispose();
+        sut.Dispose();
+        sut.Dispose();
 
         // Assert
         this.mockKeyboardReactable.VerifyOnce(m => m.Dispose());
@@ -1126,11 +1126,11 @@ public class GLWindowTests
         // Arrange
         var initializeInvoked = false;
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Initialize += () => initializeInvoked = true;
+        var sut = CreateSystemUnderTest();
+        sut.Initialize += () => initializeInvoked = true;
 
         // Act
-        window.Show();
+        sut.Show();
 
         // Assert
         this.mockContextReactable.VerifyOnce(m => m.PushNotification(It.IsAny<GLContextData>()));
@@ -1160,10 +1160,10 @@ public class GLWindowTests
     public void GLWindow_WhenWindowResizes_SetsGLViewportAndTriggersResizeEvent()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
         var actualSize = default(SizeU);
-        window.WinResize = u => actualSize = u;
-        window.Show();
+        sut.WinResize = u => actualSize = u;
+        sut.Show();
 
         // Act
         this.mockSilkWindow.Raise(e => e.Resize += It.IsAny<Action<Vector2D<int>>>(), new Vector2D<int>(11, 22));
@@ -1179,17 +1179,17 @@ public class GLWindowTests
     public void GLWindow_WhenUpdatingWhileShuttingDown_DoesNotUpdateAnything()
     {
         // Arrange
-        var windowUpdateInvoked = false;
-        var window = CreateWindow();
-        window.Show();
-        window.Update = _ => windowUpdateInvoked = true;
+        var sutUpdateInvoked = false;
+        var sut = CreateSystemUnderTest();
+        sut.Show();
+        sut.Update = _ => sutUpdateInvoked = true;
 
         // Act
         this.mockSilkWindow.Raise(e => e.Closing += null);
         this.mockSilkWindow.Raise(e => e.Update += It.IsAny<Action<double>>(), 0.016);
 
         // Assert
-        Assert.False(windowUpdateInvoked, $"{nameof(GLWindow.Update)} should not of been invoked during window shutdown.");
+        Assert.False(sutUpdateInvoked, $"{nameof(GLWindow.Update)} should not of been invoked during sut shutdown.");
         this.mockMouseWheelReactable.VerifyNever(m
             => m.PushNotification(It.IsAny<(MouseScrollDirection, int)>()));
     }
@@ -1199,12 +1199,12 @@ public class GLWindowTests
     {
         // Arrange
         var expectedWheelData = (MouseScrollDirection.None, 0);
-        var windowUpdateInvoked = false;
-        var window = CreateWindow();
-        window.Show();
-        window.Update = time =>
+        var sutUpdateInvoked = false;
+        var sut = CreateSystemUnderTest();
+        sut.Show();
+        sut.Update = time =>
         {
-            windowUpdateInvoked = true;
+            sutUpdateInvoked = true;
 
             AssertExtensions.EqualWithMessage(0, time.ElapsedTime.Days, "The days value must be 0.");
             AssertExtensions.EqualWithMessage(0, time.ElapsedTime.Hours, "The hours value must be 0.");
@@ -1217,7 +1217,7 @@ public class GLWindowTests
         this.mockSilkWindow.Raise(e => e.Update += It.IsAny<Action<double>>(), 0.016);
 
         // Assert
-        Assert.True(windowUpdateInvoked, $"{nameof(GLWindow.Update)} was not invoked.");
+        Assert.True(sutUpdateInvoked, $"{nameof(GLWindow.Update)} was not invoked.");
         this.mockMouseWheelReactable.VerifyOnce(m
             => m.PushNotification(expectedWheelData));
     }
@@ -1226,8 +1226,8 @@ public class GLWindowTests
     public void GLWindow_WhenRenderingFrameWithAutoClearEnabled_ClearsGLBuffer()
     {
         // Arrange
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
         this.mockSilkWindow.Raise(e => e.Render += It.IsAny<Action<double>>(), 0.016);
@@ -1240,9 +1240,9 @@ public class GLWindowTests
     public void GLWindow_WhenRenderingFrameWithAutoClearDisabled_ClearsGLBuffer()
     {
         // Arrange
-        var window = CreateWindow();
-        window.AutoClearBuffer = false;
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.AutoClearBuffer = false;
+        sut.Show();
 
         // Act
         this.mockSilkWindow.Raise(e => e.Render += It.IsAny<Action<double>>(), 0.016);
@@ -1256,14 +1256,14 @@ public class GLWindowTests
     {
         // Arrange
         var drawInvoked = false;
-        var window = CreateWindow();
-        window.Draw = time =>
+        var sut = CreateSystemUnderTest();
+        sut.Draw = time =>
         {
             drawInvoked = true;
             Assert.Equal(time.ElapsedTime, new TimeSpan(0, 0, 0, 0, 16));
         };
-        window.AutoClearBuffer = false;
-        window.Show();
+        sut.AutoClearBuffer = false;
+        sut.Show();
 
         // Act
         this.mockSilkWindow.Raise(e => e.Render += It.IsAny<Action<double>>(), 0.016);
@@ -1278,13 +1278,13 @@ public class GLWindowTests
     {
         // Arrange
         var drawInvoked = false;
-        var window = CreateWindow();
-        window.Draw = _ =>
+        var sut = CreateSystemUnderTest();
+        sut.Draw = _ =>
         {
             drawInvoked = true;
         };
-        window.AutoClearBuffer = true;
-        window.Show();
+        sut.AutoClearBuffer = true;
+        sut.Show();
 
         // Act
         this.mockSilkWindow.Raise(e => e.Closing += null);
@@ -1301,9 +1301,9 @@ public class GLWindowTests
     {
         // Arrange
         var uninitializeInvoked = false;
-        var window = CreateWindow();
-        window.Uninitialize += () => uninitializeInvoked = true;
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Uninitialize += () => uninitializeInvoked = true;
+        sut.Show();
 
         // Act
         this.mockSilkWindow.Raise(e => e.Closing += null);
@@ -1325,8 +1325,8 @@ public class GLWindowTests
         // Arrange
         var expectedKeyState = (KeyCode.Space, true);
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
         this.mockSilkKeyboard.Raise(e => e.KeyDown += It.IsAny<Action<IKeyboard, Key, int>>(),
@@ -1344,8 +1344,8 @@ public class GLWindowTests
         // Arrange
         var expectedKeyState = (KeyCode.K, false);
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
         this.mockSilkKeyboard.Raise(e => e.KeyUp += It.IsAny<Action<IKeyboard, Key, int>>(),
@@ -1363,8 +1363,8 @@ public class GLWindowTests
         // Arrange
         var expectedButtonState = (VelaptorMouseButton.LeftButton, true);
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
         this.mockSilkMouse.Raise(e => e.MouseDown += It.IsAny<Action<IMouse, SilkMouseButton>>(),
@@ -1382,8 +1382,8 @@ public class GLWindowTests
         // Arrange
         var expectedButtonState = (VelaptorMouseButton.RightButton, false);
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
         this.mockSilkMouse.Raise(e => e.MouseUp += It.IsAny<Action<IMouse, SilkMouseButton>>(),
@@ -1406,8 +1406,8 @@ public class GLWindowTests
         var wheelData = new ScrollWheel(0, wheelValue);
 
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
         this.mockSilkMouse.Raise(e => e.Scroll += It.IsAny<Action<IMouse, ScrollWheel>>(),
@@ -1425,8 +1425,8 @@ public class GLWindowTests
         // Arrange
         var expectedMousePosition = (11, 22);
         MockWindowLoadEvent();
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
         this.mockSilkMouse.Raise(e => e.MouseMove += It.IsAny<Action<IMouse, SysVector2>>(),
@@ -1442,11 +1442,11 @@ public class GLWindowTests
     public void Close_WhenInvoked_ClosesWindow()
     {
         // Arrange
-        var window = CreateWindow();
-        window.Show();
+        var sut = CreateSystemUnderTest();
+        sut.Show();
 
         // Act
-        window.Close();
+        sut.Close();
 
         // Assert
         this.mockSilkWindow.VerifyOnce(m => m.Close());
@@ -1456,10 +1456,10 @@ public class GLWindowTests
     /// <summary>
     /// Creates a new instance of <see cref="GLWindow"/> for the purpose of testing.
     /// </summary>
-    /// <param name="width">The width of the window.</param>
-    /// <param name="height">The height of the window.</param>
+    /// <param name="width">The width of the sut.</param>
+    /// <param name="height">The height of the sut.</param>
     /// <returns>The instance to test.</returns>
-    private GLWindow CreateWindow(uint width = 10, uint height = 20)
+    private GLWindow CreateSystemUnderTest(uint width = 10, uint height = 20)
         => new (
             width,
             height,

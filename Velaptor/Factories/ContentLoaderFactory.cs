@@ -2,9 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories;
-
-
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
@@ -15,7 +12,7 @@ using Velaptor.Content.Fonts;
 using Velaptor.Services;
 using IVelaptorSound = Velaptor.Content.ISound;
 
-
+namespace Velaptor.Factories;
 
 /// <summary>
 /// Creates instances of a content loader.

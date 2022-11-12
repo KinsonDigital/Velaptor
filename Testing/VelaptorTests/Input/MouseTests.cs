@@ -35,7 +35,7 @@ public class MouseTests
     public void Ctor_WhenInvoked_SubscribesToReactables()
     {
         // Act & Arrange
-        var unused = CreateMouse();
+        var unused = CreateSystemUnderTest();
 
         // Assert
         this.mockMousePosReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(int, int)>>()));
@@ -55,11 +55,11 @@ public class MouseTests
                 reactor = reactorObj;
             });
 
-        var mouse = CreateMouse();
+        var sut = CreateSystemUnderTest();
         reactor?.OnNext((11, 22));
 
         // Act
-        var actual = mouse.GetState();
+        var actual = sut.GetState();
 
         // Assert
         Assert.Equal(11, actual.GetPosition().X);
@@ -82,11 +82,11 @@ public class MouseTests
                 reactor = reactorObj;
             });
 
-        var mouse = CreateMouse();
+        var sut = CreateSystemUnderTest();
         reactor?.OnNext((mouseButton, true));
 
         // Act
-        var actual = mouse.GetState();
+        var actual = sut.GetState();
 
         // Assert
         Assert.True(actual.GetButtonState(mouseButton));
@@ -104,11 +104,11 @@ public class MouseTests
                 reactor = reactorObj;
             });
 
-        var mouse = CreateMouse();
+        var sut = CreateSystemUnderTest();
         reactor?.OnNext((MouseScrollDirection.ScrollDown, 33));
 
         // Act
-        var actual = mouse.GetState();
+        var actual = sut.GetState();
 
         // Assert
         Assert.Equal(MouseScrollDirection.ScrollDown, actual.GetScrollDirection());
@@ -147,7 +147,7 @@ public class MouseTests
                 wheelReactor = reactorObj;
             });
 
-        var unused = CreateMouse();
+        var unused = CreateSystemUnderTest();
 
         // Act
         posReactor.OnCompleted();
@@ -165,7 +165,7 @@ public class MouseTests
     /// Creates a new instance of <see cref="Mouse"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private Mouse CreateMouse()
+    private Mouse CreateSystemUnderTest()
         => new Mouse(this.mockMousePosReactable.Object,
             this.mockMouseBtnReactable.Object,
             this.mockMouseWheelReactable.Object);

@@ -44,10 +44,10 @@ public class ControlBaseTests
     public void Name_WithDefaultValue_ReturnsCorrectResult()
     {
         // Act
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Arrange
-        var actual = ctrlBase.Name;
+        var actual = sut.Name;
 
         // Act
         Assert.Equal(string.Empty, actual);
@@ -57,11 +57,11 @@ public class ControlBaseTests
     public void Name_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var ctrlBase = CreateBase();
-        ctrlBase.Name = "test-name";
+        var sut = CreateSystemUnderTest();
+        sut.Name = "test-name";
 
         // Arrange
-        var actual = ctrlBase.Name;
+        var actual = sut.Name;
 
         // Assert
         Assert.Equal("test-name", actual);
@@ -72,11 +72,11 @@ public class ControlBaseTests
     {
         // Arrange
         var expected = new Point(11, 22);
-        var ctrlBase = CreateBase();
-        ctrlBase.Position = new Point(11, 22);
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(11, 22);
 
         // Act
-        var actual = ctrlBase.Position;
+        var actual = sut.Position;
 
         // Assert
         Assert.Equal(expected, actual);
@@ -87,12 +87,12 @@ public class ControlBaseTests
     {
         // Arrange
         const int expected = 11;
-        var ctrlBase = CreateBase();
-        ctrlBase.Left = 11;
+        var sut = CreateSystemUnderTest();
+        sut.Left = 11;
 
         // Act
-        var actualLeft = ctrlBase.Left;
-        var actualPosX = ctrlBase.Position.X;
+        var actualLeft = sut.Left;
+        var actualPosX = sut.Position.X;
 
         // Assert
         Assert.Equal(expected, actualLeft);
@@ -104,13 +104,13 @@ public class ControlBaseTests
     {
         // Arrange
         const int expected = 30;
-        var ctrlBase = CreateBase();
-        ctrlBase.Width = 20u;
+        var sut = CreateSystemUnderTest();
+        sut.Width = 20u;
 
         // Act
-        ctrlBase.Right = 30;
-        var actualRight = ctrlBase.Right;
-        var actualPosX = ctrlBase.Position.X;
+        sut.Right = 30;
+        var actualRight = sut.Right;
+        var actualPosX = sut.Position.X;
 
         // Assert
         Assert.Equal(expected, actualRight);
@@ -122,11 +122,11 @@ public class ControlBaseTests
     {
         // Arrange
         const int expected = 20;
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        ctrlBase.Top = 20;
-        var actualTop = ctrlBase.Top;
+        sut.Top = 20;
+        var actualTop = sut.Top;
 
         // Assert
         Assert.Equal(expected, actualTop);
@@ -137,13 +137,13 @@ public class ControlBaseTests
     {
         // Arrange
         const int expected = 30;
-        var ctrlBase = CreateBase();
-        ctrlBase.Height = 20;
-        ctrlBase.Bottom = 30;
+        var sut = CreateSystemUnderTest();
+        sut.Height = 20;
+        sut.Bottom = 30;
 
         // Act
-        var actualBottom = ctrlBase.Bottom;
-        var positionY = ctrlBase.Position.Y;
+        var actualBottom = sut.Bottom;
+        var positionY = sut.Position.Y;
 
         // Assert
         Assert.Equal(expected, actualBottom);
@@ -154,11 +154,11 @@ public class ControlBaseTests
     public void Width_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        ctrlBase.Width = 11;
-        var actual = ctrlBase.Width;
+        sut.Width = 11;
+        var actual = sut.Width;
 
         // Assert
         Assert.Equal(11u, actual);
@@ -168,11 +168,11 @@ public class ControlBaseTests
     public void Height_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        ctrlBase.Height = 11;
-        var actual = ctrlBase.Height;
+        sut.Height = 11;
+        var actual = sut.Height;
 
         // Assert
         Assert.Equal(11u, actual);
@@ -182,10 +182,10 @@ public class ControlBaseTests
     public void Visible_WhenGettingDefaultValue_ReturnsTrue()
     {
         // Arrange
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = ctrlBase.Visible;
+        var actual = sut.Visible;
 
         // Assert
         Assert.True(actual);
@@ -195,11 +195,11 @@ public class ControlBaseTests
     public void Visible_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        ctrlBase.Visible = false;
-        var actual = ctrlBase.Visible;
+        sut.Visible = false;
+        var actual = sut.Visible;
 
         // Assert
         Assert.False(actual);
@@ -209,10 +209,10 @@ public class ControlBaseTests
     public void Enabled_WhenGettingDefaultValue_ReturnsTrue()
     {
         // Arrange
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = ctrlBase.Enabled;
+        var actual = sut.Enabled;
 
         // Assert
         Assert.True(actual);
@@ -222,11 +222,11 @@ public class ControlBaseTests
     public void Enabled_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        ctrlBase.Enabled = false;
-        var actual = ctrlBase.Enabled;
+        sut.Enabled = false;
+        var actual = sut.Enabled;
 
         // Assert
         Assert.False(actual);
@@ -236,7 +236,7 @@ public class ControlBaseTests
     public void MouseDownColor_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var control = CreateBase();
+        var control = CreateSystemUnderTest();
 
         // Act
         var actual = control.MouseDownColor;
@@ -249,7 +249,7 @@ public class ControlBaseTests
     public void MouseHoverColor_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var control = CreateBase();
+        var control = CreateSystemUnderTest();
 
         // Act
         var actual = control.MouseHoverColor;
@@ -262,7 +262,7 @@ public class ControlBaseTests
     public void MouseDownColor_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var control = CreateBase();
+        var control = CreateSystemUnderTest();
 
         // Act
         control.MouseDownColor = Color.FromArgb(11, 22, 33, 44);
@@ -276,7 +276,7 @@ public class ControlBaseTests
     public void MouseHoverColor_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var control = CreateBase();
+        var control = CreateSystemUnderTest();
 
         // Act
         control.MouseHoverColor = Color.FromArgb(11, 22, 33, 44);
@@ -292,12 +292,12 @@ public class ControlBaseTests
     public void LoadContent_WhenInvokedBeforeAndAfterLoadingContent_SetContentAsLoaded()
     {
         // Arrange
-        var ctrlBase = CreateBase();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var beforeLoad = ctrlBase.IsLoaded;
-        ctrlBase.LoadContent();
-        var afterLoad = ctrlBase.IsLoaded;
+        var beforeLoad = sut.IsLoaded;
+        sut.LoadContent();
+        var afterLoad = sut.IsLoaded;
 
         Assert.False(beforeLoad);
         Assert.True(afterLoad);
@@ -315,7 +315,7 @@ public class ControlBaseTests
         byte blue)
     {
         // Arrange
-        var ctrlBase = new ControlBaseFake(this.mockMouseInput.Object)
+        var sut = new ControlBaseFake(this.mockMouseInput.Object)
         {
             Position = new Point(50, 50),
             Width = 100,
@@ -329,16 +329,16 @@ public class ControlBaseTests
         this.mockMouseInput.Setup(m => m.GetState())
             .Returns(mouseState);
 
-        ctrlBase.LoadContent();
+        sut.LoadContent();
 
         // Act
-        ctrlBase.Update(default);
+        sut.Update(default);
 
         // Assert
-        Assert.Equal(alpha, ctrlBase.TintColorValue.A);
-        Assert.Equal(red, ctrlBase.TintColorValue.R);
-        Assert.Equal(green, ctrlBase.TintColorValue.G);
-        Assert.Equal(blue, ctrlBase.TintColorValue.B);
+        Assert.Equal(alpha, sut.TintColorValue.A);
+        Assert.Equal(red, sut.TintColorValue.R);
+        Assert.Equal(green, sut.TintColorValue.G);
+        Assert.Equal(blue, sut.TintColorValue.B);
     }
 
     [Fact]
@@ -354,26 +354,26 @@ public class ControlBaseTests
         // Set the mouse position before moving it over the control
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseStateWhenNotOverControl);
 
-        var ctrlBase = CreateBase();
-        ctrlBase.Position = new Point(50, 50);
-        ctrlBase.Width = 100;
-        ctrlBase.Height = 100;
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(50, 50);
+        sut.Width = 100;
+        sut.Height = 100;
 
-        ctrlBase.LoadContent();
+        sut.LoadContent();
 
         // Act
-        ctrlBase.Update(default);
+        sut.Update(default);
 
         // Set current mouse position
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseStateWhenOverControl);
 
         // Assert
         Assert.Raises<MousePositionEventArgs>(
-            (e) => ctrlBase.MouseMove += e,
-            (e) => ctrlBase.MouseMove -= e,
+            (e) => sut.MouseMove += e,
+            (e) => sut.MouseMove -= e,
             () =>
             {
-                ctrlBase.Update(default);
+                sut.Update(default);
             });
     }
 
@@ -387,23 +387,23 @@ public class ControlBaseTests
 
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
 
-        var ctrlBase = CreateBase();
-        ctrlBase.Position = new Point(50, 50);
-        ctrlBase.Width = 100;
-        ctrlBase.Height = 100;
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(50, 50);
+        sut.Width = 100;
+        sut.Height = 100;
 
-        ctrlBase.LoadContent();
+        sut.LoadContent();
 
         // Act
-        ctrlBase.Update(default);
+        sut.Update(default);
 
         // Assert
         Assert.Raises<EventArgs>(
-            (e) => ctrlBase.MouseDown += e,
-            (e) => ctrlBase.MouseDown -= e,
+            (e) => sut.MouseDown += e,
+            (e) => sut.MouseDown -= e,
             () =>
             {
-                ctrlBase.Update(default);
+                sut.Update(default);
             });
     }
 
@@ -420,10 +420,10 @@ public class ControlBaseTests
 
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseButtonDownOverControlState);
 
-        var ctrlBase = CreateBase();
-        ctrlBase.Position = new Point(50, 50);
-        ctrlBase.Width = 100;
-        ctrlBase.Height = 100;
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(50, 50);
+        sut.Width = 100;
+        sut.Height = 100;
 
         var clickInvoked = false;
 
@@ -437,24 +437,24 @@ public class ControlBaseTests
             Assert.False(clickInvoked, $"The '{nameof(ControlBase.MouseUp)}' event must be invoked before '{nameof(ControlBase.Click)}'");
         }
 
-        ctrlBase.Click += CtrlClicked;
-        ctrlBase.MouseUp += MouseUp;
+        sut.Click += CtrlClicked;
+        sut.MouseUp += MouseUp;
 
-        ctrlBase.LoadContent();
+        sut.LoadContent();
 
         // Act
-        ctrlBase.Update(default);
+        sut.Update(default);
 
         // Set left mouse button as up which is a full click
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseButtonUpOverControlState);
 
         // Assert
         Assert.Raises<EventArgs>(
-            (e) => ctrlBase.MouseUp += e,
-            (e) => ctrlBase.MouseUp -= e,
+            (e) => sut.MouseUp += e,
+            (e) => sut.MouseUp -= e,
             () =>
             {
-                ctrlBase.Update(default);
+                sut.Update(default);
             });
     }
 
@@ -468,16 +468,16 @@ public class ControlBaseTests
 
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
 
-        var ctrlBase = CreateBase();
-        ctrlBase.Position = new Point(50, 50);
-        ctrlBase.Width = 100;
-        ctrlBase.Height = 100;
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(50, 50);
+        sut.Width = 100;
+        sut.Height = 100;
 
         // Act & Assert
         AssertExtensions.DoesNotRaise<EventArgs>(
-            e => ctrlBase.MouseDown += e,
-            e => ctrlBase.MouseDown -= e,
-            () => ctrlBase.Update(default));
+            e => sut.MouseDown += e,
+            e => sut.MouseDown -= e,
+            () => sut.Update(default));
     }
 
     [Fact]
@@ -490,26 +490,26 @@ public class ControlBaseTests
 
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseState);
 
-        var ctrlBase = CreateBase();
-        ctrlBase.Enabled = false;
-        ctrlBase.Position = new Point(50, 50);
-        ctrlBase.Width = 100;
-        ctrlBase.Height = 100;
+        var sut = CreateSystemUnderTest();
+        sut.Enabled = false;
+        sut.Position = new Point(50, 50);
+        sut.Width = 100;
+        sut.Height = 100;
 
-        ctrlBase.LoadContent();
+        sut.LoadContent();
 
         // Act & Assert
         AssertExtensions.DoesNotRaise<EventArgs>(
-            e => ctrlBase.MouseDown += e,
-            e => ctrlBase.MouseDown -= e,
-            () => ctrlBase.Update(default));
+            e => sut.MouseDown += e,
+            e => sut.MouseDown -= e,
+            () => sut.Update(default));
     }
 
     [Fact]
     public void UnloadContent_WhenInvoked_SetsControlAsUnloaded()
     {
         // Arrange
-        var control = CreateBase();
+        var control = CreateSystemUnderTest();
 
         // Act
         control.UnloadContent();
@@ -524,6 +524,6 @@ public class ControlBaseTests
     /// Creates a new instance of <see cref="ControlBase"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private ControlBaseFake CreateBase()
+    private ControlBaseFake CreateSystemUnderTest()
         => new ControlBaseFake(this.mockMouseInput.Object);
 }

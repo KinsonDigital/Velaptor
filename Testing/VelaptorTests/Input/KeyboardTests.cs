@@ -28,7 +28,7 @@ public class KeyboardTests
     public void Ctor_WhenInvoked_SubscribesToReactable()
     {
         // Arrange & Act
-        var unused = CreateKeyboard();
+        var unused = CreateSystemUnderTest();
 
         // Assert
         this.mockKeyboardReactable.VerifyOnce(m => m.Subscribe(It.IsAny<Reactor<(KeyCode, bool)>>()));
@@ -55,11 +55,11 @@ public class KeyboardTests
                 reactor.OnNext(data);
             });
 
-        var keyboard = CreateKeyboard();
+        var sut = CreateSystemUnderTest();
         this.mockKeyboardReactable.Object.PushNotification(keyState);
 
         // Act
-        var actual = keyboard.GetState();
+        var actual = sut.GetState();
 
         // Assert
         AssertExtensions.AllItemsAre(actual.GetKeyStates(),
@@ -94,5 +94,5 @@ public class KeyboardTests
     /// Creates a new instance of <see cref="Keyboard"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private Keyboard CreateKeyboard() => new Keyboard(this.mockKeyboardReactable.Object);
+    private Keyboard CreateSystemUnderTest() => new Keyboard(this.mockKeyboardReactable.Object);
 }

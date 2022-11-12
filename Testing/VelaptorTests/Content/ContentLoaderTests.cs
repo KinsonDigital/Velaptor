@@ -40,10 +40,10 @@ public class ContentLoaderTests
     public void LoadTexture_WhenLoadingTextures_LoadsTexture()
     {
         // Arrange
-        var loader = CreateContentLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.LoadTexture(TextureContentName);
+        sut.LoadTexture(TextureContentName);
 
         // Assert
         this.mockTextureLoader.Verify(m => m.Load(TextureContentName), Times.Once());
@@ -53,10 +53,10 @@ public class ContentLoaderTests
     public void LoadSound_WhenLoadingSounds_LoadsSound()
     {
         // Arrange
-        var loader = CreateContentLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.LoadSound(SoundContentName);
+        sut.LoadSound(SoundContentName);
 
         // Assert
         this.mockSoundLoader.Verify(m => m.Load(SoundContentName), Times.Once());
@@ -66,10 +66,10 @@ public class ContentLoaderTests
     public void LoadAtlas_WhenLoadingAtlasData_LoadsAtlasData()
     {
         // Arrange
-        var loader = CreateContentLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.LoadAtlas(AtlasContentName);
+        sut.LoadAtlas(AtlasContentName);
 
         // Assert
         this.mockAtlasLoader.Verify(m => m.Load(AtlasContentName), Times.Once());
@@ -79,10 +79,10 @@ public class ContentLoaderTests
     public void LoadFont_WhenLoadingFonts_LoadsFont()
     {
         // Arrange
-        var loader = CreateContentLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.LoadFont(FontContentName, 12);
+        sut.LoadFont(FontContentName, 12);
 
         // Assert
         this.mockFontLoader.Verify(m => m.Load($"{FontContentName}|size:12"), Times.Once());
@@ -97,11 +97,11 @@ public class ContentLoaderTests
 
         this.mockTextureLoader.Setup(m => m.Load(TextureContentName)).Returns(mockTexture.Object);
 
-        var loader = CreateContentLoader();
-        var texture = loader.LoadTexture(TextureContentName);
+        var sut = CreateSystemUnderTest();
+        var texture = sut.LoadTexture(TextureContentName);
 
         // Act
-        loader.UnloadTexture(texture);
+        sut.UnloadTexture(texture);
 
         // Assert
         this.mockTextureLoader.Verify(m => m.Unload(TextureContentName), Times.Once());
@@ -116,11 +116,11 @@ public class ContentLoaderTests
 
         this.mockSoundLoader.Setup(m => m.Load(SoundContentName)).Returns(mockSound.Object);
 
-        var loader = CreateContentLoader();
-        var sound = loader.LoadSound(SoundContentName);
+        var sut = CreateSystemUnderTest();
+        var sound = sut.LoadSound(SoundContentName);
 
         // Act
-        loader.UnloadSound(sound);
+        sut.UnloadSound(sound);
 
         // Assert
         this.mockSoundLoader.Verify(m => m.Unload(SoundContentName), Times.Once());
@@ -135,11 +135,11 @@ public class ContentLoaderTests
 
         this.mockAtlasLoader.Setup(m => m.Load(AtlasContentName)).Returns(mockAtlasData.Object);
 
-        var loader = CreateContentLoader();
-        var atlasData = loader.LoadAtlas(AtlasContentName);
+        var sut = CreateSystemUnderTest();
+        var atlasData = sut.LoadAtlas(AtlasContentName);
 
         // Act
-        loader.UnloadAtlas(atlasData);
+        sut.UnloadAtlas(atlasData);
 
         // Assert
         this.mockAtlasLoader.Verify(m => m.Unload(AtlasContentName), Times.Once());
@@ -156,11 +156,11 @@ public class ContentLoaderTests
 
         this.mockFontLoader.Setup(m => m.Load($"{FontContentName}|size:{fontSize}")).Returns(mockFont.Object);
 
-        var loader = CreateContentLoader();
-        var font = loader.LoadFont(FontContentName, fontSize);
+        var sut = CreateSystemUnderTest();
+        var font = sut.LoadFont(FontContentName, fontSize);
 
         // Act
-        loader.UnloadFont(font);
+        sut.UnloadFont(font);
 
         // Assert
         this.mockFontLoader.Verify(m => m.Unload($"{FontContentName}|size:{fontSize}"), Times.Once());
@@ -168,10 +168,10 @@ public class ContentLoaderTests
     #endregion
 
     /// <summary>
-    /// Returns a new instance of a content loader.
+    /// Returns a new instance of a content sut.
     /// </summary>
-    /// <returns>A content loader instance to use for testing.</returns>
-    private ContentLoader CreateContentLoader()
+    /// <returns>A content sut instance to use for testing.</returns>
+    private ContentLoader CreateSystemUnderTest()
         => new (this.mockTextureLoader.Object,
             this.mockSoundLoader.Object,
             this.mockAtlasLoader.Object,

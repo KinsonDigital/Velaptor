@@ -23,8 +23,8 @@ namespace VelaptorTests.OpenGL.Shaders;
 public class ShaderProgramTests
 {
     private const string BatchSizeVarName = "BATCH_SIZE";
-    private const string VertShaderSrc = "vert-shader-src";
-    private const string FragShaderSrc = "frag-shader-src";
+    private const string VertShaderSrc = "vert-sut-src";
+    private const string FragShaderSrc = "frag-sut-src";
     private const string ShaderName = "UNKNOWN";
     private const uint VertexShaderId = 1234u;
     private const uint FragShaderId = 5678u;
@@ -51,12 +51,12 @@ public class ShaderProgramTests
             (BatchSizeVarName, DefaultBatchSize),
         };
 
-        // Sets up the vertex shader file mock.
+        // Sets up the vertex sut file mock.
         this.mockShaderLoader.Setup(m
                 => m.LoadVertSource(ShaderName, vertTemplateVars))
             .Returns(() => VertShaderSrc);
 
-        // Sets up the fragment shader file mock.
+        // Sets up the fragment sut file mock.
         this.mockShaderLoader.Setup(m
                 => m.LoadFragSource(ShaderName, vertTemplateVars))
             .Returns(() => FragShaderSrc);
@@ -174,10 +174,10 @@ public class ShaderProgramTests
     public void Name_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var shader = CreateShaderProgram();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = shader.Name;
+        var actual = sut.Name;
 
         // Assert
         Assert.Equal("UNKNOWN", actual);
@@ -194,7 +194,7 @@ public class ShaderProgramTests
             (BatchSizeVarName, 0u),
         };
 
-        CreateShaderProgram();
+        CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -210,7 +210,7 @@ public class ShaderProgramTests
     public void ReactorInit_WhenInvokedSecondTime_DoesNotCreateShaderProgram()
     {
         // Arrange
-        CreateShaderProgram();
+        CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
@@ -233,18 +233,18 @@ public class ShaderProgramTests
     public void ReactorInit_WhenInvoked_SuccessfullyCreatesVertexShader()
     {
         // Arrange
-        CreateShaderProgram();
+        CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
 
         // Assert
-        // Verify the creation of the vertex shader
+        // Verify the creation of the vertex sut
         this.mockGL.Verify(m => m.CreateShader(GLShaderType.VertexShader), Times.Once());
         this.mockGL.Verify(m => m.ShaderSource(VertexShaderId, VertShaderSrc), Times.Once());
         this.mockGL.Verify(m => m.CompileShader(VertexShaderId), Times.Once());
 
-        // Verify the creation of the fragment shader
+        // Verify the creation of the fragment sut
         this.mockGL.Verify(m => m.CreateShader(GLShaderType.FragmentShader), Times.Once());
         this.mockGL.Verify(m => m.ShaderSource(FragShaderId, FragShaderSrc), Times.Once());
         this.mockGL.Verify(m => m.CompileShader(FragShaderId), Times.Once());
@@ -254,7 +254,7 @@ public class ShaderProgramTests
     public void ReactorInit_WhenInvoked_SuccessfullyCreatesProgram()
     {
         // Arrange
-        CreateShaderProgram();
+        CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -270,7 +270,7 @@ public class ShaderProgramTests
     public void ReactorInit_WhenInvoked_DestroysVertexAndFragmentShader()
     {
         // Arrange
-        CreateShaderProgram();
+        CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -291,7 +291,7 @@ public class ShaderProgramTests
             .Returns(statusCode);
         this.mockGL.Setup(m => m.GetShaderInfoLog(VertexShaderId)).Returns("Vertex Shader Compile Error");
 
-        CreateShaderProgram();
+        CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
@@ -309,7 +309,7 @@ public class ShaderProgramTests
             .Returns(statusCode);
         this.mockGL.Setup(m => m.GetShaderInfoLog(FragShaderId)).Returns("Fragment Shader Compile Error");
 
-        CreateShaderProgram();
+        CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
@@ -327,7 +327,7 @@ public class ShaderProgramTests
             .Returns(statusCode);
         this.mockGL.Setup(m => m.GetProgramInfoLog(ShaderProgramId)).Returns("Program Linking Error");
 
-        CreateShaderProgram();
+        CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
@@ -340,7 +340,7 @@ public class ShaderProgramTests
     public void Use_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var program = CreateShaderProgram();
+        var program = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ShaderNotInitializedException>(() =>
@@ -353,7 +353,7 @@ public class ShaderProgramTests
     public void Use_WhenInvoked_SetsProgramForUse()
     {
         // Arrange
-        var program = CreateShaderProgram();
+        var program = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
@@ -381,7 +381,7 @@ public class ShaderProgramTests
                 shutDownReactor = reactor;
             });
 
-        CreateShaderProgram();
+        CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
@@ -398,7 +398,7 @@ public class ShaderProgramTests
     /// Creates an instance of <see cref="ShaderProgramFake"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test with.</returns>
-    private ShaderProgramFake CreateShaderProgram()
+    private ShaderProgramFake CreateSystemUnderTest()
         => new (
             this.mockGL.Object,
             this.mockGLService.Object,

@@ -66,7 +66,7 @@ public class WindowsFontPathResolverTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<PlatformNotSupportedException>(() =>
         {
-            _ = CreateResolver();
+            _ = CreateSystemUnderTest();
         }, $"The '{nameof(WindowsFontPathResolver)}' can only be used on the 'Windows' platform.");
     }
     #endregion
@@ -76,10 +76,10 @@ public class WindowsFontPathResolverTests
     public void RootDirectoryPath_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.RootDirectoryPath;
+        var actual = sut.RootDirectoryPath;
 
         // Assert
         Assert.Equal(@"C:/Windows", actual);
@@ -89,10 +89,10 @@ public class WindowsFontPathResolverTests
     public void ContentDirectoryName_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ContentDirectoryName;
+        var actual = sut.ContentDirectoryName;
 
         // Assert
         Assert.Equal("Fonts", actual);
@@ -106,12 +106,12 @@ public class WindowsFontPathResolverTests
     public void ResolveFilePath_WhenNullOrEmpty_ThrowsException(string contentName)
     {
         // Arrange
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            resolver.ResolveFilePath(contentName);
+            sut.ResolveFilePath(contentName);
         }, "The string parameter must not be null or empty. (Parameter 'contentName')");
     }
 
@@ -119,12 +119,12 @@ public class WindowsFontPathResolverTests
     public void ResolveFilePath_WhenContentNameEndsWithDirectorySeparator_ThrowsException()
     {
         // Arrange
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
         {
-            resolver.ResolveFilePath(@"test-content/");
+            sut.ResolveFilePath(@"test-content/");
         }, @"The 'test-content/' cannot end with a folder.  It must end with a file name with or without the extension. (Parameter 'contentName')");
     }
 
@@ -148,10 +148,10 @@ public class WindowsFontPathResolverTests
         this.mockDirectory.Setup(m => m.GetFiles(fullContentDirPath, $"*{extension}"))
             .Returns(files);
 
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ResolveFilePath(contentName);
+        var actual = sut.ResolveFilePath(contentName);
 
         // Assert
         Assert.Equal(expected, actual);
@@ -162,10 +162,10 @@ public class WindowsFontPathResolverTests
     {
         // Arrange
         const string expected = "C:/Windows/Fonts";
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ResolveDirPath();
+        var actual = sut.ResolveDirPath();
 
         // Assert
         Assert.Equal(expected, actual);
@@ -176,5 +176,5 @@ public class WindowsFontPathResolverTests
     /// Creates a new instance of <see cref="WindowsFontPathResolver"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private WindowsFontPathResolver CreateResolver() => new (this.mockDirectory.Object, this.mockPlatform.Object);
+    private WindowsFontPathResolver CreateSystemUnderTest() => new (this.mockDirectory.Object, this.mockPlatform.Object);
 }

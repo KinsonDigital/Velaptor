@@ -8,8 +8,8 @@ using System.Runtime.CompilerServices;
 namespace Velaptor.Guards;
 
 /// <summary>
-/// Performs analysis on particular values to ensure that a value meets a criteria,
-/// then invokes behavior based on result.
+/// Performs analysis on particular values to ensure that they meets a criteria,
+/// then invokes behavior based on a result.
 /// </summary>
 internal static class EnsureThat
 {

@@ -81,12 +81,12 @@ public class TextureFactoryTests
     public void Create_WhenUsingNullOrEmptyName_ThrowsException(string name)
     {
         // Arrange
-        var factory = CreateFactory();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            factory.Create(name, "test-path", new ImageData(null, 1, 2));
+            sut.Create(name, "test-path", new ImageData(null, 1, 2));
         }, "The string parameter must not be null or empty. (Parameter 'name')");
     }
 
@@ -96,12 +96,12 @@ public class TextureFactoryTests
     public void Create_WhenUsingNullOrEmptyFilePath_ThrowsException(string filePath)
     {
         // Arrange
-        var factory = CreateFactory();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            factory.Create("test-name", filePath, new ImageData(null, 1, 2));
+            sut.Create("test-name", filePath, new ImageData(null, 1, 2));
         }, "The string parameter must not be null or empty. (Parameter 'filePath')");
     }
 
@@ -109,10 +109,10 @@ public class TextureFactoryTests
     public void Create_WhenInvoked_WorksCorrectly()
     {
         // Arrange
-        var factory = CreateFactory();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        factory.Create("test-name", "test-path", new ImageData(null, 1, 2));
+        sut.Create("test-name", "test-path", new ImageData(null, 1, 2));
 
         // Assert
         // NOTE: These are only here to prove that the same injected objects are the ones being used.
@@ -125,7 +125,7 @@ public class TextureFactoryTests
     /// Creates a new instance of <see cref="TextureFactory"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureFactory CreateFactory() => new (
+    private TextureFactory CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockDisposeTexturesReactable.Object);
