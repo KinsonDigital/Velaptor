@@ -65,7 +65,10 @@ For first-time contributors, there are a few steps that you will need to go thro
 
 ### **1. Fork the repository**
 First, fork the **Velaptor** repository.
-   - For more information on how to fork a repository, go [here](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+
+> **Note**
+> For more information on how to fork a repository, go [here](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
+
 ### **2. Clone the forked repository**
 Clone the forked repository to your machine so you can add your changes.  Swap `johndoe` with your username.
    ```cli
@@ -118,16 +121,14 @@ Sync the _**upstream**_ branch with your fork branch depending on if you are imp
 ### **2. Create Working Branch**
 
 Create a _**feature**_ or _**preview feature**_ branch using the syntax requirements in the _**[Branching Docs](./Documentation/Branching.md)**_ and push it to the fork remote. 
-   - Creating a _**feature**_ branch.  
-   Make sure the _**develop**_ branch is checked out.
+   - Creating a _**feature**_ branch. Make sure the _**develop**_ branch is checked out.
 
       ```cli
       git checkout -b feature/123-my-branch
       git push --set-upstream origin feature/123-my-branch
       ```
 
-   - Creating a _**preview feature**_ branch.  
-   Make sure the _**preview**_ branch is checked out.
+   - Creating a _**preview feature**_ branch. Make sure the _**preview**_ branch is checked out.
 
       ```cli
       git checkout -b preview/feature/123-my-branch
@@ -142,27 +143,26 @@ Create a _**feature**_ or _**preview feature**_ branch using the syntax requirem
 
 <h2 style="border:0;font-weight:bold" align="center">Creating Early Pull Request</h2>
 
-Refer to the **DOs and DON'Ts** section for certain details about pull requests.
+Refer to the **DOs and DON'Ts** section for details about pull requests.
 
 **Velaptor** encourages and uses [Early Pull Requests](https://medium.com/practical-blend/pull-request-first-f6bb667a9b6). Please don't wait until you're finished with your work before creating a PR!
 
-1. If you have not already, do step 1 in the **Setting Things Up** section above.
-2. If you have not already, do step 2 in the **Setting Things Up** section above.
-3. If you have not already, do step 3 in the **Setting Things Up** section above.
-4. If you have not already, do step 1 in the **Create a Branch to Contribute** section above.
-5. If you have not already, do step 2 in the **Create a Branch to Contribute** section above.
+1. If you have not already done so, complete steps 1 through 3 in the **Setting Things Up** section above.
+4. If you have not already done so, complete steps 1 and 2 in the **Create a Branch to Contribute** section above.
 6. Make your changes.
 7. Once you are done with your changes, open a [**draft pull request**](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests). Do this **BEFORE** you start working.
-   - Please make sure that the title of the pull request _**EXACTLY**_ matches the title of the associated issue.
-   - Use one of the PR templates below depending on if you are doing a regular feature or a preview feature.
-     - [Feature PR Template](https://raw.githubusercontent.com/KinsonDigital/.github/master/.github/PULL_REQUEST_TEMPLATE/feature-pr-template.md)
-     - [Preview Feature PR Template](https://raw.githubusercontent.com/KinsonDigital/.github/master/.github/PULL_REQUEST_TEMPLATE/preview-feature-pr-template.md)
-8. Make your commits in small, incremental steps with clear descriptions.
-9. All unit tests must pass before a PR will be completed.
-10. Make sure that the code follows the coding standards.
-   * Pay attention to the warnings in **Visual Studio** and/or **JetBrains Rider**!!
-   * Refer to the _**.editorconfig**_ files in the code base for rules.
-11. When you are finished with your changes, tag a maintainer in the PR comments and ask for a review!
+   > **Note**
+   Please make sure that the title of the pull request _**EXACTLY**_ matches the title of the associated issue.
+   > - Use one of the PR templates below depending on if you are doing a regular feature or a preview feature.
+     >   - [Feature PR Template](https://raw.githubusercontent.com/KinsonDigital/.github/master/.github/PULL_REQUEST_TEMPLATE/feature-pr-template.md)
+     >    - [Preview Feature PR Template](https://raw.githubusercontent.com/KinsonDigital/.github/master/.github/PULL_REQUEST_TEMPLATE/preview-feature-pr-template.md)
+1. Make your commits in small, incremental steps with clear descriptions.
+2. All unit tests must pass before a PR will be completed.
+3.  Make sure that the code follows the coding standards.
+    > **Note**
+    > * Pay attention to the warnings in **Visual Studio** and/or **JetBrains Rider**!!
+    > * Refer to the _**.editorconfig**_ files in the code base for rules.
+4.  When you are finished with your changes, tag a maintainer in the PR comments and ask for a review!
 
 <h2 style="border:0;font-weight:bold" align="center">"Help wanted" & "Good first issue"</h2>
 
