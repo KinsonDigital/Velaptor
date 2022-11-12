@@ -80,8 +80,8 @@ public void $MEMBER_UNDER_TEST$_$SCENARIO_UNDER_TEST$_$EXPECTED_RESULT$()
 	
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=86F716820BF5EB468401E61C2F9C758C/Field/=MEMBER_005FUNDER_005FTEST/@KeyIndexDefined">False</s:Boolean>
 	
-	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=86F716820BF5EB468401E61C2F9C758C/Field/=METHOD_005FSUFFIX/@KeyIndexDefined">True</s:Boolean>
-	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=86F716820BF5EB468401E61C2F9C758C/Field/=METHOD_005FSUFFIX/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=86F716820BF5EB468401E61C2F9C758C/Field/=METHOD_005FSUFFIX/@KeyIndexDefined">False</s:Boolean>
+	
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=86F716820BF5EB468401E61C2F9C758C/Field/=OBJECT_005FTYPE/@KeyIndexDefined">True</s:Boolean>
 	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=86F716820BF5EB468401E61C2F9C758C/Field/=OBJECT_005FTYPE/Order/@EntryValue">0</s:Int64>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=86F716820BF5EB468401E61C2F9C758C/Field/=SCENARIO_005FUNDER_005FTEST/@KeyIndexDefined">False</s:Boolean>
@@ -96,7 +96,7 @@ public void $MEMBER_UNDER_TEST$_$SCENARIO_UNDER_TEST$_$EXPECTED_RESULT$()
 /// Creates a new instance of &lt;see cref="$OBJECT_TYPE$"/&gt; for the purpose of testing.
 /// &lt;/summary&gt;
 /// &lt;returns&gt;The instance to test.&lt;/returns&gt;
-private $OBJECT_TYPE$ Create$METHOD_SUFFIX$()
+private $OBJECT_TYPE$ CreateSystemUnderTest()
     =&gt; new ($END$);</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=dfactor/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Hori/@EntryIndexedValue">True</s:Boolean>
