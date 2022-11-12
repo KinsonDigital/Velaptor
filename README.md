@@ -68,7 +68,7 @@ We currently have the following maintainers:
 
 <h2 style="font-weight:bold;border:0" align="center">🙏🏼Contributing</h2>
 
-To learn how to contribute to the project, go [here](./Documentation/HowToContribute.md).
+To learn how to contribute to the project, go [here](./CONTRIBUTING.md).
 
 <h2 style="font-weight:bold;border:0" align="center">Practices</h2>
 
