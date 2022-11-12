@@ -29,7 +29,7 @@
 
 <h2 style="font-weight:bold;border:0" align="center" >!! NOTICE !!</h2>
 
-This library is still under development and is not at v1.0.0 yet!!  However, all of the major features are available, so we encourage you to use it and report back any issues and improvements you may have.  That is what open source is all about. 🥳
+This library is still under development and is not at v1.0.0 yet!!  However, all of the major features are available, so we encourage you to use it and give us feedback.  That is what open source is all about. 🥳
 
 <h2 style="font-weight:bold;border:0" align="center">📖 About Velaptor</h2>
 
@@ -88,7 +88,7 @@ This helps ensure the long term viability of all the projects in the organizatio
   - This is a sample project for the purpose of performing manual testing of the library as well as understanding how to use it.
 - [CASL](https://github.com/KinsonDigital/CASL) is used for audio.
 - Powered by [Silk.NET](https://github.com/dotnet/Silk.NET).
-- Come chat with us on [discord](https://discord.gg/qewu6fNgv7)!
+- Come chat with us on [Discord](https://discord.gg/qewu6fNgv7)!
 
 <h2 style="font-weight:bold;border:0" align="center">Licensing And Governance</h2>
 
