@@ -26,7 +26,7 @@ namespace VelaptorTests.UI;
 public class ButtonTests
 {
     private const string ButtonTextValue = "test-value";
-    private const string TextureName = "button-face-small";
+    private const string TextureName = "sut-face-small";
     private readonly Mock<IContentLoader> mockContentLoader;
     private readonly Mock<ITexture> mockTexture;
     private readonly Mock<IFont> mockFont;
@@ -99,11 +99,11 @@ public class ButtonTests
     {
         // Arrange
         var expected = new Point(11, 22);
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.Position = new Point(11, 22);
-        var actual = button.Position;
+        sut.Position = new Point(11, 22);
+        var actual = sut.Position;
 
         // Assert
         Assert.Equal(expected, actual);
@@ -113,10 +113,10 @@ public class ButtonTests
     public void AutoSize_WhenGettingDefaultValue_ReturnsTrue()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = button.AutoSize;
+        var actual = sut.AutoSize;
 
         // Assert
         Assert.True(actual);
@@ -126,31 +126,31 @@ public class ButtonTests
     public void AutoSize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.AutoSize = false;
+        sut.AutoSize = false;
 
         // Assert
-        Assert.False(button.AutoSize);
+        Assert.False(sut.AutoSize);
     }
 
     [Fact]
     public void AutoSize_WhenTurningOffAutoSize_SetsWidthAngHeightBeforeAutoSizeWasTurnedOn()
     {
         // Arrange
-        var button = CreateButton();
-        button.AutoSize = false;
-        button.Width = 123u;
-        button.Height = 456u;
-        button.AutoSize = true;
+        var sut = CreateSystemUnderTest();
+        sut.AutoSize = false;
+        sut.Width = 123u;
+        sut.Height = 456u;
+        sut.AutoSize = true;
 
         // Act
-        button.AutoSize = false;
+        sut.AutoSize = false;
 
         // Assert
-        AssertExtensions.EqualWithMessage(123u, button.Width, "The width is incorrect.");
-        AssertExtensions.EqualWithMessage(456u, button.Height, "The height is incorrect.");
+        AssertExtensions.EqualWithMessage(123u, sut.Width, "The width is incorrect.");
+        AssertExtensions.EqualWithMessage(456u, sut.Height, "The height is incorrect.");
     }
 
     [Theory]
@@ -163,26 +163,26 @@ public class ButtonTests
         // Arrange
         this.mockFont.Setup(m => m.Measure(It.IsAny<string>())).Returns(new SizeF(30, 40));
         this.label.AutoSize = true;
-        var button = CreateButton();
-        button.LoadContent();
-        button.AutoSize = autoSize;
+        var sut = CreateSystemUnderTest();
+        sut.LoadContent();
+        sut.AutoSize = autoSize;
 
         // Act
-        button.Width = 40;
+        sut.Width = 40;
 
         // Assert
-        Assert.Equal(expectedWidth, button.Width);
+        Assert.Equal(expectedWidth, sut.Width);
     }
 
     [Fact]
     public void Text_WhenSettingValueBeforeLoadingContent_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.Text = ButtonTextValue;
-        var actual = button.Text;
+        sut.Text = ButtonTextValue;
+        var actual = sut.Text;
 
         // Assert
         Assert.Equal(ButtonTextValue, actual);
@@ -192,12 +192,12 @@ public class ButtonTests
     public void Text_WhenSettingValueAfterLoadingContent_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
-        button.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.LoadContent();
 
         // Act
-        button.Text = "test-value";
-        var actual = button.Text;
+        sut.Text = "test-value";
+        var actual = sut.Text;
 
         // Assert
         Assert.Equal("test-value", actual);
@@ -207,10 +207,10 @@ public class ButtonTests
     public void BorderVisible_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = button.BorderVisible;
+        var actual = sut.BorderVisible;
 
         // Assert
         Assert.True(actual);
@@ -220,23 +220,23 @@ public class ButtonTests
     public void BorderVisible_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.BorderVisible = true;
+        sut.BorderVisible = true;
 
         // Assert
-        Assert.True(button.BorderVisible);
+        Assert.True(sut.BorderVisible);
     }
 
     [Fact]
     public void BorderColor_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = button.BorderColor;
+        var actual = sut.BorderColor;
 
         // Assert
         Assert.Equal(Color.SlateGray, actual);
@@ -246,39 +246,39 @@ public class ButtonTests
     public void BorderColor_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.BorderColor = Color.Red;
+        sut.BorderColor = Color.Red;
 
         // Assert
-        Assert.Equal(Color.Red, button.BorderColor);
+        Assert.Equal(Color.Red, sut.BorderColor);
     }
 
     [Fact]
     public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.BorderThickness = 123u;
+        sut.BorderThickness = 123u;
 
         // Assert
-        Assert.Equal(123u, button.BorderThickness);
+        Assert.Equal(123u, sut.BorderThickness);
     }
 
     [Fact]
     public void FaceColor_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.FaceColor = Color.CornflowerBlue;
+        sut.FaceColor = Color.CornflowerBlue;
 
         // Assert
-        Assert.Equal(Color.CornflowerBlue, button.FaceColor);
+        Assert.Equal(Color.CornflowerBlue, sut.FaceColor);
     }
 
     [Fact]
@@ -286,13 +286,13 @@ public class ButtonTests
     {
         // Arrange
         var expected = new CornerRadius(10f, 20f, 30f, 40f);
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.CornerRadius = new CornerRadius(10f, 20f, 30f, 40f);
+        sut.CornerRadius = new CornerRadius(10f, 20f, 30f, 40f);
 
         // Assert
-        Assert.Equal(expected, button.CornerRadius);
+        Assert.Equal(expected, sut.CornerRadius);
     }
 
     [Fact]
@@ -300,24 +300,24 @@ public class ButtonTests
     {
         // Arrange
         this.mockFont.SetupProperty(p => p.Size);
-        var button = CreateButton();
-        button.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.LoadContent();
 
         // Act
-        button.FontSize = 123u;
+        sut.FontSize = 123u;
 
         // Assert
-        Assert.Equal(123u, button.FontSize);
+        Assert.Equal(123u, sut.FontSize);
     }
 
     [Fact]
     public void Enabled_WhenSettingValueBeforeLoadingContent_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = button.Enabled;
+        var actual = sut.Enabled;
 
         // Assert
         Assert.True(actual);
@@ -327,14 +327,14 @@ public class ButtonTests
     public void Enabled_WhenSettingValueAfterLoadingContent_ReturnsCorrectResult()
     {
         // Arrange
-        var button = CreateButton();
-        button.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.LoadContent();
 
         // Act
-        button.Enabled = false;
+        sut.Enabled = false;
 
         // Assert
-        Assert.False(button.Enabled);
+        Assert.False(sut.Enabled);
     }
     #endregion
 
@@ -346,18 +346,18 @@ public class ButtonTests
         this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12))
             .Returns(this.mockFont.Object);
 
-        var button = CreateButton();
-        button.Text = "test-value";
-        button.Enabled = false;
-        button.Position = new Point(11, 22);
+        var sut = CreateSystemUnderTest();
+        sut.Text = "test-value";
+        sut.Enabled = false;
+        sut.Position = new Point(11, 22);
 
         // Act
-        button.LoadContent();
+        sut.LoadContent();
 
         // Assert
-        Assert.Equal("test-value", button.Text);
-        Assert.False(button.Enabled);
-        Assert.Equal(new Point(11, 22), button.Position);
+        Assert.Equal("test-value", sut.Text);
+        Assert.False(sut.Enabled);
+        Assert.Equal(new Point(11, 22), sut.Position);
         this.mockContentLoader.Verify(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12), Times.Once);
     }
 
@@ -365,27 +365,27 @@ public class ButtonTests
     public void UnloadContent_WhenInvoked_UnloadsContent()
     {
         // Arrange
-        var button = CreateButton();
-        button.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.LoadContent();
 
         // Act
-        button.UnloadContent();
+        sut.UnloadContent();
 
         // Assert
-        Assert.False(button.IsLoaded);
+        Assert.False(sut.IsLoaded);
     }
 
     [Fact]
     public void UnloadContent_WhenAlreadyUnloaded_DoesNotUnloadContent()
     {
         // Arrange
-        var button = CreateButton();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        button.UnloadContent();
+        sut.UnloadContent();
 
         // Assert
-        Assert.False(button.IsLoaded);
+        Assert.False(sut.IsLoaded);
         this.mockContentLoader.Verify(m => m.UnloadTexture(this.mockTexture.Object), Times.Never);
     }
 
@@ -394,11 +394,11 @@ public class ButtonTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderer>();
-        var button = CreateButton();
-        button.Visible = true;
+        var sut = CreateSystemUnderTest();
+        sut.Visible = true;
 
         // Act
-        button.Render(mockRenderer.Object);
+        sut.Render(mockRenderer.Object);
 
         // Assert
         mockRenderer.Verify(m =>
@@ -413,12 +413,12 @@ public class ButtonTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderer>();
-        var button = CreateButton();
-        button.Visible = false;
-        button.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.Visible = false;
+        sut.LoadContent();
 
         // Act
-        button.Render(mockRenderer.Object);
+        sut.Render(mockRenderer.Object);
 
         // Assert
         mockRenderer.Verify(m =>
@@ -443,12 +443,12 @@ public class ButtonTests
                 return nullTexture;
 #pragma warning restore 8603
             });
-        var button = CreateButton();
-        button.Visible = true;
-        button.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.Visible = true;
+        sut.LoadContent();
 
         // Act
-        button.Render(mockRenderer.Object);
+        sut.Render(mockRenderer.Object);
 
         // Assert
         mockRenderer.Verify(m =>
@@ -468,27 +468,27 @@ public class ButtonTests
         mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>()))
             .Callback<RectShape>((rectangle) =>
             {
-                // Only capture the button face rectangle
+                // Only capture the sut face rectangle
                 if (rectangle.IsFilled)
                 {
                     actual = rectangle;
                 }
             });
 
-        var button = CreateButton();
-        button.Position = new Point(400, 600);
-        button.BorderVisible = false;
-        button.Visible = true;
-        button.Enabled = true;
-        button.AutoSize = false;
-        button.Width = 100;
-        button.Height = 50;
-        button.BorderThickness = 123u;
-        button.CornerRadius = new CornerRadius(11, 22, 33, 44);
-        button.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(400, 600);
+        sut.BorderVisible = false;
+        sut.Visible = true;
+        sut.Enabled = true;
+        sut.AutoSize = false;
+        sut.Width = 100;
+        sut.Height = 50;
+        sut.BorderThickness = 123u;
+        sut.CornerRadius = new CornerRadius(11, 22, 33, 44);
+        sut.LoadContent();
 
         // Act
-        button.Render(mockRenderer.Object);
+        sut.Render(mockRenderer.Object);
 
         // Assert
         mockRenderer.Verify(m => m.Render(actual), Times.Once);
@@ -570,9 +570,9 @@ public class ButtonTests
     }
 
     /// <summary>
-    /// Creates a new button for the purpose of testing.
+    /// Creates a new sut for the purpose of testing.
     /// </summary>
-    /// <returns>The button instance to test.</returns>
-    private Button CreateButton()
+    /// <returns>The sut instance to test.</returns>
+    private Button CreateSystemUnderTest()
         => new (this.mockContentLoader.Object, this.mockControlFactory.Object);
 }

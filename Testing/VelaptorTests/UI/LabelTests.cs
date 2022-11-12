@@ -73,11 +73,11 @@ public class LabelTests
     public void Text_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        label.Text = "test-value";
-        var actual = label.Text;
+        sut.Text = "test-value";
+        var actual = sut.Text;
 
         // Assert
         Assert.Equal("test-value", actual);
@@ -87,11 +87,11 @@ public class LabelTests
     public void Position_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        label.Position = new Point(11, 22);
-        var actual = label.Position;
+        sut.Position = new Point(11, 22);
+        var actual = sut.Position;
 
         // Assert
         Assert.Equal(new Point(11, 22), actual);
@@ -103,13 +103,13 @@ public class LabelTests
         // Arrange
         const string labelText = "xunit";
 
-        var label = CreateLabel();
-        label.Position = new Point(100, 200);
-        label.Width = 108;
-        label.Text = labelText;
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(100, 200);
+        sut.Width = 108;
+        sut.Text = labelText;
 
         // Act
-        var actual = label.CharacterBounds;
+        var actual = sut.CharacterBounds;
 
         // Assert
         Assert.Empty(actual);
@@ -123,8 +123,8 @@ public class LabelTests
         const string labelText = "xunit";
         var characters = labelText.ToArray();
 
-        var label = CreateLabel();
-        label.AutoSize = false;
+        var sut = CreateSystemUnderTest();
+        sut.AutoSize = false;
         var mockedCharBounds = new List<(char character, RectangleF bounds)>()
         {
             (characters[0], RectangleF.Empty),
@@ -137,13 +137,13 @@ public class LabelTests
         this.mockFont.Setup(m => m.GetCharacterBounds(It.IsAny<string>(), It.IsAny<Vector2>()))
             .Returns(mockedCharBounds);
 
-        label.Position = new Point(100, 200);
-        label.Width = 108;
-        label.Text = labelText;
-        label.LoadContent();
+        sut.Position = new Point(100, 200);
+        sut.Width = 108;
+        sut.Text = labelText;
+        sut.LoadContent();
 
         // Act
-        var actual = label.CharacterBounds;
+        var actual = sut.CharacterBounds;
 
         // Assert
         Assert.Equal(labelText.Length, actual.Count);
@@ -154,10 +154,10 @@ public class LabelTests
     public void AutoSize_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = label.AutoSize;
+        var actual = sut.AutoSize;
 
         // Assert
         Assert.True(actual, $"The expected default value of the '{nameof(Label.AutoSize)}' property must be true.");
@@ -167,13 +167,13 @@ public class LabelTests
     public void AutoSize_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        label.AutoSize = false;
+        sut.AutoSize = false;
 
         // Assert
-        Assert.False(label.AutoSize);
+        Assert.False(sut.AutoSize);
     }
 
     [Theory]
@@ -187,14 +187,14 @@ public class LabelTests
         // Arrange
         const string testText = "xunit";
         this.mockFont.Setup(m => m.Measure(testText)).Returns(new SizeF(expected, 20));
-        var label = CreateLabel();
-        label.AutoSize = autoSize;
-        label.Text = testText;
-        label.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.AutoSize = autoSize;
+        sut.Text = testText;
+        sut.LoadContent();
 
         // Act
-        label.Width = width;
-        var actual = label.Width;
+        sut.Width = width;
+        var actual = sut.Width;
 
         // Assert
         Assert.Equal(expected, actual);
@@ -211,14 +211,14 @@ public class LabelTests
         // Arrange
         const string testText = "xunit";
         this.mockFont.Setup(m => m.Measure(testText)).Returns(new SizeF(10, expected));
-        var label = CreateLabel();
-        label.AutoSize = autoSize;
-        label.Text = testText;
-        label.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.AutoSize = autoSize;
+        sut.Text = testText;
+        sut.LoadContent();
 
         // Act
-        label.Height = height;
-        var actual = label.Height;
+        sut.Height = height;
+        var actual = sut.Height;
 
         // Assert
         Assert.Equal(expected, actual);
@@ -229,27 +229,27 @@ public class LabelTests
     {
         // Arrange
         this.mockFont.SetupProperty(p => p.Style);
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        label.Style = FontStyle.Italic;
+        sut.Style = FontStyle.Italic;
 
         // Assert
-        Assert.Equal(FontStyle.Italic, label.Style);
+        Assert.Equal(FontStyle.Italic, sut.Style);
     }
 
     [Fact]
     public void WidthAndHeight_WhenTextIsEmpty_CalculatesCorrectResults()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
-        label.Text = string.Empty;
-        label.LoadContent();
+        sut.Text = string.Empty;
+        sut.LoadContent();
 
         // Act
-        var actualWidth = label.Width;
-        var actualHeight = label.Height;
+        var actualWidth = sut.Width;
+        var actualHeight = sut.Height;
 
         // Assert
         Assert.Equal(0u, actualWidth);
@@ -260,10 +260,10 @@ public class LabelTests
     public void Color_WhenNotGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = label.Color;
+        var actual = sut.Color;
 
         // Assert
         Assert.Equal(Color.Black, actual);
@@ -273,11 +273,11 @@ public class LabelTests
     public void Color_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        label.Color = Color.FromArgb(11, 22, 33, 44);
-        var actual = label.Color;
+        sut.Color = Color.FromArgb(11, 22, 33, 44);
+        var actual = sut.Color;
 
         // Assert
         Assert.Equal(Color.FromArgb(11, 22, 33, 44), actual);
@@ -287,11 +287,11 @@ public class LabelTests
     public void Font_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var label = CreateLabel();
-        label.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.LoadContent();
 
         // Act
-        var actual = label.Font;
+        var actual = sut.Font;
 
         // Assert
         Assert.Same(this.mockFont.Object, actual);
@@ -314,16 +314,16 @@ public class LabelTests
         var position = new Vector2(11f, 22f);
         this.mockFont.Setup(m => m.GetCharacterBounds(testText, position))
             .Returns(() => expectedCharBounds);
-        var label = CreateLabel();
-        label.Text = testText;
-        label.Position = position.ToPoint();
+        var sut = CreateSystemUnderTest();
+        sut.Text = testText;
+        sut.Position = position.ToPoint();
 
         // Act
-        label.LoadContent();
-        label.LoadContent();
+        sut.LoadContent();
+        sut.LoadContent();
 
         // Assert
-        Assert.Equal(expectedCharBounds, label.CharacterBounds);
+        Assert.Equal(expectedCharBounds, sut.CharacterBounds);
     }
 
     [Fact]
@@ -333,7 +333,7 @@ public class LabelTests
         const string labelText = "test-value";
         var characters = labelText.ToArray();
 
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
         var mockedCharBounds = new List<(char character, RectangleF bounds)>()
         {
             (characters[0], RectangleF.Empty),
@@ -351,14 +351,14 @@ public class LabelTests
         this.mockFont.Setup(m => m.GetCharacterBounds(It.IsAny<string>(), It.IsAny<Vector2>()))
             .Returns(mockedCharBounds);
 
-        label.AutoSize = false;
-        label.Position = new Point(100, 200);
-        label.Width = 108;
-        label.Text = labelText;
-        label.LoadContent();
+        sut.AutoSize = false;
+        sut.Position = new Point(100, 200);
+        sut.Width = 108;
+        sut.Text = labelText;
+        sut.LoadContent();
 
         // Act
-        var actual = label.CharacterBounds;
+        var actual = sut.CharacterBounds;
 
         // Assert
         Assert.Equal(labelText.Length, actual.Count);
@@ -369,11 +369,11 @@ public class LabelTests
     public void UnloadContent_WhenLoadedAndNotDisposed_UnloadsContent()
     {
         // Arrange
-        var label = CreateLabel();
-        label.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.LoadContent();
 
         // Act
-        label.UnloadContent();
+        sut.UnloadContent();
 
         // Assert
         this.mockContentLoader.Verify(m => m.UnloadFont(this.mockFont.Object), Times.Once);
@@ -383,10 +383,10 @@ public class LabelTests
     public void UnloadContent_WhenNotLoaded_DoesNotUnloadContent()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        label.UnloadContent();
+        sut.UnloadContent();
 
         // Assert
         this.mockContentLoader.Verify(m => m.UnloadFont(this.mockFont.Object), Times.Never);
@@ -396,12 +396,12 @@ public class LabelTests
     public void Render_WithNullRenderer_ThrowsException()
     {
         // Arrange
-        var label = CreateLabel();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            label.Render(null);
+            sut.Render(null);
         }, "The parameter must not be null. (Parameter 'renderer')");
     }
 
@@ -410,11 +410,11 @@ public class LabelTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderer>();
-        var label = CreateLabel();
-        label.Visible = true;
+        var sut = CreateSystemUnderTest();
+        sut.Visible = true;
 
         // Act
-        label.Render(mockRenderer.Object);
+        sut.Render(mockRenderer.Object);
 
         // Assert
         mockRenderer.Verify(m => m.Render(It.IsAny<IFont>(),
@@ -429,12 +429,12 @@ public class LabelTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderer>();
-        var label = CreateLabel();
-        label.Visible = false;
+        var sut = CreateSystemUnderTest();
+        sut.Visible = false;
 
         // Act
-        label.LoadContent();
-        label.Render(mockRenderer.Object);
+        sut.LoadContent();
+        sut.Render(mockRenderer.Object);
 
         // Assert
         mockRenderer.Verify(m =>
@@ -450,12 +450,12 @@ public class LabelTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderer>();
-        var label = CreateLabel();
-        label.Text = string.Empty;
-        label.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.Text = string.Empty;
+        sut.LoadContent();
 
         // Act
-        label.Render(mockRenderer.Object);
+        sut.Render(mockRenderer.Object);
 
         // Assert
         mockRenderer.Verify(m =>
@@ -475,15 +475,15 @@ public class LabelTests
         // Arrange
         var mockRenderer = new Mock<IRenderer>();
 
-        var label = CreateLabel();
-        label.Text = TextValue;
-        label.Position = new Point(100, 200);
-        label.Visible = true;
-        label.Color = Color.FromArgb(11, 22, 33, 44);
-        label.LoadContent();
+        var sut = CreateSystemUnderTest();
+        sut.Text = TextValue;
+        sut.Position = new Point(100, 200);
+        sut.Visible = true;
+        sut.Color = Color.FromArgb(11, 22, 33, 44);
+        sut.LoadContent();
 
         // Act
-        label.Render(mockRenderer.Object);
+        sut.Render(mockRenderer.Object);
 
         // Assert
         mockRenderer.Verify(m =>
@@ -530,8 +530,8 @@ public class LabelTests
     }
 
     /// <summary>
-    /// Creates a new label for the purpose of testing.
+    /// Creates a new sut for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private Label CreateLabel() => new (this.mockContentLoader.Object, this.mockFont.Object, this.mockMouse.Object);
+    private Label CreateSystemUnderTest() => new (this.mockContentLoader.Object, this.mockFont.Object, this.mockMouse.Object);
 }

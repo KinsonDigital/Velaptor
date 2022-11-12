@@ -133,7 +133,7 @@ public class ShaderTemplateProcessorServiceTests
     public void ProcessTemplateVariables_WithInvalidName_ThrowsException(string varName, string expectedExceptionMsg)
     {
         // Arrange
-        var service = CreateTemplateService();
+        var sut = CreateSystemUnderTest();
 
         IEnumerable<(string, string)> vars = new[]
         {
@@ -142,7 +142,7 @@ public class ShaderTemplateProcessorServiceTests
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            service.ProcessTemplateVariables(It.IsAny<string>(), vars);
+            sut.ProcessTemplateVariables(It.IsAny<string>(), vars);
         }, expectedExceptionMsg);
     }
 
@@ -154,10 +154,10 @@ public class ShaderTemplateProcessorServiceTests
         string expected)
     {
         // Arrange
-        var service = CreateTemplateService();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = service.ProcessTemplateVariables(content, variables);
+        var actual = sut.ProcessTemplateVariables(content, variables);
 
         // Assert
         Assert.Equal(expected, actual);
@@ -168,5 +168,5 @@ public class ShaderTemplateProcessorServiceTests
     /// Creates a new instance of <see cref="ShaderTemplateProcessorService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The object instance to test.</returns>
-    private ShaderTemplateProcessorService CreateTemplateService() => new ();
+    private ShaderTemplateProcessorService CreateSystemUnderTest() => new ();
 }

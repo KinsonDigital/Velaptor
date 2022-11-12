@@ -132,12 +132,12 @@ public class TextureGPUBufferTests
     public void UploadVertexData_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.UploadVertexData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>());
+            sut.UploadVertexData(It.IsAny<TextureBatchItem>(), It.IsAny<uint>());
         }, "The texture buffer has not been initialized.");
     }
 
@@ -146,13 +146,13 @@ public class TextureGPUBufferTests
     {
         // Arrange
         var textureQuad = new TextureBatchItem() { Effects = (RenderEffects)1234, };
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<InvalidRenderEffectsException>(() =>
         {
-            buffer.UploadVertexData(textureQuad, It.IsAny<uint>());
+            sut.UploadVertexData(textureQuad, It.IsAny<uint>());
         }, "The 'RenderEffects' value of '1234' is not valid.");
     }
 
@@ -163,12 +163,12 @@ public class TextureGPUBufferTests
         var batchItem = default(TextureBatchItem);
         batchItem.Effects = RenderEffects.None;
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         this.glInitReactor.OnNext(default);
 
         // Act
-        buffer.UploadVertexData(batchItem, 0u);
+        sut.UploadVertexData(batchItem, 0u);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Update Texture Quad - BatchItem(0) Data"), Times.Once);
@@ -190,12 +190,12 @@ public class TextureGPUBufferTests
         batchItem.TextureId = 1;
         batchItem.ViewPortSize = new SizeF(800, 600);
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         this.glInitReactor.OnNext(default);
 
         // Act
-        buffer.UploadVertexData(batchItem, 0u);
+        sut.UploadVertexData(batchItem, 0u);
 
         // Assert
         this.mockGL.Verify(m
@@ -206,12 +206,12 @@ public class TextureGPUBufferTests
     public void PrepareForUpload_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.PrepareForUpload();
+            sut.PrepareForUpload();
         }, "The texture buffer has not been initialized.");
     }
 
@@ -219,11 +219,11 @@ public class TextureGPUBufferTests
     public void PrepareForUpload_WhenInvoked_BindsVertexArrayObject()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
-        buffer.PrepareForUpload();
+        sut.PrepareForUpload();
 
         // Assert
         this.mockGLService.Verify(m => m.BindVAO(VertexArrayId), Times.AtLeastOnce);
@@ -233,12 +233,12 @@ public class TextureGPUBufferTests
     public void GenerateData_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.GenerateData();
+            sut.GenerateData();
         }, "The texture buffer has not been initialized.");
     }
 
@@ -246,11 +246,11 @@ public class TextureGPUBufferTests
     public void GenerateData_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
-        var actual = buffer.GenerateData();
+        var actual = sut.GenerateData();
 
         // Assert
         Assert.Equal(32_000, actual.Length);
@@ -260,12 +260,12 @@ public class TextureGPUBufferTests
     public void SetupVAO_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.SetupVAO();
+            sut.SetupVAO();
         }, "The texture buffer has not been initialized.");
     }
 
@@ -273,7 +273,7 @@ public class TextureGPUBufferTests
     public void SetupVAO_WhenInvoked_SetsUpVertexArrayObject()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -303,12 +303,12 @@ public class TextureGPUBufferTests
     public void GenerateIndices_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.GenerateIndices();
+            sut.GenerateIndices();
         }, "The texture buffer has not been initialized.");
     }
     #endregion
@@ -317,7 +317,7 @@ public class TextureGPUBufferTests
     /// Creates a new instance of <see cref="TextureGPUBuffer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureGPUBuffer CreateBuffer() => new (
+    private TextureGPUBuffer CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockGLInitReactable.Object,

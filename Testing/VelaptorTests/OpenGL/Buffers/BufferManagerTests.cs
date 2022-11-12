@@ -46,10 +46,10 @@ public class BufferManagerTests
     {
         // Arrange
         var expectedSize = new SizeU(111u, 222u);
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.SetViewPortSize(VelaptorBufferType.Texture, new SizeU(111u, 222u));
+        sut.SetViewPortSize(VelaptorBufferType.Texture, new SizeU(111u, 222u));
 
         // Assert
         this.mockTextureBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
@@ -60,10 +60,10 @@ public class BufferManagerTests
     {
         // Arrange
         var expectedSize = new SizeU(111u, 222u);
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.SetViewPortSize(VelaptorBufferType.Font, new SizeU(111u, 222u));
+        sut.SetViewPortSize(VelaptorBufferType.Font, new SizeU(111u, 222u));
 
         // Assert
         this.mockFontGlyphBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
@@ -74,10 +74,10 @@ public class BufferManagerTests
     {
         // Arrange
         var expectedSize = new SizeU(111u, 222u);
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.SetViewPortSize(VelaptorBufferType.Rectangle, new SizeU(111u, 222u));
+        sut.SetViewPortSize(VelaptorBufferType.Rectangle, new SizeU(111u, 222u));
 
         // Assert
         this.mockRectBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
@@ -87,12 +87,12 @@ public class BufferManagerTests
     public void SetViewPortSize_WithInvalidBufferType_ThrowsException()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
         {
-            manager.SetViewPortSize((VelaptorBufferType)1234, It.IsAny<SizeU>());
+            sut.SetViewPortSize((VelaptorBufferType)1234, It.IsAny<SizeU>());
         }, $"The enum '{nameof(VelaptorBufferType)}' value is invalid. (Parameter 'bufferType'){Environment.NewLine}Actual value was 1234.");
     }
 
@@ -105,10 +105,10 @@ public class BufferManagerTests
         data.Effects = RenderEffects.FlipHorizontally;
         data.Size = 1.5f;
 
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.UploadTextureData(data, 123u);
+        sut.UploadTextureData(data, 123u);
 
         // Assert
         this.mockTextureBuffer.VerifyOnce(m => m.UploadData(data, 123u));
@@ -123,10 +123,10 @@ public class BufferManagerTests
         data.Effects = RenderEffects.FlipVertically;
         data.Size = 2.5f;
 
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.UploadFontGlyphData(data, 456u);
+        sut.UploadFontGlyphData(data, 456u);
 
         // Assert
         this.mockFontGlyphBuffer.VerifyOnce(m => m.UploadData(data, 456u));
@@ -141,10 +141,10 @@ public class BufferManagerTests
         data.Width = 444;
         data.Height = 555;
 
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.UploadRectData(data, 789u);
+        sut.UploadRectData(data, 789u);
 
         // Assert
         this.mockRectBuffer.VerifyOnce(m => m.UploadData(data, 789u));
@@ -155,5 +155,5 @@ public class BufferManagerTests
     /// Creates a new instance of <see cref="BufferManager"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private BufferManager CreateManager() => new (this.mockBufferFactory.Object);
+    private BufferManager CreateSystemUnderTest() => new (this.mockBufferFactory.Object);
 }

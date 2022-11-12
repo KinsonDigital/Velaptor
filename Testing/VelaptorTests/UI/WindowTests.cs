@@ -50,11 +50,11 @@ public class WindowTests
     public void Title_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.Title = "test-title";
-        _ = window.Title;
+        sut.Title = "test-title";
+        _ = sut.Title;
 
         // Assert
         this.mockWindow.VerifySet(p => p.Title = "test-title", Times.Once());
@@ -65,11 +65,11 @@ public class WindowTests
     public void Position_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.Position = new Vector2(11, 22);
-        _ = window.Position;
+        sut.Position = new Vector2(11, 22);
+        _ = sut.Position;
 
         // Assert
         this.mockWindow.VerifySet(p => p.Position = new Vector2(11, 22), Times.Once());
@@ -80,11 +80,11 @@ public class WindowTests
     public void Width_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.Width = 1234;
-        _ = window.Width;
+        sut.Width = 1234;
+        _ = sut.Width;
 
         // Assert
         this.mockWindow.VerifySet(p => p.Width = 1234, Times.Once());
@@ -95,11 +95,11 @@ public class WindowTests
     public void Height_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
-        window.Height = 1234;
+        var sut = CreateSystemUnderTest();
+        sut.Height = 1234;
 
         // Act
-        _ = window.Height;
+        _ = sut.Height;
 
         // Assert
         this.mockWindow.VerifySet(p => p.Height = 1234, Times.Once());
@@ -110,11 +110,11 @@ public class WindowTests
     public void AutoClearBuffer_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.AutoClearBuffer = true;
-        _ = window.AutoClearBuffer;
+        sut.AutoClearBuffer = true;
+        _ = sut.AutoClearBuffer;
 
         // Assert
         this.mockWindow.VerifySet(p => p.AutoClearBuffer = true, Times.Once());
@@ -125,11 +125,11 @@ public class WindowTests
     public void MouseCursorVisible_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.MouseCursorVisible = true;
-        _ = window.MouseCursorVisible;
+        sut.MouseCursorVisible = true;
+        _ = sut.MouseCursorVisible;
 
         // Assert
         this.mockWindow.VerifySet(p => p.MouseCursorVisible = true, Times.Once());
@@ -140,11 +140,11 @@ public class WindowTests
     public void UpdateFrequency_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.UpdateFrequency = 1234;
-        _ = window.UpdateFrequency;
+        sut.UpdateFrequency = 1234;
+        _ = sut.UpdateFrequency;
 
         // Assert
         this.mockWindow.VerifySet(p => p.UpdateFrequency = 1234, Times.Once());
@@ -155,11 +155,11 @@ public class WindowTests
     public void WindowState_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.WindowState = StateOfWindow.FullScreen;
-        _ = window.WindowState;
+        sut.WindowState = StateOfWindow.FullScreen;
+        _ = sut.WindowState;
 
         // Assert
         this.mockWindow.VerifySet(p => p.WindowState = StateOfWindow.FullScreen, Times.Once());
@@ -170,11 +170,11 @@ public class WindowTests
     public void TypeOfBorder_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.TypeOfBorder = WindowBorder.Resizable;
-        _ = window.TypeOfBorder;
+        sut.TypeOfBorder = WindowBorder.Resizable;
+        _ = sut.TypeOfBorder;
 
         // Assert
         this.mockWindow.VerifySet(p => p.TypeOfBorder = WindowBorder.Resizable, Times.Once());
@@ -185,11 +185,11 @@ public class WindowTests
     public void ContentLoader_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.ContentLoader = this.mockContentLoader.Object;
-        _ = window.ContentLoader;
+        sut.ContentLoader = this.mockContentLoader.Object;
+        _ = sut.ContentLoader;
 
         // Assert
         this.mockWindow.VerifySet(p => p.ContentLoader = this.mockContentLoader.Object, Times.Once());
@@ -201,10 +201,10 @@ public class WindowTests
     {
         // Arrange
         this.mockWindow.SetupGet(p => p.Initialized).Returns(true);
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = window.Initialized;
+        var actual = sut.Initialized;
 
         // Assert
         Assert.True(actual);
@@ -226,10 +226,10 @@ public class WindowTests
     public void Show_WhenInvoked_ShowsWindow()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.Show();
+        sut.Show();
 
         // Assert
         this.mockWindow.Verify(m => m.Show(), Times.Once());
@@ -241,10 +241,10 @@ public class WindowTests
         // Arrange
         this.mockWindow.Setup(m => m.ShowAsync(null, null))
             .Returns(Task.Run(() => { }));
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        await window.ShowAsync();
+        await sut.ShowAsync();
 
         // Assert
         this.mockWindow.Verify(m => m.ShowAsync(null, null), Times.Once);
@@ -254,11 +254,11 @@ public class WindowTests
     public void Dispose_WhenInvoked_DisposesOfMangedResources()
     {
         // Arrange
-        var window = CreateWindow();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        window.Dispose();
-        window.Dispose();
+        sut.Dispose();
+        sut.Dispose();
 
         // Assert
         this.mockWindow.Verify(m => m.Dispose(), Times.Once());
@@ -270,5 +270,5 @@ public class WindowTests
     /// of testing the abstract <see cref="Window"/> class.
     /// </summary>
     /// <returns>The instance used for testing.</returns>
-    private WindowFake CreateWindow() => new (this.mockWindow.Object);
+    private WindowFake CreateSystemUnderTest() => new (this.mockWindow.Object);
 }

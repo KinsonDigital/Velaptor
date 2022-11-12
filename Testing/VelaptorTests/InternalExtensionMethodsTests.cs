@@ -439,7 +439,7 @@ public class InternalExtensionMethodsTests
         var expectedPixels = CreateImageDataPixels(2, 3, rowColors);
 
         // Act
-        var actual = ToImageData(sixLaborsImage);
+        var actual = sixLaborsImage.ToImageData();
 
         // Assert
         Assert.Equal(expectedPixels, actual.Pixels);

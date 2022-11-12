@@ -154,7 +154,7 @@ public class GPUBufferBaseTests
     public void BatchSize_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var buffer = CreateSystemUnderTest();
 
         // Act
         var actual = buffer.BatchSize;
@@ -167,7 +167,7 @@ public class GPUBufferBaseTests
     public void IsInitialized_AfterGLInitializes_ReturnsTrue()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var buffer = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -182,7 +182,7 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_CreatesVertexArrayObject()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -198,7 +198,7 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_CreatesVertexBufferObject()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -215,7 +215,7 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_CreatesElementBufferObject()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -232,7 +232,7 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_GeneratesVertexData()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -245,7 +245,7 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_GeneratesIndicesData()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -258,7 +258,7 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_UploadsVertexData()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -274,7 +274,7 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_UploadsIndicesData()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -290,7 +290,7 @@ public class GPUBufferBaseTests
     public void OpenGLInit_WhenInvoked_SetsUpVertexArrayObject()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -329,7 +329,7 @@ public class GPUBufferBaseTests
                 uploadIndicesDataGroupSequence = totalInvokes;
             });
 
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -351,28 +351,28 @@ public class GPUBufferBaseTests
     public void UploadData_WhenInvoked_PreparesGPUForDataUpload()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
         var batchItem = default(TextureBatchItem);
 
         // Act
-        buffer.UploadData(batchItem, 0u);
+        sut.UploadData(batchItem, 0u);
 
         // Assert
-        Assert.True(buffer.PrepareForUseInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.PrepareForUpload)}'() has not been invoked.");
+        Assert.True(sut.PrepareForUseInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.PrepareForUpload)}'() has not been invoked.");
     }
 
     [Fact]
     public void UploadData_WhenInvoked_UpdatesGPUData()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
         var batchItem = default(TextureBatchItem);
 
         // Act
-        buffer.UploadData(batchItem, 0u);
+        sut.UploadData(batchItem, 0u);
 
         // Assert
-        Assert.True(buffer.UpdateVertexDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.UploadVertexData)}'() has not been invoked.");
+        Assert.True(sut.UpdateVertexDataInvoked, $"The method '{nameof(GPUBufferBase<TextureBatchItem>.UploadVertexData)}'() has not been invoked.");
     }
 
     [Fact]
@@ -391,7 +391,7 @@ public class GPUBufferBaseTests
                 this.shutDownReactor = reactor;
             });
 
-        CreateBuffer();
+        CreateSystemUnderTest();
 
         this.glInitReactor.OnNext(default);
 
@@ -411,7 +411,7 @@ public class GPUBufferBaseTests
     public void InitReactable_WhenOnCompletedExecutes_DisposesOfSubscription()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnCompleted();
@@ -424,7 +424,7 @@ public class GPUBufferBaseTests
     public void ShutDownReactable_WhenOnCompletedExecutes_DisposesOfSubscription()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.shutDownReactor.OnCompleted();
@@ -439,7 +439,7 @@ public class GPUBufferBaseTests
     /// testing the abstract class <see cref="GPUBufferBase{TData}"/>.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private GPUBufferFake CreateBuffer() => new (
+    private GPUBufferFake CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockGLInitReactable.Object,

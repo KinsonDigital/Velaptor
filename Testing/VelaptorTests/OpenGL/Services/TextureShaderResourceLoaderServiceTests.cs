@@ -101,12 +101,12 @@ public class TextureShaderResourceLoaderServiceTests
     public void LoadVerSource_WhenPropsParamAreNull_ThrowsException()
     {
         // Arrange
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            service.LoadVertSource(It.IsAny<string>());
+            sut.LoadVertSource(It.IsAny<string>());
         }, "Missing the property 'BATCH_SIZE' template variable for shader processing.");
     }
 
@@ -114,12 +114,12 @@ public class TextureShaderResourceLoaderServiceTests
     public void LoadVertSource_WithNoProps_ThrowsException()
     {
         // Arrange
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            service.LoadVertSource(It.IsAny<string>(), Array.Empty<(string, uint)>());
+            sut.LoadVertSource(It.IsAny<string>(), Array.Empty<(string, uint)>());
         }, "Missing the property 'BATCH_SIZE' template variable for shader processing.");
     }
 
@@ -127,12 +127,12 @@ public class TextureShaderResourceLoaderServiceTests
     public void LoadVertSource_WhenBatchSizePropDoesNotExist_ThrowsException()
     {
         // Arrange
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<Exception>(() =>
         {
-            service.LoadVertSource(It.IsAny<string>(), Array.Empty<(string, uint)>());
+            sut.LoadVertSource(It.IsAny<string>(), Array.Empty<(string, uint)>());
         }, "Missing the property 'BATCH_SIZE' template variable for shader processing.");
     }
 
@@ -146,11 +146,11 @@ public class TextureShaderResourceLoaderServiceTests
                 => m.ProcessTemplateVariables(It.IsAny<string>(), It.IsAny<IEnumerable<(string, string)>>()))
             .Returns(ProcessedVertShaderSample);
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
         var vertFileName = $"{TextureShaderName}.vert";
 
         // Act
-        var actual = service.LoadVertSource(TextureShaderName, new[] { ("BATCH_SIZE", 10u) });
+        var actual = sut.LoadVertSource(TextureShaderName, new[] { ("BATCH_SIZE", 10u) });
 
         // Assert
         this.mockResourceLoaderService.Verify(m => m.LoadResource(vertFileName), Times.Once);
@@ -161,10 +161,10 @@ public class TextureShaderResourceLoaderServiceTests
     public void LoadFragSource_WhenInvoked_ReturnsCorrectSourceCode()
     {
         // Arrange
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = service.LoadFragSource(TextureShaderName);
+        var actual = sut.LoadFragSource(TextureShaderName);
 
         // Assert
         Assert.Equal(NoProcessingFragShaderSample, actual);
@@ -175,6 +175,6 @@ public class TextureShaderResourceLoaderServiceTests
     /// Creates a new instance of <see cref="TextureShaderResourceLoaderService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureShaderResourceLoaderService CreateService()
+    private TextureShaderResourceLoaderService CreateSystemUnderTest()
         => new (this.mockShaderSrcTemplateService.Object, this.mockResourceLoaderService.Object, this.mockPath.Object);
 }

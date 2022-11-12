@@ -128,12 +128,12 @@ public class FontGPUBufferTests
     public void UploadVertexData_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.UploadVertexData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>());
+            sut.UploadVertexData(It.IsAny<FontGlyphBatchItem>(), It.IsAny<uint>());
         }, "The font buffer has not been initialized.");
     }
 
@@ -144,12 +144,12 @@ public class FontGPUBufferTests
         var batchItem = default(FontGlyphBatchItem);
         batchItem.Effects = RenderEffects.None;
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         this.glInitReactor.OnNext(default);
 
         // Act
-        buffer.UploadVertexData(batchItem, 0u);
+        sut.UploadVertexData(batchItem, 0u);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Update Font Quad - BatchItem(0)"), Times.Once);
@@ -177,12 +177,12 @@ public class FontGPUBufferTests
         batchItem.TextureId = 1;
         batchItem.ViewPortSize = new SizeF(800, 600);
 
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         this.glInitReactor.OnNext(default);
 
         // Act
-        buffer.UploadVertexData(batchItem, 0u);
+        sut.UploadVertexData(batchItem, 0u);
 
         // Assert
         this.mockGL.Verify(m
@@ -193,12 +193,12 @@ public class FontGPUBufferTests
     public void PrepareForUpload_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.PrepareForUpload();
+            sut.PrepareForUpload();
         }, "The font buffer has not been initialized.");
     }
 
@@ -206,11 +206,11 @@ public class FontGPUBufferTests
     public void PrepareForUpload_WhenInvoked_BindsVertexArrayObject()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
-        buffer.PrepareForUpload();
+        sut.PrepareForUpload();
 
         // Assert
         this.mockGLService.Verify(m => m.BindVAO(VertexArrayId), Times.AtLeastOnce);
@@ -220,12 +220,12 @@ public class FontGPUBufferTests
     public void GenerateData_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.GenerateData();
+            sut.GenerateData();
         }, "The font buffer has not been initialized.");
     }
 
@@ -233,11 +233,11 @@ public class FontGPUBufferTests
     public void GenerateData_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
-        var actual = buffer.GenerateData();
+        var actual = sut.GenerateData();
 
         // Assert
         Assert.Equal(32_000, actual.Length);
@@ -247,12 +247,12 @@ public class FontGPUBufferTests
     public void SetupVAO_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.SetupVAO();
+            sut.SetupVAO();
         }, "The font buffer has not been initialized.");
     }
 
@@ -260,7 +260,7 @@ public class FontGPUBufferTests
     public void SetupVAO_WhenInvoked_SetsUpVertexArrayObject()
     {
         // Arrange
-        var unused = CreateBuffer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnNext(default);
@@ -290,12 +290,12 @@ public class FontGPUBufferTests
     public void GenerateIndices_WhenNotInitialized_ThrowsException()
     {
         // Arrange
-        var buffer = CreateBuffer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<BufferNotInitializedException>(() =>
         {
-            buffer.GenerateIndices();
+            sut.GenerateIndices();
         }, "The font buffer has not been initialized.");
     }
     #endregion
@@ -304,7 +304,7 @@ public class FontGPUBufferTests
     /// Creates a new instance of <see cref="FontGPUBuffer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontGPUBuffer CreateBuffer() => new (
+    private FontGPUBuffer CreateSystemUnderTest() => new (
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockGLInitReactable.Object,
