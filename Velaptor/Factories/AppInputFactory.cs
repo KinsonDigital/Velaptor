@@ -2,13 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories;
-
-
 using System.Diagnostics.CodeAnalysis;
 using Velaptor.Input;
 
-
+namespace Velaptor.Factories;
 
 /// <summary>
 /// Generates input type objects for processing input such as the keyboard and mouse.

@@ -2,12 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content;
-
-
 using Velaptor.Content.Fonts;
 
-
+namespace Velaptor.Content;
 
 /// <summary>
 /// Loads various kinds of content.

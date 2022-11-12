@@ -30,6 +30,7 @@
     <Configurations>Debug;Release</Configurations>
     <PackageIcon>velaptor-logo.png</PackageIcon>
     <Platforms>x64</Platforms>
+    <NoWarn>CS7035</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\x64\Debug\</OutputPath>

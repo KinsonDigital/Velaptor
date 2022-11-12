@@ -82,13 +82,11 @@ internal sealed class GLInvoker : IGLInvoker
     /// <inheritdoc/>
     public event EventHandler<GLErrorEventArgs>? GLError;
 
-    // ReSharper disable once UnusedMember.Global
-#pragma warning disable SA1600
     /// <summary>
     /// Gets the list of OpenGL function calls.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used for future debugging capabilities.")]
     public static string[] GLCallStack => OpenGLCallStack.ToArray();
-#pragma warning restore SA1600
 
     /// <inheritdoc/>
     public void SetupErrorCallback()

@@ -14,6 +14,7 @@ namespace Velaptor.UI;
 /// Provides the ability to enter text into a box.
 /// </summary>
 [ExcludeFromCodeCoverage] // TODO: Remove this once implementation is being worked on
+
 // TODO: Left as internal to prevent library users from using the control until it is ready
 internal sealed class TextBox : ControlBase
 {

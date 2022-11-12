@@ -2,15 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services;
-
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Velaptor.OpenGL;
 
-
+namespace Velaptor.Services;
 
 /// <summary>
 /// Manages the process of batching up glyphs to be rendered.

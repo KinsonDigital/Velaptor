@@ -2,9 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories;
-
-
 using System.Diagnostics.CodeAnalysis;
 using Velaptor.Input;
 using Velaptor.NativeInterop.GLFW;
@@ -15,7 +12,7 @@ using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
 using Velaptor.UI;
 
-
+namespace Velaptor.Factories;
 
 /// <summary>
 /// Velaptor application specific functionality.

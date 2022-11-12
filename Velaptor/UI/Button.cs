@@ -2,9 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.UI;
-
-
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -14,7 +11,7 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Guards;
 
-
+namespace Velaptor.UI;
 
 /// <summary>
 /// A button that can be clicked to execute functionality.

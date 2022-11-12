@@ -4,11 +4,8 @@
 
 namespace Velaptor.Content;
 
-
 using System.Collections.ObjectModel;
 using Velaptor.Graphics;
-
-
 
 /// <summary>
 /// Holds data for a texture atlas.

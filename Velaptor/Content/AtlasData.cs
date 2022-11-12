@@ -4,7 +4,6 @@
 
 namespace Velaptor.Content;
 
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,8 +12,6 @@ using System.Linq;
 using Velaptor.Content.Caching;
 using Velaptor.Graphics;
 using Velaptor.Guards;
-
-
 
 /// <summary>
 /// Holds data relating to a texture atlas.

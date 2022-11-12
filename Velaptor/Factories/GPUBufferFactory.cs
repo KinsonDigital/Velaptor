@@ -2,9 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories;
-
-
 using System.Diagnostics.CodeAnalysis;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
@@ -13,7 +10,7 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 
-
+namespace Velaptor.Factories;
 
 /// <summary>
 /// Creates singleton instances of <see cref="TextureGPUBuffer"/> and <see cref="FontGPUBuffer"/>.

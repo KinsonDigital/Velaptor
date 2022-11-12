@@ -4,11 +4,8 @@
 
 namespace Velaptor.Content;
 
-
 using Velaptor.Content.Fonts;
 using Velaptor.Guards;
-
-
 
 /// <summary>
 /// Loads content.
