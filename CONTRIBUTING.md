@@ -160,8 +160,8 @@ Refer to the **DOs and DON'Ts** section for certain details about pull requests.
 8. Make your commits in small, incremental steps with clear descriptions.
 9. All unit tests must pass before a PR will be completed.
 10. Make sure that the code follows the coding standards.
-   * Pay attention to the warnings in **Visual Studio** and/or **JetBrains Rider**!!
-   * Refer to the _**.editorconfig**_ files in the code base for rules.
+    * Pay attention to the warnings in **Visual Studio** and/or **JetBrains Rider**!!
+    * Refer to the _**.editorconfig**_ files in the code base for rules.
 11. When you are finished with your changes, tag a maintainer in the PR comments and ask for a review!
 
 <h2 style="border:0;font-weight:bold" align="center">"Help wanted" & "Good first issue"</h2>
