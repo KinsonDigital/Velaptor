@@ -21,6 +21,10 @@ As with all software, there is always a chance for issues and bugs, especially f
 4. [#171](https://github.com/KinsonDigital/Velaptor/issues/171) - Changed the data type of constructor parameters and properties from `int` to `uint`.
    - This is not a breaking change and is only an internal change.
 
+<h2 style="font-weight:bold" align="center">Nuget/Library Updates 📦</h2>
+
+1. [#375](https://github.com/KinsonDigital/Velaptor/issues/375) - Updated the NuGet package **FluentAssertions** from version **_v6.7.0_** to **_v6.8.0_**.
+
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
