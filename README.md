@@ -1,12 +1,4 @@
 <!--PRE-PROCESSING-COMMENT-START-->
-<!--PRE-PROCESSING-COMMENT-STOP-->
-
-<!--PRE-PROCESSING-UNCOMMENT-START-->
-<!--
--->
-<!--PRE-PROCESSING-UNCOMMENT-STOP-->
-
-<!--PRE-PROCESSING-COMMENT-START-->
 <div align="center">
     <a href="#"><img align="center" src="./Documentation/Images/velaptor-logo.png" height="96"></a>
     <br />
