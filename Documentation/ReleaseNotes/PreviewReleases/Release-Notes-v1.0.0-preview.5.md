@@ -18,23 +18,23 @@ As with all software, there is always a chance for issues and bugs, especially f
 3. Added exception named `CachingException` that will be thrown if something goes wrong when caching items during the content loading process.
 4. Added exception named `LoadEmbeddedResourceException` that will be thrown if something goes wrong when loading embedded resources during the content loading process.
 5. Added exception named `CachingMetaDataException` that will be thrown if something goes wrong when processing metadata during the font loading process.
-6. Added property named `AtlasDataFilePath` to the `AtlasData` class and `IAtlasData` interface.
+6. Added a property named `AtlasDataFilePath` to the `AtlasData` class and `IAtlasData` interface.
    - This is the fully qualified file path to an atlas texture **JSON** data file.
 7. Added the ability to automatically create default white pixels for the `ImageData` struct constructor when using `null` for the `pixels` parameter.
-8. Enhanced the caching system to improve performance, and code maintainability and testability.
+8. Enhanced the caching system to improve performance, code maintainability, and testability.
 9. Added an `IItemCache` interface that can be used to build caching systems for personal application use.
     - For more information on how caching can be done, refer to [System.Collections.Concurrent](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent?view=net-6.0) and  
       [System.Runtime.Caching](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.caching?view=dotnet-plat-ext-6.0).
 10. Added an `IDisposableItemCache` interface that inherits the new `IItemCache` interface to provide a way to dispose of cached items.
-11. Added the ability to use a default font when creating UI controls which prevents the user from having to manage content items when dealing with `Label`  
+11. Added the ability to use a default font when creating UI controls to prevent the user from having to manage content items when dealing with `Label`  
     controls.  It also applies to any controls that render textual content.
 12. Added the ability to load system fonts when loading an `IFont` content type.
     - Use the name of the content file with or without the extension to load this on purpose.
-13. Added the ability to automatically search and load a system font that matches a request font to be used if it does not exist in the  
+13. Added the ability to automatically search and load a system font that matches the requested font to be used if it does not exist in the  
     application's content directory.
 14. Added enumeration named `FontSource` in the `Velaptor.Content.Fonts` namespace that is used to signify whether a font was  
     loaded from the application's content directory or from the current platform system fonts.
-15. Added the properties below to the `IPlatform` interface and `Platform` class to check if the current platform is running as a 64 or 32 bit process.
+15. Added the properties below to the `IPlatform` interface and `Platform` class to check if the current platform is running as a 64-bit or 32-bit process.
     - `Is64BitProcess`
     - `Is32BitProcess`
 16. Added extension methods below to help develop applications.
@@ -46,7 +46,7 @@ As with all software, there is always a chance for issues and bugs, especially f
     - `HasValidFullDirPathSyntax()` - Checks to see whether or not a string is a fully qualified directory path from a syntax perspective.
     - `HasValidUNCPathSyntax()` - Checks to see whether or not a string is a valid UNC path from a syntax perspective.
 17. Created an interface and class implementation to abstract the process of serializing JSON data.
-    - This is to help provide a easy, testable way to manage JSON data used in games and multi-media applications. 
+    - This is to help provide an easy, testable way to manage JSON data used in games and multimedia applications. 
     - `IJSONService`
     - `JSONService`
 18. Added ability for the `SpriteBatch` class to throw an exception if attempting to render a texture or font. 
@@ -74,7 +74,7 @@ As with all software, there is always a chance for issues and bugs, especially f
       - `Font`
       - `Sound`
 14. Made API changes to the `IContentLoader` and `ContentLoader` types.  This was done due to extra font features needing more control over the font loading process.  This lead to using generics causing some issues with needing that finer control. 
-    - Removed methods `Load<T>()` and `Unload<T>` and replaced with respective methods to load each type of content.
+    - Removed methods `Load<T>()` and `Unload<T>` and replaced them with respective methods to load each type of content.
     - Added the methods to load the respective types of content below:
       - `LoadTexture()`
       - `LoadSound()`
@@ -87,11 +87,11 @@ As with all software, there is always a chance for issues and bugs, especially f
       - `UnloadFont`
 15. Refactored the parameter name of the `ILoader.Load()` and `ILoader.Unload()` methods from `name` to `contentPathOrName`.
 16. Changed the `ShaderProgram` type from `public` to `internal`.
-    - These types are not meant to be part of the public facing API.
+    - These types are not meant to be part of the public-facing API.
 17. Changed the `GPUBufferBase<TData>` type from `public` to `internal`.
-    - These types are not meant to be part of the public facing API.
+    - These types are not meant to be part of the public-facing API.
 18. Change all of the resolve types below from `public` to `internal`.
-    - These types are not meant to be part of the public facing API:
+    - These types are not meant to be part of the public-facing API:
       - `ContentPathResolver`
       - `FontPathResolver`
       - `ContentFontPathResolver`
@@ -101,11 +101,11 @@ As with all software, there is always a chance for issues and bugs, especially f
       - `AtlasJSONDataPathResolver`
       - `AtlasTexturePathResolver`
 19. Changed the type `ISoundFactory` interface and `SoundFactory` class from `public` to `internal`.
-    - These types were not meant to be part of the public facing API.
-20. Changed readonly struct `ImageData` constructor parameter `pixels` from non-nullable to nullable. 
+    - These types were not meant to be part of the public-facing API.
+20. Changed the read-only struct `ImageData` constructor parameter `pixels` from non-nullable to nullable. 
 21. Changed the scope of the `Window.Dispose(bool disposing)` method from `protected` to `private`.
-22. Removed the `IContent.IsPooled` property.  This property does not suit its purpose or intent anymore due to the improvements of the content caching system.
-    - Removed the other implementations of the `IsPooled` property for the other `IContent` implementation classes.  All other references and related code also cleaned up and removed.
+22. Removed the `IContent.IsPooled` property.  This property does not suit its purpose or intent anymore due to the improvements in the content caching system.
+    - Removed the other implementations of the `IsPooled` property for the other `IContent` implementation classes.  All other references and related code were also cleaned up and removed.
       - `ITexture` interface and `Texture` class.
       - `ISound` interface and `Sound` class.
       - `IAtlasData` interface and `AtlasData` class.
@@ -117,6 +117,6 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
 1. Changed the `Label` class to use the newly implemented default font system as a default font.
-2. Improved how content is managed increasing testability, stability and performance.
-3. Lots of improvements to documentation related to grammar, spelling and clarity.
+2. Improved how content is managed increasing testability, stability, and performance.
+3. Lots of improvements to documentation related to grammar, spelling, and clarity.
     - This is all due to the hard work of my beautiful wife [@kselena](https://github.com/kselena/kselena)!!  Thanks babe!! 😚

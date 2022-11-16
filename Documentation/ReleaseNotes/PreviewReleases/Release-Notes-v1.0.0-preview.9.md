@@ -24,7 +24,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Bug Fixes 🐛</h2>
 
 1. [#220](https://github.com/KinsonDigital/Velaptor/issues/220) - Fixed a bug where using mouse buttons other than the left, right, and middle buttons would cause **Velaptor** to crash.
-2. [#224](https://github.com/KinsonDigital/Velaptor/issues/224) - Fixed default value for solid fill color button in the scene used for testing rectangles for the **_VelaptorTesting_** application.
+2. [#224](https://github.com/KinsonDigital/Velaptor/issues/224) - Fixed the default value for the solid fill color button in the scene used for testing rectangles for the **_VelaptorTesting_** application.
 
 ---
 
@@ -43,7 +43,7 @@ As with all software, there is always a chance for issues and bugs, especially f
    - This was done for the same reason as in item **_#1_** above.
    - NOTE: The `Renderer` class used to be named `ISpriteBatch`.
 4. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Refactored `afterUnloadAction` to `afterUnload` parameter for `IWindow.ShowAsync()` and `Window.ShowAsync()` methods.
-   - This was done to simplify naming as well as internal naming of class field and to follow coding standards.
+   - This was done to simplify naming as well as internal naming of class fields and to follow coding standards.
 5. [#239](https://github.com/KinsonDigital/Velaptor/issues/239) - Removed method parameter from `IReactable` interface and the abstract `Reactable` class.
    - Removed the parameter named `unsubscribeAfterProcessing` from the `PushNotification()` method.
 
@@ -61,10 +61,10 @@ As with all software, there is always a chance for issues and bugs, especially f
 6. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Removed the `IBatchingService.AddRange()` method and uses throughout code base.
    - This method was not necessary and was done to simplify.
 7. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Created new **_MOQ_** verify extension method named 'VerifyOnce()' to help reduce typing in the future.
-8. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Created new interface named `IBatchServiceManager` and class named `BatchServiceManager` to help simplify the `Renderer` class.
-9. [#227](https://github.com/KinsonDigital/Velaptor/issues/227) - Created new internal `IShaderManager` interface and `ShaderManager` class for managing shaders.
+8. [#226](https://github.com/KinsonDigital/Velaptor/issues/226) - Created a new interface named `IBatchServiceManager` and a class named `BatchServiceManager` to help simplify the `Renderer` class.
+9. [#227](https://github.com/KinsonDigital/Velaptor/issues/227) - Created a new internal `IShaderManager` interface and `ShaderManager` class for managing shaders.
 10. [#227](https://github.com/KinsonDigital/Velaptor/issues/227) - Refactored internal `Renderer` class to use the new shader manager implementations.
-11. [#228](https://github.com/KinsonDigital/Velaptor/issues/228) - Created new internal `IBufferManager` interface and `BufferManager` class for managing shaders.
+11. [#228](https://github.com/KinsonDigital/Velaptor/issues/228) - Created a new internal `IBufferManager` interface and `BufferManager` class for managing shaders.
 12. [#228](https://github.com/KinsonDigital/Velaptor/issues/228) - Refactored internal `Renderer` class to use the new buffer manager implementations.
 13. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Deleted class named `GLWindowFacade`.
     - This class functionality was consolidated into `GLWindow`.
@@ -78,11 +78,11 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Nuget/Library Updates 📦</h2>
 
-1. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Updated nuget package **Microsoft.CodeAnalysis.NetAnalyzers** from **_v5.0.3_** to **_v6.0.0_**
+1. [#209](https://github.com/KinsonDigital/Velaptor/issues/209) - Updated NuGet package **Microsoft.CodeAnalysis.NetAnalyzers** from **_v5.0.3_** to **_v6.0.0_**
 
 ---
 
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
 <h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
-1. [#254](https://github.com/KinsonDigital/Velaptor/issues/254) - Created new issue template for performing releases.
+1. [#254](https://github.com/KinsonDigital/Velaptor/issues/254) - Created a new issue template for performing releases.
