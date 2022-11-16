@@ -2,274 +2,270 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL.Shaders
-{
-    // ReSharper disable RedundantNameQualifier
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using Velaptor.Graphics;
-    using Velaptor.Guards;
-    using Velaptor.NativeInterop.OpenGL;
-    using Velaptor.OpenGL.Exceptions;
-    using Velaptor.OpenGL.Services;
-    using Velaptor.Reactables.Core;
-    using Velaptor.Reactables.ReactableData;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using Velaptor.Graphics;
+using Velaptor.Guards;
+using Velaptor.NativeInterop.OpenGL;
+using Velaptor.OpenGL.Exceptions;
+using Velaptor.OpenGL.Services;
+using Velaptor.Reactables.Core;
+using Velaptor.Reactables.ReactableData;
 
-    // ReSharper restore RedundantNameQualifier
+namespace Velaptor.OpenGL.Shaders;
+
+/// <inheritdoc/>
+[BatchSize(IRenderer.BatchSize)]
+internal abstract class ShaderProgram : IShaderProgram
+{
+    private readonly IShaderLoaderService<uint> shaderLoaderService;
+    private readonly IDisposable glInitReactorUnsubscriber;
+    private readonly IDisposable shutDownReactorUnsubscriber;
+    private bool isInitialized;
+    private uint batchSize;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
+    /// </summary>
+    /// <param name="gl">Invokes OpenGL functions.</param>
+    /// <param name="openGLService">Provides OpenGL related helper methods.</param>
+    /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
+    /// <param name="glInitReactable">Initializes the shader once it receives a notification.</param>
+    /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Invoked when any of the parameters are null.
+    /// </exception>
+    internal ShaderProgram(
+        IGLInvoker gl,
+        IOpenGLService openGLService,
+        IShaderLoaderService<uint> shaderLoaderService,
+        IReactable<GLInitData> glInitReactable,
+        IReactable<ShutDownData> shutDownReactable)
+    {
+        EnsureThat.ParamIsNotNull(gl);
+        EnsureThat.ParamIsNotNull(openGLService);
+        EnsureThat.ParamIsNotNull(shaderLoaderService);
+        EnsureThat.ParamIsNotNull(glInitReactable);
+        EnsureThat.ParamIsNotNull(shutDownReactable);
+
+        GL = gl;
+        OpenGLService = openGLService;
+        this.shaderLoaderService = shaderLoaderService;
+        this.glInitReactorUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
+        this.shutDownReactorUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
+
+        ProcessCustomAttributes();
+    }
+
+    /// <summary>
+    /// Finalizes an instance of the <see cref="ShaderProgram"/> class.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    ~ShaderProgram()
+    {
+        if (UnitTestDetector.IsRunningFromUnitTest)
+        {
+            return;
+        }
+
+        Dispose();
+    }
 
     /// <inheritdoc/>
-    [BatchSize(IRenderer.BatchSize)]
-    internal abstract class ShaderProgram : IShaderProgram
+    public uint ShaderId { get; private set; }
+
+    /// <inheritdoc/>
+    public string Name { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or not a value if the <see cref="ShaderProgram"/> is disposed.
+    /// </summary>
+    [SuppressMessage(
+        "ReSharper",
+        "MemberCanBePrivate.Global",
+        Justification = "Left of inheriting members to use.")]
+    protected bool IsDisposed { get; set; }
+
+    /// <summary>
+    /// Gets invokes OpenGL functions.
+    /// </summary>
+    private protected IGLInvoker GL { get; }
+
+    /// <summary>
+    /// Gets the OpenGL service that provides helper methods for OpenGL related operations.
+    /// </summary>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Intended to be available in classes inheriting this class.")]
+    private protected IOpenGLService OpenGLService { get; }
+
+    /// <summary>
+    /// <inheritdoc cref="IShaderProgram.Use"/>
+    /// </summary>
+    /// <exception cref="ShaderNotInitializedException">
+    ///     Thrown when invoked without the shader being initialized.
+    /// </exception>
+    public virtual void Use()
     {
-        private readonly IShaderLoaderService<uint> shaderLoaderService;
-        private readonly IDisposable glInitReactorUnsubscriber;
-        private readonly IDisposable shutDownReactorUnsubscriber;
-        private bool isInitialized;
-        private uint batchSize;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
-        /// </summary>
-        /// <param name="gl">Invokes OpenGL functions.</param>
-        /// <param name="openGLService">Provides OpenGL related helper methods.</param>
-        /// <param name="shaderLoaderService">Loads shader source code for compilation and linking.</param>
-        /// <param name="glInitReactable">Initializes the shader once it receives a notification.</param>
-        /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
-        /// <exception cref="ArgumentNullException">
-        ///     Invoked when any of the parameters are null.
-        /// </exception>
-        internal ShaderProgram(
-            IGLInvoker gl,
-            IOpenGLService openGLService,
-            IShaderLoaderService<uint> shaderLoaderService,
-            IReactable<GLInitData> glInitReactable,
-            IReactable<ShutDownData> shutDownReactable)
+        if (this.isInitialized is false)
         {
-            EnsureThat.ParamIsNotNull(gl);
-            EnsureThat.ParamIsNotNull(openGLService);
-            EnsureThat.ParamIsNotNull(shaderLoaderService);
-            EnsureThat.ParamIsNotNull(glInitReactable);
-            EnsureThat.ParamIsNotNull(shutDownReactable);
-
-            GL = gl;
-            OpenGLService = openGLService;
-            this.shaderLoaderService = shaderLoaderService;
-            this.glInitReactorUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(_ => Init()));
-            this.shutDownReactorUnsubscriber = shutDownReactable.Subscribe(new Reactor<ShutDownData>(_ => Dispose()));
-
-            ProcessCustomAttributes();
+            throw new ShaderNotInitializedException("The shader has not been initialized.");
         }
 
-        /// <summary>
-        /// Finalizes an instance of the <see cref="ShaderProgram"/> class.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        ~ShaderProgram()
-        {
-            if (UnitTestDetector.IsRunningFromUnitTest)
-            {
-                return;
-            }
+        GL.UseProgram(ShaderId);
+    }
 
-            Dispose();
+    /// <summary>
+    /// Shuts down the application by disposing of any resources.
+    /// </summary>
+    [SuppressMessage(
+        "ReSharper",
+        "VirtualMemberNeverOverridden.Global",
+        Justification = "Will be used in the future.")]
+    protected virtual void Dispose()
+    {
+        if (IsDisposed)
+        {
+            return;
         }
 
-        /// <inheritdoc/>
-        public uint ShaderId { get; private set; }
+        GL.DeleteProgram(ShaderId);
 
-        /// <inheritdoc/>
-        public string Name { get; private set; } = string.Empty;
+        this.glInitReactorUnsubscriber.Dispose();
+        this.shutDownReactorUnsubscriber.Dispose();
 
-        /// <summary>
-        /// Gets or sets a value indicating whether or not a value if the <see cref="ShaderProgram"/> is disposed.
-        /// </summary>
-        [SuppressMessage(
-            "ReSharper",
-            "MemberCanBePrivate.Global",
-            Justification = "Left of inheriting members to use.")]
-        protected bool IsDisposed { get; set; }
+        IsDisposed = true;
+    }
 
-        /// <summary>
-        /// Gets invokes OpenGL functions.
-        /// </summary>
-        private protected IGLInvoker GL { get; }
-
-        /// <summary>
-        /// Gets the OpenGL service that provides helper methods for OpenGL related operations.
-        /// </summary>
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Intended to be available in classes inheriting this class.")]
-        private protected IOpenGLService OpenGLService { get; }
-
-        /// <summary>
-        /// <inheritdoc cref="IShaderProgram.Use"/>
-        /// </summary>
-        /// <exception cref="ShaderNotInitializedException">
-        ///     Thrown when invoked without the shader being initialized.
-        /// </exception>
-        public virtual void Use()
+    private void Init()
+    {
+        if (this.isInitialized)
         {
-            if (this.isInitialized is false)
-            {
-                throw new ShaderNotInitializedException("The shader has not been initialized.");
-            }
-
-            GL.UseProgram(ShaderId);
+            return;
         }
 
-        /// <summary>
-        /// Shuts down the application by disposing of any resources.
-        /// </summary>
-        [SuppressMessage(
-            "ReSharper",
-            "VirtualMemberNeverOverridden.Global",
-            Justification = "Will be used in the future.")]
-        protected virtual void Dispose()
+        OpenGLService.BeginGroup($"Load {Name} Vertex Shader");
+
+        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
+        var vertShaderId = GL.CreateShader(GLShaderType.VertexShader);
+
+        OpenGLService.LabelShader(vertShaderId, $"{Name} Vertex Shader");
+
+        GL.ShaderSource(vertShaderId, vertShaderSrc);
+        GL.CompileShader(vertShaderId);
+
+        // Checking the shader for compilation errors.
+        var infoLog = GL.GetShaderInfoLog(vertShaderId);
+        if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            if (IsDisposed)
-            {
-                return;
-            }
-
-            GL.DeleteProgram(ShaderId);
-
-            this.glInitReactorUnsubscriber.Dispose();
-            this.shutDownReactorUnsubscriber.Dispose();
-
-            IsDisposed = true;
+            // TODO: Create custom compile shader exception
+            throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.{Environment.NewLine}{infoLog}");
         }
 
-        private void Init()
+        OpenGLService.EndGroup();
+
+        OpenGLService.BeginGroup($"Load {Name} Fragment Shader");
+
+        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
+        var fragShaderId = GL.CreateShader(GLShaderType.FragmentShader);
+
+        OpenGLService.LabelShader(fragShaderId, $"{Name} Fragment Shader");
+
+        GL.ShaderSource(fragShaderId, fragShaderSrc);
+        GL.CompileShader(fragShaderId);
+
+        // Checking the shader for compilation errors.
+        infoLog = GL.GetShaderInfoLog(fragShaderId);
+        if (!string.IsNullOrWhiteSpace(infoLog))
         {
-            if (this.isInitialized)
-            {
-                return;
-            }
-
-            OpenGLService.BeginGroup($"Load {Name} Vertex Shader");
-
-            var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
-            var vertShaderId = GL.CreateShader(GLShaderType.VertexShader);
-
-            OpenGLService.LabelShader(vertShaderId, $"{Name} Vertex Shader");
-
-            GL.ShaderSource(vertShaderId, vertShaderSrc);
-            GL.CompileShader(vertShaderId);
-
-            // Checking the shader for compilation errors.
-            var infoLog = GL.GetShaderInfoLog(vertShaderId);
-            if (!string.IsNullOrWhiteSpace(infoLog))
-            {
-                // TODO: Create custom compile shader exception
-                throw new Exception($"Error compiling vertex shader '{Name}' with shader ID '{vertShaderId}'.{Environment.NewLine}{infoLog}");
-            }
-
-            OpenGLService.EndGroup();
-
-            OpenGLService.BeginGroup($"Load {Name} Fragment Shader");
-
-            var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
-            var fragShaderId = GL.CreateShader(GLShaderType.FragmentShader);
-
-            OpenGLService.LabelShader(fragShaderId, $"{Name} Fragment Shader");
-
-            GL.ShaderSource(fragShaderId, fragShaderSrc);
-            GL.CompileShader(fragShaderId);
-
-            // Checking the shader for compilation errors.
-            infoLog = GL.GetShaderInfoLog(fragShaderId);
-            if (!string.IsNullOrWhiteSpace(infoLog))
-            {
-                // TODO: Create custom compile shader exception
-                throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.{Environment.NewLine}{infoLog}");
-            }
-
-            OpenGLService.EndGroup();
-
-            CreateProgram(Name, vertShaderId, fragShaderId);
-            CleanShadersIfReady(Name, vertShaderId, fragShaderId);
-
-            this.isInitialized = true;
+            // TODO: Create custom compile shader exception
+            throw new Exception($"Error compiling fragment shader '{Name}' with shader ID '{fragShaderId}'.{Environment.NewLine}{infoLog}");
         }
 
-        private void CreateProgram(string shaderName, uint vertShaderId, uint fragShaderId)
+        OpenGLService.EndGroup();
+
+        CreateProgram(Name, vertShaderId, fragShaderId);
+        CleanShadersIfReady(Name, vertShaderId, fragShaderId);
+
+        this.isInitialized = true;
+    }
+
+    private void CreateProgram(string shaderName, uint vertShaderId, uint fragShaderId)
+    {
+        OpenGLService.BeginGroup($"Create {shaderName} Shader Program");
+
+        // Combining the shaders under one shader program.
+        ShaderId = GL.CreateProgram();
+
+        OpenGLService.LabelShaderProgram(ShaderId, $"{shaderName} Shader Program");
+
+        GL.AttachShader(ShaderId, vertShaderId);
+        GL.AttachShader(ShaderId, fragShaderId);
+
+        // Link and check for for errors.
+        GL.LinkProgram(ShaderId);
+        var status = GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus);
+        if (status == 0)
         {
-            OpenGLService.BeginGroup($"Create {shaderName} Shader Program");
-
-            // Combining the shaders under one shader program.
-            ShaderId = GL.CreateProgram();
-
-            OpenGLService.LabelShaderProgram(ShaderId, $"{shaderName} Shader Program");
-
-            GL.AttachShader(ShaderId, vertShaderId);
-            GL.AttachShader(ShaderId, fragShaderId);
-
-            // Link and check for for errors.
-            GL.LinkProgram(ShaderId);
-            var status = GL.GetProgram(ShaderId, GLProgramParameterName.LinkStatus);
-            if (status == 0)
-            {
-                throw new Exception($"Error linking shader with ID '{ShaderId}'{Environment.NewLine}{GL.GetProgramInfoLog(ShaderId)}");
-            }
-
-            OpenGLService.EndGroup();
+            throw new Exception($"Error linking shader with ID '{ShaderId}'{Environment.NewLine}{GL.GetProgramInfoLog(ShaderId)}");
         }
 
-        private void CleanShadersIfReady(string name, uint vertShaderId, uint fragShaderId)
+        OpenGLService.EndGroup();
+    }
+
+    private void CleanShadersIfReady(string name, uint vertShaderId, uint fragShaderId)
+    {
+        OpenGLService.BeginGroup($"Clean Up {name} Vertex Shader");
+
+        GL.DetachShader(ShaderId, vertShaderId);
+        GL.DeleteShader(vertShaderId);
+
+        OpenGLService.EndGroup();
+
+        OpenGLService.BeginGroup($"Clean Up {name} Fragment Shader");
+
+        // Delete the no longer useful individual shaders
+        GL.DetachShader(ShaderId, fragShaderId);
+        GL.DeleteShader(fragShaderId);
+
+        OpenGLService.EndGroup();
+    }
+
+    private void ProcessCustomAttributes()
+    {
+        Attribute[]? attributes = null;
+        var currentType = GetType();
+
+        if (currentType == typeof(TextureShader))
         {
-            OpenGLService.BeginGroup($"Clean Up {name} Vertex Shader");
-
-            GL.DetachShader(ShaderId, vertShaderId);
-            GL.DeleteShader(vertShaderId);
-
-            OpenGLService.EndGroup();
-
-            OpenGLService.BeginGroup($"Clean Up {name} Fragment Shader");
-
-            // Delete the no longer useful individual shaders
-            GL.DetachShader(ShaderId, fragShaderId);
-            GL.DeleteShader(fragShaderId);
-
-            OpenGLService.EndGroup();
+            attributes = Attribute.GetCustomAttributes(typeof(TextureShader));
+        }
+        else if (currentType == typeof(FontShader))
+        {
+            attributes = Attribute.GetCustomAttributes(typeof(FontShader));
+        }
+        else if (currentType == typeof(RectangleShader))
+        {
+            attributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
+        }
+        else
+        {
+            Name = "UNKNOWN";
         }
 
-        private void ProcessCustomAttributes()
+        if (attributes is null || attributes.Length <= 0)
         {
-            Attribute[]? attributes = null;
-            var currentType = GetType();
+            return;
+        }
 
-            if (currentType == typeof(TextureShader))
+        foreach (var attribute in attributes)
+        {
+            switch (attribute)
             {
-                attributes = Attribute.GetCustomAttributes(typeof(TextureShader));
-            }
-            else if (currentType == typeof(FontShader))
-            {
-                attributes = Attribute.GetCustomAttributes(typeof(FontShader));
-            }
-            else if (currentType == typeof(RectangleShader))
-            {
-                attributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
-            }
-            else
-            {
-                Name = "UNKNOWN";
-            }
-
-            if (attributes is null || attributes.Length <= 0)
-            {
-                return;
-            }
-
-            foreach (var attribute in attributes)
-            {
-                switch (attribute)
-                {
-                    case ShaderNameAttribute nameAttribute:
-                        Name = nameAttribute.Name;
-                        break;
-                    case BatchSizeAttribute sizeAttribute:
-                        this.batchSize = sizeAttribute.BatchSize;
-                        break;
-                }
+                case ShaderNameAttribute nameAttribute:
+                    Name = nameAttribute.Name;
+                    break;
+                case BatchSizeAttribute sizeAttribute:
+                    this.batchSize = sizeAttribute.BatchSize;
+                    break;
             }
         }
     }

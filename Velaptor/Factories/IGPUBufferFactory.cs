@@ -2,45 +2,41 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Factories
-{
-    // ReSharper disable RedundantNameQualifier
-    using Velaptor.Graphics;
-    using Velaptor.OpenGL;
-    using Velaptor.OpenGL.Buffers;
+using Velaptor.Graphics;
+using Velaptor.OpenGL;
+using Velaptor.OpenGL.Buffers;
 
-    // ReSharper restore RedundantNameQualifier
+namespace Velaptor.Factories;
+
+/// <summary>
+/// Creates various types of GPU buffers.
+/// </summary>
+internal interface IGPUBufferFactory
+{
+    /// <summary>
+    /// Creates an instance of the <see cref="TextureGPUBuffer"/> class.
+    /// </summary>
+    /// <returns>A GPU buffer class.</returns>
+    /// <remarks>
+    ///     The instance is a singleton.  Every call to this method will return the same instance.
+    /// </remarks>
+    IGPUBuffer<TextureBatchItem> CreateTextureGPUBuffer();
 
     /// <summary>
-    /// Creates various types of GPU buffers.
+    /// Creates an instance of the <see cref="FontGPUBuffer"/> class.
     /// </summary>
-    internal interface IGPUBufferFactory
-    {
-        /// <summary>
-        /// Creates an instance of the <see cref="TextureGPUBuffer"/> class.
-        /// </summary>
-        /// <returns>A GPU buffer class.</returns>
-        /// <remarks>
-        ///     The instance is a singleton.  Every call to this method will return the same instance.
-        /// </remarks>
-        IGPUBuffer<TextureBatchItem> CreateTextureGPUBuffer();
+    /// <returns>A GPU buffer class.</returns>
+    /// <remarks>
+    ///     The instance is a singleton.  Every call to this method will return the same instance.
+    /// </remarks>
+    IGPUBuffer<FontGlyphBatchItem> CreateFontGPUBuffer();
 
-        /// <summary>
-        /// Creates an instance of the <see cref="FontGPUBuffer"/> class.
-        /// </summary>
-        /// <returns>A GPU buffer class.</returns>
-        /// <remarks>
-        ///     The instance is a singleton.  Every call to this method will return the same instance.
-        /// </remarks>
-        IGPUBuffer<FontGlyphBatchItem> CreateFontGPUBuffer();
-
-        /// <summary>
-        /// Creates an instance of the <see cref="RectGPUBuffer"/> class.
-        /// </summary>
-        /// <returns>A GPU buffer class.</returns>
-        /// <remarks>
-        ///     The instance is a singleton.  Every call to this method will return the same instance.
-        /// </remarks>
-        IGPUBuffer<RectShape> CreateRectGPUBuffer();
-    }
+    /// <summary>
+    /// Creates an instance of the <see cref="RectGPUBuffer"/> class.
+    /// </summary>
+    /// <returns>A GPU buffer class.</returns>
+    /// <remarks>
+    ///     The instance is a singleton.  Every call to this method will return the same instance.
+    /// </remarks>
+    IGPUBuffer<RectShape> CreateRectGPUBuffer();
 }

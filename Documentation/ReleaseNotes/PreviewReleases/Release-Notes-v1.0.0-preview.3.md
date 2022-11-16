@@ -58,9 +58,9 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Nuget/Library Additions 📦</h2>
 
-1. Added nuget package **Microsoft.CodeAnalysis.NetAnalyzers** **_v5.0.3_**
+1. Added NuGet package **Microsoft.CodeAnalysis.NetAnalyzers** **_v5.0.3_**
    - This is for the purpose for code analysis during development.
-2. Added nuget package **StyleCop.Analyzers** **_v1.1.118_**
+2. Added NuGet package **StyleCop.Analyzers** **_v1.1.118_**
    - This is for the purpose for code analysis during development.
 
 ---

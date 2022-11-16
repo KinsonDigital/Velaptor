@@ -3,5 +3,6 @@
     "Solution": "Velaptor.sln",
     "RepoOwner": "KinsonDigital",
     "RepoName": "Velaptor",
-    "ProjectName": "Velaptor"
+    "ProjectName": "Velaptor",
+    "PreProcessReadMe": true
 }

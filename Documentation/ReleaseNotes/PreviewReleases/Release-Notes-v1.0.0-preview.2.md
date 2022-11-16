@@ -22,7 +22,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Bug Fixes 🐛</h2>
 
-1. Fixed an issue with manual testing application crashing immediately after running the application.
+1. Fixed an issue with the manual testing application crashing immediately after running the application.
    - This required an update of the **KinsonDigital.CASL** audio library.
 
 ---

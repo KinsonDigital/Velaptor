@@ -2,25 +2,24 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.UI
+using System;
+using System.Drawing;
+
+namespace Velaptor.UI;
+
+/// <summary>
+/// Holds information about the mouse position over a control.
+/// </summary>
+public class MousePositionEventArgs : EventArgs
 {
-    using System;
-    using System.Drawing;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MousePositionEventArgs"/> class.
+    /// </summary>
+    /// <param name="mousePosition">The position of the mouse.</param>
+    public MousePositionEventArgs(Point mousePosition) => MousePosition = mousePosition;
 
     /// <summary>
-    /// Holds information about the mouse position over a control.
+    /// Gets the position of the mouse relative to the top right corner of the control.
     /// </summary>
-    public class MousePositionEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MousePositionEventArgs"/> class.
-        /// </summary>
-        /// <param name="mousePosition">The position of the mouse.</param>
-        public MousePositionEventArgs(Point mousePosition) => MousePosition = mousePosition;
-
-        /// <summary>
-        /// Gets the position of the mouse relative to the top right corner of the control.
-        /// </summary>
-        public Point MousePosition { get; }
-    }
+    public Point MousePosition { get; }
 }

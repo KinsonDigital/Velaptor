@@ -2,27 +2,23 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Reactables.ReactableData
-{
-    // ReSharper disable RedundantNameQualifier
-    using Velaptor.Reactables.Core;
+using Velaptor.Reactables.Core;
 
-    // ReSharper restore RedundantNameQualifier
+namespace Velaptor.Reactables.ReactableData;
+
+/// <summary>
+/// Holds data for the <see cref="IReactable{T}"/>.
+/// </summary>
+internal readonly struct DisposeSoundData
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DisposeSoundData"/> struct.
+    /// </summary>
+    /// <param name="soundId">The ID of the sound.</param>
+    public DisposeSoundData(uint soundId) => SoundId = soundId;
 
     /// <summary>
-    /// Holds data for the <see cref="IReactable{T}"/>.
+    /// Gets the sound ID.
     /// </summary>
-    internal readonly struct DisposeSoundData
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DisposeSoundData"/> struct.
-        /// </summary>
-        /// <param name="soundId">The ID of the sound.</param>
-        public DisposeSoundData(uint soundId) => SoundId = soundId;
-
-        /// <summary>
-        /// Gets the sound ID.
-        /// </summary>
-        public uint SoundId { get; }
-    }
+    public uint SoundId { get; }
 }

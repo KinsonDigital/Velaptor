@@ -2,86 +2,82 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services
-{
-    // ReSharper disable RedundantNameQualifier
-    using System;
-    using System.IO.Abstractions;
-    using System.Text.Json;
-    using Velaptor;
-    using Velaptor.Exceptions;
-    using Velaptor.Guards;
+using System;
+using System.IO.Abstractions;
+using System.Text.Json;
+using Velaptor;
+using Velaptor.Exceptions;
+using Velaptor.Guards;
 
-    // ReSharper restore RedundantNameQualifier
+namespace Velaptor.Services;
+
+/// <inheritdoc/>
+internal sealed class AppSettingsService : IAppSettingsService
+{
+    private const string AppSettingsFileName = "app-settings.json";
+    private readonly IJSONService jsonService;
+    private readonly IFile file;
+    private readonly string appSettingsFilePath;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppSettingsService"/> class.
+    /// </summary>
+    /// <param name="jsonService">Provides JSON related services.</param>
+    /// <param name="directory">Performs operations with directories.</param>
+    /// <param name="file">Performs operations with files.</param>
+    /// <exception cref="AppSettingsException">Occurs if there are issues with loading the application settings file.</exception>
+    public AppSettingsService(IJSONService jsonService, IDirectory directory, IFile file)
+    {
+        EnsureThat.ParamIsNotNull(jsonService);
+        EnsureThat.ParamIsNotNull(directory);
+        EnsureThat.ParamIsNotNull(file);
+
+        this.jsonService = jsonService;
+        this.file = file;
+
+        var baseDirPath = directory.GetCurrentDirectory().ToCrossPlatPath();
+        this.appSettingsFilePath = $"{baseDirPath}/{AppSettingsFileName}";
+        LoadSettings();
+    }
 
     /// <inheritdoc/>
-    internal sealed class AppSettingsService : IAppSettingsService
+    public AppSettings Settings { get; private set; } = new ();
+
+    /// <summary>
+    /// Loads the app settings data.
+    /// </summary>
+    private void LoadSettings()
     {
-        private const string AppSettingsFileName = "app-settings.json";
-        private readonly IJSONService jsonService;
-        private readonly IFile file;
-        private readonly string appSettingsFilePath;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AppSettingsService"/> class.
-        /// </summary>
-        /// <param name="jsonService">Provides JSON related services.</param>
-        /// <param name="directory">Performs operations with directories.</param>
-        /// <param name="file">Performs operations with files.</param>
-        /// <exception cref="AppSettingsException">Occurs if there are issues with loading the application settings file.</exception>
-        public AppSettingsService(IJSONService jsonService, IDirectory directory, IFile file)
+        if (this.file.Exists(this.appSettingsFilePath) is false)
         {
-            EnsureThat.ParamIsNotNull(jsonService);
-            EnsureThat.ParamIsNotNull(directory);
-            EnsureThat.ParamIsNotNull(file);
+            CreateSettings();
 
-            this.jsonService = jsonService;
-            this.file = file;
-
-            var baseDirPath = directory.GetCurrentDirectory().ToCrossPlatPath();
-            this.appSettingsFilePath = $"{baseDirPath}/{AppSettingsFileName}";
-            LoadSettings();
+            return;
         }
 
-        /// <inheritdoc/>
-        public AppSettings Settings { get; private set; } = new ();
+        var jsonData = this.file.ReadAllText(this.appSettingsFilePath);
 
-        /// <summary>
-        /// Loads the app settings data.
-        /// </summary>
-        private void LoadSettings()
+        try
         {
-            if (this.file.Exists(this.appSettingsFilePath) is false)
-            {
-                CreateSettings();
-
-                return;
-            }
-
-            var jsonData = this.file.ReadAllText(this.appSettingsFilePath);
-
-            try
-            {
-                Settings = this.jsonService.Deserialize<AppSettings>(jsonData) ?? new AppSettings();
-            }
-            catch (JsonException e)
-            {
-                var exMsg = $"There was an issue loading the application settings at the path '{this.appSettingsFilePath}'.";
-                exMsg += $"{Environment.NewLine}The file could be corrupt.";
-                throw new AppSettingsException(exMsg, e);
-            }
+            Settings = this.jsonService.Deserialize<AppSettings>(jsonData) ?? new AppSettings();
         }
-
-        /// <summary>
-        /// Creates default settings and an associated file for storage.
-        /// </summary>
-        private void CreateSettings()
+        catch (JsonException e)
         {
-            Settings = new AppSettings();
-
-            var settingData = this.jsonService.Serialize(Settings);
-
-            this.file.WriteAllText(this.appSettingsFilePath, settingData);
+            var exMsg = $"There was an issue loading the application settings at the path '{this.appSettingsFilePath}'.";
+            exMsg += $"{Environment.NewLine}The file could be corrupt.";
+            throw new AppSettingsException(exMsg, e);
         }
+    }
+
+    /// <summary>
+    /// Creates default settings and an associated file for storage.
+    /// </summary>
+    private void CreateSettings()
+    {
+        Settings = new AppSettings();
+
+        var settingData = this.jsonService.Serialize(Settings);
+
+        this.file.WriteAllText(this.appSettingsFilePath, settingData);
     }
 }

@@ -71,6 +71,9 @@ dotnet_naming_symbols.constant_fields.required_modifiers          = const
 # SA1309: A field name in C# begins with an underscore
 dotnet_diagnostic.SA1309.severity = warning
 
+# SA1200: Using directive should appear within a namespace declaration
+dotnet_diagnostic.SA1200.severity = none
+
 ###############################
 # C# Coding Conventions       #
 ###############################

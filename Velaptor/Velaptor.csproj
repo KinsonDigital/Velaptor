@@ -6,10 +6,10 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.11</Version>
+    <Version>1.0.0-preview.12</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.11</FileVersion>
+    <FileVersion>1.0.0-preview.12</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
@@ -30,6 +30,9 @@
     <Configurations>Debug;Release</Configurations>
     <PackageIcon>velaptor-logo.png</PackageIcon>
     <Platforms>x64</Platforms>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NoWarn>CS7035</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\x64\Debug\</OutputPath>
@@ -39,18 +42,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="velaptor-logo.ico">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\Documentation\Images\velaptor-logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\LICENSE.md">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Include="velaptor-logo.ico" Pack="true" PackagePath="\"/>
+    <None Include="..\Documentation\Images\velaptor-logo.png" Pack="true" PackagePath="\"/>
+    <None Include="..\LICENSE.md" Pack="true" PackagePath="\"/>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -102,7 +97,6 @@
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-<!--    <PackageReference Include="NVorbis" Version="0.10.4" />-->
     <PackageReference Include="Silk.NET" Version="2.16.0" />
     <PackageReference Include="SimpleInjector" Version="5.4.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />

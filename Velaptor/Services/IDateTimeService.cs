@@ -2,16 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Services
-{
-    using System;
+namespace Velaptor.Services;
 
-    /// <summary>
-    /// Provides date and time related information.
-    /// </summary>
-    internal interface IDateTimeService
-    {
-        /// <inheritdoc cref="DateTime.Now"/>
-        DateTime Now();
-    }
+using System;
+
+/// <summary>
+/// Provides date and time related information.
+/// </summary>
+internal interface IDateTimeService
+{
+    /// <inheritdoc cref="DateTime.Now"/>
+    DateTime Now();
 }

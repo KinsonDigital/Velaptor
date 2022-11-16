@@ -1,37 +1,36 @@
-﻿// <copyright file="IContentLoadable.cs" company="KinsonDigital">
+// <copyright file="IContentLoadable.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.Content
+namespace Velaptor.Content;
+
+using System.Diagnostics.CodeAnalysis;
+
+/// <summary>
+/// Provides the ability to load content.
+/// </summary>
+public interface IContentLoadable
 {
-    using System.Diagnostics.CodeAnalysis;
+    /// <summary>
+    /// Gets a value indicating whether or not the content for an object is loaded.
+    /// </summary>
+    [SuppressMessage(
+        "ReSharper",
+        "UnusedMemberInSuper.Global",
+        Justification = "Used by library users.")]
+    bool IsLoaded { get; }
 
     /// <summary>
-    /// Provides the ability to load content.
+    /// Loads the content for an object.
     /// </summary>
-    public interface IContentLoadable
-    {
-        /// <summary>
-        /// Gets a value indicating whether or not the content for an object is loaded.
-        /// </summary>
-        [SuppressMessage(
-            "ReSharper",
-            "UnusedMemberInSuper.Global",
-            Justification = "Used by library users.")]
-        bool IsLoaded { get; }
+    void LoadContent();
 
-        /// <summary>
-        /// Loads the content for an object.
-        /// </summary>
-        void LoadContent();
-
-        /// <summary>
-        /// Unloads the content for an object.
-        /// </summary>
-        [SuppressMessage(
-            "ReSharper",
-            "UnusedMemberInSuper.Global",
-            Justification = "Used by library users.")]
-        void UnloadContent();
-    }
+    /// <summary>
+    /// Unloads the content for an object.
+    /// </summary>
+    [SuppressMessage(
+        "ReSharper",
+        "UnusedMemberInSuper.Global",
+        Justification = "Used by library users.")]
+    void UnloadContent();
 }

@@ -2,32 +2,31 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTests.Content
+using System.IO.Abstractions;
+using Moq;
+using Velaptor.Content;
+using Xunit;
+
+namespace VelaptorTests.Content;
+
+/// <summary>
+/// Tests the <see cref="AtlasTexturePathResolver"/> class.
+/// </summary>
+public class AtlasTexturePathResolverTests
 {
-    using System.IO.Abstractions;
-    using Moq;
-    using Velaptor.Content;
-    using Xunit;
-
-    /// <summary>
-    /// Tests the <see cref="AtlasTexturePathResolver"/> class.
-    /// </summary>
-    public class AtlasTexturePathResolverTests
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
     {
-        #region Constructor Tests
-        [Fact]
-        public void Ctor_WhenInvoked_SetsFileDirectoryNameToCorrectResult()
-        {
-            // Arrange
-            var mockDirectory = new Mock<IDirectory>();
+        // Arrange
+        var mockDirectory = new Mock<IDirectory>();
 
-            // Act
-            var resolver = new AtlasTexturePathResolver(mockDirectory.Object);
-            var actual = resolver.ContentDirectoryName;
+        // Act
+        var resolver = new AtlasTexturePathResolver(mockDirectory.Object);
+        var actual = resolver.ContentDirectoryName;
 
-            // Assert
-            Assert.Equal("Atlas", actual);
-        }
-        #endregion
+        // Assert
+        Assert.Equal("Atlas", actual);
     }
+    #endregion
 }

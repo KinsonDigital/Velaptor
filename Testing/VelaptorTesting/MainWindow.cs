@@ -2,179 +2,178 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace VelaptorTesting
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using Velaptor;
+using Velaptor.Factories;
+using Velaptor.UI;
+using VelaptorTesting.Core;
+using VelaptorTesting.Scenes;
+
+namespace VelaptorTesting;
+
+/// <summary>
+/// The main window to the testing application.
+/// </summary>
+public class MainWindow : Window
 {
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Linq;
-    using Velaptor;
-    using Velaptor.Factories;
-    using Velaptor.UI;
-    using VelaptorTesting.Core;
-    using VelaptorTesting.Scenes;
+    private static readonly char[] UpperCaseChars =
+    {
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z',
+    };
+    private readonly SceneManager sceneManager;
 
     /// <summary>
-    /// The main window to the testing application.
+    /// Initializes a new instance of the <see cref="MainWindow"/> class.
     /// </summary>
-    public class MainWindow : Window
+    /// <param name="window">The native window implementation.</param>
+    public MainWindow(IWindow window)
+        : base(window)
     {
-        private static readonly char[] UpperCaseChars =
+        var contentLoader = ContentLoaderFactory.CreateContentLoader();
+
+        WindowWidth = Width;
+        WindowHeight = Height;
+        var renderer = RendererFactory.CreateRenderer(Width, Height);
+        renderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
+        window.WinResize = (size) =>
         {
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-            'U', 'V', 'W', 'X', 'Y', 'Z',
+            renderer.RenderSurfaceWidth = size.Width;
+            renderer.RenderSurfaceHeight = size.Height;
         };
-        private readonly SceneManager sceneManager;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MainWindow"/> class.
-        /// </summary>
-        /// <param name="window">The native window implementation.</param>
-        public MainWindow(IWindow window)
-            : base(window)
+        this.sceneManager = new SceneManager(renderer);
+
+        var testRenderTextScene = new TestRenderTextScene(contentLoader)
         {
-            var contentLoader = ContentLoaderFactory.CreateContentLoader();
+            Name = SplitByUpperCase(nameof(TestRenderTextScene)),
+        };
 
-            WindowWidth = Width;
-            WindowHeight = Height;
-            var renderer = RendererFactory.CreateRenderer(Width, Height);
-            renderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
-            window.WinResize = (size) =>
-            {
-                renderer.RenderSurfaceWidth = size.Width;
-                renderer.RenderSurfaceHeight = size.Height;
-            };
-
-            this.sceneManager = new SceneManager(renderer);
-
-            var testRenderTextScene = new TestRenderTextScene(contentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestRenderTextScene)),
-            };
-
-            var testMouseScene = new TestMouseScene(contentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestMouseScene)),
-            };
-
-            var testKeyboardScene = new TestKeyboardScene(contentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestKeyboardScene)),
-            };
-
-            var renderNonAnimatedGraphicsScene = new TestNonAnimatedGraphicsScene(contentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestNonAnimatedGraphicsScene)),
-            };
-
-            var renderAnimatedGraphicsScene = new TestAnimatedGraphicsScene(contentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestAnimatedGraphicsScene)),
-            };
-
-            var testSoundScene = new TestSoundsScene(ContentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestSoundsScene)),
-            };
-
-            var testRectScene = new TestRectangleScene(ContentLoader)
-            {
-                Name = SplitByUpperCase(nameof(TestRectangleScene)),
-            };
-
-            this.sceneManager.AddScene(testRenderTextScene, true);
-            this.sceneManager.AddScene(testMouseScene);
-            this.sceneManager.AddScene(testKeyboardScene);
-            this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
-            this.sceneManager.AddScene(renderAnimatedGraphicsScene);
-            this.sceneManager.AddScene(testSoundScene);
-            this.sceneManager.AddScene(testRectScene);
-        }
-
-        /// <summary>
-        /// Gets the width of the window.
-        /// </summary>
-        public static uint WindowWidth { get; private set; }
-
-        /// <summary>
-        /// Gets the height of the window.
-        /// </summary>
-        public static uint WindowHeight { get; private set; }
-
-        /// <inheritdoc cref="Window.OnLoad"/>
-        protected override void OnLoad()
+        var testMouseScene = new TestMouseScene(contentLoader)
         {
-            this.sceneManager.LoadContent();
-            base.OnLoad();
-        }
+            Name = SplitByUpperCase(nameof(TestMouseScene)),
+        };
 
-        /// <inheritdoc cref="Window.OnUpdate"/>
-        protected override void OnUpdate(FrameTime frameTime)
+        var testKeyboardScene = new TestKeyboardScene(contentLoader)
         {
-            this.sceneManager.Update(frameTime);
+            Name = SplitByUpperCase(nameof(TestKeyboardScene)),
+        };
 
-            Title = $"Scene: {this.sceneManager.CurrentScene?.Name ?? "No Scene Loaded"}";
-
-            base.OnUpdate(frameTime);
-        }
-
-        /// <inheritdoc cref="Window.OnDraw"/>
-        protected override void OnDraw(FrameTime frameTime)
+        var renderNonAnimatedGraphicsScene = new TestNonAnimatedGraphicsScene(contentLoader)
         {
-            this.sceneManager.Render();
+            Name = SplitByUpperCase(nameof(TestNonAnimatedGraphicsScene)),
+        };
 
-            base.OnDraw(frameTime);
-        }
-
-        /// <inheritdoc cref="Window.OnUnload"/>
-        protected override void OnUnload()
+        var renderAnimatedGraphicsScene = new TestAnimatedGraphicsScene(contentLoader)
         {
-            this.sceneManager.UnloadContent();
-            base.OnUnload();
-        }
+            Name = SplitByUpperCase(nameof(TestAnimatedGraphicsScene)),
+        };
 
-        /// <inheritdoc cref="Window.OnResize"/>
-        protected override void OnResize(SizeU size)
+        var testSoundScene = new TestSoundsScene(ContentLoader)
         {
-            WindowWidth = Width;
-            WindowHeight = Height;
+            Name = SplitByUpperCase(nameof(TestSoundsScene)),
+        };
 
-            base.OnResize(size);
-        }
-
-        /// <summary>
-        /// Splits the given <param name="value"></param> based on uppercase characters.
-        /// </summary>
-        /// <param name="value">The value to split.</param>
-        /// <returns>The value returned as a list of sections.</returns>
-        private static string SplitByUpperCase(string value)
+        var testRectScene = new TestRectangleScene(ContentLoader)
         {
-            var sections = new List<string>();
+            Name = SplitByUpperCase(nameof(TestRectangleScene)),
+        };
 
-            var currentSection = string.Empty;
+        this.sceneManager.AddScene(testRenderTextScene, true);
+        this.sceneManager.AddScene(testMouseScene);
+        this.sceneManager.AddScene(testKeyboardScene);
+        this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        this.sceneManager.AddScene(renderAnimatedGraphicsScene);
+        this.sceneManager.AddScene(testSoundScene);
+        this.sceneManager.AddScene(testRectScene);
+    }
 
-            for (var i = 0; i < value.Length; i++)
+    /// <summary>
+    /// Gets the width of the window.
+    /// </summary>
+    public static uint WindowWidth { get; private set; }
+
+    /// <summary>
+    /// Gets the height of the window.
+    /// </summary>
+    public static uint WindowHeight { get; private set; }
+
+    /// <inheritdoc cref="Window.OnLoad"/>
+    protected override void OnLoad()
+    {
+        this.sceneManager.LoadContent();
+        base.OnLoad();
+    }
+
+    /// <inheritdoc cref="Window.OnUpdate"/>
+    protected override void OnUpdate(FrameTime frameTime)
+    {
+        this.sceneManager.Update(frameTime);
+
+        Title = $"Scene: {this.sceneManager.CurrentScene?.Name ?? "No Scene Loaded"}";
+
+        base.OnUpdate(frameTime);
+    }
+
+    /// <inheritdoc cref="Window.OnDraw"/>
+    protected override void OnDraw(FrameTime frameTime)
+    {
+        this.sceneManager.Render();
+
+        base.OnDraw(frameTime);
+    }
+
+    /// <inheritdoc cref="Window.OnUnload"/>
+    protected override void OnUnload()
+    {
+        this.sceneManager.UnloadContent();
+        base.OnUnload();
+    }
+
+    /// <inheritdoc cref="Window.OnResize"/>
+    protected override void OnResize(SizeU size)
+    {
+        WindowWidth = Width;
+        WindowHeight = Height;
+
+        base.OnResize(size);
+    }
+
+    /// <summary>
+    /// Splits the given <param name="value"></param> based on uppercase characters.
+    /// </summary>
+    /// <param name="value">The value to split.</param>
+    /// <returns>The value returned as a list of sections.</returns>
+    private static string SplitByUpperCase(string value)
+    {
+        var sections = new List<string>();
+
+        var currentSection = string.Empty;
+
+        for (var i = 0; i < value.Length; i++)
+        {
+            var character = value[i];
+
+            if (UpperCaseChars.Contains(character) && i != 0)
             {
-                var character = value[i];
+                sections.Add(currentSection);
 
-                if (UpperCaseChars.Contains(character) && i != 0)
-                {
-                    sections.Add(currentSection);
-
-                    currentSection = string.Empty;
-                    currentSection += character;
-                }
-                else
-                {
-                    currentSection += character;
-                }
+                currentSection = string.Empty;
+                currentSection += character;
             }
-
-            sections.Add(currentSection);
-
-            var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
-
-            return result.TrimEnd(' ');
+            else
+            {
+                currentSection += character;
+            }
         }
+
+        sections.Add(currentSection);
+
+        var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
+
+        return result.TrimEnd(' ');
     }
 }

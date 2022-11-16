@@ -32,7 +32,7 @@ As with all software, there is always a chance for issues and bugs, especially f
    - When set to `true`, the label's `Width` and `Height` will automatically be set based on the width and height of the rendered text.  When set to `false`, `Width` and `Height` are independent of the rendered text size.
 12. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added new property named `AutoSize` to the `Button` control.
    - When set to `true`, the button's `Width` and `Height` will automatically be set based on the width and height of the button text.  When set to `false`, `Width` and `Height` are independent of the button text size.
-13. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added new method to the `IFont` interface and `Font` class that returns the bounds of each character of some given text relative to a position.
+13. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added a new method to the `IFont` interface and `Font` class that returns the bounds of each character of some given text relative to a position.
 14. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added the ability to add a `Label` to a `Button`.  This can be done by sending in a `Label` instance into the `Button` constructor.
 15. [#196](https://github.com/KinsonDigital/Velaptor/issues/196) - Added additional constructors to the `Button` class to improve the ease of use when creating new buttons.  List of new constructors listed below:
     - `Button(Label label)`
@@ -72,7 +72,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 <h2 style="font-weight:bold" align="center">Nuget/Library Updates 📦</h2>
 
-1. [#204](https://github.com/KinsonDigital/Velaptor/issues/204) - Update nuget package **SixLabors.ImageSharp** library from **_v1.0.3_** to **_v2.0.0_**.
+1. [#204](https://github.com/KinsonDigital/Velaptor/issues/204) - Update NuGet package **SixLabors.ImageSharp** library from **_v1.0.3_** to **_v2.0.0_**.
    - This is what fixed the texture rendering issue.
 
 ---

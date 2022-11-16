@@ -2,25 +2,24 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.OpenGL
+namespace Velaptor.OpenGL;
+
+using System;
+
+/// <summary>
+/// Represents the size of a batch.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+internal sealed class BatchSizeAttribute : Attribute
 {
-    using System;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BatchSizeAttribute"/> class.
+    /// </summary>
+    /// <param name="batchSize">The size of the batch to represent.</param>
+    public BatchSizeAttribute(uint batchSize) => BatchSize = batchSize;
 
     /// <summary>
-    /// Represents the size of a batch.
+    /// Gets the size of the batch.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    internal sealed class BatchSizeAttribute : Attribute
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BatchSizeAttribute"/> class.
-        /// </summary>
-        /// <param name="batchSize">The size of the batch to represent.</param>
-        public BatchSizeAttribute(uint batchSize) => BatchSize = batchSize;
-
-        /// <summary>
-        /// Gets the size of the batch.
-        /// </summary>
-        public uint BatchSize { get; }
-    }
+    public uint BatchSize { get; }
 }
