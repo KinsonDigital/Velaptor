@@ -36,8 +36,8 @@ As with all software, there is always a chance for issues and bugs, especially f
 3. [#408](https://github.com/KinsonDigital/Velaptor/issues/408) - Improved the project's outside **_CONTRIBUTING_** document.
 4. [#404](https://github.com/KinsonDigital/Velaptor/issues/404) - Set up the project to detect and set issues as stale using the stale bot [here](https://github.com/probot/stale).
 5. [#395](https://github.com/KinsonDigital/Velaptor/issues/395) - Updated the [CICD](https://github.com/KinsonDigital/CICD) system for the project from version **_v1.0.0-preview.12_** to **_v1.0.0-preview.13_**.
-6. [#395](https://github.com/KinsonDigital/Velaptor/issues/395) - Added a release tweet template to the project for the [CICD](https://github.com/KinsonDigital/CICD) system to use when performing releases.
-   - This template is what is used when doing a preview or production release to send out a tweet about the release.
+6. [#395](https://github.com/KinsonDigital/Velaptor/issues/395) - Added a tweet template to the project for the [CICD](https://github.com/KinsonDigital/CICD) system to use when performing releases.
+   - This template is used when sending a tweet about a preview or production release.
 7. [#393](https://github.com/KinsonDigital/Velaptor/issues/393) - Removed the ability for the project to copy the native library **_soft_oal.dll_** to the build target directory.
    - This library is used by **_OpenAL_** for sound.  This is not required anymore due to using the [CASL](https://github.com/KinsonDigital/CASL) project instead for sound.
 8. [#389](https://github.com/KinsonDigital/Velaptor/issues/389) - Performed simple project file cleanup.
