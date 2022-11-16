@@ -11,18 +11,6 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 ---
 
-<h2 style="font-weight:bold" align="center">New Features ✨</h2>
-
----
-
-<h2 style="font-weight:bold" align="center">Bug Fixes 🐛</h2>
-
----
-
-<h2 style="font-weight:bold" align="center">Breaking Changes 🧨</h2>
-
----
-
 <h2 style="font-weight:bold" align="center">Internal Changes ⚙️</h2>
 <h5 align="center">(Changes that do not affect users.  Not breaking changes, new features, or bug fixes.)</h5>
 
