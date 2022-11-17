@@ -11,19 +11,4 @@ namespace Velaptor.Reactables;
 /// </summary>
 internal sealed class MousePositionReactable : Reactable<(int x, int y)>
 {
-    /// <summary>
-    /// Sends a push notification to signal a change to the position of the mouse.
-    /// </summary>
-    /// <param name="data">The data to send with the push notification.</param>
-    public override void PushNotification((int x, int y) data)
-    {
-        /* Work from the end to the beginning of the list
-           just in case the reactable is disposed(removed)
-           in the OnNext() method.
-         */
-        for (var i = Reactors.Count - 1; i >= 0; i--)
-        {
-            Reactors[i].OnNext(data);
-        }
-    }
 }

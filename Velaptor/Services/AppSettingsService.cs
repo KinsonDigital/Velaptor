@@ -5,7 +5,6 @@
 using System;
 using System.IO.Abstractions;
 using System.Text.Json;
-using Velaptor;
 using Velaptor.Exceptions;
 using Velaptor.Guards;
 
