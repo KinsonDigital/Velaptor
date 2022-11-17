@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using Velaptor.Content.Fonts;
 using Velaptor.Graphics;
 
 namespace Velaptor.Content.Fonts.Services;

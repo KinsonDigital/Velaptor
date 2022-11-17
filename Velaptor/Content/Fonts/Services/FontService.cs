@@ -9,7 +9,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using FreeTypeSharp.Native;
 using Velaptor.Content.Exceptions;
-using Velaptor.Content.Fonts;
 using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.Guards;

@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.Guards;
 using Velaptor.NativeInterop.OpenGL;
