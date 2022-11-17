@@ -1270,37 +1270,6 @@ public class InternalExtensionMethodsTests
     }
 
     /// <summary>
-    /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
-    /// to the type of <see cref="ImageData"/>.
-    /// </summary>
-    /// <param name="image">The image to convert.</param>
-    /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-    private static ImageData ToImageData(Image<Rgba32> image)
-    {
-        var pixelData = new NETColor[image.Width, image.Height];
-
-        for (var y = 0; y < image.Height; y++)
-        {
-            var row = y;
-            image.ProcessPixelRows(accessor =>
-            {
-                var pixelRowSpan = accessor.GetRowSpan(row);
-
-                for (var x = 0; x < image.Width; x++)
-                {
-                    pixelData[x, row] = NETColor.FromArgb(
-                        pixelRowSpan[x].A,
-                        pixelRowSpan[x].R,
-                        pixelRowSpan[x].G,
-                        pixelRowSpan[x].B);
-                }
-            });
-        }
-
-        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
-    }
-
-    /// <summary>
     /// Generates GPU data with numerical values sequentially throughout
     /// the struct starting with the given <paramref name="startValue"/> for the purpose of testing.
     /// </summary>
