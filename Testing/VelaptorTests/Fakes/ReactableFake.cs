@@ -2,7 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
 using Velaptor.Reactables.Core;
 
 namespace VelaptorTests.Fakes;
@@ -13,5 +12,4 @@ namespace VelaptorTests.Fakes;
 /// <typeparam name="T">The type of notification to set.</typeparam>
 public class ReactableFake<T> : Reactable<T>
 {
-    public override void PushNotification(T data) => throw new NotImplementedException();
 }

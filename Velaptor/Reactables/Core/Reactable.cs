@@ -38,7 +38,17 @@ public abstract class Reactable<TData> : IReactable<TData>
     }
 
     /// <inheritdoc/>
-    public abstract void PushNotification(TData data);
+    public virtual void PushNotification(TData data)
+    {
+        /* Work from the end to the beginning of the list
+           just in case the reactable is disposed(removed)
+           in the OnNext() method.
+         */
+        for (var i = Reactors.Count - 1; i >= 0; i--)
+        {
+            Reactors[i].OnNext(data);
+        }
+    }
 
     /// <inheritdoc/>
     public void EndNotifications()
