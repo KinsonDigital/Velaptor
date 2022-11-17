@@ -747,7 +747,7 @@ internal sealed class GLWindow : VelaptorIWindow
             setterWhenNotCaching: (value) =>
             {
                 var enumTypeStr = nameof(Velaptor);
-                enumTypeStr += $".{nameof(Velaptor.WindowBorder)}";
+                enumTypeStr += $".{nameof(WindowBorder)}";
 
                 var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 this.glWindow.WindowBorder = value switch
