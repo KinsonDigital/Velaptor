@@ -2,12 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Reactables.Core;
-
 namespace Velaptor.Reactables.ReactableData;
 
 /// <summary>
-/// Holds data for the <see cref="IReactable{T}"/>.
+/// Holds data for the <see cref="DisposeTexturesReactable"/> reactable.
 /// </summary>
 internal readonly struct DisposeTextureData
 {

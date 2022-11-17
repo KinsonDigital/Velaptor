@@ -3,14 +3,14 @@
 // </copyright>
 
 using System.Diagnostics.CodeAnalysis;
-using Velaptor.Reactables.Core;
 
 namespace Velaptor.Reactables.ReactableData;
 
 /// <summary>
-/// Holds data for the <see cref="IReactable{T}"/>.
+/// Holds data for the <see cref="OpenGLInitReactable"/> reactable.
 /// </summary>
 [ExcludeFromCodeCoverage]
 internal readonly struct GLInitData
 {
+    // NOTE: No data is required.  This just acts as a unique type for dependency injection.
 }
