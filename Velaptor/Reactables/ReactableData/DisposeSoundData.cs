@@ -13,7 +13,7 @@ internal readonly struct DisposeSoundData
     /// Initializes a new instance of the <see cref="DisposeSoundData"/> struct.
     /// </summary>
     /// <param name="soundId">The ID of the sound.</param>
-    public DisposeSoundData(uint soundId) => SoundId = soundId;
+    public DisposeSoundData(in uint soundId) => SoundId = soundId;
 
     /// <summary>
     /// Gets the sound ID.

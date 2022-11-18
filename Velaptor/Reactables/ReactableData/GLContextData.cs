@@ -13,7 +13,7 @@ internal readonly struct GLContextData
     /// Initializes a new instance of the <see cref="GLContextData"/> struct.
     /// </summary>
     /// <param name="data">The context data.</param>
-    public GLContextData(object data) => Data = data;
+    public GLContextData(in object data) => Data = data;
 
     /// <summary>
     /// Gets the data.
