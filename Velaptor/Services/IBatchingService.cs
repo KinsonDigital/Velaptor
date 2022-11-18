@@ -24,7 +24,7 @@ internal interface IBatchingService<T>
     /// <summary>
     /// Gets or sets the list of batch items.
     /// </summary>
-    ReadOnlyCollection<(bool shouldRender, T item)> BatchItems { get; set; }
+    ReadOnlyCollection<T> BatchItems { get; set; }
 
     /// <summary>
     /// Adds the given <paramref name="item"/> to the batch.

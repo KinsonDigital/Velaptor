@@ -32,17 +32,17 @@ internal interface IBatchServiceManager : IDisposable
     /// <summary>
     /// Gets or sets the list of texture batch items.
     /// </summary>
-    ReadOnlyCollection<(bool shouldRender, TextureBatchItem item)> TextureBatchItems { get; set; }
+    ReadOnlyCollection<TextureBatchItem> TextureBatchItems { get; set; }
 
     /// <summary>
     /// Gets or sets the list of font glyph batch items.
     /// </summary>
-    ReadOnlyCollection<(bool shouldRender, FontGlyphBatchItem item)> FontGlyphBatchItems { get; set; }
+    ReadOnlyCollection<FontGlyphBatchItem> FontGlyphBatchItems { get; set; }
 
     /// <summary>
     /// Gets or sets the list of rectangle batch items.
     /// </summary>
-    ReadOnlyCollection<(bool shouldRender, RectShape item)> RectBatchItems { get; set; }
+    ReadOnlyCollection<RectShape> RectBatchItems { get; set; }
 
     /// <summary>
     /// Adds the given texture <paramref name="batchItem"/> to the batch.

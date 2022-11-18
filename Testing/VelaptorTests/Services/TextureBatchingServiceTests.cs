@@ -90,7 +90,7 @@ public class TextureBatchingServiceTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = (true, new TextureBatchItem
+        var batchItem1 = new TextureBatchItem
         {
             Angle = 1,
             Effects = RenderEffects.None,
@@ -100,8 +100,8 @@ public class TextureBatchingServiceTests
             TextureId = 11,
             TintColor = Color.FromArgb(12, 13, 14, 15),
             ViewPortSize = new SizeF(16, 17),
-        });
-        var batchItem2 = (true, new TextureBatchItem
+        };
+        var batchItem2 = new TextureBatchItem
         {
             Angle = 18,
             Effects = RenderEffects.FlipHorizontally,
@@ -111,10 +111,10 @@ public class TextureBatchingServiceTests
             TextureId = 28,
             TintColor = Color.FromArgb(29, 30, 31, 32),
             ViewPortSize = new SizeF(33, 34),
-        });
+        };
 
-        var batchItems = new List<(bool, TextureBatchItem)> { batchItem1, batchItem2 };
-        var expected = new ReadOnlyCollection<(bool, TextureBatchItem)>(batchItems.ToReadOnlyCollection());
+        var batchItems = new List<TextureBatchItem> { batchItem1, batchItem2 };
+        var expected = new ReadOnlyCollection<TextureBatchItem>(batchItems.ToReadOnlyCollection());
         var service = CreateService();
 
         // Act
@@ -198,7 +198,7 @@ public class TextureBatchingServiceTests
         service.EmptyBatch();
 
         // Assert
-        Assert.NotEqual(batchItem1, service.BatchItems[0].item);
+        Assert.NotEqual(batchItem1, service.BatchItems[0]);
     }
 
     [Fact]
@@ -206,20 +206,18 @@ public class TextureBatchingServiceTests
     {
         // Arrange
         var batchItem1 = default(TextureBatchItem);
-        batchItem1.TextureId = 10;
         var batchItem2 = default(TextureBatchItem);
-        batchItem2.TextureId = 10;
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(2u));
-        service.BatchItems = new List<(bool, TextureBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyCollection();
+        service.BatchItems = new List<TextureBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
         service.EmptyBatch();
 
         // Assert
-        Assert.Equal(batchItem1, service.BatchItems[0].item);
-        Assert.Equal(batchItem2, service.BatchItems[1].item);
+        Assert.Equal(batchItem1, service.BatchItems[0]);
+        Assert.Equal(batchItem2, service.BatchItems[1]);
     }
     #endregion
 

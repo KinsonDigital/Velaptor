@@ -19,7 +19,7 @@ namespace Velaptor.Services;
 internal sealed class RectBatchingService : IBatchingService<RectShape>
 {
     private readonly IDisposable unsubscriber;
-    private (bool shouldRender, RectShape item)[] batchItems = null!;
+    private RectShape[] batchItems = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBatchingService"/> class.
@@ -32,11 +32,11 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
         this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
             onNext: data =>
             {
-                var items = new List<(bool, RectShape)>();
+                var items = new List<RectShape>();
 
                 for (var i = 0u; i < data.BatchSize; i++)
                 {
-                    items.Add((false, default));
+                    items.Add(default);
                 }
 
                 this.batchItems = items.ToArray();
@@ -48,7 +48,7 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
     public event EventHandler<EventArgs>? ReadyForRendering;
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<(bool shouldRender, RectShape item)> BatchItems
+    public ReadOnlyCollection<RectShape> BatchItems
     {
         get => new (this.batchItems);
         set => this.batchItems = value.ToArray();
@@ -60,18 +60,18 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
     /// <param name="rect">The item to be added.</param>
     public void Add(RectShape rect)
     {
-        var batchIsFull = this.batchItems.All(i => i.item.IsEmpty() is false);
+        var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
         if (batchIsFull)
         {
             this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
         }
 
-        var emptyItemIndex = this.batchItems.IndexOf(i => i.item.IsEmpty());
+        var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
 
         if (emptyItemIndex != -1)
         {
-            this.batchItems[emptyItemIndex] = (true, rect);
+            this.batchItems[emptyItemIndex] = rect;
         }
     }
 
@@ -85,16 +85,15 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
     {
         for (var i = 0u; i < this.batchItems.Length; i++)
         {
-            if (this.batchItems[i].shouldRender is false)
+            if (this.batchItems[i].IsEmpty())
             {
                 continue;
             }
 
             // TODO: This will probably not work anymore once the struct is readonly
             // TODO: This is probably going to have to be a completly new item that writes over top
-            (bool shouldRender, RectShape rectItem) itemToEmpty = this.batchItems[i];
-            itemToEmpty.shouldRender = false;
-            itemToEmpty.rectItem.Empty();
+            RectShape itemToEmpty = this.batchItems[i];
+            itemToEmpty.Empty();
 
             this.batchItems[i] = itemToEmpty;
         }

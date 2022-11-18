@@ -53,21 +53,21 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     public event EventHandler<EventArgs>? RectBatchReadyForRendering;
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<(bool shouldRender, TextureBatchItem item)> TextureBatchItems
+    public ReadOnlyCollection<TextureBatchItem> TextureBatchItems
     {
         get => this.textureBatchingService.BatchItems;
         set => this.textureBatchingService.BatchItems = value;
     }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<(bool shouldRender, FontGlyphBatchItem item)> FontGlyphBatchItems
+    public ReadOnlyCollection<FontGlyphBatchItem> FontGlyphBatchItems
     {
         get => this.fontGlyphBatchingService.BatchItems;
         set => this.fontGlyphBatchingService.BatchItems = value;
     }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<(bool shouldRender, RectShape item)> RectBatchItems
+    public ReadOnlyCollection<RectShape> RectBatchItems
     {
         get => this.rectBatchingService.BatchItems;
         set => this.rectBatchingService.BatchItems = value;

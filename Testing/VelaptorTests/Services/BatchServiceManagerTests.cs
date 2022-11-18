@@ -93,18 +93,18 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(TextureBatchItem);
-        var batchItems = new List<(bool shouldRender, TextureBatchItem item)>()
+        var batchItems = new List<TextureBatchItem>()
         {
-            (true, batchItem),
+            batchItem,
         };
-        var expected = new ReadOnlyCollection<(bool shouldRender, TextureBatchItem item)>(batchItems);
+        var expected = new ReadOnlyCollection<TextureBatchItem>(batchItems);
 
         this.mockTextureBatchingService.SetupProperty(p => p.BatchItems);
 
         var manager = CreateManager();
 
         // Act
-        manager.TextureBatchItems = new ReadOnlyCollection<(bool shouldRender, TextureBatchItem item)>(batchItems);
+        manager.TextureBatchItems = new ReadOnlyCollection<TextureBatchItem>(batchItems);
         var actual = manager.TextureBatchItems;
 
         // Assert
@@ -122,18 +122,18 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(FontGlyphBatchItem);
-        var batchItems = new List<(bool shouldRender, FontGlyphBatchItem item)>()
+        var batchItems = new List<FontGlyphBatchItem>()
         {
-            (true, batchItem),
+            batchItem,
         };
-        var expected = new ReadOnlyCollection<(bool shouldRender, FontGlyphBatchItem item)>(batchItems);
+        var expected = new ReadOnlyCollection<FontGlyphBatchItem>(batchItems);
 
         this.mockFontGlyphBatchingService.SetupProperty(p => p.BatchItems);
 
         var manager = CreateManager();
 
         // Act
-        manager.FontGlyphBatchItems = new ReadOnlyCollection<(bool shouldRender, FontGlyphBatchItem item)>(batchItems);
+        manager.FontGlyphBatchItems = new ReadOnlyCollection<FontGlyphBatchItem>(batchItems);
         var actual = manager.FontGlyphBatchItems;
 
         // Assert
@@ -151,18 +151,18 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(RectShape);
-        var batchItems = new List<(bool shouldRender, RectShape item)>()
+        var batchItems = new List<RectShape>()
         {
-            (true, batchItem),
+            batchItem,
         };
-        var expected = new ReadOnlyCollection<(bool shouldRender, RectShape item)>(batchItems);
+        var expected = new ReadOnlyCollection<RectShape>(batchItems);
 
         this.mockRectBatchingService.SetupProperty(p => p.BatchItems);
 
         var manager = CreateManager();
 
         // Act
-        manager.RectBatchItems = new ReadOnlyCollection<(bool shouldRender, RectShape item)>(batchItems);
+        manager.RectBatchItems = new ReadOnlyCollection<RectShape>(batchItems);
         var actual = manager.RectBatchItems;
 
         // Assert

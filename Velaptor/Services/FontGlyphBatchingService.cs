@@ -19,7 +19,7 @@ namespace Velaptor.Services;
 internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
 {
     private readonly IDisposable unsubscriber;
-    private (bool shouldRender, FontGlyphBatchItem item)[] batchItems = null!;
+    private FontGlyphBatchItem[] batchItems = null!;
 #if DEBUG
     private uint currentFrame;
 #endif
@@ -38,11 +38,11 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
         this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
             onNext: data =>
             {
-                var items = new List<(bool, FontGlyphBatchItem)>();
+                var items = new List<FontGlyphBatchItem>();
 
                 for (var i = 0u; i < data.BatchSize; i++)
                 {
-                    items.Add((false, default));
+                    items.Add(default);
                 }
 
                 this.batchItems = items.ToArray();
@@ -54,7 +54,7 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
     public event EventHandler<EventArgs>? ReadyForRendering;
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<(bool shouldRender, FontGlyphBatchItem item)> BatchItems
+    public ReadOnlyCollection<FontGlyphBatchItem> BatchItems
     {
         get => new (this.batchItems);
         set => this.batchItems = value.ToArray();
@@ -70,18 +70,18 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
         var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
                                  && this.firstTimeRender is false;
 
-        var batchIsFull = this.batchItems.All(i => i.item.IsEmpty() is false);
+        var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
         if (hasSwitchedTexture || batchIsFull)
         {
             this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
         }
 
-        var emptyItemIndex = this.batchItems.IndexOf(i => i.item.IsEmpty());
+        var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
 
         if (emptyItemIndex != -1)
         {
-            this.batchItems[emptyItemIndex] = (true, item);
+            this.batchItems[emptyItemIndex] = item;
         }
 
         this.previousTextureId = this.currentTextureId;
@@ -102,24 +102,23 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
 
         for (var i = 0u; i < this.batchItems.Length; i++)
         {
-            if (this.batchItems[i].shouldRender is false)
+            if (this.batchItems[i].IsEmpty())
             {
                 continue;
             }
 
-            (bool shouldRender, FontGlyphBatchItem batchItem) itemToEmpty = this.batchItems[i];
+            FontGlyphBatchItem itemToEmpty = this.batchItems[i];
 
 #if DEBUG
             AppStats.RecordFontGlyphRendering(
                 this.currentFrame,
-                itemToEmpty.batchItem.Glyph,
-                itemToEmpty.batchItem.TextureId,
-                itemToEmpty.batchItem.Size,
-                itemToEmpty.batchItem.DestRect);
+                itemToEmpty.Glyph,
+                itemToEmpty.TextureId,
+                itemToEmpty.Size,
+                itemToEmpty.DestRect);
 #endif
 
-            itemToEmpty.shouldRender = false;
-            itemToEmpty.batchItem.Empty();
+            itemToEmpty.Empty();
 
             this.batchItems[i] = itemToEmpty;
         }

@@ -20,7 +20,7 @@ namespace Velaptor.Services;
 internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem>
 {
     private readonly IDisposable unsubscriber;
-    private (bool shouldRender, TextureBatchItem item)[] batchItems = null!;
+    private TextureBatchItem[] batchItems = null!;
     private bool firstTimeRender = true;
     private uint currentTextureId;
     private uint previousTextureId;
@@ -36,11 +36,11 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
         this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
             onNext: data =>
             {
-                var items = new List<(bool, TextureBatchItem)>();
+                var items = new List<TextureBatchItem>();
 
                 for (var i = 0u; i < data.BatchSize; i++)
                 {
-                    items.Add((false, default));
+                    items.Add(default);
                 }
 
                 this.batchItems = items.ToArray();
@@ -61,7 +61,7 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
     public event EventHandler<EventArgs>? ReadyForRendering;
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<(bool shouldRender, TextureBatchItem item)> BatchItems
+    public ReadOnlyCollection<TextureBatchItem> BatchItems
     {
         get => new (this.batchItems);
         set => this.batchItems = value.ToArray();
@@ -77,18 +77,18 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
 
         var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
                                  && this.firstTimeRender is false;
-        var batchIsFull = this.batchItems.All(i => i.item.IsEmpty() is false);
+        var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
         if (hasSwitchedTexture || batchIsFull)
         {
             this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
         }
 
-        var emptyItemIndex = this.batchItems.IndexOf(i => i.item.IsEmpty());
+        var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
 
         if (emptyItemIndex != -1)
         {
-            this.batchItems[emptyItemIndex] = (true, item);
+            this.batchItems[emptyItemIndex] = item;
         }
 
         this.previousTextureId = this.currentTextureId;
@@ -105,15 +105,14 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
     {
         for (var i = 0u; i < this.batchItems.Length; i++)
         {
-            if (this.batchItems[i].shouldRender is false)
+            if (this.batchItems[i].IsEmpty())
             {
                 continue;
             }
 
-            (bool shouldRender, TextureBatchItem batchItem) itemToEmpty = this.batchItems[i];
+            TextureBatchItem itemToEmpty = this.batchItems[i];
 
-            itemToEmpty.shouldRender = false;
-            itemToEmpty.batchItem.Empty();
+            itemToEmpty.Empty();
 
             this.batchItems[i] = itemToEmpty;
         }

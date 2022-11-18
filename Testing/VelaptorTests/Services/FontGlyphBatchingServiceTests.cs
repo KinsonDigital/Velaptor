@@ -86,7 +86,7 @@ public class FontGlyphBatchingServiceTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = (true, new FontGlyphBatchItem
+        var batchItem1 = new FontGlyphBatchItem
         {
             Angle = 1,
             Effects = RenderEffects.None,
@@ -96,8 +96,8 @@ public class FontGlyphBatchingServiceTests
             TextureId = 11,
             TintColor = Color.FromArgb(12, 13, 14, 15),
             ViewPortSize = new SizeF(16, 17),
-        });
-        var batchItem2 = (true, new FontGlyphBatchItem
+        };
+        var batchItem2 = new FontGlyphBatchItem
         {
             Angle = 18,
             Effects = RenderEffects.FlipHorizontally,
@@ -107,10 +107,10 @@ public class FontGlyphBatchingServiceTests
             TextureId = 28,
             TintColor = Color.FromArgb(29, 30, 31, 32),
             ViewPortSize = new SizeF(33, 34),
-        });
+        };
 
-        var batchItems = new List<(bool, FontGlyphBatchItem)> { batchItem1, batchItem2 };
-        var expected = new ReadOnlyCollection<(bool, FontGlyphBatchItem)>(batchItems.ToReadOnlyCollection());
+        var batchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 };
+        var expected = new ReadOnlyCollection<FontGlyphBatchItem>(batchItems.ToReadOnlyCollection());
         var service = CreateService();
 
         // Act
@@ -168,7 +168,7 @@ public class FontGlyphBatchingServiceTests
         service.EmptyBatch();
 
         // Assert
-        Assert.NotEqual(batchItem1, service.BatchItems[0].item);
+        Assert.NotEqual(batchItem1, service.BatchItems[0]);
     }
 
     [Fact]
@@ -176,20 +176,18 @@ public class FontGlyphBatchingServiceTests
     {
         // Arrange
         var batchItem1 = default(FontGlyphBatchItem);
-        batchItem1.TextureId = 10;
         var batchItem2 = default(FontGlyphBatchItem);
-        batchItem2.TextureId = 10;
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(2u));
-        service.BatchItems = new List<(bool, FontGlyphBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyCollection();
+        service.BatchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
         service.EmptyBatch();
 
         // Assert
-        Assert.Equal(batchItem1, service.BatchItems[0].item);
-        Assert.Equal(batchItem2, service.BatchItems[1].item);
+        Assert.Equal(batchItem1, service.BatchItems[0]);
+        Assert.Equal(batchItem2, service.BatchItems[1]);
     }
     #endregion
 

@@ -434,9 +434,9 @@ internal sealed class Renderer : IRenderer
 
         for (var i = 0u; i < this.batchServiceManager.TextureBatchItems.Count; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.TextureBatchItems[(int)i];
+            var batchItem = this.batchServiceManager.TextureBatchItems[(int)i];
 
-            if (shouldRender is false || batchItem.IsEmpty())
+            if (batchItem.IsEmpty())
             {
                 continue;
             }
@@ -496,9 +496,9 @@ internal sealed class Renderer : IRenderer
 
         for (var i = 0u; i < this.batchServiceManager.FontGlyphBatchItems.Count; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.FontGlyphBatchItems[(int)i];
+            var batchItem = this.batchServiceManager.FontGlyphBatchItems[(int)i];
 
-            if (shouldRender is false || batchItem.IsEmpty())
+            if (batchItem.IsEmpty())
             {
                 continue;
             }
@@ -555,9 +555,9 @@ internal sealed class Renderer : IRenderer
 
         for (var i = 0u; i < this.batchServiceManager.RectBatchItems.Count; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.RectBatchItems[(int)i];
+            var batchItem = this.batchServiceManager.RectBatchItems[(int)i];
 
-            if (shouldRender is false || batchItem.IsEmpty())
+            if (batchItem.IsEmpty())
             {
                 continue;
             }

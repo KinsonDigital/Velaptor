@@ -82,11 +82,11 @@ public class RendererTests
 
         this.mockBatchServiceManager = new Mock<IBatchServiceManager>();
         this.mockBatchServiceManager.SetupGet(p => p.TextureBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, TextureBatchItem item)>().ToReadOnlyCollection());
+            .Returns(Array.Empty<TextureBatchItem>().ToReadOnlyCollection());
         this.mockBatchServiceManager.SetupGet(p => p.FontGlyphBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, FontGlyphBatchItem item)>().ToReadOnlyCollection());
+            .Returns(Array.Empty<FontGlyphBatchItem>().ToReadOnlyCollection());
         this.mockBatchServiceManager.SetupGet(p => p.RectBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, RectShape item)>().ToReadOnlyCollection());
+            .Returns(Array.Empty<RectShape>().ToReadOnlyCollection());
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
@@ -653,7 +653,7 @@ public class RendererTests
         shouldRenderItem.TextureId = TextureId;
 
         var shouldNotRenderItem = default(TextureBatchItem);
-        var items = new[] { (true, shouldRenderItem), (false, shouldNotRenderItem) };
+        var items = new[] { shouldRenderItem, shouldNotRenderItem };
 
         var batch = CreateRenderer();
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
@@ -1231,13 +1231,11 @@ public class RendererTests
     public void RenderFont_WhenInvoked_RendersFont()
     {
         // Arrange
-        const string textBeingRendered = "font";
-        const string textNotBeingRendered = "testing";
-        const string renderText = $"{textBeingRendered}{textNotBeingRendered}";
+        const string renderText = "font";
 
         MockFontMetrics();
         MockToGlyphMetrics(renderText);
-        MockFontBatchItems(renderText, 4, 11);
+        MockFontBatchItems(renderText);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Id).Returns(FontAtlasTextureId);
@@ -1253,7 +1251,7 @@ public class RendererTests
             {
                 totalAddFontGlyphBatchItemInvokes += 1;
 
-                if (totalAddFontGlyphBatchItemInvokes > textBeingRendered.Length || doNotRaise)
+                if (totalAddFontGlyphBatchItemInvokes > renderText.Length || doNotRaise)
                 {
                     return;
                 }
@@ -1275,14 +1273,14 @@ public class RendererTests
 
         // Assert
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles,
-                6u * (uint)textBeingRendered.Length,
+                6u * (uint)renderText.Length,
                 GLDrawElementsType.UnsignedInt,
                 IntPtr.Zero),
             Times.Once());
         this.mockGLService.Verify(m => m.BindTexture2D(FontAtlasTextureId), Times.Once);
         this.mockBufferManager.Verify(m => m.UploadFontGlyphData(It.IsAny<FontGlyphBatchItem>(),
                 It.IsAny<uint>()),
-            Times.Exactly(textBeingRendered.Length));
+            Times.Exactly(renderText.Length));
         this.mockBatchServiceManager.VerifyOnce(m => m.EmptyBatch(BatchServiceType.FontGlyph));
     }
 
@@ -1361,19 +1359,9 @@ public class RendererTests
         shouldRenderItem.GradientStop = Color.FromArgb(55, 66, 77, 88);
         shouldRenderItem.GradientType = ColorGradient.Horizontal;
 
-        var shouldNotRenderItem = default(RectShape);
-        shouldNotRenderItem.Position = new Vector2(99, 111);
-        shouldNotRenderItem.Width = 222;
-        shouldNotRenderItem.Height = 333;
-        shouldNotRenderItem.BorderThickness = 444;
-        shouldNotRenderItem.CornerRadius = new CornerRadius(555f, 666f, 777f, 888f);
-        shouldNotRenderItem.GradientStart = Color.FromArgb(112, 113, 114, 115);
-        shouldNotRenderItem.GradientStop = Color.FromArgb(116, 117, 118, 119);
-        shouldNotRenderItem.GradientType = ColorGradient.Vertical;
-
         var shouldNotRenderEmptyItem = default(RectShape);
 
-        var items = new[] { (true, shouldRenderItem), (false, shouldNotRenderItem), (true, shouldNotRenderEmptyItem) };
+        var items = new[] { shouldRenderItem, shouldNotRenderEmptyItem };
 
         var batch = CreateRenderer();
         this.mockBatchServiceManager.Setup(m => m.AddRectBatchItem(It.IsAny<RectShape>()))
@@ -1393,7 +1381,6 @@ public class RendererTests
         this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
         this.mockBufferManager.VerifyOnce(m => m.UploadRectData(shouldRenderItem, batchIndex));
-        this.mockBufferManager.VerifyNever(m => m.UploadRectData(shouldNotRenderItem, batchIndex));
         this.mockBufferManager.VerifyNever(m => m.UploadRectData(shouldNotRenderEmptyItem, batchIndex));
         this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Rectangle), Times.Once);
     }
@@ -1549,7 +1536,7 @@ public class RendererTests
     /// Mocks the <see cref="BatchServiceManager.TextureBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
     /// </summary>
     /// <param name="items">The items to store in the service.</param>
-    private void MockTextureBatchItems((bool shouldRender, TextureBatchItem item)[] items)
+    private void MockTextureBatchItems(TextureBatchItem[] items)
     {
         this.mockBatchServiceManager.SetupProperty(p => p.TextureBatchItems);
         this.mockBatchServiceManager.Object.TextureBatchItems = items.ToReadOnlyCollection();
@@ -1559,25 +1546,17 @@ public class RendererTests
     /// Mocks the <see cref="BatchServiceManager.FontGlyphBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
     /// </summary>
     /// <param name="batchGlyphs">The glyphs to mock.</param>
-    /// <param name="excludeIndexStart">The starting index of the glyph to inclusively exclude from mocking.</param>
-    /// <param name="excludeIndexStop">The ending index of the glyph to inclusively exclude from mocking.</param>
-    /// <remarks>
-    ///     The <paramref name="excludeIndexStart"/> and <paramref name="excludeIndexStop"/> are the index start and stop
-    ///     of the given glyph string param <paramref name="batchGlyphs"/>.
-    /// </remarks>
-    private void MockFontBatchItems(string batchGlyphs, int excludeIndexStart, int excludeIndexStop)
+    private void MockFontBatchItems(string batchGlyphs)
     {
-        var glyphsToMock = new List<(bool, FontGlyphBatchItem)>();
+        var glyphsToMock = new List<FontGlyphBatchItem>();
 
         for (var i = 0; i < batchGlyphs.Length; i++)
         {
-            var shouldRender = i < excludeIndexStart || i > excludeIndexStop;
             var batchItem = default(FontGlyphBatchItem);
             batchItem.Glyph = batchGlyphs[i];
             batchItem.TextureId = FontAtlasTextureId;
 
-            var glyphInBatchToMock = (shouldRender, batchItem);
-            glyphsToMock.Add(glyphInBatchToMock);
+            glyphsToMock.Add(batchItem);
         }
 
         this.mockBatchServiceManager.SetupProperty(p => p.FontGlyphBatchItems);
@@ -1588,7 +1567,7 @@ public class RendererTests
     /// Mocks the <see cref="BatchServiceManager.RectBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
     /// </summary>
     /// <param name="items">The items to store in the service.</param>
-    private void MockRectBatchItems((bool shouldRender, RectShape item)[] items)
+    private void MockRectBatchItems(RectShape[] items)
     {
         this.mockBatchServiceManager.SetupProperty(p => p.RectBatchItems);
         this.mockBatchServiceManager.Object.RectBatchItems = items.ToReadOnlyCollection();

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using FluentAssertions;
 using Moq;
@@ -15,7 +14,6 @@ using Velaptor.Graphics;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
 using Xunit;
 
 namespace VelaptorTests.Services;
@@ -89,7 +87,7 @@ public class RectBatchingServiceTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = (true, new RectShape
+        var batchItem1 = new RectShape
         {
             Position = new Vector2(1f, 2f),
             Width = 3f,
@@ -101,8 +99,8 @@ public class RectBatchingServiceTests
             GradientType = ColorGradient.None,
             GradientStart = Color.FromArgb(14, 15, 16, 17),
             GradientStop = Color.FromArgb(18, 19, 20, 21),
-        });
-        var batchItem2 = (true, new RectShape()
+        };
+        var batchItem2 = new RectShape
         {
             Position = new Vector2(22f, 23f),
             Width = 24f,
@@ -114,10 +112,10 @@ public class RectBatchingServiceTests
             GradientType = ColorGradient.None,
             GradientStart = Color.FromArgb(35, 36, 37, 38),
             GradientStop = Color.FromArgb(39, 40, 41, 42),
-        });
+        };
 
-        var batchItems = new List<(bool, RectShape)> { batchItem1, batchItem2 };
-        var expected = new ReadOnlyDictionary<uint, (bool, RectShape)>(batchItems.ToDictionary());
+        var batchItems = new List<RectShape> { batchItem1, batchItem2 };
+        var expected = new ReadOnlyCollection<RectShape>(batchItems.ToReadOnlyCollection());
         var service = CreateService();
 
         // Act
@@ -125,7 +123,7 @@ public class RectBatchingServiceTests
         var actual = service.BatchItems;
 
         // Assert
-        AssertExtensions.ItemsEqual(expected.Values.ToArray(), actual.ToArray());
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -166,8 +164,8 @@ public class RectBatchingServiceTests
     public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
     {
         // Arrange
-        var batchItem1 = default(RectShape);
-        var batchItem2 = default(RectShape);
+        var batchItem1 = new RectShape() { Width = 10 };
+        var batchItem2 = new RectShape() { Width = 20 };
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(2u));
@@ -178,7 +176,7 @@ public class RectBatchingServiceTests
         service.EmptyBatch();
 
         // Assert
-        Assert.NotEqual(batchItem1, service.BatchItems[0].item);
+        Assert.NotEqual(batchItem1, service.BatchItems[0]);
     }
 
     [Fact]
@@ -190,14 +188,14 @@ public class RectBatchingServiceTests
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(2u));
-        service.BatchItems = new List<(bool, RectShape)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyCollection();
+        service.BatchItems = new List<RectShape> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
         service.EmptyBatch();
 
         // Assert
-        Assert.Equal(batchItem1, service.BatchItems[0].item);
-        Assert.Equal(batchItem2, service.BatchItems[1].item);
+        Assert.Equal(batchItem1, service.BatchItems[0]);
+        Assert.Equal(batchItem2, service.BatchItems[1]);
     }
     #endregion
 
