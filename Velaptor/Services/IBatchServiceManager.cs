@@ -17,52 +17,32 @@ internal interface IBatchServiceManager : IDisposable
     /// <summary>
     /// Invoked when the texture batch has been filled.
     /// </summary>
-    event EventHandler<EventArgs>? TextureBatchFilled;
+    event EventHandler<EventArgs>? TextureBatchReadyForRendering;
 
     /// <summary>
     /// Invoked when the font glyph batch has been filled.
     /// </summary>
-    event EventHandler<EventArgs>? FontGlyphBatchFilled;
+    event EventHandler<EventArgs>? FontGlyphBatchReadyForRendering;
 
     /// <summary>
     /// Invoked when the rectangle batch has been filled.
     /// </summary>
-    event EventHandler<EventArgs>? RectBatchFilled;
+    event EventHandler<EventArgs>? RectBatchReadyForRendering;
 
     /// <summary>
     /// Gets or sets the list of texture batch items.
     /// </summary>
-    ReadOnlyDictionary<uint, (bool shouldRender, TextureBatchItem item)> TextureBatchItems { get; set; }
+    ReadOnlyCollection<(bool shouldRender, TextureBatchItem item)> TextureBatchItems { get; set; }
 
     /// <summary>
     /// Gets or sets the list of font glyph batch items.
     /// </summary>
-    ReadOnlyDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)> FontGlyphBatchItems { get; set; }
+    ReadOnlyCollection<(bool shouldRender, FontGlyphBatchItem item)> FontGlyphBatchItems { get; set; }
 
     /// <summary>
     /// Gets or sets the list of rectangle batch items.
     /// </summary>
-    ReadOnlyDictionary<uint, (bool shouldRender, RectShape item)> RectBatchItems { get; set; }
-
-    /// <summary>
-    /// Returns the size for the batching service that matches the given <paramref name="serviceType"/>.
-    /// </summary>
-    /// <param name="serviceType">The type of batching service.</param>
-    /// <returns>The size of the batch.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if the <paramref name="serviceType"/> has an invalid value.
-    /// </exception>
-    uint GetBatchSize(BatchServiceType serviceType);
-
-    /// <summary>
-    /// Sets the batch size for the batching service that matches the given <paramref name="serviceType"/>.
-    /// </summary>
-    /// <param name="serviceType">The type of batching service.</param>
-    /// <param name="batchSize">The size of the batch.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if the <paramref name="serviceType"/> has an invalid value.
-    /// </exception>
-    void SetBatchSize(BatchServiceType serviceType, uint batchSize);
+    ReadOnlyCollection<(bool shouldRender, RectShape item)> RectBatchItems { get; set; }
 
     /// <summary>
     /// Adds the given texture <paramref name="batchItem"/> to the batch.

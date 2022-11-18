@@ -424,7 +424,7 @@ public class RendererTests
         var unused = CreateRenderer();
 
         // Act
-        this.mockBatchServiceManager.Raise(e => e.TextureBatchFilled += null, EventArgs.Empty);
+        this.mockBatchServiceManager.Raise(e => e.TextureBatchReadyForRendering += null, EventArgs.Empty);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Render Texture Process - Nothing To Render"), Times.Once);
@@ -597,7 +597,7 @@ public class RendererTests
             .Callback<TextureBatchItem>(_ =>
             {
                 MockTextureBatchItems(items);
-                this.mockBatchServiceManager.Raise(m => m.TextureBatchFilled += null, EventArgs.Empty);
+                this.mockBatchServiceManager.Raise(m => m.TextureBatchReadyForRendering += null, EventArgs.Empty);
             });
         this.glInitReactor.OnNext(default);
 
@@ -645,7 +645,7 @@ public class RendererTests
         var unused = CreateRenderer();
 
         // Act
-        this.mockBatchServiceManager.Raise(e => e.FontGlyphBatchFilled += null, EventArgs.Empty);
+        this.mockBatchServiceManager.Raise(e => e.FontGlyphBatchReadyForRendering += null, EventArgs.Empty);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Render Text Process - Nothing To Render"), Times.Once);
@@ -1195,7 +1195,7 @@ public class RendererTests
                     return;
                 }
 
-                this.mockBatchServiceManager.Raise(m => m.FontGlyphBatchFilled += null, EventArgs.Empty);
+                this.mockBatchServiceManager.Raise(m => m.FontGlyphBatchReadyForRendering += null, EventArgs.Empty);
                 doNotRaise = true;
             });
 
@@ -1232,7 +1232,7 @@ public class RendererTests
         var unused = CreateRenderer();
 
         // Act
-        this.mockBatchServiceManager.Raise(e => e.RectBatchFilled += null, EventArgs.Empty);
+        this.mockBatchServiceManager.Raise(e => e.RectBatchReadyForRendering += null, EventArgs.Empty);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"), Times.Once);
@@ -1317,7 +1317,7 @@ public class RendererTests
             .Callback<RectShape>(_ =>
             {
                 MockRectBatchItems(items);
-                this.mockBatchServiceManager.Raise(m => m.RectBatchFilled += null, EventArgs.Empty);
+                this.mockBatchServiceManager.Raise(m => m.RectBatchReadyForRendering += null, EventArgs.Empty);
             });
         this.glInitReactor.OnNext(default);
 
@@ -1367,11 +1367,11 @@ public class RendererTests
         // Assert
         this.mockBatchServiceManager.Verify(m => m.Dispose(), Times.Once);
         this.mockBatchServiceManager.
-            VerifyRemove(e => e.TextureBatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+            VerifyRemove(e => e.TextureBatchReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
         this.mockBatchServiceManager.
-            VerifyRemove(e => e.FontGlyphBatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+            VerifyRemove(e => e.FontGlyphBatchReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
         this.mockBatchServiceManager.
-            VerifyRemove(e => e.RectBatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+            VerifyRemove(e => e.RectBatchReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
     }
     #endregion
 

@@ -385,9 +385,9 @@ internal sealed class Renderer : IRenderer
             return;
         }
 
-        this.batchServiceManager.TextureBatchFilled -= TextureBatchService_BatchFilled;
-        this.batchServiceManager.FontGlyphBatchFilled -= FontGlyphBatchService_BatchFilled;
-        this.batchServiceManager.RectBatchFilled -= RectBatchService_BatchFilled;
+        this.batchServiceManager.TextureBatchReadyForRendering -= TextureBatchService_BatchReadyForRendering;
+        this.batchServiceManager.FontGlyphBatchReadyForRendering -= FontGlyphBatchService_BatchReadyForRendering;
+        this.batchServiceManager.RectBatchReadyForRendering -= RectBatchService_BatchReadyForRendering;
         this.batchServiceManager.Dispose();
         this.cachedUIntProps.Clear();
 
@@ -408,7 +408,7 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Invoked every time a batch of textures is ready to be rendered.
     /// </summary>
-    private void TextureBatchService_BatchFilled(object? sender, EventArgs e)
+    private void TextureBatchService_BatchReadyForRendering(object? sender, EventArgs e)
     {
         var textureIsBound = false;
 
@@ -470,7 +470,7 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Invoked every time a batch of fonts is ready to be rendered.
     /// </summary>
-    private void FontGlyphBatchService_BatchFilled(object? sender, EventArgs e)
+    private void FontGlyphBatchService_BatchReadyForRendering(object? sender, EventArgs e)
     {
         var fontTextureIsBound = false;
 
@@ -531,7 +531,7 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Invoked every time a batch of rectangles is ready to be rendered.
     /// </summary>
-    private void RectBatchService_BatchFilled(object? sender, EventArgs e)
+    private void RectBatchService_BatchReadyForRendering(object? sender, EventArgs e)
     {
         if (this.batchServiceManager.RectBatchItems.Count <= 0)
         {

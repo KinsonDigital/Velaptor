@@ -34,72 +34,43 @@ internal sealed class BatchServiceManager : IBatchServiceManager
         EnsureThat.ParamIsNotNull(rectBatchingService);
 
         this.textureBatchingService = textureBatchingService;
-        this.textureBatchingService.BatchFilled += TextureBatchingService_BatchFilled;
+        this.textureBatchingService.ReadyForRendering += TextureBatchingServiceReadyForRendering;
 
         this.fontGlyphBatchingService = fontGlyphBatchingService;
-        this.fontGlyphBatchingService.BatchFilled += FontGlyphBatchingService_BatchFilled;
+        this.fontGlyphBatchingService.ReadyForRendering += FontGlyphBatchingServiceReadyForRendering;
 
         this.rectBatchingService = rectBatchingService;
-        this.rectBatchingService.BatchFilled += RectBatchingService_BatchFilled;
+        this.rectBatchingService.ReadyForRendering += RectBatchingServiceReadyForRendering;
     }
 
     /// <inheritdoc/>
-    public event EventHandler<EventArgs>? TextureBatchFilled;
+    public event EventHandler<EventArgs>? TextureBatchReadyForRendering;
 
     /// <inheritdoc/>
-    public event EventHandler<EventArgs>? FontGlyphBatchFilled;
+    public event EventHandler<EventArgs>? FontGlyphBatchReadyForRendering;
 
     /// <inheritdoc/>
-    public event EventHandler<EventArgs>? RectBatchFilled;
+    public event EventHandler<EventArgs>? RectBatchReadyForRendering;
 
     /// <inheritdoc/>
-    public ReadOnlyDictionary<uint, (bool shouldRender, TextureBatchItem item)> TextureBatchItems
+    public ReadOnlyCollection<(bool shouldRender, TextureBatchItem item)> TextureBatchItems
     {
         get => this.textureBatchingService.BatchItems;
         set => this.textureBatchingService.BatchItems = value;
     }
 
     /// <inheritdoc/>
-    public ReadOnlyDictionary<uint, (bool shouldRender, FontGlyphBatchItem item)> FontGlyphBatchItems
+    public ReadOnlyCollection<(bool shouldRender, FontGlyphBatchItem item)> FontGlyphBatchItems
     {
         get => this.fontGlyphBatchingService.BatchItems;
         set => this.fontGlyphBatchingService.BatchItems = value;
     }
 
     /// <inheritdoc/>
-    public ReadOnlyDictionary<uint, (bool shouldRender, RectShape item)> RectBatchItems
+    public ReadOnlyCollection<(bool shouldRender, RectShape item)> RectBatchItems
     {
         get => this.rectBatchingService.BatchItems;
         set => this.rectBatchingService.BatchItems = value;
-    }
-
-    /// <inheritdoc/>
-    public uint GetBatchSize(BatchServiceType serviceType) =>
-        serviceType switch
-        {
-            BatchServiceType.Texture => this.textureBatchingService.BatchSize,
-            BatchServiceType.FontGlyph => this.fontGlyphBatchingService.BatchSize,
-            BatchServiceType.Rectangle => this.rectBatchingService.BatchSize,
-            _ => throw new ArgumentOutOfRangeException(nameof(serviceType), serviceType, $"The enum '{nameof(BatchServiceType)}' value is invalid.")
-        };
-
-    /// <inheritdoc/>
-    public void SetBatchSize(BatchServiceType serviceType, uint batchSize)
-    {
-        switch (serviceType)
-        {
-            case BatchServiceType.Texture:
-                this.textureBatchingService.BatchSize = batchSize;
-                break;
-            case BatchServiceType.FontGlyph:
-                this.fontGlyphBatchingService.BatchSize = batchSize;
-                break;
-            case BatchServiceType.Rectangle:
-                this.rectBatchingService.BatchSize = batchSize;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(serviceType), serviceType, $"The enum '{nameof(BatchServiceType)}' value is invalid.");
-        }
     }
 
     /// <inheritdoc/>
@@ -139,13 +110,13 @@ internal sealed class BatchServiceManager : IBatchServiceManager
         switch (serviceType)
         {
             case BatchServiceType.Texture:
-                this.TextureBatchFilled?.Invoke(this, EventArgs.Empty);
+                this.TextureBatchReadyForRendering?.Invoke(this, EventArgs.Empty);
                 break;
             case BatchServiceType.FontGlyph:
-                this.FontGlyphBatchFilled?.Invoke(this, EventArgs.Empty);
+                this.FontGlyphBatchReadyForRendering?.Invoke(this, EventArgs.Empty);
                 break;
             case BatchServiceType.Rectangle:
-                this.RectBatchFilled?.Invoke(this, EventArgs.Empty);
+                this.RectBatchReadyForRendering?.Invoke(this, EventArgs.Empty);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -171,9 +142,9 @@ internal sealed class BatchServiceManager : IBatchServiceManager
 
         if (disposing)
         {
-            this.textureBatchingService.BatchFilled -= TextureBatchingService_BatchFilled;
-            this.fontGlyphBatchingService.BatchFilled -= FontGlyphBatchingService_BatchFilled;
-            this.rectBatchingService.BatchFilled -= RectBatchingService_BatchFilled;
+            this.textureBatchingService.ReadyForRendering -= TextureBatchingServiceReadyForRendering;
+            this.fontGlyphBatchingService.ReadyForRendering -= FontGlyphBatchingServiceReadyForRendering;
+            this.rectBatchingService.ReadyForRendering -= RectBatchingServiceReadyForRendering;
         }
 
         this.disposed = true;
@@ -182,18 +153,18 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     /// <summary>
     /// Invoked the texture batch filled event.
     /// </summary>
-    private void TextureBatchingService_BatchFilled(object? sender, EventArgs e)
-        => this.TextureBatchFilled?.Invoke(sender, e);
+    private void TextureBatchingServiceReadyForRendering(object? sender, EventArgs e)
+        => this.TextureBatchReadyForRendering?.Invoke(sender, e);
 
     /// <summary>
     /// Invoked the font glyph batch filled event.
     /// </summary>
-    private void FontGlyphBatchingService_BatchFilled(object? sender, EventArgs e)
-        => this.FontGlyphBatchFilled?.Invoke(sender, e);
+    private void FontGlyphBatchingServiceReadyForRendering(object? sender, EventArgs e)
+        => this.FontGlyphBatchReadyForRendering?.Invoke(sender, e);
 
     /// <summary>
     /// Invoked the rectangle batch filled event.
     /// </summary>
-    private void RectBatchingService_BatchFilled(object? sender, EventArgs e)
-        => this.RectBatchFilled?.Invoke(sender, e);
+    private void RectBatchingServiceReadyForRendering(object? sender, EventArgs e)
+        => this.RectBatchReadyForRendering?.Invoke(sender, e);
 }
