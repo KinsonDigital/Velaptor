@@ -42,8 +42,9 @@ public static class RendererFactory
         var bufferManager = new BufferManager(bufferFactory);
 
         var batchServiceManager = IoC.Container.GetInstance<IBatchServiceManager>();
-        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
+        var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
 
         renderer = new Renderer(
             glInvoker,
@@ -51,8 +52,9 @@ public static class RendererFactory
             shaderManager,
             bufferManager,
             batchServiceManager,
-            glInitReactor,
-            shutDownReactor);
+            glInitReactable,
+            shutDownReactable,
+            batchSizeReactable);
 
         renderer.RenderSurfaceWidth = renderSurfaceWidth;
         renderer.RenderSurfaceHeight = renderSurfaceHeight;

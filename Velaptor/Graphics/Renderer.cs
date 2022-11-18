@@ -26,6 +26,7 @@ namespace Velaptor.Graphics;
 /// <inheritdoc/>
 internal sealed class Renderer : IRenderer
 {
+    private const uint BatchSize = 1000;
     private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
     private readonly IGLInvoker gl;
     private readonly IOpenGLService openGLService;
@@ -51,6 +52,7 @@ internal sealed class Renderer : IRenderer
     /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
     /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="batchSizeReactable">Sends a push notification of the batch size.</param>
     /// <remarks>
     ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
     ///     pushes the notification that OpenGL has been initialized.
@@ -62,7 +64,8 @@ internal sealed class Renderer : IRenderer
         IBufferManager bufferManager,
         IBatchServiceManager batchServiceManager,
         IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactable<ShutDownData> shutDownReactable,
+        IReactable<BatchSizeData> batchSizeReactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
@@ -71,6 +74,7 @@ internal sealed class Renderer : IRenderer
         EnsureThat.ParamIsNotNull(batchServiceManager);
         EnsureThat.ParamIsNotNull(glInitReactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
+        EnsureThat.ParamIsNotNull(batchSizeReactable);
 
         this.gl = gl;
         this.openGLService = openGLService;
@@ -78,12 +82,9 @@ internal sealed class Renderer : IRenderer
         this.bufferManager = bufferManager;
 
         this.batchServiceManager = batchServiceManager;
-        this.batchServiceManager.SetBatchSize(BatchServiceType.Texture, IRenderer.BatchSize);
-        this.batchServiceManager.SetBatchSize(BatchServiceType.Rectangle, IRenderer.BatchSize);
-        this.batchServiceManager.SetBatchSize(BatchServiceType.FontGlyph, IRenderer.BatchSize);
-        this.batchServiceManager.TextureBatchFilled += TextureBatchService_BatchFilled;
-        this.batchServiceManager.FontGlyphBatchFilled += FontGlyphBatchService_BatchFilled;
-        this.batchServiceManager.RectBatchFilled += RectBatchService_BatchFilled;
+        this.batchServiceManager.TextureBatchReadyForRendering += TextureBatchService_BatchReadyForRendering;
+        this.batchServiceManager.FontGlyphBatchReadyForRendering += FontGlyphBatchService_BatchReadyForRendering;
+        this.batchServiceManager.RectBatchReadyForRendering += RectBatchService_BatchReadyForRendering;
 
         // Receive a push notification that OpenGL has initialized
         this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
@@ -105,6 +106,11 @@ internal sealed class Renderer : IRenderer
             {
                 this.shutDownUnsubscriber?.Dispose();
             }));
+
+        var batchSizeData = new BatchSizeData(BatchSize);
+        batchSizeReactable.PushNotification(batchSizeData);
+        batchSizeReactable.EndNotifications();
+        batchSizeReactable.UnsubscribeAll();
 
         SetupPropertyCaches();
     }
@@ -428,7 +434,7 @@ internal sealed class Renderer : IRenderer
 
         for (var i = 0u; i < this.batchServiceManager.TextureBatchItems.Count; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.TextureBatchItems[i];
+            var (shouldRender, batchItem) = this.batchServiceManager.TextureBatchItems[(int)i];
 
             if (shouldRender is false || batchItem.IsEmpty())
             {
@@ -490,7 +496,7 @@ internal sealed class Renderer : IRenderer
 
         for (var i = 0u; i < this.batchServiceManager.FontGlyphBatchItems.Count; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.FontGlyphBatchItems[i];
+            var (shouldRender, batchItem) = this.batchServiceManager.FontGlyphBatchItems[(int)i];
 
             if (shouldRender is false || batchItem.IsEmpty())
             {
@@ -549,7 +555,7 @@ internal sealed class Renderer : IRenderer
 
         for (var i = 0u; i < this.batchServiceManager.RectBatchItems.Count; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.RectBatchItems[i];
+            var (shouldRender, batchItem) = this.batchServiceManager.RectBatchItems[(int)i];
 
             if (shouldRender is false || batchItem.IsEmpty())
             {

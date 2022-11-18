@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
@@ -47,6 +48,7 @@ public class RendererTests
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
+    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
     private readonly char[] glyphChars =
     {
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -80,11 +82,11 @@ public class RendererTests
 
         this.mockBatchServiceManager = new Mock<IBatchServiceManager>();
         this.mockBatchServiceManager.SetupGet(p => p.TextureBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, TextureBatchItem item)>().ToReadOnlyDictionary());
+            .Returns(Array.Empty<(bool shouldRender, TextureBatchItem item)>().ToReadOnlyCollection());
         this.mockBatchServiceManager.SetupGet(p => p.FontGlyphBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, FontGlyphBatchItem item)>().ToReadOnlyDictionary());
+            .Returns(Array.Empty<(bool shouldRender, FontGlyphBatchItem item)>().ToReadOnlyCollection());
         this.mockBatchServiceManager.SetupGet(p => p.RectBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, RectShape item)>().ToReadOnlyDictionary());
+            .Returns(Array.Empty<(bool shouldRender, RectShape item)>().ToReadOnlyCollection());
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
@@ -104,7 +106,7 @@ public class RendererTests
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>((reactor) =>
+            .Callback<IReactor<ShutDownData>>(reactor =>
             {
                 if (reactor is null)
                 {
@@ -113,6 +115,8 @@ public class RendererTests
 
                 this.shutDownReactor = reactor;
             });
+
+        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -137,8 +141,27 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullOpenGLServiceParam_ThrowException()
+    {
+        // Act & Assert
+        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        {
+            var unused = new Renderer(
+                this.mockGL.Object,
+                null,
+                this.mockShaderManager.Object,
+                this.mockBufferManager.Object,
+                this.mockBatchServiceManager.Object,
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
+        }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -154,7 +177,8 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'shaderManager')");
     }
 
@@ -171,7 +195,8 @@ public class RendererTests
                 null,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'bufferManager')");
     }
 
@@ -188,7 +213,8 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 null,
                 this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'batchServiceManager')");
     }
 
@@ -205,7 +231,8 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 null,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'glInitReactable')");
     }
 
@@ -222,8 +249,32 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
-                null);
+                null,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'shutDownReactable')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            var unused = new Renderer(
+                this.mockGL.Object,
+                this.mockGLService.Object,
+                this.mockShaderManager.Object,
+                this.mockBufferManager.Object,
+                this.mockBatchServiceManager.Object,
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object,
+                null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
     }
 
     [Fact]
@@ -233,9 +284,21 @@ public class RendererTests
         var unused = CreateRenderer();
 
         // Assert
-        this.mockBatchServiceManager.VerifyAdd(a => a.TextureBatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-        this.mockBatchServiceManager.VerifyAdd(a => a.FontGlyphBatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-        this.mockBatchServiceManager.VerifyAdd(a => a.RectBatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+        this.mockBatchServiceManager.VerifyAdd(a => a.TextureBatchReadyForRendering += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+        this.mockBatchServiceManager.VerifyAdd(a => a.FontGlyphBatchReadyForRendering += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+        this.mockBatchServiceManager.VerifyAdd(a => a.RectBatchReadyForRendering += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_ManagesBatchSize()
+    {
+        // Arrange & Act
+        _ = CreateRenderer();
+
+        // Assert
+        this.mockBatchSizeReactable.Verify(m => m.PushNotification(new BatchSizeData(1000u)), Times.Once);
+        this.mockBatchSizeReactable.Verify(m => m.EndNotifications(), Times.Once);
+        this.mockBatchSizeReactable.Verify(m => m.UnsubscribeAll(), Times.Once);
     }
     #endregion
 
@@ -1476,7 +1539,8 @@ public class RendererTests
             this.mockBufferManager.Object,
             this.mockBatchServiceManager.Object,
             this.mockGLInitReactable.Object,
-            this.mockShutDownReactable.Object);
+            this.mockShutDownReactable.Object,
+            this.mockBatchSizeReactable.Object);
 
         return result;
     }
@@ -1488,7 +1552,7 @@ public class RendererTests
     private void MockTextureBatchItems((bool shouldRender, TextureBatchItem item)[] items)
     {
         this.mockBatchServiceManager.SetupProperty(p => p.TextureBatchItems);
-        this.mockBatchServiceManager.Object.TextureBatchItems = items.ToReadOnlyDictionary();
+        this.mockBatchServiceManager.Object.TextureBatchItems = items.ToReadOnlyCollection();
     }
 
     /// <summary>
@@ -1517,7 +1581,7 @@ public class RendererTests
         }
 
         this.mockBatchServiceManager.SetupProperty(p => p.FontGlyphBatchItems);
-        this.mockBatchServiceManager.Object.FontGlyphBatchItems = glyphsToMock.ToReadOnlyDictionary();
+        this.mockBatchServiceManager.Object.FontGlyphBatchItems = glyphsToMock.ToReadOnlyCollection();
     }
 
     /// <summary>
@@ -1527,6 +1591,6 @@ public class RendererTests
     private void MockRectBatchItems((bool shouldRender, RectShape item)[] items)
     {
         this.mockBatchServiceManager.SetupProperty(p => p.RectBatchItems);
-        this.mockBatchServiceManager.Object.RectBatchItems = items.ToReadOnlyDictionary();
+        this.mockBatchServiceManager.Object.RectBatchItems = items.ToReadOnlyCollection();
     }
 }
