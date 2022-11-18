@@ -7,8 +7,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using FluentAssertions;
+using Moq;
+using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
+using Velaptor.Reactables.Core;
+using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
 using VelaptorTests.Helpers;
 using Xunit;
@@ -17,21 +22,66 @@ namespace VelaptorTests.Services;
 
 public class FontGlyphBatchingServiceTests
 {
-    #region Prop Tests
-    [Fact]
-    public void BatchSize_WhenSettingValue_ReturnsCorrectResult()
+    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IDisposable> mockUnsubscriber;
+    private IReactor<BatchSizeData>? reactor;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FontGlyphBatchingServiceTests"/> class.
+    /// </summary>
+    public FontGlyphBatchingServiceTests()
     {
-        // Arrange
-        var service = CreateService();
+        this.mockUnsubscriber = new Mock<IDisposable>();
 
-        // Act
-        service.BatchSize = 123u;
-        var actual = service.BatchSize;
-
-        // Assert
-        Assert.Equal(123u, actual);
+        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
+            .Callback<IReactor<BatchSizeData>>(reactorObj => this.reactor = reactorObj)
+            .Returns(this.mockUnsubscriber.Object);
     }
 
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new FontGlyphBatchingService(null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+    }
+
+    [Fact]
+    public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
+    {
+        // Arrange & Act
+        var sut = CreateService();
+        this.reactor.OnNext(new BatchSizeData(4u));
+
+        // Assert
+        sut.BatchItems.Should().HaveCount(4);
+    }
+
+    [Fact]
+    public void Ctor_WhenEndNotificationsIsInvoked_UnsubscribesFromReactable()
+    {
+        // Arrange
+        _ = CreateService();
+
+        // Act
+        this.reactor.OnCompleted();
+        this.reactor.OnCompleted();
+
+        // Assert
+        this.mockUnsubscriber.Verify(m => m.Dispose());
+    }
+    #endregion
+
+    #region Prop Tests
     [Fact]
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
@@ -60,16 +110,16 @@ public class FontGlyphBatchingServiceTests
         });
 
         var batchItems = new List<(bool, FontGlyphBatchItem)> { batchItem1, batchItem2 };
-        var expected = new ReadOnlyDictionary<uint, (bool, FontGlyphBatchItem)>(batchItems.ToDictionary());
+        var expected = new ReadOnlyCollection<(bool, FontGlyphBatchItem)>(batchItems.ToReadOnlyCollection());
         var service = CreateService();
 
         // Act
-        service.BatchItems = batchItems.ToReadOnlyDictionary();
+        service.BatchItems = batchItems.ToReadOnlyCollection();
         var actual = service.BatchItems;
 
         // Assert
-        AssertExtensions.ItemsEqual(expected.Keys.ToArray(), actual.Keys.ToArray());
-        AssertExtensions.ItemsEqual(expected.Values.ToArray(), actual.Values.ToArray());
+        AssertExtensions.ItemsEqual(expected.ToArray(), actual.ToArray());
+        AssertExtensions.ItemsEqual(expected.ToArray(), actual.ToArray());
     }
     #endregion
 
@@ -84,22 +134,20 @@ public class FontGlyphBatchingServiceTests
         batchItem2.TextureId = 10;
 
         var service = CreateService();
-        service.BatchSize = 1;
+        this.reactor.OnNext(new BatchSizeData(1u));
         service.Add(batchItem1);
 
         // Act & Assert
         Assert.Raises<EventArgs>(e =>
         {
-            service.BatchFilled += e;
+            service.ReadyForRendering += e;
         }, e =>
         {
-            service.BatchFilled -= e;
+            service.ReadyForRendering -= e;
         }, () =>
         {
             service.Add(batchItem2);
         });
-
-        Assert.Equal(2, service.BatchItems.Count);
     }
 
     [Fact]
@@ -112,7 +160,7 @@ public class FontGlyphBatchingServiceTests
         batchItem2.TextureId = 10;
 
         var service = CreateService();
-        service.BatchSize = 2;
+        this.reactor.OnNext(new BatchSizeData(2u));
         service.Add(batchItem1);
         service.Add(batchItem2);
 
@@ -133,8 +181,8 @@ public class FontGlyphBatchingServiceTests
         batchItem2.TextureId = 10;
 
         var service = CreateService();
-        service.BatchSize = 2;
-        service.BatchItems = new List<(bool, FontGlyphBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
+        this.reactor.OnNext(new BatchSizeData(2u));
+        service.BatchItems = new List<(bool, FontGlyphBatchItem)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyCollection();
 
         // Act
         service.EmptyBatch();
@@ -149,5 +197,5 @@ public class FontGlyphBatchingServiceTests
     /// Creates a new instance of <see cref="FontGlyphBatchingService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private static FontGlyphBatchingService CreateService() => new ();
+    private FontGlyphBatchingService CreateService() => new (this.mockBatchSizeReactable.Object);
 }

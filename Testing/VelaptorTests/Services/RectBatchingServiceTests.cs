@@ -8,7 +8,12 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using FluentAssertions;
+using Moq;
+using Velaptor;
 using Velaptor.Graphics;
+using Velaptor.Reactables.Core;
+using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
 using VelaptorTests.Helpers;
 using Xunit;
@@ -20,21 +25,66 @@ namespace VelaptorTests.Services;
 /// </summary>
 public class RectBatchingServiceTests
 {
-    #region Prop Tests
-    [Fact]
-    public void BatchSize_WhenSettingValue_ReturnsCorrectResult()
+    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IDisposable> mockUnsubscriber;
+    private IReactor<BatchSizeData>? reactor;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RectBatchingServiceTests"/> class.
+    /// </summary>
+    public RectBatchingServiceTests()
     {
-        // Arrange
-        var service = CreateService();
+        this.mockUnsubscriber = new Mock<IDisposable>();
 
-        // Act
-        service.BatchSize = 123u;
-        var actual = service.BatchSize;
-
-        // Assert
-        Assert.Equal(123u, actual);
+        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
+            .Callback<IReactor<BatchSizeData>>(reactorObj => this.reactor = reactorObj)
+            .Returns(this.mockUnsubscriber.Object);
     }
 
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new RectBatchingService(null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+    }
+
+    [Fact]
+    public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
+    {
+        // Arrange & Act
+        var sut = CreateService();
+        this.reactor.OnNext(new BatchSizeData(4u));
+
+        // Assert
+        sut.BatchItems.Should().HaveCount(4);
+    }
+
+    [Fact]
+    public void Ctor_WhenEndNotificationsIsInvoked_UnsubscribesFromReactable()
+    {
+        // Arrange
+        _ = CreateService();
+
+        // Act
+        this.reactor.OnCompleted();
+        this.reactor.OnCompleted();
+
+        // Assert
+        this.mockUnsubscriber.Verify(m => m.Dispose());
+    }
+    #endregion
+
+    #region Prop Tests
     [Fact]
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
@@ -71,12 +121,11 @@ public class RectBatchingServiceTests
         var service = CreateService();
 
         // Act
-        service.BatchItems = batchItems.ToReadOnlyDictionary();
+        service.BatchItems = batchItems.ToReadOnlyCollection();
         var actual = service.BatchItems;
 
         // Assert
-        AssertExtensions.ItemsEqual(expected.Keys.ToArray(), actual.Keys.ToArray());
-        AssertExtensions.ItemsEqual(expected.Values.ToArray(), actual.Values.ToArray());
+        AssertExtensions.ItemsEqual(expected.Values.ToArray(), actual.ToArray());
     }
     #endregion
 
@@ -85,26 +134,32 @@ public class RectBatchingServiceTests
     public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
     {
         // Arrange
-        var batchItem1 = default(RectShape);
-        var batchItem2 = default(RectShape);
+        var batchItem1 = new RectShape
+        {
+            Width = 10,
+            Height = 20,
+        };
+        var batchItem2 = new RectShape
+        {
+            Width = 30,
+            Height = 40,
+        };
 
         var service = CreateService();
-        service.BatchSize = 1;
+        this.reactor.OnNext(new BatchSizeData(1u));
         service.Add(batchItem1);
 
         // Act & Assert
         Assert.Raises<EventArgs>(e =>
         {
-            service.BatchFilled += e;
+            service.ReadyForRendering += e;
         }, e =>
         {
-            service.BatchFilled -= e;
+            service.ReadyForRendering -= e;
         }, () =>
         {
             service.Add(batchItem2);
         });
-
-        Assert.Equal(2, service.BatchItems.Count);
     }
 
     [Fact]
@@ -115,8 +170,9 @@ public class RectBatchingServiceTests
         var batchItem2 = default(RectShape);
 
         var service = CreateService();
-        service.BatchSize = 2;
-        service.AddRange(new[] { batchItem1, batchItem2 });
+        this.reactor.OnNext(new BatchSizeData(2u));
+        service.Add(batchItem1);
+        service.Add(batchItem2);
 
         // Act
         service.EmptyBatch();
@@ -133,8 +189,8 @@ public class RectBatchingServiceTests
         var batchItem2 = default(RectShape);
 
         var service = CreateService();
-        service.BatchSize = 2;
-        service.BatchItems = new List<(bool, RectShape)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyDictionary();
+        this.reactor.OnNext(new BatchSizeData(2u));
+        service.BatchItems = new List<(bool, RectShape)> { (false, batchItem1), (false, batchItem2) }.ToReadOnlyCollection();
 
         // Act
         service.EmptyBatch();
@@ -149,5 +205,5 @@ public class RectBatchingServiceTests
     /// Creates a new instance of <see cref="RectBatchingService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private static RectBatchingService CreateService() => new ();
+    private RectBatchingService CreateService() => new (this.mockBatchSizeReactable.Object);
 }
