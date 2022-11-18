@@ -1172,6 +1172,21 @@ public class InternalExtensionMethodsTests
         Assert.Equal(2, totalInvokes);
         Assert.Empty(queue);
     }
+
+    [Theory]
+    [InlineData(3, 2)]
+    [InlineData(40, -1)]
+    public void IndexOf_WhenInvoked_ReturnsCorrectResult(int value, int expected)
+    {
+        // Arrange
+        var items = new[] { 1, 2, 3, 4 };
+
+        // Act
+        var actual = items.IndexOf(i => i == value);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
     #endregion
 
     /// <summary>

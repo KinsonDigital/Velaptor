@@ -1246,4 +1246,30 @@ internal static class InternalExtensionMethods
             currentIteration += 1;
         }
     }
+
+    /// <summary>
+    /// Gets the index of the first item that given <paramref name="predicate"/> returns true on.
+    /// </summary>
+    /// <param name="items">The items to search.</param>
+    /// <param name="predicate">The predicate to execute for each item.</param>
+    /// <typeparam name="T">The type of items.</typeparam>
+    /// <returns>
+    /// The positive index location of the item or <c>-1</c> if the item is not found.
+    /// </returns>
+    public static int IndexOf<T>(this IEnumerable<T> items, Predicate<T> predicate)
+    {
+        var index = -1;
+
+        foreach (T item in items)
+        {
+            index++;
+
+            if (predicate(item))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
 }
