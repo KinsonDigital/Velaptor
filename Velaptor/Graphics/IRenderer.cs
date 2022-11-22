@@ -1,4 +1,4 @@
-// <copyright file="IRenderer.cs" company="KinsonDigital">
+﻿// <copyright file="IRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -292,11 +292,13 @@ public interface IRenderer
     /// <param name="text">The text to render.</param>
     /// <param name="x">The X coordinate location to render the text.</param>
     /// <param name="y">The Y coordinate location to render the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, int x, int y);
+    void Render(IFont font, string text, int x, int y, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -305,11 +307,13 @@ public interface IRenderer
     /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
     /// <param name="text">The text to render.</param>
     /// <param name="position">The position to render the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position);
+    void Render(IFont font, string text, Vector2 position, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -321,6 +325,8 @@ public interface IRenderer
     /// <param name="y">The Y coordinate location to render the text.</param>
     /// <param name="renderSize">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     /// <para>
     ///     The position is based on the center of the text.  The center of the text is based on the
@@ -332,7 +338,7 @@ public interface IRenderer
     ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
     /// </para>
     /// </remarks>
-    void Render(IFont font, string text, int x, int y, float renderSize, float angle);
+    void Render(IFont font, string text, int x, int y, float renderSize, float angle, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -343,6 +349,8 @@ public interface IRenderer
     /// <param name="position">The position to render the text.</param>
     /// <param name="size">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     /// <para>
     ///     The position is based on the center of the text.  The center of the text is based on the
@@ -354,7 +362,7 @@ public interface IRenderer
     ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
     /// </para>
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position, float size, float angle);
+    void Render(IFont font, string text, Vector2 position, float size, float angle, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -366,6 +374,8 @@ public interface IRenderer
     /// <param name="x">The X coordinate location to render the text.</param>
     /// <param name="y">The Y coordinate location to render the text.</param>
     /// <param name="color">The color of the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     /// <para>
     ///     The position is based on the center of the text.  The center of the text is based on the
@@ -377,7 +387,7 @@ public interface IRenderer
     ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
     /// </para>
     /// </remarks>
-    void Render(IFont font, string text, int x, int y, Color color);
+    void Render(IFont font, string text, int x, int y, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -387,11 +397,13 @@ public interface IRenderer
     /// <param name="text">The text to render.</param>
     /// <param name="position">The position to render the text.</param>
     /// <param name="color">The color of the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position, Color color);
+    void Render(IFont font, string text, Vector2 position, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -402,11 +414,13 @@ public interface IRenderer
     /// <param name="position">The position to render the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color of the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position, float angle, Color color);
+    void Render(IFont font, string text, Vector2 position, float angle, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -419,11 +433,12 @@ public interface IRenderer
     /// <param name="y">The Y coordinate location to render the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color to apply to the rendering.</param>
+    /// <param name="layer">The layer to render the text.</param>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, int x, int y, float angle, Color color);
+    void Render(IFont font, string text, int x, int y, float angle, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -437,6 +452,8 @@ public interface IRenderer
     /// <param name="renderSize">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color to apply to the rendering.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     /// <para>
     ///     The position is based on the center of the text.  The center of the text is based on the
@@ -448,7 +465,7 @@ public interface IRenderer
     ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
     /// </para>
     /// </remarks>
-    void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color);
+    void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="rectangle"/>.

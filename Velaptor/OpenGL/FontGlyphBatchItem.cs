@@ -64,6 +64,11 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     public uint TextureId;
 
     /// <summary>
+    /// The layer that the shape will be rendered on.
+    /// </summary>
+    public int Layer;
+
+    /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
     /// </summary>
     /// <param name="left">The left operand compared with the right operand.</param>
@@ -85,13 +90,14 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
         this.TextureId == 0 &&
+        this.Size == 0f &&
+        this.Angle == 0f &&
+        this.Layer == 0 &&
+        this.Effects is 0 or RenderEffects.None &&
         this.Glyph == '\0' &&
         this.SrcRect.IsEmpty &&
         this.DestRect.IsEmpty &&
-        this.Size == 0f &&
-        this.Angle == 0f &&
         this.TintColor.IsEmpty &&
-        this.Effects is 0 or RenderEffects.None &&
         this.ViewPortSize.IsEmpty;
 
     /// <summary>
@@ -108,6 +114,7 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         this.TintColor = default;
         this.Effects = RenderEffects.None;
         this.ViewPortSize = default;
+        this.Layer = 0;
     }
 
     /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
@@ -120,7 +127,8 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         this.Effects == other.Effects &&
         this.ViewPortSize.Equals(other.ViewPortSize) &&
         this.TextureId == other.TextureId &&
-        this.Glyph == other.Glyph;
+        this.Glyph == other.Glyph &&
+        this.Layer == other.Layer;
 
     /// <inheritdoc cref="object.Equals(object?)"/>
     public override bool Equals(object? obj) => obj is FontGlyphBatchItem other && Equals(other);
@@ -138,7 +146,8 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
                 (int)this.Effects,
                 this.ViewPortSize,
                 this.TextureId),
-            this.Glyph);
+            this.Glyph,
+            this.Layer);
 
     /// <inheritdoc/>
     public override string ToString()
@@ -156,6 +165,7 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
         result.AppendLine($"Texture ID: {this.TextureId.ToString()}");
         result.Append($"Glyph: {this.Glyph}");
+        result.Append($"Layer: {this.Layer}");
 
         return result.ToString();
     }

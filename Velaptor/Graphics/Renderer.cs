@@ -242,36 +242,36 @@ internal sealed class Renderer : IRenderer
     }
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y)
-        => Render(font, text, x, y, 1f, 0f, Color.White);
+    public void Render(IFont font, string text, int x, int y, int layer = 0)
+        => Render(font, text, x, y, 1f, 0f, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, Vector2 position)
-        => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White);
+    public void Render(IFont font, string text, Vector2 position, int layer = 0)
+        => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y, float renderSize, float angle)
-        => Render(font, text, x, y, renderSize, angle, Color.White);
+    public void Render(IFont font, string text, int x, int y, float renderSize, float angle, int layer = 0)
+        => Render(font, text, x, y, renderSize, angle, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, Vector2 position, float renderSize, float angle)
-        => Render(font, text, (int)position.X, (int)position.Y, renderSize, angle, Color.White);
+    public void Render(IFont font, string text, Vector2 position, float renderSize, float angle, int layer = 0)
+        => Render(font, text, (int)position.X, (int)position.Y, renderSize, angle, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y, Color color)
-        => Render(font, text, x, y, 1f, 0f, color);
+    public void Render(IFont font, string text, int x, int y, Color color, int layer = 0)
+        => Render(font, text, x, y, 1f, 0f, color, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, Vector2 position, Color color)
-        => Render(font, text, (int)position.X, (int)position.Y, 0f, 0f, color);
+    public void Render(IFont font, string text, Vector2 position, Color color, int layer = 0)
+        => Render(font, text, (int)position.X, (int)position.Y, 0f, 0f, color, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y, float angle, Color color)
-        => Render(font, text, x, y, 1f, angle, color);
+    public void Render(IFont font, string text, int x, int y, float angle, Color color, int layer = 0)
+        => Render(font, text, x, y, 1f, angle, color, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, Vector2 position, float angle, Color color)
-        => Render(font, text, (int)position.X, (int)position.Y, 1f, angle, color);
+    public void Render(IFont font, string text, Vector2 position, float angle, Color color, int layer = 0)
+        => Render(font, text, (int)position.X, (int)position.Y, 1f, angle, color, layer);
 
     /// <inheritdoc/>
     /// <exception cref="InvalidOperationException">
@@ -281,7 +281,7 @@ internal sealed class Renderer : IRenderer
     ///     If <paramref name="font"/> is null, nothing will be rendered.
     ///     <para>A null reference exception will not be thrown.</para>
     /// </remarks>
-    public void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color)
+    public void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color, int layer = 0)
     {
         if (font is null)
         {
@@ -361,7 +361,8 @@ internal sealed class Renderer : IRenderer
                 angle,
                 color,
                 atlasWidth,
-                atlasHeight);
+                atlasHeight,
+                layer);
 
             foreach (var item in batchItems)
             {
@@ -489,8 +490,6 @@ internal sealed class Renderer : IRenderer
     /// </summary>
     private void FontGlyphBatchService_BatchReadyForRendering(object? sender, EventArgs e)
     {
-        var fontTextureIsBound = false;
-
         if (this.batchServiceManager.FontGlyphBatchItems.Count <= 0)
         {
             this.openGLService.BeginGroup("Render Text Process - Nothing To Render");
@@ -504,39 +503,47 @@ internal sealed class Renderer : IRenderer
         this.shaderManager.Use(ShaderType.Font);
 
         var totalItemsToRender = 0u;
+        var gpuDataIndex = -1;
 
         for (var i = 0u; i < this.batchServiceManager.FontGlyphBatchItems.Count; i++)
         {
-            var batchItem = this.batchServiceManager.FontGlyphBatchItems[(int)i];
-
-            if (batchItem.IsEmpty())
+            if (this.batchServiceManager.FontGlyphBatchItems[(int)i].IsEmpty())
             {
                 continue;
             }
 
+            var batchItem = this.batchServiceManager.FontGlyphBatchItems[(int)i];
+
             this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
 
-            if (!fontTextureIsBound)
+            var isLastItem = i >= this.batchServiceManager.FontGlyphBatchItems.Count - 1;
+            var shouldRender = isLastItem ||
+                               this.batchServiceManager.FontGlyphBatchItems[(int)(i + 1)].TextureId != batchItem.TextureId;
+
+            gpuDataIndex++;
+            totalItemsToRender++;
+            this.bufferManager.UploadFontGlyphData(batchItem, (uint)gpuDataIndex);
+
+            this.openGLService.EndGroup();
+
+            if (shouldRender)
             {
                 this.openGLService.BindTexture2D(batchItem.TextureId);
-                fontTextureIsBound = true;
+
+                // Only render the amount of elements for the amount of batch items to render.
+                // 6 = the number of vertices per quad and each batch item is a quad. totalItemsToRender is the total quads to render
+                if (totalItemsToRender > 0)
+                {
+                    var totalElements = 6u * totalItemsToRender;
+
+                    this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
+                    this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                    this.openGLService.EndGroup();
+
+                    totalItemsToRender = 0;
+                    gpuDataIndex = -1;
+                }
             }
-
-            this.bufferManager.UploadFontGlyphData(batchItem, i);
-            totalItemsToRender += 1;
-
-            this.openGLService.EndGroup();
-        }
-
-        // Only render the amount of elements for the amount of batch items to render.
-        // 6 = the number of vertices per quad and each batch is a quad. totalItemsToRender is the total quads to render
-        if (totalItemsToRender > 0)
-        {
-            var totalElements = 6u * totalItemsToRender;
-
-            this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
-            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-            this.openGLService.EndGroup();
         }
 
         // Empty the batch
@@ -611,6 +618,7 @@ internal sealed class Renderer : IRenderer
     /// <param name="color">The color of the text.</param>
     /// <param name="atlasWidth">The width of the font texture atlas.</param>
     /// <param name="atlasHeight">The height of the font texture atlas.</param>
+    /// <param name="layer">The layer to render the text.</param>
     /// <returns>The list of glyphs that make up the string as font batch items.</returns>
     private IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
         Vector2 textPos,
@@ -621,7 +629,8 @@ internal sealed class Renderer : IRenderer
         float angle,
         Color color,
         float atlasWidth,
-        float atlasHeight)
+        float atlasHeight,
+        int layer)
     {
         var result = new List<FontGlyphBatchItem>();
 
@@ -672,6 +681,7 @@ internal sealed class Renderer : IRenderer
                 itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
                 itemToAdd.Effects = RenderEffects.None;
                 itemToAdd.TextureId = font.FontTextureAtlas.Id;
+                itemToAdd.Layer = layer;
 
                 result.Add(itemToAdd);
             }

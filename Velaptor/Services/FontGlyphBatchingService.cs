@@ -1,4 +1,4 @@
-﻿// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
+// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,13 +19,11 @@ namespace Velaptor.Services;
 internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
 {
     private readonly IDisposable unsubscriber;
+    private readonly FontGlyphBatchItemComparer itemComparer = new ();
     private FontGlyphBatchItem[] batchItems = null!;
 #if DEBUG
     private uint currentFrame;
 #endif
-    private bool firstTimeRender = true;
-    private uint currentTextureId;
-    private uint previousTextureId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGlyphBatchingService"/> class.
@@ -66,26 +64,22 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
     /// <param name="item">The item to be added.</param>
     public void Add(FontGlyphBatchItem item)
     {
-        this.currentTextureId = item.TextureId;
-        var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
-                                 && this.firstTimeRender is false;
-
         var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
-        if (hasSwitchedTexture || batchIsFull)
+        if (batchIsFull)
         {
             this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
 
-        if (emptyItemIndex != -1)
+        if (emptyItemIndex == -1)
         {
-            this.batchItems[emptyItemIndex] = item;
+            return;
         }
 
-        this.previousTextureId = this.currentTextureId;
-        this.firstTimeRender = false;
+        this.batchItems[emptyItemIndex] = item;
+        Array.Sort(this.batchItems, this.itemComparer);
     }
 
     /// <summary>
