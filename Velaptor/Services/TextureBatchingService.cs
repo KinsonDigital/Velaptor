@@ -20,10 +20,8 @@ namespace Velaptor.Services;
 internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem>
 {
     private readonly IDisposable unsubscriber;
+    private readonly TextureBatchItemComparer itemComparer = new ();
     private TextureBatchItem[] batchItems = null!;
-    private bool firstTimeRender = true;
-    private uint currentTextureId;
-    private uint previousTextureId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureBatchingService"/> class.
@@ -73,26 +71,22 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
     /// <param name="item">The item to be added.</param>
     public void Add(TextureBatchItem item)
     {
-        this.currentTextureId = item.TextureId;
-
-        var hasSwitchedTexture = this.currentTextureId != this.previousTextureId
-                                 && this.firstTimeRender is false;
         var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
-        if (hasSwitchedTexture || batchIsFull)
+        if (batchIsFull)
         {
             this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
         }
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
 
-        if (emptyItemIndex != -1)
+        if (emptyItemIndex == -1)
         {
-            this.batchItems[emptyItemIndex] = item;
+            return;
         }
 
-        this.previousTextureId = this.currentTextureId;
-        this.firstTimeRender = false;
+        this.batchItems[emptyItemIndex] = item;
+        Array.Sort(this.batchItems, this.itemComparer);
     }
 
     /// <summary>
@@ -116,7 +110,5 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
 
             this.batchItems[i] = itemToEmpty;
         }
-
-        this.previousTextureId = 0u;
     }
 }

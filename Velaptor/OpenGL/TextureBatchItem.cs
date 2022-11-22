@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureBatchItem.cs" company="KinsonDigital">
+// <copyright file="TextureBatchItem.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -59,6 +59,11 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
     public uint TextureId;
 
     /// <summary>
+    /// The layer that the shape will be rendered on.
+    /// </summary>
+    public int Layer;
+
+    /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
     /// </summary>
     /// <param name="left">The left operand compared with the right operand.</param>
@@ -80,12 +85,13 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
         this.TextureId == 0 &&
-        this.SrcRect.IsEmpty &&
-        this.DestRect.IsEmpty &&
         this.Size == 0f &&
         this.Angle == 0f &&
-        this.TintColor.IsEmpty &&
         this.Effects is 0 or RenderEffects.None &&
+        this.Layer == 0 &&
+        this.SrcRect.IsEmpty &&
+        this.DestRect.IsEmpty &&
+        this.TintColor.IsEmpty &&
         this.ViewPortSize.IsEmpty;
 
     /// <summary>
@@ -101,6 +107,7 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
         this.TintColor = default;
         this.Effects = RenderEffects.None;
         this.ViewPortSize = default;
+        this.Layer = 0;
     }
 
     /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
@@ -112,7 +119,8 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
         this.TintColor.Equals(other.TintColor) &&
         this.Effects == other.Effects &&
         this.ViewPortSize.Equals(other.ViewPortSize) &&
-        this.TextureId == other.TextureId;
+        this.TextureId == other.TextureId &&
+        this.Layer == other.Layer;
 
     /// <inheritdoc cref="object.Equals(object?)"/>
     public override bool Equals(object? obj) => obj is TextureBatchItem other && Equals(other);
@@ -121,6 +129,7 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
     [ExcludeFromCodeCoverage]
     public override int GetHashCode()
         => HashCode.Combine(
+            HashCode.Combine(
             this.SrcRect,
             this.DestRect,
             this.Size,
@@ -128,7 +137,8 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
             this.TintColor,
             (int)this.Effects,
             this.ViewPortSize,
-            this.TextureId);
+            this.TextureId),
+            this.Layer);
 
     /// <inheritdoc/>
     public override string ToString()
@@ -145,6 +155,7 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
         result.AppendLine($"Effects: {this.Effects.ToString()}");
         result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
         result.Append($"Texture ID: {this.TextureId.ToString()}");
+        result.Append($"Layer: {this.Layer}");
 
         return result.ToString();
     }

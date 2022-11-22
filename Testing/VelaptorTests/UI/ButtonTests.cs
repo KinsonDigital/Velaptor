@@ -405,7 +405,8 @@ public class ButtonTests
             m.Render(It.IsAny<ITexture>(),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
-                It.IsAny<Color>()), Times.Never);
+                It.IsAny<Color>(),
+                It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -425,7 +426,8 @@ public class ButtonTests
             m.Render(It.IsAny<ITexture>(),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
-                It.IsAny<Color>()), Times.Never);
+                It.IsAny<Color>(),
+                It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -455,7 +457,8 @@ public class ButtonTests
             m.Render(It.IsAny<ITexture>(),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
-                It.IsAny<Color>()), Times.Never);
+                It.IsAny<Color>(),
+                It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
