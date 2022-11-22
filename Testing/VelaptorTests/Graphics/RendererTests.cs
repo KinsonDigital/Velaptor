@@ -86,7 +86,7 @@ public class RendererTests
         this.mockBatchServiceManager.SetupGet(p => p.FontGlyphBatchItems)
             .Returns(Array.Empty<FontGlyphBatchItem>().ToReadOnlyCollection());
         this.mockBatchServiceManager.SetupGet(p => p.RectBatchItems)
-            .Returns(Array.Empty<RectShape>().ToReadOnlyCollection());
+            .Returns(Array.Empty<RectBatchItem>().ToReadOnlyCollection());
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
@@ -679,7 +679,6 @@ public class RendererTests
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
-        this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
         this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
         this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(shouldRenderItem, batchIndex));
         this.mockBufferManager.VerifyNever(m => m.UploadTextureData(shouldNotRenderItem, batchIndex));
@@ -1305,7 +1304,7 @@ public class RendererTests
         this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
         this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
         this.mockBufferManager.VerifyNever(m =>
-            m.UploadRectData(It.IsAny<RectShape>(), It.IsAny<uint>()));
+            m.UploadRectData(It.IsAny<RectBatchItem>(), It.IsAny<uint>()));
         this.mockGLService.VerifyNever(m =>
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
         this.mockGL.VerifyNever(m => m.DrawElements(
@@ -1320,7 +1319,21 @@ public class RendererTests
     public void RenderRectangle_WhenInvoked_AddsRectToBatch()
     {
         // Arrange
-        var expected = new RectShape
+        var rect = new RectShape
+        {
+            Position = new Vector2(11, 22),
+            Width = 33u,
+            Height = 44u,
+            IsFilled = true,
+            BorderThickness = 0,
+            CornerRadius = CornerRadius.Empty(),
+            Color = Color.White,
+            GradientType = ColorGradient.None,
+            GradientStart = Color.Magenta,
+            GradientStop = Color.Magenta,
+        };
+
+        var expected = new RectBatchItem
         {
             Position = new Vector2(11, 22),
             Width = 33u,
@@ -1337,7 +1350,7 @@ public class RendererTests
         var sut = CreateSystemUnderTest();
 
         // Act
-        sut.Render(expected);
+        sut.Render(rect);
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.AddRectBatchItem(expected), Times.Once);
@@ -1349,23 +1362,33 @@ public class RendererTests
         // Arrange
         const uint batchIndex = 0;
 
-        var shouldRenderItem = default(RectShape);
-        shouldRenderItem.Position = new Vector2(1, 2);
-        shouldRenderItem.Width = 3;
-        shouldRenderItem.Height = 4;
-        shouldRenderItem.BorderThickness = 5;
-        shouldRenderItem.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
-        shouldRenderItem.GradientStart = Color.FromArgb(11, 22, 33, 44);
-        shouldRenderItem.GradientStop = Color.FromArgb(55, 66, 77, 88);
-        shouldRenderItem.GradientType = ColorGradient.Horizontal;
+        var rect = default(RectShape);
+        rect.Position = new Vector2(1, 2);
+        rect.Width = 3;
+        rect.Height = 4;
+        rect.BorderThickness = 5;
+        rect.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
+        rect.GradientStart = Color.FromArgb(11, 22, 33, 44);
+        rect.GradientStop = Color.FromArgb(55, 66, 77, 88);
+        rect.GradientType = ColorGradient.Horizontal;
 
-        var shouldNotRenderEmptyItem = default(RectShape);
+        var batchItem = default(RectBatchItem);
+        batchItem.Position = new Vector2(1, 2);
+        batchItem.Width = 3;
+        batchItem.Height = 4;
+        batchItem.BorderThickness = 5;
+        batchItem.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
+        batchItem.GradientStart = Color.FromArgb(11, 22, 33, 44);
+        batchItem.GradientStop = Color.FromArgb(55, 66, 77, 88);
+        batchItem.GradientType = ColorGradient.Horizontal;
 
-        var items = new[] { shouldRenderItem, shouldNotRenderEmptyItem };
+        var shouldNotRenderEmptyItem = default(RectBatchItem);
+
+        var items = new[] { batchItem, shouldNotRenderEmptyItem };
 
         var sut = CreateSystemUnderTest();
-        this.mockBatchServiceManager.Setup(m => m.AddRectBatchItem(It.IsAny<RectShape>()))
-            .Callback<RectShape>(_ =>
+        this.mockBatchServiceManager.Setup(m => m.AddRectBatchItem(It.IsAny<RectBatchItem>()))
+            .Callback<RectBatchItem>(_ =>
             {
                 MockRectBatchItems(items);
                 this.mockBatchServiceManager.Raise(m => m.RectBatchReadyForRendering += null, EventArgs.Empty);
@@ -1374,13 +1397,13 @@ public class RendererTests
 
         // Act
         sut.Begin();
-        sut.Render(shouldRenderItem);
+        sut.Render(rect);
 
         // Assert
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
         this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
-        this.mockBufferManager.VerifyOnce(m => m.UploadRectData(shouldRenderItem, batchIndex));
+        this.mockBufferManager.VerifyOnce(m => m.UploadRectData(batchItem, batchIndex));
         this.mockBufferManager.VerifyNever(m => m.UploadRectData(shouldNotRenderEmptyItem, batchIndex));
         this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Rectangle), Times.Once);
     }
@@ -1567,7 +1590,7 @@ public class RendererTests
     /// Mocks the <see cref="BatchServiceManager.RectBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
     /// </summary>
     /// <param name="items">The items to store in the service.</param>
-    private void MockRectBatchItems(RectShape[] items)
+    private void MockRectBatchItems(RectBatchItem[] items)
     {
         this.mockBatchServiceManager.SetupProperty(p => p.RectBatchItems);
         this.mockBatchServiceManager.Object.RectBatchItems = items.ToReadOnlyCollection();

@@ -21,7 +21,7 @@ namespace Velaptor.OpenGL.Buffers;
 /// </summary>
 [GPUBufferName("Rectangle")]
 [BatchSize(IRenderer.BatchSize)]
-internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
+internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
 {
     private const string BufferNotInitMsg = "The rectangle buffer has not been initialized.";
 
@@ -42,7 +42,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     }
 
     /// <inheritdoc/>
-    protected internal override void UploadVertexData(RectShape rectShape, uint batchIndex)
+    protected internal override void UploadVertexData(RectBatchItem rectShape, uint batchIndex)
     {
         OpenGLService.BeginGroup($"Update Rectangle - BatchItem({batchIndex})");
 
@@ -271,7 +271,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     ///     Thrown if the <see cref="ColorGradient"/> of the given <paramref name="rect"/>
     ///     is an invalid value.
     /// </exception>
-    private static RectGPUData ApplyColor(RectGPUData data, RectShape rect)
+    private static RectGPUData ApplyColor(RectGPUData data, RectBatchItem rect)
     {
         switch (rect.GradientType)
         {
@@ -304,7 +304,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     /// <remarks>
     ///     This is done to prevent any undesired rendering artifacts from occuring.
     /// </remarks>
-    private static RectShape ProcessBorderThicknessLimit(RectShape rect)
+    private static RectBatchItem ProcessBorderThicknessLimit(RectBatchItem rect)
     {
         var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
 
@@ -326,7 +326,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     /// <remarks>
     ///     This is done to prevent any undesired rendering artifacts from occuring.
     /// </remarks>
-    private static RectShape ProcessCornerRadiusLimits(RectShape rect)
+    private static RectBatchItem ProcessCornerRadiusLimits(RectBatchItem rect)
     {
         /*
              * Always have the smallest value between the width and height (divided by 2)

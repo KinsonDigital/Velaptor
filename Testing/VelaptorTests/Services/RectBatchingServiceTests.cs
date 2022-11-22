@@ -11,6 +11,7 @@ using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Graphics;
+using Velaptor.OpenGL;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
@@ -87,7 +88,7 @@ public class RectBatchingServiceTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = new RectShape
+        var batchItem1 = new RectBatchItem
         {
             Position = new Vector2(1f, 2f),
             Width = 3f,
@@ -100,7 +101,7 @@ public class RectBatchingServiceTests
             GradientStart = Color.FromArgb(14, 15, 16, 17),
             GradientStop = Color.FromArgb(18, 19, 20, 21),
         };
-        var batchItem2 = new RectShape
+        var batchItem2 = new RectBatchItem
         {
             Position = new Vector2(22f, 23f),
             Width = 24f,
@@ -114,8 +115,8 @@ public class RectBatchingServiceTests
             GradientStop = Color.FromArgb(39, 40, 41, 42),
         };
 
-        var batchItems = new List<RectShape> { batchItem1, batchItem2 };
-        var expected = new ReadOnlyCollection<RectShape>(batchItems.ToReadOnlyCollection());
+        var batchItems = new List<RectBatchItem> { batchItem1, batchItem2 };
+        var expected = new ReadOnlyCollection<RectBatchItem>(batchItems.ToReadOnlyCollection());
         var service = CreateService();
 
         // Act
@@ -132,12 +133,12 @@ public class RectBatchingServiceTests
     public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
     {
         // Arrange
-        var batchItem1 = new RectShape
+        var batchItem1 = new RectBatchItem
         {
             Width = 10,
             Height = 20,
         };
-        var batchItem2 = new RectShape
+        var batchItem2 = new RectBatchItem
         {
             Width = 30,
             Height = 40,
@@ -164,8 +165,8 @@ public class RectBatchingServiceTests
     public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
     {
         // Arrange
-        var batchItem1 = new RectShape() { Width = 10 };
-        var batchItem2 = new RectShape() { Width = 20 };
+        var batchItem1 = new RectBatchItem() { Width = 10 };
+        var batchItem2 = new RectBatchItem() { Width = 20 };
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(2u));
@@ -183,12 +184,12 @@ public class RectBatchingServiceTests
     public void EmptyBatch_WithNoItemsReadyToRender_DoesNotEmptyItems()
     {
         // Arrange
-        var batchItem1 = default(RectShape);
-        var batchItem2 = default(RectShape);
+        var batchItem1 = default(RectBatchItem);
+        var batchItem2 = default(RectBatchItem);
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(2u));
-        service.BatchItems = new List<RectShape> { batchItem1, batchItem2 }.ToReadOnlyCollection();
+        service.BatchItems = new List<RectBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
         service.EmptyBatch();

@@ -11,7 +11,6 @@ using Velaptor.Content.Caching;
 using Velaptor.Content.Factories;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.Factories;
-using Velaptor.Graphics;
 using Velaptor.Input;
 using Velaptor.NativeInterop.FreeType;
 using Velaptor.NativeInterop.GLFW;
@@ -162,7 +161,7 @@ internal static class IoC
         IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<TextureBatchItem>, TextureBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<FontGlyphBatchItem>, FontGlyphBatchingService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingService<RectShape>, RectBatchingService>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchingService<RectBatchItem>, RectBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchServiceManager, BatchServiceManager>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(

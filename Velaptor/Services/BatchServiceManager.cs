@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using Velaptor.Graphics;
 using Velaptor.Guards;
 using Velaptor.OpenGL;
 
@@ -15,7 +14,7 @@ internal sealed class BatchServiceManager : IBatchServiceManager
 {
     private readonly IBatchingService<TextureBatchItem> textureBatchingService;
     private readonly IBatchingService<FontGlyphBatchItem> fontGlyphBatchingService;
-    private readonly IBatchingService<RectShape> rectBatchingService;
+    private readonly IBatchingService<RectBatchItem> rectBatchingService;
     private bool disposed;
 
     /// <summary>
@@ -27,7 +26,7 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     public BatchServiceManager(
         IBatchingService<TextureBatchItem> textureBatchingService,
         IBatchingService<FontGlyphBatchItem> fontGlyphBatchingService,
-        IBatchingService<RectShape> rectBatchingService)
+        IBatchingService<RectBatchItem> rectBatchingService)
     {
         EnsureThat.ParamIsNotNull(textureBatchingService);
         EnsureThat.ParamIsNotNull(fontGlyphBatchingService);
@@ -67,7 +66,7 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     }
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<RectShape> RectBatchItems
+    public ReadOnlyCollection<RectBatchItem> RectBatchItems
     {
         get => this.rectBatchingService.BatchItems;
         set => this.rectBatchingService.BatchItems = value;
@@ -80,7 +79,7 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     public void AddFontGlyphBatchItem(FontGlyphBatchItem batchItem) => this.fontGlyphBatchingService.Add(batchItem);
 
     /// <inheritdoc/>
-    public void AddRectBatchItem(RectShape batchItem) => this.rectBatchingService.Add(batchItem);
+    public void AddRectBatchItem(RectBatchItem batchItem) => this.rectBatchingService.Add(batchItem);
 
     /// <inheritdoc/>
     public void EmptyBatch(BatchServiceType serviceType)

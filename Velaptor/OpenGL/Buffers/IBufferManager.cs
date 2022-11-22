@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace Velaptor.OpenGL.Buffers;
 
 /// <summary>
@@ -58,5 +56,5 @@ internal interface IBufferManager
     ///     being laid out like an array of data, this would be the location
     ///     of the 'chunk' of <paramref name="data"/> in the array.
     /// </remarks>
-    void UploadRectData(RectShape data, uint batchIndex);
+    void UploadRectData(RectBatchItem data, uint batchIndex);
 }

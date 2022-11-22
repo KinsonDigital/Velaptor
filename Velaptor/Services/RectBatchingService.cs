@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Velaptor.Graphics;
 using Velaptor.Guards;
+using Velaptor.OpenGL;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 
@@ -16,10 +16,11 @@ namespace Velaptor.Services;
 /// <summary>
 /// Manages the process of batching the rendering of rectangles.
 /// </summary>
-internal sealed class RectBatchingService : IBatchingService<RectShape>
+internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
 {
     private readonly IDisposable unsubscriber;
     private RectShape[] batchItems = null!;
+    private RectBatchItem[] batchItems = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBatchingService"/> class.
@@ -32,7 +33,7 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
         this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
             onNext: data =>
             {
-                var items = new List<RectShape>();
+                var items = new List<RectBatchItem>();
 
                 for (var i = 0u; i < data.BatchSize; i++)
                 {
@@ -48,7 +49,7 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
     public event EventHandler<EventArgs>? ReadyForRendering;
 
     /// <inheritdoc/>
-    public ReadOnlyCollection<RectShape> BatchItems
+    public ReadOnlyCollection<RectBatchItem> BatchItems
     {
         get => new (this.batchItems);
         set => this.batchItems = value.ToArray();
@@ -58,7 +59,7 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
     /// Adds the given <paramref name="rect"/> to the batch.
     /// </summary>
     /// <param name="rect">The item to be added.</param>
-    public void Add(RectShape rect)
+    public void Add(RectBatchItem rect)
     {
         var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
@@ -91,8 +92,8 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
             }
 
             // TODO: This will probably not work anymore once the struct is readonly
-            // TODO: This is probably going to have to be a completly new item that writes over top
-            RectShape itemToEmpty = this.batchItems[i];
+            // TODO: This is probably going to have to be a completely new item that writes over top
+            RectBatchItem itemToEmpty = this.batchItems[i];
             itemToEmpty.Empty();
 
             this.batchItems[i] = itemToEmpty;

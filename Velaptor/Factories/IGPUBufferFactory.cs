@@ -2,7 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
 
@@ -38,5 +37,5 @@ internal interface IGPUBufferFactory
     /// <remarks>
     ///     The instance is a singleton.  Every call to this method will return the same instance.
     /// </remarks>
-    IGPUBuffer<RectShape> CreateRectGPUBuffer();
+    IGPUBuffer<RectBatchItem> CreateRectGPUBuffer();
 }

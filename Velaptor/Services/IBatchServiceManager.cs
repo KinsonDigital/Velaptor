@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using Velaptor.Graphics;
 using Velaptor.OpenGL;
 
 namespace Velaptor.Services;
@@ -42,7 +41,7 @@ internal interface IBatchServiceManager : IDisposable
     /// <summary>
     /// Gets or sets the list of rectangle batch items.
     /// </summary>
-    ReadOnlyCollection<RectShape> RectBatchItems { get; set; }
+    ReadOnlyCollection<RectBatchItem> RectBatchItems { get; set; }
 
     /// <summary>
     /// Adds the given texture <paramref name="batchItem"/> to the batch.
@@ -60,7 +59,7 @@ internal interface IBatchServiceManager : IDisposable
     /// Adds the given rectangle <paramref name="batchItem"/> to the batch.
     /// </summary>
     /// <param name="batchItem">The rectangle batch item to add.</param>
-    void AddRectBatchItem(RectShape batchItem);
+    void AddRectBatchItem(RectBatchItem batchItem);
 
     /// <summary>
     /// Empties the batching service that matches the given <paramref name="serviceType"/>.

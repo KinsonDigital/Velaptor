@@ -129,32 +129,6 @@ public class TextureBatchingServiceTests
 
     #region Method Tests
     [Fact]
-    public void Add_WhenSwitchingTextures_RaisesBatchFilledEvent()
-    {
-        // Arrange
-        var batchItem1 = default(TextureBatchItem);
-        batchItem1.TextureId = 10;
-        var batchItem2 = default(TextureBatchItem);
-        batchItem2.TextureId = 20;
-
-        var service = CreateService();
-        this.reactor.OnNext(new BatchSizeData(100u));
-        service.Add(batchItem1);
-
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            service.ReadyForRendering += e;
-        }, e =>
-        {
-            service.ReadyForRendering -= e;
-        }, () =>
-        {
-            service.Add(batchItem2);
-        });
-    }
-
-    [Fact]
     public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
     {
         // Arrange

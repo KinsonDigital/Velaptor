@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Moq;
-using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.Services;
 using VelaptorTests.Helpers;
@@ -22,7 +21,7 @@ public class BatchServiceManagerTests
 {
     private readonly Mock<IBatchingService<TextureBatchItem>> mockTextureBatchingService;
     private readonly Mock<IBatchingService<FontGlyphBatchItem>> mockFontGlyphBatchingService;
-    private readonly Mock<IBatchingService<RectShape>> mockRectBatchingService;
+    private readonly Mock<IBatchingService<RectBatchItem>> mockRectBatchingService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BatchServiceManagerTests"/> class.
@@ -31,7 +30,7 @@ public class BatchServiceManagerTests
     {
         this.mockTextureBatchingService = new Mock<IBatchingService<TextureBatchItem>>();
         this.mockFontGlyphBatchingService = new Mock<IBatchingService<FontGlyphBatchItem>>();
-        this.mockRectBatchingService = new Mock<IBatchingService<RectShape>>();
+        this.mockRectBatchingService = new Mock<IBatchingService<RectBatchItem>>();
     }
 
     #region Constructor Tests
@@ -44,7 +43,7 @@ public class BatchServiceManagerTests
             _ = new BatchServiceManager(
                 null,
                 new Mock<IBatchingService<FontGlyphBatchItem>>().Object,
-                new Mock<IBatchingService<RectShape>>().Object);
+                new Mock<IBatchingService<RectBatchItem>>().Object);
         }, "The parameter must not be null. (Parameter 'textureBatchingService')");
     }
 
@@ -57,7 +56,7 @@ public class BatchServiceManagerTests
             _ = new BatchServiceManager(
                 new Mock<IBatchingService<TextureBatchItem>>().Object,
                 null,
-                new Mock<IBatchingService<RectShape>>().Object);
+                new Mock<IBatchingService<RectBatchItem>>().Object);
         }, "The parameter must not be null. (Parameter 'fontGlyphBatchingService')");
     }
 
@@ -150,28 +149,28 @@ public class BatchServiceManagerTests
     public void RectBatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem = default(RectShape);
-        var batchItems = new List<RectShape>()
+        var batchItem = default(RectBatchItem);
+        var batchItems = new List<RectBatchItem>()
         {
             batchItem,
         };
-        var expected = new ReadOnlyCollection<RectShape>(batchItems);
+        var expected = new ReadOnlyCollection<RectBatchItem>(batchItems);
 
         this.mockRectBatchingService.SetupProperty(p => p.BatchItems);
 
         var manager = CreateManager();
 
         // Act
-        manager.RectBatchItems = new ReadOnlyCollection<RectShape>(batchItems);
+        manager.RectBatchItems = new ReadOnlyCollection<RectBatchItem>(batchItems);
         var actual = manager.RectBatchItems;
 
         // Assert
         this.mockRectBatchingService.VerifySet(p => p.BatchItems = expected,
             Times.Once,
-            $"The setter for property '{nameof(IBatchingService<RectShape>)}.{nameof(IBatchingService<RectShape>.BatchItems)}' was not invoked.");
+            $"The setter for property '{nameof(IBatchingService<RectBatchItem>)}.{nameof(IBatchingService<RectBatchItem>.BatchItems)}' was not invoked.");
         this.mockRectBatchingService.VerifyGet(p => p.BatchItems,
             Times.Once,
-            $"The getter for property '{nameof(IBatchingService<RectShape>)}.{nameof(IBatchingService<RectShape>.BatchItems)} was not invoked.'");
+            $"The getter for property '{nameof(IBatchingService<RectBatchItem>)}.{nameof(IBatchingService<RectBatchItem>.BatchItems)} was not invoked.'");
         Assert.Equal(expected, actual);
     }
     #endregion
@@ -243,90 +242,48 @@ public class BatchServiceManagerTests
 
         // Assert that the rectangle batching service is not used
         this.mockRectBatchingService.Verify(m =>
-            m.Add(It.IsAny<RectShape>()), Times.Never);
+            m.Add(It.IsAny<RectBatchItem>()), Times.Never);
     }
 
     [Fact]
-    public void AddTextureBatchItem_WithFullBatch_RaisesTextureBatchFilledEvent()
+    public void AddTextureBatchItem_WhenInvoked_AddsItemToTextureBatchingService()
     {
         // Arrange
         var batchItem = default(TextureBatchItem);
-        this.mockTextureBatchingService.Setup(m => m.Add(It.IsAny<TextureBatchItem>()))
-            .Callback<TextureBatchItem>((_) =>
-            {
-                this.mockTextureBatchingService.Raise(e => e.ReadyForRendering += null, EventArgs.Empty);
-            });
-
         var manager = CreateManager();
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            manager.TextureBatchReadyForRendering += e;
-        }, e =>
-        {
-            manager.TextureBatchReadyForRendering -= e;
-        }, () =>
-        {
-            manager.AddTextureBatchItem(batchItem);
-        });
+        // Act
+        manager.AddTextureBatchItem(batchItem);
 
+        // Assert
         this.mockTextureBatchingService.VerifyOnce(m => m.Add(batchItem));
     }
 
     [Fact]
-    public void AddFontGlyphBatchItem_WithFullBatch_RaisesFontGlyphBatchFilledEvent()
+    public void AddFontGlyphBatchItem_WhenInvoked_AddsItemToFontGlyphBatchingService()
     {
         // Arrange
         var batchItem = default(FontGlyphBatchItem);
-        this.mockFontGlyphBatchingService.Setup(m => m.Add(It.IsAny<FontGlyphBatchItem>()))
-            .Callback<FontGlyphBatchItem>((_) =>
-            {
-                this.mockFontGlyphBatchingService.Raise(e => e.ReadyForRendering += null, EventArgs.Empty);
-            });
-
         var manager = CreateManager();
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            manager.FontGlyphBatchReadyForRendering += e;
-        }, e =>
-        {
-            manager.FontGlyphBatchReadyForRendering -= e;
-        }, () =>
-        {
-            manager.AddFontGlyphBatchItem(batchItem);
-        });
+        // Act
+        manager.AddFontGlyphBatchItem(batchItem);
 
+        // Assert
         this.mockFontGlyphBatchingService.VerifyOnce(m => m.Add(batchItem));
     }
 
     [Fact]
-    public void AddRectBatchItem_WithFullBatch_RaisesFontGlyphBatchFilledEvent()
+    public void AddRectBatchItem_WhenInvoked_AddsItemToRectBatchingService()
     {
         // Arrange
-        var batchItem = default(RectShape);
-        this.mockRectBatchingService.Setup(m => m.Add(It.IsAny<RectShape>()))
-            .Callback<RectShape>((_) =>
-            {
-                this.mockRectBatchingService.Raise(e => e.ReadyForRendering += null, EventArgs.Empty);
-            });
-
+        var batchItem = default(RectBatchItem);
         var manager = CreateManager();
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            manager.RectBatchReadyForRendering += e;
-        }, e =>
-        {
-            manager.RectBatchReadyForRendering -= e;
-        }, () =>
-        {
-            manager.AddRectBatchItem(batchItem);
-        });
+        // Act
+        manager.AddRectBatchItem(batchItem);
 
+        // Assert
         this.mockRectBatchingService.VerifyOnce(m => m.Add(batchItem));
     }
 

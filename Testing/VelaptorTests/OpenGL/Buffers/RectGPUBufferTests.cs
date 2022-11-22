@@ -86,7 +86,7 @@ public class RectGPUBufferTests
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
-        var rect = default(RectShape);
+        var rect = default(RectBatchItem);
 
         var sut = CreateSystemUnderTest();
 
@@ -111,7 +111,7 @@ public class RectGPUBufferTests
         };
         var failMessage = string.Join("{Environment.NewLine}", executionLocations);
 
-        var rect = default(RectShape);
+        var rect = default(RectBatchItem);
 
         var sut = CreateSystemUnderTest();
 
@@ -144,7 +144,7 @@ public class RectGPUBufferTests
 
         var arrayRegions = CreateArrayRegions(16, 4);
 
-        var rect = new RectShape
+        var rect = new RectBatchItem
         {
             Position = new Vector2(1, 2),
             Width = 3,
@@ -182,7 +182,7 @@ public class RectGPUBufferTests
     public void UploadVertexData_WithInvalidColorGradientValue_ThrowsException()
     {
         // Arrange
-        var rect = new RectShape
+        var rect = new RectBatchItem
         {
             GradientType = (ColorGradient)1234,
         };
@@ -236,7 +236,7 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var rect = new RectShape
+        var rect = new RectBatchItem
         {
             Position = new Vector2(1, 2), Width = 3, Height = 4,
             Color = Color.FromArgb(5, 6, 7, 8),
@@ -299,7 +299,7 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var rect = new RectShape
+        var rect = new RectBatchItem
         {
             Position = new Vector2(1, 2), Width = 3, Height = 4,
             Color = Color.FromArgb(5, 6, 7, 8),
@@ -362,7 +362,7 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var rect = new RectShape
+        var rect = new RectBatchItem
         {
             Position = new Vector2(1, 2), Width = 3, Height = 4,
             Color = Color.FromArgb(5, 6, 7, 8),

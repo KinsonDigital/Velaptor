@@ -372,7 +372,22 @@ internal sealed class Renderer : IRenderer
     }
 
     /// <inheritdoc/>
-    public void Render(RectShape rectangle) => this.batchServiceManager.AddRectBatchItem(rectangle);
+    public void Render(RectShape rectangle)
+    {
+        var batchItem = default(RectBatchItem);
+        batchItem.BorderThickness = rectangle.BorderThickness;
+        batchItem.CornerRadius = rectangle.CornerRadius;
+        batchItem.Width = rectangle.Width;
+        batchItem.Height = rectangle.Height;
+        batchItem.Position = rectangle.Position;
+        batchItem.GradientType = rectangle.GradientType;
+        batchItem.GradientStart = rectangle.GradientStart;
+        batchItem.GradientStop = rectangle.GradientStop;
+        batchItem.Color = rectangle.Color;
+        batchItem.IsFilled = rectangle.IsFilled;
+
+        this.batchServiceManager.AddRectBatchItem(batchItem);
+    }
 
     /// <inheritdoc/>
     public void End()

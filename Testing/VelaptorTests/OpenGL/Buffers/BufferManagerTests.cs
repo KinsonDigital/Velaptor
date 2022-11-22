@@ -23,7 +23,7 @@ public class BufferManagerTests
     private readonly Mock<IGPUBufferFactory> mockBufferFactory;
     private readonly Mock<IGPUBuffer<TextureBatchItem>> mockTextureBuffer;
     private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontGlyphBuffer;
-    private readonly Mock<IGPUBuffer<RectShape>> mockRectBuffer;
+    private readonly Mock<IGPUBuffer<RectBatchItem>> mockRectBuffer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferManagerTests"/> class.
@@ -32,7 +32,7 @@ public class BufferManagerTests
     {
         this.mockTextureBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
         this.mockFontGlyphBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
-        this.mockRectBuffer = new Mock<IGPUBuffer<RectShape>>();
+        this.mockRectBuffer = new Mock<IGPUBuffer<RectBatchItem>>();
 
         this.mockBufferFactory = new Mock<IGPUBufferFactory>();
         this.mockBufferFactory.Setup(m => m.CreateTextureGPUBuffer()).Returns(this.mockTextureBuffer.Object);
@@ -136,7 +136,7 @@ public class BufferManagerTests
     public void UploadRectangleData_WhenInvoked_UploadsData()
     {
         // Arrange
-        var data = default(RectShape);
+        var data = default(RectBatchItem);
         data.Position = new Vector2(111, 222);
         data.Width = 444;
         data.Height = 555;
