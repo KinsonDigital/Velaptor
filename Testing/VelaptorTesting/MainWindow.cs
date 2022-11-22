@@ -1,4 +1,4 @@
-// <copyright file="MainWindow.cs" company="KinsonDigital">
+﻿// <copyright file="MainWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -91,6 +91,7 @@ public class MainWindow : Window
         this.sceneManager.AddScene(mouseScene);
         this.sceneManager.AddScene(keyboardScene);
         this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        this.sceneManager.AddScene(layeredRenderingScene);
         this.sceneManager.AddScene(renderAnimatedGraphicsScene);
         this.sceneManager.AddScene(soundScene);
         this.sceneManager.AddScene(rectScene);
