@@ -346,6 +346,7 @@ public class FontGlyphBatchItemTests
         expected += $"{Environment.NewLine}View Port Size: {{W=16,H=17}}";
         expected += $"{Environment.NewLine}Texture ID: 11";
         expected += $"{Environment.NewLine}Glyph: V";
+        expected += $"{Environment.NewLine}Layer: 18";
 
         var batchItem = default(FontGlyphBatchItem);
         batchItem.Angle = 1;
@@ -357,6 +358,7 @@ public class FontGlyphBatchItemTests
         batchItem.Glyph = 'V';
         batchItem.TintColor = Color.FromArgb(12, 13, 14, 15);
         batchItem.ViewPortSize = new SizeF(16, 17);
+        batchItem.Layer = 18;
 
         // Act
         var actual = batchItem.ToString();

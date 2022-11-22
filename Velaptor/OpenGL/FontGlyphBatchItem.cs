@@ -164,7 +164,7 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         result.AppendLine($"Effects: {this.Effects.ToString()}");
         result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
         result.AppendLine($"Texture ID: {this.TextureId.ToString()}");
-        result.Append($"Glyph: {this.Glyph}");
+        result.AppendLine($"Glyph: {this.Glyph}");
         result.Append($"Layer: {this.Layer}");
 
         return result.ToString();

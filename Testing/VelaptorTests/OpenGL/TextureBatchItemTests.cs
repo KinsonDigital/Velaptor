@@ -345,6 +345,7 @@ public class TextureBatchItemTests
         expected += $"{Environment.NewLine}Effects: None";
         expected += $"{Environment.NewLine}View Port Size: {{W=16,H=17}}";
         expected += $"{Environment.NewLine}Texture ID: 11";
+        expected += $"{Environment.NewLine}Layer: 18";
 
         var batchItem = default(TextureBatchItem);
         batchItem.Angle = 1;
@@ -355,6 +356,7 @@ public class TextureBatchItemTests
         batchItem.TextureId = 11;
         batchItem.TintColor = Color.FromArgb(12, 13, 14, 15);
         batchItem.ViewPortSize = new SizeF(16, 17);
+        batchItem.Layer = 18;
 
         // Act
         var actual = batchItem.ToString();

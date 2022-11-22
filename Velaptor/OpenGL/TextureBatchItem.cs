@@ -154,7 +154,7 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
             $"Tint Clr: {{A={this.TintColor.A},R={this.TintColor.R},G={this.TintColor.G},B={this.TintColor.B}}}");
         result.AppendLine($"Effects: {this.Effects.ToString()}");
         result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
-        result.Append($"Texture ID: {this.TextureId.ToString()}");
+        result.AppendLine($"Texture ID: {this.TextureId.ToString()}");
         result.Append($"Layer: {this.Layer}");
 
         return result.ToString();
