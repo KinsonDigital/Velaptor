@@ -19,12 +19,13 @@ public class LayeredTextureRenderingScene : SceneBase
 {
     private const string DefaultFont = "TimesNewRoman-Regular.ttf";
     private const float Speed = 200f;
-    private const float TopEdge = 200;
+    private const int BackgroundLayer = -50;
     private const RenderLayer OrangeLayer = RenderLayer.Two;
     private const RenderLayer BlueLayer = RenderLayer.Four;
     private readonly IAppInput<KeyboardState>? keyboard;
     private readonly int windowHalfWidth;
     private readonly int windowHalfHeight;
+    private ITexture? background;
     private IFont? font;
     private IAtlasData? atlas;
     private AtlasSubTextureData? whiteBoxData;
@@ -35,15 +36,14 @@ public class LayeredTextureRenderingScene : SceneBase
     private KeyboardState prevKeyState;
     private AtlasSubTextureData? orangeBoxData;
     private AtlasSubTextureData? blueBoxData;
-    private string instructions = string.Empty;
-    private string boxStateText = string.Empty;
+    private Vector2 boxStateTextPos;
+    private Vector2 backgroundPos;
+    private SizeF instructionTextSize;
+    private RenderLayer whiteLayer = RenderLayer.One;
     private int instructionsX;
     private int instructionsY;
-    private RenderLayer whiteLayer = RenderLayer.One;
-    private SizeF instructionTextSize;
-    private Vector2 boxStateTextPos;
-    private ITexture? background;
-    private Vector2 backgroundPos;
+    private string instructions = string.Empty;
+    private string boxStateText = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LayeredTextureRenderingScene"/> class.
@@ -66,14 +66,15 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         this.background = ContentLoader.LoadTexture("layered-rendering-background");
-        this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight + 100);
+        this.backgroundPos = new Vector2(this.windowHalfWidth, this.windowHalfHeight);
 
         this.font = ContentLoader.LoadFont(DefaultFont, 12);
         this.font.Style = FontStyle.Bold;
 
         var textLines = new[]
         {
-            "Use the arrow keys to move the white box.", "Use the 'L' key to change the layer that the white box is rendered on.",
+            "Use the arrow keys to move the white box.",
+            "Use the 'L' key to change the layer that the white box is rendered on.",
         };
 
         this.instructions = string.Join(Environment.NewLine, textLines);
@@ -139,7 +140,8 @@ public class LayeredTextureRenderingScene : SceneBase
             1f,
             0f,
             Color.White,
-            RenderEffects.None); // Neutral layer. Value is 0.
+            RenderEffects.None,
+            (int)OrangeLayer); // Neutral layer
 
         // WHITE
         renderer.Render(
@@ -152,11 +154,13 @@ public class LayeredTextureRenderingScene : SceneBase
             RenderEffects.None,
             (int)this.whiteLayer);
 
-        renderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, -50);
+        // Render the checkerboard background
+        renderer.Render(this.background, (int)this.backgroundPos.X, (int)this.backgroundPos.Y, BackgroundLayer);
 
         // Render the instructions
-        renderer.Render(this.font, this.instructions, this.instructionsX, this.instructionsY, Color.IndianRed);
+        renderer.Render(this.font, this.instructions, this.instructionsX, this.instructionsY, Color.White);
 
+        // Render the box state text
         renderer.Render(this.font, this.boxStateText, (int)this.boxStateTextPos.X, (int)this.boxStateTextPos.Y);
 
         base.Render(renderer);
@@ -170,6 +174,7 @@ public class LayeredTextureRenderingScene : SceneBase
             return;
         }
 
+        ContentLoader.UnloadTexture(this.background);
         ContentLoader.UnloadAtlas(this.atlas);
         ContentLoader.UnloadFont(this.font);
 
@@ -189,10 +194,18 @@ public class LayeredTextureRenderingScene : SceneBase
         base.Dispose(disposing);
     }
 
+    /// <summary>
+    /// Updates the text for the state of the white box.
+    /// </summary>
     private void UpdateBoxStateText()
     {
         // Render the current enabled box text
-        var textLines = new[] { $"White Box Layer: {this.whiteLayer}", $"Orange Box Layer: {OrangeLayer}", $"Blue Box Layer: {BlueLayer}", };
+        var textLines = new[]
+        {
+            $"White Box Layer: {this.whiteLayer}",
+            $"Orange Box Layer: {OrangeLayer}",
+            $"Blue Box Layer: {BlueLayer}",
+        };
         this.boxStateText = string.Join(Environment.NewLine, textLines);
 
         var boxStateTextSize = this.font.Measure(this.boxStateText);
@@ -203,10 +216,16 @@ public class LayeredTextureRenderingScene : SceneBase
             Y = this.instructionsY +
                 (int)this.instructionTextSize.Height +
                 (int)(boxStateTextSize.Height / 2) +
-                10,
+                100,
         };
     }
 
+    /// <summary>
+    /// Updates the current layer of the white box.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     Occurs if the <see cref="RenderLayer"/> is out of range.
+    /// </exception>
     private void UpdateWhiteBoxLayer()
     {
         if (this.currentKeyState.IsKeyDown(KeyCode.L) && this.prevKeyState.IsKeyUp(KeyCode.L))
@@ -221,6 +240,10 @@ public class LayeredTextureRenderingScene : SceneBase
         }
     }
 
+    /// <summary>
+    /// Moves the white box.
+    /// </summary>
+    /// <param name="frameTime">The current frame time.</param>
     private void MoveWhiteBox(FrameTime frameTime)
     {
         if (this.currentKeyState.IsKeyDown(KeyCode.Left))
@@ -259,9 +282,9 @@ public class LayeredTextureRenderingScene : SceneBase
         }
 
         // Top edge containment
-        if (this.whiteBoxPos.Y < TopEdge + halfHeight)
+        if (this.whiteBoxPos.Y < halfHeight)
         {
-            this.whiteBoxPos.Y = TopEdge + halfHeight;
+            this.whiteBoxPos.Y = halfHeight;
         }
 
         // Bottom edge containment
