@@ -471,9 +471,10 @@ public interface IRenderer
     /// Renders the given <paramref name="rectangle"/>.
     /// </summary>
     /// <param name="rectangle">The rectangle to render.</param>
+    /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The <see cref="RectShape.Position"/> is the center of the rectangle.
     /// </remarks>
-    void Render(RectShape rectangle);
+    void Render(RectShape rectangle, int layer = 0);
 }

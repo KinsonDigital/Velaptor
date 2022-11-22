@@ -468,7 +468,7 @@ public class ButtonTests
         var actual = default(RectShape);
 
         var mockRenderer = new Mock<IRenderer>();
-        mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>()))
+        mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
             .Callback<RectShape>((rectangle) =>
             {
                 // Only capture the sut face rectangle
@@ -494,7 +494,7 @@ public class ButtonTests
         sut.Render(mockRenderer.Object);
 
         // Assert
-        mockRenderer.Verify(m => m.Render(actual), Times.Once);
+        mockRenderer.Verify(m => m.Render(actual, 0), Times.Once);
 
         // Assert that the values of the rectangle were set correctly
         AssertExtensions.TypeMemberEquals(

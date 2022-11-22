@@ -19,7 +19,7 @@ namespace Velaptor.Services;
 internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
 {
     private readonly IDisposable unsubscriber;
-    private RectShape[] batchItems = null!;
+    private readonly RectBatchItemComparer itemComparer = new ();
     private RectBatchItem[] batchItems = null!;
 
     /// <summary>
@@ -70,10 +70,13 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
 
         var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
 
-        if (emptyItemIndex != -1)
+        if (emptyItemIndex == -1)
         {
-            this.batchItems[emptyItemIndex] = rect;
+            return;
         }
+
+        this.batchItems[emptyItemIndex] = rect;
+        Array.Sort(this.batchItems, this.itemComparer);
     }
 
     /// <summary>

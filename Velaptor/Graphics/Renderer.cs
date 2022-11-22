@@ -164,15 +164,19 @@ internal sealed class Renderer : IRenderer
         this.bufferManager.SetViewPortSize(VelaptorBufferType.Rectangle, size);
     }
 
+    // TODO: Add layer param and unit test
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, int layer = 0) => Render(texture, x, y, Color.White, layer);
 
+    // TODO: Add layer param and unit test
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, RenderEffects effects, int layer = 0) => Render(texture, x, y, Color.White, effects, layer);
 
+    // TODO: Add layer param and unit test
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, Color color, int layer = 0) => Render(texture, x, y, color, RenderEffects.None, layer);
 
+    // TODO: Add layer param and unit test
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0)
     {
@@ -190,6 +194,7 @@ internal sealed class Renderer : IRenderer
         Render(texture, srcRect, destRect, 1, 0, color, effects, layer);
     }
 
+    // TODO: Unit test layer
     /// <inheritdoc/>
     /// <exception cref="InvalidOperationException">
     ///     Thrown if the <see cref="Begin"/>() method is not called before calling this method.
@@ -372,7 +377,7 @@ internal sealed class Renderer : IRenderer
     }
 
     /// <inheritdoc/>
-    public void Render(RectShape rectangle)
+    public void Render(RectShape rectangle, int layer = 0)
     {
         var batchItem = default(RectBatchItem);
         batchItem.BorderThickness = rectangle.BorderThickness;
@@ -385,6 +390,7 @@ internal sealed class Renderer : IRenderer
         batchItem.GradientStop = rectangle.GradientStop;
         batchItem.Color = rectangle.Color;
         batchItem.IsFilled = rectangle.IsFilled;
+        batchItem.Layer = layer;
 
         this.batchServiceManager.AddRectBatchItem(batchItem);
     }
@@ -585,20 +591,22 @@ internal sealed class Renderer : IRenderer
         this.shaderManager.Use(ShaderType.Rectangle);
 
         var totalItemsToRender = 0u;
+        var gpuDataIndex = -1;
 
         for (var i = 0u; i < this.batchServiceManager.RectBatchItems.Count; i++)
         {
-            var batchItem = this.batchServiceManager.RectBatchItems[(int)i];
-
-            if (batchItem.IsEmpty())
+            if (this.batchServiceManager.RectBatchItems[(int)i].IsEmpty())
             {
                 continue;
             }
 
+            var batchItem = this.batchServiceManager.RectBatchItems[(int)i];
+
             this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
 
-            this.bufferManager.UploadRectData(batchItem, i);
-            totalItemsToRender += 1;
+            gpuDataIndex++;
+            totalItemsToRender++;
+            this.bufferManager.UploadRectData(batchItem, (uint)gpuDataIndex);
 
             this.openGLService.EndGroup();
         }
