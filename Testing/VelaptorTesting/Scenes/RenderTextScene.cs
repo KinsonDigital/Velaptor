@@ -1,4 +1,4 @@
-// <copyright file="TestRenderTextScene.cs" company="KinsonDigital">
+// <copyright file="RenderTextScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,7 +17,7 @@ namespace VelaptorTesting.Scenes;
 /// <summary>
 /// Used to test whether or not text is properly rendered to the screen.
 /// </summary>
-public class TestRenderTextScene : SceneBase
+public class RenderTextScene : SceneBase
 {
     private const int LeftMargin = 50;
     private const int VertButtonSpacing = 10;
@@ -47,10 +47,10 @@ public class TestRenderTextScene : SceneBase
     private float renderSize = 1f;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestRenderTextScene"/> class.
+    /// Initializes a new instance of the <see cref="RenderTextScene"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads content for the scene.</param>
-    public TestRenderTextScene(IContentLoader contentLoader)
+    public RenderTextScene(IContentLoader contentLoader)
         : base(contentLoader) =>
         this.windowCenter = new Point(
             (int)(MainWindow.WindowWidth / 2f),

@@ -1,4 +1,4 @@
-﻿// <copyright file="MainWindow.cs" company="KinsonDigital">
+// <copyright file="MainWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -47,48 +47,53 @@ public class MainWindow : Window
 
         this.sceneManager = new SceneManager(renderer);
 
-        var testRenderTextScene = new TestRenderTextScene(contentLoader)
+        var renderTextScene = new RenderTextScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestRenderTextScene)),
+            Name = SplitByUpperCase(nameof(RenderTextScene)),
         };
 
-        var testMouseScene = new TestMouseScene(contentLoader)
+        var mouseScene = new MouseScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestMouseScene)),
+            Name = SplitByUpperCase(nameof(MouseScene)),
         };
 
-        var testKeyboardScene = new TestKeyboardScene(contentLoader)
+        var keyboardScene = new KeyboardScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestKeyboardScene)),
+            Name = SplitByUpperCase(nameof(KeyboardScene)),
         };
 
-        var renderNonAnimatedGraphicsScene = new TestNonAnimatedGraphicsScene(contentLoader)
+        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestNonAnimatedGraphicsScene)),
+            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
         };
 
-        var renderAnimatedGraphicsScene = new TestAnimatedGraphicsScene(contentLoader)
+        var layeredRenderingScene = new LayeredTextureRenderingScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestAnimatedGraphicsScene)),
+            Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
         };
 
-        var testSoundScene = new TestSoundsScene(ContentLoader)
+        var renderAnimatedGraphicsScene = new AnimatedGraphicsScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestSoundsScene)),
+            Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         };
 
-        var testRectScene = new TestRectangleScene(ContentLoader)
+        var soundScene = new SoundScene(ContentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestRectangleScene)),
+            Name = SplitByUpperCase(nameof(SoundScene)),
         };
 
-        this.sceneManager.AddScene(testRenderTextScene, true);
-        this.sceneManager.AddScene(testMouseScene);
-        this.sceneManager.AddScene(testKeyboardScene);
+        var rectScene = new RectangleScene(ContentLoader)
+        {
+            Name = SplitByUpperCase(nameof(RectangleScene)),
+        };
+
+        this.sceneManager.AddScene(renderTextScene, true);
+        this.sceneManager.AddScene(mouseScene);
+        this.sceneManager.AddScene(keyboardScene);
         this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
         this.sceneManager.AddScene(renderAnimatedGraphicsScene);
-        this.sceneManager.AddScene(testSoundScene);
-        this.sceneManager.AddScene(testRectScene);
+        this.sceneManager.AddScene(soundScene);
+        this.sceneManager.AddScene(rectScene);
     }
 
     /// <summary>

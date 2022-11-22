@@ -1,4 +1,4 @@
-﻿// <copyright file="TestNonAnimatedGraphicsScene.cs" company="KinsonDigital">
+﻿// <copyright file="NonAnimatedGraphicsScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -18,7 +18,7 @@ namespace VelaptorTesting.Scenes;
 /// <summary>
 /// Tests that graphics properly render to the screen.
 /// </summary>
-public class TestNonAnimatedGraphicsScene : SceneBase
+public class NonAnimatedGraphicsScene : SceneBase
 {
     private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly IAppInput<KeyboardState> keyboard;
@@ -34,10 +34,10 @@ public class TestNonAnimatedGraphicsScene : SceneBase
     private SizeF textSize;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestNonAnimatedGraphicsScene"/> class.
+    /// Initializes a new instance of the <see cref="NonAnimatedGraphicsScene"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads content for the scene.</param>
-    public TestNonAnimatedGraphicsScene(IContentLoader contentLoader)
+    public NonAnimatedGraphicsScene(IContentLoader contentLoader)
         : base(contentLoader)
     {
         this.keyboard = AppInputFactory.CreateKeyboard();

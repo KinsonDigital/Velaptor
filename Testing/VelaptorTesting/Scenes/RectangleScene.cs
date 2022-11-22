@@ -1,4 +1,4 @@
-// <copyright file="TestRectangleScene.cs" company="KinsonDigital">
+// <copyright file="RectangleScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ using VelaptorTesting.Core;
 
 namespace VelaptorTesting.Scenes;
 
-public class TestRectangleScene : SceneBase
+public class RectangleScene : SceneBase
 {
     private const int LeftMargin = 30;
     private const int RightMargin = 10;
@@ -46,7 +46,7 @@ public class TestRectangleScene : SceneBase
     private Button? btnGradClrStart;
     private Button? btnGradClrStop;
 
-    public TestRectangleScene(IContentLoader contentLoader)
+    public RectangleScene(IContentLoader contentLoader)
         : base(contentLoader) =>
         this.windowCenter = new Point((int)(MainWindow.WindowWidth / 2f), (int)(MainWindow.WindowHeight / 2f));
 

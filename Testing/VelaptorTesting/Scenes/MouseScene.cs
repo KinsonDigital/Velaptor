@@ -1,4 +1,4 @@
-﻿// <copyright file="TestMouseScene.cs" company="KinsonDigital">
+﻿// <copyright file="MouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -16,7 +16,7 @@ namespace VelaptorTesting.Scenes;
 /// <summary>
 /// Used to test that the mouse works correctly.
 /// </summary>
-public class TestMouseScene : SceneBase
+public class MouseScene : SceneBase
 {
     private readonly IAppInput<MouseState> mouse;
     private Label? mouseInfoLabel;
@@ -24,10 +24,10 @@ public class TestMouseScene : SceneBase
     private MouseScrollDirection scrollDirection;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestMouseScene"/> class.
+    /// Initializes a new instance of the <see cref="MouseScene"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads content for the scene.</param>
-    public TestMouseScene(IContentLoader contentLoader)
+    public MouseScene(IContentLoader contentLoader)
         : base(contentLoader)
         => this.mouse = AppInputFactory.CreateMouse();
 
