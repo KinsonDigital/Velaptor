@@ -1,4 +1,4 @@
-﻿// <copyright file="MainWindow.cs" company="KinsonDigital">
+// <copyright file="MainWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -82,6 +82,11 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(SoundScene)),
         };
 
+        var layeredRectScene = new LayeredRectRenderingScene(contentLoader)
+        {
+            Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
+        };
+
         var rectScene = new RectangleScene(ContentLoader)
         {
             Name = SplitByUpperCase(nameof(RectangleScene)),
@@ -94,6 +99,7 @@ public class MainWindow : Window
         this.sceneManager.AddScene(layeredRenderingScene);
         this.sceneManager.AddScene(renderAnimatedGraphicsScene);
         this.sceneManager.AddScene(soundScene);
+        this.sceneManager.AddScene(layeredRectScene);
         this.sceneManager.AddScene(rectScene);
     }
 
