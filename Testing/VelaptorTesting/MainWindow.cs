@@ -52,6 +52,11 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(RenderTextScene)),
         };
 
+        var layeredTextRenderingScene = new LayeredTextRenderingScene(contentLoader)
+        {
+            Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
+        };
+
         var mouseScene = new MouseScene(contentLoader)
         {
             Name = SplitByUpperCase(nameof(MouseScene)),
@@ -93,7 +98,7 @@ public class MainWindow : Window
         };
 
         this.sceneManager.AddScene(renderTextScene, true);
-        this.sceneManager.AddScene(mouseScene);
+        this.sceneManager.AddScene(layeredTextRenderingScene);
         this.sceneManager.AddScene(keyboardScene);
         this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
         this.sceneManager.AddScene(layeredRenderingScene);

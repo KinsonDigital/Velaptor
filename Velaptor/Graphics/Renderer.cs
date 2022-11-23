@@ -538,8 +538,11 @@ internal sealed class Renderer : IRenderer
             this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
 
             var isLastItem = i >= this.batchServiceManager.FontGlyphBatchItems.Count - 1;
+            var nextItemIsFull = i < this.batchServiceManager.FontGlyphBatchItems.Count - 1 &&
+                                 this.batchServiceManager.FontGlyphBatchItems[(int)(i + 1)].IsEmpty() is false;
             var shouldRender = isLastItem ||
-                               this.batchServiceManager.FontGlyphBatchItems[(int)(i + 1)].TextureId != batchItem.TextureId;
+                               (nextItemIsFull &&
+                                this.batchServiceManager.FontGlyphBatchItems[(int)(i + 1)].TextureId != batchItem.TextureId);
 
             gpuDataIndex++;
             totalItemsToRender++;
