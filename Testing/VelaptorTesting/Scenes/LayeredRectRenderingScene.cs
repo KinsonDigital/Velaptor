@@ -15,6 +15,9 @@ using VelaptorTesting.Core;
 
 namespace VelaptorTesting.Scenes;
 
+/// <summary>
+/// Tests out layered rendering with rectangles.
+/// </summary>
 public class LayeredRectRenderingScene : SceneBase
 {
     private const string DefaultFont = "TimesNewRoman-Regular.ttf";

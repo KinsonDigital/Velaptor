@@ -1,8 +1,8 @@
-// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CS8524 The switch expression does not handle some values of its input type.
+#pragma warning disable CS8524 - The switch expression does not handle some values of its input type.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
