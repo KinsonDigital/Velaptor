@@ -1,4 +1,4 @@
-﻿// <copyright file="LayeredTextureRenderingScene.cs" company="KinsonDigital">
+// <copyright file="LayeredTextureRenderingScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -172,7 +172,7 @@ public class LayeredTextureRenderingScene : SceneBase
     /// <inheritdoc cref="IScene.UnloadContent"/>
     public override void UnloadContent()
     {
-        if (IsLoaded || IsDisposed)
+        if (!IsLoaded || IsDisposed)
         {
             return;
         }
