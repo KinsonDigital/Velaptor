@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+using System;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -89,6 +91,20 @@ public class ContentLoaderTests
     }
 
     [Fact]
+    public void UnloadTexture_WithNullParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.UnloadTexture(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'content')");
+    }
+
+    [Fact]
     public void UnloadTexture_WhenUnloadingTextures_UnloadsTexture()
     {
         // Arrange
@@ -105,6 +121,20 @@ public class ContentLoaderTests
 
         // Assert
         this.mockTextureLoader.Verify(m => m.Unload(TextureContentName), Times.Once());
+    }
+
+    [Fact]
+    public void UnloadSound_WithNullParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.UnloadSound(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'content')");
     }
 
     [Fact]
@@ -127,6 +157,20 @@ public class ContentLoaderTests
     }
 
     [Fact]
+    public void UnloadAtlas_WithNullParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.UnloadAtlas(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'content')");
+    }
+
+    [Fact]
     public void UnloadAtlas_WhenUnloadingAtlasData_UnloadsAtlasData()
     {
         // Arrange
@@ -143,6 +187,20 @@ public class ContentLoaderTests
 
         // Assert
         this.mockAtlasLoader.Verify(m => m.Unload(AtlasContentName), Times.Once());
+    }
+
+    [Fact]
+    public void UnloadFont_WithNullParam_ThrowsException()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.UnloadFont(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'content')");
     }
 
     [Fact]
