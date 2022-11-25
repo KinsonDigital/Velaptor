@@ -6,6 +6,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Velaptor;
 using Velaptor.Content;
 using Velaptor.Graphics;
 using Velaptor.UI;
@@ -13,6 +14,9 @@ using VelaptorTesting.Core;
 
 namespace VelaptorTesting.Scenes;
 
+/// <summary>
+/// Tests out rectangle rendering.
+/// </summary>
 public class RectangleScene : SceneBase
 {
     private const int LeftMargin = 30;
@@ -46,10 +50,15 @@ public class RectangleScene : SceneBase
     private Button? btnGradClrStart;
     private Button? btnGradClrStop;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RectangleScene"/> class.
+    /// </summary>
+    /// <param name="contentLoader">Loads content for the scene.</param>
     public RectangleScene(IContentLoader contentLoader)
         : base(contentLoader) =>
         this.windowCenter = new Point((int)(MainWindow.WindowWidth / 2f), (int)(MainWindow.WindowHeight / 2f));
 
+    /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
         this.rectangle = new RectShape
@@ -73,6 +82,7 @@ public class RectangleScene : SceneBase
         LayoutButtonsBottom();
     }
 
+    /// <inheritdoc cref="IDrawable.Render"/>
     public override void Render(IRenderer renderer)
     {
         base.Render(renderer);

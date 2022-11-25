@@ -100,12 +100,13 @@ public class MainWindow : Window
         this.sceneManager.AddScene(renderTextScene, true);
         this.sceneManager.AddScene(layeredTextRenderingScene);
         this.sceneManager.AddScene(keyboardScene);
-        this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
+        this.sceneManager.AddScene(mouseScene);
         this.sceneManager.AddScene(layeredRenderingScene);
+        this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
         this.sceneManager.AddScene(renderAnimatedGraphicsScene);
-        this.sceneManager.AddScene(soundScene);
-        this.sceneManager.AddScene(layeredRectScene);
         this.sceneManager.AddScene(rectScene);
+        this.sceneManager.AddScene(layeredRectScene);
+        this.sceneManager.AddScene(soundScene);
     }
 
     /// <summary>

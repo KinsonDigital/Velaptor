@@ -16,7 +16,7 @@ using Velaptor.Content.Exceptions;
 using Velaptor.Content.Factories;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 
 /// <summary>

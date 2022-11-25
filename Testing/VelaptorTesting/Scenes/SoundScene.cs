@@ -72,6 +72,11 @@ public class SoundScene : SceneBase
 
     public override void UnloadContent()
     {
+        if (!IsLoaded || IsDisposed)
+        {
+            return;
+        }
+
         if (this.sound is not null)
         {
             this.sound.Stop();

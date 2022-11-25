@@ -164,19 +164,15 @@ internal sealed class Renderer : IRenderer
         this.bufferManager.SetViewPortSize(VelaptorBufferType.Rectangle, size);
     }
 
-    // TODO: Add layer param and unit test
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, int layer = 0) => Render(texture, x, y, Color.White, layer);
 
-    // TODO: Add layer param and unit test
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, RenderEffects effects, int layer = 0) => Render(texture, x, y, Color.White, effects, layer);
 
-    // TODO: Add layer param and unit test
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, Color color, int layer = 0) => Render(texture, x, y, color, RenderEffects.None, layer);
 
-    // TODO: Add layer param and unit test
     /// <inheritdoc/>
     public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0)
     {
@@ -194,7 +190,6 @@ internal sealed class Renderer : IRenderer
         Render(texture, srcRect, destRect, 1, 0, color, effects, layer);
     }
 
-    // TODO: Unit test layer
     /// <inheritdoc/>
     /// <exception cref="InvalidOperationException">
     ///     Thrown if the <see cref="Begin"/>() method is not called before calling this method.

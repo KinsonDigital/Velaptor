@@ -11,7 +11,7 @@ using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Graphics;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 
 /// <summary>

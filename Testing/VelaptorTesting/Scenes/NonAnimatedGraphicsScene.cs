@@ -162,7 +162,7 @@ public class NonAnimatedGraphicsScene : SceneBase
     /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
     protected override void Dispose(bool disposing)
     {
-        if (IsDisposed || !IsLoaded)
+        if (!IsLoaded || IsDisposed)
         {
             return;
         }

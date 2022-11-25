@@ -70,31 +70,4 @@ public class MouseScene : SceneBase
 
         base.Update(frameTime);
     }
-
-    /// <inheritdoc cref="IScene.UnloadContent"/>
-    public override void UnloadContent()
-    {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
-        base.UnloadContent();
-    }
-
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (IsDisposed || !IsLoaded)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            UnloadContent();
-        }
-
-        base.Dispose(disposing);
-    }
 }
