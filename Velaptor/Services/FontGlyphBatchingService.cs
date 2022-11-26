@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Velaptor.Guards;
-using Velaptor.OpenGL;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.Services;
+using Guards;
+using OpenGL;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Manages the process of batching up glyphs to be rendered.

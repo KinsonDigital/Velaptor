@@ -2,27 +2,27 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor;
+
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using SimpleInjector;
-using Velaptor.Content;
-using Velaptor.Content.Caching;
+using Content;
+using Content.Caching;
 using Velaptor.Content.Factories;
 using Velaptor.Content.Fonts.Services;
-using Velaptor.Factories;
-using Velaptor.Input;
-using Velaptor.NativeInterop.FreeType;
-using Velaptor.NativeInterop.GLFW;
+using Factories;
+using Input;
+using NativeInterop.FreeType;
+using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
+using OpenGL;
 using Velaptor.OpenGL.Services;
-using Velaptor.Reactables;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-using Velaptor.Services;
-
-namespace Velaptor;
+using Reactables;
+using Reactables.Core;
+using Reactables.ReactableData;
+using Services;
 
 /// <summary>
 /// Provides dependency injection for the application.

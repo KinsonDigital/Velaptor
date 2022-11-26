@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.UI;
+
 using System.Drawing;
 using Velaptor.UI;
 using Xunit;
-
-namespace VelaptorTests.UI;
 
 /// <summary>
 /// Tests the <see cref="MousePositionEventArgs"/> class.

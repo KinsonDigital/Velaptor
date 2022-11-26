@@ -2,19 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.UI;
+
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
-using Velaptor.Factories;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-using Velaptor.Input;
-
-namespace Velaptor.UI;
+using Content;
+using Content.Fonts;
+using Factories;
+using Graphics;
+using Guards;
+using Input;
 
 /// <summary>
 /// A label that renders text on the screen.

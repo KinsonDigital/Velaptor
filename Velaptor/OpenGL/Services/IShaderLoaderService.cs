@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Services;
+
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.OpenGL.Services;
 
 /// <summary>
 /// Loads the source code for the vertex and fragment shaders from a resource.

@@ -2,17 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.UI;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Moq;
 using Velaptor.Input;
 using Velaptor.UI;
-using VelaptorTests.Fakes;
-using VelaptorTests.Helpers;
+using Fakes;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.UI;
 
 /// <summary>
 /// Tests the <see cref="ControlBase"/> class.

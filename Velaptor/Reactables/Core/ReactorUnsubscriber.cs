@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Reactables.Core;
+
 using System;
 using System.Collections.Generic;
-using Velaptor.Guards;
-
-namespace Velaptor.Reactables.Core;
+using Guards;
 
 /// <summary>
 /// A reactor unsubscriber for unsubscribing from an <see cref="Reactable{TData}"/>.

@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-
-namespace Velaptor.Graphics;
 
 /// <summary>
 /// Holds image data such as the pixel colors for each X and Y location, the image width, and height.

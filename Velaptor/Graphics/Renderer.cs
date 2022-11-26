@@ -2,26 +2,26 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
-using Velaptor.Guards;
+using Content;
+using Content.Fonts;
+using Guards;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
-using Velaptor.OpenGL.Buffers;
-using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-using Velaptor.Services;
+using OpenGL;
+using OpenGL.Buffers;
+using OpenGL.Shaders;
+using Reactables.Core;
+using Reactables.ReactableData;
+using Services;
 using NETRect = System.Drawing.Rectangle;
 using NETSizeF = System.Drawing.SizeF;
-
-namespace Velaptor.Graphics;
 
 /// <inheritdoc/>
 internal sealed class Renderer : IRenderer

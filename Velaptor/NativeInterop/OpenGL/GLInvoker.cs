@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.OpenGL;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -10,12 +12,10 @@ using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Velaptor.OpenGL;
-using Velaptor.Reactables;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-using Velaptor.Services;
-
-namespace Velaptor.NativeInterop.OpenGL;
+using Reactables;
+using Reactables.Core;
+using Reactables.ReactableData;
+using Services;
 
 /// <summary>
 /// Invokes OpenGL calls.

@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.FreeType;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FreeTypeSharp.Native;
-
-namespace Velaptor.NativeInterop.FreeType;
 
 /// <summary>
 /// Invokes calls to the <c>FreeType</c> library for loading and managing fonts.

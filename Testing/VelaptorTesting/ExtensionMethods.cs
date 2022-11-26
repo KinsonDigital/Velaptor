@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Velaptor.Graphics;
-
-namespace VelaptorTesting;
 
 public static class ExtensionMethods
 {

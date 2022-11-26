@@ -2,17 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+namespace VelaptorTests.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Moq;
 using Velaptor.OpenGL;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Services;
 
 /// <summary>
 /// Tests the <see cref="BatchServiceManager"/> class.

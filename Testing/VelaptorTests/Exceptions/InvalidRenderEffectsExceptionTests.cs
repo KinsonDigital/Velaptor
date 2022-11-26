@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Exceptions;
+
 using System;
 using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Xunit;
-
-namespace VelaptorTests.Exceptions;
 
 /// <summary>
 /// Tests the <see cref="InvalidRenderEffectsException"/> class.

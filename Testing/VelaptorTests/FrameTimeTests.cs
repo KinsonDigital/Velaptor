@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests;
+
 using System;
 using Velaptor;
 using Xunit;
-
-namespace VelaptorTests;
 
 public class FrameTimeTests
 {

@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.Graphics;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 
 /// <summary>

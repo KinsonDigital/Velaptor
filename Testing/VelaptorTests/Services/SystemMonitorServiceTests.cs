@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Services;
+
 using System;
 using Moq;
 using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Services;
 
 /// <summary>
 /// Tests the <see cref="SystemMonitorService"/> class.

@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.GPUData;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.OpenGL.GPUData;
 
 /// <summary>
 /// Holds data for a single quad in the GPU vertex buffer.

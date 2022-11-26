@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Reactables.Core;
-
 namespace Velaptor.Reactables;
+
+using Core;
 
 /// <summary>
 /// Creates a reactable to send push notifications to signal that the position of the mouse has changed.

@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests;
+
 using FluentAssertions;
 using Velaptor;
 using Velaptor.OpenGL;
 using Xunit;
-
-namespace VelaptorTests;
 
 /// <summary>
 /// Tests the <see cref="RectBatchItemComparer"/> class.

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Buffers;
+
 using System.Collections.Generic;
 using System.Drawing;
 using Moq;
@@ -12,10 +14,8 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Buffers;
 
 public class FontGPUBufferTests
 {

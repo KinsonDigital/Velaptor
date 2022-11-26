@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting;
+
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.UI;
-using VelaptorTesting.Core;
-using VelaptorTesting.Scenes;
-
-namespace VelaptorTesting;
+using Core;
+using Scenes;
 
 /// <summary>
 /// The main window to the testing application.

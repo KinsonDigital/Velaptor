@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Helpers;
+
 using System;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using Xunit;
-
-namespace VelaptorTests.Helpers;
 
 /// <summary>
 /// Loads test data from the unit test project's SampleTestData folder.

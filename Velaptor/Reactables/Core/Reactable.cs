@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Reactables.Core;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Velaptor.Guards;
-
-namespace Velaptor.Reactables.Core;
+using Guards;
 
 /// <summary>
 /// Defines a provider for push-based notifications.

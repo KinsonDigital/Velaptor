@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content;
+
 using System;
 using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Xunit;
-
-namespace VelaptorTests.Content;
 
 /// <summary>
 /// Tests the <see cref="ContentLoader"/> class.

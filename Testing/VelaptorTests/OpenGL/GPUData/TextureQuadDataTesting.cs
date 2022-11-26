@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.GPUData;
+
 using System.Numerics;
 using Velaptor.OpenGL.GPUData;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.GPUData;
 
 /// <summary>
 /// Tests the <see cref="TextureQuadData"/> struct.

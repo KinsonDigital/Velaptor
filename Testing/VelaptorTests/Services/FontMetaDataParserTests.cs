@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Services;
+
 using System;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Services;
 
 /// <summary>
 /// Tests the <see cref="FontMetaDataParser"/> class.

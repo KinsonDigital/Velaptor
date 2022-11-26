@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.NativeInterop.OpenGL;
-
 namespace Velaptor.OpenGL;
+
+using Velaptor.NativeInterop.OpenGL;
 
 /// <summary>
 /// Represents the type of GPU buffer.

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
-using Velaptor.Graphics;
-
-namespace Velaptor.OpenGL;
+using Graphics;
 
 /// <summary>
 /// A single item in a batch of glyph items that can be rendered to the screen.

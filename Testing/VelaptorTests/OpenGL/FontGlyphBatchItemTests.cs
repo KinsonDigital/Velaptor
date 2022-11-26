@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Xunit;
-
-namespace VelaptorTests.OpenGL;
 
 /// <summary>
 /// Test the <see cref="FontGlyphBatchItem"/> struct.

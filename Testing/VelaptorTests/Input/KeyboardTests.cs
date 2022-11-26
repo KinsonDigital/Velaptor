@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Input;
+
 using System;
 using Moq;
 using Velaptor.Input;
 using Velaptor.Reactables.Core;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Input;
 
 /// <summary>
 /// Tests the <see cref="Keyboard"/> class.

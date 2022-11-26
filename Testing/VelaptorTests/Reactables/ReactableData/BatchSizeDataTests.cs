@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Reactables.ReactableData;
+
 using FluentAssertions;
 using Velaptor.Reactables.ReactableData;
 using Xunit;
-
-namespace VelaptorTests.Reactables.ReactableData;
 
 /// <summary>
 /// Tests the <see cref="BatchSizeData"/> struct.

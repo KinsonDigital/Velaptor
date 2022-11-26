@@ -2,21 +2,21 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Buffers;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Velaptor.Exceptions;
-using Velaptor.Graphics;
+using Graphics;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL.Exceptions;
-using Velaptor.OpenGL.GPUData;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
+using Exceptions;
+using GPUData;
+using Reactables.Core;
+using Reactables.ReactableData;
 using NETRect = System.Drawing.Rectangle;
-
-namespace Velaptor.OpenGL.Buffers;
 
 /// <summary>
 /// Updates texture data in the GPU buffer.

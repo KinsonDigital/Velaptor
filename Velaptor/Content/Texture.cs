@@ -2,17 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Velaptor.Graphics;
-using Velaptor.Guards;
+using Graphics;
+using Guards;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.Content;
+using OpenGL;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// The texture to render to a screen.

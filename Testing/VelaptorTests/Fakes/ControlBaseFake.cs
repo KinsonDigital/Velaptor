@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Fakes;
+
 using System.Drawing;
 using Velaptor.Input;
 using Velaptor.UI;
-
-namespace VelaptorTests.Fakes;
 
 /// <summary>
 /// Used to test the abstract class <see cref="ControlBase"/>.

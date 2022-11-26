@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.Graphics;
 
 /// <summary>
 /// Provides metric data for a single font atlas texture.

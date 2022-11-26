@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Exceptions;
+
+using System;
 
 /// <summary>
 /// Occurs when there is an issue with one of the system monitors.

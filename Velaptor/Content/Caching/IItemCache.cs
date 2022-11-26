@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Caching;
+
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.Content.Caching;
 
 /// <summary>
 /// Caches items for retrieval at a later time.

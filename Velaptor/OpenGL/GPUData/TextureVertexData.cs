@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.GPUData;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-
-namespace Velaptor.OpenGL.GPUData;
 
 /// <summary>
 /// Represents a single vertex of data for a quad.

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,8 +18,6 @@ using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
 using Xunit;
-
-namespace VelaptorTests.Services;
 
 /// <summary>
 /// Tests the <see cref="RectBatchingService"/> class.

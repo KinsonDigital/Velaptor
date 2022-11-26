@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.UI;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Velaptor.Content;
-using Velaptor.Factories;
-using Velaptor.Graphics;
-using Velaptor.Input;
-
-namespace Velaptor.UI;
+using Content;
+using Factories;
+using Graphics;
+using Input;
 
 /// <summary>
 /// Represents a basic control with behavior that is shared among all controls.

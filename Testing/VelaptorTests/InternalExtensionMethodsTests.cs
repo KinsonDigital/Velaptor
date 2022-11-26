@@ -2,7 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CS8524 - The switch expression does not handle some values of its input type.
+#pragma warning disable CS8524
+namespace VelaptorTests;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -16,14 +18,12 @@ using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GPUData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
 using NETSizeF = System.Drawing.SizeF;
-
-namespace VelaptorTests;
 
 /// <summary>
 /// Tests the <see cref="Velaptor.InternalExtensionMethods"/> class.

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.UI;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,10 +17,8 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Input;
 using Velaptor.UI;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.UI;
 
 /// <summary>
 /// Tests the <see cref="Button"/> class.

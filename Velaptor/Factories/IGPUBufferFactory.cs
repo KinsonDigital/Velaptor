@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.OpenGL;
-using Velaptor.OpenGL.Buffers;
-
 namespace Velaptor.Factories;
+
+using OpenGL;
+using OpenGL.Buffers;
 
 /// <summary>
 /// Creates various types of GPU buffers.

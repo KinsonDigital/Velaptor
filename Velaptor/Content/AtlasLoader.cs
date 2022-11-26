@@ -2,19 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Content.Caching;
-using Velaptor.Content.Exceptions;
-using Velaptor.Content.Factories;
+using Caching;
+using Exceptions;
+using Factories;
 using Velaptor.Factories;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-using Velaptor.Services;
-
-namespace Velaptor.Content;
+using Graphics;
+using Guards;
+using Services;
 
 /// <summary>
 /// Loads atlas data.

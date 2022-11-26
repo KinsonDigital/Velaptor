@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.Graphics;
 
 /// <summary>
 /// Holds all of the radius values for each corner of a rectangle.

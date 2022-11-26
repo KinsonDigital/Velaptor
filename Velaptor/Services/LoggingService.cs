@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Guards;
-
 namespace Velaptor.Services;
+
+using Guards;
 
 /// <inheritdoc/>
 internal sealed class LoggingService : ILoggingService

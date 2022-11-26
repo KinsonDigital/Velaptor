@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Hardware;
+
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -9,10 +11,8 @@ using System.Runtime.InteropServices;
 using Moq;
 using Velaptor;
 using Velaptor.Hardware;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Hardware;
 
 /// <summary>
 /// Tests the <see cref="SystemMonitor"/> struct.

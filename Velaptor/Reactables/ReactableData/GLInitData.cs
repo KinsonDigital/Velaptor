@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace Velaptor.Reactables.ReactableData;
+
+using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Holds data for the <see cref="OpenGLInitReactable"/> reactable.

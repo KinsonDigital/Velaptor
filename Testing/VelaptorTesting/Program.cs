@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting;
+
 using System;
 using System.Threading.Tasks;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.UI;
-
-namespace VelaptorTesting;
 
 /// <summary>
 /// The main program entry point.

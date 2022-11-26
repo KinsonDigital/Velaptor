@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace Velaptor;
+
+using Graphics;
 
 /// <summary>
 /// Provides the ability for an object to be rendered.

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content.Fonts;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,10 +20,8 @@ using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content.Fonts;
 
 /// <summary>
 /// Tests the <see cref="Font"/> class.

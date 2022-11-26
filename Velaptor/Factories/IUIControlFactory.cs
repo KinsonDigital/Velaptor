@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Content.Fonts;
-using Velaptor.UI;
-
 namespace Velaptor.Factories;
+
+using Content.Fonts;
+using UI;
 
 /// <summary>
 /// Creates UI controls.

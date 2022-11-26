@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -9,8 +11,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-namespace Velaptor;
 
 /// <summary>
 /// Records and retrieves information about the running application.

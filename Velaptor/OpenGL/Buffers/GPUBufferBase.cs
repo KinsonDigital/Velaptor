@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Buffers;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Velaptor.Guards;
+using Guards;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
+using Reactables.Core;
+using Reactables.ReactableData;
 using NETSizeF = System.Drawing.SizeF;
-
-namespace Velaptor.OpenGL.Buffers;
 
 /// <summary>
 /// Base functionality for managing buffer data in the GPU.

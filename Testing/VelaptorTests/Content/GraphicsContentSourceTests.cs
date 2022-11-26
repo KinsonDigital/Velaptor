@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content;
+
 using System.IO.Abstractions;
 using Moq;
 using Velaptor.Content;
 using Xunit;
-
-namespace VelaptorTests.Content;
 
 /// <summary>
 /// Tests the <see cref="TexturePathResolver"/> class.

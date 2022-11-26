@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Factories;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
-
-namespace Velaptor.Factories;
+using Content;
+using Content.Fonts;
 
 /// <summary>
 /// Creates path resolver instances.

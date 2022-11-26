@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Input;
-using Velaptor.Reactables.Core;
-
 namespace Velaptor.Reactables;
+
+using Input;
+using Core;
 
 /// <summary>
 /// Creates a reactable to send push notifications to signal changes to the state of the mouse buttons.

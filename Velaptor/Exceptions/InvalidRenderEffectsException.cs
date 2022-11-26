@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.Graphics;
-
 namespace Velaptor.Exceptions;
+
+using System;
+using Graphics;
 
 /// <summary>
 /// Thrown when an invalid <see cref="RenderEffects"/> value is used.

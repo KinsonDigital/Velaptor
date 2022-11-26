@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
-using Velaptor.Graphics;
-
-namespace Velaptor.OpenGL;
+using Graphics;
 
 /// <summary>
 /// A single texture batch item that can be rendered to the screen.
@@ -19,7 +19,7 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureBatchItem"/> struct.
     /// </summary>
-    /// <param name="srcRect">The source rectangle inside of a texture to render.</param>
+    /// <param name="srcRect">The rectangular section inside of a texture to render.</param>
     /// <param name="destRect">The destination rectangular area of where to render the texture on the screen.</param>
     /// <param name="size">The size of the rendered texture.</param>
     /// <param name="angle">The angle of the texture in degrees.</param>
@@ -52,7 +52,7 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     }
 
     /// <summary>
-    /// Gets the source rectangle inside of a texture to render.
+    /// Gets the rectangular section inside of a texture to render.
     /// </summary>
     public RectangleF SrcRect { get; }
 

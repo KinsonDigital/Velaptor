@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting.Scenes;
+
 using System;
 using System.Drawing;
 using System.Globalization;
@@ -9,10 +11,8 @@ using System.Linq;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.UI;
-using VelaptorTesting.Core;
+using Core;
 using ISound = Velaptor.Content.ISound;
-
-namespace VelaptorTesting.Scenes;
 
 public class SoundScene : SceneBase
 {

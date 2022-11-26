@@ -2,18 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// ReSharper disable UseObjectOrCollectionInitializer
+namespace VelaptorTests.Content;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Velaptor;
 using Velaptor.Content;
-using VelaptorTests.Fakes;
-using VelaptorTests.Helpers;
+using Fakes;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content;
 
 /// <summary>
 /// Tests the <see cref="ContentPathResolver"/> class.

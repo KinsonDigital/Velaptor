@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Shaders;
+
 using System;
 using Moq;
 using Velaptor.Factories;
 using Velaptor.OpenGL.Shaders;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Shaders;
 
 /// <summary>
 /// Tests the <see cref="ShaderManager"/> class.

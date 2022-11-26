@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting.Scenes;
+
 using System;
 using System.Drawing;
 using System.Linq;
@@ -10,9 +12,7 @@ using Velaptor;
 using Velaptor.Content;
 using Velaptor.Graphics;
 using Velaptor.UI;
-using VelaptorTesting.Core;
-
-namespace VelaptorTesting.Scenes;
+using Core;
 
 /// <summary>
 /// Tests out rectangle rendering.

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content;
+
 using System;
 using System.IO;
 using System.IO.Abstractions;
@@ -9,10 +11,8 @@ using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
 using Velaptor.Content.Exceptions;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content;
 
 /// <summary>
 /// Tests the <see cref="SoundLoader"/> class.

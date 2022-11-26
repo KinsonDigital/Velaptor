@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Buffers;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,10 +17,8 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Buffers;
 
 /// <summary>
 /// Tests the <see cref="RectGPUBuffer"/> class.

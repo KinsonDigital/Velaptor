@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Content.Exceptions;
+
+using System;
 
 /// <summary>
 /// Thrown when there is an issue with processing metadata during the caching process when loading fonts.

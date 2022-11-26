@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Helpers;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -15,8 +17,6 @@ using Velaptor;
 using Velaptor.Graphics;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
-
-namespace VelaptorTests.Helpers;
 
 [ExcludeFromCodeCoverage]
 public static class TestHelpers

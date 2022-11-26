@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Graphics;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,10 +22,8 @@ using Velaptor.OpenGL.Shaders;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Graphics;
 
 /// <summary>
 /// Tests the <see cref="Renderer"/> class.

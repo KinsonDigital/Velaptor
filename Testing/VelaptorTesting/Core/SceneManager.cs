@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting.Core;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,8 +14,6 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Input;
 using Velaptor.UI;
-
-namespace VelaptorTesting.Core;
 
 /// <summary>
 /// Manages scenes by loading and unloading content, updating, and rendering scenes.

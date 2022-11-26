@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.OpenGL.GPUData;
-using VelaptorTests.Helpers;
-using Xunit;
-
 namespace VelaptorTests.OpenGL.GPUData;
+
+using Velaptor.OpenGL.GPUData;
+using Helpers;
+using Xunit;
 
 /// <summary>
 /// Tests the <see cref="RectGPUData"/> struct.

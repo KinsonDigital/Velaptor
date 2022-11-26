@@ -2,7 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// ReSharper disable UseObjectOrCollectionInitializer
+namespace VelaptorTests.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,10 +17,8 @@ using Velaptor.OpenGL;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Services;
 
 /// <summary>
 /// Tests the <see cref="TextureBatchingService"/> class.

@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Input;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Velaptor.Reactables.Core;
-
-namespace Velaptor.Input;
+using Reactables.Core;
 
 /// <summary>
 /// Provides functionality for the keyboard.

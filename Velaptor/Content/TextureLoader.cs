@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
-using Velaptor.Content.Caching;
-using Velaptor.Content.Exceptions;
+using Caching;
+using Exceptions;
 using Velaptor.Factories;
-using Velaptor.Guards;
-
-namespace Velaptor.Content;
+using Guards;
 
 /// <summary>
 /// Loads textures.

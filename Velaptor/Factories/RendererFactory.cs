@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-using Velaptor.Graphics;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL.Buffers;
-using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-using Velaptor.Services;
-
 namespace Velaptor.Factories;
+
+using System.Diagnostics.CodeAnalysis;
+using Graphics;
+using Velaptor.NativeInterop.OpenGL;
+using OpenGL.Buffers;
+using OpenGL.Shaders;
+using Reactables.Core;
+using Reactables.ReactableData;
+using Services;
 
 /// <summary>
 /// Creates instances of the type <see cref="Renderer"/>.

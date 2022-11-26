@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.OpenGL;
+
 using System;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Guards;
+using Guards;
 using Velaptor.OpenGL;
-
-namespace Velaptor.NativeInterop.OpenGL;
 
 /// <summary>
 /// Provides OpenGL helper methods to improve OpenGL related operations.

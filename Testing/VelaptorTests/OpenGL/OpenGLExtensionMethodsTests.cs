@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL;
+
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GPUData;
 using Xunit;
-
-namespace VelaptorTests.OpenGL;
 
 /// <summary>
 /// Tests the helper methods in the <see cref="OpenGLExtensionMethods"/> class.

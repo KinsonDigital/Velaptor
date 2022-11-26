@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.Factories;
-using Velaptor.Guards;
-
 namespace Velaptor.OpenGL.Buffers;
+
+using System;
+using Factories;
+using Guards;
 
 /// <inheritdoc/>
 internal sealed class BufferManager : IBufferManager

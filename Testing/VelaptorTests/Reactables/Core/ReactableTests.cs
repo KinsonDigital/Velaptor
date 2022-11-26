@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Reactables.Core;
+
 using System;
 using FluentAssertions;
 using Moq;
 using Velaptor.Reactables.Core;
-using VelaptorTests.Fakes;
-using VelaptorTests.Helpers;
+using Fakes;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Reactables.Core;
 
 /// <summary>
 /// Tests the <see cref="Reactable{TData}"/> class.

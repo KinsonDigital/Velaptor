@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System;
 using System.Collections.ObjectModel;
-using Velaptor.Guards;
-using Velaptor.OpenGL;
-
-namespace Velaptor.Services;
+using Guards;
+using OpenGL;
 
 /// <inheritdoc />
 internal sealed class BatchServiceManager : IBatchServiceManager

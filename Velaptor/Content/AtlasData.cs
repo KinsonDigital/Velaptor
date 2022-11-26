@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Content.Caching;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-
-namespace Velaptor.Content;
+using Caching;
+using Graphics;
+using Guards;
 
 /// <summary>
 /// Holds data relating to a texture atlas.

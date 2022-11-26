@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.UI;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,11 +17,9 @@ using Velaptor.Content.Fonts;
 using Velaptor.Graphics;
 using Velaptor.Input;
 using Velaptor.UI;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
-
-namespace VelaptorTests.UI;
 
 /// <summary>
 /// Tests the <see cref="Label"/> class.

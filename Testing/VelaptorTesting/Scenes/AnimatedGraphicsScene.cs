@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting.Scenes;
+
 using System.Drawing;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Graphics;
 using Velaptor.UI;
-using VelaptorTesting.Core;
-
-namespace VelaptorTesting.Scenes;
+using Core;
 
 /// <summary>
 /// Tests that animated graphics properly render to the screen.

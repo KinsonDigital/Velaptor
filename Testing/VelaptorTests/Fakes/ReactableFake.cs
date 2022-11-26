@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Reactables.Core;
-
 namespace VelaptorTests.Fakes;
+
+using Velaptor.Reactables.Core;
 
 /// <summary>
 /// Used for testing the abstract <see cref="Reactable{TData}"/> class.

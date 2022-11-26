@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System;
 using System.IO.Abstractions;
 using System.Text.Json;
-using Velaptor.Exceptions;
-using Velaptor.Guards;
-
-namespace Velaptor.Services;
+using Exceptions;
+using Guards;
 
 /// <inheritdoc/>
 internal sealed class AppSettingsService : IAppSettingsService

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.UI;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Threading.Tasks;
-using Velaptor.Content;
-using Velaptor.Guards;
-
-namespace Velaptor.UI;
+using Content;
+using Guards;
 
 /// <summary>
 /// A system window where graphics can be rendered.

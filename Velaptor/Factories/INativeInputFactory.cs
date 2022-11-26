@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Silk.NET.Input;
-
 namespace Velaptor.Factories;
+
+using Silk.NET.Input;
 
 /// <summary>
 /// Creates an input object that gives access to native input hardware.

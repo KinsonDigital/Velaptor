@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Guards;
+
 using System;
 using System.Runtime.CompilerServices;
-
-namespace Velaptor.Guards;
 
 /// <summary>
 /// Performs analysis on particular values to ensure that they meets a criteria,

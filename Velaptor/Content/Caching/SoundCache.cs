@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Caching;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
@@ -9,13 +11,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Content.Exceptions;
-using Velaptor.Content.Factories;
-using Velaptor.Guards;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.Content.Caching;
+using Exceptions;
+using Factories;
+using Guards;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Caches <see cref="ISound"/> objects for retrieval at a later time.

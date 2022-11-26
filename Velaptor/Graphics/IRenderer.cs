@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
-
-namespace Velaptor.Graphics;
+using Content;
+using Content.Fonts;
 
 /// <summary>
 /// Renders a single or batch of textures.

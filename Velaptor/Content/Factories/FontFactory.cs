@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-using Velaptor.Content.Caching;
-using Velaptor.Content.Fonts;
-using Velaptor.Content.Fonts.Services;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-using Velaptor.Services;
-
 namespace Velaptor.Content.Factories;
+
+using System.Diagnostics.CodeAnalysis;
+using Caching;
+using Fonts;
+using Velaptor.Content.Fonts.Services;
+using Graphics;
+using Guards;
+using Services;
 
 /// <summary>
 /// Generates <see cref="IFont"/> instances.

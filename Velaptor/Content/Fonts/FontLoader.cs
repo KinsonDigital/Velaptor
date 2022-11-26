@@ -2,19 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Content.Caching;
-using Velaptor.Content.Exceptions;
-using Velaptor.Content.Factories;
+using Caching;
+using Exceptions;
+using Factories;
 using Velaptor.Factories;
-using Velaptor.Guards;
+using Guards;
 using Velaptor.Services;
-
-namespace Velaptor.Content.Fonts;
 
 /// <summary>
 /// Loads font content for rendering text.

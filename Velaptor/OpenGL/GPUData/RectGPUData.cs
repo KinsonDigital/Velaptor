@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace Velaptor.OpenGL.GPUData;
+
+using System.Collections.Generic;
 
 /// <summary>
 /// Holds all the necessary data for a rectangle to send to the GPU for rendering.

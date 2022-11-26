@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Helpers;
+
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL.GPUData;
-
-namespace VelaptorTests.Helpers;
 
 /// <summary>
 /// Helps generate <see cref="RectVertexData"/> easily for the purpose of testing.

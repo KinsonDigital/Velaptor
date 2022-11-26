@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests;
+
 using FluentAssertions;
 using Velaptor;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests;
 
 /// <summary>
 /// Tests the <see cref="AppSettings"/> class.

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting.Scenes;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,9 +13,7 @@ using Velaptor.Content.Fonts;
 using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Input;
-using VelaptorTesting.Core;
-
-namespace VelaptorTesting.Scenes;
+using Core;
 
 /// <summary>
 /// Tests that graphics properly render to the screen.

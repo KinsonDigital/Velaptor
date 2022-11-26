@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Helpers;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
-namespace VelaptorTests.Helpers;
 
 /// <summary>
 /// Provides extension methods to ease the writing of unit tests.

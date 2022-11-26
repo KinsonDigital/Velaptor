@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using Velaptor.Graphics;
-using Velaptor.OpenGL;
-
 namespace Velaptor;
+
+using System.Collections.Generic;
+using Graphics;
+using OpenGL;
 
 /// <summary>
 /// Used to compare 2 <see cref="RectShape"/>'s for the purpose of sorting.

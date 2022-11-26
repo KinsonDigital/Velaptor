@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Shaders;
+
 using System;
 using System.Collections.Generic;
 using Moq;
@@ -11,11 +13,9 @@ using Velaptor.OpenGL.Exceptions;
 using Velaptor.OpenGL.Services;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-using VelaptorTests.Fakes;
-using VelaptorTests.Helpers;
+using Fakes;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Shaders;
 
 /// <summary>
 /// Initializes a new instance of <see cref="ShaderProgramTests"/>.

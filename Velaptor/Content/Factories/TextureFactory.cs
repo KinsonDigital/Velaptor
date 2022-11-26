@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Factories;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Velaptor.Graphics;
-using Velaptor.Guards;
+using Graphics;
+using Guards;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.Content.Factories;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Creates <see cref="ITexture"/> objects for rendering.

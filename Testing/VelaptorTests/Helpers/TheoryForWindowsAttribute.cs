@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Helpers;
+
 using System.Runtime.InteropServices;
 using Xunit;
-
-namespace VelaptorTests.Helpers;
 
 /// <summary>
 /// <inheritdoc cref="TheoryAttribute"/>.

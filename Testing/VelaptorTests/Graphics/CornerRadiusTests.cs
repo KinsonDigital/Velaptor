@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Graphics;
+
 using Velaptor.Graphics;
 using Xunit;
-
-namespace VelaptorTests.Graphics;
 
 /// <summary>
 /// Tests the <see cref="CornerRadius"/> struct.

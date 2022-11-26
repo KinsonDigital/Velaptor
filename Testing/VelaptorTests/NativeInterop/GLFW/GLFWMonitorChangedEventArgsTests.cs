@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.NativeInterop.GLFW;
+
 using Velaptor.NativeInterop.GLFW;
 using Xunit;
-
-namespace VelaptorTests.NativeInterop.GLFW;
 
 public class GLFWMonitorChangedEventArgsTests
 {

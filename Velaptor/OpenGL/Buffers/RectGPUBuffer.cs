@@ -2,19 +2,19 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Buffers;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Graphics;
+using Graphics;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL.Exceptions;
-using Velaptor.OpenGL.GPUData;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.OpenGL.Buffers;
+using Exceptions;
+using GPUData;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Updates data in the rectangle GPU buffer.

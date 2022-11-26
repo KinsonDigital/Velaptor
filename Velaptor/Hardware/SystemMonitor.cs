@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Hardware;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Velaptor.Guards;
-
-namespace Velaptor.Hardware;
+using Guards;
 
 /// <summary>
 /// Holds information about a single monitor in the system.

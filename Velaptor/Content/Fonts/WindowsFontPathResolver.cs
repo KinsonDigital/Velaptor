@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts;
+
 using System;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Velaptor.Guards;
-
-namespace Velaptor.Content.Fonts;
+using Guards;
 
 /// <summary>
 /// Resolves paths to Windows system fonts.

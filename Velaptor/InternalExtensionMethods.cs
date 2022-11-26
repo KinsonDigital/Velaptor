@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,15 +16,13 @@ using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Velaptor.Graphics;
-using Velaptor.OpenGL;
-using Velaptor.OpenGL.GPUData;
+using Graphics;
+using OpenGL;
+using OpenGL.GPUData;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
 using NETSizeF = System.Drawing.SizeF;
-
-namespace Velaptor;
 
 /// <summary>
 /// Provides extensions to various things to help make better code.

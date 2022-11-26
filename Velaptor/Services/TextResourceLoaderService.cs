@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Velaptor.Exceptions;
-
-namespace Velaptor.Services;
+using Exceptions;
 
 /// <summary>
 /// Loads embedded text file resources.

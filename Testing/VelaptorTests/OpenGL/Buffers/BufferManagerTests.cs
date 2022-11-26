@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Buffers;
+
 using System;
 using System.Drawing;
 using System.Numerics;
@@ -11,10 +13,8 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Buffers;
 
 /// <summary>
 /// Tests the <see cref="BufferManager"/> class.

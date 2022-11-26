@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting.Scenes;
+
 using System.Drawing;
 using System.Text;
 using Velaptor;
@@ -9,9 +11,7 @@ using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
-using VelaptorTesting.Core;
-
-namespace VelaptorTesting.Scenes;
+using Core;
 
 /// <summary>
 /// Used to test that the keyboard works correctly.

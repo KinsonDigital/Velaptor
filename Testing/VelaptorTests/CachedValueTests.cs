@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// ReSharper disable RedundantArgumentDefaultValue Used to force being explicit for CachedValue Ctor
+// ReSharper disable RedundantArgumentDefaultValue
+namespace VelaptorTests;
+
 using System;
 using Moq;
 using Velaptor;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests;
 
 public class CachedValueTests
 {

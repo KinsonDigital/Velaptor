@@ -2,17 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-using Velaptor.Input;
-using Velaptor.NativeInterop.GLFW;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-using Velaptor.Services;
-using Velaptor.UI;
-
 namespace Velaptor.Factories;
+
+using System.Diagnostics.CodeAnalysis;
+using Input;
+using NativeInterop.GLFW;
+using Velaptor.NativeInterop.OpenGL;
+using OpenGL;
+using Reactables.Core;
+using Reactables.ReactableData;
+using Services;
+using UI;
 
 /// <summary>
 /// Velaptor application specific functionality.

@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Content.Fonts;
-using Velaptor.Guards;
-
 namespace Velaptor.Content;
+
+using Fonts;
+using Guards;
 
 /// <summary>
 /// Loads content.

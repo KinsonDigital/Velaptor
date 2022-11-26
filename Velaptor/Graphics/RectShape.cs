@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-
-namespace Velaptor.Graphics;
 
 /// <summary>
 /// Represents a rectangular shape with various attributes.
