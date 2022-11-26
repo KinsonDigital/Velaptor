@@ -2,8 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable SA1129
-// ReSharper disable UseObjectOrCollectionInitializer
+namespace VelaptorTests.Graphics;
+
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -11,8 +11,6 @@ using System.Numerics;
 using Velaptor.Graphics;
 using VelaptorTests.Helpers;
 using Xunit;
-
-namespace VelaptorTests.Graphics;
 
 /// <summary>
 /// Tests the <see cref="RectShape"/> struct.
@@ -214,7 +212,7 @@ public class RectShapeTests
     public void Width_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
 
         // Act
         rect.Width = value;
@@ -231,7 +229,7 @@ public class RectShapeTests
     public void Height_WhenSettingValue_ReturnsCorrectResult(float value, float expected)
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
 
         // Act
         rect.Height = value;
@@ -245,7 +243,7 @@ public class RectShapeTests
     public void HalfWidth_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
         rect.Width = 100;
 
         // Act
@@ -259,7 +257,7 @@ public class RectShapeTests
     public void HalfHeight_WhenGettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
         rect.Height = 100;
 
         // Act
@@ -273,7 +271,7 @@ public class RectShapeTests
     public void BorderThickness_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
 
         // Act
         rect.BorderThickness = 123f;
@@ -287,7 +285,7 @@ public class RectShapeTests
     public void CornerRadius_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
 
         // Act
         var actual = rect.CornerRadius;
@@ -303,7 +301,7 @@ public class RectShapeTests
     public void CornerRadius_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
 
         // Act
         rect.CornerRadius = new CornerRadius(11f, 22f, 33f, 44f);
@@ -320,7 +318,7 @@ public class RectShapeTests
     public void Top_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
         rect.Position = new Vector2(100, 100);
         rect.Width = 100;
         rect.Height = 50;
@@ -339,7 +337,7 @@ public class RectShapeTests
     public void Right_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
         rect.Position = new Vector2(200, 100);
         rect.Width = 100;
         rect.Height = 50;
@@ -358,7 +356,7 @@ public class RectShapeTests
     public void Bottom_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
         rect.Position = new Vector2(100, 100);
         rect.Width = 100;
         rect.Height = 50;
@@ -377,7 +375,7 @@ public class RectShapeTests
     public void Left_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
         rect.Position = new Vector2(200, 100);
         rect.Width = 100;
         rect.Height = 50;
@@ -410,7 +408,7 @@ public class RectShapeTests
         bool expected)
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
         rect.Position = position;
         rect.Width = width;
         rect.Height = height;
@@ -433,7 +431,7 @@ public class RectShapeTests
     public void Empty_WhenInvoked_EmptiesStruct()
     {
         // Arrange
-        var rect = new RectShape();
+        var rect = default(RectShape);
         rect.Position = new Vector2(1, 2);
         rect.Width = 3f;
         rect.Height = 4f;
