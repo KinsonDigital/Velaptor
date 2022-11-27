@@ -291,10 +291,10 @@ public class RectShapeTests
         var actual = rect.CornerRadius;
 
         // Assert
-        AssertExtensions.EqualWithMessage(1f, actual.TopLeft, "The top left value is incorrect.");
-        AssertExtensions.EqualWithMessage(1f, actual.BottomLeft, "The bottom left value is incorrect.");
-        AssertExtensions.EqualWithMessage(1f, actual.BottomRight, "The bottom right value is incorrect.");
-        AssertExtensions.EqualWithMessage(1f, actual.TopRight, "The top right value is incorrect.");
+        AssertExtensions.EqualWithMessage(0f, actual.TopLeft, "The top left value is incorrect.");
+        AssertExtensions.EqualWithMessage(0f, actual.BottomLeft, "The bottom left value is incorrect.");
+        AssertExtensions.EqualWithMessage(0f, actual.BottomRight, "The bottom right value is incorrect.");
+        AssertExtensions.EqualWithMessage(0f, actual.TopRight, "The top right value is incorrect.");
     }
 
     [Fact]
