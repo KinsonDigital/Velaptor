@@ -4,7 +4,6 @@
 
 namespace Velaptor.Graphics;
 
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 

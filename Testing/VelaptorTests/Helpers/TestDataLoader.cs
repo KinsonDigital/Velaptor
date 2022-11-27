@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
 namespace VelaptorTests.Helpers;
 
 using System;
