@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable RedundantArgumentDefaultValue
 namespace VelaptorTests.OpenGL.Buffers;
 
 using System;
@@ -144,18 +145,18 @@ public class RectGPUBufferTests
 
         var arrayRegions = CreateArrayRegions(16, 4);
 
-        var rect = new RectBatchItem
-        {
-            Position = new Vector2(1, 2),
-            Width = 3,
-            Height = 4,
-            Color = Color.FromArgb(5, 6, 7, 8),
-            BorderThickness = 9,
-            CornerRadius = new CornerRadius(10, 11, 12, 13),
-            GradientType = ColorGradient.None,
-            GradientStart = Color.FromArgb(14, 15, 16, 17),
-            GradientStop = Color.FromArgb(18, 19, 20, 21),
-        };
+        var rect = new RectBatchItem(
+            new Vector2(1, 2),
+            3,
+            4,
+            Color.FromArgb(5, 6, 7, 8),
+            true,
+            9,
+            new CornerRadius(10, 11, 12, 13),
+            ColorGradient.None,
+            Color.FromArgb(14, 15, 16, 17),
+            Color.FromArgb(18, 19, 20, 21),
+            0);
 
         float[]? actualRawData = null;
 
@@ -182,10 +183,7 @@ public class RectGPUBufferTests
     public void UploadVertexData_WithInvalidColorGradientValue_ThrowsException()
     {
         // Arrange
-        var rect = new RectBatchItem
-        {
-            GradientType = (ColorGradient)1234,
-        };
+        var rect = new RectBatchItem(gradientType: (ColorGradient)1234);
 
         var sut = CreateSystemUnderTest();
 
@@ -236,16 +234,18 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var rect = new RectBatchItem
-        {
-            Position = new Vector2(1, 2), Width = 3, Height = 4,
-            Color = Color.FromArgb(5, 6, 7, 8),
-            BorderThickness = 9,
-            CornerRadius = new CornerRadius(10, 11, 12, 13),
-            GradientType = ColorGradient.None,
-            GradientStart = Color.FromArgb(14, 15, 16, 17),
-            GradientStop = Color.FromArgb(17, 18, 19, 20),
-        };
+#pragma warning disable SA1117
+        var rect = new RectBatchItem(
+            position: new Vector2(1, 2),
+            width: 3,
+            height: 4,
+            color: Color.FromArgb(5, 6, 7, 8),
+            borderThickness: 9,
+            cornerRadius: new CornerRadius(10, 11, 12, 13),
+            gradientType: ColorGradient.None,
+            gradientStart: Color.FromArgb(14, 15, 16, 17),
+            gradientStop: Color.FromArgb(17, 18, 19, 20));
+#pragma warning restore SA1117
 
         var sut = CreateSystemUnderTest();
 
@@ -299,16 +299,18 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var rect = new RectBatchItem
-        {
-            Position = new Vector2(1, 2), Width = 3, Height = 4,
-            Color = Color.FromArgb(5, 6, 7, 8),
-            BorderThickness = 9,
-            CornerRadius = new CornerRadius(10, 11, 12, 13),
-            GradientType = ColorGradient.Horizontal,
-            GradientStart = Color.FromArgb(14, 15, 16, 17),
-            GradientStop = Color.FromArgb(18, 19, 20, 21),
-        };
+#pragma warning disable SA1117
+        var rect = new RectBatchItem(
+            position: new Vector2(1, 2),
+            width: 3,
+            height: 4,
+            color: Color.FromArgb(5, 6, 7, 8),
+            borderThickness: 9,
+            cornerRadius: new CornerRadius(10, 11, 12, 13),
+            gradientType: ColorGradient.Horizontal,
+            gradientStart: Color.FromArgb(14, 15, 16, 17),
+            gradientStop: Color.FromArgb(18, 19, 20, 21));
+#pragma warning restore SA1117
 
         var sut = CreateSystemUnderTest();
 
@@ -362,16 +364,18 @@ public class RectGPUBufferTests
                 actualRawData = data;
             });
 
-        var rect = new RectBatchItem
-        {
-            Position = new Vector2(1, 2), Width = 3, Height = 4,
-            Color = Color.FromArgb(5, 6, 7, 8),
-            BorderThickness = 9,
-            CornerRadius = new CornerRadius(10, 11, 12, 13),
-            GradientType = ColorGradient.Vertical,
-            GradientStart = Color.FromArgb(14, 15, 16, 17),
-            GradientStop = Color.FromArgb(18, 19, 20, 21),
-        };
+#pragma warning disable SA1117
+        var rect = new RectBatchItem(
+            position: new Vector2(1, 2),
+            width: 3,
+            height: 4,
+            color: Color.FromArgb(5, 6, 7, 8),
+            borderThickness: 9,
+            cornerRadius: new CornerRadius(10, 11, 12, 13),
+            gradientType: ColorGradient.Vertical,
+            gradientStart: Color.FromArgb(14, 15, 16, 17),
+            gradientStop: Color.FromArgb(18, 19, 20, 21));
+#pragma warning restore SA1117
 
         var sut = CreateSystemUnderTest();
 

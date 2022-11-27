@@ -11,75 +11,122 @@ using Graphics;
 /// <summary>
 /// Represents a rectangular shape with various attributes.
 /// </summary>
-internal struct RectBatchItem
+internal readonly struct RectBatchItem
 {
-    private float width = 1f;
-    private float height = 1f;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBatchItem"/> struct.
     /// </summary>
-    public RectBatchItem()
+    /// <param name="position">The position of the rectangle.</param>
+    /// <param name="width">The width of the rectangle.</param>
+    /// <param name="height">The height of the rectangle.</param>
+    /// <param name="color">The color of the rectangle.</param>
+    /// <param name="isFilled">If true, a solid rectangle.</param>
+    /// <param name="borderThickness">The thickness of the rectangle's border.</param>
+    /// <param name="cornerRadius">The radius of each corner of the rectangle.</param>
+    /// <param name="gradientType">The type of color gradient that will be applied to the rectangle.</param>
+    /// <param name="gradientStart">The starting color of the gradient.</param>
+    /// <param name="gradientStop">The ending color of the gradient.</param>
+    /// <param name="layer">The layer that the shape will be rendered on.</param>
+    /// <remarks>
+    /// <para>
+    ///     The <see cref="BorderThickness"/> property is ignored if the <paramref name="isFilled"/> parameter is set to <c>true</c>.
+    /// </para>
+    /// <para>
+    ///     The value of each corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
+    /// </para>
+    /// </remarks>
+    public RectBatchItem(
+        Vector2 position = default,
+        float width = 1f,
+        float height = 1f,
+        Color color = default,
+        bool isFilled = true,
+        float borderThickness = 1f,
+        CornerRadius cornerRadius = default,
+        ColorGradient gradientType = ColorGradient.None,
+        Color gradientStart = default,
+        Color gradientStop = default,
+        int layer = 0)
     {
+        Position = position;
+        Width = width;
+        Height = height;
+        Color = color == Color.Empty ? Color.White : color;
+        IsFilled = isFilled;
+        BorderThickness = borderThickness;
+
+        if (cornerRadius == CornerRadius.Empty())
+        {
+            CornerRadius = new CornerRadius(1, 1, 1, 1);
+        }
+        else
+        {
+            var minValue = Width > height ? width : height;
+
+            cornerRadius = cornerRadius.TopLeft > minValue
+                ? CornerRadius.SetTopLeft(cornerRadius, minValue)
+                : cornerRadius;
+
+            cornerRadius = cornerRadius.TopRight > minValue
+                ? CornerRadius.SetTopRight(cornerRadius, minValue)
+                : cornerRadius;
+
+            cornerRadius = cornerRadius.BottomRight > minValue
+                ? CornerRadius.SetBottomRight(cornerRadius, minValue)
+                : cornerRadius;
+
+            cornerRadius = cornerRadius.BottomLeft > minValue
+                ? CornerRadius.SetBottomLeft(cornerRadius, minValue)
+                : cornerRadius;
+
+            CornerRadius = cornerRadius;
+        }
+
+        GradientType = gradientType;
+        GradientStart = gradientStart == Color.Empty ? Color.White : gradientStart;
+        GradientStop = gradientStop == Color.Empty ? Color.White : gradientStop;
+        Layer = layer;
     }
 
     /// <summary>
-    /// Gets or sets the position of the rectangle.
+    /// Gets the position of the rectangle.
     /// </summary>
     /// <remarks>
-    ///     This position is the center of the rectangle.
+    ///     This is the center of the rectangle.
     /// </remarks>
-    public Vector2 Position { get; set; } = Vector2.Zero;
+    public Vector2 Position { get; }
 
     /// <summary>
-    /// Gets or sets the width of the rectangle.
+    /// Gets the width of the rectangle.
     /// </summary>
     /// <remarks>
     ///     The width is restricted to a minimum value of 1.
     /// </remarks>
-    public float Width
-    {
-        get => this.width;
-        set
-        {
-            value = value < 1f ? 1f : value;
-
-            this.width = value;
-        }
-    }
+    public float Width { get; }
 
     /// <summary>
-    /// Gets or sets the height of the rectangle.
+    /// Gets the height of the rectangle.
     /// </summary>
     /// <remarks>
     ///     The height is restricted to a minimum value of 1.
     /// </remarks>
-    public float Height
-    {
-        get => this.height;
-        set
-        {
-            value = value < 1f ? 1f : value;
-
-            this.height = value;
-        }
-    }
+    public float Height { get; }
 
     /// <summary>
-    /// Gets or sets the color of the rectangle.
+    /// Gets the color of the rectangle.
     /// </summary>
     /// <remarks>
     ///     Ignored if the <see cref="GradientType"/> is set to any value other than <see cref="ColorGradient.None"/>.
     /// </remarks>
-    public Color Color { get; set; } = Color.White;
+    public Color Color { get; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not the rectangle is filled or empty.
+    /// Gets a value indicating whether or not the rectangle is filled or empty.
     /// </summary>
-    public bool IsFilled { get; set; } = true;
+    public bool IsFilled { get; } = true;
 
     /// <summary>
-    /// Gets or sets the thickness of the rectangle's border.
+    /// Gets the thickness of the rectangle's border.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -90,18 +137,18 @@ internal struct RectBatchItem
     ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
     /// </para>
     /// </remarks>
-    public float BorderThickness { get; set; } = 1f;
+    public float BorderThickness { get; }
 
     /// <summary>
-    /// Gets or sets the radius of each corner of the rectangle.
+    /// Gets the radius of each corner of the rectangle.
     /// </summary>
     /// <remarks>
     ///     The value of a corner will never be larger than the smallest half <see cref="Width"/> or half <see cref="Height"/>.
     /// </remarks>
-    public CornerRadius CornerRadius { get; set; } = new (1f, 1f, 1f, 1f);
+    public CornerRadius CornerRadius { get; }
 
     /// <summary>
-    /// Gets or sets the type of color gradient that will be applied to the rectangle.
+    /// Gets the type of color gradient that will be applied to the rectangle.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -123,28 +170,28 @@ internal struct RectBatchItem
     ///     render it to the bottom as the <see cref="GradientStop"/> color.
     /// </para>
     /// </remarks>
-    public ColorGradient GradientType { get; set; } = ColorGradient.None;
+    public ColorGradient GradientType { get; }
 
     /// <summary>
-    /// Gets or sets the starting color of the gradient.
+    /// Gets the starting color of the gradient.
     /// </summary>
     /// <remarks>
     ///     This property is ignored if the <see cref="GradientType"/> is set to a value of <see cref="ColorGradient.None"/>.
     /// </remarks>
-    public Color GradientStart { get; set; } = Color.White;
+    public Color GradientStart { get; }
 
     /// <summary>
-    /// Gets or sets the ending color of the gradient.
+    /// Gets the ending color of the gradient.
     /// </summary>
     /// <remarks>
     ///     This property is ignored if the <see cref="GradientType"/> is set to a value of <see cref="ColorGradient.None"/>.
     /// </remarks>
-    public Color GradientStop { get; set; } = Color.White;
+    public Color GradientStop { get; }
 
     /// <summary>
-    /// Gets or sets the layer that the shape will be rendered on.
+    /// Gets the layer that the shape will be rendered on.
     /// </summary>
-    public int Layer { get; set; } = 0;
+    public int Layer { get; }
 
     /// <summary>
     /// Returns a value indicating whether or not the <see cref="RectShape"/> struct is empty.
@@ -162,22 +209,4 @@ internal struct RectBatchItem
         GradientStart.IsEmpty &&
         GradientStop.IsEmpty &&
         Layer == 0;
-
-    /// <summary>
-    /// Empties the struct.
-    /// </summary>
-    public void Empty()
-    {
-        Position = Vector2.Zero;
-        Width = 0;
-        Height = 0;
-        Color = Color.Empty;
-        IsFilled = false;
-        BorderThickness = 0u;
-        CornerRadius = new CornerRadius(0f, 0f, 0f, 0f);
-        GradientType = ColorGradient.None;
-        GradientStart = Color.Empty;
-        GradientStop = Color.Empty;
-        Layer = 0;
-    }
 }

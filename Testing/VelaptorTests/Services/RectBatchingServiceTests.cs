@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable RedundantArgumentDefaultValue
 namespace VelaptorTests.Services;
 
 using System;
@@ -61,7 +62,7 @@ public class RectBatchingServiceTests
     public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
     {
         // Arrange & Act
-        var sut = CreateService();
+        var sut = CreateSystemUnderTest();
         this.reactor.OnNext(new BatchSizeData(4u));
 
         // Assert
@@ -72,7 +73,7 @@ public class RectBatchingServiceTests
     public void Ctor_WhenEndNotificationsIsInvoked_UnsubscribesFromReactable()
     {
         // Arrange
-        _ = CreateService();
+        _ = CreateSystemUnderTest();
 
         // Act
         this.reactor.OnCompleted();
@@ -88,40 +89,38 @@ public class RectBatchingServiceTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = new RectBatchItem
-        {
-            Position = new Vector2(1f, 2f),
-            Width = 3f,
-            Height = 4f,
-            Color = Color.FromArgb(5, 6, 7, 8),
-            IsFilled = true,
-            BorderThickness = 9,
-            CornerRadius = new CornerRadius(10, 11, 12, 13),
-            GradientType = ColorGradient.None,
-            GradientStart = Color.FromArgb(14, 15, 16, 17),
-            GradientStop = Color.FromArgb(18, 19, 20, 21),
-        };
-        var batchItem2 = new RectBatchItem
-        {
-            Position = new Vector2(22f, 23f),
-            Width = 24f,
-            Height = 25f,
-            Color = Color.FromArgb(26, 27, 28, 29),
-            IsFilled = true,
-            BorderThickness = 30,
-            CornerRadius = new CornerRadius(31, 32, 33, 34),
-            GradientType = ColorGradient.None,
-            GradientStart = Color.FromArgb(35, 36, 37, 38),
-            GradientStop = Color.FromArgb(39, 40, 41, 42),
-        };
+        var batchItem1 = new RectBatchItem(
+            new Vector2(1f, 2f),
+            3f,
+            4f,
+            Color.FromArgb(5, 6, 7, 8),
+            true,
+            9,
+            new CornerRadius(10, 11, 12, 13),
+            ColorGradient.None,
+            Color.FromArgb(14, 15, 16, 17),
+            Color.FromArgb(18, 19, 20, 21),
+            0);
+        var batchItem2 = new RectBatchItem(
+            new Vector2(22f, 23f),
+            24f,
+            25f,
+            Color.FromArgb(26, 27, 28, 29),
+            true,
+            30,
+            new CornerRadius(31, 32, 33, 34),
+            ColorGradient.None,
+            Color.FromArgb(35, 36, 37, 38),
+            Color.FromArgb(39, 40, 41, 42),
+            0);
 
         var batchItems = new List<RectBatchItem> { batchItem1, batchItem2 };
         var expected = new ReadOnlyCollection<RectBatchItem>(batchItems.ToReadOnlyCollection());
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        service.BatchItems = batchItems.ToReadOnlyCollection();
-        var actual = service.BatchItems;
+        sut.BatchItems = batchItems.ToReadOnlyCollection();
+        var actual = sut.BatchItems;
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -133,31 +132,23 @@ public class RectBatchingServiceTests
     public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
     {
         // Arrange
-        var batchItem1 = new RectBatchItem
-        {
-            Width = 10,
-            Height = 20,
-        };
-        var batchItem2 = new RectBatchItem
-        {
-            Width = 30,
-            Height = 40,
-        };
+        var batchItem1 = new RectBatchItem(width: 10, height: 20);
+        var batchItem2 = new RectBatchItem(width: 30, height: 40);
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
         this.reactor.OnNext(new BatchSizeData(1u));
-        service.Add(batchItem1);
+        sut.Add(batchItem1);
 
         // Act & Assert
         Assert.Raises<EventArgs>(e =>
         {
-            service.ReadyForRendering += e;
+            sut.ReadyForRendering += e;
         }, e =>
         {
-            service.ReadyForRendering -= e;
+            sut.ReadyForRendering -= e;
         }, () =>
         {
-            service.Add(batchItem2);
+            sut.Add(batchItem2);
         });
     }
 
@@ -165,19 +156,19 @@ public class RectBatchingServiceTests
     public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
     {
         // Arrange
-        var batchItem1 = new RectBatchItem() { Width = 10 };
-        var batchItem2 = new RectBatchItem() { Width = 20 };
+        var batchItem1 = new RectBatchItem(width: 10);
+        var batchItem2 = new RectBatchItem(width: 20);
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
         this.reactor.OnNext(new BatchSizeData(2u));
-        service.Add(batchItem1);
-        service.Add(batchItem2);
+        sut.Add(batchItem1);
+        sut.Add(batchItem2);
 
         // Act
-        service.EmptyBatch();
+        sut.EmptyBatch();
 
         // Assert
-        Assert.NotEqual(batchItem1, service.BatchItems[0]);
+        Assert.NotEqual(batchItem1, sut.BatchItems[0]);
     }
 
     [Fact]
@@ -187,16 +178,16 @@ public class RectBatchingServiceTests
         var batchItem1 = default(RectBatchItem);
         var batchItem2 = default(RectBatchItem);
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
         this.reactor.OnNext(new BatchSizeData(2u));
-        service.BatchItems = new List<RectBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
+        sut.BatchItems = new List<RectBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
-        service.EmptyBatch();
+        sut.EmptyBatch();
 
         // Assert
-        Assert.Equal(batchItem1, service.BatchItems[0]);
-        Assert.Equal(batchItem2, service.BatchItems[1]);
+        Assert.Equal(batchItem1, sut.BatchItems[0]);
+        Assert.Equal(batchItem2, sut.BatchItems[1]);
     }
     #endregion
 
@@ -204,5 +195,5 @@ public class RectBatchingServiceTests
     /// Creates a new instance of <see cref="RectBatchingService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private RectBatchingService CreateService() => new (this.mockBatchSizeReactable.Object);
+    private RectBatchingService CreateSystemUnderTest() => new (this.mockBatchSizeReactable.Object);
 }

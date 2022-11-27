@@ -141,10 +141,18 @@ public class BufferManagerTests
     public void UploadRectangleData_WhenInvoked_UploadsData()
     {
         // Arrange
-        var data = default(RectBatchItem);
-        data.Position = new Vector2(111, 222);
-        data.Width = 444;
-        data.Height = 555;
+        var data = new RectBatchItem(
+            new Vector2(1, 2),
+            3,
+            4,
+            Color.FromArgb(5, 6, 7, 8),
+            true,
+            9f,
+            new CornerRadius(10, 11, 13, 14),
+            ColorGradient.Horizontal,
+            Color.FromArgb(15, 16, 17, 18),
+            Color.FromArgb(15, 16, 17, 18),
+            19);
 
         var sut = CreateSystemUnderTest();
 

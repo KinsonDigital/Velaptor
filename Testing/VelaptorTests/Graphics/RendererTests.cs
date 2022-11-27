@@ -2,6 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable RedundantArgumentDefaultValue
 namespace VelaptorTests.Graphics;
 
 using System;
@@ -552,7 +553,8 @@ public class RendererTests
         const int expectedWidth = 111;
         const int expectedHeight = 222;
         const RenderEffects expectedRenderEffects = RenderEffects.FlipHorizontally;
-        var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, Color.White, textureId);
+        var expectedBatchItem =
+            CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, Color.White, textureId);
 
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(textureId);
@@ -619,7 +621,8 @@ public class RendererTests
         const int expectedHeight = 222;
         var expectedClr = Color.FromArgb(11, 22, 33, 44);
         const RenderEffects expectedRenderEffects = RenderEffects.FlipVertically;
-        var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, expectedClr, textureId);
+        var expectedBatchItem =
+            CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, expectedClr, textureId);
 
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(textureId);
@@ -1341,19 +1344,18 @@ public class RendererTests
             GradientStop = Color.Magenta,
         };
 
-        var expected = new RectBatchItem
-        {
-            Position = new Vector2(11, 22),
-            Width = 33u,
-            Height = 44u,
-            IsFilled = true,
-            BorderThickness = 0,
-            CornerRadius = CornerRadius.Empty(),
-            Color = Color.White,
-            GradientType = ColorGradient.None,
-            GradientStart = Color.Magenta,
-            GradientStop = Color.Magenta,
-        };
+        var expected = new RectBatchItem(
+            new Vector2(11, 22),
+            33u,
+            44u,
+            Color.White,
+            true,
+            0,
+            CornerRadius.Empty(),
+            ColorGradient.None,
+            Color.Magenta,
+            Color.Magenta,
+            0);
 
         var sut = CreateSystemUnderTest();
 
@@ -1374,21 +1376,26 @@ public class RendererTests
         rect.Position = new Vector2(1, 2);
         rect.Width = 3;
         rect.Height = 4;
+        rect.Color = Color.FromArgb(99, 100, 110, 120);
+        rect.IsFilled = true;
         rect.BorderThickness = 5;
         rect.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
         rect.GradientStart = Color.FromArgb(11, 22, 33, 44);
         rect.GradientStop = Color.FromArgb(55, 66, 77, 88);
         rect.GradientType = ColorGradient.Horizontal;
 
-        var batchItem = default(RectBatchItem);
-        batchItem.Position = new Vector2(1, 2);
-        batchItem.Width = 3;
-        batchItem.Height = 4;
-        batchItem.BorderThickness = 5;
-        batchItem.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
-        batchItem.GradientStart = Color.FromArgb(11, 22, 33, 44);
-        batchItem.GradientStop = Color.FromArgb(55, 66, 77, 88);
-        batchItem.GradientType = ColorGradient.Horizontal;
+        var batchItem = new RectBatchItem(
+            new Vector2(1, 2),
+            3,
+            4,
+            Color.FromArgb(99, 100, 110, 120),
+            true,
+            5,
+            new CornerRadius(6f, 7f, 8f, 9f),
+            ColorGradient.Horizontal,
+            Color.FromArgb(11, 22, 33, 44),
+            Color.FromArgb(55, 66, 77, 88),
+            0);
 
         var shouldNotRenderEmptyItem = default(RectBatchItem);
 

@@ -373,18 +373,18 @@ internal sealed class Renderer : IRenderer
     /// <inheritdoc/>
     public void Render(RectShape rectangle, int layer = 0)
     {
-        var batchItem = default(RectBatchItem);
-        batchItem.BorderThickness = rectangle.BorderThickness;
-        batchItem.CornerRadius = rectangle.CornerRadius;
-        batchItem.Width = rectangle.Width;
-        batchItem.Height = rectangle.Height;
-        batchItem.Position = rectangle.Position;
-        batchItem.GradientType = rectangle.GradientType;
-        batchItem.GradientStart = rectangle.GradientStart;
-        batchItem.GradientStop = rectangle.GradientStop;
-        batchItem.Color = rectangle.Color;
-        batchItem.IsFilled = rectangle.IsFilled;
-        batchItem.Layer = layer;
+        var batchItem = new RectBatchItem(
+            rectangle.Position,
+            rectangle.Width,
+            rectangle.Height,
+            rectangle.Color,
+            rectangle.IsFilled,
+            rectangle.BorderThickness,
+            rectangle.CornerRadius,
+            rectangle.GradientType,
+            rectangle.GradientStart,
+            rectangle.GradientStop,
+            layer);
 
         this.batchServiceManager.AddRectBatchItem(batchItem);
     }
@@ -585,34 +585,29 @@ internal sealed class Renderer : IRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        for (var i = 0u; i < this.batchServiceManager.RectBatchItems.Count; i++)
+        var itemsToRender = this.batchServiceManager.RectBatchItems
+            .Where(i => i.IsEmpty() is false)
+            .Select(i => i)
+            .OrderBy(i => i.Layer)
+            .ToArray();
+
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            if (this.batchServiceManager.RectBatchItems[(int)i].IsEmpty())
-            {
-                continue;
-            }
-
-            var batchItem = this.batchServiceManager.RectBatchItems[(int)i];
-
-            this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
+            var batchItem = itemsToRender[(int)i];
 
             gpuDataIndex++;
             totalItemsToRender++;
+
+            this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
             this.bufferManager.UploadRectData(batchItem, (uint)gpuDataIndex);
-
             this.openGLService.EndGroup();
         }
 
-        // Only render the amount of elements for the amount of batch items to render.
-        // 6 = the number of vertices per quad and each batch is a quad. totalItemsToRender is the total number of  quads to render
-        if (totalItemsToRender > 0)
-        {
-            var totalElements = 6u * totalItemsToRender;
+        var totalElements = 6u * totalItemsToRender;
 
-            this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
-            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-            this.openGLService.EndGroup();
-        }
+        this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
+        this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+        this.openGLService.EndGroup();
 
         // Empty the batch
         this.batchServiceManager.EmptyBatch(BatchServiceType.Rectangle);

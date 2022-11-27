@@ -19,7 +19,6 @@ using Reactables.ReactableData;
 internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
 {
     private readonly IDisposable unsubscriber;
-    private readonly RectBatchItemComparer itemComparer = new ();
     private RectBatchItem[] batchItems = null!;
 
     /// <summary>
@@ -76,7 +75,6 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
         }
 
         this.batchItems[emptyItemIndex] = rect;
-        Array.Sort(this.batchItems, this.itemComparer);
     }
 
     /// <summary>
@@ -94,12 +92,7 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
                 continue;
             }
 
-            // TODO: This will probably not work anymore once the struct is readonly
-            // TODO: This is probably going to have to be a completely new item that writes over top
-            RectBatchItem itemToEmpty = this.batchItems[i];
-            itemToEmpty.Empty();
-
-            this.batchItems[i] = itemToEmpty;
+            this.batchItems[i] = default;
         }
     }
 }
