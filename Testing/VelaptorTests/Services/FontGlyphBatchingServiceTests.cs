@@ -86,28 +86,28 @@ public class FontGlyphBatchingServiceTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = new FontGlyphBatchItem
-        {
-            Angle = 1,
-            Effects = RenderEffects.None,
-            Size = 2,
-            DestRect = new RectangleF(3, 4, 5, 6),
-            SrcRect = new RectangleF(7, 8, 9, 10),
-            TextureId = 11,
-            TintColor = Color.FromArgb(12, 13, 14, 15),
-            ViewPortSize = new SizeF(16, 17),
-        };
-        var batchItem2 = new FontGlyphBatchItem
-        {
-            Angle = 18,
-            Effects = RenderEffects.FlipHorizontally,
-            Size = 19,
-            DestRect = new RectangleF(20, 21, 22, 23),
-            SrcRect = new RectangleF(24, 25, 26, 27),
-            TextureId = 28,
-            TintColor = Color.FromArgb(29, 30, 31, 32),
-            ViewPortSize = new SizeF(33, 34),
-        };
+        var batchItem1 = new FontGlyphBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            'g',
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            12);
+        var batchItem2 = new FontGlyphBatchItem(
+            new RectangleF(20, 21, 22, 23),
+            new RectangleF(24, 25, 26, 27),
+            'g',
+            19,
+            18,
+            Color.FromArgb(29, 30, 31, 32),
+            RenderEffects.FlipHorizontally,
+            new SizeF(33, 34),
+            28,
+            35);
 
         var batchItems = new List<FontGlyphBatchItem> { batchItem1, batchItem2 };
         var expected = new ReadOnlyCollection<FontGlyphBatchItem>(batchItems.ToReadOnlyCollection());
@@ -128,10 +128,28 @@ public class FontGlyphBatchingServiceTests
     public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
     {
         // Arrange
-        var batchItem1 = default(FontGlyphBatchItem);
-        batchItem1.TextureId = 10;
-        var batchItem2 = default(FontGlyphBatchItem);
-        batchItem2.TextureId = 10;
+        var batchItem1 = new FontGlyphBatchItem(
+            default,
+            default,
+            'g',
+            0,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            0,
+            0);
+        var batchItem2 = new FontGlyphBatchItem(
+            default,
+            default,
+            'g',
+            0,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            0,
+            0);
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(1u));
@@ -154,10 +172,28 @@ public class FontGlyphBatchingServiceTests
     public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
     {
         // Arrange
-        var batchItem1 = default(FontGlyphBatchItem);
-        batchItem1.TextureId = 10;
-        var batchItem2 = default(FontGlyphBatchItem);
-        batchItem2.TextureId = 10;
+        var batchItem1 = new FontGlyphBatchItem(
+            default,
+            default,
+            'g',
+            0,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            0,
+            0);
+        var batchItem2 = new FontGlyphBatchItem(
+            default,
+            default,
+            'g',
+            0,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            0,
+            0);
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(2u));

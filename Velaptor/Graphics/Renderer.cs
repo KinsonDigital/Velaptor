@@ -517,48 +517,46 @@ internal sealed class Renderer : IRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        for (var i = 0u; i < this.batchServiceManager.FontGlyphBatchItems.Count; i++)
+        var itemsToRender = this.batchServiceManager.FontGlyphBatchItems
+            .Where(i => i.IsEmpty() is false)
+            .Select(i => i)
+            .OrderBy(i => i.Layer)
+            .ToArray();
+
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            if (this.batchServiceManager.FontGlyphBatchItems[(int)i].IsEmpty())
+            var batchItem = itemsToRender[(int)i];
+
+            var isLastItem = i >= itemsToRender.Length - 1;
+            var isNotLastItem = !isLastItem;
+
+            var nextTextureIsDifferent = isNotLastItem &&
+                                         itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
+            var shouldRender = isLastItem || nextTextureIsDifferent;
+            var shouldNotRender = !shouldRender;
+
+            gpuDataIndex++;
+            totalItemsToRender++;
+
+            this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+            this.bufferManager.UploadFontGlyphData(batchItem, (uint)gpuDataIndex);
+            this.openGLService.EndGroup();
+
+            if (shouldNotRender)
             {
                 continue;
             }
 
-            var batchItem = this.batchServiceManager.FontGlyphBatchItems[(int)i];
+            this.openGLService.BindTexture2D(batchItem.TextureId);
 
-            this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+            var totalElements = 6u * totalItemsToRender;
 
-            var isLastItem = i >= this.batchServiceManager.FontGlyphBatchItems.Count - 1;
-            var nextItemIsFull = i < this.batchServiceManager.FontGlyphBatchItems.Count - 1 &&
-                                 this.batchServiceManager.FontGlyphBatchItems[(int)(i + 1)].IsEmpty() is false;
-            var shouldRender = isLastItem ||
-                               (nextItemIsFull &&
-                                this.batchServiceManager.FontGlyphBatchItems[(int)(i + 1)].TextureId != batchItem.TextureId);
-
-            gpuDataIndex++;
-            totalItemsToRender++;
-            this.bufferManager.UploadFontGlyphData(batchItem, (uint)gpuDataIndex);
-
+            this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
+            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
             this.openGLService.EndGroup();
 
-            if (shouldRender)
-            {
-                this.openGLService.BindTexture2D(batchItem.TextureId);
-
-                // Only render the amount of elements for the amount of batch items to render.
-                // 6 = the number of vertices per quad and each batch item is a quad. totalItemsToRender is the total quads to render
-                if (totalItemsToRender > 0)
-                {
-                    var totalElements = 6u * totalItemsToRender;
-
-                    this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
-                    this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                    this.openGLService.EndGroup();
-
-                    totalItemsToRender = 0;
-                    gpuDataIndex = -1;
-                }
-            }
+            totalItemsToRender = 0;
+            gpuDataIndex = -1;
         }
 
         // Empty the batch
@@ -687,18 +685,17 @@ internal sealed class Renderer : IRenderer
             // Only render characters that are not a space (32 char code)
             if (currentCharMetric.Glyph != ' ')
             {
-                var itemToAdd = default(FontGlyphBatchItem);
-
-                itemToAdd.Glyph = currentCharMetric.Glyph;
-                itemToAdd.SrcRect = srcRect;
-                itemToAdd.DestRect = destRect;
-                itemToAdd.Size = renderSize;
-                itemToAdd.Angle = angle;
-                itemToAdd.TintColor = color;
-                itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
-                itemToAdd.Effects = RenderEffects.None;
-                itemToAdd.TextureId = font.FontTextureAtlas.Id;
-                itemToAdd.Layer = layer;
+                var itemToAdd = new FontGlyphBatchItem(
+                    srcRect,
+                    destRect,
+                    currentCharMetric.Glyph,
+                    renderSize,
+                    angle,
+                    color,
+                    RenderEffects.None,
+                    new SizeF(RenderSurfaceWidth, RenderSurfaceHeight),
+                    font.FontTextureAtlas.Id,
+                    layer);
 
                 result.Add(itemToAdd);
             }

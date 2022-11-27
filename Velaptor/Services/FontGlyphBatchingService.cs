@@ -1,4 +1,4 @@
-// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
+﻿// <copyright file="FontGlyphBatchingService.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -19,7 +19,6 @@ namespace Velaptor.Services;
 internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
 {
     private readonly IDisposable unsubscriber;
-    private readonly FontGlyphBatchItemComparer itemComparer = new ();
     private FontGlyphBatchItem[] batchItems = null!;
 #if DEBUG
     private uint currentFrame;
@@ -79,7 +78,6 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
         }
 
         this.batchItems[emptyItemIndex] = item;
-        Array.Sort(this.batchItems, this.itemComparer);
     }
 
     /// <summary>
@@ -101,20 +99,16 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
                 continue;
             }
 
-            FontGlyphBatchItem itemToEmpty = this.batchItems[i];
-
 #if DEBUG
             AppStats.RecordFontGlyphRendering(
                 this.currentFrame,
-                itemToEmpty.Glyph,
-                itemToEmpty.TextureId,
-                itemToEmpty.Size,
-                itemToEmpty.DestRect);
+                this.batchItems[i].Glyph,
+                this.batchItems[i].TextureId,
+                this.batchItems[i].Size,
+                this.batchItems[i].DestRect);
 #endif
 
-            itemToEmpty.Empty();
-
-            this.batchItems[i] = itemToEmpty;
+            this.batchItems[i] = default;
         }
     }
 }

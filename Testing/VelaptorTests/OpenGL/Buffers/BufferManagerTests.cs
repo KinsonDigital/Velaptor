@@ -1,8 +1,9 @@
-﻿// <copyright file="BufferManagerTests.cs" company="KinsonDigital">
+// <copyright file="BufferManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
 using System;
+using System.Drawing;
 using System.Numerics;
 using Moq;
 using Velaptor;
@@ -115,10 +116,17 @@ public class BufferManagerTests
     public void UploadFontGlyphData_WhenInvoked_UploadsData()
     {
         // Arrange
-        var data = default(FontGlyphBatchItem);
-        data.Angle = 90;
-        data.Effects = RenderEffects.FlipVertically;
-        data.Size = 2.5f;
+        var data = new FontGlyphBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            'g',
+            2.5F,
+            90,
+            Color.Empty,
+            RenderEffects.FlipVertically,
+            SizeF.Empty,
+            0,
+            0);
 
         var sut = CreateSystemUnderTest();
 

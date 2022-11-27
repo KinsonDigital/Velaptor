@@ -891,7 +891,8 @@ public class RendererTests
             300,
             1.5f,
             45,
-            Color.FromArgb(11, 22, 33, 44));
+            Color.FromArgb(11, 22, 33, 44),
+            500);
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.AddFontGlyphBatchItem(It.IsAny<FontGlyphBatchItem>()), Times.Exactly(renderText.Length));
@@ -1583,9 +1584,17 @@ public class RendererTests
 
         for (var i = 0; i < batchGlyphs.Length; i++)
         {
-            var batchItem = default(FontGlyphBatchItem);
-            batchItem.Glyph = batchGlyphs[i];
-            batchItem.TextureId = FontAtlasTextureId;
+            var batchItem = new FontGlyphBatchItem(
+                RectangleF.Empty,
+                RectangleF.Empty,
+                batchGlyphs[i],
+                0,
+                0,
+                Color.Empty,
+                RenderEffects.None,
+                SizeF.Empty,
+                FontAtlasTextureId,
+                0);
 
             glyphsToMock.Add(batchItem);
         }
