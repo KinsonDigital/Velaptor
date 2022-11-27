@@ -469,7 +469,7 @@ public class ButtonTests
 
         var mockRenderer = new Mock<IRenderer>();
         mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
-            .Callback<RectShape>((rectangle) =>
+            .Callback<RectShape, int>((rectangle, _) =>
             {
                 // Only capture the sut face rectangle
                 if (rectangle.IsFilled)

@@ -20,7 +20,6 @@ namespace Velaptor.Services;
 internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem>
 {
     private readonly IDisposable unsubscriber;
-    private readonly TextureBatchItemComparer itemComparer = new ();
     private TextureBatchItem[] batchItems = null!;
 
     /// <summary>
@@ -69,7 +68,7 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
     /// Adds the given <paramref name="item"/> to the batch.
     /// </summary>
     /// <param name="item">The item to be added.</param>
-    public void Add(TextureBatchItem item)
+    public void Add(in TextureBatchItem item)
     {
         var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
@@ -86,7 +85,6 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
         }
 
         this.batchItems[emptyItemIndex] = item;
-        Array.Sort(this.batchItems, this.itemComparer);
     }
 
     /// <summary>
@@ -104,11 +102,7 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
                 continue;
             }
 
-            TextureBatchItem itemToEmpty = this.batchItems[i];
-
-            itemToEmpty.Empty();
-
-            this.batchItems[i] = itemToEmpty;
+            this.batchItems[i] = default;
         }
     }
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using FluentAssertions;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Xunit;
@@ -33,6 +34,7 @@ public class TextureBatchItemTests
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
             new SizeF(16, 17), // Viewport Size
+            18, // Layer
             true, // Expected Equal Result
         };
         yield return new object[]
@@ -45,6 +47,7 @@ public class TextureBatchItemTests
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
             new SizeF(16, 17), // Viewport Size
+            18, // Layer
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -57,6 +60,7 @@ public class TextureBatchItemTests
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
             new SizeF(16, 17), // Viewport Size
+            18, // Layer
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -69,6 +73,7 @@ public class TextureBatchItemTests
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
             new SizeF(16, 17), // Viewport Size
+            18, // Layer
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -81,6 +86,7 @@ public class TextureBatchItemTests
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
             new SizeF(16, 17), // Viewport Size
+            18, // Layer
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -93,6 +99,7 @@ public class TextureBatchItemTests
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
             new SizeF(16, 17), // Viewport Size
+            18, // Layer
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -105,6 +112,7 @@ public class TextureBatchItemTests
             111, // TextureId <-- THIS ONE IS DIFFERENT
             Color.FromArgb(12, 13, 14, 15), // Tint Color
             new SizeF(16, 17), // Viewport Size
+            18, // Layer
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -117,6 +125,7 @@ public class TextureBatchItemTests
             11, // TextureId
             Color.FromArgb(120, 130, 140, 150), // Tint Color <-- THIS ONE IS DIFFERENT
             new SizeF(16, 17), // Viewport Size
+            18, // Layer
             false, // Expected Equal Result
         };
         yield return new object[]
@@ -129,6 +138,20 @@ public class TextureBatchItemTests
             11, // TextureId
             Color.FromArgb(12, 13, 14, 15), // Tint Color
             new SizeF(160, 170), // Viewport Size <-- THIS ONE IS DIFFERENT
+            18, // Layer
+            false, // Expected Equal Result
+        };
+        yield return new object[]
+        {
+            1, // Angle
+            RenderEffects.None, //Render Effects
+            2, // Size
+            new RectangleF(3, 4, 5, 6), // Dest Rect
+            new RectangleF(7, 8, 9, 10), // Src Rect
+            11, // TextureId
+            Color.FromArgb(12, 13, 14, 15), // Tint Color
+            new SizeF(16, 17), // Viewport Size
+            180, // Layer <-- THIS ONE IS DIFFERENT
             false, // Expected Equal Result
         };
     }
@@ -147,32 +170,6 @@ public class TextureBatchItemTests
         Assert.True(actual);
     }
 
-    [Fact]
-    public void Empty_WhenGettingValue_ReturnsCorrectResult()
-    {
-        // Arrange
-        var batchItem = default(TextureBatchItem);
-        batchItem.Angle = 1;
-        batchItem.Effects = RenderEffects.None;
-        batchItem.Size = 2;
-        batchItem.DestRect = new RectangleF(3, 4, 5, 6);
-        batchItem.SrcRect = new RectangleF(7, 8, 9, 10);
-        batchItem.TextureId = 11;
-        batchItem.TintColor = Color.FromArgb(12, 13, 14, 15);
-        batchItem.ViewPortSize = new SizeF(16, 17);
-
-        // Act
-        batchItem.Empty();
-
-        // Assert
-        Assert.Equal(0u, batchItem.TextureId);
-        Assert.Equal(Rectangle.Empty, batchItem.SrcRect);
-        Assert.Equal(Rectangle.Empty, batchItem.DestRect);
-        Assert.Equal(0f, batchItem.Size);
-        Assert.Equal(0f, batchItem.Angle);
-        Assert.Equal(Color.Empty, batchItem.TintColor);
-    }
-
     [Theory]
     [MemberData(nameof(GetBatchItemData))]
     public void Equals_WhenUsingBatchItemParamOverload_ReturnsCorrectResult(
@@ -184,59 +181,64 @@ public class TextureBatchItemTests
         uint textureId,
         Color tintColor,
         SizeF viewPortSize,
+        int layer,
         bool expected)
     {
         // Arrange
-        var batchItemA = default(TextureBatchItem);
-        batchItemA.Angle = 1;
-        batchItemA.Effects = RenderEffects.None;
-        batchItemA.Size = 2;
-        batchItemA.DestRect = new RectangleF(3, 4, 5, 6);
-        batchItemA.SrcRect = new RectangleF(7, 8, 9, 10);
-        batchItemA.TextureId = 11;
-        batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
-        batchItemA.ViewPortSize = new SizeF(16, 17);
+        var batchItemA = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            18);
 
-        var batchItemB = default(TextureBatchItem);
-        batchItemB.Angle = angle;
-        batchItemB.Effects = effects;
-        batchItemB.Size = size;
-        batchItemB.DestRect = destRect;
-        batchItemB.SrcRect = srcRect;
-        batchItemB.TextureId = textureId;
-        batchItemB.TintColor = tintColor;
-        batchItemB.ViewPortSize = viewPortSize;
+        var batchItemB = new TextureBatchItem(
+            srcRect,
+            destRect,
+            size,
+            angle,
+            tintColor,
+            effects,
+            viewPortSize,
+            textureId,
+            layer);
 
         // Act
         var actual = batchItemA.Equals(batchItemB);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
     public void EqualsOperator_WithEqualOperands_ReturnsTrue()
     {
         // Arrange
-        var batchItemA = default(TextureBatchItem);
-        batchItemA.Angle = 1;
-        batchItemA.Effects = RenderEffects.None;
-        batchItemA.Size = 2;
-        batchItemA.DestRect = new RectangleF(3, 4, 5, 6);
-        batchItemA.SrcRect = new RectangleF(7, 8, 9, 10);
-        batchItemA.TextureId = 11;
-        batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
-        batchItemA.ViewPortSize = new SizeF(16, 17);
+        var batchItemA = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            18);
 
-        var batchItemB = default(TextureBatchItem);
-        batchItemB.Angle = 1;
-        batchItemB.Effects = RenderEffects.None;
-        batchItemB.Size = 2;
-        batchItemB.DestRect = new RectangleF(3, 4, 5, 6);
-        batchItemB.SrcRect = new RectangleF(7, 8, 9, 10);
-        batchItemB.TextureId = 11;
-        batchItemB.TintColor = Color.FromArgb(12, 13, 14, 15);
-        batchItemB.ViewPortSize = new SizeF(16, 17);
+        var batchItemB = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            18);
 
         // Act
         var actual = batchItemA == batchItemB;
@@ -249,25 +251,27 @@ public class TextureBatchItemTests
     public void NotEqualsOperator_WithUnequalOperands_ReturnsTrue()
     {
         // Arrange
-        var batchItemA = default(TextureBatchItem);
-        batchItemA.Angle = 1;
-        batchItemA.Effects = RenderEffects.None;
-        batchItemA.Size = 2;
-        batchItemA.DestRect = new RectangleF(3, 4, 5, 6);
-        batchItemA.SrcRect = new RectangleF(7, 8, 9, 10);
-        batchItemA.TextureId = 11;
-        batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
-        batchItemA.ViewPortSize = new SizeF(16, 17);
+        var batchItemA = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            18);
 
-        var batchItemB = default(TextureBatchItem);
-        batchItemB.Angle = 11;
-        batchItemB.Effects = RenderEffects.None;
-        batchItemB.Size = 22;
-        batchItemB.DestRect = new RectangleF(33, 44, 55, 66);
-        batchItemB.SrcRect = new RectangleF(77, 88, 99, 100);
-        batchItemB.TextureId = 110;
-        batchItemB.TintColor = Color.FromArgb(120, 130, 140, 150);
-        batchItemB.ViewPortSize = new SizeF(160, 170);
+        var batchItemB = new TextureBatchItem(
+            new RectangleF(77, 88, 99, 100),
+            new RectangleF(33, 44, 55, 66),
+            22,
+            11,
+            Color.FromArgb(120, 130, 140, 150),
+            RenderEffects.None,
+            new SizeF(160, 170),
+            110,
+            180);
 
         // Act
         var actual = batchItemA != batchItemB;
@@ -280,27 +284,27 @@ public class TextureBatchItemTests
     public void Equals_WhenUsingObjectParamOverloadWithMatchingType_ReturnsTrue()
     {
         // Arrange
-        var batchItemA = default(TextureBatchItem);
-        batchItemA.Angle = 1;
-        batchItemA.Effects = RenderEffects.None;
-        batchItemA.Size = 2;
-        batchItemA.DestRect = new RectangleF(3, 4, 5, 6);
-        batchItemA.SrcRect = new RectangleF(7, 8, 9, 10);
-        batchItemA.TextureId = 11;
-        batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
-        batchItemA.ViewPortSize = new SizeF(16, 17);
+        var batchItemA = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            12);
 
-        object batchItemB = new TextureBatchItem()
-        {
-            Angle = 1,
-            Effects = RenderEffects.None,
-            Size = 2,
-            DestRect = new RectangleF(3, 4, 5, 6),
-            SrcRect = new RectangleF(7, 8, 9, 10),
-            TextureId = 11,
-            TintColor = Color.FromArgb(12, 13, 14, 15),
-            ViewPortSize = new SizeF(16, 17),
-        };
+        object batchItemB = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            12);
 
         // Act
         var actual = batchItemA.Equals(batchItemB);
@@ -313,15 +317,16 @@ public class TextureBatchItemTests
     public void Equals_WhenUsingObjectParamOverloadWithDifferentType_ReturnsFalse()
     {
         // Arrange
-        var batchItemA = default(TextureBatchItem);
-        batchItemA.Angle = 1;
-        batchItemA.Effects = RenderEffects.None;
-        batchItemA.Size = 2;
-        batchItemA.DestRect = new RectangleF(3, 4, 5, 6);
-        batchItemA.SrcRect = new RectangleF(7, 8, 9, 10);
-        batchItemA.TextureId = 11;
-        batchItemA.TintColor = Color.FromArgb(12, 13, 14, 15);
-        batchItemA.ViewPortSize = new SizeF(16, 17);
+        var batchItemA = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            12);
 
         var batchItemB = new object();
 
@@ -347,16 +352,16 @@ public class TextureBatchItemTests
         expected += $"{Environment.NewLine}Texture ID: 11";
         expected += $"{Environment.NewLine}Layer: 18";
 
-        var batchItem = default(TextureBatchItem);
-        batchItem.Angle = 1;
-        batchItem.Effects = RenderEffects.None;
-        batchItem.Size = 2;
-        batchItem.DestRect = new RectangleF(3, 4, 5, 6);
-        batchItem.SrcRect = new RectangleF(7, 8, 9, 10);
-        batchItem.TextureId = 11;
-        batchItem.TintColor = Color.FromArgb(12, 13, 14, 15);
-        batchItem.ViewPortSize = new SizeF(16, 17);
-        batchItem.Layer = 18;
+        var batchItem = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            18);
 
         // Act
         var actual = batchItem.ToString();

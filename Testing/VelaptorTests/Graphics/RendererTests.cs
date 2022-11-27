@@ -648,9 +648,16 @@ public class RendererTests
         // Arrange
         const uint batchIndex = 0;
 
-        var shouldRenderItem = default(TextureBatchItem);
-        shouldRenderItem.Angle = 45;
-        shouldRenderItem.TextureId = TextureId;
+        var shouldRenderItem = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            1,
+            45,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            TextureId,
+            0);
 
         var shouldNotRenderItem = default(TextureBatchItem);
         var items = new[] { shouldRenderItem, shouldNotRenderItem };
@@ -1502,15 +1509,16 @@ public class RendererTests
     /// <returns>The instance to use for testing.</returns>
     private static TextureBatchItem CreateBatchItem(int x, int y, int width, int height, RenderEffects effects, Color clr, int textureId)
     {
-        var result = default(TextureBatchItem);
-        result.SrcRect = new RectangleF(0f, 0f, width, height);
-        result.DestRect = new RectangleF(x, y, width, height);
-        result.Size = 1f;
-        result.Angle = 0f;
-        result.TintColor = clr;
-        result.Effects = effects;
-        result.ViewPortSize = new SizeF(800f, 600f);
-        result.TextureId = (uint)textureId;
+        var result = new TextureBatchItem(
+            new RectangleF(0f, 0f, width, height),
+            new RectangleF(x, y, width, height),
+            1f,
+            0f,
+            clr,
+            effects,
+            new SizeF(800f, 600f),
+            (uint)textureId,
+            0);
 
         return result;
     }

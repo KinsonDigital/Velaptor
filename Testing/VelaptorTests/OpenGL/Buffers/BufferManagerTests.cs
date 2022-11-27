@@ -101,9 +101,6 @@ public class BufferManagerTests
     {
         // Arrange
         var data = default(TextureBatchItem);
-        data.Angle = 45;
-        data.Effects = RenderEffects.FlipHorizontally;
-        data.Size = 1.5f;
 
         var sut = CreateSystemUnderTest();
 

@@ -90,28 +90,26 @@ public class TextureBatchingServiceTests
     public void BatchItems_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var batchItem1 = new TextureBatchItem
-        {
-            Angle = 1,
-            Effects = RenderEffects.None,
-            Size = 2,
-            DestRect = new RectangleF(3, 4, 5, 6),
-            SrcRect = new RectangleF(7, 8, 9, 10),
-            TextureId = 11,
-            TintColor = Color.FromArgb(12, 13, 14, 15),
-            ViewPortSize = new SizeF(16, 17),
-        };
-        var batchItem2 = new TextureBatchItem
-        {
-            Angle = 18,
-            Effects = RenderEffects.FlipHorizontally,
-            Size = 19,
-            DestRect = new RectangleF(20, 21, 22, 23),
-            SrcRect = new RectangleF(24, 25, 26, 27),
-            TextureId = 28,
-            TintColor = Color.FromArgb(29, 30, 31, 32),
-            ViewPortSize = new SizeF(33, 34),
-        };
+        var batchItem1 = new TextureBatchItem(
+            new RectangleF(7, 8, 9, 10),
+            new RectangleF(3, 4, 5, 6),
+            2,
+            1,
+            Color.FromArgb(12, 13, 14, 15),
+            RenderEffects.None,
+            new SizeF(16, 17),
+            11,
+            18);
+        var batchItem2 = new TextureBatchItem(
+            new RectangleF(24, 25, 26, 27),
+            new RectangleF(20, 21, 22, 23),
+            19,
+            18,
+            Color.FromArgb(29, 30, 31, 32),
+            RenderEffects.FlipHorizontally,
+            new SizeF(33, 34),
+            28,
+            35);
 
         var batchItems = new List<TextureBatchItem> { batchItem1, batchItem2 };
         var expected = new ReadOnlyCollection<TextureBatchItem>(batchItems.ToReadOnlyCollection());
@@ -132,10 +130,27 @@ public class TextureBatchingServiceTests
     public void Add_WhenBatchIsFull_RaisesBatchFilledEvent()
     {
         // Arrange
-        var batchItem1 = default(TextureBatchItem);
-        batchItem1.TextureId = 10;
-        var batchItem2 = default(TextureBatchItem);
-        batchItem2.TextureId = 10;
+        var batchItem1 = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            1,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            1,
+            0);
+
+        var batchItem2 = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            2,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            2,
+            0);
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(1u));
@@ -158,10 +173,27 @@ public class TextureBatchingServiceTests
     public void EmptyBatch_WhenInvoked_EmptiesAllItemsReadyToRender()
     {
         // Arrange
-        var batchItem1 = default(TextureBatchItem);
-        batchItem1.TextureId = 10;
-        var batchItem2 = default(TextureBatchItem);
-        batchItem2.TextureId = 10;
+        var expected = new[] { default(TextureBatchItem), default(TextureBatchItem) };
+        var batchItem1 = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            1,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            1,
+            0);
+        var batchItem2 = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            2,
+            0,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            2,
+            0);
 
         var service = CreateService();
         this.reactor.OnNext(new BatchSizeData(2u));
@@ -172,7 +204,7 @@ public class TextureBatchingServiceTests
         service.EmptyBatch();
 
         // Assert
-        Assert.NotEqual(batchItem1, service.BatchItems[0]);
+        Assert.Equal(expected, service.BatchItems);
     }
 
     [Fact]

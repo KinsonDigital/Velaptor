@@ -30,7 +30,7 @@ internal interface IBatchingService<T>
     /// Adds the given <paramref name="item"/> to the batch.
     /// </summary>
     /// <param name="item">The item to be added.</param>
-    void Add(T item);
+    void Add(in T item);
 
     /// <summary>
     /// Empties the entire batch.

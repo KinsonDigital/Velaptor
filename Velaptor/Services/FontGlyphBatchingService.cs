@@ -62,7 +62,7 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
     /// Adds the given <paramref name="item"/> to the batch.
     /// </summary>
     /// <param name="item">The item to be added.</param>
-    public void Add(FontGlyphBatchItem item)
+    public void Add(in FontGlyphBatchItem item)
     {
         var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 

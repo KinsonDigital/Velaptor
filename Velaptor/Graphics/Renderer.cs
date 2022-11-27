@@ -231,17 +231,16 @@ internal sealed class Renderer : IRenderer
             throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
         }
 
-        var itemToAdd = default(TextureBatchItem);
-
-        itemToAdd.SrcRect = srcRect;
-        itemToAdd.DestRect = destRect;
-        itemToAdd.Size = size;
-        itemToAdd.Angle = angle;
-        itemToAdd.TintColor = color;
-        itemToAdd.Effects = effects;
-        itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
-        itemToAdd.TextureId = texture.Id;
-        itemToAdd.Layer = layer;
+        var itemToAdd = new TextureBatchItem(
+            srcRect,
+            destRect,
+            size,
+            angle,
+            color,
+            effects,
+            new SizeF(RenderSurfaceWidth, RenderSurfaceHeight),
+            texture.Id,
+            layer);
 
         this.batchServiceManager.AddTextureBatchItem(itemToAdd);
     }
@@ -455,49 +454,46 @@ internal sealed class Renderer : IRenderer
         var totalItemsToRender = 0u;
         var gpuDataIndex = -1;
 
-        for (var i = 0u; i < this.batchServiceManager.TextureBatchItems.Count; i++)
+        var itemsToRender = this.batchServiceManager.TextureBatchItems
+            .Where(i => i.IsEmpty() is false)
+            .Select(i => i)
+            .OrderBy(i => i.Layer)
+            .ToArray();
+
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            if (this.batchServiceManager.TextureBatchItems[(int)i].IsEmpty())
-            {
-                // TODO: Because batch items are sorted by layers from lease to highest in the batching service,
-                // If the batch item is empty, then the rest should be empty, we can break out of the loop.
-                // Currently the batch items are only sorted by layer.  Look into sorting by layer AND if they are empty.
-                // This way, all of the empty items are always after the non empty items.
-                continue;
-            }
+            var batchItem = itemsToRender[(int)i];
 
-            var batchItem = this.batchServiceManager.TextureBatchItems[(int)i];
+            var isLastItem = i >= itemsToRender.Length - 1;
+            var isNotLastItem = !isLastItem;
 
-            var isLastItem = i >= this.batchServiceManager.TextureBatchItems.Count - 1;
-            var shouldRender = isLastItem ||
-                               this.batchServiceManager.TextureBatchItems[(int)(i + 1)].TextureId != batchItem.TextureId;
+            var nextTextureIsDifferent = isNotLastItem &&
+                                         itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
+            var shouldRender = isLastItem || nextTextureIsDifferent;
+            var shouldNotRender = !shouldRender;
 
             gpuDataIndex++;
             totalItemsToRender++;
-            this.bufferManager.UploadTextureData(batchItem, (uint)gpuDataIndex);
-
-            if (shouldRender)
-            {
-                this.openGLService.BindTexture2D(batchItem.TextureId);
-
-                // Only render the amount of elements for the amount of batch items to render.
-                // 6 = the number of vertices per quad and each batch item is a quad. totalItemsToRender is the total quads to render
-                if (totalItemsToRender > 0)
-                {
-                    var totalElements = 6u * totalItemsToRender;
-
-                    this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
-                    this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-                    this.openGLService.EndGroup();
-
-                    totalItemsToRender = 0;
-                    gpuDataIndex = -1;
-                }
-            }
 
             this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
-
+            this.bufferManager.UploadTextureData(batchItem, (uint)gpuDataIndex);
             this.openGLService.EndGroup();
+
+            if (shouldNotRender)
+            {
+                continue;
+            }
+
+            this.openGLService.BindTexture2D(batchItem.TextureId);
+
+            var totalElements = 6u * totalItemsToRender;
+
+            this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
+            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+            this.openGLService.EndGroup();
+
+            totalItemsToRender = 0;
+            gpuDataIndex = -1;
         }
 
         // Empty the batch

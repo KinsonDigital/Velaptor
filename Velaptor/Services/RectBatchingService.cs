@@ -59,7 +59,7 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
     /// Adds the given <paramref name="rect"/> to the batch.
     /// </summary>
     /// <param name="rect">The item to be added.</param>
-    public void Add(RectBatchItem rect)
+    public void Add(in RectBatchItem rect)
     {
         var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
