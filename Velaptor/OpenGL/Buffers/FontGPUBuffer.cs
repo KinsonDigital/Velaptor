@@ -56,16 +56,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 
         for (var i = 0u; i < BatchSize; i++)
         {
-            result.AddRange(new TextureQuadData[]
-            {
-                new ()
-                {
-                    Vertex1 = default,
-                    Vertex2 = default,
-                    Vertex3 = default,
-                    Vertex4 = default,
-                },
-            });
+            result.AddRange(new TextureQuadData[] { new (default, default, default, default) });
         }
 
         return OpenGLExtensionMethods.ToArray(result);
@@ -175,32 +166,31 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         bottomRight = bottomRight.RotateAround(origin, angle);
         topRight = topRight.RotateAround(origin, angle);
 
-        var textureWidth = textureQuad.DestRect.Width;
-        var textureHeight = textureQuad.DestRect.Height;
-
-        // Convert the texture quad vertex positions to NDC values
-        var quadDataItem = default(TextureQuadData);
-        quadDataItem.Vertex1.VertexPos = topLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        quadDataItem.Vertex2.VertexPos = bottomLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        quadDataItem.Vertex3.VertexPos = topRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-        quadDataItem.Vertex4.VertexPos = bottomRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
-
-        // Update the color
-        quadDataItem.Vertex1.TintColor = textureQuad.TintColor;
-        quadDataItem.Vertex2.TintColor = textureQuad.TintColor;
-        quadDataItem.Vertex3.TintColor = textureQuad.TintColor;
-        quadDataItem.Vertex4.TintColor = textureQuad.TintColor;
+        var vertex1 = topLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+        var vertex2 = bottomLeft.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+        var vertex3 = topRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
+        var vertex4 = bottomRight.ToNDC(textureQuad.ViewPortSize.Width, textureQuad.ViewPortSize.Height);
 
         var textureTopLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Top);
         var textureBottomLeft = new Vector2(textureQuad.SrcRect.Left, textureQuad.SrcRect.Bottom);
         var textureTopRight = new Vector2(textureQuad.SrcRect.Right, textureQuad.SrcRect.Top);
         var textureBottomRight = new Vector2(textureQuad.SrcRect.Right, textureQuad.SrcRect.Bottom);
 
+        var textureWidth = textureQuad.DestRect.Width;
+        var textureHeight = textureQuad.DestRect.Height;
+
         // Update the texture coordinates
-        quadDataItem.Vertex1.TextureCoord = textureTopLeft.ToNDCTextureCoords(textureWidth, textureHeight);
-        quadDataItem.Vertex2.TextureCoord = textureBottomLeft.ToNDCTextureCoords(textureWidth, textureHeight);
-        quadDataItem.Vertex3.TextureCoord = textureTopRight.ToNDCTextureCoords(textureWidth, textureHeight);
-        quadDataItem.Vertex4.TextureCoord = textureBottomRight.ToNDCTextureCoords(textureWidth, textureHeight);
+        textureTopLeft = textureTopLeft.ToNDCTextureCoords(textureWidth, textureHeight);
+        textureBottomLeft = textureBottomLeft.ToNDCTextureCoords(textureWidth, textureHeight);
+        textureTopRight = textureTopRight.ToNDCTextureCoords(textureWidth, textureHeight);
+        textureBottomRight = textureBottomRight.ToNDCTextureCoords(textureWidth, textureHeight);
+
+        // Convert the texture quad vertex positions to NDC values
+        var quadDataItem = new TextureQuadData(
+            new TextureVertexData(vertex1, textureTopLeft, textureQuad.TintColor),
+            new TextureVertexData(vertex2, textureBottomLeft, textureQuad.TintColor),
+            new TextureVertexData(vertex3, textureTopRight, textureQuad.TintColor),
+            new TextureVertexData(vertex4, textureBottomRight, textureQuad.TintColor));
 
         var totalBytes = TextureQuadData.GetTotalBytes();
         var data = quadDataItem.ToArray();

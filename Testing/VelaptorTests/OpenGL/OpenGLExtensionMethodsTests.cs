@@ -105,10 +105,10 @@ public class OpenGLExtensionMethodsTests
     {
         // Arrange
         var expected = new[] { 1f, 2f, 3f, 4f, 6f, 7f, 8f, 5f };
-        var data = default(TextureVertexData);
-        data.VertexPos = new Vector2(1, 2);
-        data.TextureCoord = new Vector2(3, 4);
-        data.TintColor = Color.FromArgb(5, 6, 7, 8);
+        var data = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8));
 
         // Act
         var actual = data.ToArray();
@@ -129,31 +129,31 @@ public class OpenGLExtensionMethodsTests
             17f, 18f, 19f, 20f, 22f, 23f, 24f, 21f, // Vertex 3
             25f, 26f, 27f, 28f, 30f, 31f, 32f, 29f, // Vertex 4
         };
-        var vertex1 = default(TextureVertexData);
-        vertex1.VertexPos = new Vector2(1, 2);
-        vertex1.TextureCoord = new Vector2(3, 4);
-        vertex1.TintColor = Color.FromArgb(5, 6, 7, 8);
+        var vertex1 = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8));
 
-        var vertex2 = default(TextureVertexData);
-        vertex2.VertexPos = new Vector2(9, 10);
-        vertex2.TextureCoord = new Vector2(11, 12);
-        vertex2.TintColor = Color.FromArgb(13, 14, 15, 16);
+        var vertex2 = new TextureVertexData(
+            new Vector2(9, 10),
+            new Vector2(11, 12),
+            Color.FromArgb(13, 14, 15, 16));
 
-        var vertex3 = default(TextureVertexData);
-        vertex3.VertexPos = new Vector2(17, 18);
-        vertex3.TextureCoord = new Vector2(19, 20);
-        vertex3.TintColor = Color.FromArgb(21, 22, 23, 24);
+        var vertex3 = new TextureVertexData(
+            new Vector2(17, 18),
+            new Vector2(19, 20),
+            Color.FromArgb(21, 22, 23, 24));
 
-        var vertex4 = default(TextureVertexData);
-        vertex4.VertexPos = new Vector2(25, 26);
-        vertex4.TextureCoord = new Vector2(27, 28);
-        vertex4.TintColor = Color.FromArgb(29, 30, 31, 32);
+        var vertex4 = new TextureVertexData(
+            new Vector2(25, 26),
+            new Vector2(27, 28),
+            Color.FromArgb(29, 30, 31, 32));
 
-        var quadData = default(TextureQuadData);
-        quadData.Vertex1 = vertex1;
-        quadData.Vertex2 = vertex2;
-        quadData.Vertex3 = vertex3;
-        quadData.Vertex4 = vertex4;
+        var quadData = new TextureQuadData(
+            vertex1,
+            vertex2,
+            vertex3,
+            vertex4);
 
         // Act
         var actual = quadData.ToArray();
@@ -196,10 +196,10 @@ public class OpenGLExtensionMethodsTests
     {
         // Arrange
         var expected = new[] { 11f, 22f, 33f, 44f, 66, 77, 88, 55 };
-        var vertexData = default(TextureVertexData);
-        vertexData.VertexPos = new Vector2(11, 22);
-        vertexData.TextureCoord = new Vector2(33, 44);
-        vertexData.TintColor = Color.FromArgb(55, 66, 77, 88);
+        var vertexData = new TextureVertexData(
+            new Vector2(11, 22),
+            new Vector2(33, 44),
+            Color.FromArgb(55, 66, 77, 88));
 
         // Act
         var actual = vertexData.ToArray();
@@ -279,35 +279,23 @@ public class OpenGLExtensionMethodsTests
     /// <returns>The texture quad data to test.</returns>
     private static TextureQuadData CreateNewQuad(int start)
     {
-        var result = default(TextureQuadData);
-
-        result.Vertex1 = new TextureVertexData()
-        {
-            VertexPos = new Vector2(start, start + 1),
-            TextureCoord = new Vector2(start + 2, start + 3),
-            TintColor = Color.FromArgb(start + 4, start + 5, start + 6, start + 7),
-        };
-
-        result.Vertex2 = new TextureVertexData()
-        {
-            VertexPos = new Vector2(start + 8, start + 9),
-            TextureCoord = new Vector2(start + 10, start + 11),
-            TintColor = Color.FromArgb(start + 12, start + 13, start + 14, start + 15),
-        };
-
-        result.Vertex3 = new TextureVertexData()
-        {
-            VertexPos = new Vector2(start + 16, start + 17),
-            TextureCoord = new Vector2(start + 18, start + 19),
-            TintColor = Color.FromArgb(start + 20, start + 21, start + 22, start + 23),
-        };
-
-        result.Vertex4 = new TextureVertexData()
-        {
-            VertexPos = new Vector2(start + 24, start + 25),
-            TextureCoord = new Vector2(start + 26, start + 27),
-            TintColor = Color.FromArgb(start + 28, start + 29, start + 30, start + 31),
-        };
+        var result = new TextureQuadData(
+            new TextureVertexData(
+                new Vector2(start, start + 1),
+                new Vector2(start + 2, start + 3),
+                Color.FromArgb(start + 4, start + 5, start + 6, start + 7)),
+            new TextureVertexData(
+                new Vector2(start + 8, start + 9),
+                new Vector2(start + 10, start + 11),
+                Color.FromArgb(start + 12, start + 13, start + 14, start + 15)),
+            new TextureVertexData(
+                new Vector2(start + 16, start + 17),
+                new Vector2(start + 18, start + 19),
+                Color.FromArgb(start + 20, start + 21, start + 22, start + 23)),
+            new TextureVertexData(
+                new Vector2(start + 24, start + 25),
+                new Vector2(start + 26, start + 27),
+                Color.FromArgb(start + 28, start + 29, start + 30, start + 31)));
 
         return result;
     }
