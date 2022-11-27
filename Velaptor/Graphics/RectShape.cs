@@ -200,46 +200,6 @@ public struct RectShape
     public Color GradientStop { get; set; } = Color.White;
 
     /// <summary>
-    /// Sets the <see cref="CornerRadius"/> top left value.
-    /// </summary>
-    /// <param name="radius">The struct with the value to set.</param>
-    /// <param name="topLeft">The new top left value.</param>
-    /// <returns>The original <paramref name="radius"/> with its  <see cref="CornerRadius"/> top left value updated.</returns>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
-    public static CornerRadius SetTopLeft(CornerRadius radius, float topLeft) =>
-        new (topLeft, radius.BottomLeft, radius.BottomRight, radius.TopRight);
-
-    /// <summary>
-    /// Sets the <see cref="CornerRadius"/> bottom left value.
-    /// </summary>
-    /// <param name="radius">The struct with the value to set.</param>
-    /// <param name="bottomLeft">The new bottom left value.</param>
-    /// <returns>The original <paramref name="radius"/> with its  <see cref="CornerRadius"/> bottom left value updated.</returns>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
-    public static CornerRadius SetBottomLeft(CornerRadius radius, float bottomLeft) =>
-        new (radius.TopLeft, bottomLeft, radius.BottomRight, radius.TopRight);
-
-    /// <summary>
-    /// Sets the <see cref="CornerRadius"/> bottom right value.
-    /// </summary>
-    /// <param name="radius">The struct with the value to set.</param>
-    /// <param name="bottomRight">The new bottom right value.</param>
-    /// <returns>The original <paramref name="radius"/> with its  <see cref="CornerRadius"/> bottom right value updated.</returns>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
-    public static CornerRadius SetBottomRight(CornerRadius radius, float bottomRight) =>
-        new (radius.TopLeft, radius.BottomLeft, bottomRight, radius.TopRight);
-
-    /// <summary>
-    /// Sets the <see cref="CornerRadius"/> top right value.
-    /// </summary>
-    /// <param name="radius">The struct with the value to set.</param>
-    /// <param name="topRight">The new top right value.</param>
-    /// <returns>The original <paramref name="radius"/> with its  <see cref="CornerRadius"/> top right value updated.</returns>
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Used by library users.")]
-    public static CornerRadius SetTopRight(CornerRadius radius, float topRight) =>
-        new (radius.TopLeft, radius.BottomLeft, radius.BottomRight, topRight);
-
-    /// <summary>
     /// Returns a value indicating whether or not the <see cref="RectShape"/> struct is empty.
     /// </summary>
     /// <returns>True if empty.</returns>
