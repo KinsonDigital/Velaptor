@@ -5,6 +5,8 @@
 namespace VelaptorTests.Input;
 
 using System;
+using System.Collections.Generic;
+using FluentAssertions;
 using Moq;
 using Velaptor.Input;
 using Velaptor.Reactables.Core;
@@ -24,6 +26,22 @@ public class KeyboardTests
     public KeyboardTests() => this.mockKeyboardReactable = new Mock<IReactable<(KeyCode key, bool isDown)>>();
 
     #region Constructor Tests
+
+    [Fact]
+    public void Ctor_WithNullKeyboardReactableParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Keyboard(null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'keyboardReactable')");
+    }
+
     [Fact]
     public void Ctor_WhenInvoked_SubscribesToReactable()
     {
@@ -42,6 +60,8 @@ public class KeyboardTests
         // Arrange
         IReactor<(KeyCode key, bool isDown)>? reactor = null;
 
+        var expected = new KeyValuePair<KeyCode, bool>(KeyCode.K, true);
+
         var keyState = (KeyCode.K, true);
         this.mockKeyboardReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<(KeyCode key, bool isDown)>>()))
             .Callback<IReactor<(KeyCode key, bool isDown)>>(reactorObj =>
@@ -59,11 +79,10 @@ public class KeyboardTests
         this.mockKeyboardReactable.Object.PushNotification(keyState);
 
         // Act
-        var actual = sut.GetState();
+        var actual = sut.GetState().GetKeyStates();
 
         // Assert
-        AssertExtensions.AllItemsAre(actual.GetKeyStates(),
-            state => state.Key == KeyCode.K || state.Value == false);
+        actual.Should().Contain(expected);
     }
 
     [Fact]

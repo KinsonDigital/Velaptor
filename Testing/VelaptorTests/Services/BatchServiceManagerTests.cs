@@ -7,6 +7,7 @@ namespace VelaptorTests.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using FluentAssertions;
 using Moq;
 using Velaptor.OpenGL;
 using Velaptor.Services;
@@ -36,47 +37,62 @@ public class BatchServiceManagerTests
     [Fact]
     public void Ctor_WithNullTextureBatchingServiceParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new BatchServiceManager(
                 null,
                 new Mock<IBatchingService<FontGlyphBatchItem>>().Object,
                 new Mock<IBatchingService<RectBatchItem>>().Object);
-        }, "The parameter must not be null. (Parameter 'textureBatchingService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'textureBatchingService')");
     }
 
     [Fact]
     public void Ctor_WithNullFontGlyphBatchingServiceParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new BatchServiceManager(
                 new Mock<IBatchingService<TextureBatchItem>>().Object,
                 null,
                 new Mock<IBatchingService<RectBatchItem>>().Object);
-        }, "The parameter must not be null. (Parameter 'fontGlyphBatchingService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fontGlyphBatchingService')");
     }
 
     [Fact]
     public void Ctor_WithNullRectBatchingServiceParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new BatchServiceManager(
                 new Mock<IBatchingService<TextureBatchItem>>().Object,
                 new Mock<IBatchingService<FontGlyphBatchItem>>().Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'rectBatchingService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'rectBatchingService')");
     }
 
     [Fact]
     public void Ctor_WhenInvoked_SubscribesToBatchFilledEvents()
     {
         // Arrange & Act
-        CreateManager();
+        CreateSystemUnderTest();
 
         // Assert
         this.mockTextureBatchingService.VerifyAdd(e => e.ReadyForRendering += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
@@ -99,11 +115,11 @@ public class BatchServiceManagerTests
 
         this.mockTextureBatchingService.SetupProperty(p => p.BatchItems);
 
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.TextureBatchItems = new ReadOnlyCollection<TextureBatchItem>(batchItems);
-        var actual = manager.TextureBatchItems;
+        sut.TextureBatchItems = new ReadOnlyCollection<TextureBatchItem>(batchItems);
+        var actual = sut.TextureBatchItems;
 
         // Assert
         this.mockTextureBatchingService.VerifySet(p => p.BatchItems = expected,
@@ -112,7 +128,7 @@ public class BatchServiceManagerTests
         this.mockTextureBatchingService.VerifyGet(p => p.BatchItems,
             Times.Once,
             $"The getter for property '{nameof(IBatchingService<TextureBatchItem>)}.{nameof(IBatchingService<TextureBatchItem>.BatchItems)} was not invoked.'");
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -128,11 +144,11 @@ public class BatchServiceManagerTests
 
         this.mockFontGlyphBatchingService.SetupProperty(p => p.BatchItems);
 
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.FontGlyphBatchItems = new ReadOnlyCollection<FontGlyphBatchItem>(batchItems);
-        var actual = manager.FontGlyphBatchItems;
+        sut.FontGlyphBatchItems = new ReadOnlyCollection<FontGlyphBatchItem>(batchItems);
+        var actual = sut.FontGlyphBatchItems;
 
         // Assert
         this.mockFontGlyphBatchingService.VerifySet(p => p.BatchItems = expected,
@@ -141,7 +157,7 @@ public class BatchServiceManagerTests
         this.mockFontGlyphBatchingService.VerifyGet(p => p.BatchItems,
             Times.Once,
             $"The getter for property '{nameof(IBatchingService<FontGlyphBatchItem>)}.{nameof(IBatchingService<FontGlyphBatchItem>.BatchItems)} was not invoked.'");
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -157,11 +173,11 @@ public class BatchServiceManagerTests
 
         this.mockRectBatchingService.SetupProperty(p => p.BatchItems);
 
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.RectBatchItems = new ReadOnlyCollection<RectBatchItem>(batchItems);
-        var actual = manager.RectBatchItems;
+        sut.RectBatchItems = new ReadOnlyCollection<RectBatchItem>(batchItems);
+        var actual = sut.RectBatchItems;
 
         // Assert
         this.mockRectBatchingService.VerifySet(p => p.BatchItems = expected,
@@ -170,7 +186,7 @@ public class BatchServiceManagerTests
         this.mockRectBatchingService.VerifyGet(p => p.BatchItems,
             Times.Once,
             $"The getter for property '{nameof(IBatchingService<RectBatchItem>)}.{nameof(IBatchingService<RectBatchItem>.BatchItems)} was not invoked.'");
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
     #endregion
 
@@ -183,10 +199,10 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var serviceType = (BatchServiceType)serviceTypeValue;
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.EmptyBatch(serviceType);
+        sut.EmptyBatch(serviceType);
 
         // Assert
         switch (serviceType)
@@ -213,24 +229,28 @@ public class BatchServiceManagerTests
     public void EmptyBatch_WithInvalidServiceType_ThrowsException()
     {
         // Arrange
-        var manager = CreateManager();
+        var expected = $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType')";
+        expected += $"{Environment.NewLine}Actual value was 1234.";
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            manager.EmptyBatch((BatchServiceType)1234);
-        }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType'){Environment.NewLine}Actual value was 1234.");
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.EmptyBatch((BatchServiceType)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage(expected);
     }
 
     [Fact]
     public void AddTextureBatchItem_WhenInvoked_AddsBatchItem()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
         var item = default(TextureBatchItem);
 
         // Act
-        manager.AddTextureBatchItem(item);
+        sut.AddTextureBatchItem(item);
 
         // Assert
         this.mockTextureBatchingService.Verify(m => m.Add(item), Times.Once);
@@ -249,10 +269,10 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(TextureBatchItem);
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.AddTextureBatchItem(batchItem);
+        sut.AddTextureBatchItem(batchItem);
 
         // Assert
         this.mockTextureBatchingService.VerifyOnce(m => m.Add(batchItem));
@@ -263,10 +283,10 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(FontGlyphBatchItem);
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.AddFontGlyphBatchItem(batchItem);
+        sut.AddFontGlyphBatchItem(batchItem);
 
         // Assert
         this.mockFontGlyphBatchingService.VerifyOnce(m => m.Add(batchItem));
@@ -277,10 +297,10 @@ public class BatchServiceManagerTests
     {
         // Arrange
         var batchItem = default(RectBatchItem);
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        manager.AddRectBatchItem(batchItem);
+        sut.AddRectBatchItem(batchItem);
 
         // Assert
         this.mockRectBatchingService.VerifyOnce(m => m.Add(batchItem));
@@ -290,86 +310,129 @@ public class BatchServiceManagerTests
     public void EndBatch_WhenTextureBatch_RaisesTextureBatchFilledEvent()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
+        using var monitor = sut.Monitor();
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            manager.TextureBatchReadyForRendering += e;
-        }, e =>
-        {
-            manager.TextureBatchReadyForRendering -= e;
-        }, () =>
-        {
-            manager.EndBatch(BatchServiceType.Texture);
-        });
+        // Act
+        sut.EndBatch(BatchServiceType.Texture);
+
+        // Assert
+        monitor.Should().Raise(nameof(BatchServiceManager.TextureBatchReadyForRendering));
     }
 
     [Fact]
     public void EndBatch_WhenFontGlyphBatch_RaisesFontGlyphBatchFilledEvent()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
+        using var monitor = sut.Monitor();
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            manager.FontGlyphBatchReadyForRendering += e;
-        }, e =>
-        {
-            manager.FontGlyphBatchReadyForRendering -= e;
-        }, () =>
-        {
-            manager.EndBatch(BatchServiceType.FontGlyph);
-        });
+        // Act
+        sut.EndBatch(BatchServiceType.FontGlyph);
+
+        // Assert
+        monitor.Should().Raise(nameof(BatchServiceManager.FontGlyphBatchReadyForRendering));
     }
 
     [Fact]
     public void EndBatch_WhenRectBatch_RaisesRectBatchFilledEvent()
     {
         // Arrange
-        var manager = CreateManager();
+        var sut = CreateSystemUnderTest();
+        using var monitor = sut.Monitor();
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            manager.RectBatchReadyForRendering += e;
-        }, e =>
-        {
-            manager.RectBatchReadyForRendering -= e;
-        }, () =>
-        {
-            manager.EndBatch(BatchServiceType.Rectangle);
-        });
+        // Act
+        sut.EndBatch(BatchServiceType.Rectangle);
+
+        // Assert
+        monitor.Should().Raise(nameof(BatchServiceManager.RectBatchReadyForRendering));
     }
 
     [Fact]
     public void EndBatch_WithInvalidServiceTypeValue_ThrowsException()
     {
         // Arrange
-        var manager = CreateManager();
+        var expected = $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType')";
+        expected += $"{Environment.NewLine}Actual value was 1234.";
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            manager.EndBatch((BatchServiceType)1234);
-        }, $"The enum '{nameof(BatchServiceType)}' value is invalid. (Parameter 'serviceType'){Environment.NewLine}Actual value was 1234.");
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.EndBatch((BatchServiceType)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage(expected);
     }
 
     [Fact]
     public void Dispose_WhenInvoked_DisposesOfManager()
     {
         // Arrange
-        var manager = CreateManager();
+       var sut = CreateSystemUnderTest();
 
         // Act
-        manager.Dispose();
-        manager.Dispose();
+       sut.Dispose();
+       sut.Dispose();
 
         // Assert
-        this.mockTextureBatchingService.VerifyRemove(e => e.ReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-        this.mockFontGlyphBatchingService.VerifyRemove(e => e.ReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-        this.mockRectBatchingService.VerifyRemove(e => e.ReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+       this.mockTextureBatchingService.VerifyRemove(e
+            => e.ReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+       this.mockFontGlyphBatchingService.VerifyRemove(e
+            => e.ReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+       this.mockRectBatchingService.VerifyRemove(e
+            => e.ReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+    }
+
+    [Fact]
+    public void TextureBatchService_WhenReadyForRendering_InvokesBatchManagerEvent()
+    {
+        // Arrange
+        var eventArgs = EventArgs.Empty;
+        var sut = CreateSystemUnderTest();
+        using var monitor = sut.Monitor();
+
+        // Act
+        this.mockTextureBatchingService.Raise(service
+            => service.ReadyForRendering += null, eventArgs);
+
+        // Assert
+        monitor.Should().Raise(nameof(BatchServiceManager.TextureBatchReadyForRendering))
+            .WithArgs<EventArgs>(args => args == eventArgs);
+    }
+
+    [Fact]
+    public void FontGlyphBatchService_WhenReadyForRendering_InvokesBatchManagerEvent()
+    {
+        // Arrange
+        var eventArgs = EventArgs.Empty;
+        var sut = CreateSystemUnderTest();
+        using var monitor = sut.Monitor();
+
+        // Act
+        this.mockFontGlyphBatchingService.Raise(service
+            => service.ReadyForRendering += null, eventArgs);
+
+        // Assert
+        monitor.Should().Raise(nameof(BatchServiceManager.FontGlyphBatchReadyForRendering))
+            .WithArgs<EventArgs>(args => args == eventArgs);
+    }
+
+    [Fact]
+    public void RectBatchService_WhenReadyForRendering_InvokesBatchManagerEvent()
+    {
+        // Arrange
+        var eventArgs = EventArgs.Empty;
+        var sut = CreateSystemUnderTest();
+        using var monitor = sut.Monitor();
+
+        // Act
+        this.mockRectBatchingService.Raise(service
+            => service.ReadyForRendering += null, eventArgs);
+
+        // Assert
+        monitor.Should().Raise(nameof(BatchServiceManager.RectBatchReadyForRendering))
+            .WithArgs<EventArgs>(args => args == eventArgs);
     }
     #endregion
 
@@ -377,7 +440,7 @@ public class BatchServiceManagerTests
     /// Creates a new instance of <see cref="BatchServiceManager"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private BatchServiceManager CreateManager() =>
+    private BatchServiceManager CreateSystemUnderTest() =>
         new (this.mockTextureBatchingService.Object,
             this.mockFontGlyphBatchingService.Object,
             this.mockRectBatchingService.Object);

@@ -649,9 +649,11 @@ public class RendererTests
     public void RenderTexture_WhenInvoked_RendersTexture()
     {
         // Arrange
-        const uint batchIndex = 0;
+        const uint itemABatchIndex = 0;
+        const uint itemBBatchIndex = 1;
+        const uint expectedTotalElements = 12;
 
-        var shouldRenderItem = new TextureBatchItem(
+        var itemA = new TextureBatchItem(
             RectangleF.Empty,
             RectangleF.Empty,
             1,
@@ -662,8 +664,19 @@ public class RendererTests
             TextureId,
             0);
 
+        var itemB = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            2,
+            90,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            TextureId,
+            1);
+
         var shouldNotRenderItem = default(TextureBatchItem);
-        var items = new[] { shouldRenderItem, shouldNotRenderItem };
+        var items = new[] { itemA, itemB, shouldNotRenderItem };
 
         var sut = CreateSystemUnderTest();
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
@@ -687,12 +700,14 @@ public class RendererTests
             It.IsAny<RenderEffects>());
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
-        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
-        this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
-        this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(shouldRenderItem, batchIndex));
-        this.mockBufferManager.VerifyNever(m => m.UploadTextureData(shouldNotRenderItem, batchIndex));
-        this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Texture), Times.Once);
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 12 Texture Elements"));
+        this.mockGL.VerifyOnce(m
+            => m.DrawElements(GLPrimitiveType.Triangles, expectedTotalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero));
+        this.mockGLService.VerifyOnce(m => m.BindTexture2D(TextureId));
+        this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(itemA, itemABatchIndex));
+        this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(itemB, itemBBatchIndex));
+        this.mockBufferManager.VerifyNever(m => m.UploadTextureData(shouldNotRenderItem, It.IsAny<uint>()));
+        this.mockBatchServiceManager.VerifyOnce(m => m.EmptyBatch(BatchServiceType.Texture));
     }
 
     [Fact]

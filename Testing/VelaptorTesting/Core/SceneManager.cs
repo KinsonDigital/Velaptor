@@ -81,7 +81,7 @@ public sealed class SceneManager : IUpdatable, IDisposable
             }
         }
 
-        scene.IsActive = setToActive;
+        scene.IsActive = this.scenes.Count <= 0 || setToActive;
         this.scenes.Add(scene);
     }
 

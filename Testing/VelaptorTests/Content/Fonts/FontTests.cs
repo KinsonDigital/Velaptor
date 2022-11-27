@@ -532,7 +532,6 @@ public class FontTests : IDisposable
     {
         // Arrange
         const string testText = "test-value";
-        // MockGlyphKernings(testText);
         var font = CreateFont();
 
         // Act

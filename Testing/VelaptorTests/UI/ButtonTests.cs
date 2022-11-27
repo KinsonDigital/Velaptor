@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
@@ -31,6 +32,7 @@ public class ButtonTests
     private readonly Mock<ITexture> mockTexture;
     private readonly Mock<IFont> mockFont;
     private readonly Mock<IUIControlFactory> mockControlFactory;
+    private readonly Mock<IAppInput<MouseState>> mockMouse;
     private readonly Label label;
 
     /// <summary>
@@ -72,9 +74,9 @@ public class ButtonTests
         this.mockContentLoader.Setup(m => m.LoadFont("TimesNewRoman", 12))
             .Returns(this.mockFont.Object);
 
-        var mockMouse = new Mock<IAppInput<MouseState>>();
+        this.mockMouse = new Mock<IAppInput<MouseState>>();
 
-        this.label = new Label(this.mockContentLoader.Object, this.mockFont.Object, mockMouse.Object);
+        this.label = new Label(this.mockContentLoader.Object, this.mockFont.Object, this.mockMouse.Object);
 
         this.mockControlFactory = new Mock<IUIControlFactory>();
         this.mockControlFactory.Setup(m => m.CreateLabel(It.IsAny<string>(), It.IsAny<IFont>()))
@@ -83,13 +85,33 @@ public class ButtonTests
 
     #region Constructor Tests
     [Fact]
-    public void Ctor2Args_WithNullContentLoaderParam_ThrowsException()
+    public void Ctor_WithNullContentLoaderParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            _ = new Button(null, this.mockControlFactory.Object);
-        }, "The parameter must not be null. (Parameter 'contentLoader')");
+            _ = new Button(null, this.mockControlFactory.Object, this.mockMouse.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'contentLoader')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullControlFactoryParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new Button(this.mockContentLoader.Object, null, this.mockMouse.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'controlFactory')");
     }
     #endregion
 
@@ -353,6 +375,7 @@ public class ButtonTests
 
         // Act
         sut.LoadContent();
+        sut.LoadContent();
 
         // Assert
         Assert.Equal("test-value", sut.Text);
@@ -544,6 +567,89 @@ public class ButtonTests
             nameof(RectShape),
             $"{nameof(RectShape.CornerRadius)}.{nameof(RectShape.CornerRadius.TopRight)}");
     }
+
+    [Fact]
+    public void Render_MouseOverButtonAndLeftMouseButtonUp_RendersButtonWithCorrectMouseHoverColor()
+    {
+        // Arrange
+        var expected = Color.FromArgb(1, 2, 3, 4);
+        var btnFace = default(RectShape);
+
+        var mouseState = default(MouseState);
+        mouseState.SetPosition(400, 600);
+
+        this.mockMouse.Setup(m => m.GetState())
+            .Returns(mouseState);
+
+        var mockRenderer = new Mock<IRenderer>();
+        mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
+            .Callback<RectShape, int>((rectangle, _) =>
+            {
+                btnFace = rectangle;
+            });
+
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(400, 600);
+        sut.BorderVisible = false;
+        sut.Visible = true;
+        sut.Enabled = true;
+        sut.AutoSize = false;
+        sut.MouseHoverColor = Color.FromArgb(1, 2, 3, 4);
+        sut.Width = 100;
+        sut.Height = 50;
+        sut.BorderThickness = 123u;
+        sut.CornerRadius = new CornerRadius(11, 22, 33, 44);
+        sut.LoadContent();
+        sut.Update(default);
+
+        // Act
+        sut.Render(mockRenderer.Object);
+
+        // Assert
+        Assert.Equal(expected, btnFace.Color);
+    }
+
+    [Fact]
+    public void Render_MouseOverButtonAndLeftMouseButtonDown_RendersButtonWithCorrectMouseHoverColor()
+    {
+        // Arrange
+        var expected = Color.FromArgb(1, 2, 3, 4);
+        var btnFace = default(RectShape);
+
+        var mouseState = default(MouseState);
+        mouseState.SetPosition(400, 600);
+        mouseState.SetButtonState(MouseButton.LeftButton, true);
+
+        this.mockMouse.Setup(m => m.GetState())
+            .Returns(mouseState);
+
+        var mockRenderer = new Mock<IRenderer>();
+        mockRenderer.Setup(m => m.Render(It.IsAny<RectShape>(), It.IsAny<int>()))
+            .Callback<RectShape, int>((rectangle, _) =>
+            {
+                btnFace = rectangle;
+            });
+
+        var sut = CreateSystemUnderTest();
+        sut.Position = new Point(400, 600);
+        sut.BorderVisible = false;
+        sut.Visible = true;
+        sut.Enabled = true;
+        sut.AutoSize = false;
+        sut.MouseDownColor = Color.FromArgb(1, 2, 3, 4);
+        sut.Width = 100;
+        sut.Height = 50;
+        sut.BorderThickness = 123u;
+        sut.CornerRadius = new CornerRadius(11, 22, 33, 44);
+        sut.LoadContent();
+        sut.Update(default);
+
+        // Act
+        sut.Render(mockRenderer.Object);
+
+        // Assert
+        Assert.Equal(expected, btnFace.Color);
+    }
     #endregion
 
     /// <summary>
@@ -577,5 +683,7 @@ public class ButtonTests
     /// </summary>
     /// <returns>The sut instance to test.</returns>
     private Button CreateSystemUnderTest()
-        => new (this.mockContentLoader.Object, this.mockControlFactory.Object);
+        => new (this.mockContentLoader.Object,
+            this.mockControlFactory.Object,
+            this.mockMouse.Object);
 }

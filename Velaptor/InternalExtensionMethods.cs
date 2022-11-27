@@ -742,14 +742,15 @@ internal static class InternalExtensionMethods
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -781,14 +782,15 @@ internal static class InternalExtensionMethods
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -837,14 +839,15 @@ internal static class InternalExtensionMethods
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -893,14 +896,15 @@ internal static class InternalExtensionMethods
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -949,14 +953,15 @@ internal static class InternalExtensionMethods
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -1005,14 +1010,15 @@ internal static class InternalExtensionMethods
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -1061,14 +1067,15 @@ internal static class InternalExtensionMethods
             bottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -1117,14 +1124,15 @@ internal static class InternalExtensionMethods
             oldVertex.BottomRightCornerRadius,
             topRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>
@@ -1173,14 +1181,15 @@ internal static class InternalExtensionMethods
             oldVertex.BottomRightCornerRadius,
             oldVertex.TopRightCornerRadius);
 
+#pragma warning disable CS8524
         return vertexNumber switch
         {
             VertexNumber.One => new RectGPUData(newVertexData, gpuData.Vertex2, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Two => new RectGPUData(gpuData.Vertex1, newVertexData, gpuData.Vertex3, gpuData.Vertex4),
             VertexNumber.Three => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, newVertexData, gpuData.Vertex4),
             VertexNumber.Four => new RectGPUData(gpuData.Vertex1, gpuData.Vertex2, gpuData.Vertex3, newVertexData),
-            _ => throw new ArgumentOutOfRangeException(nameof(vertexNumber), vertexNumber, null)
         };
+#pragma warning restore CS8524
     }
 
     /// <summary>

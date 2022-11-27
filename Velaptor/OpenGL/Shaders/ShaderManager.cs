@@ -29,23 +29,14 @@ internal sealed class ShaderManager : IShaderManager
     }
 
     /// <inheritdoc/>
-    public uint GetShaderId(ShaderType shaderType)
-    {
-        switch (shaderType)
+    public uint GetShaderId(ShaderType shaderType) =>
+        shaderType switch
         {
-            case ShaderType.Texture:
-                return this.textureShader.ShaderId;
-            case ShaderType.Font:
-                return this.fontShader.ShaderId;
-            case ShaderType.Rectangle:
-                return this.rectShader.ShaderId;
-            default:
-                throw new ArgumentOutOfRangeException(
-                    nameof(shaderType),
-                    shaderType,
-                    $"The enum '{nameof(ShaderType)}' value is invalid.");
-        }
-    }
+            ShaderType.Texture => this.textureShader.ShaderId,
+            ShaderType.Font => this.fontShader.ShaderId,
+            ShaderType.Rectangle => this.rectShader.ShaderId,
+            _ => throw new ArgumentOutOfRangeException(nameof(shaderType), shaderType, $"The enum '{nameof(ShaderType)}' value is invalid.")
+        };
 
     /// <inheritdoc/>
     public string GetShaderName(ShaderType shaderType)
