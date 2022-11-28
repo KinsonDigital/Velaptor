@@ -341,11 +341,11 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     private static RectBatchItem ProcessCornerRadiusLimits(RectBatchItem rect)
     {
         /*
-             * Always have the smallest value between the width and height (divided by 2)
-             * as the maximum limit of what any corner radius can be.
-             * If the value was allowed to be larger than the smallest value between
-             * the width and height, it would produce unintended rendering artifacts.
-             */
+         * Always have the smallest value between the width and height (divided by 2)
+         * as the maximum limit of what any corner radius can be.
+         * If the value was allowed to be larger than the smallest value between
+         * the width and height, it would produce unintended rendering artifacts.
+         */
         var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
 
         var cornerRadius = rect.CornerRadius;

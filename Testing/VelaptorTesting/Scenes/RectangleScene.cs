@@ -608,6 +608,30 @@ public class RectangleScene : SceneBase
         {
             this.rectangle.Position += new Vector2(0f, value);
         }
+
+        // Left edge containment1
+        if (this.rectangle.Position.X < this.rectangle.HalfWidth)
+        {
+            this.rectangle.Position = new Vector2(this.rectangle.HalfWidth, this.rectangle.Position.Y);
+        }
+
+        // Right edge containment
+        if (this.rectangle.Position.X > MainWindow.WindowWidth - this.rectangle.HalfWidth)
+        {
+            this.rectangle.Position = new Vector2(MainWindow.WindowWidth - this.rectangle.HalfWidth, this.rectangle.Position.Y);
+        }
+
+        // Top edge containment
+        if (this.rectangle.Position.Y < this.rectangle.HalfHeight)
+        {
+            this.rectangle.Position = new Vector2(this.rectangle.Position.X, this.rectangle.HalfHeight);
+        }
+
+        // Bottom edge containment
+        if (this.rectangle.Position.Y > MainWindow.WindowHeight - this.rectangle.HalfHeight)
+        {
+            this.rectangle.Position = new Vector2(this.rectangle.Position.X, MainWindow.WindowHeight - this.rectangle.HalfHeight);
+        }
     }
 
     /// <summary>

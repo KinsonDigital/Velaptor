@@ -121,7 +121,7 @@ internal readonly struct RectBatchItem
     public Color Color { get; }
 
     /// <summary>
-    /// Gets a value indicating whether or not the rectangle is filled or empty.
+    /// Gets a value indicating whether or not the rectangle is filled with a solid color.
     /// </summary>
     public bool IsFilled { get; } = true;
 

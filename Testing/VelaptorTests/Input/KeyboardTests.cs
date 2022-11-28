@@ -26,7 +26,6 @@ public class KeyboardTests
     public KeyboardTests() => this.mockKeyboardReactable = new Mock<IReactable<(KeyCode key, bool isDown)>>();
 
     #region Constructor Tests
-
     [Fact]
     public void Ctor_WithNullKeyboardReactableParam_ThrowsException()
     {
