@@ -1,4 +1,4 @@
-// <copyright file="TestRectangleScene.cs" company="KinsonDigital">
+﻿// <copyright file="TestRectangleScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -387,6 +387,7 @@ public class TestRectangleScene : SceneBase
             }
 
             this.btnGradClrStart.Text = $"Grad Clr Start: {clrStr}";
+            LayoutButtonsBottom();
         };
 
         this.btnGradClrStop = new Button
@@ -415,6 +416,7 @@ public class TestRectangleScene : SceneBase
             }
 
             this.btnGradClrStop.Text = $"Grad Clr Stop: {clrStr}";
+            LayoutButtonsBottom();
         };
 
         AddControl(this.btnLeft);
