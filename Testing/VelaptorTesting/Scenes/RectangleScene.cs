@@ -411,6 +411,7 @@ public class RectangleScene : SceneBase
             }
 
             this.btnGradClrStart.Text = $"Grad Clr Start: {clrStr}";
+            LayoutButtonsBottom();
         };
 
         this.btnGradClrStop = new Button
@@ -439,6 +440,7 @@ public class RectangleScene : SceneBase
             }
 
             this.btnGradClrStop.Text = $"Grad Clr Stop: {clrStr}";
+            LayoutButtonsBottom();
         };
 
         AddControl(this.btnIncreaseWidth);
