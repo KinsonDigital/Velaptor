@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Helpers;
+
 using System;
 using System.Linq.Expressions;
 using Moq;
 using Moq.Language.Flow;
-
-namespace VelaptorTests.Helpers;
 
 /// <summary>
 /// Provides extensions to the <see cref="Moq"/> library for ease of use and readability purposes.

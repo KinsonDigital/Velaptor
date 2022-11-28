@@ -2,13 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
+namespace VelaptorTests.Helpers;
+
 using System;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using Xunit;
-
-namespace VelaptorTests.Helpers;
 
 /// <summary>
 /// Loads test data from the unit test project's SampleTestData folder.
@@ -20,7 +21,7 @@ public static class TestDataLoader
     private const string TestDataFolderName = "SampleTestData";
     private static readonly string RootDirPath = @$"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}"
                                                      .Replace(WinDirSeparatorChar, CrossPlatDirSeparatorChar) +
-                                                 $"{CrossPlatDirSeparatorChar}{TestDataFolderName}{CrossPlatDirSeparatorChar}";
+                                                 $"{CrossPlatDirSeparatorChar}{TestDataFolderName}";
 
     /// <summary>
     /// Loads JSON formatted test data and returns it as type a list of type <typeparamref name="T"/>.
@@ -85,7 +86,15 @@ public static class TestDataLoader
 
         var testJSONData = File.ReadAllText(fullTestDataFilePath);
 
-        var result = JsonConvert.DeserializeObject<T[]>(testJSONData);
+        var settings = new JsonSerializerSettings
+        {
+            Error = (_, args) =>
+            {
+                Assert.True(false, args.ErrorContext.Error.Message);
+            },
+        };
+
+        var result = JsonConvert.DeserializeObject<T[]>(testJSONData, settings);
 
         if (result is null)
         {

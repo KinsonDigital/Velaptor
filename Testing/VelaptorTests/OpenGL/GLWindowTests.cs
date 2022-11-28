@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL;
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -25,7 +27,7 @@ using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
 using Velaptor.UI;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindow = Silk.NET.Windowing.IWindow;
@@ -35,8 +37,6 @@ using VelaptorKeyboardState = Velaptor.Input.KeyboardState;
 using VelaptorMouseButton = Velaptor.Input.MouseButton;
 using VelaptorMouseState = Velaptor.Input.MouseState;
 using VelaptorWindowBorder = Velaptor.WindowBorder;
-
-namespace VelaptorTests.OpenGL;
 
 /// <summary>
 /// Tests the <see cref="GLWindow"/> class.

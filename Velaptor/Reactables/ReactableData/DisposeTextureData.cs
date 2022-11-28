@@ -2,12 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Reactables.Core;
-
 namespace Velaptor.Reactables.ReactableData;
 
 /// <summary>
-/// Holds data for the <see cref="IReactable{T}"/>.
+/// Holds data for the <see cref="DisposeTexturesReactable"/> reactable.
 /// </summary>
 internal readonly struct DisposeTextureData
 {
@@ -15,7 +13,7 @@ internal readonly struct DisposeTextureData
     /// Initializes a new instance of the <see cref="DisposeTextureData"/> struct.
     /// </summary>
     /// <param name="textureId">The texture ID of the texture to dispose.</param>
-    public DisposeTextureData(uint textureId) => TextureId = textureId;
+    public DisposeTextureData(in uint textureId) => TextureId = textureId;
 
     /// <summary>
     /// Gets the texture ID.

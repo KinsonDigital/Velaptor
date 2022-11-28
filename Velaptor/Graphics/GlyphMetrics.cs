@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-
-namespace Velaptor.Graphics;
 
 /// <summary>
 /// Holds all of the various metrics of a glyph for rendering purposes.

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.GPUData;
+
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Velaptor.OpenGL.GPUData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.GPUData;
 
 /// <summary>
 /// Tests the <see cref="RectVertexData"/> struct.

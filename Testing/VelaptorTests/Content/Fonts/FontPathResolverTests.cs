@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content.Fonts;
+
 using System;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
@@ -9,10 +11,8 @@ using Moq;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content.Fonts;
 
 /// <summary>
 /// Tests the <see cref="FontPathResolver"/> class.

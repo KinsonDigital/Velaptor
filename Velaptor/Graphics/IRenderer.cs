@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
-
-namespace Velaptor.Graphics;
+using Content;
+using Content.Fonts;
 
 /// <summary>
 /// Renders a single or batch of textures.
@@ -61,9 +61,9 @@ public interface IRenderer
     void End();
 
     /// <summary>
-    /// Updates the view port size.
+    /// Updates the viewport size.
     /// </summary>
-    /// <param name="size">The size to set the view port to.</param>
+    /// <param name="size">The size to set the viewport to.</param>
     void OnResize(SizeU size);
 
     /// <summary>
@@ -71,40 +71,172 @@ public interface IRenderer
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
-    /// <param name="y">The y location of the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
-    void Render(ITexture texture, int x, int y);
+    /// <param name="y">The Y location of the texture.</param>
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The position is based on the center of the text.  The center of the text is based on the
+    ///         furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
+    ///         rendered in the order that the render method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, int x, int y, int layer = 0);
 
     /// <summary>
     /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
-    /// <param name="y">The y location of the texture.</param>
+    /// <param name="y">The Y location of the texture.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
-    void Render(ITexture texture, int x, int y, RenderEffects effects);
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The position is based on the center of the text.  The center of the text is based on the
+    ///         furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
+    ///         rendered in the order that the render method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, int x, int y, RenderEffects effects, int layer = 0);
 
     /// <summary>
     /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
-    /// <param name="y">The y location of the texture.</param>
+    /// <param name="y">The Y location of the texture.</param>
     /// <param name="color">The color to apply to the texture.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
-    void Render(ITexture texture, int x, int y, Color color);
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The position is based on the center of the text.  The center of the text is based on the
+    ///         furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
+    ///         rendered in the order that the render method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, int x, int y, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given texture at the given <paramref name="x"/> and <paramref name="y"/> coordinates.
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
-    /// <param name="y">The y location of the texture.</param>
+    /// <param name="y">The Y location of the texture.</param>
     /// <param name="color">The color to apply to the texture.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
-    void Render(ITexture texture, int x, int y, Color color, RenderEffects effects);
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         The position is based on the center of the text.  The center of the text is based on the
+    ///         furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
+    ///         rendered in the order that the render method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0);
 
     /// <summary>
     /// Renders the given <see cref="Texture"/> using the given parameters.
@@ -116,12 +248,41 @@ public interface IRenderer
     /// <param name="angle">The angle of rotation in degrees of the rendering.</param>
     /// <param name="color">The color to apply to the rendering.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
-    /// <exception cref="Exception">Thrown if the <see cref="Begin"/>() method has not been called.</exception>
+    /// <param name="layer">The layer to render the texture.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
+    ///     <para>
+    ///         The position is based on the center of the text.  The center of the text is based on the
+    ///         furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
+    ///         rendered in the order that the render method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
-    void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color color, RenderEffects effects);
+    void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color color, RenderEffects effects, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -131,11 +292,13 @@ public interface IRenderer
     /// <param name="text">The text to render.</param>
     /// <param name="x">The X coordinate location to render the text.</param>
     /// <param name="y">The Y coordinate location to render the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, int x, int y);
+    void Render(IFont font, string text, int x, int y, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -144,11 +307,13 @@ public interface IRenderer
     /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
     /// <param name="text">The text to render.</param>
     /// <param name="position">The position to render the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position);
+    void Render(IFont font, string text, Vector2 position, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -160,6 +325,8 @@ public interface IRenderer
     /// <param name="y">The Y coordinate location to render the text.</param>
     /// <param name="renderSize">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     /// <para>
     ///     The position is based on the center of the text.  The center of the text is based on the
@@ -171,7 +338,7 @@ public interface IRenderer
     ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
     /// </para>
     /// </remarks>
-    void Render(IFont font, string text, int x, int y, float renderSize, float angle);
+    void Render(IFont font, string text, int x, int y, float renderSize, float angle, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -182,6 +349,8 @@ public interface IRenderer
     /// <param name="position">The position to render the text.</param>
     /// <param name="size">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     /// <para>
     ///     The position is based on the center of the text.  The center of the text is based on the
@@ -193,7 +362,7 @@ public interface IRenderer
     ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
     /// </para>
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position, float size, float angle);
+    void Render(IFont font, string text, Vector2 position, float size, float angle, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -205,6 +374,8 @@ public interface IRenderer
     /// <param name="x">The X coordinate location to render the text.</param>
     /// <param name="y">The Y coordinate location to render the text.</param>
     /// <param name="color">The color of the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     /// <para>
     ///     The position is based on the center of the text.  The center of the text is based on the
@@ -216,7 +387,7 @@ public interface IRenderer
     ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
     /// </para>
     /// </remarks>
-    void Render(IFont font, string text, int x, int y, Color color);
+    void Render(IFont font, string text, int x, int y, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -226,11 +397,13 @@ public interface IRenderer
     /// <param name="text">The text to render.</param>
     /// <param name="position">The position to render the text.</param>
     /// <param name="color">The color of the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position, Color color);
+    void Render(IFont font, string text, Vector2 position, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -241,11 +414,13 @@ public interface IRenderer
     /// <param name="position">The position to render the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color of the text.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position, float angle, Color color);
+    void Render(IFont font, string text, Vector2 position, float angle, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -258,11 +433,12 @@ public interface IRenderer
     /// <param name="y">The Y coordinate location to render the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color to apply to the rendering.</param>
+    /// <param name="layer">The layer to render the text.</param>
     /// <remarks>
     ///     The position is based on the center of the text.  The center of the text is based on the
     ///     furthest most left, right, top, and bottom edges of the text.
     /// </remarks>
-    void Render(IFont font, string text, int x, int y, float angle, Color color);
+    void Render(IFont font, string text, int x, int y, float angle, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -276,6 +452,8 @@ public interface IRenderer
     /// <param name="renderSize">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="color">The color to apply to the rendering.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     /// <para>
     ///     The position is based on the center of the text.  The center of the text is based on the
@@ -287,14 +465,16 @@ public interface IRenderer
     ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
     /// </para>
     /// </remarks>
-    void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color);
+    void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="rectangle"/>.
     /// </summary>
     /// <param name="rectangle">The rectangle to render.</param>
+    /// <param name="layer">The layer to render the text.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     The <see cref="RectShape.Position"/> is the center of the rectangle.
     /// </remarks>
-    void Render(RectShape rectangle);
+    void Render(RectShape rectangle, int layer = 0);
 }

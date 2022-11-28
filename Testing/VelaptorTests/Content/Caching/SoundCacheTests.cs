@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content.Caching;
+
 using System;
 using System.IO;
 using System.IO.Abstractions;
@@ -12,10 +14,8 @@ using Velaptor.Content.Exceptions;
 using Velaptor.Content.Factories;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content.Caching;
 
 /// <summary>
 /// Tests the <see cref="SoundCache"/> class.

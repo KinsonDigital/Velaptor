@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Runtime.InteropServices;
-
 namespace Velaptor;
+
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// Represents the current platform.

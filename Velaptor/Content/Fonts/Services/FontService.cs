@@ -2,21 +2,20 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using FreeTypeSharp.Native;
-using Velaptor.Content.Exceptions;
-using Velaptor.Content.Fonts;
+using Exceptions;
 using Velaptor.Exceptions;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-using Velaptor.NativeInterop.FreeType;
+using Graphics;
+using Guards;
+using NativeInterop.FreeType;
 using Velaptor.Services;
-
-namespace Velaptor.Content.Fonts.Services;
 
 /// <summary>
 /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.

@@ -1,62 +1,100 @@
-﻿// <copyright file="TextureBatchItem.cs" company="KinsonDigital">
+// <copyright file="TextureBatchItem.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
+
+namespace Velaptor.OpenGL;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
-using Velaptor.Graphics;
-
-namespace Velaptor.OpenGL;
+using Graphics;
 
 /// <summary>
 /// A single texture batch item that can be rendered to the screen.
 /// </summary>
-internal struct TextureBatchItem : IEquatable<TextureBatchItem>
+internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
 {
     /// <summary>
-    /// The source rectangle inside of the texture to render.
+    /// Initializes a new instance of the <see cref="TextureBatchItem"/> struct.
     /// </summary>
-    public RectangleF SrcRect;
+    /// <param name="srcRect">The rectangular section inside of a texture to render.</param>
+    /// <param name="destRect">The destination rectangular area of where to render the texture on the screen.</param>
+    /// <param name="size">The size of the rendered texture.</param>
+    /// <param name="angle">The angle of the texture in degrees.</param>
+    /// <param name="tintColor">The color to apply to an entire texture.</param>
+    /// <param name="effects">The type of effects to apply to a texture.</param>
+    /// <param name="viewPortSize">The size of the viewport.</param>
+    /// <param name="textureId">The ID of the texture.</param>
+    /// <param name="layer">The layer where a texture will be rendered.</param>
+    public TextureBatchItem(
+        in
+        RectangleF srcRect,
+        RectangleF destRect,
+        float size,
+        float angle,
+        Color tintColor,
+        RenderEffects effects,
+        SizeF viewPortSize,
+        uint textureId,
+        int layer)
+    {
+        SrcRect = srcRect;
+        DestRect = destRect;
+        Size = size;
+        Angle = angle;
+        TintColor = tintColor;
+        Effects = effects;
+        ViewPortSize = viewPortSize;
+        TextureId = textureId;
+        Layer = layer;
+    }
 
     /// <summary>
-    /// The destination rectangular area of where to render the texture on the screen.
+    /// Gets the rectangular section inside of a texture to render.
     /// </summary>
-    public RectangleF DestRect;
+    public RectangleF SrcRect { get; }
 
     /// <summary>
-    /// The size of the texture to be rendered.
+    /// Gets the destination rectangular area of where to render the texture on the screen.
     /// </summary>
-    /// <remarks>This must be a value between 0 and 1.</remarks>
-    public float Size;
+    public RectangleF DestRect { get; }
 
     /// <summary>
-    /// The angle in degrees of the texture.
+    /// Gets the size of the rendered texture.
     /// </summary>
-    /// <remarks>Needs to be a value between 0 and 360.</remarks>
-    public float Angle;
+    public float Size { get; }
 
     /// <summary>
-    /// The color to apply to the entire texture.
+    /// Gets the angle of the texture in degrees.
     /// </summary>
-    public Color TintColor;
+    public float Angle { get; }
 
     /// <summary>
-    /// The type of effects to apply to the texture when rendering.
+    /// Gets the color to apply to an entire texture.
     /// </summary>
-    public RenderEffects Effects;
+    public Color TintColor { get; }
 
     /// <summary>
-    /// The size of the viewport.
+    /// Gets the type of effects to apply to a texture.
     /// </summary>
-    public SizeF ViewPortSize;
+    public RenderEffects Effects { get; } = RenderEffects.None;
 
     /// <summary>
-    /// The ID of the texture.
+    /// Gets the size of the viewport.
     /// </summary>
-    public uint TextureId;
+    public SizeF ViewPortSize { get; }
+
+    /// <summary>
+    /// Gets the ID of the texture.
+    /// </summary>
+    public uint TextureId { get; }
+
+    /// <summary>
+    /// Gets the layer that the a texture will be rendered on.
+    /// </summary>
+    public int Layer { get; }
 
     /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
@@ -79,40 +117,27 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
-        this.TextureId == 0 &&
-        this.SrcRect.IsEmpty &&
-        this.DestRect.IsEmpty &&
-        this.Size == 0f &&
-        this.Angle == 0f &&
-        this.TintColor.IsEmpty &&
-        this.Effects is 0 or RenderEffects.None &&
-        this.ViewPortSize.IsEmpty;
-
-    /// <summary>
-    /// Empties the struct by setting all members to default values.
-    /// </summary>
-    public void Empty()
-    {
-        this.TextureId = 0u;
-        this.SrcRect = default;
-        this.DestRect = default;
-        this.Size = 0f;
-        this.Angle = 0f;
-        this.TintColor = default;
-        this.Effects = RenderEffects.None;
-        this.ViewPortSize = default;
-    }
+        TextureId == 0 &&
+        Size == 0f &&
+        Angle == 0f &&
+        Effects is 0 or RenderEffects.None &&
+        Layer == 0 &&
+        SrcRect.IsEmpty &&
+        DestRect.IsEmpty &&
+        TintColor.IsEmpty &&
+        ViewPortSize.IsEmpty;
 
     /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
     public bool Equals(TextureBatchItem other) =>
-        this.SrcRect.Equals(other.SrcRect) &&
-        this.DestRect.Equals(other.DestRect) &&
-        this.Size.Equals(other.Size) &&
-        this.Angle.Equals(other.Angle) &&
-        this.TintColor.Equals(other.TintColor) &&
-        this.Effects == other.Effects &&
-        this.ViewPortSize.Equals(other.ViewPortSize) &&
-        this.TextureId == other.TextureId;
+        SrcRect.Equals(other.SrcRect) &&
+        DestRect.Equals(other.DestRect) &&
+        Size.Equals(other.Size) &&
+        Angle.Equals(other.Angle) &&
+        TintColor.Equals(other.TintColor) &&
+        Effects == other.Effects &&
+        ViewPortSize.Equals(other.ViewPortSize) &&
+        TextureId == other.TextureId &&
+        Layer == other.Layer;
 
     /// <inheritdoc cref="object.Equals(object?)"/>
     public override bool Equals(object? obj) => obj is TextureBatchItem other && Equals(other);
@@ -121,14 +146,16 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
     [ExcludeFromCodeCoverage]
     public override int GetHashCode()
         => HashCode.Combine(
-            this.SrcRect,
-            this.DestRect,
-            this.Size,
-            this.Angle,
-            this.TintColor,
-            (int)this.Effects,
-            this.ViewPortSize,
-            this.TextureId);
+            HashCode.Combine(
+            SrcRect,
+            DestRect,
+            Size,
+            Angle,
+            TintColor,
+            (int)Effects,
+            ViewPortSize,
+            TextureId),
+            Layer);
 
     /// <inheritdoc/>
     public override string ToString()
@@ -136,15 +163,16 @@ internal struct TextureBatchItem : IEquatable<TextureBatchItem>
         var result = new StringBuilder();
 
         result.AppendLine("Texture Batch Item Values:");
-        result.AppendLine($"Src Rect: {this.SrcRect.ToString()}");
-        result.AppendLine($"Dest Rect: {this.DestRect.ToString()}");
-        result.AppendLine($"Size: {this.Size.ToString(CultureInfo.InvariantCulture)}");
-        result.AppendLine($"Angle: {this.Angle.ToString(CultureInfo.InvariantCulture)}");
+        result.AppendLine($"Src Rect: {SrcRect.ToString()}");
+        result.AppendLine($"Dest Rect: {DestRect.ToString()}");
+        result.AppendLine($"Size: {Size.ToString(CultureInfo.InvariantCulture)}");
+        result.AppendLine($"Angle: {Angle.ToString(CultureInfo.InvariantCulture)}");
         result.AppendLine(
-            $"Tint Clr: {{A={this.TintColor.A},R={this.TintColor.R},G={this.TintColor.G},B={this.TintColor.B}}}");
-        result.AppendLine($"Effects: {this.Effects.ToString()}");
-        result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
-        result.Append($"Texture ID: {this.TextureId.ToString()}");
+            $"Tint Clr: {{A={TintColor.A},R={TintColor.R},G={TintColor.G},B={TintColor.B}}}");
+        result.AppendLine($"Effects: {Effects.ToString()}");
+        result.AppendLine($"View Port Size: {{W={ViewPortSize.Width},H={ViewPortSize.Height}}}");
+        result.AppendLine($"Texture ID: {TextureId.ToString()}");
+        result.Append($"Layer: {Layer}");
 
         return result.ToString();
     }

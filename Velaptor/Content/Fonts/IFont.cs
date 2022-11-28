@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.Graphics;
-using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
-
-namespace Velaptor.Content.Fonts;
+using Graphics;
+using VelFontStyle = FontStyle;
 
 /// <summary>
 /// The font to use when rendering text to the screen.

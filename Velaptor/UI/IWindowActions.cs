@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.UI;
+
+using System;
 
 /// <summary>
 /// Provides the various actions of a window.

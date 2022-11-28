@@ -2,11 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable RedundantArgumentDefaultValue
+namespace VelaptorTests.Graphics;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
@@ -19,10 +23,8 @@ using Velaptor.OpenGL.Shaders;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Graphics;
 
 /// <summary>
 /// Tests the <see cref="Renderer"/> class.
@@ -47,12 +49,13 @@ public class RendererTests
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private readonly Mock<IDisposable> mockShutDownUnsubscriber;
+    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
     private readonly char[] glyphChars =
     {
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
-        '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=', '~', '_', '+',
+        '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ',
     };
 
     private List<GlyphMetrics> allGlyphMetrics = new ();
@@ -80,11 +83,11 @@ public class RendererTests
 
         this.mockBatchServiceManager = new Mock<IBatchServiceManager>();
         this.mockBatchServiceManager.SetupGet(p => p.TextureBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, TextureBatchItem item)>().ToReadOnlyDictionary());
+            .Returns(Array.Empty<TextureBatchItem>().ToReadOnlyCollection());
         this.mockBatchServiceManager.SetupGet(p => p.FontGlyphBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, FontGlyphBatchItem item)>().ToReadOnlyDictionary());
+            .Returns(Array.Empty<FontGlyphBatchItem>().ToReadOnlyCollection());
         this.mockBatchServiceManager.SetupGet(p => p.RectBatchItems)
-            .Returns(Array.Empty<(bool shouldRender, RectShape item)>().ToReadOnlyDictionary());
+            .Returns(Array.Empty<RectBatchItem>().ToReadOnlyCollection());
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
@@ -104,7 +107,7 @@ public class RendererTests
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>((reactor) =>
+            .Callback<IReactor<ShutDownData>>(reactor =>
             {
                 if (reactor is null)
                 {
@@ -113,6 +116,8 @@ public class RendererTests
 
                 this.shutDownReactor = reactor;
             });
+
+        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Width).Returns(200);
@@ -137,8 +142,27 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'gl')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullOpenGLServiceParam_ThrowException()
+    {
+        // Act & Assert
+        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        {
+            var unused = new Renderer(
+                this.mockGL.Object,
+                null,
+                this.mockShaderManager.Object,
+                this.mockBufferManager.Object,
+                this.mockBatchServiceManager.Object,
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
+        }, "The parameter must not be null. (Parameter 'openGLService')");
     }
 
     [Fact]
@@ -154,7 +178,8 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'shaderManager')");
     }
 
@@ -171,7 +196,8 @@ public class RendererTests
                 null,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'bufferManager')");
     }
 
@@ -188,7 +214,8 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 null,
                 this.mockGLInitReactable.Object,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'batchServiceManager')");
     }
 
@@ -205,7 +232,8 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 null,
-                this.mockShutDownReactable.Object);
+                this.mockShutDownReactable.Object,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'glInitReactable')");
     }
 
@@ -222,20 +250,56 @@ public class RendererTests
                 this.mockBufferManager.Object,
                 this.mockBatchServiceManager.Object,
                 this.mockGLInitReactable.Object,
-                null);
+                null,
+                this.mockBatchSizeReactable.Object);
         }, "The parameter must not be null. (Parameter 'shutDownReactable')");
+    }
+
+    [Fact]
+    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            var unused = new Renderer(
+                this.mockGL.Object,
+                this.mockGLService.Object,
+                this.mockShaderManager.Object,
+                this.mockBufferManager.Object,
+                this.mockBatchServiceManager.Object,
+                this.mockGLInitReactable.Object,
+                this.mockShutDownReactable.Object,
+                null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
     }
 
     [Fact]
     public void Ctor_WhenInvoked_SubscribesToBatchEvents()
     {
         // Arrange & Act
-        var unused = CreateRenderer();
+        var unused = CreateSystemUnderTest();
 
         // Assert
-        this.mockBatchServiceManager.VerifyAdd(a => a.TextureBatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-        this.mockBatchServiceManager.VerifyAdd(a => a.FontGlyphBatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
-        this.mockBatchServiceManager.VerifyAdd(a => a.RectBatchFilled += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+        this.mockBatchServiceManager.VerifyAdd(a => a.TextureBatchReadyForRendering += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+        this.mockBatchServiceManager.VerifyAdd(a => a.FontGlyphBatchReadyForRendering += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+        this.mockBatchServiceManager.VerifyAdd(a => a.RectBatchReadyForRendering += It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_ManagesBatchSize()
+    {
+        // Arrange & Act
+        _ = CreateSystemUnderTest();
+
+        // Assert
+        this.mockBatchSizeReactable.Verify(m => m.PushNotification(new BatchSizeData(1000u)), Times.Once);
+        this.mockBatchSizeReactable.Verify(m => m.EndNotifications(), Times.Once);
+        this.mockBatchSizeReactable.Verify(m => m.UnsubscribeAll(), Times.Once);
     }
     #endregion
 
@@ -245,12 +309,12 @@ public class RendererTests
     {
         // Arrange
         this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(0, 22));
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
-        batch.RenderSurfaceWidth = 100;
-        _ = batch.RenderSurfaceWidth;
+        sut.RenderSurfaceWidth = 100;
+        _ = sut.RenderSurfaceWidth;
 
         // Assert
         this.mockGLService.Verify(m => m.GetViewPortSize(), Times.Exactly(4));
@@ -262,12 +326,12 @@ public class RendererTests
     {
         // Arrange
         this.mockGLService.Setup(m => m.GetViewPortSize()).Returns(new Size(11, 0));
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
-        batch.RenderSurfaceHeight = 100;
-        _ = batch.RenderSurfaceHeight;
+        sut.RenderSurfaceHeight = 100;
+        _ = sut.RenderSurfaceHeight;
 
         // Assert
         this.mockGLService.Verify(m => m.SetViewPortSize(new Size(11, 100)), Times.Once());
@@ -293,11 +357,11 @@ public class RendererTests
                 data[3] = expectedAlpha;
             });
 
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
-        var actual = batch.ClearColor;
+        var actual = sut.ClearColor;
 
         // Assert
         this.mockGL.Verify(m => m.GetFloat(GLGetPName.ColorClearValue, It.IsAny<float[]>()), Times.Once);
@@ -308,11 +372,11 @@ public class RendererTests
     public void ClearColor_WhenSettingValueAfterOpenGLInitialized_ReturnsCorrectResult()
     {
         // Arrange
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
         // Act
-        batch.ClearColor = Color.FromArgb(11, 22, 33, 44);
+        sut.ClearColor = Color.FromArgb(11, 22, 33, 44);
 
         // Assert
         this.mockGL.Verify(m => m.ClearColor(
@@ -329,8 +393,8 @@ public class RendererTests
     public void Clear_WhenInvoked_ClearsBuffer()
     {
         // Act
-        var batch = CreateRenderer();
-        batch.Clear();
+        var sut = CreateSystemUnderTest();
+        sut.Clear();
 
         // Assert
         this.mockGL.Verify(m => m.Clear(GLClearBufferMask.ColorBufferBit), Times.Once());
@@ -340,10 +404,10 @@ public class RendererTests
     public void OnResize_WhenInvoked_SetsBufferViewPortSizes()
     {
         // Arrange
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        batch.OnResize(new SizeU(11u, 22u));
+        sut.OnResize(new SizeU(11u, 22u));
 
         // Assert
         this.mockBufferManager.VerifyOnce(m => m.SetViewPortSize(VelaptorBufferType.Texture, new SizeU(11u, 22u)));
@@ -355,12 +419,12 @@ public class RendererTests
     public void RenderTexture_WhenNotCallingBeginFirst_ThrowsException()
     {
         // Arrange
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
         {
-            batch.Render(
+            sut.Render(
                 new Mock<ITexture>().Object,
                 It.IsAny<Rectangle>(),
                 It.IsAny<Rectangle>(),
@@ -377,13 +441,13 @@ public class RendererTests
     public void RenderTexture_WithSourceRectWithNoWidthOrHeight_ThrowsException(int width, int height)
     {
         // Arrange
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentException>(() =>
         {
-            batch.Render(
+            sut.Render(
                 new Mock<ITexture>().Object,
                 new Rectangle(1, 2, width, height),
                 It.IsAny<Rectangle>(),
@@ -398,13 +462,13 @@ public class RendererTests
     public void RenderTexture_WithNullTexture_ThrowsException()
     {
         // Arrange
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            batch.Render(
+            sut.Render(
                 null,
                 It.IsAny<Rectangle>(),
                 It.IsAny<Rectangle>(),
@@ -421,10 +485,10 @@ public class RendererTests
         // Arrange
         const string shaderName = "TestTextureShader";
         this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Texture)).Returns(shaderName);
-        var unused = CreateRenderer();
+        var unused = CreateSystemUnderTest();
 
         // Act
-        this.mockBatchServiceManager.Raise(e => e.TextureBatchFilled += null, EventArgs.Empty);
+        this.mockBatchServiceManager.Raise(e => e.TextureBatchReadyForRendering += null, EventArgs.Empty);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Render Texture Process - Nothing To Render"), Times.Once);
@@ -467,12 +531,12 @@ public class RendererTests
 
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
-        batch.Begin();
+        sut.Begin();
 
         // Act
-        batch.Render(mockTexture.Object, 10, 20);
+        sut.Render(mockTexture.Object, 10, 20);
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()), Times.Once);
@@ -489,7 +553,8 @@ public class RendererTests
         const int expectedWidth = 111;
         const int expectedHeight = 222;
         const RenderEffects expectedRenderEffects = RenderEffects.FlipHorizontally;
-        var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, Color.White, textureId);
+        var expectedBatchItem =
+            CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, Color.White, textureId);
 
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(textureId);
@@ -500,12 +565,12 @@ public class RendererTests
 
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
-        batch.Begin();
+        sut.Begin();
 
         // Act
-        batch.Render(mockTexture.Object, 10, 20, expectedRenderEffects);
+        sut.Render(mockTexture.Object, 10, 20, expectedRenderEffects);
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()), Times.Once);
@@ -533,12 +598,12 @@ public class RendererTests
 
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
-        batch.Begin();
+        sut.Begin();
 
         // Act
-        batch.Render(mockTexture.Object, 10, 20, expectedClr);
+        sut.Render(mockTexture.Object, 10, 20, expectedClr);
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()), Times.Once);
@@ -556,7 +621,8 @@ public class RendererTests
         const int expectedHeight = 222;
         var expectedClr = Color.FromArgb(11, 22, 33, 44);
         const RenderEffects expectedRenderEffects = RenderEffects.FlipVertically;
-        var expectedBatchItem = CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, expectedClr, textureId);
+        var expectedBatchItem =
+            CreateBatchItem(expectedX, expectedY, expectedWidth, expectedHeight, expectedRenderEffects, expectedClr, textureId);
 
         var mockTexture = new Mock<ITexture>();
         mockTexture.SetupGet(p => p.Id).Returns(textureId);
@@ -567,12 +633,12 @@ public class RendererTests
 
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(rect => actualBatchItem = rect);
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
-        batch.Begin();
+        sut.Begin();
 
         // Act
-        batch.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects);
+        sut.Render(mockTexture.Object, 10, 20, expectedClr, expectedRenderEffects);
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()), Times.Once);
@@ -583,28 +649,48 @@ public class RendererTests
     public void RenderTexture_WhenInvoked_RendersTexture()
     {
         // Arrange
-        const uint batchIndex = 0;
+        const uint itemABatchIndex = 0;
+        const uint itemBBatchIndex = 1;
+        const uint expectedTotalElements = 12;
 
-        var shouldRenderItem = default(TextureBatchItem);
-        shouldRenderItem.Angle = 45;
-        shouldRenderItem.TextureId = TextureId;
+        var itemA = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            1,
+            45,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            TextureId,
+            0);
+
+        var itemB = new TextureBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            2,
+            90,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            TextureId,
+            1);
 
         var shouldNotRenderItem = default(TextureBatchItem);
-        var items = new[] { (true, shouldRenderItem), (false, shouldNotRenderItem) };
+        var items = new[] { itemA, itemB, shouldNotRenderItem };
 
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         this.mockBatchServiceManager.Setup(m => m.AddTextureBatchItem(It.IsAny<TextureBatchItem>()))
             .Callback<TextureBatchItem>(_ =>
             {
                 MockTextureBatchItems(items);
-                this.mockBatchServiceManager.Raise(m => m.TextureBatchFilled += null, EventArgs.Empty);
+                this.mockBatchServiceManager.Raise(m => m.TextureBatchReadyForRendering += null, EventArgs.Empty);
             });
         this.glInitReactor.OnNext(default);
 
         // Act
-        batch.Begin();
+        sut.Begin();
 
-        batch.Render(
+        sut.Render(
             MockTexture(TextureId),
             new Rectangle(0, 0, 1, 2),
             It.IsAny<Rectangle>(),
@@ -614,25 +700,26 @@ public class RendererTests
             It.IsAny<RenderEffects>());
 
         // Assert
-        this.mockGLService.Verify(m => m.BeginGroup("Render 6 Texture Elements"), Times.Once);
-        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
-        this.mockGL.Verify(m => m.ActiveTexture(GLTextureUnit.Texture0), Times.Once);
-        this.mockGLService.Verify(m => m.BindTexture2D(TextureId), Times.Once);
-        this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(shouldRenderItem, batchIndex));
-        this.mockBufferManager.VerifyNever(m => m.UploadTextureData(shouldNotRenderItem, batchIndex));
-        this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Texture), Times.Once);
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 12 Texture Elements"));
+        this.mockGL.VerifyOnce(m
+            => m.DrawElements(GLPrimitiveType.Triangles, expectedTotalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero));
+        this.mockGLService.VerifyOnce(m => m.BindTexture2D(TextureId));
+        this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(itemA, itemABatchIndex));
+        this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(itemB, itemBBatchIndex));
+        this.mockBufferManager.VerifyNever(m => m.UploadTextureData(shouldNotRenderItem, It.IsAny<uint>()));
+        this.mockBatchServiceManager.VerifyOnce(m => m.EmptyBatch(BatchServiceType.Texture));
     }
 
     [Fact]
     public void RenderFont_WithNullFont_ThrowsException()
     {
         // Arrange
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Asset
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
         {
-            batch.Render(null, "test", 10, 20, 1f, 0f, Color.White);
+            sut.Render(null, "test", 10, 20, 1f, 0f, Color.White);
         }, $"Cannot render a null '{nameof(IFont)}'. (Parameter 'font')");
     }
 
@@ -642,10 +729,10 @@ public class RendererTests
         // Arrange
         const string shaderName = "TestFontShader";
         this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Font)).Returns(shaderName);
-        var unused = CreateRenderer();
+        var unused = CreateSystemUnderTest();
 
         // Act
-        this.mockBatchServiceManager.Raise(e => e.FontGlyphBatchFilled += null, EventArgs.Empty);
+        this.mockBatchServiceManager.Raise(e => e.FontGlyphBatchReadyForRendering += null, EventArgs.Empty);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Render Text Process - Nothing To Render"), Times.Once);
@@ -674,11 +761,11 @@ public class RendererTests
     public void RenderFont_WithNullOrEmptyText_DoesNotRenderText(string renderText)
     {
         // Arrange
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             new Mock<IFont>().Object,
             renderText,
             It.IsAny<int>(),
@@ -699,11 +786,11 @@ public class RendererTests
         // Arrange
         this.mockFont.SetupGet(p => p.Size).Returns(0);
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             "test-text",
             It.IsAny<int>(),
@@ -725,12 +812,12 @@ public class RendererTests
         const string renderText = "hello world";
         MockFontMetrics();
         MockToGlyphMetrics(renderText);
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<InvalidOperationException>(() =>
         {
-            batch.Render(
+            sut.Render(
                 this.mockFont.Object,
                 renderText,
                 It.IsAny<int>(),
@@ -748,11 +835,11 @@ public class RendererTests
         const string renderText = "hello world";
         MockFontMetrics();
         MockToGlyphMetrics(renderText);
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             It.IsAny<int>(),
@@ -775,11 +862,11 @@ public class RendererTests
         MockToGlyphMetrics("hello");
         MockToGlyphMetrics("world");
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             It.IsAny<int>(),
@@ -811,18 +898,19 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             400,
             300,
             1.5f,
             45,
-            Color.FromArgb(11, 22, 33, 44));
+            Color.FromArgb(11, 22, 33, 44),
+            500);
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.AddFontGlyphBatchItem(It.IsAny<FontGlyphBatchItem>()), Times.Exactly(renderText.Length));
@@ -854,11 +942,11 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             11,
@@ -895,11 +983,11 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             new Vector2(33, 44));
@@ -935,11 +1023,11 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             321,
@@ -978,11 +1066,11 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             new Vector2(66, 77),
@@ -1020,11 +1108,11 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             456,
@@ -1062,11 +1150,11 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             new Vector2(758, 137),
@@ -1103,11 +1191,11 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             147,
@@ -1146,11 +1234,11 @@ public class RendererTests
                 actualBatchResultData.Add(batchItem);
             });
 
-        var batch = CreateRenderer();
-        batch.Begin();
+        var sut = CreateSystemUnderTest();
+        sut.Begin();
 
         // Act
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             new Vector2(1255, 79),
@@ -1168,20 +1256,18 @@ public class RendererTests
     public void RenderFont_WhenInvoked_RendersFont()
     {
         // Arrange
-        const string textBeingRendered = "font";
-        const string textNotBeingRendered = "testing";
-        const string renderText = $"{textBeingRendered}{textNotBeingRendered}";
+        const string renderText = "font";
 
         MockFontMetrics();
         MockToGlyphMetrics(renderText);
-        MockFontBatchItems(renderText, 4, 11);
+        MockFontBatchItems(renderText);
 
         var mockFontTextureAtlas = new Mock<ITexture>();
         mockFontTextureAtlas.SetupGet(p => p.Id).Returns(FontAtlasTextureId);
 
         this.mockFont.SetupGet(p => p.FontTextureAtlas).Returns(mockFontTextureAtlas.Object);
 
-        var batch = CreateRenderer();
+        var sut = CreateSystemUnderTest();
         var totalAddFontGlyphBatchItemInvokes = 0;
         var doNotRaise = false;
 
@@ -1190,21 +1276,21 @@ public class RendererTests
             {
                 totalAddFontGlyphBatchItemInvokes += 1;
 
-                if (totalAddFontGlyphBatchItemInvokes > textBeingRendered.Length || doNotRaise)
+                if (totalAddFontGlyphBatchItemInvokes > renderText.Length || doNotRaise)
                 {
                     return;
                 }
 
-                this.mockBatchServiceManager.Raise(m => m.FontGlyphBatchFilled += null, EventArgs.Empty);
+                this.mockBatchServiceManager.Raise(m => m.FontGlyphBatchReadyForRendering += null, EventArgs.Empty);
                 doNotRaise = true;
             });
 
         this.glInitReactor.OnNext(default);
 
         // Act
-        batch.Begin();
+        sut.Begin();
 
-        batch.Render(
+        sut.Render(
             this.mockFont.Object,
             renderText,
             11,
@@ -1212,14 +1298,14 @@ public class RendererTests
 
         // Assert
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles,
-                6u * (uint)textBeingRendered.Length,
+                6u * (uint)renderText.Length,
                 GLDrawElementsType.UnsignedInt,
                 IntPtr.Zero),
             Times.Once());
         this.mockGLService.Verify(m => m.BindTexture2D(FontAtlasTextureId), Times.Once);
         this.mockBufferManager.Verify(m => m.UploadFontGlyphData(It.IsAny<FontGlyphBatchItem>(),
                 It.IsAny<uint>()),
-            Times.Exactly(textBeingRendered.Length));
+            Times.Exactly(renderText.Length));
         this.mockBatchServiceManager.VerifyOnce(m => m.EmptyBatch(BatchServiceType.FontGlyph));
     }
 
@@ -1229,10 +1315,10 @@ public class RendererTests
         // Arrange
         const string shaderName = "TestRectShader";
         this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Rectangle)).Returns(shaderName);
-        var unused = CreateRenderer();
+        var unused = CreateSystemUnderTest();
 
         // Act
-        this.mockBatchServiceManager.Raise(e => e.RectBatchFilled += null, EventArgs.Empty);
+        this.mockBatchServiceManager.Raise(e => e.RectBatchReadyForRendering += null, EventArgs.Empty);
 
         // Assert
         this.mockGLService.Verify(m => m.BeginGroup("Render Rectangle Process - Nothing To Render"), Times.Once);
@@ -1244,7 +1330,7 @@ public class RendererTests
         this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
         this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
         this.mockBufferManager.VerifyNever(m =>
-            m.UploadRectData(It.IsAny<RectShape>(), It.IsAny<uint>()));
+            m.UploadRectData(It.IsAny<RectBatchItem>(), It.IsAny<uint>()));
         this.mockGLService.VerifyNever(m =>
             m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
         this.mockGL.VerifyNever(m => m.DrawElements(
@@ -1259,7 +1345,7 @@ public class RendererTests
     public void RenderRectangle_WhenInvoked_AddsRectToBatch()
     {
         // Arrange
-        var expected = new RectShape
+        var rect = new RectShape
         {
             Position = new Vector2(11, 22),
             Width = 33u,
@@ -1273,10 +1359,23 @@ public class RendererTests
             GradientStop = Color.Magenta,
         };
 
-        var batch = CreateRenderer();
+        var expected = new RectBatchItem(
+            new Vector2(11, 22),
+            33u,
+            44u,
+            Color.White,
+            true,
+            0,
+            CornerRadius.Empty(),
+            ColorGradient.None,
+            Color.Magenta,
+            Color.Magenta,
+            0);
+
+        var sut = CreateSystemUnderTest();
 
         // Act
-        batch.Render(expected);
+        sut.Render(rect);
 
         // Assert
         this.mockBatchServiceManager.Verify(m => m.AddRectBatchItem(expected), Times.Once);
@@ -1288,49 +1387,53 @@ public class RendererTests
         // Arrange
         const uint batchIndex = 0;
 
-        var shouldRenderItem = default(RectShape);
-        shouldRenderItem.Position = new Vector2(1, 2);
-        shouldRenderItem.Width = 3;
-        shouldRenderItem.Height = 4;
-        shouldRenderItem.BorderThickness = 5;
-        shouldRenderItem.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
-        shouldRenderItem.GradientStart = Color.FromArgb(11, 22, 33, 44);
-        shouldRenderItem.GradientStop = Color.FromArgb(55, 66, 77, 88);
-        shouldRenderItem.GradientType = ColorGradient.Horizontal;
+        var rect = default(RectShape);
+        rect.Position = new Vector2(1, 2);
+        rect.Width = 3;
+        rect.Height = 4;
+        rect.Color = Color.FromArgb(99, 100, 110, 120);
+        rect.IsFilled = true;
+        rect.BorderThickness = 5;
+        rect.CornerRadius = new CornerRadius(6f, 7f, 8f, 9f);
+        rect.GradientStart = Color.FromArgb(11, 22, 33, 44);
+        rect.GradientStop = Color.FromArgb(55, 66, 77, 88);
+        rect.GradientType = ColorGradient.Horizontal;
 
-        var shouldNotRenderItem = default(RectShape);
-        shouldNotRenderItem.Position = new Vector2(99, 111);
-        shouldNotRenderItem.Width = 222;
-        shouldNotRenderItem.Height = 333;
-        shouldNotRenderItem.BorderThickness = 444;
-        shouldNotRenderItem.CornerRadius = new CornerRadius(555f, 666f, 777f, 888f);
-        shouldNotRenderItem.GradientStart = Color.FromArgb(112, 113, 114, 115);
-        shouldNotRenderItem.GradientStop = Color.FromArgb(116, 117, 118, 119);
-        shouldNotRenderItem.GradientType = ColorGradient.Vertical;
+        var batchItem = new RectBatchItem(
+            new Vector2(1, 2),
+            3,
+            4,
+            Color.FromArgb(99, 100, 110, 120),
+            true,
+            5,
+            new CornerRadius(6f, 7f, 8f, 9f),
+            ColorGradient.Horizontal,
+            Color.FromArgb(11, 22, 33, 44),
+            Color.FromArgb(55, 66, 77, 88),
+            0);
 
-        var shouldNotRenderEmptyItem = default(RectShape);
+        var shouldNotRenderEmptyItem = default(RectBatchItem);
 
-        var items = new[] { (true, shouldRenderItem), (false, shouldNotRenderItem), (true, shouldNotRenderEmptyItem) };
+        var items = new[] { batchItem, shouldNotRenderEmptyItem };
 
-        var batch = CreateRenderer();
-        this.mockBatchServiceManager.Setup(m => m.AddRectBatchItem(It.IsAny<RectShape>()))
-            .Callback<RectShape>(_ =>
+        var sut = CreateSystemUnderTest();
+        this.mockBatchServiceManager.Setup(m => m.AddRectBatchItem(It.IsAny<RectBatchItem>()))
+            .Callback<RectBatchItem>(_ =>
             {
                 MockRectBatchItems(items);
-                this.mockBatchServiceManager.Raise(m => m.RectBatchFilled += null, EventArgs.Empty);
+                this.mockBatchServiceManager.Raise(m => m.RectBatchReadyForRendering += null, EventArgs.Empty);
             });
         this.glInitReactor.OnNext(default);
 
         // Act
-        batch.Begin();
-        batch.Render(shouldRenderItem);
+        sut.Begin();
+        sut.Render(rect);
 
         // Assert
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
         this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
-        this.mockBufferManager.VerifyOnce(m => m.UploadRectData(shouldRenderItem, batchIndex));
-        this.mockBufferManager.VerifyNever(m => m.UploadRectData(shouldNotRenderItem, batchIndex));
+        this.mockBufferManager.VerifyOnce(m => m.UploadRectData(batchItem, batchIndex));
         this.mockBufferManager.VerifyNever(m => m.UploadRectData(shouldNotRenderEmptyItem, batchIndex));
         this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Rectangle), Times.Once);
     }
@@ -1339,7 +1442,7 @@ public class RendererTests
     public void End_WhenInvoked_EndsBatches()
     {
         // Arrange
-        var manager = CreateRenderer();
+        var manager = CreateSystemUnderTest();
 
         // Act
         manager.End();
@@ -1358,7 +1461,7 @@ public class RendererTests
             .Returns(this.mockShutDownUnsubscriber.Object)
             .Callback<IReactor<ShutDownData>>(reactor => this.shutDownReactor = reactor);
 
-        CreateRenderer();
+        CreateSystemUnderTest();
 
         // Act
         this.shutDownReactor?.OnNext(default);
@@ -1367,11 +1470,11 @@ public class RendererTests
         // Assert
         this.mockBatchServiceManager.Verify(m => m.Dispose(), Times.Once);
         this.mockBatchServiceManager.
-            VerifyRemove(e => e.TextureBatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+            VerifyRemove(e => e.TextureBatchReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
         this.mockBatchServiceManager.
-            VerifyRemove(e => e.FontGlyphBatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+            VerifyRemove(e => e.FontGlyphBatchReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
         this.mockBatchServiceManager.
-            VerifyRemove(e => e.RectBatchFilled -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
+            VerifyRemove(e => e.RectBatchReadyForRendering -= It.IsAny<EventHandler<EventArgs>>(), Times.Once);
     }
     #endregion
 
@@ -1380,7 +1483,7 @@ public class RendererTests
     public void GlInitReactable_WhenCompleted_DisposesOfSubscription()
     {
         // Arrange
-        var unused = CreateRenderer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.glInitReactor.OnCompleted();
@@ -1393,7 +1496,7 @@ public class RendererTests
     public void ShutDownReactable_WhenCompleted_DisposesOfSubscription()
     {
         // Arrange
-        var unused = CreateRenderer();
+        var unused = CreateSystemUnderTest();
 
         // Act
         this.shutDownReactor.OnCompleted();
@@ -1429,15 +1532,16 @@ public class RendererTests
     /// <returns>The instance to use for testing.</returns>
     private static TextureBatchItem CreateBatchItem(int x, int y, int width, int height, RenderEffects effects, Color clr, int textureId)
     {
-        var result = default(TextureBatchItem);
-        result.SrcRect = new RectangleF(0f, 0f, width, height);
-        result.DestRect = new RectangleF(x, y, width, height);
-        result.Size = 1f;
-        result.Angle = 0f;
-        result.TintColor = clr;
-        result.Effects = effects;
-        result.ViewPortSize = new SizeF(800f, 600f);
-        result.TextureId = (uint)textureId;
+        var result = new TextureBatchItem(
+            new RectangleF(0f, 0f, width, height),
+            new RectangleF(x, y, width, height),
+            1f,
+            0f,
+            clr,
+            effects,
+            new SizeF(800f, 600f),
+            (uint)textureId,
+            0);
 
         return result;
     }
@@ -1467,7 +1571,7 @@ public class RendererTests
     /// Creates a new instance of <see cref="Renderer"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test with.</returns>
-    private Renderer CreateRenderer()
+    private Renderer CreateSystemUnderTest()
     {
         var result = new Renderer(
             this.mockGL.Object,
@@ -1476,7 +1580,8 @@ public class RendererTests
             this.mockBufferManager.Object,
             this.mockBatchServiceManager.Object,
             this.mockGLInitReactable.Object,
-            this.mockShutDownReactable.Object);
+            this.mockShutDownReactable.Object,
+            this.mockBatchSizeReactable.Object);
 
         return result;
     }
@@ -1485,48 +1590,48 @@ public class RendererTests
     /// Mocks the <see cref="BatchServiceManager.TextureBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
     /// </summary>
     /// <param name="items">The items to store in the service.</param>
-    private void MockTextureBatchItems((bool shouldRender, TextureBatchItem item)[] items)
+    private void MockTextureBatchItems(TextureBatchItem[] items)
     {
         this.mockBatchServiceManager.SetupProperty(p => p.TextureBatchItems);
-        this.mockBatchServiceManager.Object.TextureBatchItems = items.ToReadOnlyDictionary();
+        this.mockBatchServiceManager.Object.TextureBatchItems = items.ToReadOnlyCollection();
     }
 
     /// <summary>
     /// Mocks the <see cref="BatchServiceManager.FontGlyphBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
     /// </summary>
     /// <param name="batchGlyphs">The glyphs to mock.</param>
-    /// <param name="excludeIndexStart">The starting index of the glyph to inclusively exclude from mocking.</param>
-    /// <param name="excludeIndexStop">The ending index of the glyph to inclusively exclude from mocking.</param>
-    /// <remarks>
-    ///     The <paramref name="excludeIndexStart"/> and <paramref name="excludeIndexStop"/> are the index start and stop
-    ///     of the given glyph string param <paramref name="batchGlyphs"/>.
-    /// </remarks>
-    private void MockFontBatchItems(string batchGlyphs, int excludeIndexStart, int excludeIndexStop)
+    private void MockFontBatchItems(string batchGlyphs)
     {
-        var glyphsToMock = new List<(bool, FontGlyphBatchItem)>();
+        var glyphsToMock = new List<FontGlyphBatchItem>();
 
-        for (var i = 0; i < batchGlyphs.Length; i++)
+        foreach (var t in batchGlyphs)
         {
-            var shouldRender = i < excludeIndexStart || i > excludeIndexStop;
-            var batchItem = default(FontGlyphBatchItem);
-            batchItem.Glyph = batchGlyphs[i];
-            batchItem.TextureId = FontAtlasTextureId;
+            var batchItem = new FontGlyphBatchItem(
+                RectangleF.Empty,
+                RectangleF.Empty,
+                t,
+                0,
+                0,
+                Color.Empty,
+                RenderEffects.None,
+                SizeF.Empty,
+                FontAtlasTextureId,
+                0);
 
-            var glyphInBatchToMock = (shouldRender, batchItem);
-            glyphsToMock.Add(glyphInBatchToMock);
+            glyphsToMock.Add(batchItem);
         }
 
         this.mockBatchServiceManager.SetupProperty(p => p.FontGlyphBatchItems);
-        this.mockBatchServiceManager.Object.FontGlyphBatchItems = glyphsToMock.ToReadOnlyDictionary();
+        this.mockBatchServiceManager.Object.FontGlyphBatchItems = glyphsToMock.ToReadOnlyCollection();
     }
 
     /// <summary>
     /// Mocks the <see cref="BatchServiceManager.RectBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
     /// </summary>
     /// <param name="items">The items to store in the service.</param>
-    private void MockRectBatchItems((bool shouldRender, RectShape item)[] items)
+    private void MockRectBatchItems(RectBatchItem[] items)
     {
         this.mockBatchServiceManager.SetupProperty(p => p.RectBatchItems);
-        this.mockBatchServiceManager.Object.RectBatchItems = items.ToReadOnlyDictionary();
+        this.mockBatchServiceManager.Object.RectBatchItems = items.ToReadOnlyCollection();
     }
 }

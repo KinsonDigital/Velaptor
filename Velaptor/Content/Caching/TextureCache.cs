@@ -2,21 +2,21 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Caching;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Content.Exceptions;
-using Velaptor.Content.Factories;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-using Velaptor.Services;
-
-namespace Velaptor.Content.Caching;
+using Exceptions;
+using Factories;
+using Graphics;
+using Guards;
+using Reactables.Core;
+using Reactables.ReactableData;
+using Services;
 
 /// <summary>
 /// Caches <see cref="ITexture"/> objects for retrieval at a later time.
@@ -233,6 +233,9 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
 
                 atlasImageData = this.imageService.FlipVertically(atlasImageData);
                 imageData = atlasImageData;
+#if DEBUG
+                AppStats.RecordLoadedFont(cacheKey);
+#endif
             }
             else
             {
@@ -246,10 +249,20 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
                 contentName = $"FontAtlasTexture|{contentName}|{parseResult.MetaData}";
             }
 
+            var loadedTexture = this.textureFactory.Create(contentName, fullFilePath, imageData);
+
 #if DEBUG
-            AppStats.RecordLoadedFont(cacheKey);
+            if (isFontFile)
+            {
+                AppStats.RecordLoadedTexture("Texture Atlas", contentName, loadedTexture.Id);
+            }
+            else
+            {
+                AppStats.RecordLoadedTexture("Texture", contentName, loadedTexture.Id);
+            }
 #endif
-            return this.textureFactory.Create(contentName, fullFilePath, imageData);
+
+            return loadedTexture;
         });
     }
 
@@ -263,6 +276,7 @@ internal sealed class TextureCache : IItemCache<string, ITexture>
             this.disposeTexturesReactable.PushNotification(new DisposeTextureData(texture.Id));
 #if DEBUG
             AppStats.ClearLoadedFont(cacheKey);
+            AppStats.RemoveLoadedTexture(texture.Id);
 #endif
         }
     }

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,10 +14,8 @@ using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content;
 
 /// <summary>
 /// Tests the <see cref="Texture"/> class.

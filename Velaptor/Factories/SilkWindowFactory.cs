@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Factories;
+
 using System.Diagnostics.CodeAnalysis;
 using Silk.NET.Windowing;
-
-namespace Velaptor.Factories;
 
 /// <inheritdoc/>
 [ExcludeFromCodeCoverage]

@@ -2,16 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.UI;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
-using Velaptor.Content;
-using Velaptor.Factories;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-
-namespace Velaptor.UI;
+using Content;
+using Factories;
+using Graphics;
+using Guards;
+using Input;
 
 /// <summary>
 /// A button that can be clicked to execute functionality.
@@ -130,16 +131,18 @@ public sealed class Button : ControlBase
     /// </summary>
     /// <param name="contentLoader">Loads various kinds of content.</param>
     /// <param name="controlFactory">Creates UI controls.</param>
+    /// <param name="mouse">The system mouse.</param>
     /// <exception cref="ArgumentNullException">
     ///     Thrown if the any of the parameters below are null:
     ///     <list type="bullet">
     ///         <item><paramref name="contentLoader"/></item>
     ///     </list>
     /// </exception>
-    internal Button(IContentLoader contentLoader, IUIControlFactory controlFactory)
+    internal Button(IContentLoader contentLoader, IUIControlFactory controlFactory, IAppInput<MouseState> mouse)
+        : base(mouse)
     {
-        EnsureThat.ParamIsNotNull(contentLoader); // TODO: Check for unit test
-        EnsureThat.ParamIsNotNull(controlFactory); // TODO: Check for unit test
+        EnsureThat.ParamIsNotNull(contentLoader);
+        EnsureThat.ParamIsNotNull(controlFactory);
 
         this.contentLoader = contentLoader;
         this.controlFactory = controlFactory;

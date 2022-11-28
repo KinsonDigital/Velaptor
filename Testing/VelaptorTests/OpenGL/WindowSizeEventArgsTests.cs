@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL;
+
 using FluentAssertions;
 using Velaptor.OpenGL;
 using Xunit;
-
-namespace VelaptorTests.OpenGL;
 
 /// <summary>
 /// Tests the <see cref="WindowSizeEventArgs"/> class.

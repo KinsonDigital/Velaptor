@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Guards;
+
 using System;
 using Velaptor.Guards;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Guards;
 
 /// <summary>
 /// Tests the <see cref="EnsureThat"/> class.

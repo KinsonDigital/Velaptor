@@ -2,35 +2,50 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.GPUData;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.OpenGL.GPUData;
 
 /// <summary>
 /// Holds data for a single quad in the GPU vertex buffer.
 /// </summary>
-internal struct TextureQuadData : IEquatable<TextureQuadData>
+internal readonly struct TextureQuadData : IEquatable<TextureQuadData>
 {
     /// <summary>
-    /// The top left corner vertex of the quad.
+    /// Initializes a new instance of the <see cref="TextureQuadData"/> struct.
     /// </summary>
-    public TextureVertexData Vertex1;
+    /// <param name="vertex1">The top left corner vertex of the quad.</param>
+    /// <param name="vertex2">The top right corner vertex of the quad.</param>
+    /// <param name="vertex3">The bottom right corner vertex of the quad.</param>
+    /// <param name="vertex4">The bottom left corner vertex of the quad.</param>
+    public TextureQuadData(in TextureVertexData vertex1, TextureVertexData vertex2, TextureVertexData vertex3, TextureVertexData vertex4)
+    {
+        Vertex1 = vertex1;
+        Vertex2 = vertex2;
+        Vertex3 = vertex3;
+        Vertex4 = vertex4;
+    }
 
     /// <summary>
-    /// The top right corner vertex of the quad.
+    /// Gets the top left corner vertex of the quad.
     /// </summary>
-    public TextureVertexData Vertex2;
+    public TextureVertexData Vertex1 { get; }
 
     /// <summary>
-    /// The bottom right corner vertex of the quad.
+    /// Gets the top right corner vertex of the quad.
     /// </summary>
-    public TextureVertexData Vertex3;
+    public TextureVertexData Vertex2 { get; }
 
     /// <summary>
-    /// The bottom left corner vertex of the quad.
+    /// Gets the bottom right corner vertex of the quad.
     /// </summary>
-    public TextureVertexData Vertex4;
+    public TextureVertexData Vertex3 { get; }
+
+    /// <summary>
+    /// Gets the bottom left corner vertex of the quad.
+    /// </summary>
+    public TextureVertexData Vertex4 { get; }
 
     /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
@@ -69,12 +84,12 @@ internal struct TextureQuadData : IEquatable<TextureQuadData>
 
     /// <inheritdoc/>
     public bool Equals(TextureQuadData other)
-        => this.Vertex1 == other.Vertex1 &&
-           this.Vertex2 == other.Vertex2 &&
-           this.Vertex3 == other.Vertex3 &&
-           this.Vertex4 == other.Vertex4;
+        => Vertex1 == other.Vertex1 &&
+           Vertex2 == other.Vertex2 &&
+           Vertex3 == other.Vertex3 &&
+           Vertex4 == other.Vertex4;
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public override int GetHashCode() => this.Vertex1.GetHashCode() + this.Vertex2.GetHashCode() + this.Vertex3.GetHashCode() + this.Vertex4.GetHashCode();
+    public override int GetHashCode() => Vertex1.GetHashCode() + Vertex2.GetHashCode() + Vertex3.GetHashCode() + Vertex4.GetHashCode();
 }

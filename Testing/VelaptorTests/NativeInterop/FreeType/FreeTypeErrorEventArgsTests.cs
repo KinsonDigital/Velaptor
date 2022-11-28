@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.NativeInterop.FreeType;
+
 using System;
 using Velaptor.NativeInterop.FreeType;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.NativeInterop.FreeType;
 
 /// <summary>
 /// Tests the <see cref="FreeTypeErrorEventArgs"/> class.

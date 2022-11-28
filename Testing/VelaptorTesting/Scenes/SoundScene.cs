@@ -1,6 +1,8 @@
-// <copyright file="TestSoundsScene.cs" company="KinsonDigital">
+// <copyright file="SoundScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
+
+namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
@@ -9,12 +11,10 @@ using System.Linq;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.UI;
-using VelaptorTesting.Core;
+using Core;
 using ISound = Velaptor.Content.ISound;
 
-namespace VelaptorTesting.Scenes;
-
-public class TestSoundsScene : SceneBase
+public class SoundScene : SceneBase
 {
     private const int BottomMargin = 10;
     private const int HoriBtnSpacing = 10;
@@ -34,7 +34,7 @@ public class TestSoundsScene : SceneBase
     private Button? btnRepeat;
     private ISound? sound;
 
-    public TestSoundsScene(IContentLoader contentLoader)
+    public SoundScene(IContentLoader contentLoader)
         : base(contentLoader)
     {
         this.windowCenter.X = (int)MainWindow.WindowWidth / 2;
@@ -72,6 +72,11 @@ public class TestSoundsScene : SceneBase
 
     public override void UnloadContent()
     {
+        if (!IsLoaded || IsDisposed)
+        {
+            return;
+        }
+
         if (this.sound is not null)
         {
             this.sound.Stop();

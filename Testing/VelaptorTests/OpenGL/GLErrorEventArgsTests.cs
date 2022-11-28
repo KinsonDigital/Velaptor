@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL;
+
 using System;
 using Velaptor.OpenGL;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL;
 
 /// <summary>
 /// Tests the <see cref="GLErrorEventArgs"/> class.

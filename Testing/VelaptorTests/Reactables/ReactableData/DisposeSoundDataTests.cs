@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Reactables.ReactableData;
+
 using Velaptor.Reactables.ReactableData;
 using Xunit;
-
-namespace VelaptorTests.Reactables.ReactableData;
 
 /// <summary>
 /// Tests the <see cref="DisposeSoundData"/> struct.

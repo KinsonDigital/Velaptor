@@ -1,6 +1,8 @@
-﻿// <copyright file="TestMouseScene.cs" company="KinsonDigital">
+﻿// <copyright file="MouseScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
+
+namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
@@ -9,14 +11,12 @@ using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
-using VelaptorTesting.Core;
-
-namespace VelaptorTesting.Scenes;
+using Core;
 
 /// <summary>
 /// Used to test that the mouse works correctly.
 /// </summary>
-public class TestMouseScene : SceneBase
+public class MouseScene : SceneBase
 {
     private readonly IAppInput<MouseState> mouse;
     private Label? mouseInfoLabel;
@@ -24,10 +24,10 @@ public class TestMouseScene : SceneBase
     private MouseScrollDirection scrollDirection;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestMouseScene"/> class.
+    /// Initializes a new instance of the <see cref="MouseScene"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads content for the scene.</param>
-    public TestMouseScene(IContentLoader contentLoader)
+    public MouseScene(IContentLoader contentLoader)
         : base(contentLoader)
         => this.mouse = AppInputFactory.CreateMouse();
 
@@ -69,32 +69,5 @@ public class TestMouseScene : SceneBase
         this.mouseInfoLabel.Text = mouseInfo;
 
         base.Update(frameTime);
-    }
-
-    /// <inheritdoc cref="IScene.UnloadContent"/>
-    public override void UnloadContent()
-    {
-        if (!IsLoaded || IsDisposed)
-        {
-            return;
-        }
-
-        base.UnloadContent();
-    }
-
-    /// <inheritdoc cref="SceneBase.Dispose(bool)"/>
-    protected override void Dispose(bool disposing)
-    {
-        if (IsDisposed || !IsLoaded)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            UnloadContent();
-        }
-
-        base.Dispose(disposing);
     }
 }

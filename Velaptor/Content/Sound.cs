@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using CASL;
-using Velaptor.Content.Factories;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
+using Factories;
+using Reactables.Core;
+using Reactables.ReactableData;
 using CASLSound = CASL.Sound;
-
-namespace Velaptor.Content;
 
 /// <summary>
 /// A single sound that can be played, paused etc.

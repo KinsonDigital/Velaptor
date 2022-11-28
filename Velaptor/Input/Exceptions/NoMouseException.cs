@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Input.Exceptions;
 
+using System;
+
 /// <summary>
-/// Occurs when no mouse has been detected in the system.
+/// Occurs when a mouse has not been detected in the system.
 /// </summary>
 public class NoMouseException : Exception
 {

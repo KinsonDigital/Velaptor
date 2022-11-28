@@ -2,80 +2,79 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Velaptor.Graphics;
-
-namespace Velaptor.Services;
+using System.Linq;
+using Guards;
+using OpenGL;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Manages the process of batching the rendering of rectangles.
 /// </summary>
-internal sealed class RectBatchingService : IBatchingService<RectShape>
+internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
 {
-    private SortedDictionary<uint, (bool shouldRender, RectShape item)> batchItems = new ();
-    private uint currentBatchIndex;
-    private uint batchSize;
+    private readonly IDisposable unsubscriber;
+    private RectBatchItem[] batchItems = null!;
 
     /// <summary>
-    /// Occurs when a batch is full.
+    /// Initializes a new instance of the <see cref="RectBatchingService"/> class.
     /// </summary>
-    /// <remarks>
-    ///     The batch is ready when the total amount of items to be rendered is equal to the <see cref="BatchSize"/>.
-    /// </remarks>
-    public event EventHandler<EventArgs>? BatchFilled;
-
-    /// <inheritdoc/>
-    public uint BatchSize
+    /// <param name="batchSizeReactable">Receives push notifications about the batch size.</param>
+    public RectBatchingService(IReactable<BatchSizeData> batchSizeReactable)
     {
-        get => this.batchSize;
-        set
-        {
-            this.batchSize = value;
-            this.batchItems.Clear();
+        EnsureThat.ParamIsNotNull(batchSizeReactable);
 
-            for (var i = 0u; i < this.batchSize; i++)
+        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
+            onNext: data =>
             {
-                this.batchItems.Add(i, (false, default));
-            }
-        }
+                var items = new List<RectBatchItem>();
+
+                for (var i = 0u; i < data.BatchSize; i++)
+                {
+                    items.Add(default);
+                }
+
+                this.batchItems = items.ToArray();
+            },
+            onCompleted: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>
-    public ReadOnlyDictionary<uint, (bool shouldRender, RectShape item)> BatchItems
+    public event EventHandler<EventArgs>? ReadyForRendering;
+
+    /// <inheritdoc/>
+    public ReadOnlyCollection<RectBatchItem> BatchItems
     {
         get => new (this.batchItems);
-        set => this.batchItems = new SortedDictionary<uint, (bool shouldRender, RectShape item)>(value);
+        set => this.batchItems = value.ToArray();
     }
 
     /// <summary>
     /// Adds the given <paramref name="rect"/> to the batch.
     /// </summary>
     /// <param name="rect">The item to be added.</param>
-    public void Add(RectShape rect)
+    public void Add(in RectBatchItem rect)
     {
-        var batchIsFull = this.currentBatchIndex >= BatchSize;
+        var batchIsFull = this.batchItems.All(i => i.IsEmpty() is false);
 
         if (batchIsFull)
         {
-            this.BatchFilled?.Invoke(this, EventArgs.Empty);
+            this.ReadyForRendering?.Invoke(this, EventArgs.Empty);
         }
 
-        this.batchItems[this.currentBatchIndex] = (true, rect);
-        this.currentBatchIndex += 1;
-    }
+        var emptyItemIndex = this.batchItems.IndexOf(i => i.IsEmpty());
 
-    /// <summary>
-    /// Adds the given list of <paramref name="rects"/> to batch.
-    /// </summary>
-    /// <param name="rects">The items to be added.</param>
-    public void AddRange(IEnumerable<RectShape> rects)
-    {
-        foreach (var rect in rects)
+        if (emptyItemIndex == -1)
         {
-            Add(rect);
+            return;
         }
+
+        this.batchItems[emptyItemIndex] = rect;
     }
 
     /// <summary>
@@ -86,20 +85,14 @@ internal sealed class RectBatchingService : IBatchingService<RectShape>
     /// </remarks>
     public void EmptyBatch()
     {
-        for (var i = 0u; i < this.batchItems.Count; i++)
+        for (var i = 0u; i < this.batchItems.Length; i++)
         {
-            if (this.batchItems[i].shouldRender is false)
+            if (this.batchItems[i].IsEmpty())
             {
                 continue;
             }
 
-            (bool shouldRender, RectShape rectItem) itemToEmpty = this.batchItems[i];
-            itemToEmpty.shouldRender = false;
-            itemToEmpty.rectItem.Empty();
-
-            this.batchItems[i] = itemToEmpty;
+            this.batchItems[i] = default;
         }
-
-        this.currentBatchIndex = 0u;
     }
 }

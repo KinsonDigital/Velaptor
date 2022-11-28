@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.GLFW;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Velaptor.Guards;
-
-namespace Velaptor.NativeInterop.GLFW;
+using Guards;
 
 /// <summary>
 /// Holds GLFW related error information.

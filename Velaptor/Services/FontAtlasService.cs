@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -9,14 +11,12 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using Velaptor.Content.Fonts.Services;
-using Velaptor.Exceptions;
-using Velaptor.Graphics;
-using Velaptor.Guards;
+using Exceptions;
+using Graphics;
+using Guards;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectangle = System.Drawing.Rectangle;
-
-namespace Velaptor.Services;
 
 /// <summary>
 /// Creates font atlas data for rendering text.

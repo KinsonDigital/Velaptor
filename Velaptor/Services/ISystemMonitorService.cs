@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.ObjectModel;
-using Velaptor.Hardware;
-
 namespace Velaptor.Services;
+
+using System.Collections.ObjectModel;
+using Hardware;
 
 /// <summary>
 /// Gets information about all of the monitors in the system.

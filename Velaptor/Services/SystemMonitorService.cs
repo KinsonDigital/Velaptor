@@ -2,15 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Velaptor.Guards;
-using Velaptor.Hardware;
-using Velaptor.NativeInterop.GLFW;
-
-namespace Velaptor.Services;
+using Guards;
+using Hardware;
+using NativeInterop.GLFW;
 
 /// <summary>
 /// Gets information about all of the monitors in the system.

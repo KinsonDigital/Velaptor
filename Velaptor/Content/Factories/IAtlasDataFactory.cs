@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using Velaptor.Graphics;
-
 namespace Velaptor.Content.Factories;
+
+using System.Collections.Generic;
+using Graphics;
 
 /// <summary>
 /// Generates <see cref="IAtlasData"/> instances.

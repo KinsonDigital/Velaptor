@@ -1,8 +1,10 @@
-// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-#pragma warning disable CS8524 The switch expression does not handle some values of its input type.
+#pragma warning disable CS8524
+namespace VelaptorTests;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -16,14 +18,12 @@ using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.GPUData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectF = System.Drawing.RectangleF;
 using NETSizeF = System.Drawing.SizeF;
-
-namespace VelaptorTests;
 
 /// <summary>
 /// Tests the <see cref="Velaptor.InternalExtensionMethods"/> class.
@@ -1172,6 +1172,21 @@ public class InternalExtensionMethodsTests
         Assert.Equal(2, totalInvokes);
         Assert.Empty(queue);
     }
+
+    [Theory]
+    [InlineData(3, 2)]
+    [InlineData(40, -1)]
+    public void IndexOf_WhenInvoked_ReturnsCorrectResult(int value, int expected)
+    {
+        // Arrange
+        var items = new[] { 1, 2, 3, 4 };
+
+        // Act
+        var actual = items.IndexOf(i => i == value);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
     #endregion
 
     /// <summary>
@@ -1270,39 +1285,8 @@ public class InternalExtensionMethodsTests
     }
 
     /// <summary>
-    /// Converts the given <paramref name="image"/> of type <see cref="Image{Rgba32}"/>
-    /// to the type of <see cref="ImageData"/>.
-    /// </summary>
-    /// <param name="image">The image to convert.</param>
-    /// <returns>The image data of type <see cref="ImageData"/>.</returns>
-    private static ImageData ToImageData(Image<Rgba32> image)
-    {
-        var pixelData = new NETColor[image.Width, image.Height];
-
-        for (var y = 0; y < image.Height; y++)
-        {
-            var row = y;
-            image.ProcessPixelRows(accessor =>
-            {
-                var pixelRowSpan = accessor.GetRowSpan(row);
-
-                for (var x = 0; x < image.Width; x++)
-                {
-                    pixelData[x, row] = NETColor.FromArgb(
-                        pixelRowSpan[x].A,
-                        pixelRowSpan[x].R,
-                        pixelRowSpan[x].G,
-                        pixelRowSpan[x].B);
-                }
-            });
-        }
-
-        return new ImageData(pixelData, (uint)image.Width, (uint)image.Height);
-    }
-
-    /// <summary>
-    /// Generates GPU data with numerical values sequentially throughout
-    /// the struct starting with the given <paramref name="startValue"/> for the purpose of testing.
+    /// Generates GPU data with sequential, numerical values throughout
+    /// the struct, starting with the given <paramref name="startValue"/> for the purpose of testing.
     /// </summary>
     /// <param name="startValue">The value to start the sequential assignment from.</param>
     /// <returns>The GPU data to test.</returns>

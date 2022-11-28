@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.Guards;
-
 namespace Velaptor.OpenGL;
+
+using System;
+using Guards;
 
 /// <summary>
 /// Holds information about OpenGL errors that occur.

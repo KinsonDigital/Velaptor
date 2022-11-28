@@ -2,12 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Input;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Velaptor.Reactables.Core;
-
-namespace Velaptor.Input;
+using Guards;
+using Reactables.Core;
 
 /// <summary>
 /// Provides functionality for the keyboard.
@@ -23,6 +24,8 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// <param name="keyboardReactable">Subscribed for keyboard state push notifications.</param>
     public Keyboard(IReactable<(KeyCode key, bool isDown)> keyboardReactable)
     {
+        EnsureThat.ParamIsNotNull(keyboardReactable);
+
         this.keyboardStateUnsubscriber = keyboardReactable.Subscribe(new Reactor<(KeyCode key, bool isDown)>(
             state =>
             {
@@ -53,11 +56,6 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     /// </summary>
     private void InitializeKeyStates()
     {
-        if (this.keyStates.Count > 0)
-        {
-            return;
-        }
-
         var keys = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>().ToArray();
 
         foreach (var key in keys)

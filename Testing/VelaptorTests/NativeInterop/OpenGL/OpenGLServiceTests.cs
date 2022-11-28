@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.NativeInterop.OpenGL;
+
 using System;
 using System.Drawing;
 using System.Numerics;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.NativeInterop.OpenGL;
 
 /// <summary>
 /// Tests the <see cref="OpenGLService"/> class.

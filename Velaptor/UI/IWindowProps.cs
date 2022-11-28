@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Numerics;
-using Velaptor.Content;
-using Velaptor.Graphics;
-
 namespace Velaptor.UI;
+
+using System.Numerics;
+using Content;
+using Graphics;
 
 /// <summary>
 /// Provides properties to hold the state of a window.

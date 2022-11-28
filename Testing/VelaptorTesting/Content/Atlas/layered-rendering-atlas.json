@@ -1,0 +1,20 @@
+[
+  {
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "0, 0, 200, 200",
+    "FrameIndex": 0,
+    "Name": "white-box"
+  },
+  {
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "201, 0, 200, 200",
+    "FrameIndex": 1,
+    "Name": "orange-box"
+  },
+  {
+    "$type": "Velaptor.Graphics.AtlasSubTextureData, Velaptor",
+    "Bounds": "402, 0, 200, 200",
+    "FrameIndex": 2,
+    "Name": "blue-box"
+  }
+]

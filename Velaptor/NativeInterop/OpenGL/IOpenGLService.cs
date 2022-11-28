@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.OpenGL;
+
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL;
-
-namespace Velaptor.NativeInterop.OpenGL;
 
 /// <summary>
 /// Provides OpenGL helper methods to improve OpenGL related operations.
@@ -53,7 +53,7 @@ internal interface IOpenGLService
     Size GetViewPortSize();
 
     /// <summary>
-    /// Sets the size of the view port.
+    /// Sets the size of the viewport.
     /// </summary>
     /// <param name="size">The vector representing the width and height of the viewport.</param>
     void SetViewPortSize(Size size);

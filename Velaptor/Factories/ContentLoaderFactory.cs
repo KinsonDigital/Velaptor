@@ -2,17 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Factories;
+
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
-using Velaptor.Content;
-using Velaptor.Content.Caching;
+using Content;
+using Content.Caching;
 using Velaptor.Content.Factories;
-using Velaptor.Content.Fonts;
-using Velaptor.Services;
-using IVelaptorSound = Velaptor.Content.ISound;
-
-namespace Velaptor.Factories;
+using Content.Fonts;
+using Services;
+using IVelaptorSound = Content.ISound;
 
 /// <summary>
 /// Creates instances of a content loader.

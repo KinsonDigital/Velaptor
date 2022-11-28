@@ -2,32 +2,45 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.GPUData;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
 
-namespace Velaptor.OpenGL.GPUData;
-
 /// <summary>
 /// Represents a single vertex of data for a quad.
 /// </summary>
-internal struct TextureVertexData : IEquatable<TextureVertexData>
+internal readonly struct TextureVertexData : IEquatable<TextureVertexData>
 {
     /// <summary>
-    /// The position of the vertex in NDC (normal device coordinate) coordinates.
+    /// Initializes a new instance of the <see cref="TextureVertexData"/> struct.
     /// </summary>
-    public Vector2 VertexPos; // Location 0 | aPosition
+    /// <param name="vertexPos">The position of the vertex in NDC (normal device coordinate) coordinates.</param>
+    /// <param name="textureCoord">The point in a texture that corresponds to this structure's <see cref="VertexPos"/>.</param>
+    /// <param name="tintColor">The color of the vertex.</param>
+    public TextureVertexData(in Vector2 vertexPos, Vector2 textureCoord, Color tintColor)
+    {
+        VertexPos = vertexPos;
+        TextureCoord = textureCoord;
+        TintColor = tintColor;
+    }
 
     /// <summary>
-    /// The point in a texture that corresponds to this structure's <see cref="VertexPos"/>.
+    /// Gets the position of the vertex in NDC (normal device coordinate) coordinates.
     /// </summary>
-    public Vector2 TextureCoord; // Location 1 | aTexCoord
+    public Vector2 VertexPos { get; } // Location 0 | aPosition
 
     /// <summary>
-    /// The color of the current vertex.
+    /// Gets the point in a texture that corresponds to this structure's <see cref="VertexPos"/>.
     /// </summary>
-    public Color TintColor; // Location 2 | aTintColor
+    public Vector2 TextureCoord { get; } // Location 1 | aTexCoord
+
+    /// <summary>
+    /// Gets the color of the current vertex.
+    /// </summary>
+    public Color TintColor { get; } // Location 2 | aTintColor
 
     /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
@@ -70,19 +83,19 @@ internal struct TextureVertexData : IEquatable<TextureVertexData>
 
     /// <inheritdoc/>
     public bool Equals(TextureVertexData other)
-        => other.VertexPos == this.VertexPos &&
-           other.TextureCoord == this.TextureCoord &&
-           other.TintColor == this.TintColor;
+        => other.VertexPos == VertexPos &&
+           other.TextureCoord == TextureCoord &&
+           other.TintColor == TintColor;
 
     /// <summary>
     /// Returns a value indicating if this struct is empty.
     /// </summary>
     /// <returns>True if the struct is empty.</returns>
-    public bool IsEmpty() => this.VertexPos == Vector2.Zero &&
-                             this.TextureCoord == Vector2.Zero &&
-                             this.TintColor == Color.Empty;
+    public bool IsEmpty() => VertexPos == Vector2.Zero &&
+                             TextureCoord == Vector2.Zero &&
+                             TintColor == Color.Empty;
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
-    public override int GetHashCode() => this.VertexPos.GetHashCode() + this.TextureCoord.GetHashCode() + this.TintColor.GetHashCode();
+    public override int GetHashCode() => VertexPos.GetHashCode() + TextureCoord.GetHashCode() + TintColor.GetHashCode();
 }

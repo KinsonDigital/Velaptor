@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
 namespace Velaptor.OpenGL.Services;
+
+using System.Collections.Generic;
 
 /// <summary>
 /// Processes template variables in textual data.

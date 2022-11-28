@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Services;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -14,13 +16,11 @@ using SixLabors.ImageSharp.Processing;
 using Velaptor;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
 using NETRectangle = System.Drawing.Rectangle;
-
-namespace VelaptorTests.Services;
 
 /// <summary>
 /// Tests the <see cref="ImageService"/>.

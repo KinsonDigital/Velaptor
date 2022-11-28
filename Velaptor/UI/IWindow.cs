@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.UI;
+
 using System;
 using System.Threading.Tasks;
-
-namespace Velaptor.UI;
 
 /// <summary>
 /// Provides the core of an application window which facilitates how the

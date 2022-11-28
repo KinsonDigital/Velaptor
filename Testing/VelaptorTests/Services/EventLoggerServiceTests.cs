@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Services;
+
 using System;
 using System.IO.Abstractions;
 using FluentAssertions;
@@ -9,8 +11,6 @@ using Moq;
 using Velaptor;
 using Velaptor.Services;
 using Xunit;
-
-namespace VelaptorTests.Services;
 
 /// <summary>
 /// Tests the <see cref="EventLoggerService"/> class.

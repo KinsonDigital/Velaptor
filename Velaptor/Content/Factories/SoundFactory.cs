@@ -2,16 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Factories;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Velaptor.Content;
-using Velaptor.Guards;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.Content.Factories;
+using Guards;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Creates sounds based on the sound file at a location.

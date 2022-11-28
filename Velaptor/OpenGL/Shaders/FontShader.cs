@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Shaders;
+
 using System;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL.Services;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.OpenGL.Shaders;
+using Services;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// A shader used to render text of a particular font.

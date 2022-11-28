@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.Content.Fonts;
 
 /// <summary>
 /// Holds information about fonts.

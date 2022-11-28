@@ -2,10 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Graphics;
+
+using FluentAssertions;
 using Velaptor.Graphics;
 using Xunit;
-
-namespace VelaptorTests.Graphics;
 
 /// <summary>
 /// Tests the <see cref="CornerRadius"/> struct.
@@ -41,6 +42,62 @@ public class CornerRadiusTests
     #endregion
 
     #region Method Tests
+    [Fact]
+    public void SetTopLeft_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new CornerRadius(55, 22, 33, 44);
+        var sut = new CornerRadius(11, 22, 33, 44);
+
+        // Act
+        var actual = CornerRadius.SetTopLeft(sut, 55);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void SetBottomLeft_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new CornerRadius(11, 55, 33, 44);
+        var sut = new CornerRadius(11, 22, 33, 44);
+
+        // Act
+        var actual = CornerRadius.SetBottomLeft(sut, 55);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void SetBottomRight_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new CornerRadius(11, 22, 55, 44);
+        var sut = new CornerRadius(11, 22, 33, 44);
+
+        // Act
+        var actual = CornerRadius.SetBottomRight(sut, 55);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void SetTopRight_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new CornerRadius(11, 22, 33, 55);
+        var sut = new CornerRadius(11, 22, 33, 44);
+
+        // Act
+        var actual = CornerRadius.SetTopRight(sut, 55);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
     [Theory]
     [InlineData(0f, 0f, 0f, 0f, true)]
     [InlineData(2f, 0f, 0f, 0f, false)]

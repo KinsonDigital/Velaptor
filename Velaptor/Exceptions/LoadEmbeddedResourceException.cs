@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Exceptions;
+
+using System;
 
 /// <summary>
 /// Occurs when something goes wrong with loading an embedded resource.

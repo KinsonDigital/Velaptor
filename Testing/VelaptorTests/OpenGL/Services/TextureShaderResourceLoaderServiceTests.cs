@@ -2,16 +2,16 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Services;
+
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using Moq;
 using Velaptor.OpenGL.Services;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Services;
 
 /// <summary>
 /// Tests the <see cref="TextureShaderResourceLoaderService"/> class.

@@ -2,15 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-// ReSharper disable UnusedMember.Global
+namespace VelaptorTests.Helpers;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Xunit;
 using Xunit.Sdk;
-
-namespace VelaptorTests.Helpers;
 
 /// <summary>
 /// Provides helper methods for the <see cref="Xunit"/>'s <see cref="Assert"/> class.
@@ -36,7 +35,7 @@ public class AssertExtensions : Assert
     public static void ThrowsWithMessage<T>(Action testCode, string expectedMessage)
         where T : Exception
     {
-        Assert.Equal(expectedMessage, Assert.Throws<T>(testCode).Message);
+        Equal(expectedMessage, Throws<T>(testCode).Message);
     }
 
     /// <summary>
@@ -584,7 +583,7 @@ public class AssertExtensions : Assert
     public static void TypeMemberFalse(bool condition, string typeName, string memberName)
     {
         var message = $"{TableFlip}{typeName}.{memberName} not true.";
-        Assert.False(condition, message);
+        False(condition, message);
     }
 
     /// <summary>
@@ -599,12 +598,12 @@ public class AssertExtensions : Assert
     {
         try
         {
-            Assert.Raises(attach, detach, testCode);
-            Assert.Equal("No event was raised", "An event was raised.");
+            Raises(attach, detach, testCode);
+            Equal("No event was raised", "An event was raised.");
         }
         catch (Exception ex)
         {
-            Assert.Equal($"(No event was raised){Environment.NewLine}EventArgs{Environment.NewLine}(No event was raised)", ex.Message);
+            Equal($"(No event was raised){Environment.NewLine}EventArgs{Environment.NewLine}(No event was raised)", ex.Message);
         }
     }
 }

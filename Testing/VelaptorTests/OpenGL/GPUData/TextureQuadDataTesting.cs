@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.GPUData;
+
 using System.Numerics;
 using Velaptor.OpenGL.GPUData;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.GPUData;
 
 /// <summary>
 /// Tests the <see cref="TextureQuadData"/> struct.
@@ -33,13 +33,14 @@ public class TextureQuadDataTesting
     {
         // Arrange
         var quadA = default(TextureQuadData);
-        var quadB = new TextureQuadData()
-        {
-            Vertex1 = new TextureVertexData()
-            {
-                VertexPos = new Vector2(11, 22),
-            },
-        };
+        var quadB = new TextureQuadData(
+            new TextureVertexData(
+                new Vector2(11, 22),
+                default,
+                default),
+            default,
+            default,
+            default);
 
         // Act
         var actual = quadA != quadB;

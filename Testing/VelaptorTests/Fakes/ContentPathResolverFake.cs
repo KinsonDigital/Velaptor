@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Content;
-
 namespace VelaptorTests.Fakes;
+
+using Velaptor.Content;
 
 /// <summary>
 /// Used to test the abstract <see cref="ContentPathResolver"/> class.

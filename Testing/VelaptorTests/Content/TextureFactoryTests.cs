@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content;
+
 using System;
 using Moq;
 using Velaptor.Content.Factories;
@@ -9,10 +11,8 @@ using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content;
 
 /// <summary>
 /// Tests the <see cref="TextureFactory"/> class.

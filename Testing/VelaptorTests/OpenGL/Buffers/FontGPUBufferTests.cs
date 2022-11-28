@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Buffers;
+
 using System.Collections.Generic;
 using System.Drawing;
 using Moq;
@@ -12,10 +14,8 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Buffers;
 
 public class FontGPUBufferTests
 {
@@ -141,8 +141,17 @@ public class FontGPUBufferTests
     public void UploadVertexData_WhenInvoked_CreatesOpenGLDebugGroups()
     {
         // Arrange
-        var batchItem = default(FontGlyphBatchItem);
-        batchItem.Effects = RenderEffects.None;
+        var batchItem = new FontGlyphBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            'g',
+            2.5F,
+            90,
+            Color.Empty,
+            RenderEffects.None,
+            SizeF.Empty,
+            0,
+            0);
 
         var sut = CreateSystemUnderTest();
 
@@ -167,15 +176,17 @@ public class FontGPUBufferTests
             0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.804163694f, 0.702218235f, 0.571428597f, 0.25f, 147f,
             112f, 219f, 255f,
         };
-        var batchItem = default(FontGlyphBatchItem);
-        batchItem.Angle = 45;
-        batchItem.Effects = RenderEffects.None;
-        batchItem.Size = 1.5f;
-        batchItem.SrcRect = new RectangleF(11, 22, 33, 44);
-        batchItem.DestRect = new RectangleF(55, 66, 77, 88);
-        batchItem.TintColor = Color.MediumPurple;
-        batchItem.TextureId = 1;
-        batchItem.ViewPortSize = new SizeF(800, 600);
+        var batchItem = new FontGlyphBatchItem(
+            new RectangleF(11, 22, 33, 44),
+            new RectangleF(55, 66, 77, 88),
+            'g',
+            1.5f,
+            45f,
+            Color.MediumPurple,
+            RenderEffects.None,
+            new SizeF(800, 600),
+            1,
+            0);
 
         var sut = CreateSystemUnderTest();
 

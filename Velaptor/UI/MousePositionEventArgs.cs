@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.UI;
+
 using System;
 using System.Drawing;
-
-namespace Velaptor.UI;
 
 /// <summary>
 /// Holds information about the mouse position over a control.

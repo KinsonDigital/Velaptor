@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Exceptions;
+
 using System;
 using Velaptor.Exceptions;
 using Xunit;
-
-namespace VelaptorTests.Exceptions;
 
 /// <summary>
 /// Tests the <see cref="EnumOutOfRangeException"/> class.

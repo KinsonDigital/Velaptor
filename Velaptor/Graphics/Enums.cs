@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Graphics;
+
+using System;
 
 /// <summary>
 /// Adds basic effects to a texture when rendered.

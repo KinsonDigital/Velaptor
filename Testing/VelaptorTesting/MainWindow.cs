@@ -1,6 +1,8 @@
-﻿// <copyright file="MainWindow.cs" company="KinsonDigital">
+// <copyright file="MainWindow.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
+
+namespace VelaptorTesting;
 
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,10 +10,8 @@ using System.Linq;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.UI;
-using VelaptorTesting.Core;
-using VelaptorTesting.Scenes;
-
-namespace VelaptorTesting;
+using Core;
+using Scenes;
 
 /// <summary>
 /// The main window to the testing application.
@@ -47,48 +47,66 @@ public class MainWindow : Window
 
         this.sceneManager = new SceneManager(renderer);
 
-        var testRenderTextScene = new TestRenderTextScene(contentLoader)
+        var renderTextScene = new RenderTextScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestRenderTextScene)),
+            Name = SplitByUpperCase(nameof(RenderTextScene)),
         };
 
-        var testMouseScene = new TestMouseScene(contentLoader)
+        var layeredTextRenderingScene = new LayeredTextRenderingScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestMouseScene)),
+            Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
         };
 
-        var testKeyboardScene = new TestKeyboardScene(contentLoader)
+        var mouseScene = new MouseScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestKeyboardScene)),
+            Name = SplitByUpperCase(nameof(MouseScene)),
         };
 
-        var renderNonAnimatedGraphicsScene = new TestNonAnimatedGraphicsScene(contentLoader)
+        var keyboardScene = new KeyboardScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestNonAnimatedGraphicsScene)),
+            Name = SplitByUpperCase(nameof(KeyboardScene)),
         };
 
-        var renderAnimatedGraphicsScene = new TestAnimatedGraphicsScene(contentLoader)
+        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestAnimatedGraphicsScene)),
+            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
         };
 
-        var testSoundScene = new TestSoundsScene(ContentLoader)
+        var layeredRenderingScene = new LayeredTextureRenderingScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestSoundsScene)),
+            Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
         };
 
-        var testRectScene = new TestRectangleScene(ContentLoader)
+        var renderAnimatedGraphicsScene = new AnimatedGraphicsScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(TestRectangleScene)),
+            Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         };
 
-        this.sceneManager.AddScene(testRenderTextScene, true);
-        this.sceneManager.AddScene(testMouseScene);
-        this.sceneManager.AddScene(testKeyboardScene);
+        var soundScene = new SoundScene(ContentLoader)
+        {
+            Name = SplitByUpperCase(nameof(SoundScene)),
+        };
+
+        var layeredRectScene = new LayeredRectRenderingScene(contentLoader)
+        {
+            Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
+        };
+
+        var rectScene = new RectangleScene(ContentLoader)
+        {
+            Name = SplitByUpperCase(nameof(RectangleScene)),
+        };
+
+        this.sceneManager.AddScene(renderTextScene, true);
+        this.sceneManager.AddScene(layeredTextRenderingScene);
+        this.sceneManager.AddScene(keyboardScene);
+        this.sceneManager.AddScene(mouseScene);
+        this.sceneManager.AddScene(layeredRenderingScene);
         this.sceneManager.AddScene(renderNonAnimatedGraphicsScene);
         this.sceneManager.AddScene(renderAnimatedGraphicsScene);
-        this.sceneManager.AddScene(testSoundScene);
-        this.sceneManager.AddScene(testRectScene);
+        this.sceneManager.AddScene(rectScene);
+        this.sceneManager.AddScene(layeredRectScene);
+        this.sceneManager.AddScene(soundScene);
     }
 
     /// <summary>

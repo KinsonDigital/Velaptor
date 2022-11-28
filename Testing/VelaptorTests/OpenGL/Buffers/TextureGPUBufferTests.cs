@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Buffers;
+
 using System.Collections.Generic;
 using System.Drawing;
 using Moq;
@@ -13,10 +15,8 @@ using Velaptor.OpenGL.Buffers;
 using Velaptor.OpenGL.Exceptions;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Buffers;
 
 /// <summary>
 /// Tests the <see cref="TextureGPUBuffer"/> class.
@@ -145,7 +145,16 @@ public class TextureGPUBufferTests
     public void UploadVertexData_WithInvalidRenderEffects_ThrowsException()
     {
         // Arrange
-        var textureQuad = new TextureBatchItem() { Effects = (RenderEffects)1234, };
+        var textureQuad = new TextureBatchItem(
+            new RectangleF(1, 1, 1, 1),
+            new RectangleF(1, 1, 1, 1),
+            1,
+            1,
+            Color.White,
+            (RenderEffects)1234,
+            default,
+            1,
+            1);
         var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
 
@@ -160,8 +169,16 @@ public class TextureGPUBufferTests
     public void UploadVertexData_WhenInvoked_CreatesOpenGLDebugGroups()
     {
         // Arrange
-        var batchItem = default(TextureBatchItem);
-        batchItem.Effects = RenderEffects.None;
+        var batchItem = new TextureBatchItem(
+            default,
+            default,
+            1,
+            0,
+            default,
+            RenderEffects.None,
+            default,
+            1,
+            0);
 
         var sut = CreateSystemUnderTest();
 
@@ -180,15 +197,16 @@ public class TextureGPUBufferTests
     public void UploadVertexData_WhenInvoked_UploadsData(RenderEffects effects, float[] expected)
     {
         // Arrange
-        var batchItem = default(TextureBatchItem);
-        batchItem.Angle = 45;
-        batchItem.Effects = effects;
-        batchItem.Size = 1.5f;
-        batchItem.SrcRect = new RectangleF(11, 22, 33, 44);
-        batchItem.DestRect = new RectangleF(55, 66, 77, 88);
-        batchItem.TintColor = Color.MediumPurple;
-        batchItem.TextureId = 1;
-        batchItem.ViewPortSize = new SizeF(800, 600);
+        var batchItem = new TextureBatchItem(
+            new RectangleF(11, 22, 33, 44),
+            new RectangleF(55, 66, 77, 88),
+            1.5f,
+            45,
+            Color.MediumPurple,
+            effects,
+            new SizeF(800, 600),
+            1,
+            0);
 
         var sut = CreateSystemUnderTest();
 

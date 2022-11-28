@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Xunit;
-
 namespace VelaptorTests.Helpers;
+
+using Xunit;
 
 /// <summary>
 /// <inheritdoc cref="FactAttribute"/>.

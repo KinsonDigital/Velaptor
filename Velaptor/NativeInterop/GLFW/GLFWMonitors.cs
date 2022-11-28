@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.GLFW;
+
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using Velaptor.Guards;
-using Velaptor.Hardware;
-
-namespace Velaptor.NativeInterop.GLFW;
+using Guards;
+using Hardware;
 
 /// <summary>
 /// Gets all of the monitors in the system.

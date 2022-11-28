@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Content.Exceptions;
 
+using System;
+
 /// <summary>
-/// Thrown when an issue occurs loading content.
+/// Thrown when there is an issue loading content.
 /// </summary>
 public class LoadContentException : Exception
 {

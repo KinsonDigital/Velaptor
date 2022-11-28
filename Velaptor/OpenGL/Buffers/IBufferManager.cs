@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace Velaptor.OpenGL.Buffers;
 
 /// <summary>
@@ -12,7 +10,7 @@ namespace Velaptor.OpenGL.Buffers;
 internal interface IBufferManager
 {
     /// <summary>
-    /// Sets the view port size for a buffer that matches the given <paramref name="bufferType"/>.
+    /// Sets the viewport size for a buffer that matches the given <paramref name="bufferType"/>.
     /// </summary>
     /// <param name="bufferType">The type of GPU buffer.</param>
     /// <param name="size">The size to set the buffer to.</param>
@@ -58,5 +56,5 @@ internal interface IBufferManager
     ///     being laid out like an array of data, this would be the location
     ///     of the 'chunk' of <paramref name="data"/> in the array.
     /// </remarks>
-    void UploadRectData(RectShape data, uint batchIndex);
+    void UploadRectData(RectBatchItem data, uint batchIndex);
 }

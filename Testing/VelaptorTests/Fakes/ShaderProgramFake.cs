@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Fakes;
+
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
-
-namespace VelaptorTests.Fakes;
 
 /// <summary>
 /// Used to test the abstract class <see cref="ShaderProgram"/>.

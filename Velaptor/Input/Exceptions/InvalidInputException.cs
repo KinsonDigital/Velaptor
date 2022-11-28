@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Input.Exceptions;
+
+using System;
 
 /// <summary>
 /// Occurs when invalid input has occured.

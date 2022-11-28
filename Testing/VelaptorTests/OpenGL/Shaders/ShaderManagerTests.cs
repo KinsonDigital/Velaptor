@@ -1,15 +1,16 @@
-﻿// <copyright file="ShaderManagerTests.cs" company="KinsonDigital">
+// <copyright file="ShaderManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Shaders;
+
 using System;
+using FluentAssertions;
 using Moq;
 using Velaptor.Factories;
 using Velaptor.OpenGL.Shaders;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Shaders;
 
 /// <summary>
 /// Tests the <see cref="ShaderManager"/> class.
@@ -54,15 +55,37 @@ public class ShaderManagerTests
     [Fact]
     public void Ctor_WithNullShaderFactoryParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new ShaderManager(null);
-        }, "The parameter must not be null. (Parameter 'shaderFactory')");
+            _ = new ShaderManager(null);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'shaderFactory')");
     }
     #endregion
 
     #region Method Tests
+    [Fact]
+    public void GetShaderId_WithInvalidShaderType_ThrowsException()
+    {
+        // Arrange
+        var expected = $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType')";
+        expected += $"{Environment.NewLine}Actual value was 1234.";
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        var act = () => sut.GetShaderId((ShaderType)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage(expected);
+    }
+
     [Theory]
     [InlineData(1, TextureShaderId)]
     [InlineData(2, FontShaderId)]
@@ -77,7 +100,7 @@ public class ShaderManagerTests
         var actual = sut.GetShaderId(shaderType);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -94,20 +117,23 @@ public class ShaderManagerTests
         var actual = sut.GetShaderName(shaderType);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
     public void GetShaderName_WithInvalidShaderType_ThrowsException()
     {
         // Arrange
+        var expected = $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType')";
+        expected += $"{Environment.NewLine}Actual value was 1234.";
+
         var sut = CreateSystemUnderTest();
 
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            sut.GetShaderName((ShaderType)1234);
-        }, $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType'){Environment.NewLine}Actual value was 1234.");
+        var act = () => sut.GetShaderName((ShaderType)1234);
+
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -159,13 +185,17 @@ public class ShaderManagerTests
     public void Use_WithInvalidShaderType_ThrowsException()
     {
         // Arrange
+        var expected = $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType')";
+        expected += $"{Environment.NewLine}Actual value was 1234.";
+
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentOutOfRangeException>(() =>
-        {
-            sut.Use((ShaderType)1234);
-        }, $"The enum '{nameof(ShaderType)}' value is invalid. (Parameter 'shaderType'){Environment.NewLine}Actual value was 1234.");
+        // Act
+        var act = () => sut.Use((ShaderType)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage(expected);
     }
     #endregion
 

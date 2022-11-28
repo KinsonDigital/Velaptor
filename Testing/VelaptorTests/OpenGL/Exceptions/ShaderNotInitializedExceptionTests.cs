@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Exceptions;
+
 using System;
 using Velaptor.OpenGL.Exceptions;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Exceptions;
 
 /// <summary>
 /// Tests the <see cref="ShaderNotInitializedException"/> class.

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Services;
+
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Guards;
+using Guards;
 using Velaptor.Services;
-
-namespace Velaptor.OpenGL.Services;
 
 /// <summary>
 /// Loads the source code for the vertex and fragment shaders for rendering 2D textures.

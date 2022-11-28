@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.OpenGL;
+
 using System;
 using System.Numerics;
 using Velaptor.OpenGL;
-
-namespace Velaptor.NativeInterop.OpenGL;
 
 /// <summary>
 /// Invokes OpenGL calls.

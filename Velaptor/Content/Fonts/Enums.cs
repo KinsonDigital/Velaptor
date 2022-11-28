@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Content.Fonts;
+
+using System;
 
 /// <summary>
 /// The kind of font styles.

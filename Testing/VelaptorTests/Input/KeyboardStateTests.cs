@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Input;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Velaptor.Input;
 using Xunit;
-
-namespace VelaptorTests.Input;
 
 /// <summary>
 /// Tests the <see cref="KeyboardState"/> struct.

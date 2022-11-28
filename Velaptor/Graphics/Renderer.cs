@@ -2,31 +2,31 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor;
-using Velaptor.Content;
-using Velaptor.Content.Fonts;
-using Velaptor.Guards;
+using Content;
+using Content.Fonts;
+using Guards;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
-using Velaptor.OpenGL.Buffers;
-using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-using Velaptor.Services;
+using OpenGL;
+using OpenGL.Buffers;
+using OpenGL.Shaders;
+using Reactables.Core;
+using Reactables.ReactableData;
+using Services;
 using NETRect = System.Drawing.Rectangle;
 using NETSizeF = System.Drawing.SizeF;
-
-namespace Velaptor.Graphics;
 
 /// <inheritdoc/>
 internal sealed class Renderer : IRenderer
 {
+    private const uint BatchSize = 1000;
     private readonly Dictionary<string, CachedValue<uint>> cachedUIntProps = new ();
     private readonly IGLInvoker gl;
     private readonly IOpenGLService openGLService;
@@ -52,6 +52,7 @@ internal sealed class Renderer : IRenderer
     /// <param name="batchServiceManager">Manages the batching of various items to be rendered.</param>
     /// <param name="glInitReactable">Provides push notifications that OpenGL has been initialized.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
+    /// <param name="batchSizeReactable">Sends a push notification of the batch size.</param>
     /// <remarks>
     ///     <paramref name="glInitReactable"/> is subscribed to in this class.  <see cref="GLWindow"/>
     ///     pushes the notification that OpenGL has been initialized.
@@ -63,7 +64,8 @@ internal sealed class Renderer : IRenderer
         IBufferManager bufferManager,
         IBatchServiceManager batchServiceManager,
         IReactable<GLInitData> glInitReactable,
-        IReactable<ShutDownData> shutDownReactable)
+        IReactable<ShutDownData> shutDownReactable,
+        IReactable<BatchSizeData> batchSizeReactable)
     {
         EnsureThat.ParamIsNotNull(gl);
         EnsureThat.ParamIsNotNull(openGLService);
@@ -72,6 +74,7 @@ internal sealed class Renderer : IRenderer
         EnsureThat.ParamIsNotNull(batchServiceManager);
         EnsureThat.ParamIsNotNull(glInitReactable);
         EnsureThat.ParamIsNotNull(shutDownReactable);
+        EnsureThat.ParamIsNotNull(batchSizeReactable);
 
         this.gl = gl;
         this.openGLService = openGLService;
@@ -79,12 +82,9 @@ internal sealed class Renderer : IRenderer
         this.bufferManager = bufferManager;
 
         this.batchServiceManager = batchServiceManager;
-        this.batchServiceManager.SetBatchSize(BatchServiceType.Texture, IRenderer.BatchSize);
-        this.batchServiceManager.SetBatchSize(BatchServiceType.Rectangle, IRenderer.BatchSize);
-        this.batchServiceManager.SetBatchSize(BatchServiceType.FontGlyph, IRenderer.BatchSize);
-        this.batchServiceManager.TextureBatchFilled += TextureBatchService_BatchFilled;
-        this.batchServiceManager.FontGlyphBatchFilled += FontGlyphBatchService_BatchFilled;
-        this.batchServiceManager.RectBatchFilled += RectBatchService_BatchFilled;
+        this.batchServiceManager.TextureBatchReadyForRendering += TextureBatchService_BatchReadyForRendering;
+        this.batchServiceManager.FontGlyphBatchReadyForRendering += FontGlyphBatchService_BatchReadyForRendering;
+        this.batchServiceManager.RectBatchReadyForRendering += RectBatchService_BatchReadyForRendering;
 
         // Receive a push notification that OpenGL has initialized
         this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
@@ -106,6 +106,11 @@ internal sealed class Renderer : IRenderer
             {
                 this.shutDownUnsubscriber?.Dispose();
             }));
+
+        var batchSizeData = new BatchSizeData(BatchSize);
+        batchSizeReactable.PushNotification(batchSizeData);
+        batchSizeReactable.EndNotifications();
+        batchSizeReactable.UnsubscribeAll();
 
         SetupPropertyCaches();
     }
@@ -160,16 +165,16 @@ internal sealed class Renderer : IRenderer
     }
 
     /// <inheritdoc/>
-    public void Render(ITexture texture, int x, int y) => Render(texture, x, y, Color.White);
+    public void Render(ITexture texture, int x, int y, int layer = 0) => Render(texture, x, y, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(ITexture texture, int x, int y, RenderEffects effects) => Render(texture, x, y, Color.White, effects);
+    public void Render(ITexture texture, int x, int y, RenderEffects effects, int layer = 0) => Render(texture, x, y, Color.White, effects, layer);
 
     /// <inheritdoc/>
-    public void Render(ITexture texture, int x, int y, Color color) => Render(texture, x, y, color, RenderEffects.None);
+    public void Render(ITexture texture, int x, int y, Color color, int layer = 0) => Render(texture, x, y, color, RenderEffects.None, layer);
 
     /// <inheritdoc/>
-    public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects)
+    public void Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0)
     {
         // Render the entire texture
         var srcRect = new NETRect()
@@ -182,7 +187,7 @@ internal sealed class Renderer : IRenderer
 
         var destRect = new NETRect(x, y, (int)texture.Width, (int)texture.Height);
 
-        Render(texture, srcRect, destRect, 1, 0, color, effects);
+        Render(texture, srcRect, destRect, 1, 0, color, effects, layer);
     }
 
     /// <inheritdoc/>
@@ -203,7 +208,8 @@ internal sealed class Renderer : IRenderer
         float size,
         float angle,
         Color color,
-        RenderEffects effects)
+        RenderEffects effects,
+        int layer = 0)
     {
         if (texture is null)
         {
@@ -220,51 +226,51 @@ internal sealed class Renderer : IRenderer
             throw new ArgumentException("The source rectangle must have a width and height greater than zero.", nameof(srcRect));
         }
 
-        var itemToAdd = default(TextureBatchItem);
-
-        itemToAdd.SrcRect = srcRect;
-        itemToAdd.DestRect = destRect;
-        itemToAdd.Size = size;
-        itemToAdd.Angle = angle;
-        itemToAdd.TintColor = color;
-        itemToAdd.Effects = effects;
-        itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
-        itemToAdd.TextureId = texture.Id;
+        var itemToAdd = new TextureBatchItem(
+            srcRect,
+            destRect,
+            size,
+            angle,
+            color,
+            effects,
+            new SizeF(RenderSurfaceWidth, RenderSurfaceHeight),
+            texture.Id,
+            layer);
 
         this.batchServiceManager.AddTextureBatchItem(itemToAdd);
     }
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y)
-        => Render(font, text, x, y, 1f, 0f, Color.White);
+    public void Render(IFont font, string text, int x, int y, int layer = 0)
+        => Render(font, text, x, y, 1f, 0f, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, Vector2 position)
-        => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White);
+    public void Render(IFont font, string text, Vector2 position, int layer = 0)
+        => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y, float renderSize, float angle)
-        => Render(font, text, x, y, renderSize, angle, Color.White);
+    public void Render(IFont font, string text, int x, int y, float renderSize, float angle, int layer = 0)
+        => Render(font, text, x, y, renderSize, angle, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, Vector2 position, float renderSize, float angle)
-        => Render(font, text, (int)position.X, (int)position.Y, renderSize, angle, Color.White);
+    public void Render(IFont font, string text, Vector2 position, float renderSize, float angle, int layer = 0)
+        => Render(font, text, (int)position.X, (int)position.Y, renderSize, angle, Color.White, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y, Color color)
-        => Render(font, text, x, y, 1f, 0f, color);
+    public void Render(IFont font, string text, int x, int y, Color color, int layer = 0)
+        => Render(font, text, x, y, 1f, 0f, color, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, Vector2 position, Color color)
-        => Render(font, text, (int)position.X, (int)position.Y, 0f, 0f, color);
+    public void Render(IFont font, string text, Vector2 position, Color color, int layer = 0)
+        => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, color, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, int x, int y, float angle, Color color)
-        => Render(font, text, x, y, 1f, angle, color);
+    public void Render(IFont font, string text, int x, int y, float angle, Color color, int layer = 0)
+        => Render(font, text, x, y, 1f, angle, color, layer);
 
     /// <inheritdoc/>
-    public void Render(IFont font, string text, Vector2 position, float angle, Color color)
-        => Render(font, text, (int)position.X, (int)position.Y, 1f, angle, color);
+    public void Render(IFont font, string text, Vector2 position, float angle, Color color, int layer = 0)
+        => Render(font, text, (int)position.X, (int)position.Y, 1f, angle, color, layer);
 
     /// <inheritdoc/>
     /// <exception cref="InvalidOperationException">
@@ -274,7 +280,7 @@ internal sealed class Renderer : IRenderer
     ///     If <paramref name="font"/> is null, nothing will be rendered.
     ///     <para>A null reference exception will not be thrown.</para>
     /// </remarks>
-    public void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color)
+    public void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color, int layer = 0)
     {
         if (font is null)
         {
@@ -354,7 +360,8 @@ internal sealed class Renderer : IRenderer
                 angle,
                 color,
                 atlasWidth,
-                atlasHeight);
+                atlasHeight,
+                layer);
 
             foreach (var item in batchItems)
             {
@@ -364,7 +371,23 @@ internal sealed class Renderer : IRenderer
     }
 
     /// <inheritdoc/>
-    public void Render(RectShape rectangle) => this.batchServiceManager.AddRectBatchItem(rectangle);
+    public void Render(RectShape rectangle, int layer = 0)
+    {
+        var batchItem = new RectBatchItem(
+            rectangle.Position,
+            rectangle.Width,
+            rectangle.Height,
+            rectangle.Color,
+            rectangle.IsFilled,
+            rectangle.BorderThickness,
+            rectangle.CornerRadius,
+            rectangle.GradientType,
+            rectangle.GradientStart,
+            rectangle.GradientStop,
+            layer);
+
+        this.batchServiceManager.AddRectBatchItem(batchItem);
+    }
 
     /// <inheritdoc/>
     public void End()
@@ -386,9 +409,9 @@ internal sealed class Renderer : IRenderer
             return;
         }
 
-        this.batchServiceManager.TextureBatchFilled -= TextureBatchService_BatchFilled;
-        this.batchServiceManager.FontGlyphBatchFilled -= FontGlyphBatchService_BatchFilled;
-        this.batchServiceManager.RectBatchFilled -= RectBatchService_BatchFilled;
+        this.batchServiceManager.TextureBatchReadyForRendering -= TextureBatchService_BatchReadyForRendering;
+        this.batchServiceManager.FontGlyphBatchReadyForRendering -= FontGlyphBatchService_BatchReadyForRendering;
+        this.batchServiceManager.RectBatchReadyForRendering -= RectBatchService_BatchReadyForRendering;
         this.batchServiceManager.Dispose();
         this.cachedUIntProps.Clear();
 
@@ -409,10 +432,8 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Invoked every time a batch of textures is ready to be rendered.
     /// </summary>
-    private void TextureBatchService_BatchFilled(object? sender, EventArgs e)
+    private void TextureBatchService_BatchReadyForRendering(object? sender, EventArgs e)
     {
-        var textureIsBound = false;
-
         if (this.batchServiceManager.TextureBatchItems.Count <= 0)
         {
             this.openGLService.BeginGroup("Render Texture Process - Nothing To Render");
@@ -426,40 +447,48 @@ internal sealed class Renderer : IRenderer
         this.shaderManager.Use(ShaderType.Texture);
 
         var totalItemsToRender = 0u;
+        var gpuDataIndex = -1;
 
-        for (var i = 0u; i < this.batchServiceManager.TextureBatchItems.Count; i++)
+        var itemsToRender = this.batchServiceManager.TextureBatchItems
+            .Where(i => i.IsEmpty() is false)
+            .Select(i => i)
+            .OrderBy(i => i.Layer)
+            .ToArray();
+
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.TextureBatchItems[i];
+            var batchItem = itemsToRender[(int)i];
 
-            if (shouldRender is false || batchItem.IsEmpty())
+            var isLastItem = i >= itemsToRender.Length - 1;
+            var isNotLastItem = !isLastItem;
+
+            var nextTextureIsDifferent = isNotLastItem &&
+                                         itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
+            var shouldRender = isLastItem || nextTextureIsDifferent;
+            var shouldNotRender = !shouldRender;
+
+            gpuDataIndex++;
+            totalItemsToRender++;
+
+            this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+            this.bufferManager.UploadTextureData(batchItem, (uint)gpuDataIndex);
+            this.openGLService.EndGroup();
+
+            if (shouldNotRender)
             {
                 continue;
             }
 
-            this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+            this.openGLService.BindTexture2D(batchItem.TextureId);
 
-            if (!textureIsBound)
-            {
-                this.gl.ActiveTexture(GLTextureUnit.Texture0);
-                this.openGLService.BindTexture2D(batchItem.TextureId);
-                textureIsBound = true;
-            }
-
-            this.bufferManager.UploadTextureData(batchItem, i);
-            totalItemsToRender += 1;
-
-            this.openGLService.EndGroup();
-        }
-
-        // Only render the amount of elements for the amount of batch items to render.
-        // 6 = the number of vertices per quad and each batch is a quad. batchAmountToRender is the total quads to render
-        if (totalItemsToRender > 0)
-        {
             var totalElements = 6u * totalItemsToRender;
 
             this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
             this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
             this.openGLService.EndGroup();
+
+            totalItemsToRender = 0;
+            gpuDataIndex = -1;
         }
 
         // Empty the batch
@@ -471,10 +500,8 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Invoked every time a batch of fonts is ready to be rendered.
     /// </summary>
-    private void FontGlyphBatchService_BatchFilled(object? sender, EventArgs e)
+    private void FontGlyphBatchService_BatchReadyForRendering(object? sender, EventArgs e)
     {
-        var fontTextureIsBound = false;
-
         if (this.batchServiceManager.FontGlyphBatchItems.Count <= 0)
         {
             this.openGLService.BeginGroup("Render Text Process - Nothing To Render");
@@ -488,39 +515,48 @@ internal sealed class Renderer : IRenderer
         this.shaderManager.Use(ShaderType.Font);
 
         var totalItemsToRender = 0u;
+        var gpuDataIndex = -1;
 
-        for (var i = 0u; i < this.batchServiceManager.FontGlyphBatchItems.Count; i++)
+        var itemsToRender = this.batchServiceManager.FontGlyphBatchItems
+            .Where(i => i.IsEmpty() is false)
+            .Select(i => i)
+            .OrderBy(i => i.Layer)
+            .ToArray();
+
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.FontGlyphBatchItems[i];
+            var batchItem = itemsToRender[(int)i];
 
-            if (shouldRender is false || batchItem.IsEmpty())
+            var isLastItem = i >= itemsToRender.Length - 1;
+            var isNotLastItem = !isLastItem;
+
+            var nextTextureIsDifferent = isNotLastItem &&
+                                         itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
+            var shouldRender = isLastItem || nextTextureIsDifferent;
+            var shouldNotRender = !shouldRender;
+
+            gpuDataIndex++;
+            totalItemsToRender++;
+
+            this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+            this.bufferManager.UploadFontGlyphData(batchItem, (uint)gpuDataIndex);
+            this.openGLService.EndGroup();
+
+            if (shouldNotRender)
             {
                 continue;
             }
 
-            this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+            this.openGLService.BindTexture2D(batchItem.TextureId);
 
-            if (!fontTextureIsBound)
-            {
-                this.openGLService.BindTexture2D(batchItem.TextureId);
-                fontTextureIsBound = true;
-            }
-
-            this.bufferManager.UploadFontGlyphData(batchItem, i);
-            totalItemsToRender += 1;
-
-            this.openGLService.EndGroup();
-        }
-
-        // Only render the amount of elements for the amount of batch items to render.
-        // 6 = the number of vertices per quad and each batch is a quad. totalItemsToRender is the total quads to render
-        if (totalItemsToRender > 0)
-        {
             var totalElements = 6u * totalItemsToRender;
 
             this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
             this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
             this.openGLService.EndGroup();
+
+            totalItemsToRender = 0;
+            gpuDataIndex = -1;
         }
 
         // Empty the batch
@@ -532,7 +568,7 @@ internal sealed class Renderer : IRenderer
     /// <summary>
     /// Invoked every time a batch of rectangles is ready to be rendered.
     /// </summary>
-    private void RectBatchService_BatchFilled(object? sender, EventArgs e)
+    private void RectBatchService_BatchReadyForRendering(object? sender, EventArgs e)
     {
         if (this.batchServiceManager.RectBatchItems.Count <= 0)
         {
@@ -547,34 +583,31 @@ internal sealed class Renderer : IRenderer
         this.shaderManager.Use(ShaderType.Rectangle);
 
         var totalItemsToRender = 0u;
+        var gpuDataIndex = -1;
 
-        for (var i = 0u; i < this.batchServiceManager.RectBatchItems.Count; i++)
+        var itemsToRender = this.batchServiceManager.RectBatchItems
+            .Where(i => i.IsEmpty() is false)
+            .Select(i => i)
+            .OrderBy(i => i.Layer)
+            .ToArray();
+
+        for (var i = 0u; i < itemsToRender.Length; i++)
         {
-            var (shouldRender, batchItem) = this.batchServiceManager.RectBatchItems[i];
+            var batchItem = itemsToRender[(int)i];
 
-            if (shouldRender is false || batchItem.IsEmpty())
-            {
-                continue;
-            }
+            gpuDataIndex++;
+            totalItemsToRender++;
 
             this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
-
-            this.bufferManager.UploadRectData(batchItem, i);
-            totalItemsToRender += 1;
-
+            this.bufferManager.UploadRectData(batchItem, (uint)gpuDataIndex);
             this.openGLService.EndGroup();
         }
 
-        // Only render the amount of elements for the amount of batch items to render.
-        // 6 = the number of vertices per quad and each batch is a quad. totalItemsToRender is the total number of  quads to render
-        if (totalItemsToRender > 0)
-        {
-            var totalElements = 6u * totalItemsToRender;
+        var totalElements = 6u * totalItemsToRender;
 
-            this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
-            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-            this.openGLService.EndGroup();
-        }
+        this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
+        this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+        this.openGLService.EndGroup();
 
         // Empty the batch
         this.batchServiceManager.EmptyBatch(BatchServiceType.Rectangle);
@@ -595,6 +628,7 @@ internal sealed class Renderer : IRenderer
     /// <param name="color">The color of the text.</param>
     /// <param name="atlasWidth">The width of the font texture atlas.</param>
     /// <param name="atlasHeight">The height of the font texture atlas.</param>
+    /// <param name="layer">The layer to render the text.</param>
     /// <returns>The list of glyphs that make up the string as font batch items.</returns>
     private IEnumerable<FontGlyphBatchItem> ToFontBatchItems(
         Vector2 textPos,
@@ -605,7 +639,8 @@ internal sealed class Renderer : IRenderer
         float angle,
         Color color,
         float atlasWidth,
-        float atlasHeight)
+        float atlasHeight,
+        int layer)
     {
         var result = new List<FontGlyphBatchItem>();
 
@@ -645,17 +680,17 @@ internal sealed class Renderer : IRenderer
             // Only render characters that are not a space (32 char code)
             if (currentCharMetric.Glyph != ' ')
             {
-                var itemToAdd = default(FontGlyphBatchItem);
-
-                itemToAdd.Glyph = currentCharMetric.Glyph;
-                itemToAdd.SrcRect = srcRect;
-                itemToAdd.DestRect = destRect;
-                itemToAdd.Size = renderSize;
-                itemToAdd.Angle = angle;
-                itemToAdd.TintColor = color;
-                itemToAdd.ViewPortSize = new SizeF(RenderSurfaceWidth, RenderSurfaceHeight);
-                itemToAdd.Effects = RenderEffects.None;
-                itemToAdd.TextureId = font.FontTextureAtlas.Id;
+                var itemToAdd = new FontGlyphBatchItem(
+                    srcRect,
+                    destRect,
+                    currentCharMetric.Glyph,
+                    renderSize,
+                    angle,
+                    color,
+                    RenderEffects.None,
+                    new SizeF(RenderSurfaceWidth, RenderSurfaceHeight),
+                    font.FontTextureAtlas.Id,
+                    layer);
 
                 result.Add(itemToAdd);
             }

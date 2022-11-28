@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
-
-namespace Velaptor.Services;
 
 /// <summary>
 /// Performs JSON services.
