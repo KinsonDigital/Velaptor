@@ -71,7 +71,7 @@ public interface IRenderer
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
-    /// <param name="y">The y location of the texture.</param>
+    /// <param name="y">The Y location of the texture.</param>
     /// <param name="layer">The layer to render the texture.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
@@ -113,7 +113,7 @@ public interface IRenderer
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
-    /// <param name="y">The y location of the texture.</param>
+    /// <param name="y">The Y location of the texture.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
@@ -156,7 +156,7 @@ public interface IRenderer
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
-    /// <param name="y">The y location of the texture.</param>
+    /// <param name="y">The Y location of the texture.</param>
     /// <param name="color">The color to apply to the texture.</param>
     /// <param name="layer">The layer to render the texture.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
@@ -199,7 +199,7 @@ public interface IRenderer
     /// </summary>
     /// <param name="texture">The texture to render.</param>
     /// <param name="x">The X location of the texture.</param>
-    /// <param name="y">The y location of the texture.</param>
+    /// <param name="y">The Y location of the texture.</param>
     /// <param name="color">The color to apply to the texture.</param>
     /// <param name="effects">The rendering effects to apply to the texture when rendering.</param>
     /// <param name="layer">The layer to render the texture.</param>
