@@ -1604,12 +1604,12 @@ public class RendererTests
     {
         var glyphsToMock = new List<FontGlyphBatchItem>();
 
-        for (var i = 0; i < batchGlyphs.Length; i++)
+        foreach (var t in batchGlyphs)
         {
             var batchItem = new FontGlyphBatchItem(
                 RectangleF.Empty,
                 RectangleF.Empty,
-                batchGlyphs[i],
+                t,
                 0,
                 0,
                 Color.Empty,

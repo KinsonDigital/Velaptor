@@ -262,7 +262,7 @@ internal sealed class Renderer : IRenderer
 
     /// <inheritdoc/>
     public void Render(IFont font, string text, Vector2 position, Color color, int layer = 0)
-        => Render(font, text, (int)position.X, (int)position.Y, 0f, 0f, color, layer);
+        => Render(font, text, (int)position.X, (int)position.Y, 1f, 0f, color, layer);
 
     /// <inheritdoc/>
     public void Render(IFont font, string text, int x, int y, float angle, Color color, int layer = 0)
