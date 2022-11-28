@@ -1285,8 +1285,8 @@ public class InternalExtensionMethodsTests
     }
 
     /// <summary>
-    /// Generates GPU data with numerical values sequentially throughout
-    /// the struct starting with the given <paramref name="startValue"/> for the purpose of testing.
+    /// Generates GPU data with sequential, numerical values throughout
+    /// the struct, starting with the given <paramref name="startValue"/> for the purpose of testing.
     /// </summary>
     /// <param name="startValue">The value to start the sequential assignment from.</param>
     /// <returns>The GPU data to test.</returns>

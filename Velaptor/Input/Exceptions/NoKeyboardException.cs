@@ -7,7 +7,7 @@ namespace Velaptor.Input.Exceptions;
 using System;
 
 /// <summary>
-/// Occurs when no keyboard has been detected in the system.
+/// Occurs when a keyboard has not been detected in the system.
 /// </summary>
 public class NoKeyboardException : Exception
 {

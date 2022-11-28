@@ -26,7 +26,7 @@ internal readonly struct RectBatchItem
     /// <param name="gradientType">The type of color gradient that will be applied to the rectangle.</param>
     /// <param name="gradientStart">The starting color of the gradient.</param>
     /// <param name="gradientStop">The ending color of the gradient.</param>
-    /// <param name="layer">The layer that the shape will be rendered on.</param>
+    /// <param name="layer">The layer where the shape will be rendered.</param>
     /// <remarks>
     /// <para>
     ///     The <see cref="BorderThickness"/> property is ignored if the <paramref name="isFilled"/> parameter is set to <c>true</c>.
@@ -189,7 +189,7 @@ internal readonly struct RectBatchItem
     public Color GradientStop { get; }
 
     /// <summary>
-    /// Gets the layer that the shape will be rendered on.
+    /// Gets the layer where the shape will be rendered.
     /// </summary>
     public int Layer { get; }
 

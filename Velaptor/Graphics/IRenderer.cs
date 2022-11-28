@@ -61,9 +61,9 @@ public interface IRenderer
     void End();
 
     /// <summary>
-    /// Updates the view port size.
+    /// Updates the viewport size.
     /// </summary>
-    /// <param name="size">The size to set the view port to.</param>
+    /// <param name="size">The size to set the viewport to.</param>
     void OnResize(SizeU size);
 
     /// <summary>

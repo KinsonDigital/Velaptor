@@ -8,7 +8,7 @@ using Core;
 using ReactableData;
 
 /// <summary>
-/// Creates a reactable to send push notifications to of the system batch size.
+/// Creates a reactable to send push notifications to the system batch size.
 /// </summary>
 internal class BatchSizeReactable : Reactable<BatchSizeData>
 {

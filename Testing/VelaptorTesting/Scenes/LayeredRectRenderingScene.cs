@@ -75,7 +75,7 @@ public class LayeredRectRenderingScene : SceneBase
         var textLines = new[]
         {
             "Use the arrow keys to move the white rectangle.",
-            "Use the 'L' key to change the layer that the white rectangle is rendered on.",
+            "Use the 'L' key to change the layer where the white rectangle is rendered.",
         };
 
         this.instructions = string.Join(Environment.NewLine, textLines);

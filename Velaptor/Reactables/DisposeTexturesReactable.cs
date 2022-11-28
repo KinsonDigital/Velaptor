@@ -8,7 +8,7 @@ using Core;
 using ReactableData;
 
 /// <summary>
-/// Creates a reactable to send push notifications to signal a texture needs to be disposed.
+/// Creates a reactable to send push notifications to signal that a texture needs to be disposed.
 /// </summary>
 internal sealed class DisposeTexturesReactable : Reactable<DisposeTextureData>
 {

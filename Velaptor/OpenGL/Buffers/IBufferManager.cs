@@ -10,7 +10,7 @@ namespace Velaptor.OpenGL.Buffers;
 internal interface IBufferManager
 {
     /// <summary>
-    /// Sets the view port size for a buffer that matches the given <paramref name="bufferType"/>.
+    /// Sets the viewport size for a buffer that matches the given <paramref name="bufferType"/>.
     /// </summary>
     /// <param name="bufferType">The type of GPU buffer.</param>
     /// <param name="size">The size to set the buffer to.</param>

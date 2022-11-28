@@ -8,7 +8,7 @@ using Core;
 using ReactableData;
 
 /// <summary>
-/// Creates an reactable to send push notification that OpenGL is initialized.
+/// Creates an reactable to send a push notification that OpenGL is initialized.
 /// </summary>
 internal sealed class OpenGLInitReactable : Reactable<GLInitData>
 {

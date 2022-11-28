@@ -72,8 +72,8 @@ public class LayeredTextRenderingScene : SceneBase
         var whiteLines = new[]
         {
             "Use the arrow keys to move the white text.",
-            "Use the 'L' key to change the layer that the",
-            "white text is rendered on.",
+            "Use the 'L' key to change the layer where the",
+            "white text is rendered.",
         };
 
         this.whiteText = string.Join(Environment.NewLine, whiteLines);

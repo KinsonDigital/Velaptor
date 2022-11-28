@@ -5,7 +5,7 @@
 namespace VelaptorTesting;
 
 /// <summary>
-/// The different layers for textures to be rendered on for testing purposes.
+/// The different layers for textures to be rendered for testing purposes.
 /// </summary>
 public enum RenderLayer
 {

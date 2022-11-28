@@ -25,10 +25,10 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     /// <param name="size">The size of the glyph texture to be rendered.</param>
     /// <param name="angle">The angle in degrees of the glyph texture.</param>
     /// <param name="tintColor">The color to apply to the entire glyph texture.</param>
-    /// <param name="effects">The typ of effects to apply tot he glyph texture when rendering.</param>
+    /// <param name="effects">The type of effects to apply to the glyph texture when rendering.</param>
     /// <param name="viewPortSize">The size of the viewport.</param>
     /// <param name="textureId">The ID of the font atlas texture.</param>
-    /// <param name="layer">The layer that the shape will be rendered on.</param>
+    /// <param name="layer">The layer where the shape will be rendered.</param>
     public FontGlyphBatchItem(
         RectangleF srcRect,
         RectangleF destRect,
@@ -101,7 +101,7 @@ internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     public uint TextureId { get; }
 
     /// <summary>
-    /// Gets the layer that the shape will be rendered on.
+    /// Gets the layer where the shape will be rendered.
     /// </summary>
     public int Layer { get; }
 

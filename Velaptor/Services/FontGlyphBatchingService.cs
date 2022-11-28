@@ -14,7 +14,7 @@ using Reactables.Core;
 using Reactables.ReactableData;
 
 /// <summary>
-/// Manages the process of batching up glyphs to be rendered.
+/// Manages the process of batching glyphs to be rendered.
 /// </summary>
 internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatchItem>
 {

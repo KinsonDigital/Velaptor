@@ -1257,7 +1257,7 @@ internal static class InternalExtensionMethods
     }
 
     /// <summary>
-    /// Gets the index of the first item that given <paramref name="predicate"/> returns true on.
+    /// Gets the index of the first item when the given <paramref name="predicate"/> returns true.
     /// </summary>
     /// <param name="items">The items to search.</param>
     /// <param name="predicate">The predicate to execute for each item.</param>

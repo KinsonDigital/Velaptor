@@ -8,7 +8,7 @@ using Core;
 using ReactableData;
 
 /// <summary>
-/// Creates a reactable to send push notifications of OpenGL events.
+/// Creates a reactable to send push notifications to signal that the OpenGL has been created.
 /// </summary>
 internal sealed class OpenGLContextReactable : Reactable<GLContextData>
 {

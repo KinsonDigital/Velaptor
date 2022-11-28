@@ -48,7 +48,7 @@ public class FontAtlasServiceTests
     {
         TestHelpers.SetupTestResultDirPath();
 
-        // Setup the glyph indices
+        // Set up the glyph indices
         foreach (var glyphChar in this.glyphChars)
         {
             this.glyphIndices.Add(glyphChar, glyphChar);

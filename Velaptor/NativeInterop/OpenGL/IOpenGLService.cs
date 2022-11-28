@@ -53,7 +53,7 @@ internal interface IOpenGLService
     Size GetViewPortSize();
 
     /// <summary>
-    /// Sets the size of the view port.
+    /// Sets the size of the viewport.
     /// </summary>
     /// <param name="size">The vector representing the width and height of the viewport.</param>
     void SetViewPortSize(Size size);

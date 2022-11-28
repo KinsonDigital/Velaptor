@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using Guards;
 
 /// <summary>
-/// A reactor unsubscriber for unsubscribing from an <see cref="Reactable{TData}"/>.
+/// A reactor unsubscriber for unsubscribing from a <see cref="Reactable{TData}"/>.
 /// </summary>
 /// <typeparam name="T">
 ///     The type of data that is pushed to all of the subscribed <see cref="Reactor{T}"/>s.

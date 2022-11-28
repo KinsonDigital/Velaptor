@@ -8,7 +8,7 @@ using System;
 using System.Runtime.CompilerServices;
 
 /// <summary>
-/// Performs analysis on particular values to ensure that they meets a criteria,
+/// Performs analysis on particular values to ensure that they meet a criteria,
 /// then invokes behavior based on a result.
 /// </summary>
 internal static class EnsureThat

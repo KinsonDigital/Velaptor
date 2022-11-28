@@ -25,9 +25,9 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// <param name="angle">The angle of the texture in degrees.</param>
     /// <param name="tintColor">The color to apply to an entire texture.</param>
     /// <param name="effects">The type of effects to apply to a texture.</param>
-    /// <param name="viewPortSize">The size of the view port.</param>
+    /// <param name="viewPortSize">The size of the viewport.</param>
     /// <param name="textureId">The ID of the texture.</param>
-    /// <param name="layer">The layer that a texture will be rendered on.</param>
+    /// <param name="layer">The layer where a texture will be rendered.</param>
     public TextureBatchItem(
         in
         RectangleF srcRect,
