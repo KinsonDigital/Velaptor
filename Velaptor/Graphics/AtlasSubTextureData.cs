@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Drawing;
-
 namespace Velaptor.Graphics;
+
+using System.Drawing;
 
 /// <summary>
 /// Holds data about a texture atlas sub texture.

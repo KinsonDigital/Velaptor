@@ -6,10 +6,10 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.12</Version>
+    <Version>1.0.0-preview.13</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.12</FileVersion>
+    <FileVersion>1.0.0-preview.13</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
@@ -42,10 +42,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="velaptor-logo.ico" Pack="true" PackagePath="\"/>
-    <None Include="..\Documentation\Images\velaptor-logo.png" Pack="true" PackagePath="\"/>
-    <None Include="..\LICENSE.md" Pack="true" PackagePath="\"/>
-    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="velaptor-logo.ico" Pack="true" PackagePath="\" />
+    <None Include="..\Documentation\Images\velaptor-logo.png" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

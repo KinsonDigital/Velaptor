@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Shaders;
+
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL.Services;
@@ -9,8 +11,6 @@ using Velaptor.OpenGL.Shaders;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Shaders;
 
 public class RectangleShaderTests
 {

@@ -2,14 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-
-namespace Velaptor;
+using System.Text;
 
 /// <summary>
 /// Records and retrieves information about the running application.
@@ -18,7 +19,8 @@ namespace Velaptor;
 public static class AppStats
 {
     private const string DefaultTag = "[DEFAULT]";
-    private static readonly Queue<(uint frame, char glyph, uint textureId, float renderSize, RectangleF srcRect)> Textures = new ();
+    private static readonly Queue<(uint frame, char glyph, uint textureId, float renderSize, RectangleF srcRect)> GlyphTextures = new ();
+    private static readonly List<(string textureType, string name, uint textureId)> LoadedTextures = new ();
     private static readonly List<(string fontFileName, string fontSize)> LoadedFonts = new ();
 
     /// <summary>
@@ -29,9 +31,9 @@ public static class AppStats
     {
         var result = string.Empty;
 
-        var largestFrame = Textures.Max(i => i.frame);
+        var largestFrame = GlyphTextures.Max(i => i.frame);
 
-        foreach (var (frame, glyph, textureId, renderSize, srcRect) in Textures)
+        foreach (var (frame, glyph, textureId, renderSize, srcRect) in GlyphTextures)
         {
             if (frame == largestFrame)
             {
@@ -59,6 +61,22 @@ public static class AppStats
     }
 
     /// <summary>
+    /// Returns all of the loaded textures.
+    /// </summary>
+    /// <returns>The string result of all the loaded textures.</returns>
+    public static string GetLoadedTextures()
+    {
+        var result = new StringBuilder();
+
+        foreach (var loadedTexture in LoadedTextures)
+        {
+            result.AppendLine($"Type: {loadedTexture.textureType} | Id: {loadedTexture.textureId} | Name: {loadedTexture.name}");
+        }
+
+        return result.ToString();
+    }
+
+    /// <summary>
     /// Records information about the textures that have been rendered for the 2 most recent frames.
     /// </summary>
     /// <param name="frame">The application frame.</param>
@@ -73,13 +91,13 @@ public static class AppStats
         float renderSize,
         RectangleF destRect)
     {
-        Textures.Enqueue((frame, glyph, fontAtlasTextureId, renderSize, destRect));
+        GlyphTextures.Enqueue((frame, glyph, fontAtlasTextureId, renderSize, destRect));
 
-        var largestFrame = Textures.Max(i => i.frame);
+        var largestFrame = GlyphTextures.Max(i => i.frame);
         var secondLargest = 0u;
 
         // Collect all of the unique frame numbers that have been rendered
-        var frames = (from texture in Textures
+        var frames = (from texture in GlyphTextures
             orderby texture.frame descending
             select texture.frame).Distinct().ToArray();
 
@@ -95,8 +113,41 @@ public static class AppStats
         // that are older than the last 2 recorded frames
         if (largestFrame != 0u && secondLargest != 0u)
         {
-            Textures.DequeueWhile(_ => frames.Length >= 2);
+            GlyphTextures.DequeueWhile(_ => frames.Length >= 2);
         }
+    }
+
+    /// <summary>
+    /// Records information about the textures that have been loaded.
+    /// </summary>
+    /// <param name="textureType">The type of texture.</param>
+    /// <param name="name">The name of the texture.</param>
+    /// <param name="textureId">The OpenGL id of the texture.</param>
+    internal static void RecordLoadedTexture(string textureType, string name, uint textureId)
+    {
+        var type = textureType switch
+        {
+            "Texture" => "Texture      ",
+            "Texture Atlas" => "Texture Atlas",
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(textureType),
+                textureType,
+                "Unknown texture type.  Only accept 'Texture' and 'Texture Atlas'")
+        };
+
+        LoadedTextures.Add((type, name, textureId));
+    }
+
+    /// <summary>
+    /// Removes the recorded record of a loaded texture that matches the given <paramref name="textureId"/>.
+    /// </summary>
+    /// <param name="textureId">The OpenGL id of the texture.</param>
+    internal static void RemoveLoadedTexture(uint textureId)
+    {
+        var foundItem = LoadedTextures
+            .ToArray().FirstOrDefault(i => i.textureId == textureId);
+
+        LoadedTextures.Remove(foundItem);
     }
 
     /// <summary>

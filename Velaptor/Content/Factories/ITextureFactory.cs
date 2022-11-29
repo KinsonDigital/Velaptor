@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Graphics;
-
 namespace Velaptor.Content.Factories;
+
+using Graphics;
 
 /// <summary>
 /// Creates <see cref="ITexture"/> objects for rendering.

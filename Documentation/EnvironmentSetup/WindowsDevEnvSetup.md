@@ -1,4 +1,4 @@
-<h1 style="font-weight:bold" align="center">Windows Development Environment Setup</h1>
+<h1 style="font-weight:bold" align="center">Windows Development Environment Set up</h1>
 
 Below are instructions for setting up your development environment to contribute to **Velaptor**.
 
@@ -9,6 +9,6 @@ Below are instructions for setting up your development environment to contribute
 
 <div align="right">
 
-   [Table Of Contents](./../TableOfContents.md) | [Linux Dev Env Setup >](./LinuxDevEnvSetup.md)
+   [Table Of Contents](./../TableOfContents.md) | [Linux Dev Env Set up >](./LinuxDevEnvSetup.md)
    <br/>
 </div>

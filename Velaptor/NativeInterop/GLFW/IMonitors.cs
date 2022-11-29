@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.Hardware;
-
 namespace Velaptor.NativeInterop.GLFW;
+
+using System;
+using Hardware;
 
 /// <summary>
 /// Represents multiple monitors in a system.

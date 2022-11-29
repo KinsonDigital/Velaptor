@@ -4,8 +4,8 @@
 
 namespace Velaptor.Content;
 
-using Velaptor.Content.Fonts;
-using Velaptor.Guards;
+using Fonts;
+using Guards;
 
 /// <summary>
 /// Loads content.
@@ -54,14 +54,34 @@ public sealed class ContentLoader : IContentLoader
     public IFont LoadFont(string nameOrFilePath, uint size) => this.fontLoader.Load($"{nameOrFilePath}|size:{size}");
 
     /// <inheritdoc/>
-    public void UnloadTexture(ITexture content) => this.textureLoader.Unload(content.FilePath);
+    public void UnloadTexture(ITexture content)
+    {
+        EnsureThat.ParamIsNotNull(content);
+
+        this.textureLoader.Unload(content.FilePath);
+    }
 
     /// <inheritdoc/>
-    public void UnloadSound(ISound content) => this.soundLoader.Unload(content.FilePath);
+    public void UnloadSound(ISound content)
+    {
+        EnsureThat.ParamIsNotNull(content);
+
+        this.soundLoader.Unload(content.FilePath);
+    }
 
     /// <inheritdoc/>
-    public void UnloadAtlas(IAtlasData content) => this.atlasLoader.Unload(content.FilePath);
+    public void UnloadAtlas(IAtlasData content)
+    {
+        EnsureThat.ParamIsNotNull(content);
+
+        this.atlasLoader.Unload(content.FilePath);
+    }
 
     /// <inheritdoc/>
-    public void UnloadFont(IFont content) => this.fontLoader.Unload($"{content.FilePath}|size:{content.Size}");
+    public void UnloadFont(IFont content)
+    {
+        EnsureThat.ParamIsNotNull(content);
+
+        this.fontLoader.Unload($"{content.FilePath}|size:{content.Size}");
+    }
 }

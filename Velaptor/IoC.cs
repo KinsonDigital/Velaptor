@@ -2,28 +2,27 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor;
+
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Abstractions;
 using SimpleInjector;
-using Velaptor.Content;
-using Velaptor.Content.Caching;
+using Content;
+using Content.Caching;
 using Velaptor.Content.Factories;
 using Velaptor.Content.Fonts.Services;
-using Velaptor.Factories;
-using Velaptor.Graphics;
-using Velaptor.Input;
-using Velaptor.NativeInterop.FreeType;
-using Velaptor.NativeInterop.GLFW;
+using Factories;
+using Input;
+using NativeInterop.FreeType;
+using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
+using OpenGL;
 using Velaptor.OpenGL.Services;
-using Velaptor.Reactables;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-using Velaptor.Services;
-
-namespace Velaptor;
+using Reactables;
+using Reactables.Core;
+using Reactables.ReactableData;
+using Services;
 
 /// <summary>
 /// Provides dependency injection for the application.
@@ -108,6 +107,7 @@ internal static class IoC
         IoCContainer.Register<IReactable<GLContextData>, OpenGLContextReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<DisposeTextureData>, DisposeTexturesReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<DisposeSoundData>, DisposeSoundsReactable>(Lifestyle.Singleton);
+        IoCContainer.Register<IReactable<BatchSizeData>, BatchSizeReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<(KeyCode key, bool isDown)>, KeyboardStateReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<(int, int)>, MousePositionReactable>(Lifestyle.Singleton);
         IoCContainer.Register<IReactable<(MouseButton, bool)>, MouseButtonReactable>(Lifestyle.Singleton);
@@ -161,7 +161,7 @@ internal static class IoC
         IoCContainer.Register<IFontService, FontService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<TextureBatchItem>, TextureBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<FontGlyphBatchItem>, FontGlyphBatchingService>(Lifestyle.Singleton);
-        IoCContainer.Register<IBatchingService<RectShape>, RectBatchingService>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchingService<RectBatchItem>, RectBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchServiceManager, BatchServiceManager>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(

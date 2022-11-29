@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.GLFW;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.NativeInterop.GLFW;
 
 /// <summary>
 /// Holds GLFW monitor changed event information.

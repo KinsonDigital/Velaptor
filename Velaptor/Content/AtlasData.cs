@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Content.Caching;
-using Velaptor.Graphics;
-using Velaptor.Guards;
+using Caching;
+using Graphics;
+using Guards;
 
 /// <summary>
 /// Holds data relating to a texture atlas.
@@ -41,37 +41,16 @@ public sealed class AtlasData : IAtlasData
         string dirPath,
         string atlasName)
     {
+        // ReSharper disable PossibleMultipleEnumeration
+        EnsureThat.ParamIsNotNull(textureCache);
+        EnsureThat.ParamIsNotNull(path);
+        EnsureThat.ParamIsNotNull(atlasSubTextureData);
         EnsureThat.StringParamIsNotNullOrEmpty(dirPath);
-
-        // Throw exception if the path is not a directory path
-        if (string.IsNullOrEmpty(dirPath))
-        {
-            throw new ArgumentNullException(nameof(dirPath), "The parameters must not be null or empty.");
-        }
-
-        // Throw exception if the path is not a directory path
-        if (string.IsNullOrEmpty(atlasName))
-        {
-            throw new ArgumentNullException(nameof(atlasName), "The parameters must not be null or empty.");
-        }
-
-        if (textureCache is null)
-        {
-            throw new ArgumentNullException(nameof(textureCache), "The parameters must not be null or empty.");
-        }
-
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path), "The parameters must not be null or empty.");
-        }
-
-        if (atlasSubTextureData is null)
-        {
-            throw new ArgumentNullException(nameof(atlasSubTextureData), "The parameters must not be null or empty.");
-        }
+        EnsureThat.StringParamIsNotNullOrEmpty(atlasName);
 
         this.subTexturesData = atlasSubTextureData.OrderBy(data => data.FrameIndex).ToArray();
 
+        // ReSharper restore PossibleMultipleEnumeration
         atlasName = path.GetFileNameWithoutExtension(atlasName);
 
         dirPath = dirPath.TrimDirSeparatorFromEnd();

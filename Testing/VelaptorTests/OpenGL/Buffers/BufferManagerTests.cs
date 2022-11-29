@@ -1,8 +1,11 @@
-﻿// <copyright file="BufferManagerTests.cs" company="KinsonDigital">
+// <copyright file="BufferManagerTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Buffers;
+
 using System;
+using System.Drawing;
 using System.Numerics;
 using Moq;
 using Velaptor;
@@ -10,10 +13,8 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Buffers;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Buffers;
 
 /// <summary>
 /// Tests the <see cref="BufferManager"/> class.
@@ -23,7 +24,7 @@ public class BufferManagerTests
     private readonly Mock<IGPUBufferFactory> mockBufferFactory;
     private readonly Mock<IGPUBuffer<TextureBatchItem>> mockTextureBuffer;
     private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontGlyphBuffer;
-    private readonly Mock<IGPUBuffer<RectShape>> mockRectBuffer;
+    private readonly Mock<IGPUBuffer<RectBatchItem>> mockRectBuffer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferManagerTests"/> class.
@@ -32,7 +33,7 @@ public class BufferManagerTests
     {
         this.mockTextureBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
         this.mockFontGlyphBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
-        this.mockRectBuffer = new Mock<IGPUBuffer<RectShape>>();
+        this.mockRectBuffer = new Mock<IGPUBuffer<RectBatchItem>>();
 
         this.mockBufferFactory = new Mock<IGPUBufferFactory>();
         this.mockBufferFactory.Setup(m => m.CreateTextureGPUBuffer()).Returns(this.mockTextureBuffer.Object);
@@ -101,9 +102,6 @@ public class BufferManagerTests
     {
         // Arrange
         var data = default(TextureBatchItem);
-        data.Angle = 45;
-        data.Effects = RenderEffects.FlipHorizontally;
-        data.Size = 1.5f;
 
         var sut = CreateSystemUnderTest();
 
@@ -118,10 +116,17 @@ public class BufferManagerTests
     public void UploadFontGlyphData_WhenInvoked_UploadsData()
     {
         // Arrange
-        var data = default(FontGlyphBatchItem);
-        data.Angle = 90;
-        data.Effects = RenderEffects.FlipVertically;
-        data.Size = 2.5f;
+        var data = new FontGlyphBatchItem(
+            RectangleF.Empty,
+            RectangleF.Empty,
+            'g',
+            2.5F,
+            90,
+            Color.Empty,
+            RenderEffects.FlipVertically,
+            SizeF.Empty,
+            0,
+            0);
 
         var sut = CreateSystemUnderTest();
 
@@ -136,10 +141,18 @@ public class BufferManagerTests
     public void UploadRectangleData_WhenInvoked_UploadsData()
     {
         // Arrange
-        var data = default(RectShape);
-        data.Position = new Vector2(111, 222);
-        data.Width = 444;
-        data.Height = 555;
+        var data = new RectBatchItem(
+            new Vector2(1, 2),
+            3,
+            4,
+            Color.FromArgb(5, 6, 7, 8),
+            true,
+            9f,
+            new CornerRadius(10, 11, 13, 14),
+            ColorGradient.Horizontal,
+            Color.FromArgb(15, 16, 17, 18),
+            Color.FromArgb(15, 16, 17, 18),
+            19);
 
         var sut = CreateSystemUnderTest();
 

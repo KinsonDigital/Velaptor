@@ -2,14 +2,15 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Reactables.Core;
+
 using System;
+using FluentAssertions;
 using Moq;
 using Velaptor.Reactables.Core;
-using VelaptorTests.Fakes;
-using VelaptorTests.Helpers;
+using Fakes;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Reactables.Core;
 
 /// <summary>
 /// Tests the <see cref="Reactable{TData}"/> class.
@@ -21,7 +22,7 @@ public class ReactableTests
     public void Subscribe_WithNullReactorParam_ThrowsException()
     {
         // Arrange
-        var reactable = CreateReactable<bool>();
+        var reactable = CreateSystemUnderTest<bool>();
 
         // Act & Assert
         AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
@@ -34,7 +35,7 @@ public class ReactableTests
     public void Subscribe_WhenAddingNewReactor_ReactorAddedToReactable()
     {
         // Arrange
-        var reactable = CreateReactable<bool>();
+        var reactable = CreateSystemUnderTest<bool>();
 
         // Act
         reactable.Subscribe(new Reactor<bool>());
@@ -47,7 +48,7 @@ public class ReactableTests
     public void Subscribe_WhenAddingNewReactor_ReturnsUnsubscriber()
     {
         // Arrange
-        var reactable = CreateReactable<bool>();
+        var reactable = CreateSystemUnderTest<bool>();
         var reactor = new Reactor<bool>();
 
         // Act
@@ -60,10 +61,26 @@ public class ReactableTests
     }
 
     [Fact]
+    public void PushNotification_WhenInvoked_SendsPushNotification()
+    {
+        // Arrange
+        var reactor = new Mock<IReactor<bool>>();
+
+        var reactable = new ReactableFake<bool>();
+        reactable.Subscribe(reactor.Object);
+
+        // Act
+        reactable.PushNotification(true);
+
+        // Assert
+        reactor.Verify(m => m.OnNext(true), Times.Once());
+    }
+
+    [Fact]
     public void EndNotifications_WhenInvoked_CompletesAllReactors()
     {
         // Arrange
-        var reactable = CreateReactable<bool>();
+        var reactable = CreateSystemUnderTest<bool>();
         var mockReactorA = new Mock<IReactor<bool>>();
         var mockReactorB = new Mock<IReactor<bool>>();
 
@@ -79,10 +96,29 @@ public class ReactableTests
     }
 
     [Fact]
+    public void UnsubscribeAll_WhenInvoked_UnsubscribesFromAllReactors()
+    {
+        // Arrange
+        IReactor<bool> reactorA = new Reactor<bool>();
+        IReactor<bool> reactorB = new Reactor<bool>();
+
+        var sut = CreateSystemUnderTest<bool>();
+
+        sut.Subscribe(reactorA);
+        sut.Subscribe(reactorB);
+
+        // Act
+        sut.UnsubscribeAll();
+
+        // Assert
+        sut.Reactors.Should().BeEmpty();
+    }
+
+    [Fact]
     public void Dispose_WhenInvokedWithReactors_RemovesReactors()
     {
         // Arrange
-        var reactable = CreateReactable<bool>();
+        var reactable = CreateSystemUnderTest<bool>();
 
         reactable.Subscribe(new Reactor<bool>());
 
@@ -100,6 +136,6 @@ public class ReactableTests
     /// </summary>
     /// <typeparam name="T">The type of data that the reactable will deal with.</typeparam>
     /// <returns>The instance to test.</returns>
-    private static ReactableFake<T> CreateReactable<T>()
+    private static ReactableFake<T> CreateSystemUnderTest<T>()
         => new ();
 }

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Graphics;
-
-namespace Velaptor;
+using Graphics;
 
 /// <summary>
 /// Provides extension helper methods for common game related operations.

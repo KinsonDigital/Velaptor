@@ -2,12 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts.Services;
+
 using System;
 using System.Collections.Generic;
-using Velaptor.Content.Fonts;
-using Velaptor.Graphics;
-
-namespace Velaptor.Content.Fonts.Services;
+using Graphics;
 
 /// <summary>
 /// Provides extensions to <c>FreeType</c> library operations to help simplify working with <c>FreeType</c>.

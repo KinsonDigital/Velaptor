@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.NativeInterop.GLFW;
+
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -10,10 +12,8 @@ using Silk.NET.GLFW;
 using Velaptor;
 using Velaptor.Hardware;
 using Velaptor.NativeInterop.GLFW;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.NativeInterop.GLFW;
 
 /// <summary>
 /// Tests the <see cref="GLFWMonitors"/> class.

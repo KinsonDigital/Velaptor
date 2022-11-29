@@ -1,20 +1,20 @@
-﻿// <copyright file="TestAnimatedGraphicsScene.cs" company="KinsonDigital">
+﻿// <copyright file="AnimatedGraphicsScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
+
+namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Graphics;
 using Velaptor.UI;
-using VelaptorTesting.Core;
-
-namespace VelaptorTesting.Scenes;
+using Core;
 
 /// <summary>
 /// Tests that animated graphics properly render to the screen.
 /// </summary>
-public class TestAnimatedGraphicsScene : SceneBase
+public class AnimatedGraphicsScene : SceneBase
 {
     private const int TopMargin = 50;
     private IAtlasData? mainAtlas;
@@ -24,10 +24,10 @@ public class TestAnimatedGraphicsScene : SceneBase
     private int currentFrame;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestAnimatedGraphicsScene"/> class.
+    /// Initializes a new instance of the <see cref="AnimatedGraphicsScene"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads content for the scene.</param>
-    public TestAnimatedGraphicsScene(IContentLoader contentLoader)
+    public AnimatedGraphicsScene(IContentLoader contentLoader)
         : base(contentLoader)
     {
     }

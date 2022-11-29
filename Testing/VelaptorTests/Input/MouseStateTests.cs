@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Input;
+
 using System.Drawing;
 using Velaptor.Exceptions;
 using Velaptor.Input;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Input;
 
 /// <summary>
 /// Tests the <see cref="MouseState"/> struct.

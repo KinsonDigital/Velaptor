@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.GPUData;
+
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-
-namespace Velaptor.OpenGL.GPUData;
 
 /// <summary>
 /// Represents the data of a GPU vertex for a rectangle.

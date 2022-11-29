@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.NativeInterop.GLFW;
+
 using System;
 using System.Numerics;
 using Silk.NET.GLFW;
-
-namespace Velaptor.NativeInterop.GLFW;
 
 /// <summary>
 /// Invokes GLFW calls.

@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.UI;
+
 using System;
 using System.Drawing;
-using Velaptor.Content;
-
-namespace Velaptor.UI;
+using Content;
 
 /// <summary>
 /// A user interface object that can be updated and rendered to the screen.

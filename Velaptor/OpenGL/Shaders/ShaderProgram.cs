@@ -2,17 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Shaders;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Velaptor.Graphics;
-using Velaptor.Guards;
+using Graphics;
+using Guards;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL.Exceptions;
-using Velaptor.OpenGL.Services;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.OpenGL.Shaders;
+using Exceptions;
+using Services;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <inheritdoc/>
 [BatchSize(IRenderer.BatchSize)]

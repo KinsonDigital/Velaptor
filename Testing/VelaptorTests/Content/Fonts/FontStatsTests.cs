@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content.Fonts;
+
 using Velaptor.Content.Fonts;
 using Xunit;
-
-namespace VelaptorTests.Content.Fonts;
 
 public class FontStatsTests
 {

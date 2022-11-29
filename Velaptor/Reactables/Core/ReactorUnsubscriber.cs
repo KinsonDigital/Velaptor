@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using Velaptor.Guards;
-
 namespace Velaptor.Reactables.Core;
 
+using System;
+using System.Collections.Generic;
+using Guards;
+
 /// <summary>
-/// A reactor unsubscriber for unsubscribing from an <see cref="Reactable{TData}"/>.
+/// A reactor unsubscriber for unsubscribing from a <see cref="Reactable{TData}"/>.
 /// </summary>
 /// <typeparam name="T">
 ///     The type of data that is pushed to all of the subscribed <see cref="Reactor{T}"/>s.

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Shaders;
+
 using System;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
@@ -11,8 +13,6 @@ using Velaptor.OpenGL.Shaders;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Shaders;
 
 /// <summary>
 /// Tests the <see cref="TextureShader"/> class.

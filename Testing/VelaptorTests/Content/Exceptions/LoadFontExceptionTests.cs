@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content.Exceptions;
+
 using System;
 using Velaptor.Content.Exceptions;
 using Xunit;
-
-namespace VelaptorTests.Content.Exceptions;
 
 /// <summary>
 /// Tests the <see cref="LoadFontException"/> class.

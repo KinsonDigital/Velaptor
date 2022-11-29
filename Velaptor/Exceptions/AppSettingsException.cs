@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace Velaptor.Exceptions;
+
+using System;
 
 /// <summary>
 /// Thrown when there is an issue loading the application settings.

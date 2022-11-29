@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.UI;
-
 namespace Velaptor;
+
+using UI;
 
 /// <summary>
 /// The different kinds of borders that a <see cref="IWindow"/> can have.

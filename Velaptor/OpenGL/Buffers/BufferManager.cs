@@ -2,19 +2,18 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.Factories;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-
 namespace Velaptor.OpenGL.Buffers;
+
+using System;
+using Factories;
+using Guards;
 
 /// <inheritdoc/>
 internal sealed class BufferManager : IBufferManager
 {
     private readonly IGPUBuffer<TextureBatchItem> textureBuffer;
     private readonly IGPUBuffer<FontGlyphBatchItem> fontGlyphBuffer;
-    private readonly IGPUBuffer<RectShape> rectBuffer;
+    private readonly IGPUBuffer<RectBatchItem> rectBuffer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferManager"/> class.
@@ -58,5 +57,5 @@ internal sealed class BufferManager : IBufferManager
     public void UploadFontGlyphData(FontGlyphBatchItem data, uint batchIndex) => this.fontGlyphBuffer.UploadData(data, batchIndex);
 
     /// <inheritdoc/>
-    public void UploadRectData(RectShape data, uint batchIndex) => this.rectBuffer.UploadData(data, batchIndex);
+    public void UploadRectData(RectBatchItem data, uint batchIndex) => this.rectBuffer.UploadData(data, batchIndex);
 }

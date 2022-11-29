@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts.Services;
+
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Guards;
-
-namespace Velaptor.Content.Fonts.Services;
+using Guards;
 
 /// <inheritdoc cref="IFontStatsService"/>
 internal sealed class FontStatsService : IFontStatsService

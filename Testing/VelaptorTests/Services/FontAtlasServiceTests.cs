@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,10 +17,8 @@ using Velaptor.Exceptions;
 using Velaptor.Graphics;
 using Velaptor.Hardware;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Services;
 
 /// <summary>
 /// Tests the <see cref="FontAtlasService"/> class.
@@ -48,7 +48,7 @@ public class FontAtlasServiceTests
     {
         TestHelpers.SetupTestResultDirPath();
 
-        // Setup the glyph indices
+        // Set up the glyph indices
         foreach (var glyphChar in this.glyphChars)
         {
             this.glyphIndices.Add(glyphChar, glyphChar);

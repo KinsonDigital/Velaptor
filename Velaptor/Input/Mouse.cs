@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.Reactables.Core;
-
 namespace Velaptor.Input;
+
+using System;
+using Reactables.Core;
 
 /// <summary>
 /// Gets or sets the state of the mouse.

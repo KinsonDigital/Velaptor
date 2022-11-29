@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Runtime.InteropServices;
-
 namespace Velaptor.NativeInterop.GLFW;
+
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// The GLFW video mode.

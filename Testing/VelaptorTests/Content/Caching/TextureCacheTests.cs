@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content.Caching;
+
 using System;
 using System.Drawing;
 using System.IO.Abstractions;
@@ -14,10 +16,8 @@ using Velaptor.Graphics;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content.Caching;
 
 public class TextureCacheTests
 {

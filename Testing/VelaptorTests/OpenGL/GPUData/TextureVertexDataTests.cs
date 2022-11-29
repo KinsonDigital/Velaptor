@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.GPUData;
+
 using System.Drawing;
 using System.Numerics;
 using Velaptor.OpenGL.GPUData;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.GPUData;
 
 /// <summary>
 /// Tests the <see cref="TextureVertexData"/> struct.
@@ -19,18 +19,14 @@ public class TextureVertexDataTests
     public void NotEqualsOperator_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var dataA = new TextureVertexData()
-        {
-            VertexPos = new Vector2(1, 2),
-            TextureCoord = new Vector2(4, 5),
-            TintColor = Color.FromArgb(6, 7, 8, 9),
-        };
-        var dataB = new TextureVertexData()
-        {
-            VertexPos = new Vector2(11, 22),
-            TextureCoord = new Vector2(44, 55),
-            TintColor = Color.FromArgb(66, 77, 88, 99),
-        };
+        var dataA = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(4, 5),
+            Color.FromArgb(6, 7, 8, 9));
+        var dataB = new TextureVertexData(
+            new Vector2(11, 22),
+            new Vector2(44, 55),
+            Color.FromArgb(66, 77, 88, 99));
 
         // Act
         var actual = dataA != dataB;
@@ -43,18 +39,14 @@ public class TextureVertexDataTests
     public void EqualsOperator_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var dataA = new TextureVertexData()
-        {
-            VertexPos = new Vector2(1, 2),
-            TextureCoord = new Vector2(4, 5),
-            TintColor = Color.FromArgb(6, 7, 8, 9),
-        };
-        var dataB = new TextureVertexData()
-        {
-            VertexPos = new Vector2(1, 2),
-            TextureCoord = new Vector2(4, 5),
-            TintColor = Color.FromArgb(6, 7, 8, 9),
-        };
+        var dataA = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(4, 5),
+            Color.FromArgb(6, 7, 8, 9));
+        var dataB = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(4, 5),
+            Color.FromArgb(6, 7, 8, 9));
 
         // Act
         var actual = dataA == dataB;
@@ -90,18 +82,15 @@ public class TextureVertexDataTests
     public void Equals_WhenInvoked_ReturnsCorrectResult(Vector2 vertex, Vector2 textureCoord, Color tintClr, bool expected)
     {
         // Arrange
-        var dataA = new TextureVertexData()
-        {
-            VertexPos = new Vector2(1, 2),
-            TextureCoord = new Vector2(4, 5),
-            TintColor = Color.FromArgb(6, 7, 8, 9),
-        };
-        var dataB = new TextureVertexData()
-        {
-            VertexPos = vertex,
-            TextureCoord = textureCoord,
-            TintColor = tintClr,
-        };
+        var dataA = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(4, 5),
+            Color.FromArgb(6, 7, 8, 9));
+
+        var dataB = new TextureVertexData(
+            vertex,
+            textureCoord,
+            tintClr);
 
         // Act
         var actual = dataA.Equals(dataB);
@@ -114,12 +103,10 @@ public class TextureVertexDataTests
     public void Equals_WhenUsingOverloadWithObjectParamWithObjectOfDifferentType_ReturnsFalse()
     {
         // Arrange
-        var dataA = new TextureVertexData()
-        {
-            VertexPos = new Vector2(1, 2),
-            TextureCoord = new Vector2(4, 5),
-            TintColor = Color.FromArgb(6, 7, 8, 9),
-        };
+        var dataA = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(4, 5),
+            Color.FromArgb(6, 7, 8, 9));
         var dataB = new object();
 
         // Act
@@ -133,18 +120,14 @@ public class TextureVertexDataTests
     public void Equals_WhenUsingOverloadWithObjectParamWithObjectOfSameType_ReturnsTrue()
     {
         // Arrange
-        var dataA = new TextureVertexData()
-        {
-            VertexPos = new Vector2(1, 2),
-            TextureCoord = new Vector2(4, 5),
-            TintColor = Color.FromArgb(6, 7, 8, 9),
-        };
-        object dataB = new TextureVertexData()
-        {
-            VertexPos = new Vector2(1, 2),
-            TextureCoord = new Vector2(4, 5),
-            TintColor = Color.FromArgb(6, 7, 8, 9),
-        };
+        var dataA = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(4, 5),
+            Color.FromArgb(6, 7, 8, 9));
+        object dataB = new TextureVertexData(
+            new Vector2(1, 2),
+            new Vector2(4, 5),
+            Color.FromArgb(6, 7, 8, 9));
 
         // Act
         var actual = dataA.Equals(dataB);
@@ -170,14 +153,13 @@ public class TextureVertexDataTests
         bool expected)
     {
         // Arrange
-        var data = new TextureVertexData()
-        {
-            VertexPos = new Vector2(vertexPosX, vertexPosY),
-            TextureCoord = new Vector2(textureCoordX, textureCoordY),
-            TintColor = clrA == 0 && clrR == 0 && clrG == 0 && clrB == 0
-                ? Color.Empty
-                : Color.FromArgb(clrA, clrR, clrG, clrB),
-        };
+        var clr = clrA == 0 && clrR == 0 && clrG == 0 && clrB == 0
+            ? Color.Empty
+            : Color.FromArgb(clrA, clrR, clrG, clrB);
+        var data = new TextureVertexData(
+            new Vector2(vertexPosX, vertexPosY),
+            new Vector2(textureCoordX, textureCoordY),
+            clr);
 
         // Act
         var actual = data.IsEmpty();

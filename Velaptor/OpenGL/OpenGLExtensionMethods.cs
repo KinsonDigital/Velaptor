@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL;
+
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Velaptor.OpenGL.GPUData;
-
-namespace Velaptor.OpenGL;
+using GPUData;
 
 /// <summary>
 /// Provides various helper methods for OpenGL related operations.

@@ -14,32 +14,23 @@ using System.Collections.ObjectModel;
 internal interface IBatchingService<T>
 {
     /// <summary>
-    /// Occurs when a batch is full.
+    /// Occurs when the batch is ready for rendering.
     /// </summary>
     /// <remarks>
-    /// Scenarios When The Batch Is Ready:
-    /// <list type="number">
-    ///     <item>The batch is ready when draw calls switch to another circle.</item>
-    ///     <item>The batch is ready when the total amount of render calls have reached the <see cref="BatchSize"/>.</item>
-    /// </list>
+    ///     The batch is ready when all of the items are ready to be rendered.
     /// </remarks>
-    event EventHandler<EventArgs>? BatchFilled;
-
-    /// <summary>
-    /// Gets or sets the size of the batch.
-    /// </summary>
-    uint BatchSize { get; set; }
+    event EventHandler<EventArgs>? ReadyForRendering;
 
     /// <summary>
     /// Gets or sets the list of batch items.
     /// </summary>
-    ReadOnlyDictionary<uint, (bool shouldRender, T item)> BatchItems { get; set; }
+    ReadOnlyCollection<T> BatchItems { get; set; }
 
     /// <summary>
     /// Adds the given <paramref name="item"/> to the batch.
     /// </summary>
     /// <param name="item">The item to be added.</param>
-    void Add(T item);
+    void Add(in T item);
 
     /// <summary>
     /// Empties the entire batch.

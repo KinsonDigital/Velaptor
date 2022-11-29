@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL.Services;
+
 using System;
 using System.Collections.Generic;
 using Moq;
 using Velaptor.OpenGL.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.OpenGL.Services;
 
 /// <summary>
 /// Tests the <see cref="ShaderTemplateProcessorService"/> class.

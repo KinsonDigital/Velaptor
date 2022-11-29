@@ -2,9 +2,9 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.OpenGL.Shaders;
-
 namespace Velaptor.Factories;
+
+using OpenGL.Shaders;
 
 /// <summary>
 /// Creates different shaders.

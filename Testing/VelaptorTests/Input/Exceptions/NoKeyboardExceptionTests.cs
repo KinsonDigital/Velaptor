@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Input.Exceptions;
+
 using System;
 using Velaptor.Input.Exceptions;
 using Xunit;
-
-namespace VelaptorTests.Input.Exceptions;
 
 /// <summary>
 /// Tests the <see cref="InvalidInputException"/> class.

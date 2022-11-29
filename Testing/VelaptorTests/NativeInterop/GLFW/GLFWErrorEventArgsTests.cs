@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.NativeInterop.GLFW;
+
 using System;
 using Velaptor.NativeInterop.GLFW;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.NativeInterop.GLFW;
 
 public class GLFWErrorEventArgsTests
 {

@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-using Velaptor.Content.Fonts;
-using Velaptor.Input;
-using Velaptor.UI;
-
 namespace Velaptor.Factories;
+
+using System.Diagnostics.CodeAnalysis;
+using Content.Fonts;
+using Input;
+using UI;
 
 /// <inheritdoc/>
 [ExcludeFromCodeCoverage]

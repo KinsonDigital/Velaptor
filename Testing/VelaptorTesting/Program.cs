@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting;
+
 using System;
 using System.Threading.Tasks;
 using Velaptor;
 using Velaptor.Factories;
 using Velaptor.UI;
-
-namespace VelaptorTesting;
 
 /// <summary>
 /// The main program entry point.
@@ -70,6 +70,10 @@ public static class Program
                                     Console.WriteLine(AppStats.GetLoadedFonts());
                                     EmptyLine();
                                     break;
+                                case "loaded-textures":
+                                    Console.WriteLine(AppStats.GetLoadedTextures());
+                                    EmptyLine();
+                                    break;
                             }
                         }
                         else
@@ -122,7 +126,9 @@ public static class Program
                         Write("\t--show glyphs", ConsoleColor.DarkYellow);
                         WriteLine("\t\tDisplays a list of all of the glyphs being rendered on the most current frame.");
                         Write("\t--show loaded-fonts", ConsoleColor.DarkYellow);
-                        WriteLine("\t\tDisplays a list of all of the currently loaded fonts.", true);
+                        WriteLine("\tDisplays a list of all of the currently loaded fonts.");
+                        Write("\t--show loaded-textures", ConsoleColor.DarkYellow);
+                        WriteLine("\tDisplays a list of the loaded textures.", true);
                         break;
                 }
 

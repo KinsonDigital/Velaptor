@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor.Graphics;
 
 /// <summary>
 /// Holds all of the radius values for each corner of a rectangle.
@@ -80,6 +80,42 @@ public readonly struct CornerRadius : IEquatable<CornerRadius>
     /// </summary>
     /// <returns>The empty instance.</returns>
     public static CornerRadius Empty() => new (0f, 0f, 0f, 0f);
+
+    /// <summary>
+    /// Sets the top left corner value of the given <paramref name="cornerRadius"/> to the given <paramref name="value"/>.
+    /// </summary>
+    /// <param name="cornerRadius">The corner radius to change.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns>The corner radius with the updated value.</returns>
+    public static CornerRadius SetTopLeft(CornerRadius cornerRadius, float value)
+        => new (value, cornerRadius.BottomLeft, cornerRadius.BottomRight, cornerRadius.TopRight);
+
+    /// <summary>
+    /// Sets the bottom left corner value of the given <paramref name="cornerRadius"/> to the given <paramref name="value"/>.
+    /// </summary>
+    /// <param name="cornerRadius">The corner radius to change.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns>The corner radius with the updated value.</returns>
+    public static CornerRadius SetBottomLeft(CornerRadius cornerRadius, float value)
+        => new (cornerRadius.TopLeft, value, cornerRadius.BottomRight, cornerRadius.TopRight);
+
+    /// <summary>
+    /// Sets the bottom right corner value of the given <paramref name="cornerRadius"/> to the given <paramref name="value"/>.
+    /// </summary>
+    /// <param name="cornerRadius">The corner radius to change.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns>The corner radius with the updated value.</returns>
+    public static CornerRadius SetBottomRight(CornerRadius cornerRadius, float value)
+        => new (cornerRadius.TopLeft, cornerRadius.BottomLeft, value, cornerRadius.TopRight);
+
+    /// <summary>
+    /// Sets the top right corner value of the given <paramref name="cornerRadius"/> to the given <paramref name="value"/>.
+    /// </summary>
+    /// <param name="cornerRadius">The corner radius to change.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns>The corner radius with the updated value.</returns>
+    public static CornerRadius SetTopRight(CornerRadius cornerRadius, float value)
+        => new (cornerRadius.TopLeft, cornerRadius.BottomLeft, cornerRadius.BottomRight, value);
 
     /// <summary>
     /// Returns a value indicating if the <see cref="CornerRadius"/> is empty.

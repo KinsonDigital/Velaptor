@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Factories;
+
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Abstractions;
-using Velaptor.Content.Caching;
-using Velaptor.Graphics;
-
-namespace Velaptor.Content.Factories;
+using Caching;
+using Graphics;
 
 /// <summary>
 /// Generates <see cref="IAtlasData"/> instances.

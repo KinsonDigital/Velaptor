@@ -2,15 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-using Velaptor.Graphics;
-using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL;
-using Velaptor.OpenGL.Buffers;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
 namespace Velaptor.Factories;
+
+using System.Diagnostics.CodeAnalysis;
+using Velaptor.NativeInterop.OpenGL;
+using OpenGL;
+using OpenGL.Buffers;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Creates singleton instances of <see cref="TextureGPUBuffer"/> and <see cref="FontGPUBuffer"/>.
@@ -20,7 +19,7 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
 {
     private static IGPUBuffer<TextureBatchItem>? textureBuffer;
     private static IGPUBuffer<FontGlyphBatchItem>? fontBuffer;
-    private static IGPUBuffer<RectShape>? rectBuffer;
+    private static IGPUBuffer<RectBatchItem>? rectBuffer;
 
     /// <inheritdoc/>
     public IGPUBuffer<TextureBatchItem> CreateTextureGPUBuffer()
@@ -59,7 +58,7 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
     }
 
     /// <inheritdoc/>
-    public IGPUBuffer<RectShape> CreateRectGPUBuffer()
+    public IGPUBuffer<RectBatchItem> CreateRectGPUBuffer()
     {
         if (rectBuffer is not null)
         {

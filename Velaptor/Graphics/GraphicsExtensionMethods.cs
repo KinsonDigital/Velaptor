@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Graphics;
+
 using System.Collections.Generic;
 using System.Linq;
-
-namespace Velaptor.Graphics;
 
 /// <summary>
 /// Provides various helper extension methods.

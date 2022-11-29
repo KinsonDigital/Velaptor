@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.Guards;
-
 namespace Velaptor.OpenGL;
+
+using System;
+using Guards;
 
 /// <summary>
 /// Represents the name of a buffer.

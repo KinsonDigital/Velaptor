@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-namespace Velaptor.OpenGL.Services;
 
 /// <summary>
 /// Processes template variables in shader source code by finding

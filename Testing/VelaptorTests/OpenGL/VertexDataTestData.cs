@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL;
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Numerics;
-
-namespace VelaptorTests.OpenGL;
 
 /// <summary>
 /// Initializes a new instance of <see cref="VertexDataTestData"/>.

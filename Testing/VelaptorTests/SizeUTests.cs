@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests;
+
 using Velaptor;
 using Xunit;
-
-namespace VelaptorTests;
 
 /// <summary>
 /// Tests the <see cref="SizeU"/> struct.

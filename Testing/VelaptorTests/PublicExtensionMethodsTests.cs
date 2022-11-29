@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests;
+
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -9,10 +11,8 @@ using System.Linq;
 using System.Numerics;
 using Velaptor;
 using Velaptor.Graphics;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests;
 
 /// <summary>
 /// Tests the <see cref="PublicExtensionMethods"/> class.

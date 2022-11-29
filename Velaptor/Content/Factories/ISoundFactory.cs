@@ -2,8 +2,6 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Content;
-
 namespace Velaptor.Content.Factories;
 
 /// <summary>

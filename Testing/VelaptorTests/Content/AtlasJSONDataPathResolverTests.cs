@@ -11,7 +11,7 @@ using System.Reflection;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 
 /// <summary>

@@ -9,15 +9,14 @@ indent_style = space
 [*.{cs,csx,vb,vbx}]
 indent_size = 4
 insert_final_newline = true
-charset = utf-8-bom
 
 ###############################
 # .NET Coding Conventions     #
 ###############################
 
 [*.cs]
-# Expression-bodied members
-csharp_style_expression_bodied_methods = true:none
+
+csharp_style_expression_bodied_methods = true:silent
 
 ###############################
 # C# Formatting Rules         #
@@ -39,7 +38,7 @@ dotnet_diagnostic.SA1124.severity = none
 dotnet_diagnostic.CA2000.severity = none
 
 # IDE0017: Simplify object initialization
-dotnet_style_object_initializer = false:none
+dotnet_style_object_initializer = true:none
 
 # CA1063: Implement IDisposable Correctly
 dotnet_diagnostic.CA1063.severity = none
@@ -70,5 +69,3 @@ dotnet_diagnostic.CS8625.severity = none
 
 # CS8604: Possible null reference argument.
 dotnet_diagnostic.CS8604.severity = none
-
-resharper_redundant_name_qualifier_highlighting=none

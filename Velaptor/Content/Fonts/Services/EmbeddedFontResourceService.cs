@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts.Services;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -9,8 +11,6 @@ using System.Linq;
 using System.Reflection;
 using Velaptor.Exceptions;
 using Velaptor.Services;
-
-namespace Velaptor.Content.Fonts.Services;
 
 /// <summary>
 /// Loads embedded font file resources.

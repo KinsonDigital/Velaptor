@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Reactables.Core;
+
 using System;
 using Moq;
 using Velaptor.Reactables.Core;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Reactables.Core;
 
 /// <summary>
 /// Tests the <see cref="Reactor{T}"/> class.

@@ -2,66 +2,108 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
-using Velaptor.Graphics;
-
-namespace Velaptor.OpenGL;
+using Graphics;
 
 /// <summary>
 /// A single item in a batch of glyph items that can be rendered to the screen.
 /// </summary>
-internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
+internal readonly struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
 {
     /// <summary>
-    /// The source rectangle inside of the font atlas texture to render.
+    /// Initializes a new instance of the <see cref="FontGlyphBatchItem"/> struct.
     /// </summary>
-    public RectangleF SrcRect;
+    /// <param name="srcRect">The rectangular section inside of a texture to render.</param>
+    /// <param name="destRect">The destination rectangular area of where to render the glyph on the screen.</param>
+    /// <param name="glyph">The font glyph.</param>
+    /// <param name="size">The size of the glyph texture to be rendered.</param>
+    /// <param name="angle">The angle in degrees of the glyph texture.</param>
+    /// <param name="tintColor">The color to apply to the entire glyph texture.</param>
+    /// <param name="effects">The type of effects to apply to the glyph texture when rendering.</param>
+    /// <param name="viewPortSize">The size of the viewport.</param>
+    /// <param name="textureId">The ID of the font atlas texture.</param>
+    /// <param name="layer">The layer where the shape will be rendered.</param>
+    public FontGlyphBatchItem(
+        RectangleF srcRect,
+        RectangleF destRect,
+        char glyph,
+        float size,
+        float angle,
+        Color tintColor,
+        RenderEffects effects,
+        SizeF viewPortSize,
+        uint textureId,
+        int layer)
+    {
+        SrcRect = srcRect;
+        DestRect = destRect;
+        Glyph = glyph;
+        Size = size;
+        Angle = angle;
+        TintColor = tintColor;
+        Effects = effects;
+        ViewPortSize = viewPortSize;
+        TextureId = textureId;
+        Layer = layer;
+    }
 
     /// <summary>
-    /// The destination rectangular area of where to render the glyph on the screen.
+    /// Gets the rectangular section inside of a texture to render.
     /// </summary>
-    public RectangleF DestRect;
+    public RectangleF SrcRect { get; }
 
     /// <summary>
-    /// The font glyph.
+    /// Gets the destination rectangular area of where to render the glyph on the screen.
     /// </summary>
-    public char Glyph;
+    public RectangleF DestRect { get; }
 
     /// <summary>
-    /// The size of the glyph texture to be rendered.
+    /// Gets the font glyph.
+    /// </summary>
+    public char Glyph { get; }
+
+    /// <summary>
+    /// Gets the size of the glyph texture to be rendered.
     /// </summary>
     /// <remarks>This must be a value between 0 and 1.</remarks>
-    public float Size;
+    public float Size { get; }
 
     /// <summary>
-    /// The angle in degrees of the glyph texture.
+    /// Gets the angle in degrees of the glyph texture.
     /// </summary>
     /// <remarks>Needs to be a value between 0 and 360.</remarks>
-    public float Angle;
+    public float Angle { get; }
 
     /// <summary>
-    /// The color to apply to the entire glyph texture.
+    /// Gets the color to apply to the entire glyph texture.
     /// </summary>
-    public Color TintColor;
+    public Color TintColor { get; }
 
     /// <summary>
-    /// The type of effects to apply to the glyph texture when rendering.
+    /// Gets the type of effects to apply to the glyph texture when rendering.
     /// </summary>
-    public RenderEffects Effects;
+    public RenderEffects Effects { get; }
 
     /// <summary>
-    /// The size of the viewport.
+    /// Gets the size of the viewport.
     /// </summary>
-    public SizeF ViewPortSize;
+    public SizeF ViewPortSize { get; }
 
     /// <summary>
-    /// The ID of the font atlas texture.
+    /// Gets the ID of the font atlas texture.
     /// </summary>
-    public uint TextureId;
+    public uint TextureId { get; }
+
+    /// <summary>
+    /// Gets the layer where the shape will be rendered.
+    /// </summary>
+    public int Layer { get; }
 
     /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is equal to the <paramref name="right"/> operand.
@@ -84,43 +126,29 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     /// </summary>
     /// <returns>True if empty.</returns>
     public bool IsEmpty() =>
-        this.TextureId == 0 &&
-        this.Glyph == '\0' &&
-        this.SrcRect.IsEmpty &&
-        this.DestRect.IsEmpty &&
-        this.Size == 0f &&
-        this.Angle == 0f &&
-        this.TintColor.IsEmpty &&
-        this.Effects is 0 or RenderEffects.None &&
-        this.ViewPortSize.IsEmpty;
-
-    /// <summary>
-    /// Empties the struct by setting all members to default values.
-    /// </summary>
-    public void Empty()
-    {
-        this.TextureId = 0u;
-        this.Glyph = '\0';
-        this.SrcRect = default;
-        this.DestRect = default;
-        this.Size = 0f;
-        this.Angle = 0f;
-        this.TintColor = default;
-        this.Effects = RenderEffects.None;
-        this.ViewPortSize = default;
-    }
+        TextureId == 0 &&
+        Size == 0f &&
+        Angle == 0f &&
+        Layer == 0 &&
+        Effects is 0 or RenderEffects.None &&
+        Glyph == '\0' &&
+        SrcRect.IsEmpty &&
+        DestRect.IsEmpty &&
+        TintColor.IsEmpty &&
+        ViewPortSize.IsEmpty;
 
     /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
     public bool Equals(FontGlyphBatchItem other) =>
-        this.SrcRect.Equals(other.SrcRect) &&
-        this.DestRect.Equals(other.DestRect) &&
-        this.Size.Equals(other.Size) &&
-        this.Angle.Equals(other.Angle) &&
-        this.TintColor.Equals(other.TintColor) &&
-        this.Effects == other.Effects &&
-        this.ViewPortSize.Equals(other.ViewPortSize) &&
-        this.TextureId == other.TextureId &&
-        this.Glyph == other.Glyph;
+        SrcRect.Equals(other.SrcRect) &&
+        DestRect.Equals(other.DestRect) &&
+        Size.Equals(other.Size) &&
+        Angle.Equals(other.Angle) &&
+        TintColor.Equals(other.TintColor) &&
+        Effects == other.Effects &&
+        ViewPortSize.Equals(other.ViewPortSize) &&
+        TextureId == other.TextureId &&
+        Glyph == other.Glyph &&
+        Layer == other.Layer;
 
     /// <inheritdoc cref="object.Equals(object?)"/>
     public override bool Equals(object? obj) => obj is FontGlyphBatchItem other && Equals(other);
@@ -130,15 +158,16 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
     public override int GetHashCode()
         => HashCode.Combine(
             HashCode.Combine(
-                this.SrcRect,
-                this.DestRect,
-                this.Size,
-                this.Angle,
-                this.TintColor,
-                (int)this.Effects,
-                this.ViewPortSize,
-                this.TextureId),
-            this.Glyph);
+                SrcRect,
+                DestRect,
+                Size,
+                Angle,
+                TintColor,
+                (int)Effects,
+                ViewPortSize,
+                TextureId),
+            Glyph,
+            Layer);
 
     /// <inheritdoc/>
     public override string ToString()
@@ -146,16 +175,17 @@ internal struct FontGlyphBatchItem : IEquatable<FontGlyphBatchItem>
         var result = new StringBuilder();
 
         result.AppendLine("Font Batch Item Values:");
-        result.AppendLine($"Src Rect: {this.SrcRect.ToString()}");
-        result.AppendLine($"Dest Rect: {this.DestRect.ToString()}");
-        result.AppendLine($"Size: {this.Size.ToString(CultureInfo.InvariantCulture)}");
-        result.AppendLine($"Angle: {this.Angle.ToString(CultureInfo.InvariantCulture)}");
+        result.AppendLine($"Src Rect: {SrcRect.ToString()}");
+        result.AppendLine($"Dest Rect: {DestRect.ToString()}");
+        result.AppendLine($"Size: {Size.ToString(CultureInfo.InvariantCulture)}");
+        result.AppendLine($"Angle: {Angle.ToString(CultureInfo.InvariantCulture)}");
         result.AppendLine(
-            $"Tint Clr: {{A={this.TintColor.A},R={this.TintColor.R},G={this.TintColor.G},B={this.TintColor.B}}}");
-        result.AppendLine($"Effects: {this.Effects.ToString()}");
-        result.AppendLine($"View Port Size: {{W={this.ViewPortSize.Width},H={this.ViewPortSize.Height}}}");
-        result.AppendLine($"Texture ID: {this.TextureId.ToString()}");
-        result.Append($"Glyph: {this.Glyph}");
+            $"Tint Clr: {{A={TintColor.A},R={TintColor.R},G={TintColor.G},B={TintColor.B}}}");
+        result.AppendLine($"Effects: {Effects.ToString()}");
+        result.AppendLine($"View Port Size: {{W={ViewPortSize.Width},H={ViewPortSize.Height}}}");
+        result.AppendLine($"Texture ID: {TextureId.ToString()}");
+        result.AppendLine($"Glyph: {Glyph}");
+        result.Append($"Layer: {Layer}");
 
         return result.ToString();
     }

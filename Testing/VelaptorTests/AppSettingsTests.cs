@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests;
+
 using FluentAssertions;
 using Velaptor;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests;
 
 /// <summary>
 /// Tests the <see cref="AppSettings"/> class.
@@ -16,7 +16,33 @@ public class AppSettingsTests
 {
     #region Property Tests
     [Fact]
-    public void WindowWidth_WhenGettingValue_ReturnsCorrectResult()
+    public void WindowWidth_WhenGettingInitializedValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var settings = new AppSettings
+        {
+            WindowWidth = 1111,
+        };
+
+        // Act & Assert
+        settings.WindowWidth.Should().Be(1111);
+    }
+
+    [Fact]
+    public void WindowHeight_WhenGettingInitializedValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var settings = new AppSettings
+        {
+            WindowHeight = 1111,
+        };
+
+        // Act & Assert
+        settings.WindowHeight.Should().Be(1111);
+    }
+
+    [Fact]
+    public void WindowWidth_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
         var settings = new AppSettings();
@@ -26,7 +52,7 @@ public class AppSettingsTests
     }
 
     [Fact]
-    public void WindowHeight_WhenGettingValue_ReturnsCorrectResult()
+    public void WindowHeight_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
         var settings = new AppSettings();
@@ -56,7 +82,7 @@ public class AppSettingsTests
     }
 
     [Fact]
-    public void ConsoleLoggingEnabled_WhenGettingValue_ReturnsTrue()
+    public void ConsoleLoggingEnabled_WhenGettingDefaultValue_ReturnsTrue()
     {
         // Arrange
         var settings = new AppSettings();
@@ -66,7 +92,7 @@ public class AppSettingsTests
     }
 
     [Fact]
-    public void FileLoggingEnabled_WhenGettingValue_ReturnsTrue()
+    public void FileLoggingEnabled_WhenGettingDefaultValue_ReturnsTrue()
     {
         // Arrange
         var settings = new AppSettings();

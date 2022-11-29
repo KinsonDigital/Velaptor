@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Helpers;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
-namespace VelaptorTests.Helpers;
 
 /// <summary>
 /// Provides extension methods to ease the writing of unit tests.
@@ -32,30 +32,21 @@ public static class TestOnlyExtensions
     }
 
     /// <summary>
-    /// Converts the items of type <see cref="IEnumerable{T}"/> to type <see cref="ReadOnlyCollection{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the <see cref="IEnumerable{T}"/> list.</typeparam>
-    /// <param name="items">The items to convert.</param>
-    /// <returns>The items as a read only collection.</returns>
-    public static ReadOnlyDictionary<uint, T> ToReadOnlyDictionary<T>(this List<T> items)
-        => new (items.ToDictionary());
-
-    /// <summary>
     /// Converts the given list of <paramref name="items"/> to a read only dictionary where
     /// the key is the <paramref name="items"/> array item index.
     /// </summary>
     /// <param name="items">The list of items to convert.</param>
     /// <typeparam name="T">The type of values in the lists.</typeparam>
     /// <returns>A read only dictionary of the given <paramref name="items"/>.</returns>
-    public static ReadOnlyDictionary<uint, T> ToReadOnlyDictionary<T>(this T[] items)
+    public static ReadOnlyCollection<T> ToReadOnlyCollection<T>(this T[] items)
     {
-        var result = new Dictionary<uint, T>();
+        var result = new List<T>();
 
         for (var i = 0u; i < items.Length; i++)
         {
-            result.Add(i, items[i]);
+            result.Add(items[i]);
         }
 
-        return new ReadOnlyDictionary<uint, T>(result);
+        return new ReadOnlyCollection<T>(result);
     }
 }

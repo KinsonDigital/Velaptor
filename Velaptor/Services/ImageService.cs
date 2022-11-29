@@ -2,17 +2,17 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Services;
+
 using System.IO;
 using System.IO.Abstractions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using Velaptor.Graphics;
-using Velaptor.Guards;
+using Graphics;
+using Guards;
 using NETColor = System.Drawing.Color;
 using NETPoint = System.Drawing.Point;
-
-namespace Velaptor.Services;
 
 /// <summary>
 /// Saves, loads and manages image files.

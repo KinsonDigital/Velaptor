@@ -1,6 +1,8 @@
-﻿// <copyright file="TestKeyboardScene.cs" company="KinsonDigital">
+﻿// <copyright file="KeyboardScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
+
+namespace VelaptorTesting.Scenes;
 
 using System.Drawing;
 using System.Text;
@@ -9,14 +11,12 @@ using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Input;
 using Velaptor.UI;
-using VelaptorTesting.Core;
-
-namespace VelaptorTesting.Scenes;
+using Core;
 
 /// <summary>
 /// Used to test that the keyboard works correctly.
 /// </summary>
-public class TestKeyboardScene : SceneBase
+public class KeyboardScene : SceneBase
 {
     private const int TopMargin = 50;
     private readonly IAppInput<KeyboardState> keyboard;
@@ -25,10 +25,10 @@ public class TestKeyboardScene : SceneBase
     private KeyboardState currentKeyboardState;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TestKeyboardScene"/> class.
+    /// Initializes a new instance of the <see cref="KeyboardScene"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads content for the scene.</param>
-    public TestKeyboardScene(IContentLoader contentLoader)
+    public KeyboardScene(IContentLoader contentLoader)
         : base(contentLoader)
         => this.keyboard = AppInputFactory.CreateKeyboard();
 

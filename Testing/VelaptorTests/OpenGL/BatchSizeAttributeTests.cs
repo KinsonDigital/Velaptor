@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.OpenGL;
+
 using Velaptor.OpenGL;
 using Xunit;
-
-namespace VelaptorTests.OpenGL;
 
 /// <summary>
 /// Tests the <see cref="BatchSizeAttribute"/> class.

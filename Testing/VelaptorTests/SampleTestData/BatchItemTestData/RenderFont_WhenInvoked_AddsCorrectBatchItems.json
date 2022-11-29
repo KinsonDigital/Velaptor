@@ -40,7 +40,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -83,7 +84,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -126,7 +128,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -169,7 +172,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -212,7 +216,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -255,7 +260,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -298,7 +304,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -341,7 +348,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -384,7 +392,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -427,7 +436,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -470,7 +480,8 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   },
   {
     "SrcRect": {
@@ -513,6 +524,7 @@
     "TintColor": "11, 22, 33, 44",
     "Effects": 1,
     "ViewPortSize": "0, 0",
-    "TextureId": 0
+    "TextureId": 0,
+    "Layer": 500
   }
 ]

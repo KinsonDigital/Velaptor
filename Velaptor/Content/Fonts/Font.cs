@@ -2,21 +2,21 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content.Fonts;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Content.Caching;
-using Velaptor.Content.Exceptions;
-using Velaptor.Content.Fonts.Services;
-using Velaptor.Graphics;
-using Velaptor.Guards;
+using Caching;
+using Exceptions;
+using Services;
+using Graphics;
+using Guards;
 using Velaptor.Services;
-using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
-
-namespace Velaptor.Content.Fonts;
+using VelFontStyle = FontStyle;
 
 /// <summary>
 /// Represents a font with a set size and style that can be used to render text to the screen.

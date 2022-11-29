@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Content.Fonts.Services;
+
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
@@ -9,10 +11,8 @@ using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Content.Fonts.Services;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
-
-namespace VelaptorTests.Content.Fonts.Services;
 
 /// <summary>
 /// Tests the <see cref="FontStatsService"/> class.

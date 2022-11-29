@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using Velaptor.Content.Fonts;
-using Velaptor.Graphics;
-
 namespace Velaptor.Content.Factories;
+
+using Fonts;
+using Graphics;
 
 /// <summary>
 /// Generates <see cref="IFont"/> instances.

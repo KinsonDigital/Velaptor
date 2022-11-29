@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-using System;
-using Velaptor.Guards;
-
 namespace Velaptor;
+
+using System;
+using Guards;
 
 /// <summary>
 /// Caches a value as long as caching is turned on.

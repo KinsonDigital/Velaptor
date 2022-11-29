@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.UI;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using Velaptor.Content;
-using Velaptor.Graphics;
-
-namespace Velaptor.UI;
+using Content;
+using Graphics;
 
 /// <summary>
 /// Provides the ability to enter text into a box.

@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.UI;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,11 +17,9 @@ using Velaptor.Content.Fonts;
 using Velaptor.Graphics;
 using Velaptor.Input;
 using Velaptor.UI;
-using VelaptorTests.Helpers;
+using Helpers;
 using Xunit;
 using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
-
-namespace VelaptorTests.UI;
 
 /// <summary>
 /// Tests the <see cref="Label"/> class.
@@ -421,7 +421,8 @@ public class LabelTests
             It.IsAny<string>(),
             It.IsAny<int>(),
             It.IsAny<int>(),
-            It.IsAny<Color>()), Times.Never);
+            It.IsAny<Color>(),
+            It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -442,7 +443,8 @@ public class LabelTests
                 It.IsAny<string>(),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
-                It.IsAny<Color>()), Times.Never);
+                It.IsAny<Color>(),
+                It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -466,7 +468,8 @@ public class LabelTests
                 It.IsAny<int>(),
                 It.IsAny<float>(),
                 It.IsAny<float>(),
-                It.IsAny<Color>()), Times.Never);
+                It.IsAny<Color>(),
+                It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -493,7 +496,8 @@ public class LabelTests
                 200,
                 1f,
                 0f,
-                Color.FromArgb(11, 22, 33, 44)), Times.Once());
+                Color.FromArgb(11, 22, 33, 44),
+                It.IsAny<int>()), Times.Once());
     }
     #endregion
 

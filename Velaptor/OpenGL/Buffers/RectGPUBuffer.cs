@@ -2,26 +2,26 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL.Buffers;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Velaptor.Graphics;
+using Graphics;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.OpenGL.Exceptions;
-using Velaptor.OpenGL.GPUData;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.OpenGL.Buffers;
+using Exceptions;
+using GPUData;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Updates data in the rectangle GPU buffer.
 /// </summary>
 [GPUBufferName("Rectangle")]
 [BatchSize(IRenderer.BatchSize)]
-internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
+internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
 {
     private const string BufferNotInitMsg = "The rectangle buffer has not been initialized.";
 
@@ -42,7 +42,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     }
 
     /// <inheritdoc/>
-    protected internal override void UploadVertexData(RectShape rectShape, uint batchIndex)
+    protected internal override void UploadVertexData(RectBatchItem rectShape, uint batchIndex)
     {
         OpenGLService.BeginGroup($"Update Rectangle - BatchItem({batchIndex})");
 
@@ -271,7 +271,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     ///     Thrown if the <see cref="ColorGradient"/> of the given <paramref name="rect"/>
     ///     is an invalid value.
     /// </exception>
-    private static RectGPUData ApplyColor(RectGPUData data, RectShape rect)
+    private static RectGPUData ApplyColor(RectGPUData data, RectBatchItem rect)
     {
         switch (rect.GradientType)
         {
@@ -304,15 +304,27 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     /// <remarks>
     ///     This is done to prevent any undesired rendering artifacts from occuring.
     /// </remarks>
-    private static RectShape ProcessBorderThicknessLimit(RectShape rect)
+    private static RectBatchItem ProcessBorderThicknessLimit(RectBatchItem rect)
     {
         var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
 
-        rect.BorderThickness = rect.BorderThickness > largestValueAllowed
+        var newBorderThickness = rect.BorderThickness > largestValueAllowed
             ? largestValueAllowed
             : rect.BorderThickness;
+        newBorderThickness = newBorderThickness < 1f ? 1f : newBorderThickness;
 
-        rect.BorderThickness = rect.BorderThickness < 1f ? 1f : rect.BorderThickness;
+        rect = new RectBatchItem(
+            rect.Position,
+            rect.Width,
+            rect.Height,
+            rect.Color,
+            rect.IsFilled,
+            newBorderThickness,
+            rect.CornerRadius,
+            rect.GradientType,
+            rect.GradientStart,
+            rect.GradientStop,
+            rect.Layer);
 
         return rect;
     }
@@ -326,25 +338,40 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectShape>
     /// <remarks>
     ///     This is done to prevent any undesired rendering artifacts from occuring.
     /// </remarks>
-    private static RectShape ProcessCornerRadiusLimits(RectShape rect)
+    private static RectBatchItem ProcessCornerRadiusLimits(RectBatchItem rect)
     {
         /*
-             * Always have the smallest value between the width and height (divided by 2)
-             * as the maximum limit of what any corner radius can be.
-             * If the value was allowed to be larger than the smallest value between
-             * the width and height, it would produce unintended rendering artifacts.
-             */
+         * Always have the smallest value between the width and height (divided by 2)
+         * as the maximum limit of what any corner radius can be.
+         * If the value was allowed to be larger than the smallest value between
+         * the width and height, it would produce unintended rendering artifacts.
+         */
         var largestValueAllowed = (rect.Width <= rect.Height ? rect.Width : rect.Height) / 2f;
 
-        rect.CornerRadius = rect.CornerRadius.TopLeft > largestValueAllowed ? RectShape.SetTopLeft(rect.CornerRadius, largestValueAllowed) : rect.CornerRadius;
-        rect.CornerRadius = rect.CornerRadius.BottomLeft > largestValueAllowed ? RectShape.SetBottomLeft(rect.CornerRadius, largestValueAllowed) : rect.CornerRadius;
-        rect.CornerRadius = rect.CornerRadius.BottomRight > largestValueAllowed ? RectShape.SetBottomRight(rect.CornerRadius, largestValueAllowed) : rect.CornerRadius;
-        rect.CornerRadius = rect.CornerRadius.TopRight > largestValueAllowed ? RectShape.SetTopRight(rect.CornerRadius, largestValueAllowed) : rect.CornerRadius;
+        var cornerRadius = rect.CornerRadius;
 
-        rect.CornerRadius = rect.CornerRadius.TopLeft < 0 ? RectShape.SetTopLeft(rect.CornerRadius, 0) : rect.CornerRadius;
-        rect.CornerRadius = rect.CornerRadius.BottomLeft < 0 ? RectShape.SetBottomLeft(rect.CornerRadius, 0) : rect.CornerRadius;
-        rect.CornerRadius = rect.CornerRadius.BottomRight < 0 ? RectShape.SetBottomRight(rect.CornerRadius, 0) : rect.CornerRadius;
-        rect.CornerRadius = rect.CornerRadius.TopRight < 0 ? RectShape.SetTopRight(rect.CornerRadius, 0) : rect.CornerRadius;
+        cornerRadius = cornerRadius.TopLeft > largestValueAllowed ? CornerRadius.SetTopLeft(cornerRadius, largestValueAllowed) : cornerRadius;
+        cornerRadius = cornerRadius.BottomLeft > largestValueAllowed ? CornerRadius.SetBottomLeft(cornerRadius, largestValueAllowed) : cornerRadius;
+        cornerRadius = cornerRadius.BottomRight > largestValueAllowed ? CornerRadius.SetBottomRight(cornerRadius, largestValueAllowed) : cornerRadius;
+        cornerRadius = cornerRadius.TopRight > largestValueAllowed ? CornerRadius.SetTopRight(cornerRadius, largestValueAllowed) : cornerRadius;
+
+        cornerRadius = cornerRadius.TopLeft < 0 ? CornerRadius.SetTopLeft(cornerRadius, 0) : cornerRadius;
+        cornerRadius = cornerRadius.BottomLeft < 0 ? CornerRadius.SetBottomLeft(cornerRadius, 0) : cornerRadius;
+        cornerRadius = cornerRadius.BottomRight < 0 ? CornerRadius.SetBottomRight(cornerRadius, 0) : cornerRadius;
+        cornerRadius = cornerRadius.TopRight < 0 ? CornerRadius.SetTopRight(cornerRadius, 0) : cornerRadius;
+
+        rect = new RectBatchItem(
+            rect.Position,
+            rect.Width,
+            rect.Height,
+            rect.Color,
+            rect.IsFilled,
+            rect.BorderThickness,
+            cornerRadius,
+            rect.GradientType,
+            rect.GradientStart,
+            rect.GradientStop,
+            rect.Layer);
 
         return rect;
     }

@@ -2,14 +2,14 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Factories;
+
 using System.Diagnostics.CodeAnalysis;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL.Services;
-using Velaptor.OpenGL.Shaders;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
-
-namespace Velaptor.Factories;
+using OpenGL.Shaders;
+using Reactables.Core;
+using Reactables.ReactableData;
 
 /// <summary>
 /// Creates instance of type <see cref="IShaderProgram"/>.

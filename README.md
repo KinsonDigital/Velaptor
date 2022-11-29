@@ -64,7 +64,7 @@
 -->
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
-This library is still under development and is not at v1.0.0 yet!!  However, all of the major features are available, so we encourage you to use it and give us feedback.  That is what open source is all about. 🥳
+This library is still under development and is not at v1.0.0 yet!!  However, all of the major features are available, so we encourage you to use it and provide feedback.  That is what open source is all about. 🥳
 
 <!--PRE-PROCESSING-COMMENT-START-->
 <h2 style="font-weight:bold;border:0" align="center">📖 About Velaptor</h2>
@@ -101,8 +101,8 @@ One of the goals of this library is to make sure that the it is easy to use.  Ev
 Loaded content such as images and sounds are cached for better performance.  If the same content is attempting to be loaded from its source after it has already been loaded, that same content will be used from memory instead of being reloaded. You can also load content by building your own content loader. 
 
 <!--PRE-PROCESSING-COMMENT-START-->
-### **Feature Demo Application**
-https://user-images.githubusercontent.com/85414302/150527337-6d872768-73dc-4603-82e8-37c691c78d4d.mp4
+### **Feature Demo**
+[![FeatureDemoVideo](https://img.youtube.com/vi/nNeVKvkbXc4/0.jpg)](https://www.youtube.com/watch?v=nNeVKvkbXc4)
 <!--PRE-PROCESSING-COMMENT-STOP-->
 
 <!--PRE-PROCESSING-COMMENT-START-->

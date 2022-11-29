@@ -2,6 +2,8 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.OpenGL;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,28 +13,26 @@ using System.Threading.Tasks;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
-using Velaptor.Content;
+using Content;
 using Velaptor.Exceptions;
-using Velaptor.Factories;
-using Velaptor.Graphics;
-using Velaptor.Guards;
-using Velaptor.Input;
+using Factories;
+using Graphics;
+using Guards;
+using Input;
 using Velaptor.Input.Exceptions;
-using Velaptor.NativeInterop.GLFW;
+using NativeInterop.GLFW;
 using Velaptor.NativeInterop.OpenGL;
-using Velaptor.Reactables.Core;
-using Velaptor.Reactables.ReactableData;
+using Reactables.Core;
+using Reactables.ReactableData;
 using Velaptor.Services;
-using Velaptor.UI;
+using UI;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
-using VelaptorIWindow = Velaptor.UI.IWindow;
-using VelaptorMouseButton = Velaptor.Input.MouseButton;
-using VelaptorWindow = Velaptor.UI.Window;
-using VelaptorWindowBorder = Velaptor.WindowBorder;
-
-namespace Velaptor.OpenGL;
+using VelaptorIWindow = UI.IWindow;
+using VelaptorMouseButton = Input.MouseButton;
+using VelaptorWindow = UI.Window;
+using VelaptorWindowBorder = WindowBorder;
 
 /// <summary>
 /// An OpenGL window implementation to be used inside of the <see cref="Velaptor.UI.Window"/> class.
@@ -426,7 +426,7 @@ internal sealed class GLWindow : VelaptorIWindow
         var uWidth = (uint)obj.X;
         var uHeight = (uint)obj.Y;
 
-        // Update the view port so it is the same size as the window
+        // Update the viewport so it is the same size as the window
         this.gl.Viewport(0, 0, uWidth, uHeight);
         var size = new SizeU { Width = uWidth, Height = uHeight };
         WinResize?.Invoke(size);
@@ -747,7 +747,7 @@ internal sealed class GLWindow : VelaptorIWindow
             setterWhenNotCaching: (value) =>
             {
                 var enumTypeStr = nameof(Velaptor);
-                enumTypeStr += $".{nameof(Velaptor.WindowBorder)}";
+                enumTypeStr += $".{nameof(WindowBorder)}";
 
                 var exceptionMsg = $"The enum '{enumTypeStr}' is invalid because it is out of range.";
                 this.glWindow.WindowBorder = value switch

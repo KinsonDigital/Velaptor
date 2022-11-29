@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Guards;
+
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Velaptor.Guards;
-
 /// <summary>
-/// Performs analysis on particular values to ensure that they meets a criteria,
+/// Performs analysis on particular values to ensure that they meet a criteria,
 /// then invokes behavior based on a result.
 /// </summary>
 internal static class EnsureThat

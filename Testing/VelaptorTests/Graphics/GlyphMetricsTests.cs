@@ -2,12 +2,12 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTests.Graphics;
+
 using System.Collections.Generic;
 using System.Drawing;
 using Velaptor.Graphics;
 using Xunit;
-
-namespace VelaptorTests.Graphics;
 
 /// <summary>
 /// Tests the <see cref="GlyphMetrics"/> struct.

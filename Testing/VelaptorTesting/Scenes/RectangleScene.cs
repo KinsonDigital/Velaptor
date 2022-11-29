@@ -1,31 +1,39 @@
-// <copyright file="TestRectangleScene.cs" company="KinsonDigital">
+// <copyright file="RectangleScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
+
+namespace VelaptorTesting.Scenes;
 
 using System;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using Velaptor;
 using Velaptor.Content;
 using Velaptor.Graphics;
 using Velaptor.UI;
-using VelaptorTesting.Core;
+using Core;
+using Velaptor.Content.Fonts;
+using Velaptor.Factories;
+using Velaptor.Input;
 
-namespace VelaptorTesting.Scenes;
-
-public class TestRectangleScene : SceneBase
+/// <summary>
+/// Tests out rectangle rendering.
+/// </summary>
+public class RectangleScene : SceneBase
 {
+    private const int Speed = 200;
     private const int LeftMargin = 30;
     private const int RightMargin = 10;
     private const int BottomMargin = 10;
     private const int VertButtonSpacing = 10;
     private const int HoriButtonSpacing = 10;
+    private const string DefaultRegularFont = "TimesNewRoman-Regular.ttf";
     private readonly Point windowCenter;
+    private readonly IAppInput<KeyboardState> keyboard;
+    private IFont? font;
+    private KeyboardState currentKeyState;
     private RectShape rectangle;
-    private Button? btnLeft;
-    private Button? btnRight;
-    private Button? btnUp;
-    private Button? btnDown;
     private Button? btnIncreaseWidth;
     private Button? btnDecreaseWidth;
     private Button? btnIncreaseHeight;
@@ -45,11 +53,21 @@ public class TestRectangleScene : SceneBase
     private Button? btnGradientType;
     private Button? btnGradClrStart;
     private Button? btnGradClrStop;
+    private Vector2 instructionsPos;
+    private string instructions = string.Empty;
 
-    public TestRectangleScene(IContentLoader contentLoader)
-        : base(contentLoader) =>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RectangleScene"/> class.
+    /// </summary>
+    /// <param name="contentLoader">Loads content for the scene.</param>
+    public RectangleScene(IContentLoader contentLoader)
+        : base(contentLoader)
+    {
+        this.keyboard = AppInputFactory.CreateKeyboard();
         this.windowCenter = new Point((int)(MainWindow.WindowWidth / 2f), (int)(MainWindow.WindowHeight / 2f));
+    }
 
+    /// <inheritdoc cref="IScene.LoadContent"/>
     public override void LoadContent()
     {
         this.rectangle = new RectShape
@@ -64,6 +82,23 @@ public class TestRectangleScene : SceneBase
             IsFilled = true,
         };
 
+        this.font = ContentLoader.LoadFont(DefaultRegularFont, 12);
+
+        var lines = new[]
+        {
+            "                    Instructions",
+            "----------------------------------------------",
+            "Rectangle Movement: Arrow Keys",
+            "Size:",
+            "   Increase Width: Shift + Right Arrow",
+            "   Decrease Width: Shift + Left Arrow",
+            "   Increase Height: Shift + Down Arrow",
+            "   Decrease Height: Shift + Up Arrow",
+        };
+        this.instructions = string.Join(Environment.NewLine, lines);
+        var size = this.font.Measure(this.instructions);
+        this.instructionsPos = new Vector2(MainWindow.WindowWidth / 2f, 25 + (size.Height / 2f));
+
         CreateButtons();
 
         base.LoadContent();
@@ -73,46 +108,35 @@ public class TestRectangleScene : SceneBase
         LayoutButtonsBottom();
     }
 
-    public override void Render(IRenderer renderer)
+    /// <inheritdoc cref="IUpdatable.Update"/>
+    public override void Update(FrameTime frameTime)
     {
-        base.Render(renderer);
-        renderer.Render(this.rectangle);
+        this.currentKeyState = this.keyboard.GetState();
+
+        MoveRect(frameTime);
+        ChangeRectSize(frameTime);
+
+        base.Update(frameTime);
     }
 
+    /// <inheritdoc cref="IDrawable.Render"/>
+    public override void Render(IRenderer renderer)
+    {
+        renderer.Render(this.rectangle);
+
+        renderer.Render(this.font, this.instructions, this.instructionsPos, Color.White);
+
+        base.Render(renderer);
+    }
+
+    /// <summary>
+    /// Creates the buttons for the scene.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///     Thrown if the <see cref="ColorGradient"/> is invalid.
+    /// </exception>
     private void CreateButtons()
     {
-        this.btnLeft = new Button
-        {
-            Text = "Left",
-            Name = nameof(this.btnLeft),
-        };
-        this.btnLeft.MouseDown += (_, _) =>
-            this.rectangle.Position = new Vector2(this.rectangle.Position.X - 5, this.rectangle.Position.Y);
-
-        this.btnRight = new Button
-        {
-            Text = "Right",
-            Name = nameof(this.btnRight),
-        };
-        this.btnRight.MouseDown += (_, _) =>
-            this.rectangle.Position = new Vector2(this.rectangle.Position.X + 5, this.rectangle.Position.Y);
-
-        this.btnUp = new Button
-        {
-            Text = "Up",
-            Name = nameof(this.btnUp),
-        };
-        this.btnUp.MouseDown += (_, _) =>
-            this.rectangle.Position = new Vector2(this.rectangle.Position.X, this.rectangle.Position.Y - 5);
-
-        this.btnDown = new Button
-        {
-            Text = "Down",
-            Name = nameof(this.btnDown),
-        };
-        this.btnDown.MouseDown += (_, _) =>
-            this.rectangle.Position = new Vector2(this.rectangle.Position.X, this.rectangle.Position.Y + 5);
-
         this.btnIncreaseWidth = new Button
         {
             Text = "Width +",
@@ -387,6 +411,7 @@ public class TestRectangleScene : SceneBase
             }
 
             this.btnGradClrStart.Text = $"Grad Clr Start: {clrStr}";
+            LayoutButtonsBottom();
         };
 
         this.btnGradClrStop = new Button
@@ -415,12 +440,9 @@ public class TestRectangleScene : SceneBase
             }
 
             this.btnGradClrStop.Text = $"Grad Clr Stop: {clrStr}";
+            LayoutButtonsBottom();
         };
 
-        AddControl(this.btnLeft);
-        AddControl(this.btnRight);
-        AddControl(this.btnUp);
-        AddControl(this.btnDown);
         AddControl(this.btnIncreaseWidth);
         AddControl(this.btnDecreaseWidth);
         AddControl(this.btnIncreaseHeight);
@@ -442,14 +464,13 @@ public class TestRectangleScene : SceneBase
         AddControl(this.btnGradClrStop);
     }
 
+    /// <summary>
+    /// Lays out the buttons on the left side of the scene.
+    /// </summary>
     private void LayoutButtonsLeftSide()
     {
         var excludeList = new[]
         {
-            nameof(this.btnLeft),
-            nameof(this.btnRight),
-            nameof(this.btnUp),
-            nameof(this.btnDown),
             nameof(this.btnIncreaseWidth),
             nameof(this.btnDecreaseWidth),
             nameof(this.btnIncreaseHeight),
@@ -482,6 +503,9 @@ public class TestRectangleScene : SceneBase
         }
     }
 
+    /// <summary>
+    /// Lays out the buttons on the right side of the scene.
+    /// </summary>
     private void LayoutButtonsRightSide()
     {
         var includeList = new[]
@@ -518,6 +542,9 @@ public class TestRectangleScene : SceneBase
         }
     }
 
+    /// <summary>
+    /// Lays out the buttons on the bottom of the scene.
+    /// </summary>
     private void LayoutButtonsBottom()
     {
         var includeList = new[]
@@ -546,6 +573,98 @@ public class TestRectangleScene : SceneBase
                 : button.Left = prevButton.Right + HoriButtonSpacing;
 
             prevButton = button;
+        }
+    }
+
+    /// <summary>
+    /// Moves the rectangle using the keyboard arrow keys.
+    /// </summary>
+    /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
+    private void MoveRect(FrameTime frameTime)
+    {
+        if (this.currentKeyState.AnyShiftKeysDown())
+        {
+            return;
+        }
+
+        var value = Speed * (float)frameTime.ElapsedTime.TotalSeconds;
+
+        if (this.currentKeyState.IsKeyDown(KeyCode.Left))
+        {
+            this.rectangle.Position -= new Vector2(value, 0f);
+        }
+
+        if (this.currentKeyState.IsKeyDown(KeyCode.Right))
+        {
+            this.rectangle.Position += new Vector2(value, 0f);
+        }
+
+        if (this.currentKeyState.IsKeyDown(KeyCode.Up))
+        {
+            this.rectangle.Position -= new Vector2(0f, value);
+        }
+
+        if (this.currentKeyState.IsKeyDown(KeyCode.Down))
+        {
+            this.rectangle.Position += new Vector2(0f, value);
+        }
+
+        // Left edge containment1
+        if (this.rectangle.Position.X < this.rectangle.HalfWidth)
+        {
+            this.rectangle.Position = new Vector2(this.rectangle.HalfWidth, this.rectangle.Position.Y);
+        }
+
+        // Right edge containment
+        if (this.rectangle.Position.X > MainWindow.WindowWidth - this.rectangle.HalfWidth)
+        {
+            this.rectangle.Position = new Vector2(MainWindow.WindowWidth - this.rectangle.HalfWidth, this.rectangle.Position.Y);
+        }
+
+        // Top edge containment
+        if (this.rectangle.Position.Y < this.rectangle.HalfHeight)
+        {
+            this.rectangle.Position = new Vector2(this.rectangle.Position.X, this.rectangle.HalfHeight);
+        }
+
+        // Bottom edge containment
+        if (this.rectangle.Position.Y > MainWindow.WindowHeight - this.rectangle.HalfHeight)
+        {
+            this.rectangle.Position = new Vector2(this.rectangle.Position.X, MainWindow.WindowHeight - this.rectangle.HalfHeight);
+        }
+    }
+
+    /// <summary>
+    /// Changes the size of the rectangle using the keyboard keys.
+    /// </summary>
+    /// <param name="frameTime">The amount of time that has passed for the current frame.</param>
+    private void ChangeRectSize(FrameTime frameTime)
+    {
+        if (this.currentKeyState.IsLeftShiftKeyDown() is false && this.currentKeyState.IsRightShiftKeyDown() is false)
+        {
+            return;
+        }
+
+        var value = Speed * (float)frameTime.ElapsedTime.TotalSeconds;
+
+        if (this.currentKeyState.IsKeyDown(KeyCode.Left))
+        {
+            this.rectangle.Width -= value;
+        }
+
+        if (this.currentKeyState.IsKeyDown(KeyCode.Right))
+        {
+            this.rectangle.Width += value;
+        }
+
+        if (this.currentKeyState.IsKeyDown(KeyCode.Up))
+        {
+            this.rectangle.Height -= value;
+        }
+
+        if (this.currentKeyState.IsKeyDown(KeyCode.Down))
+        {
+            this.rectangle.Height += value;
         }
     }
 }

@@ -2,10 +2,10 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
-
-namespace Velaptor;
 
 /// <summary>
 /// Holds timing information for a loop iteration.

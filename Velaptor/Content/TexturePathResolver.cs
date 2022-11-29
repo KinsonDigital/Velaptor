@@ -2,13 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace Velaptor.Content;
+
 using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using Velaptor.Guards;
-
-namespace Velaptor.Content;
+using Guards;
 
 /// <summary>
 /// Resolves paths to texture content.

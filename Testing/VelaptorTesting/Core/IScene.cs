@@ -2,11 +2,11 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+namespace VelaptorTesting.Core;
+
 using System;
 using Velaptor;
 using Velaptor.UI;
-
-namespace VelaptorTesting.Core;
 
 /// <summary>
 /// Represents a single scene that can be rendered to the screen.
