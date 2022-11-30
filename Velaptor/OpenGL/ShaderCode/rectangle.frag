@@ -124,6 +124,9 @@ Ellipse createCornerCircle(Rectangle rect, uint cornerType)
 */
 bool containedByEllipse(Ellipse ellipse, uint cornerType)
 {
+    // If the corner does not have a radius, then it cannot be contained.
+    // This is an optimization.  There is no point in doing the expensive
+    // calcs at the bottom of this function if a circle does not exist.
     switch (cornerType)
     {
         case TOP_LEFT_CORNER:
@@ -216,13 +219,11 @@ bool inRectCornerTip(Ellipse cornerEllipse, uint cornerType)
 }
 
 /*
-    Returns value indicating whether or not the given point is contained
-    by the given shape.
+    Returns value indicating whether or not the current
+    fragment/pixel is contained by the given shape.
 */
 bool containedByRect(Rectangle rect)
 {
-    bool calculateCorners = pass_topLeftCornerRadius > 0;
-
     bool inTopLeftCorner;
     bool inBottomLeftCorner;
     bool inBottomRightCorner;
@@ -313,7 +314,7 @@ void main()
     float halfHeight = shape.w / 2.0;
     bool isFilled = pass_isFilled > 0.0;
 
-    // Clamp the corner radius
+    // Clamp the border thickness
     borderThickness = clamp(pass_borderThickness, 1.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
 
     vec4 ndcColor = toNDCColor(pass_color);
@@ -329,7 +330,7 @@ void main()
     {
         finalColor = isContainedByOuterRect
             ? ndcColor
-            : vec4(0.0);
+            : vec4(0.0); // RGB of 0,0,0,0 which is transparent.  Example: Non filled rects or in the rect corner tip.
     }
     else
     {
@@ -353,6 +354,6 @@ void main()
 
         finalColor = isContainedByOuterRect && isNotContainedByInnerRect
             ? ndcColor
-            : vec4(0.0);
+            : vec4(0.0); // RGB of 0,0,0,0 which is transparent.  Example: Non filled rects or in the rect corner tip.
     }
 }
