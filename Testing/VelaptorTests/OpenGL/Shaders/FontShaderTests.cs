@@ -5,6 +5,7 @@
 namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
+using FluentAssertions;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
@@ -25,6 +26,7 @@ public class FontShaderTests
     private readonly Mock<IShaderLoaderService<uint>> mockShaderLoader;
     private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
     private readonly Mock<IDisposable> mockGLInitUnsubscriber;
+    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
 
     /// <summary>
@@ -37,38 +39,86 @@ public class FontShaderTests
         this.mockShaderLoader = new Mock<IShaderLoaderService<uint>>();
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
+        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
     }
 
     #region Constructor Tests
     [Fact]
-    public void Ctor_WithNullInitReactorParam_ThrowsException()
+    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontShader(
-                this.mockGL.Object,
-                this.mockGLService.Object,
-                this.mockShaderLoader.Object,
-                null,
-                this.mockShutDownReactable.Object);
-        }, "The parameter must not be null. (Parameter 'glInitReactable')");
-    }
-
-    [Fact]
-    public void Ctor_WithNullShutDownReactorParam_ThrowsException()
-    {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            var unused = new FontShader(
+            _ = new FontShader(
                 this.mockGL.Object,
                 this.mockGLService.Object,
                 this.mockShaderLoader.Object,
                 this.mockGLInitReactable.Object,
-                null);
-        }, "The parameter must not be null. (Parameter 'shutDownReactable')");
+                null,
+                this.mockShutDownReactable.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+    }
+
+    [Fact]
+    public void Ctor_WhenReceivingBatchSizeNotification_SetsBatchSize()
+    {
+        // Arrange
+        IReactor<BatchSizeData>? reactor = null;
+
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
+            .Callback<IReactor<BatchSizeData>>(reactorObj =>
+            {
+                if (reactorObj is null)
+                {
+                    Assert.True(false, "Batch size reactor object cannot be null for test.");
+                }
+
+                reactor = reactorObj;
+            });
+
+        var shader = CreateSystemUnderTest();
+
+        // Act
+        reactor.OnNext(new BatchSizeData(123u));
+        var actual = shader.BatchSize;
+
+        // Assert
+        actual.Should().Be(123u);
+    }
+
+    [Fact]
+    public void Ctor_WhenEndingNotifications_Unsubscribes()
+    {
+        // Arrange
+        IReactor<BatchSizeData>? reactor = null;
+        var mockUnsubscriber = new Mock<IDisposable>();
+
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
+            .Callback<IReactor<BatchSizeData>>(reactorObj =>
+            {
+                if (reactorObj is null)
+                {
+                    Assert.True(false, "Batch size reactor object cannot be null for test.");
+                }
+
+                reactor = reactorObj;
+            })
+            .Returns<IReactor<BatchSizeData>>(_ => mockUnsubscriber.Object);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        reactor.OnCompleted();
+        reactor.OnCompleted();
+
+        // Assert
+        mockUnsubscriber.VerifyOnce(m => m.Dispose());
     }
     #endregion
 
@@ -100,12 +150,7 @@ public class FontShaderTests
                 glInitReactor = reactor;
             });
 
-        var shader = new FontShader(
-            this.mockGL.Object,
-            this.mockGLService.Object,
-            this.mockShaderLoader.Object,
-            this.mockGLInitReactable.Object,
-            this.mockShutDownReactable.Object);
+        var shader = CreateSystemUnderTest();
 
         glInitReactor?.OnNext(default);
 
@@ -117,4 +162,16 @@ public class FontShaderTests
         this.mockGL.Verify(m => m.Uniform1(uniformLocation, 1), Times.Once);
     }
     #endregion
+
+    /// <summary>
+    /// Creates a new instance of <see cref="FontShader"/> for the purpose of testing.
+    /// </summary>
+    /// <returns>The instance to test.</returns>
+    private FontShader CreateSystemUnderTest()
+        => new (this.mockGL.Object,
+            this.mockGLService.Object,
+            this.mockShaderLoader.Object,
+            this.mockGLInitReactable.Object,
+            this.mockBatchSizeReactable.Object,
+            this.mockShutDownReactable.Object);
 }
