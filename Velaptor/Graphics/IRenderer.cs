@@ -18,11 +18,6 @@ using Content.Fonts;
 public interface IRenderer
 {
     /// <summary>
-    /// Gets the total number of items rendered for each batch.
-    /// </summary>
-    public const uint BatchSize = 1000;
-
-    /// <summary>
     /// Gets or sets the render surface width.
     /// </summary>
     /// <remarks>This is the width of the viewport.</remarks>
