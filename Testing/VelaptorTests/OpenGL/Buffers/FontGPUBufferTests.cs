@@ -4,8 +4,9 @@
 
 namespace VelaptorTests.OpenGL.Buffers;
 
-using System.Collections.Generic;
+using System;
 using System.Drawing;
+using FluentAssertions;
 using Moq;
 using Velaptor.Graphics;
 using Velaptor.NativeInterop.OpenGL;
@@ -19,14 +20,17 @@ using Xunit;
 
 public class FontGPUBufferTests
 {
+    private const uint BatchSize = 1000u;
     private const uint VertexArrayId = 111;
     private const uint VertexBufferId = 222;
     private const uint IndexBufferId = 333;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
+    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private IReactor<GLInitData>? glInitReactor;
+    private IReactor<BatchSizeData>? batchSizeReactor;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
 
@@ -68,60 +72,70 @@ public class FontGPUBufferTests
                 this.glInitReactor = reactor;
             });
 
+        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
+            .Callback<IReactor<BatchSizeData>>((reactor) =>
+            {
+                if (reactor is null)
+                {
+                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                }
+
+                this.batchSizeReactor = reactor;
+            });
+
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
     }
 
-    /// <summary>
-    /// Provides sample data to test if the correct data is being sent to the GPU.
-    /// </summary>
-    /// <returns>The data to test against.</returns>
-    public static IEnumerable<object[]> GetGPUUploadTestData()
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
     {
-        yield return new object[]
+        // Arrange & Act
+        var act = () =>
         {
-            RenderEffects.None,
-            new[]
-            {
-                -0.847915947f, 0.916118085f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.964588523f,
-                0.760554552f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.760411441f, 0.79944545f,
-                0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.877084076f, 0.643881917f, 0.571428597f,
-                0.25f, 147f, 112f, 219f, 255f,
-            },
+            _ = new FontGPUBuffer(
+                this.mockGL.Object,
+                this.mockGLService.Object,
+                this.mockGLInitReactable.Object,
+                null,
+                this.mockShutDownReactable.Object);
         };
-        yield return new object[]
-        {
-            RenderEffects.FlipHorizontally,
-            new[]
-            {
-                -0.760411441f, 0.79944545f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.877084076f,
-                0.643881917f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.847915947f, 0.916118085f,
-                0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.964588523f, 0.760554552f, 0.571428597f,
-                0.25f, 147f, 112f, 219f, 255f,
-            },
-        };
-        yield return new object[]
-        {
-            RenderEffects.FlipVertically,
-            new[]
-            {
-                -0.964588523f, 0.760554552f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.847915947f,
-                0.916118085f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.877084076f, 0.643881917f,
-                0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.760411441f, 0.79944545f, 0.571428597f,
-                0.25f, 147f, 112f, 219f, 255f,
-            },
-        };
-        yield return new object[]
-        {
-            RenderEffects.FlipBothDirections,
-            new[]
-            {
-                -0.877084076f, 0.643881917f, 0.142857149f, 0.75f, 147f, 112f, 219f, 255f, -0.760411441f,
-                0.79944545f, 0.142857149f, 0.25f, 147f, 112f, 219f, 255f, -0.964588523f, 0.760554552f,
-                0.571428597f, 0.75f, 147f, 112f, 219f, 255f, -0.847915947f, 0.916118085f, 0.571428597f,
-                0.25f, 147f, 112f, 219f, 255f,
-            },
-        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
     }
+
+    [Fact]
+    public void Ctor_WhenBatchSizeReactableEndsNotifications_UnsubscriberInvoked()
+    {
+        // Arrange
+        var mockUnsubscriber = new Mock<IDisposable>();
+
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
+            .Callback<IReactor<BatchSizeData>>((reactor) =>
+            {
+                if (reactor is null)
+                {
+                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                }
+
+                this.batchSizeReactor = reactor;
+            })
+            .Returns<IReactor<BatchSizeData>>(_ => mockUnsubscriber.Object);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.batchSizeReactor.OnCompleted();
+        this.batchSizeReactor.OnCompleted();
+
+        // Assert
+        mockUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+    }
+    #endregion
 
     #region Method Tests
     [Fact]
@@ -246,6 +260,7 @@ public class FontGPUBufferTests
         // Arrange
         var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
+        this.batchSizeReactor.OnNext(new BatchSizeData(BatchSize));
 
         // Act
         var actual = sut.GenerateData();
@@ -319,5 +334,6 @@ public class FontGPUBufferTests
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockGLInitReactable.Object,
+        this.mockBatchSizeReactable.Object,
         this.mockShutDownReactable.Object);
 }

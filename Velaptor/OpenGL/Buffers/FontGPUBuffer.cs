@@ -1,4 +1,4 @@
-﻿// <copyright file="FontGPUBuffer.cs" company="KinsonDigital">
+// <copyright file="FontGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,10 +9,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using GPUData;
+using Guards;
 using Reactables.Core;
 using Reactables.ReactableData;
 
@@ -20,10 +20,10 @@ using Reactables.ReactableData;
 /// Updates font data in the GPU buffer.
 /// </summary>
 [GPUBufferName("Font")]
-[BatchSize(IRenderer.BatchSize)]
 internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 {
     private const string BufferNotInitMsg = "The font buffer has not been initialized.";
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGPUBuffer"/> class.
@@ -31,6 +31,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+    /// <param name="batchSizeReactable">Receives push notifications about the batch size.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.
@@ -39,9 +40,18 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactable<GLInitData> glInitReactable,
+        IReactable<BatchSizeData> batchSizeReactable,
         IReactable<ShutDownData> shutDownReactable)
         : base(gl, openGLService, glInitReactable, shutDownReactable)
     {
+        EnsureThat.ParamIsNotNull(batchSizeReactable);
+
+        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
+            onNext: data =>
+            {
+                BatchSize = data.BatchSize;
+            },
+            onCompleted: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>

@@ -50,9 +50,15 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
         var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
-        fontBuffer = new FontGPUBuffer(glInvoker, glInvokerExtensions, glInitReactor, shutDownReactor);
+        fontBuffer = new FontGPUBuffer(
+            glInvoker,
+            glInvokerExtensions,
+            glInitReactor,
+            batchSizeReactable,
+            shutDownReactor);
 
         return fontBuffer;
     }
