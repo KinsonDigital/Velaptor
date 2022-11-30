@@ -57,19 +57,14 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(LayeredTextRenderingScene)),
         };
 
-        var mouseScene = new MouseScene(contentLoader)
-        {
-            Name = SplitByUpperCase(nameof(MouseScene)),
-        };
-
         var keyboardScene = new KeyboardScene(contentLoader)
         {
             Name = SplitByUpperCase(nameof(KeyboardScene)),
         };
 
-        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene(contentLoader)
+        var mouseScene = new MouseScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
+            Name = SplitByUpperCase(nameof(MouseScene)),
         };
 
         var layeredRenderingScene = new LayeredTextureRenderingScene(contentLoader)
@@ -77,14 +72,19 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(LayeredTextureRenderingScene)),
         };
 
+        var renderNonAnimatedGraphicsScene = new NonAnimatedGraphicsScene(contentLoader)
+        {
+            Name = SplitByUpperCase(nameof(NonAnimatedGraphicsScene)),
+        };
+
         var renderAnimatedGraphicsScene = new AnimatedGraphicsScene(contentLoader)
         {
             Name = SplitByUpperCase(nameof(AnimatedGraphicsScene)),
         };
 
-        var soundScene = new SoundScene(ContentLoader)
+        var rectScene = new RectangleScene(ContentLoader)
         {
-            Name = SplitByUpperCase(nameof(SoundScene)),
+            Name = SplitByUpperCase(nameof(RectangleScene)),
         };
 
         var layeredRectScene = new LayeredRectRenderingScene(contentLoader)
@@ -92,9 +92,9 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
         };
 
-        var rectScene = new RectangleScene(ContentLoader)
+        var soundScene = new SoundScene(ContentLoader)
         {
-            Name = SplitByUpperCase(nameof(RectangleScene)),
+            Name = SplitByUpperCase(nameof(SoundScene)),
         };
 
         this.sceneManager.AddScene(renderTextScene, true);
