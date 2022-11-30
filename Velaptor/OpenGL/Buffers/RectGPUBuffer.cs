@@ -13,6 +13,7 @@ using Graphics;
 using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
 using GPUData;
+using Guards;
 using Reactables.Core;
 using Reactables.ReactableData;
 
@@ -20,10 +21,10 @@ using Reactables.ReactableData;
 /// Updates data in the rectangle GPU buffer.
 /// </summary>
 [GPUBufferName("Rectangle")]
-[BatchSize(IRenderer.BatchSize)]
 internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
 {
     private const string BufferNotInitMsg = "The rectangle buffer has not been initialized.";
+    private readonly IDisposable unsubscriber;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectGPUBuffer"/> class.
@@ -31,14 +32,28 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
+    /// <param name="batchSizeReactable">Receives push notifications about the batch size.</param>
     /// <param name="shutDownReactable">Receives a notification that the application is shutting down.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Invoked when any of the parameters are null.
+    /// </exception>
     public RectGPUBuffer(
         IGLInvoker gl,
         IOpenGLService openGLService,
         IReactable<GLInitData> glInitReactable,
+        IReactable<BatchSizeData> batchSizeReactable,
         IReactable<ShutDownData> shutDownReactable)
         : base(gl, openGLService, glInitReactable, shutDownReactable)
     {
+        // TODO: Test for null batch reactable and subscription
+        EnsureThat.ParamIsNotNull(batchSizeReactable);
+
+        this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
+            onNext: data =>
+            {
+                BatchSize = data.BatchSize;
+            },
+            onCompleted: () => this.unsubscriber?.Dispose()));
     }
 
     /// <inheritdoc/>
