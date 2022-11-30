@@ -77,10 +77,17 @@ internal sealed class ShaderFactory : IShaderFactory
         var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
         var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
         var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
-        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
-        var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
+        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
+        var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
 
-        rectShader = new RectangleShader(glInvoker, glInvokerExtensions, shaderLoaderService, glInitReactor, shutDownReactor);
+        rectShader = new RectangleShader(
+            glInvoker,
+            glInvokerExtensions,
+            shaderLoaderService,
+            glInitReactable,
+            batchSizeReactable,
+            shutDownReactable);
 
         return rectShader;
     }
