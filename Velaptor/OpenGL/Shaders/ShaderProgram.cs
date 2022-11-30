@@ -1,4 +1,4 @@
-﻿// <copyright file="ShaderProgram.cs" company="KinsonDigital">
+// <copyright file="ShaderProgram.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -6,7 +6,6 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Graphics;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
@@ -15,14 +14,12 @@ using Reactables.Core;
 using Reactables.ReactableData;
 
 /// <inheritdoc/>
-[BatchSize(IRenderer.BatchSize)]
 internal abstract class ShaderProgram : IShaderProgram
 {
     private readonly IShaderLoaderService<uint> shaderLoaderService;
     private readonly IDisposable glInitReactorUnsubscriber;
     private readonly IDisposable shutDownReactorUnsubscriber;
     private bool isInitialized;
-    private uint batchSize;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
@@ -76,6 +73,11 @@ internal abstract class ShaderProgram : IShaderProgram
 
     /// <inheritdoc/>
     public string Name { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the size of the batch.
+    /// </summary>
+    public uint BatchSize { get; protected set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether or not a value if the <see cref="ShaderProgram"/> is disposed.
@@ -144,7 +146,7 @@ internal abstract class ShaderProgram : IShaderProgram
 
         OpenGLService.BeginGroup($"Load {Name} Vertex Shader");
 
-        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
+        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", BatchSize) });
         var vertShaderId = GL.CreateShader(GLShaderType.VertexShader);
 
         OpenGLService.LabelShader(vertShaderId, $"{Name} Vertex Shader");
@@ -164,7 +166,7 @@ internal abstract class ShaderProgram : IShaderProgram
 
         OpenGLService.BeginGroup($"Load {Name} Fragment Shader");
 
-        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
+        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", BatchSize) });
         var fragShaderId = GL.CreateShader(GLShaderType.FragmentShader);
 
         OpenGLService.LabelShader(fragShaderId, $"{Name} Fragment Shader");
@@ -258,14 +260,9 @@ internal abstract class ShaderProgram : IShaderProgram
 
         foreach (var attribute in attributes)
         {
-            switch (attribute)
+            if (attribute is ShaderNameAttribute shaderNameAttribute)
             {
-                case ShaderNameAttribute nameAttribute:
-                    Name = nameAttribute.Name;
-                    break;
-                case BatchSizeAttribute sizeAttribute:
-                    this.batchSize = sizeAttribute.BatchSize;
-                    break;
+                Name = shaderNameAttribute.Name;
             }
         }
     }
