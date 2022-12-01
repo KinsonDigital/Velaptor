@@ -129,22 +129,21 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     /// <inheritdoc/>
     protected internal override float[] GenerateData()
     {
-        var result = new List<RectGPUData>();
+        var result = new List<float>();
 
         for (var i = 0u; i < BatchSize; i++)
         {
             var vertexData = GenerateVertexData();
-            var gpuData = new RectGPUData(vertexData[0], vertexData[1], vertexData[2], vertexData[3]);
-            result.Add(gpuData);
+            result.AddRange(new RectGPUData(vertexData[0], vertexData[1], vertexData[2], vertexData[3]).ToArray());
         }
 
-        return OpenGLExtensionMethods.ToArray(result);
+        return result.ToArray();
     }
 
     /// <inheritdoc/>
     protected internal override void SetupVAO()
     {
-        var stride = RectVertexData.GetTotalBytes();
+        var stride = RectVertexData.GetStride();
 
         // Vertex Position
         const uint vertexPosSize = 2u * sizeof(float);
@@ -223,7 +222,8 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     }
 
     /// <summary>
-    /// Generates default <see cref="RectVertexData"/> for all 4 vertices that make up a rectangle.
+    /// Generates default <see cref="RectVertexData"/> for all 4 vertices that make
+    /// up a rectangle rendering area.
     /// </summary>
     /// <returns>The four vertex data items.</returns>
     private static RectVertexData[] GenerateVertexData()
@@ -262,7 +262,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
             0f);
 
         var vertex4 = new RectVertexData(
-            new Vector2(1.0f, 11.0f),
+            new Vector2(1.0f, 1.0f),
             Vector4.Zero,
             Color.Empty,
             false,

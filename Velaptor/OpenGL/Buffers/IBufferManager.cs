@@ -1,4 +1,4 @@
-﻿// <copyright file="IBufferManager.cs" company="KinsonDigital">
+// <copyright file="IBufferManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -34,7 +34,7 @@ internal interface IBufferManager
     /// Uploads the GPU buffer using the given font glyph <paramref name="data"/>
     /// at the given <paramref name="batchIndex"/> location.
     /// </summary>
-    /// <param name="data">The texture data to upload.</param>
+    /// <param name="data">The font data to upload.</param>
     /// <param name="batchIndex">The index location of the data to update.</param>
     /// <remarks>
     ///     Think of the <paramref name="batchIndex"/> as the offset/location of
@@ -48,7 +48,7 @@ internal interface IBufferManager
     /// Uploads the GPU buffer using the given rectangle <paramref name="data"/>
     /// at the given <paramref name="batchIndex"/> location.
     /// </summary>
-    /// <param name="data">The texture data to upload.</param>
+    /// <param name="data">The rectangle data to upload.</param>
     /// <param name="batchIndex">The index location of the data to update.</param>
     /// <remarks>
     ///     Think of the <paramref name="batchIndex"/> as the offset/location of

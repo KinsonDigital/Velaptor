@@ -62,11 +62,11 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
             throw new BufferNotInitializedException(BufferNotInitMsg);
         }
 
-        var result = new List<TextureQuadData>();
+        var result = new List<TextureGPUData>();
 
         for (var i = 0u; i < BatchSize; i++)
         {
-            result.AddRange(new TextureQuadData[] { new (default, default, default, default) });
+            result.AddRange(new TextureGPUData[] { new (default, default, default, default) });
         }
 
         return OpenGLExtensionMethods.ToArray(result);
@@ -121,7 +121,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
 
         OpenGLService.BeginGroup("Setup Font Buffer Vertex Attributes");
 
-        var stride = TextureVertexData.Stride();
+        var stride = TextureVertexData.GetStride();
 
         const uint vertexPosOffset = 0u;
         const uint vertexPosSize = 2u * sizeof(float);
@@ -196,13 +196,13 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
         textureBottomRight = textureBottomRight.ToNDCTextureCoords(textureWidth, textureHeight);
 
         // Convert the texture quad vertex positions to NDC values
-        var quadDataItem = new TextureQuadData(
+        var quadDataItem = new TextureGPUData(
             new TextureVertexData(vertex1, textureTopLeft, textureQuad.TintColor),
             new TextureVertexData(vertex2, textureBottomLeft, textureQuad.TintColor),
             new TextureVertexData(vertex3, textureTopRight, textureQuad.TintColor),
             new TextureVertexData(vertex4, textureBottomRight, textureQuad.TintColor));
 
-        var totalBytes = TextureQuadData.GetTotalBytes();
+        var totalBytes = TextureGPUData.GetTotalBytes();
         var data = quadDataItem.ToArray();
         var offset = totalBytes * batchIndex;
 

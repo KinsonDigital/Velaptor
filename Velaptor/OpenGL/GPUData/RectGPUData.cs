@@ -12,12 +12,12 @@ using System.Collections.Generic;
 internal readonly struct RectGPUData
 {
     private const uint TotalVertexItems = 4u;
-    private static readonly uint Stride;
+    private static readonly uint TotalBytes;
 
     /// <summary>
     /// Initializes static members of the <see cref="RectGPUData"/> struct.
     /// </summary>
-    static RectGPUData() => Stride = RectVertexData.GetTotalBytes() * TotalVertexItems;
+    static RectGPUData() => TotalBytes = RectVertexData.GetStride() * TotalVertexItems;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectGPUData"/> struct.
@@ -86,7 +86,7 @@ internal readonly struct RectGPUData
     /// The total number of bytes that the <see cref="RectGPUData"/> data contains.
     /// </summary>
     /// <returns>The total number of bytes.</returns>
-    public static uint GetTotalBytes() => Stride;
+    public static uint GetTotalBytes() => TotalBytes;
 
     /// <summary>
     /// Returns all of the vertex data in an array of <see cref="float"/> values.

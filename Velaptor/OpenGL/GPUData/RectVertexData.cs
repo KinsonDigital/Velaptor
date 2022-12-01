@@ -133,7 +133,7 @@ internal readonly struct RectVertexData
     /// Gets the stride of the entire vertex data chunk in bytes.
     /// </summary>
     /// <returns>The total bytes of the stride of the vertex.</returns>
-    public static uint GetTotalBytes() => Stride;
+    public static uint GetStride() => Stride;
 
     /// <summary>
     /// Returns all of the vertex data as an array or ordered values.
@@ -144,7 +144,7 @@ internal readonly struct RectVertexData
         /* NOTE:
             The order of the array elements are extremely important.
             They determine the layout of each stride of vertex data and the layout
-            here has to match the layout told to OpenGL using the VertexAttribLocation() calls
+            here has to match the layout told to OpenGL
         */
 
         var result = new List<float>();

@@ -111,23 +111,6 @@ internal static class OpenGLExtensionMethods
     public static float[] ToArray(this Vector4 vector) => new[] { vector.X, vector.Y, vector.Z, vector.W };
 
     /// <summary>
-    /// Converts the given list of <see cref="rects"/> into an array of continuous <see cref="float"/> values.
-    /// </summary>
-    /// <param name="rects">The list of rectangle data items to convert.</param>
-    /// <returns>The data in raw array format.</returns>
-    public static float[] ToArray(this IEnumerable<RectGPUData> rects)
-    {
-        var result = new List<float>();
-
-        foreach (var rectData in rects)
-        {
-            result.AddRange(rectData.ToArray());
-        }
-
-        return result.ToArray();
-    }
-
-    /// <summary>
     /// Converts the given <paramref name="color"/> to an array of <see cref="float"/>[] values.
     /// </summary>
     /// <param name="color">The value to convert.</param>
@@ -154,7 +137,7 @@ internal static class OpenGLExtensionMethods
     {
         // NOTE: The order of the array elements are extremely important.
         // They determine the layout of each stride of vertex data and the layout
-        // here has to match the layout told to OpenGL using the VertexAttribLocation() calls
+        // here has to match the layout told to OpenGL
         var result = new List<float>();
 
         result.AddRange(vertexData.VertexPos.ToArray());
@@ -165,32 +148,32 @@ internal static class OpenGLExtensionMethods
     }
 
     /// <summary>
-    /// Converts the given <paramref name="quad"/> components to an array of floats.
+    /// Converts the given <paramref name="data"/> components to an array of floats.
     /// </summary>
-    /// <param name="quad">The quad to convert.</param>
+    /// <param name="data">The quad to convert.</param>
     /// <returns>An array of float values.</returns>
-    public static float[] ToArray(this TextureQuadData quad)
+    public static float[] ToArray(this TextureGPUData data)
     {
         var result = new List<float>();
 
-        result.AddRange(quad.Vertex1.ToArray());
-        result.AddRange(quad.Vertex2.ToArray());
-        result.AddRange(quad.Vertex3.ToArray());
-        result.AddRange(quad.Vertex4.ToArray());
+        result.AddRange(data.Vertex1.ToArray());
+        result.AddRange(data.Vertex2.ToArray());
+        result.AddRange(data.Vertex3.ToArray());
+        result.AddRange(data.Vertex4.ToArray());
 
         return result.ToArray();
     }
 
     /// <summary>
-    /// Converts the given list of <paramref name="quads"/> to an array of floats.
+    /// Converts the given list of <paramref name="data"/> to an array of floats.
     /// </summary>
-    /// <param name="quads">The quads to convert.</param>
+    /// <param name="data">The quads to convert.</param>
     /// <returns>An array of float values.</returns>
-    public static float[] ToArray(this IEnumerable<TextureQuadData> quads)
+    public static float[] ToArray(this IEnumerable<TextureGPUData> data)
     {
         var result = new List<float>();
 
-        foreach (var quad in quads)
+        foreach (var quad in data)
         {
             result.AddRange(quad.ToArray());
         }
