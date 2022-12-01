@@ -455,44 +455,48 @@ internal sealed class Renderer : IRenderer
             .OrderBy(i => i.Layer)
             .ToArray();
 
-        for (var i = 0u; i < itemsToRender.Length; i++)
+        // Only if items are available render
+        if (itemsToRender.Length > 0)
         {
-            var batchItem = itemsToRender[(int)i];
-
-            var isLastItem = i >= itemsToRender.Length - 1;
-            var isNotLastItem = !isLastItem;
-
-            var nextTextureIsDifferent = isNotLastItem &&
-                                         itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
-            var shouldRender = isLastItem || nextTextureIsDifferent;
-            var shouldNotRender = !shouldRender;
-
-            gpuDataIndex++;
-            totalItemsToRender++;
-
-            this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
-            this.bufferManager.UploadTextureData(batchItem, (uint)gpuDataIndex);
-            this.openGLService.EndGroup();
-
-            if (shouldNotRender)
+            for (var i = 0u; i < itemsToRender.Length; i++)
             {
-                continue;
+                var batchItem = itemsToRender[(int)i];
+
+                var isLastItem = i >= itemsToRender.Length - 1;
+                var isNotLastItem = !isLastItem;
+
+                var nextTextureIsDifferent = isNotLastItem &&
+                                             itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
+                var shouldRender = isLastItem || nextTextureIsDifferent;
+                var shouldNotRender = !shouldRender;
+
+                gpuDataIndex++;
+                totalItemsToRender++;
+
+                this.openGLService.BeginGroup($"Update Texture Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+                this.bufferManager.UploadTextureData(batchItem, (uint)gpuDataIndex);
+                this.openGLService.EndGroup();
+
+                if (shouldNotRender)
+                {
+                    continue;
+                }
+
+                this.openGLService.BindTexture2D(batchItem.TextureId);
+
+                var totalElements = 6u * totalItemsToRender;
+
+                this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.openGLService.EndGroup();
+
+                totalItemsToRender = 0;
+                gpuDataIndex = -1;
             }
 
-            this.openGLService.BindTexture2D(batchItem.TextureId);
-
-            var totalElements = 6u * totalItemsToRender;
-
-            this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
-            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-            this.openGLService.EndGroup();
-
-            totalItemsToRender = 0;
-            gpuDataIndex = -1;
+            // Empty the batch
+            this.batchServiceManager.EmptyBatch(BatchServiceType.Texture);
         }
-
-        // Empty the batch
-        this.batchServiceManager.EmptyBatch(BatchServiceType.Texture);
 
         this.openGLService.EndGroup();
     }
@@ -523,44 +527,48 @@ internal sealed class Renderer : IRenderer
             .OrderBy(i => i.Layer)
             .ToArray();
 
-        for (var i = 0u; i < itemsToRender.Length; i++)
+        // Only if items are available render
+        if (itemsToRender.Length > 0)
         {
-            var batchItem = itemsToRender[(int)i];
-
-            var isLastItem = i >= itemsToRender.Length - 1;
-            var isNotLastItem = !isLastItem;
-
-            var nextTextureIsDifferent = isNotLastItem &&
-                                         itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
-            var shouldRender = isLastItem || nextTextureIsDifferent;
-            var shouldNotRender = !shouldRender;
-
-            gpuDataIndex++;
-            totalItemsToRender++;
-
-            this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
-            this.bufferManager.UploadFontGlyphData(batchItem, (uint)gpuDataIndex);
-            this.openGLService.EndGroup();
-
-            if (shouldNotRender)
+            for (var i = 0u; i < itemsToRender.Length; i++)
             {
-                continue;
+                var batchItem = itemsToRender[(int)i];
+
+                var isLastItem = i >= itemsToRender.Length - 1;
+                var isNotLastItem = !isLastItem;
+
+                var nextTextureIsDifferent = isNotLastItem &&
+                                             itemsToRender[(int)(i + 1)].TextureId != batchItem.TextureId;
+                var shouldRender = isLastItem || nextTextureIsDifferent;
+                var shouldNotRender = !shouldRender;
+
+                gpuDataIndex++;
+                totalItemsToRender++;
+
+                this.openGLService.BeginGroup($"Update Character Data - TextureID({batchItem.TextureId}) - BatchItem({i})");
+                this.bufferManager.UploadFontGlyphData(batchItem, (uint)gpuDataIndex);
+                this.openGLService.EndGroup();
+
+                if (shouldNotRender)
+                {
+                    continue;
+                }
+
+                this.openGLService.BindTexture2D(batchItem.TextureId);
+
+                var totalElements = 6u * totalItemsToRender;
+
+                this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.openGLService.EndGroup();
+
+                totalItemsToRender = 0;
+                gpuDataIndex = -1;
             }
 
-            this.openGLService.BindTexture2D(batchItem.TextureId);
-
-            var totalElements = 6u * totalItemsToRender;
-
-            this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
-            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-            this.openGLService.EndGroup();
-
-            totalItemsToRender = 0;
-            gpuDataIndex = -1;
+            // Empty the batch
+            this.batchServiceManager.EmptyBatch(BatchServiceType.FontGlyph);
         }
-
-        // Empty the batch
-        this.batchServiceManager.EmptyBatch(BatchServiceType.FontGlyph);
 
         this.openGLService.EndGroup();
     }
@@ -591,26 +599,30 @@ internal sealed class Renderer : IRenderer
             .OrderBy(i => i.Layer)
             .ToArray();
 
-        for (var i = 0u; i < itemsToRender.Length; i++)
+        // Only if items are available render
+        if (itemsToRender.Length > 0)
         {
-            var batchItem = itemsToRender[(int)i];
+            for (var i = 0u; i < itemsToRender.Length; i++)
+            {
+                var batchItem = itemsToRender[(int)i];
 
-            gpuDataIndex++;
-            totalItemsToRender++;
+                gpuDataIndex++;
+                totalItemsToRender++;
 
-            this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
-            this.bufferManager.UploadRectData(batchItem, (uint)gpuDataIndex);
+                this.openGLService.BeginGroup($"Update Rectangle Data - BatchItem({i})");
+                this.bufferManager.UploadRectData(batchItem, (uint)gpuDataIndex);
+                this.openGLService.EndGroup();
+            }
+
+            var totalElements = 6u * totalItemsToRender;
+
+            this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
+            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
             this.openGLService.EndGroup();
+
+            // Empty the batch
+            this.batchServiceManager.EmptyBatch(BatchServiceType.Rectangle);
         }
-
-        var totalElements = 6u * totalItemsToRender;
-
-        this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
-        this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
-        this.openGLService.EndGroup();
-
-        // Empty the batch
-        this.batchServiceManager.EmptyBatch(BatchServiceType.Rectangle);
 
         this.openGLService.EndGroup();
     }
