@@ -39,7 +39,7 @@ public class MainWindow : Window
         WindowHeight = Height;
         var renderer = RendererFactory.CreateRenderer(Width, Height);
         renderer.ClearColor = Color.FromArgb(255, 42, 42, 46);
-        window.WinResize = (size) =>
+        window.WinResize = size =>
         {
             renderer.RenderSurfaceWidth = size.Width;
             renderer.RenderSurfaceHeight = size.Height;

@@ -79,7 +79,7 @@ public class TextureGPUBufferTests
 
         this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>((reactor) =>
+            .Callback<IReactor<BatchSizeData>>(reactor =>
             {
                 if (reactor is null)
                 {
@@ -172,7 +172,7 @@ public class TextureGPUBufferTests
         var mockUnsubscriber = new Mock<IDisposable>();
 
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>((reactor) =>
+            .Callback<IReactor<BatchSizeData>>(reactor =>
             {
                 if (reactor is null)
                 {

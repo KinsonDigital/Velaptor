@@ -369,8 +369,8 @@ public class ControlBaseTests
 
         // Assert
         Assert.Raises<MousePositionEventArgs>(
-            (e) => sut.MouseMove += e,
-            (e) => sut.MouseMove -= e,
+            e => sut.MouseMove += e,
+            e => sut.MouseMove -= e,
             () =>
             {
                 sut.Update(default);
@@ -399,8 +399,8 @@ public class ControlBaseTests
 
         // Assert
         Assert.Raises<EventArgs>(
-            (e) => sut.MouseDown += e,
-            (e) => sut.MouseDown -= e,
+            e => sut.MouseDown += e,
+            e => sut.MouseDown -= e,
             () =>
             {
                 sut.Update(default);
@@ -450,8 +450,8 @@ public class ControlBaseTests
 
         // Assert
         Assert.Raises<EventArgs>(
-            (e) => sut.MouseUp += e,
-            (e) => sut.MouseUp -= e,
+            e => sut.MouseUp += e,
+            e => sut.MouseUp -= e,
             () =>
             {
                 sut.Update(default);

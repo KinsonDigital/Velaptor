@@ -78,7 +78,7 @@ public class RectGPUBufferTests
 
         this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>((reactor) =>
+            .Callback<IReactor<BatchSizeData>>(reactor =>
             {
                 if (reactor is null)
                 {
@@ -119,7 +119,7 @@ public class RectGPUBufferTests
         var mockUnsubscriber = new Mock<IDisposable>();
 
         this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
-            .Callback<IReactor<BatchSizeData>>((reactor) =>
+            .Callback<IReactor<BatchSizeData>>(reactor =>
             {
                 if (reactor is null)
                 {
@@ -149,7 +149,7 @@ public class RectGPUBufferTests
         var executionLocations = new List<string>
         {
             $"1 time in the '{nameof(GPUBufferBase<RectShape>.UploadVertexData)}()' method.",
-            "3 times in the private '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
+            $"3 times in the private '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
         };
         var failMessage = string.Join(Environment.NewLine, executionLocations);
 
@@ -176,7 +176,7 @@ public class RectGPUBufferTests
             $"1 time in the private '{nameof(GPUBufferBase<RectShape>)}.Init()' method.",
             $"1 time in the '{nameof(GPUBufferBase<RectShape>.UploadVertexData)}()' method.",
         };
-        var failMessage = string.Join("{Environment.NewLine}", executionLocations);
+        var failMessage = string.Join(Environment.NewLine, executionLocations);
 
         var rect = default(RectBatchItem);
 
@@ -496,7 +496,7 @@ public class RectGPUBufferTests
         // Arrange
         var expected = TestDataLoader
             .LoadTestData<float[]>(string.Empty,
-                $"{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}_TestData.json");
+                $"{nameof(RectGPUBufferTests)}.{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}.json");
         var sut = CreateSystemUnderTest(false);
         this.batchSizeReactor.OnNext(new BatchSizeData(BatchSize));
 
@@ -512,7 +512,7 @@ public class RectGPUBufferTests
     public void SetupVAO_WhenInvoked_SetsUpTheOpenGLVertexArrayObject()
     {
         // Arrange
-        var paramData = new (uint Index, int size, bool normalized, uint stride, uint offset, string label)[]
+        var paramData = new (uint index, int size, bool normalized, uint stride, uint offset, string label)[]
         {
             (0u, 2, false, 64u, 0u, "VertexPosition"),
             (1u, 4, false, 64u, 8u, "Rectangle"),
@@ -546,7 +546,7 @@ public class RectGPUBufferTests
         Assert.All(paramData, data =>
         {
             this.mockGL.Verify(m =>
-                    m.VertexAttribPointer(data.Index,
+                    m.VertexAttribPointer(data.index,
                         data.size,
                         GLVertexAttribPointerType.Float,
                         data.normalized,

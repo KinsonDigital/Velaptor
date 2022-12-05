@@ -827,7 +827,7 @@ internal sealed class Renderer : IRenderer
             new CachedValue<uint>(
                 0,
                 () => (uint)this.openGLService.GetViewPortSize().Width,
-                (value) =>
+                value =>
                 {
                     var viewPortSize = this.openGLService.GetViewPortSize();
 
@@ -839,7 +839,7 @@ internal sealed class Renderer : IRenderer
             new CachedValue<uint>(
                 0,
                 () => (uint)this.openGLService.GetViewPortSize().Height,
-                (value) =>
+                value =>
                 {
                     var viewPortSize = this.openGLService.GetViewPortSize();
 
@@ -860,7 +860,7 @@ internal sealed class Renderer : IRenderer
 
                 return Color.FromArgb((byte)alpha, (byte)red, (byte)green, (byte)blue);
             },
-            (value) =>
+            value =>
             {
                 var red = value.R.MapValue(0f, 255f, 0f, 1f);
                 var green = value.G.MapValue(0f, 255f, 0f, 1f);

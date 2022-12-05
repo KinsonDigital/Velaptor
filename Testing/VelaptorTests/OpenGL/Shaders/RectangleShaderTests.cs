@@ -9,7 +9,6 @@ using System.Linq;
 using FluentAssertions;
 using Helpers;
 using Moq;
-using Silk.NET.OpenGL;
 using Velaptor.NativeInterop.OpenGL;
 using Velaptor.OpenGL;
 using Velaptor.OpenGL.Services;

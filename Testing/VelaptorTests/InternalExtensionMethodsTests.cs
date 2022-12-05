@@ -1,4 +1,4 @@
-// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -475,7 +475,7 @@ public class InternalExtensionMethodsTests
     }
 
     [Fact]
-    public void SetVertexPos_WithInvalidVertexValue_ThrowsException()
+    public void SetVertexPos_WithRectGPUDataAndInvalidVertexValue_ThrowsException()
     {
         // Arrange
         var gpuData = GenerateGPUDataInSequence(0);
@@ -492,7 +492,7 @@ public class InternalExtensionMethodsTests
     [InlineData((int)VertexNumber.Two)]
     [InlineData((int)VertexNumber.Three)]
     [InlineData((int)VertexNumber.Four)]
-    public void SetVertexPos_WhenInvoked_ReturnsCorrectResult(int vertexNumberNumericalValue)
+    public void SetVertexPos_WhenInvokedWithRectGPUData_ReturnsCorrectResult(int vertexNumberNumericalValue)
     {
         // Arrange
         var vertexNumber = (VertexNumber)vertexNumberNumericalValue;

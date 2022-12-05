@@ -63,7 +63,7 @@
     <None Update="SampleTestData\RectGPUDataTestData.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="SampleTestData\GenerateData_WhenInvoked_ReturnsCorrectResult_TestData.json">
+    <None Update="SampleTestData\RectGPUBufferTests.GenerateData_WhenInvoked_ReturnsCorrectResult.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SampleTestData\GenerateIndices_WhenInvoked_ReturnsCorrectResult_TestData.json">

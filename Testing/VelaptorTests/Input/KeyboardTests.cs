@@ -69,7 +69,7 @@ public class KeyboardTests
             });
         this.mockKeyboardReactable.Setup(m
                 => m.PushNotification(It.IsAny<(KeyCode key, bool isDown)>()))
-            .Callback<(KeyCode key, bool isDown)>((data) =>
+            .Callback<(KeyCode key, bool isDown)>(data =>
             {
                 reactor.OnNext(data);
             });

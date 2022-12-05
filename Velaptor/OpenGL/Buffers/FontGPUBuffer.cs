@@ -31,7 +31,7 @@ internal sealed class FontGPUBuffer : GPUBufferBase<FontGlyphBatchItem>
     /// <param name="gl">Invokes OpenGL functions.</param>
     /// <param name="openGLService">Provides OpenGL related helper methods.</param>
     /// <param name="glInitReactable">Receives a notification when OpenGL has been initialized.</param>
-    /// <param name="batchSizeReactable">Receives push notifications about the batch size.</param>
+    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
     /// <param name="shutDownReactable">Sends out a notification that the application is shutting down.</param>
     /// <exception cref="ArgumentNullException">
     ///     Invoked when any of the parameters are null.

@@ -124,7 +124,7 @@ public class LayeredRectRenderingScene : SceneBase
 
         UpdateWhiteRectLayer();
         UpdateRectStateText();
-        MoveBlueRect(frameTime);
+        MoveWhiteRect(frameTime);
 
         this.prevKeyState = this.currentKeyState;
         base.Update(frameTime);
@@ -224,7 +224,7 @@ public class LayeredRectRenderingScene : SceneBase
     /// Moves the white rectangle.
     /// </summary>
     /// <param name="frameTime">The current frame time.</param>
-    private void MoveBlueRect(FrameTime frameTime)
+    private void MoveWhiteRect(FrameTime frameTime)
     {
         var amount = Speed * (float)frameTime.ElapsedTime.TotalSeconds;
 

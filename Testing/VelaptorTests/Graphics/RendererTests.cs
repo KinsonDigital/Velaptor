@@ -1743,12 +1743,19 @@ public class RendererTests
         return result;
     }
 
+    /// <summary>
+    /// Mocks the font metrics for testing.
+    /// </summary>
     private void MockFontMetrics()
     {
         this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics[]>(string.Empty, GlyphTestDataFileName).ToList();
         this.mockFont.SetupGet(p => p.Metrics).Returns(() => this.allGlyphMetrics.ToArray().ToReadOnlyCollection());
     }
 
+    /// <summary>
+    /// Mocks the given <paramref name="text"/> to glyph metrics for testing.
+    /// </summary>
+    /// <param name="text">The text of glyphs to mock.</param>
     private void MockToGlyphMetrics(string text)
     {
         this.mockFont.Setup(m => m.ToGlyphMetrics(text)).Returns(() =>
