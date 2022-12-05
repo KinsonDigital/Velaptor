@@ -10,7 +10,7 @@ using System.Drawing;
 using System.Numerics;
 
 /// <summary>
-/// Represents a single vertex of data for a quad.
+/// Represents a single vertex of the <see cref="TextureGPUData"/> sent to the GPU.
 /// </summary>
 internal readonly struct TextureVertexData : IEquatable<TextureVertexData>
 {

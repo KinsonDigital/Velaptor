@@ -7,7 +7,7 @@ namespace Velaptor.OpenGL.GPUData;
 using System.Collections.Generic;
 
 /// <summary>
-/// Holds all the necessary data for a rectangle to send to the GPU for rendering.
+/// Holds all the necessary data for a rectangle to sent to the GPU for rendering.
 /// </summary>
 internal readonly struct RectGPUData
 {

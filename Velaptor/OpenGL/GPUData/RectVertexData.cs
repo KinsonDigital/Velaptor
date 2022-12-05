@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Numerics;
 
 /// <summary>
-/// Represents the data of a GPU vertex for a rectangle.
+/// Represents a single vertex of the <see cref="RectGPUData"/> sent to the GPU.
 /// </summary>
 internal readonly struct RectVertexData
 {

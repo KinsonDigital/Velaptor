@@ -137,6 +137,12 @@ internal abstract class ShaderProgram : IShaderProgram
         IsDisposed = true;
     }
 
+    /// <summary>
+    /// Initializes the shader program by compiling the vertex and fragment shaders.
+    /// </summary>
+    /// <exception cref="Exception">
+    ///     Thrown if the shader compilation throws an error.
+    /// </exception>
     private void Init()
     {
         if (this.isInitialized)
@@ -190,6 +196,16 @@ internal abstract class ShaderProgram : IShaderProgram
         this.isInitialized = true;
     }
 
+    /// <summary>
+    /// Creates an <c>OpenGL</c> shader program using the given <paramref name="shaderName"/>,
+    /// <paramref name="vertShaderId"/>, and <paramref name="fragShaderId"/>.
+    /// </summary>
+    /// <param name="shaderName">The name to give the shader program.</param>
+    /// <param name="vertShaderId">The <c>OpenGL</c> vertex shader ID.</param>
+    /// <param name="fragShaderId">The <c>OpenGL</c> fragment shader ID.</param>
+    /// <exception cref="Exception">
+    ///     Thrown if the linking process during shader compilation throws an error.
+    /// </exception>
     private void CreateProgram(string shaderName, uint vertShaderId, uint fragShaderId)
     {
         OpenGLService.BeginGroup($"Create {shaderName} Shader Program");
@@ -213,6 +229,17 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService.EndGroup();
     }
 
+    /// <summary>
+    /// Performs cleanup after the vertex and fragments shaders are compiled, linked,
+    /// and sent to the GPU.
+    /// </summary>
+    /// <param name="name">The name of the shader program.</param>
+    /// <param name="vertShaderId">The <c>OpenGL</c> vertex shader ID.</param>
+    /// <param name="fragShaderId">The <c>OpenGL</c> fragment shader ID.</param>
+    /// <remarks>
+    ///     The vertex and fragment shader code is not needed on the CPU side anymore
+    ///     once the GPU receives the shader code result.
+    /// </remarks>
     private void CleanShadersIfReady(string name, uint vertShaderId, uint fragShaderId)
     {
         OpenGLService.BeginGroup($"Clean Up {name} Vertex Shader");
@@ -231,6 +258,9 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService.EndGroup();
     }
 
+    /// <summary>
+    /// Processes any custom attributes that might be on the implementing class.
+    /// </summary>
     private void ProcessCustomAttributes()
     {
         Attribute[]? attributes = null;
