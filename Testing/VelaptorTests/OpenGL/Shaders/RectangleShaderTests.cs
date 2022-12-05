@@ -5,10 +5,13 @@
 namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
+using System.Linq;
 using FluentAssertions;
 using Helpers;
 using Moq;
+using Silk.NET.OpenGL;
 using Velaptor.NativeInterop.OpenGL;
+using Velaptor.OpenGL;
 using Velaptor.OpenGL.Services;
 using Velaptor.OpenGL.Shaders;
 using Velaptor.Reactables.Core;
@@ -17,7 +20,7 @@ using Xunit;
 
 public class RectangleShaderTests
 {
-    private Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
+    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RectangleShaderTests"/> class.
@@ -100,6 +103,23 @@ public class RectangleShaderTests
 
         // Assert
         mockUnsubscriber.VerifyOnce(m => m.Dispose());
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_SetsNameProp()
+    {
+        // Arrange
+        var customAttributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
+        var containsAttribute = customAttributes.Any(i => i is ShaderNameAttribute);
+
+        // Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        containsAttribute
+            .Should()
+            .BeTrue($"the '{nameof(ShaderNameAttribute)}' is required on a shader implementation to set the shader name.");
+        sut.Name.Should().Be("Rectangle");
     }
     #endregion
 

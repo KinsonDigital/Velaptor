@@ -5,6 +5,7 @@
 namespace VelaptorTests.OpenGL.Shaders;
 
 using System;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using Velaptor.NativeInterop.OpenGL;
@@ -119,6 +120,23 @@ public class FontShaderTests
 
         // Assert
         mockUnsubscriber.VerifyOnce(m => m.Dispose());
+    }
+
+    [Fact]
+    public void Ctor_WhenInvoked_SetsNameProp()
+    {
+        // Arrange
+        var customAttributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
+        var containsAttribute = customAttributes.Any(i => i is ShaderNameAttribute);
+
+        // Act
+        var sut = CreateSystemUnderTest();
+
+        // Assert
+        containsAttribute
+            .Should()
+            .BeTrue($"the '{nameof(ShaderNameAttribute)}' is required on a shader implementation to set the shader name.");
+        sut.Name.Should().Be("Font");
     }
     #endregion
 
