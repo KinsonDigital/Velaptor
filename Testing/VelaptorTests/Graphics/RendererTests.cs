@@ -886,7 +886,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoked_AddsCorrectBatchItems)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
         const string renderText = "Font_Testing";
@@ -924,7 +924,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking4ParamsWithXAndYOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -965,7 +965,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking3ParamsWithPositionOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1005,7 +1005,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking6ParamsWithXAndYOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1048,7 +1048,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithPositionOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1090,7 +1090,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithColorOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1132,7 +1132,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1173,7 +1173,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking6ParamsWithColorOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1216,7 +1216,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1548,7 +1548,7 @@ public class RendererTests
 
     private void MockFontMetrics()
     {
-        this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics>(string.Empty, GlyphTestDataFileName).ToList();
+        this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics[]>(string.Empty, GlyphTestDataFileName).ToList();
         this.mockFont.SetupGet(p => p.Metrics).Returns(() => this.allGlyphMetrics.ToArray().ToReadOnlyCollection());
     }
 

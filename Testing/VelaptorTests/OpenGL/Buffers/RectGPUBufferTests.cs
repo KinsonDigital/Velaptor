@@ -495,7 +495,7 @@ public class RectGPUBufferTests
     {
         // Arrange
         var expected = TestDataLoader
-            .LoadTestData<float>(string.Empty,
+            .LoadTestData<float[]>(string.Empty,
                 $"{nameof(GenerateData_WhenInvoked_ReturnsCorrectResult)}_TestData.json");
         var sut = CreateSystemUnderTest(false);
         this.batchSizeReactor.OnNext(new BatchSizeData(BatchSize));
@@ -568,7 +568,7 @@ public class RectGPUBufferTests
     {
         // Arrange
         var expected = TestDataLoader
-            .LoadTestData<uint>(string.Empty, $"{nameof(GenerateIndices_WhenInvoked_ReturnsCorrectResult)}_TestData.json");
+            .LoadTestData<uint[]>(string.Empty, $"{nameof(GenerateIndices_WhenInvoked_ReturnsCorrectResult)}_TestData.json");
         var sut = CreateSystemUnderTest(false);
         this.batchSizeReactor.OnNext(new BatchSizeData(BatchSize));
 
