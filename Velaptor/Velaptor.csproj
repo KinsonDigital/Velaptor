@@ -83,6 +83,10 @@
     <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.frag" />
     <None Remove="OpenGL\ShaderCode\rectangle.vert" />
     <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.vert" />
+    <None Remove="OpenGL\ShaderCode\line-shader.frag" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\line.frag" />
+    <None Remove="OpenGL\ShaderCode\line-shader.vert" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\line.vert" />
   </ItemGroup>
 
   <ItemGroup>

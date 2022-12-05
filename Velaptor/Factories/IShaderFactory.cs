@@ -28,4 +28,10 @@ internal interface IShaderFactory
     /// </summary>
     /// <returns>The shader program.</returns>
     IShaderProgram CreateRectShader();
+
+    /// <summary>
+    /// Creates a shader for rendering lines.
+    /// </summary>
+    /// <returns>The shader program.</returns>
+    IShaderProgram CreateLineShader();
 }

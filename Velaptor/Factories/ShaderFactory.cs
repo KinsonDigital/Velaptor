@@ -20,6 +20,7 @@ internal sealed class ShaderFactory : IShaderFactory
     private static IShaderProgram? textureShader;
     private static IShaderProgram? fontShader;
     private static IShaderProgram? rectShader;
+    private static IShaderProgram? lineShader;
 
     /// <inheritdoc/>
     public IShaderProgram CreateTextureShader()
@@ -97,5 +98,31 @@ internal sealed class ShaderFactory : IShaderFactory
             shutDownReactable);
 
         return rectShader;
+    }
+
+    /// <inheritdoc/>
+    public IShaderProgram CreateLineShader()
+    {
+        if (lineShader is not null)
+        {
+            return lineShader;
+        }
+
+        var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
+        var shaderLoaderService = IoC.Container.GetInstance<IShaderLoaderService<uint>>();
+        var glInitReactable = IoC.Container.GetInstance<IReactable<GLInitData>>();
+        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
+        var shutDownReactable = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+
+        lineShader = new LineShader(
+            glInvoker,
+            glInvokerExtensions,
+            shaderLoaderService,
+            glInitReactable,
+            batchSizeReactable,
+            shutDownReactable);
+
+        return lineShader;
     }
 }

@@ -1,4 +1,4 @@
-// <copyright file="ShaderProgram.cs" company="KinsonDigital">
+﻿// <copyright file="ShaderProgram.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -277,6 +277,10 @@ internal abstract class ShaderProgram : IShaderProgram
         else if (currentType == typeof(RectangleShader))
         {
             attributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
+        }
+        else if (currentType == typeof(LineShader))
+        {
+            attributes = Attribute.GetCustomAttributes(typeof(LineShader));
         }
         else
         {
