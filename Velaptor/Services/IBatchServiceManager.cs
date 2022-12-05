@@ -29,6 +29,11 @@ internal interface IBatchServiceManager : IDisposable
     event EventHandler<EventArgs>? RectBatchReadyForRendering;
 
     /// <summary>
+    /// Invoked when the line batch has been filled.
+    /// </summary>
+    event EventHandler<EventArgs>? LineBatchReadyForRendering;
+
+    /// <summary>
     /// Gets or sets the list of texture batch items.
     /// </summary>
     ReadOnlyCollection<TextureBatchItem> TextureBatchItems { get; set; }
@@ -42,6 +47,11 @@ internal interface IBatchServiceManager : IDisposable
     /// Gets or sets the list of rectangle batch items.
     /// </summary>
     ReadOnlyCollection<RectBatchItem> RectBatchItems { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of line batch items.
+    /// </summary>
+    ReadOnlyCollection<LineBatchItem> LineBatchItems { get; set; }
 
     /// <summary>
     /// Adds the given texture <paramref name="batchItem"/> to the batch.
@@ -60,6 +70,12 @@ internal interface IBatchServiceManager : IDisposable
     /// </summary>
     /// <param name="batchItem">The rectangle batch item to add.</param>
     void AddRectBatchItem(RectBatchItem batchItem);
+
+    /// <summary>
+    /// Adds the given line <paramref name="batchItem"/> to the batch.
+    /// </summary>
+    /// <param name="batchItem">The line batch item to add.</param>
+    void AddLineBatchItem(LineBatchItem batchItem);
 
     /// <summary>
     /// Empties the batching service that matches the given <paramref name="serviceType"/>.

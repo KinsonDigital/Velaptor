@@ -22,6 +22,7 @@ public class BatchServiceManagerTests
     private readonly Mock<IBatchingService<TextureBatchItem>> mockTextureBatchingService;
     private readonly Mock<IBatchingService<FontGlyphBatchItem>> mockFontGlyphBatchingService;
     private readonly Mock<IBatchingService<RectBatchItem>> mockRectBatchingService;
+    private readonly Mock<IBatchingService<LineBatchItem>> mockLineBatchingService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BatchServiceManagerTests"/> class.
@@ -31,6 +32,7 @@ public class BatchServiceManagerTests
         this.mockTextureBatchingService = new Mock<IBatchingService<TextureBatchItem>>();
         this.mockFontGlyphBatchingService = new Mock<IBatchingService<FontGlyphBatchItem>>();
         this.mockRectBatchingService = new Mock<IBatchingService<RectBatchItem>>();
+        this.mockLineBatchingService = new Mock<IBatchingService<LineBatchItem>>();
     }
 
     #region Constructor Tests
@@ -42,8 +44,9 @@ public class BatchServiceManagerTests
         {
             _ = new BatchServiceManager(
                 null,
-                new Mock<IBatchingService<FontGlyphBatchItem>>().Object,
-                new Mock<IBatchingService<RectBatchItem>>().Object);
+                this.mockFontGlyphBatchingService.Object,
+                this.mockRectBatchingService.Object,
+                this.mockLineBatchingService.Object);
         };
 
         // Assert
@@ -59,9 +62,10 @@ public class BatchServiceManagerTests
         var act = () =>
         {
             _ = new BatchServiceManager(
-                new Mock<IBatchingService<TextureBatchItem>>().Object,
+                this.mockTextureBatchingService.Object,
                 null,
-                new Mock<IBatchingService<RectBatchItem>>().Object);
+                this.mockRectBatchingService.Object,
+                this.mockLineBatchingService.Object);
         };
 
         // Assert
@@ -77,9 +81,10 @@ public class BatchServiceManagerTests
         var act = () =>
         {
             _ = new BatchServiceManager(
-                new Mock<IBatchingService<TextureBatchItem>>().Object,
-                new Mock<IBatchingService<FontGlyphBatchItem>>().Object,
-                null);
+                this.mockTextureBatchingService.Object,
+                this.mockFontGlyphBatchingService.Object,
+                null,
+                this.mockLineBatchingService.Object);
         };
 
         // Assert
@@ -188,13 +193,43 @@ public class BatchServiceManagerTests
             $"The getter for property '{nameof(IBatchingService<RectBatchItem>)}.{nameof(IBatchingService<RectBatchItem>.BatchItems)} was not invoked.'");
         actual.Should().BeEquivalentTo(expected);
     }
+
+    [Fact]
+    public void LineBatchItems_WhenSettingValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var batchItem = default(LineBatchItem);
+        var batchItems = new List<LineBatchItem>
+        {
+            batchItem,
+        };
+        var expected = new ReadOnlyCollection<LineBatchItem>(batchItems);
+
+        this.mockLineBatchingService.SetupProperty(p => p.BatchItems);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.LineBatchItems = new ReadOnlyCollection<LineBatchItem>(batchItems);
+        var actual = sut.LineBatchItems;
+
+        // Assert
+        this.mockLineBatchingService.VerifySet(p => p.BatchItems = expected,
+            Times.Once,
+            $"The setter for property '{nameof(IBatchingService<LineBatchItem>)}.{nameof(IBatchingService<LineBatchItem>.BatchItems)}' was not invoked.");
+        this.mockLineBatchingService.VerifyGet(p => p.BatchItems,
+            Times.Once,
+            $"The getter for property '{nameof(IBatchingService<LineBatchItem>)}.{nameof(IBatchingService<LineBatchItem>.BatchItems)} was not invoked.'");
+        actual.Should().BeEquivalentTo(expected);
+    }
     #endregion
 
     #region Method Tests
     [Theory]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
+    [InlineData(1)] // Texture
+    [InlineData(2)] // FontGlyph
+    [InlineData(3)] // Rectangle
+    [InlineData(4)] // Line
     public void EmptyBatch_WhenInvoked_EmptiesCorrectBatch(int serviceTypeValue)
     {
         // Arrange
@@ -221,6 +256,14 @@ public class BatchServiceManagerTests
                 this.mockTextureBatchingService.Verify(m => m.EmptyBatch(), Times.Never);
                 this.mockFontGlyphBatchingService.Verify(m => m.EmptyBatch(), Times.Never);
                 this.mockRectBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
+                break;
+            case BatchServiceType.Line:
+                this.mockTextureBatchingService.Verify(m => m.EmptyBatch(), Times.Never);
+                this.mockFontGlyphBatchingService.Verify(m => m.EmptyBatch(), Times.Never);
+                this.mockLineBatchingService.Verify(m => m.EmptyBatch(), Times.Once);
+                break;
+            default:
+                Assert.True(false, $"The value of the enum '{nameof(BatchServiceType)}' is not valid.");
                 break;
         }
     }
@@ -307,6 +350,20 @@ public class BatchServiceManagerTests
     }
 
     [Fact]
+    public void AddLineBatchItem_WhenInvoked_AddsItemToRectBatchingService()
+    {
+        // Arrange
+        var batchItem = default(LineBatchItem);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.AddLineBatchItem(batchItem);
+
+        // Assert
+        this.mockLineBatchingService.VerifyOnce(m => m.Add(batchItem));
+    }
+
+    [Fact]
     public void EndBatch_WhenTextureBatch_RaisesTextureBatchFilledEvent()
     {
         // Arrange
@@ -346,6 +403,20 @@ public class BatchServiceManagerTests
 
         // Assert
         monitor.Should().Raise(nameof(BatchServiceManager.RectBatchReadyForRendering));
+    }
+
+    [Fact]
+    public void EndBatch_WhenLineBatch_RaisesLineBatchFilledEvent()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+        using var monitor = sut.Monitor();
+
+        // Act
+        sut.EndBatch(BatchServiceType.Line);
+
+        // Assert
+        monitor.Should().Raise(nameof(BatchServiceManager.LineBatchReadyForRendering));
     }
 
     [Fact]
@@ -434,6 +505,23 @@ public class BatchServiceManagerTests
         monitor.Should().Raise(nameof(BatchServiceManager.RectBatchReadyForRendering))
             .WithArgs<EventArgs>(args => args == eventArgs);
     }
+
+    [Fact]
+    public void LineBatchService_WhenReadyForRendering_InvokesBatchManagerEvent()
+    {
+        // Arrange
+        var eventArgs = EventArgs.Empty;
+        var sut = CreateSystemUnderTest();
+        using var monitor = sut.Monitor();
+
+        // Act
+        this.mockLineBatchingService.Raise(service
+            => service.ReadyForRendering += null, eventArgs);
+
+        // Assert
+        monitor.Should().Raise(nameof(BatchServiceManager.LineBatchReadyForRendering))
+            .WithArgs<EventArgs>(args => args == eventArgs);
+    }
     #endregion
 
     /// <summary>
@@ -443,5 +531,6 @@ public class BatchServiceManagerTests
     private BatchServiceManager CreateSystemUnderTest() =>
         new (this.mockTextureBatchingService.Object,
             this.mockFontGlyphBatchingService.Object,
-            this.mockRectBatchingService.Object);
+            this.mockRectBatchingService.Object,
+            this.mockLineBatchingService.Object);
 }
