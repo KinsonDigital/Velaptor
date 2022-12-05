@@ -69,6 +69,15 @@
     <None Update="SampleTestData\GenerateIndices_WhenInvoked_ReturnsCorrectResult_TestData.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="SampleTestData\LineGPUDataTests.ToArray_WhenInvoked_ReturnsCorrectResult.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\LineGPUBufferTests.GenerateIndices_WhenInvoked_ReturnsCorrectResult.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SampleTestData\LineGPUBufferTests.GenerateData_WhenInvoked_ReturnsCorrectResult.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
