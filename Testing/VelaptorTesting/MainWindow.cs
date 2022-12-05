@@ -92,6 +92,11 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(LayeredRectRenderingScene)),
         };
 
+        var lineScene = new LineRenderingScene(contentLoader)
+        {
+            Name = SplitByUpperCase(nameof(LineRenderingScene)),
+        };
+
         var soundScene = new SoundScene(ContentLoader)
         {
             Name = SplitByUpperCase(nameof(SoundScene)),
@@ -106,6 +111,7 @@ public class MainWindow : Window
         this.sceneManager.AddScene(renderAnimatedGraphicsScene);
         this.sceneManager.AddScene(rectScene);
         this.sceneManager.AddScene(layeredRectScene);
+        this.sceneManager.AddScene(lineScene);
         this.sceneManager.AddScene(soundScene);
     }
 
