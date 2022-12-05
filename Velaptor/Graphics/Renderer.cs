@@ -85,6 +85,7 @@ internal sealed class Renderer : IRenderer
         this.batchServiceManager.TextureBatchReadyForRendering += TextureBatchService_BatchReadyForRendering;
         this.batchServiceManager.FontGlyphBatchReadyForRendering += FontGlyphBatchService_BatchReadyForRendering;
         this.batchServiceManager.RectBatchReadyForRendering += RectBatchService_BatchReadyForRendering;
+        this.batchServiceManager.LineBatchReadyForRendering += LineBatchService_BatchReadyForRendering;
 
         // Receive a push notification that OpenGL has initialized
         this.glInitUnsubscriber = glInitReactable.Subscribe(new Reactor<GLInitData>(
@@ -162,6 +163,7 @@ internal sealed class Renderer : IRenderer
         this.bufferManager.SetViewPortSize(VelaptorBufferType.Texture, size);
         this.bufferManager.SetViewPortSize(VelaptorBufferType.Font, size);
         this.bufferManager.SetViewPortSize(VelaptorBufferType.Rectangle, size);
+        this.bufferManager.SetViewPortSize(VelaptorBufferType.Line, size);
     }
 
     /// <inheritdoc/>
@@ -390,13 +392,54 @@ internal sealed class Renderer : IRenderer
     }
 
     /// <inheritdoc/>
+    public void Render(Line line, int layer = 0) =>
+        RenderLineBase(line.P1, line.P2, line.Color, (uint)line.Thickness, layer);
+
+    /// <inheritdoc/>
+    public void RenderLine(Vector2 start, Vector2 end, int layer = 0) =>
+        RenderLineBase(start, end, Color.White, 1u, layer);
+
+    /// <inheritdoc/>
+    public void RenderLine(Vector2 start, Vector2 end, Color color, int layer = 0) =>
+        RenderLineBase(start, end, color, 1u, layer);
+
+    /// <inheritdoc/>
+    public void RenderLine(Vector2 start, Vector2 end, uint thickness, int layer = 0) =>
+        RenderLineBase(start, end, Color.White, thickness, layer);
+
+    /// <inheritdoc/>
+    public void RenderLine(Vector2 start, Vector2 end, Color color, uint thickness, int layer = 0) =>
+        RenderLineBase(start, end, color, thickness, layer);
+
+    /// <inheritdoc/>
     public void End()
     {
         this.batchServiceManager.EndBatch(BatchServiceType.Texture);
         this.batchServiceManager.EndBatch(BatchServiceType.Rectangle);
         this.batchServiceManager.EndBatch(BatchServiceType.FontGlyph);
+        this.batchServiceManager.EndBatch(BatchServiceType.Line);
 
         this.hasBegun = false;
+    }
+
+    /// <summary>
+    /// The main root method for rendering lines.
+    /// </summary>
+    /// <param name="start">The start of the line.</param>
+    /// <param name="end">The end of the line.</param>
+    /// <param name="color">The color of the line.</param>
+    /// <param name="thickness">The thickness of the line.</param>
+    /// <param name="layer">The layer to render the line.</param>
+    private void RenderLineBase(Vector2 start, Vector2 end, Color color, uint thickness, int layer)
+    {
+        var batchItem = new LineBatchItem(
+            start,
+            end,
+            color,
+            thickness,
+            layer);
+
+        this.batchServiceManager.AddLineBatchItem(batchItem);
     }
 
     /// <summary>
@@ -412,6 +455,8 @@ internal sealed class Renderer : IRenderer
         this.batchServiceManager.TextureBatchReadyForRendering -= TextureBatchService_BatchReadyForRendering;
         this.batchServiceManager.FontGlyphBatchReadyForRendering -= FontGlyphBatchService_BatchReadyForRendering;
         this.batchServiceManager.RectBatchReadyForRendering -= RectBatchService_BatchReadyForRendering;
+        this.batchServiceManager.LineBatchReadyForRendering -= LineBatchService_BatchReadyForRendering;
+
         this.batchServiceManager.Dispose();
         this.cachedUIntProps.Clear();
 
@@ -622,6 +667,60 @@ internal sealed class Renderer : IRenderer
 
             // Empty the batch
             this.batchServiceManager.EmptyBatch(BatchServiceType.Rectangle);
+        }
+
+        this.openGLService.EndGroup();
+    }
+
+    /// <summary>
+    /// Invoked every time a batch of lines is ready to be rendered.
+    /// </summary>
+    private void LineBatchService_BatchReadyForRendering(object? sender, EventArgs e)
+    {
+        if (this.batchServiceManager.LineBatchItems.Count <= 0)
+        {
+            this.openGLService.BeginGroup("Render Line Process - Nothing To Render");
+            this.openGLService.EndGroup();
+
+            return;
+        }
+
+        this.openGLService.BeginGroup($"Render Line Process With {this.shaderManager.GetShaderName(ShaderType.Line)} Shader");
+
+        this.shaderManager.Use(ShaderType.Line);
+
+        var totalItemsToRender = 0u;
+        var gpuDataIndex = -1;
+
+        var itemsToRender = this.batchServiceManager.LineBatchItems
+            .Where(i => i.IsEmpty() is false)
+            .Select(i => i)
+            .OrderBy(i => i.Layer)
+            .ToArray();
+
+        // Only if items are available render
+        if (itemsToRender.Length > 0)
+        {
+            for (var i = 0u; i < itemsToRender.Length; i++)
+            {
+                var batchItem = itemsToRender[(int)i];
+
+                gpuDataIndex++;
+                totalItemsToRender++;
+
+                this.openGLService.BeginGroup($"Update Line Data - BatchItem({i})");
+                this.bufferManager.UploadLineData(batchItem, (uint)gpuDataIndex);
+                this.openGLService.EndGroup();
+            }
+
+            var totalElements = 6u * totalItemsToRender;
+
+            this.openGLService.BeginGroup($"Render {totalElements} Line Elements");
+            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+            this.openGLService.EndGroup();
+
+            // Empty the batch
+            this.batchServiceManager.EmptyBatch(BatchServiceType.Line);
         }
 
         this.openGLService.EndGroup();
