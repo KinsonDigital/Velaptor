@@ -38,4 +38,13 @@ internal interface IGPUBufferFactory
     ///     The instance is a singleton.  Every call to this method will return the same instance.
     /// </remarks>
     IGPUBuffer<RectBatchItem> CreateRectGPUBuffer();
+
+    /// <summary>
+    /// Creates an instance of the <see cref="LineGPUBuffer"/> class.
+    /// </summary>
+    /// <returns>A GPU buffer class.</returns>
+    /// <remarks>
+    ///     The instance is a singleton.  Every call to this method will return the same instance.
+    /// </remarks>
+    IGPUBuffer<LineBatchItem> CreateLineGPUBuffer();
 }

@@ -20,6 +20,7 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
     private static IGPUBuffer<TextureBatchItem>? textureBuffer;
     private static IGPUBuffer<FontGlyphBatchItem>? fontBuffer;
     private static IGPUBuffer<RectBatchItem>? rectBuffer;
+    private static IGPUBuffer<LineBatchItem>? lineBuffer;
 
     /// <inheritdoc/>
     public IGPUBuffer<TextureBatchItem> CreateTextureGPUBuffer()
@@ -91,5 +92,29 @@ internal sealed class GPUBufferFactory : IGPUBufferFactory
             shutDownReactor);
 
         return rectBuffer;
+    }
+
+    /// <inheritdoc/>
+    public IGPUBuffer<LineBatchItem> CreateLineGPUBuffer()
+    {
+        if (lineBuffer is not null)
+        {
+            return lineBuffer;
+        }
+
+        var glInvoker = IoC.Container.GetInstance<IGLInvoker>();
+        var glInvokerExtensions = IoC.Container.GetInstance<IOpenGLService>();
+        var glInitReactor = IoC.Container.GetInstance<IReactable<GLInitData>>();
+        var batchSizeReactable = IoC.Container.GetInstance<IReactable<BatchSizeData>>();
+        var shutDownReactor = IoC.Container.GetInstance<IReactable<ShutDownData>>();
+
+        lineBuffer = new LineGPUBuffer(
+            glInvoker,
+            glInvokerExtensions,
+            glInitReactor,
+            batchSizeReactable,
+            shutDownReactor);
+
+        return lineBuffer;
     }
 }

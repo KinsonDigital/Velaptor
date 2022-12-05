@@ -1,4 +1,4 @@
-// <copyright file="GPUBufferBase.cs" company="KinsonDigital">
+﻿// <copyright file="GPUBufferBase.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -227,6 +227,10 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         else if (currentType == typeof(RectGPUBuffer))
         {
             attributes = Attribute.GetCustomAttributes(typeof(RectGPUBuffer));
+        }
+        else if (currentType == typeof(LineGPUBuffer))
+        {
+            attributes = Attribute.GetCustomAttributes(typeof(LineGPUBuffer));
         }
         else
         {

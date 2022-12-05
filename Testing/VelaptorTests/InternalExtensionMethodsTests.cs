@@ -1,8 +1,10 @@
-﻿// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
+// <copyright file="InternalExtensionMethodsTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+// ReSharper disable RedundantArgumentDefaultValue
 #pragma warning disable CS8524
+#pragma warning disable SA1202
 namespace VelaptorTests;
 
 using System;
@@ -120,6 +122,33 @@ public class InternalExtensionMethodsTests
         yield return new object[] { $@"\\", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}", false };
         yield return new object[] { $@"{CrossPlatDirSeparatorChar}{CrossPlatDirSeparatorChar}directory", true };
+    }
+
+    /// <summary>
+    /// Gets the rectangle vertice data for the <see cref="CreateRectFromLine_WhenInvoked_ReturnsCorrectResult"/> unit test.
+    /// </summary>
+    /// <returns>The test data.</returns>
+    public static IEnumerable<object[]> GetExpectedRectPointData()
+    {
+        // X and Y axis aligned rectangle
+        yield return new object[]
+        {
+            new LineBatchItem(new Vector2(50f, 100f), new Vector2(200f, 100f), NETColor.White, 20),
+            new Vector2(50f, 90f),
+            new Vector2(200f, 90f),
+            new Vector2(200f, 110f),
+            new Vector2(50f, 110f),
+        };
+
+        // X and Y axis aligned rectangle rotated 45 degrees clockwise
+        yield return new object[]
+        {
+            new LineBatchItem(new Vector2(100f, 100f), new Vector2(200f, 200f), NETColor.White, 100f, 0),
+            new Vector2(135.35535f, 64.64465f),
+            new Vector2(235.35535f, 164.64467f),
+            new Vector2(164.64465f, 235.35533f),
+            new Vector2(64.64465f, 135.35535f),
+        };
     }
 
     // ReSharper restore HeapView.BoxingAllocation
@@ -495,6 +524,218 @@ public class InternalExtensionMethodsTests
         Assert.Equal(expectedVertex.BottomLeftCornerRadius, actual.BottomLeftCornerRadius);
         Assert.Equal(expectedVertex.BottomRightCornerRadius, actual.BottomRightCornerRadius);
         Assert.Equal(expectedVertex.TopRightCornerRadius, actual.TopRightCornerRadius);
+    }
+
+    [Fact]
+    public void Scale_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expectedP1 = new Vector2(100, 100);
+        var expectedP2 = new Vector2(150, 150);
+
+        var p1 = new Vector2(100, 100);
+        var p2 = new Vector2(200, 200);
+
+        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f, 0);
+
+        // Act
+        var actual = sut.Scale(0.5f);
+
+        // Assert
+        actual.P1.Should().Be(expectedP1);
+        actual.P2.Should().Be(expectedP2);
+    }
+
+    [Fact]
+    public void Flip_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expectedP1 = new Vector2(100, 100);
+        var expectedP2 = new Vector2(0, 0);
+
+        var p1 = new Vector2(100, 100);
+        var p2 = new Vector2(200, 200);
+
+        var sut = new LineBatchItem(p1, p2, NETColor.White, 0f, 0);
+
+        // Act
+        var actual = sut.FlipEnd();
+
+        // Assert
+        actual.P1.Should().Be(expectedP1);
+        actual.P2.Should().Be(expectedP2);
+    }
+
+    [Fact]
+    public void Length_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        const float startX = 124.6f;
+        const float startY = 187.5f;
+        const float stopX = 257.3f;
+        const float stopY = 302.4f;
+
+        var line = new LineBatchItem(
+            new Vector2(startX, startY),
+            new Vector2(stopX, stopY),
+            NETColor.White,
+            0f,
+            0);
+
+        // Act
+        var actual = line.Length();
+
+        // Assert
+        actual.Should().Be(175.53146f);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetExpectedRectPointData))]
+    internal void CreateRectFromLine_WhenInvoked_ReturnsCorrectResult(
+        LineBatchItem lineItem,
+        Vector2 topLeftCorner,
+        Vector2 topRightCorner,
+        Vector2 bottomRightCorner,
+        Vector2 bottomLeftCorner)
+    {
+        // Arrange
+        var expected = new[]
+        {
+            topLeftCorner,
+            topRightCorner,
+            bottomRightCorner,
+            bottomLeftCorner,
+        };
+
+        var line = new LineBatchItem(lineItem.P1, lineItem.P2, lineItem.Color, lineItem.Thickness, lineItem.Layer);
+
+        // Act
+        var actual = line.CreateRectFromLine();
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void SetP1_WhenInvokedForLineBatchItem_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new LineBatchItem(
+            new Vector2(10, 20),
+            new Vector2(2, 3),
+            NETColor.FromArgb(4, 5, 6, 7),
+            8,
+            9);
+
+        var item = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(2, 3),
+            NETColor.FromArgb(4, 5, 6, 7),
+            8,
+            9);
+
+        // Act
+        var actual = item.SetP1(new Vector2(10, 20));
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void SetP2_WhenInvokedForLineBatchItem_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(20, 30),
+            NETColor.FromArgb(4, 5, 6, 7),
+            8,
+            9);
+
+        var item = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(2, 3),
+            NETColor.FromArgb(4, 5, 6, 7),
+            8,
+            9);
+
+        // Act
+        var actual = item.SetP2(new Vector2(20, 30));
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void SwapEnds_WhenInvoked_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expected = new LineBatchItem(
+            new Vector2(2, 3),
+            new Vector2(1, 2),
+            NETColor.FromArgb(4, 5, 6, 7),
+            8,
+            9);
+
+        var item = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(2, 3),
+            NETColor.FromArgb(4, 5, 6, 7),
+            8,
+            9);
+
+        // Act
+        var actual = item.SwapEnds();
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void SetVertexPos_WithInvalidVertextNumber_ThrowsException()
+    {
+        // Arrange
+        var gpuData = new LineGPUData(
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty));
+
+        // Act
+        var act = () => gpuData.SetVertexPos(Vector2.Zero, (VertexNumber)1234);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("The vertex number is invalid. (Parameter 'vertexNumber')");
+    }
+
+    [Theory]
+    [InlineData(VertexNumber.One)]
+    [InlineData(VertexNumber.Two)]
+    [InlineData(VertexNumber.Three)]
+    [InlineData(VertexNumber.Four)]
+    internal void SetVertexPos_WhenInvokedWithLineGPUData_ReturnsCorrectResult(VertexNumber vertexNumber)
+    {
+        // Arrange
+        var expectedPos = new Vector2(10, 20);
+
+        var gpuData = new LineGPUData(
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty),
+            new LineVertexData(Vector2.Zero, NETColor.Empty));
+
+        // Act
+        var actual = vertexNumber switch
+        {
+            VertexNumber.One => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.One).Vertex1,
+            VertexNumber.Two => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Two).Vertex2,
+            VertexNumber.Three => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Three).Vertex3,
+            VertexNumber.Four => gpuData.SetVertexPos(new Vector2(10, 20), VertexNumber.Four).Vertex4,
+        };
+
+        // Assert
+        actual.VertexPos.Should().BeEquivalentTo(expectedPos);
     }
 
     [Fact]

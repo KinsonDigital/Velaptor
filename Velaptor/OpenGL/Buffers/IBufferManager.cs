@@ -1,4 +1,4 @@
-// <copyright file="IBufferManager.cs" company="KinsonDigital">
+﻿// <copyright file="IBufferManager.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -57,4 +57,18 @@ internal interface IBufferManager
     ///     of the 'chunk' of <paramref name="data"/> in the array.
     /// </remarks>
     void UploadRectData(RectBatchItem data, uint batchIndex);
+
+    /// <summary>
+    /// Uploads the GPU buffer using the given line <paramref name="data"/>
+    /// at the given <paramref name="batchIndex"/> location.
+    /// </summary>
+    /// <param name="data">The line data to upload.</param>
+    /// <param name="batchIndex">The index location of the data to update.</param>
+    /// <remarks>
+    ///     Think of the <paramref name="batchIndex"/> as the offset/location of
+    ///     the data in GPU memory. For example, if you think of the memory
+    ///     being laid out like an array of data, this would be the location
+    ///     of the 'chunk' of <paramref name="data"/> in the array.
+    /// </remarks>
+    void UploadLineData(LineBatchItem data, uint batchIndex);
 }
