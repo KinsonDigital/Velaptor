@@ -66,6 +66,12 @@ public class LineGPUDataTests
     }
     #endregion
 
+    /// <summary>
+    /// Creates 4 <see cref="LineVertexData"/> items with all of it's data components
+    /// in a numerical order that is relative to the given <paramref name="start"/> value.
+    /// </summary>
+    /// <param name="start">The starting numerical value for the data components.</param>
+    /// <returns>The data to use for testing.</returns>
     private LineVertexData[] CreateAllOrderedVertexData(int start)
     {
         var v1 = CreateOrderedVertexData(start);
@@ -85,6 +91,12 @@ public class LineGPUDataTests
         new (new Vector2(allValues, allValues),
             Color.FromArgb(allValues, allValues, allValues, allValues));
 
+    /// <summary>
+    /// Creates a single <see cref="LineVertexData"/> item with all of it's data components
+    /// in a numerical order that is relative to the given <paramref name="start"/> value.
+    /// </summary>
+    /// <param name="start">The starting numerical value for the data components.</param>
+    /// <returns>The data to use for testing.</returns>
     private (LineVertexData result, int maxValue) CreateOrderedVertexData(int start)
     {
         var currentValue = start;
@@ -100,9 +112,21 @@ public class LineGPUDataTests
         return (newData, currentValue);
     }
 
+    /// <summary>
+    /// Creates a single <see cref="Vector2"/> item with all of it's data components
+    /// in a numerical order that is relative to the given <paramref name="start"/> value.
+    /// </summary>
+    /// <param name="start">The starting numerical value for the data components.</param>
+    /// <returns>The data to use for testing.</returns>
     private (Vector2 result, int maxValue) CreateOrderedVector(int start)
         => (new Vector2(start, start + 1), start + 1);
 
+    /// <summary>
+    /// Creates a single <see cref="Color"/> item with all of it's data components
+    /// in a numerical order that is relative to the given <paramref name="start"/> value.
+    /// </summary>
+    /// <param name="start">The starting numerical value for the data components.</param>
+    /// <returns>The data to use for testing.</returns>
     private (Color result, int maxValue) CreateOrderedColor(int start)
         => (Color.FromArgb(start, start + 1, start + 2, start + 3), start + 3);
 }

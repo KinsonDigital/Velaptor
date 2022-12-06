@@ -66,7 +66,11 @@ struct Ellipse
 float borderThickness = 1.0; // The clamped border thickness
 
 /*
-    Returns the value squared.
+    @summary - Returns the value squared.
+
+    @param(float value) - The value to square.
+
+    @returns(float) - The original value squared.
 */
 float squared(float value)
 {
@@ -74,8 +78,14 @@ float squared(float value)
 }
 
 /*
-    Creates a circle a given corner of the given rectangle
-    to represent the radius of of each corner.
+    @summary - Creates a circle in a given corner of the given rectangle
+    to represent the radius of a corner.  The corner is chosen by the 'cornerType'
+    parameter.
+
+    @param(Rectangle rect) - The rectangle that contains the corner circle.
+    @param(uint cornerType) - The type of corner to create the circle in.
+
+    @returns(Ellipse) - A circle in a particular corner of the rectangle.
 */
 Ellipse createCornerCircle(Rectangle rect, uint cornerType)
 {
@@ -120,7 +130,13 @@ Ellipse createCornerCircle(Rectangle rect, uint cornerType)
 }
 
 /*
-    Returns a value indicating whether or not the given ellipse contains the current pixel/fragment.
+    @summary - Gets a value indicating whether or not the given 'ellipse' contains
+    the current pixel in a corner of the rectangle that matches the given 'cornerType'.
+
+    @param(Ellipse ellipse) - The ellipse that possibly contains the current pixel.
+    @param(uint cornerType) - The type of corner that the 'ellipse' exists in.
+
+    @returns(bool) - True if the pixel is contained by the corner 'ellipse'.
 */
 bool containedByEllipse(Ellipse ellipse, uint cornerType)
 {
@@ -164,8 +180,13 @@ bool containedByEllipse(Ellipse ellipse, uint cornerType)
 }
 
 /*
-    Returns a value indicating whether or not the current pixel/fragment is
-    in the given corner ellipse based on the type of corner.
+    @summary - Returns a value indicating whether or not the current pixel is in the
+    given quadrant in the given 'cornerEllipse' based on the 'cornerType'.
+
+    @param(Ellipse cornerEllipse) - The ellipse that possibly contains the current pixel in it's quadrant.
+    @param(uint cornerType) - The type of corner that the 'cornerEllipse' exists in.
+
+    @returns(bool) - True if the pixel is in the correct quadrant of the given 'cornerEllipse'.
 */
 bool inCorrectEllipseQuadrant(Ellipse cornerEllipse, uint cornerType)
 {
@@ -200,8 +221,13 @@ bool inCorrectEllipseQuadrant(Ellipse cornerEllipse, uint cornerType)
 }
 
 /*
-    Returns a value indicating whether or not the current pixel/fragment is
-    in the corner ellipse based on the type of corner.
+    @summary - Returns a value indicating whether or not the current pixel is
+    in the given 'cornerEllipse' based on the 'cornerType'.
+
+    @param(Ellipse cornerEllipse) - The ellipse that is in a corner that matches the given 'cornerType'.
+    @param(uint cornerType) - The type of corner that the 'cornerEllipse' exists in.
+
+    @returns(bool) - True if the pixel is in the correct corner of the rectangle corner.
 */
 bool inRectCorner(Ellipse cornerEllipse, uint cornerType)
 {
@@ -209,9 +235,14 @@ bool inRectCorner(Ellipse cornerEllipse, uint cornerType)
 }
 
 /*
-    Returns a value indicating whether or not the current pixel/fragment is
+    @summary - Returns a value indicating whether or not the current pixel is
     in the tip of the rectangle's corner outside of the given
-    corner ellipse based on the type of corner.
+    'cornerEllipse' based on the given 'cornerType'.
+
+    @param(Ellipse cornerEllipse) - The ellipse that is in a corner that matches the given 'cornerType'.
+    @param(uint cornerType) - The type of corner that the 'cornerEllipse' exists in.
+
+    @returns(bool) - True if the pixel is in the correct corner tip of the rectangle corner.
 */
 bool inRectCornerTip(Ellipse cornerEllipse, uint cornerType)
 {
@@ -219,8 +250,16 @@ bool inRectCornerTip(Ellipse cornerEllipse, uint cornerType)
 }
 
 /*
-    Returns value indicating whether or not the current
-    fragment/pixel is contained by the given shape.
+    @summary - Returns value indicating whether or not
+    the current pixel is contained by the given 'rect'.
+
+    @param(Rectangle rect) - The rectangle that possibly contains the current pixel.
+
+    @returns(bool) - True if the current pixel is contained in the rectangle.
+
+    @remarks - The containment is based on the pixel being in the main rectangular area
+               which includes the rectangle, any of the corner circles, but not in the tip
+               of the rectangle corners outside of the corner circles.
 */
 bool containedByRect(Rectangle rect)
 {
@@ -276,13 +315,16 @@ bool containedByRect(Rectangle rect)
 }
 
 /*
-    Maps the given value from one range to another.
+    @summary - Maps the given value from the range dictated by the 'fromStart' and 'fromStop'
+               values to the new range dictaged by the 'toStart' and 'toStop' values.
 
-    @param value The value to map.
-    @param fromStart The from starting range value.
-    @param fromStop The from ending range value.
-    @param toStart The to starting range value.
-    @param toStop The to ending range value.
+    @param(float value) - The value to map.
+    @param(float fromStart) - The from starting range value.
+    @param(float fromStop) - The from ending range value.
+    @param(float toStart) - The to starting range value.
+    @param(float toStop) - The to ending range value.
+
+    @returns(float) - The given 'value' mapped to the enw range.
 */
 float mapValue(float value, float fromStart, float fromStop, float toStart, float toStop)
 {
@@ -290,8 +332,14 @@ float mapValue(float value, float fromStart, float fromStop, float toStart, floa
 }
 
 /*
-    Converts the given color in pixel units to a color with
+    @summary - Converts the given color in pixel units to a color with
     NDC(Normalized Device Coordinate) units.
+
+    @param(vec4 pixelColor) - The pixel color with the components in the unit range of 0-255.
+
+    @returns(vec4) - A 4 component vector of all the color components in NDC units.
+
+    @remarks - NDC = (N)ormalized (D)evice (C)oordinate
 */
 vec4 toNDCColor(vec4 pixelColor)
 {

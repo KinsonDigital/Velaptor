@@ -177,25 +177,25 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     }
 
     /// <summary>
-    /// Invoked the texture batch filled event.
+    /// Invokes the texture batch filled event.
     /// </summary>
     private void TextureBatchingServiceReadyForRendering(object? sender, EventArgs e)
         => this.TextureBatchReadyForRendering?.Invoke(sender, e);
 
     /// <summary>
-    /// Invoked the font glyph batch filled event.
+    /// Invokes the font glyph batch filled event.
     /// </summary>
     private void FontGlyphBatchingServiceReadyForRendering(object? sender, EventArgs e)
         => this.FontGlyphBatchReadyForRendering?.Invoke(sender, e);
 
     /// <summary>
-    /// Invoked the rectangle batch filled event.
+    /// Invokes the rectangle batch filled event.
     /// </summary>
     private void RectBatchingServiceReadyForRendering(object? sender, EventArgs e)
         => this.RectBatchReadyForRendering?.Invoke(sender, e);
 
     /// <summary>
-    /// Invoked the line batch filled event.
+    /// Invokes the line batch filled event.
     /// </summary>
     private void LineBatchingServiceReadyForRendering(object? sender, EventArgs e)
         => this.LineBatchReadyForRendering?.Invoke(sender, e);

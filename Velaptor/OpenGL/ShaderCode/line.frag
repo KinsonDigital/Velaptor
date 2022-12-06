@@ -4,13 +4,15 @@ in vec4 pass_color;
 out vec4 finalColor;
 
 /*
-    @summary Maps the given value from one range to another.
+    @summary - Maps the given value from one range to another.
 
-    @param float - value The value to map.
-    @param float - fromStart The from starting range value.
-    @param float - fromStop The from ending range value.
-    @param float - toStart The to starting range value.
-    @param float - toStop The to ending range value.
+    @param (float value) - value The value to map.
+    @param (float fromStart) - fromStart The from starting range value.
+    @param (float fromStop) - fromStop The from ending range value.
+    @param (float toStart) - toStart The to starting range value.
+    @param (float toStop) - toStop The to ending range value.
+
+    @returns(float) - Single value mapped to the new range.
 */
 float mapValue(float value, float fromStart, float fromStop, float toStart, float toStop)
 {
@@ -18,8 +20,14 @@ float mapValue(float value, float fromStart, float fromStop, float toStart, floa
 }
 
 /*
-    Converts the given color in pixel units to a color with
+    @summary - Converts the given color in pixel units to a color with
     NDC(Normalized Device Coordinate) units.
+
+    @param(vec4 pixelColor) - The pixel color with the components in the unit range of 0-255.
+
+    @returns(vec4) - A 4 component vector of all the color components in NDC units.
+
+    @remarks - NDC = (N)ormalized (D)evice (C)oordinate
 */
 vec4 toNDCColor(vec4 pixelColor)
 {
