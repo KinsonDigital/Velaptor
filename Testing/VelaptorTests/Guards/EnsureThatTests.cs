@@ -69,42 +69,39 @@ public class EnsureThatTests
     }
 
     [Theory]
-    [InlineData(0, "pointer", "The pointer parameter 'pointer' cannot be a value of zero.")]
-    [InlineData(0, "", "The pointer cannot be a value of zero.")]
+    [InlineData("pointer", "The pointer parameter 'pointer' cannot be a value of zero.")]
+    [InlineData("", "The pointer cannot be a value of zero.")]
     public void PointerIsNotNull_WithZeroIntPointer_ThrowsException(
-        nint pointer,
         string paramName,
         string expected)
     {
         // Arrange & Act
-        var act = () => EnsureThat.PointerIsNotNull(pointer, paramName);
+        var act = () => EnsureThat.PointerIsNotNull(IntPtr.Zero, paramName);
 
         // Assert
         act.Should().Throw<NullReferenceException>()
             .WithMessage(expected);
     }
 
-    [Theory]
-    [InlineData(123u)]
-    public void PointerIsNotNull_WithNonZeroUIntPointer_DoesNotThrowException(nuint pointer)
+    [Fact]
+    public void PointerIsNotNull_WithNonZeroUIntPointer_DoesNotThrowException()
     {
         // Arrange & Act
-        var act = () => EnsureThat.PointerIsNotNull(pointer);
+        var act = () => EnsureThat.PointerIsNotNull(123u);
 
         // Assert
         act.Should().NotThrow();
     }
 
     [Theory]
-    [InlineData(0u, "pointer", "The pointer parameter 'pointer' cannot be a value of zero.")]
-    [InlineData(0u, "", "The pointer cannot be a value of zero.")]
+    [InlineData("pointer", "The pointer parameter 'pointer' cannot be a value of zero.")]
+    [InlineData("", "The pointer cannot be a value of zero.")]
     public void PointerIsNotNull_WithZeroUIntPointer_ThrowsException(
-        nuint pointer,
         string paramName,
         string expected)
     {
         // Arrange & Act
-        var act = () => EnsureThat.PointerIsNotNull(pointer, paramName);
+        var act = () => EnsureThat.PointerIsNotNull(IntPtr.Zero, paramName);
 
         // Assert
         act.Should().Throw<NullReferenceException>()
