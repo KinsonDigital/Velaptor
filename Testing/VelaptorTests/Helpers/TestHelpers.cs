@@ -201,13 +201,13 @@ public static class TestHelpers
     }
 
     /// <summary>
-    /// Creates a new 2 dimensional array of pixel colors using the given <paramref name="color"/>
+    /// Creates a new two dimensional array of pixel colors using the given <paramref name="color"/>
     /// with enough pixels to fill an image that has the given <paramref name="width"/> and <paramref name="height"/>.
     /// </summary>
     /// <param name="color">The color of all the pixels.</param>
     /// <param name="width">The width of the image represented by the <see cref="ImageData.Pixels"/>.</param>
     /// <param name="height">The height of the image represented by the <see cref="ImageData.Pixels"/>.</param>
-    /// <returns>The 2 dimensional array of pixels to test.</returns>
+    /// <returns>The two dimensional array of pixels to test.</returns>
     private static NETColor[,] CreatePixels(NETColor color, uint width, uint height)
     {
         var result = new NETColor[width, height];

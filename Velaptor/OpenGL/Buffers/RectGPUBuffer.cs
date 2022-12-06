@@ -45,7 +45,6 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
         IReactable<ShutDownData> shutDownReactable)
         : base(gl, openGLService, glInitReactable, shutDownReactable)
     {
-        // TODO: Test for null batch reactable and subscription
         EnsureThat.ParamIsNotNull(batchSizeReactable);
 
         this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(
@@ -222,7 +221,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     }
 
     /// <summary>
-    /// Generates default <see cref="RectVertexData"/> for all 4 vertices that make
+    /// Generates default <see cref="RectVertexData"/> for all fout vertices that make
     /// up a rectangle rendering area.
     /// </summary>
     /// <returns>The four vertex data items.</returns>

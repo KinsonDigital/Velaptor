@@ -1503,7 +1503,7 @@ public class InternalExtensionMethodsTests
     /// Gets the <see cref="Rgba32"/> pixels from the given <paramref name="sixLaborsImage"/>.
     /// </summary>
     /// <param name="sixLaborsImage">The six labors image.</param>
-    /// <returns>The 2 dimensional pixel colors of the image.</returns>
+    /// <returns>The two dimensional pixel colors of the image.</returns>
     private static Rgba32[,] GetSixLaborPixels(Image<Rgba32> sixLaborsImage)
     {
         var result = new Rgba32[sixLaborsImage.Width, sixLaborsImage.Height];

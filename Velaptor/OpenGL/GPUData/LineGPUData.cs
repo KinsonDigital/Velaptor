@@ -89,9 +89,9 @@ internal readonly struct LineGPUData
     public float[] ToArray()
     {
         /* NOTE:
-            The order of the array elements are extremely important.
-            They determine the layout of each stride of vertex data and the layout
-            here has to match the layout told to OpenGL
+            The order of the array elements is extremely important.
+            It determines the layout of each stride of vertex data and that layout
+            has to match the layout told to OpenGL.
         */
 
         // return ToArrayDebug();

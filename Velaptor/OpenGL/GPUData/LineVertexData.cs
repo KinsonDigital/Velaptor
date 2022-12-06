@@ -55,7 +55,7 @@ internal readonly struct LineVertexData
     /// <summary>
     /// Gets the stride of the entire vertex data chunk in bytes.
     /// </summary>
-    /// <returns>The total bytes of the stride of the vertex.</returns>
+    /// <returns>The total bytes of the vertex's stride.</returns>
     public static uint GetStride() => Stride;
 
     /// <summary>
@@ -65,9 +65,9 @@ internal readonly struct LineVertexData
     public IEnumerable<float> ToArray()
     {
         /* NOTE:
-            The order of the array elements are extremely important.
-            They determine the layout of each stride of vertex data and the layout
-            here has to match the layout told to OpenGL
+            The order of the array elements is extremely important.
+            It determines the layout of each stride of vertex data and that layout
+            has to match the layout told to OpenGL.
         */
 
         var result = new List<float>();

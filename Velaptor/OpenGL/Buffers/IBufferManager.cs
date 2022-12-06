@@ -66,8 +66,8 @@ internal interface IBufferManager
     /// <param name="batchIndex">The index location of the data to update.</param>
     /// <remarks>
     ///     Think of the <paramref name="batchIndex"/> as the offset/location of
-    ///     the data in GPU memory. For example, if you think of the memory
-    ///     being laid out like an array of data, this would be the location
+    ///     the data in GPU memory. For example, if the memory
+    ///     is laid out like an array of data, this would be the location
     ///     of the 'chunk' of <paramref name="data"/> in the array.
     /// </remarks>
     void UploadLineData(LineBatchItem data, uint batchIndex);

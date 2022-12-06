@@ -80,7 +80,7 @@ internal abstract class ShaderProgram : IShaderProgram
     public uint BatchSize { get; protected set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not a value if the <see cref="ShaderProgram"/> is disposed.
+    /// Gets or sets a value indicating whether or not the <see cref="ShaderProgram"/> is disposed.
     /// </summary>
     [SuppressMessage(
         "ReSharper",
@@ -237,7 +237,7 @@ internal abstract class ShaderProgram : IShaderProgram
     /// <param name="vertShaderId">The <c>OpenGL</c> vertex shader ID.</param>
     /// <param name="fragShaderId">The <c>OpenGL</c> fragment shader ID.</param>
     /// <remarks>
-    ///     The vertex and fragment shader code is not needed on the CPU side anymore
+    ///     The vertex and fragment shader code is not needed on the CPU side
     ///     once the GPU receives the shader code result.
     /// </remarks>
     private void CleanShadersIfReady(string name, uint vertShaderId, uint fragShaderId)
@@ -259,7 +259,7 @@ internal abstract class ShaderProgram : IShaderProgram
     }
 
     /// <summary>
-    /// Processes any custom attributes that might be on the implementing class.
+    /// Processes any custom attributes that may or may not be on the implementing class.
     /// </summary>
     private void ProcessCustomAttributes()
     {

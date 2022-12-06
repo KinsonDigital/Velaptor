@@ -75,8 +75,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -117,8 +117,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -159,8 +159,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -202,8 +202,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -247,8 +247,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -291,8 +291,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -334,8 +334,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -384,8 +384,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -433,8 +433,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -483,8 +483,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -527,8 +527,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -572,8 +572,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -618,8 +618,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -670,8 +670,8 @@ public interface IRenderer
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -706,8 +706,8 @@ public interface IRenderer
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -742,8 +742,8 @@ public interface IRenderer
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -778,8 +778,8 @@ public interface IRenderer
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -816,8 +816,8 @@ public interface IRenderer
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -854,8 +854,8 @@ public interface IRenderer
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -893,8 +893,8 @@ public interface IRenderer
     /// <remarks>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///

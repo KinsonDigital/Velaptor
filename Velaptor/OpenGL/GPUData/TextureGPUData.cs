@@ -53,7 +53,7 @@ internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
     /// </summary>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
-    /// <returns><c>true</c> if the 2 operands are equal.</returns>
+    /// <returns><c>true</c> if the two operands are equal.</returns>
     public static bool operator ==(TextureGPUData left, TextureGPUData right) => left.Equals(right);
 
     /// <summary>
@@ -62,7 +62,7 @@ internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
     /// </summary>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
-    /// <returns><c>true</c> if the 2 operands are equal.</returns>
+    /// <returns><c>true</c> if the two operands are equal.</returns>
     public static bool operator !=(TextureGPUData left, TextureGPUData right) => !(left == right);
 
     /// <summary>

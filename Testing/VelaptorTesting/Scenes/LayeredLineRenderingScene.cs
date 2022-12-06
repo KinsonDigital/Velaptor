@@ -16,7 +16,7 @@ using Velaptor.Graphics;
 using Velaptor.Input;
 
 /// <summary>
-/// Tests out layered rendering with lines.
+/// Tests layered rendering with lines.
 /// </summary>
 public class LayeredLineRenderingScene : SceneBase
 {

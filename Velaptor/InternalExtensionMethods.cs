@@ -196,7 +196,7 @@ internal static class InternalExtensionMethods
     ///         <para>Value of <c>C:/</c> will return <c>true</c>.</para>
     ///     </item>
     ///     <item>
-    ///         Contains at least 1 directory.
+    ///         Contains at least one directory.
     ///         <para>will return <c>true</c>: C:/my-directory</para>
     ///     </item>
     ///     <item>
@@ -258,7 +258,7 @@ internal static class InternalExtensionMethods
     ///         <para>Value of <c>C:/</c> will return <c>false</c>.</para>
     ///     </item>
     ///     <item>
-    ///         Contains at least 1 directory
+    ///         Contains at least one directory
     ///         <para>will return <c>false</c>: C:/my-directory</para>
     ///     </item>
     ///     <item>
@@ -704,7 +704,7 @@ internal static class InternalExtensionMethods
     /// <param name="paths">The list of paths to normalize.</param>
     /// <returns>Normalized paths.</returns>
     /// <remarks>
-    ///     A normalized path is a path that has all of it's directory separators all the same to the value of <c>'/'</c>.
+    ///     A normalized path is a path that has all of its directory separators all the same to the value of <c>'/'</c>.
     /// </remarks>
     public static ReadOnlyCollection<string> NormalizePaths(this IEnumerable<string> paths) =>
         paths.Select(p => p.Contains(WinDirSeparatorChar)
@@ -1269,7 +1269,7 @@ internal static class InternalExtensionMethods
 
         var scaledVector = new Vector2(translatedVector.X * scale, translatedVector.Y * scale);
 
-        // Translate back
+        // Translate the vector back to its original position
         line = line.SetP2(scaledVector + line.P1);
 
         return line;
@@ -1286,7 +1286,7 @@ internal static class InternalExtensionMethods
 
         translatedStop *= -1;
 
-        // Translate the end of the line back
+        // Translates the end of the line back
         translatedStop += line.P1;
 
         var result = line.SetP2(translatedStop);
@@ -1304,11 +1304,11 @@ internal static class InternalExtensionMethods
 
     /// <summary>
     /// Creates a rectangle from the given line.  This rectangle is takes the thickness of the line into account with
-    /// it's length to construct the rectangle.
+    /// its length to construct the rectangle.
     /// </summary>
     /// <param name="line">The line.</param>
     /// <returns>
-    ///     The 4 corners of the rectangle as vectors.
+    ///     The four corners of the rectangle as vectors.
     /// </returns>
     public static IEnumerable<Vector2> CreateRectFromLine(this LineBatchItem line)
     {

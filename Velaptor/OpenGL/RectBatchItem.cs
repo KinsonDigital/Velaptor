@@ -194,7 +194,7 @@ internal readonly struct RectBatchItem
     /// <remarks>
     ///     <para>
     ///         Lower layer values will render before higher layer values.
-    ///         If 2 separate textures have the same layer value, they will
+    ///         If two separate textures have the same layer value, they will
     ///         rendered in the order that the render method was invoked.
     ///     </para>
     ///     <para>Example below:</para>

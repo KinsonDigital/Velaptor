@@ -83,7 +83,7 @@ float squared(float value)
     parameter.
 
     @param(Rectangle rect) - The rectangle that contains the corner circle.
-    @param(uint cornerType) - The type of corner to create the circle in.
+    @param(uint cornerType) - The corner of where to put the circle.
 
     @returns(Ellipse) - A circle in a particular corner of the rectangle.
 */
@@ -133,8 +133,8 @@ Ellipse createCornerCircle(Rectangle rect, uint cornerType)
     @summary - Gets a value indicating whether or not the given 'ellipse' contains
     the current pixel in a corner of the rectangle that matches the given 'cornerType'.
 
-    @param(Ellipse ellipse) - The ellipse that possibly contains the current pixel.
-    @param(uint cornerType) - The type of corner that the 'ellipse' exists in.
+    @param(Ellipse ellipse) - The ellipse that may or may not contain the current pixel.
+    @param(uint cornerType) - The type of corner where the 'ellipse' exists.
 
     @returns(bool) - True if the pixel is contained by the corner 'ellipse'.
 */
@@ -183,7 +183,7 @@ bool containedByEllipse(Ellipse ellipse, uint cornerType)
     @summary - Returns a value indicating whether or not the current pixel is in the
     given quadrant in the given 'cornerEllipse' based on the 'cornerType'.
 
-    @param(Ellipse cornerEllipse) - The ellipse that possibly contains the current pixel in it's quadrant.
+    @param(Ellipse cornerEllipse) - The ellipse that may or may not contain the current pixel in its quadrant.
     @param(uint cornerType) - The type of corner that the 'cornerEllipse' exists in.
 
     @returns(bool) - True if the pixel is in the correct quadrant of the given 'cornerEllipse'.
@@ -253,7 +253,7 @@ bool inRectCornerTip(Ellipse cornerEllipse, uint cornerType)
     @summary - Returns value indicating whether or not
     the current pixel is contained by the given 'rect'.
 
-    @param(Rectangle rect) - The rectangle that possibly contains the current pixel.
+    @param(Rectangle rect) - The rectangle that may or may not contain the current pixel.
 
     @returns(bool) - True if the current pixel is contained in the rectangle.
 
@@ -337,7 +337,7 @@ float mapValue(float value, float fromStart, float fromStop, float toStart, floa
 
     @param(vec4 pixelColor) - The pixel color with the components in the unit range of 0-255.
 
-    @returns(vec4) - A 4 component vector of all the color components in NDC units.
+    @returns(vec4) - A four component vector of all the color components in NDC units.
 
     @remarks - NDC = (N)ormalized (D)evice (C)oordinate
 */
@@ -362,7 +362,7 @@ void main()
     float halfHeight = shape.w / 2.0;
     bool isFilled = pass_isFilled > 0.0;
 
-    // Clamp the border thickness
+    // Clamps the border thickness
     borderThickness = clamp(pass_borderThickness, 1.0, halfWidth <= halfHeight ? halfWidth : halfHeight);
 
     vec4 ndcColor = toNDCColor(pass_color);

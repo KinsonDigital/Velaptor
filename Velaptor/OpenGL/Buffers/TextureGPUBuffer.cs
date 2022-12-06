@@ -1,4 +1,4 @@
-// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
+﻿// <copyright file="TextureGPUBuffer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -47,7 +47,6 @@ internal sealed class TextureGPUBuffer : GPUBufferBase<TextureBatchItem>
         IReactable<ShutDownData> shutDownReactable)
         : base(gl, openGLService, glInitReactable, shutDownReactable)
     {
-        // TODO: Test for null batch reactable and subscription
         EnsureThat.ParamIsNotNull(batchSizeReactable);
 
         this.unsubscriber = batchSizeReactable.Subscribe(new Reactor<BatchSizeData>(

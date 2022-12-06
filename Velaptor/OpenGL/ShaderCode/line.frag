@@ -25,7 +25,7 @@ float mapValue(float value, float fromStart, float fromStop, float toStart, floa
 
     @param(vec4 pixelColor) - The pixel color with the components in the unit range of 0-255.
 
-    @returns(vec4) - A 4 component vector of all the color components in NDC units.
+    @returns(vec4) - A four component vector of all the color components in NDC units.
 
     @remarks - NDC = (N)ormalized (D)evice (C)oordinate
 */

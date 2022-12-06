@@ -67,7 +67,7 @@ public class LineGPUDataTests
     #endregion
 
     /// <summary>
-    /// Creates 4 <see cref="LineVertexData"/> items with all of it's data components
+    /// Creates four <see cref="LineVertexData"/> items with all of its data components
     /// in a numerical order that is relative to the given <paramref name="start"/> value.
     /// </summary>
     /// <param name="start">The starting numerical value for the data components.</param>
@@ -92,7 +92,7 @@ public class LineGPUDataTests
             Color.FromArgb(allValues, allValues, allValues, allValues));
 
     /// <summary>
-    /// Creates a single <see cref="LineVertexData"/> item with all of it's data components
+    /// Creates a single <see cref="LineVertexData"/> item with all of its data components
     /// in a numerical order that is relative to the given <paramref name="start"/> value.
     /// </summary>
     /// <param name="start">The starting numerical value for the data components.</param>
@@ -113,7 +113,7 @@ public class LineGPUDataTests
     }
 
     /// <summary>
-    /// Creates a single <see cref="Vector2"/> item with all of it's data components
+    /// Creates a single <see cref="Vector2"/> item with all of its data components
     /// in a numerical order that is relative to the given <paramref name="start"/> value.
     /// </summary>
     /// <param name="start">The starting numerical value for the data components.</param>
@@ -122,7 +122,7 @@ public class LineGPUDataTests
         => (new Vector2(start, start + 1), start + 1);
 
     /// <summary>
-    /// Creates a single <see cref="Color"/> item with all of it's data components
+    /// Creates a single <see cref="Color"/> item with all of its data components
     /// in a numerical order that is relative to the given <paramref name="start"/> value.
     /// </summary>
     /// <param name="start">The starting numerical value for the data components.</param>

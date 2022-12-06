@@ -96,7 +96,7 @@ public struct KeyboardState : IEquatable<KeyboardState>
 
     private Dictionary<KeyCode, bool> keyStates;
 
-    /*TODO: Get these 2 properties working with SILK.NET
+    /*TODO: Get these two properties working with SILK.NET
 
     /// <summary>
     /// Gets a value indicating whether or not the caps lock key is on.

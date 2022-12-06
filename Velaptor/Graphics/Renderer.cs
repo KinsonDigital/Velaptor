@@ -443,7 +443,7 @@ internal sealed class Renderer : IRenderer
     }
 
     /// <summary>
-    /// Shuts down the application by disposing of resources.
+    /// Shuts down the application by disposing resources.
     /// </summary>
     private void ShutDown()
     {
@@ -500,7 +500,7 @@ internal sealed class Renderer : IRenderer
             .OrderBy(i => i.Layer)
             .ToArray();
 
-        // Only if items are available render
+        // Only if items are available to render
         if (itemsToRender.Length > 0)
         {
             for (var i = 0u; i < itemsToRender.Length; i++)
@@ -539,7 +539,7 @@ internal sealed class Renderer : IRenderer
                 gpuDataIndex = -1;
             }
 
-            // Empty the batch
+            // Empties the batch
             this.batchServiceManager.EmptyBatch(BatchServiceType.Texture);
         }
 
@@ -572,7 +572,7 @@ internal sealed class Renderer : IRenderer
             .OrderBy(i => i.Layer)
             .ToArray();
 
-        // Only if items are available render
+        // Only if items are available to render
         if (itemsToRender.Length > 0)
         {
             for (var i = 0u; i < itemsToRender.Length; i++)
@@ -611,7 +611,7 @@ internal sealed class Renderer : IRenderer
                 gpuDataIndex = -1;
             }
 
-            // Empty the batch
+            // Empties the batch
             this.batchServiceManager.EmptyBatch(BatchServiceType.FontGlyph);
         }
 
@@ -644,7 +644,7 @@ internal sealed class Renderer : IRenderer
             .OrderBy(i => i.Layer)
             .ToArray();
 
-        // Only if items are available render
+        // Only if items are available to render
         if (itemsToRender.Length > 0)
         {
             for (var i = 0u; i < itemsToRender.Length; i++)
@@ -665,7 +665,7 @@ internal sealed class Renderer : IRenderer
             this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
             this.openGLService.EndGroup();
 
-            // Empty the batch
+            // Empties the batch
             this.batchServiceManager.EmptyBatch(BatchServiceType.Rectangle);
         }
 
@@ -698,7 +698,7 @@ internal sealed class Renderer : IRenderer
             .OrderBy(i => i.Layer)
             .ToArray();
 
-        // Only if items are available render
+        // Only if items are available to render
         if (itemsToRender.Length > 0)
         {
             for (var i = 0u; i < itemsToRender.Length; i++)
@@ -719,7 +719,7 @@ internal sealed class Renderer : IRenderer
             this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
             this.openGLService.EndGroup();
 
-            // Empty the batch
+            // Empties the batch
             this.batchServiceManager.EmptyBatch(BatchServiceType.Line);
         }
 
