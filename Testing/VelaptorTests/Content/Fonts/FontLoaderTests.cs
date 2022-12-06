@@ -1,4 +1,4 @@
-// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
+﻿// <copyright file="FontLoaderTests.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,7 +17,6 @@ using Velaptor.Content.Factories;
 using Velaptor.Content.Fonts;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -30,8 +29,8 @@ public class FontLoaderTests
     private const string FontDirName = "fonts";
     private const string ContentDirPath = @"C:/content/";
     private const string FontContentName = "test-font";
+    private const string FontContentDirPath = $@"{ContentDirPath}{FontDirName}/";
     private readonly string metaData = $"size:{FontSize}";
-    private readonly string fontContentDirPath = $@"{ContentDirPath}{FontDirName}/";
     private readonly string fontFilePath;
     private readonly string filePathWithMetaData;
     private readonly string contentNameWithMetaData;
@@ -384,10 +383,10 @@ public class FontLoaderTests
         var defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
         var defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
 
-        var defaultRegularFontFilePath = $"{this.fontContentDirPath}{defaultRegularFontName}";
-        var defaultBoldFontFilePath = $"{this.fontContentDirPath}{defaultBoldFontName}";
-        var defaultItalicFontFilePath = $"{this.fontContentDirPath}{defaultItalicFontName}";
-        var defaultBoldItalicFontFilePath = $"{this.fontContentDirPath}{defaultBoldItalicFontName}";
+        var defaultRegularFontFilePath = $"{FontContentDirPath}{defaultRegularFontName}";
+        var defaultBoldFontFilePath = $"{FontContentDirPath}{defaultBoldFontName}";
+        var defaultItalicFontFilePath = $"{FontContentDirPath}{defaultItalicFontName}";
+        var defaultBoldItalicFontFilePath = $"{FontContentDirPath}{defaultBoldItalicFontName}";
 
         var mockRegularFontFileStream = MockLoadResource(defaultRegularFontName);
         var mockBoldFontFileStream = MockLoadResource(defaultBoldFontName);
@@ -400,7 +399,7 @@ public class FontLoaderTests
         var mockCopyToBoldItalicStream = MockCopyToStream(defaultBoldItalicFontFilePath);
 
         this.mockDirectory.Setup(m => m.Exists(ContentDirPath)).Returns(false);
-        this.mockDirectory.Setup(m => m.Exists(this.fontContentDirPath)).Returns(false);
+        this.mockDirectory.Setup(m => m.Exists(FontContentDirPath)).Returns(false);
 
         this.mockFile.Setup(m => m.Exists(defaultRegularFontFilePath)).Returns(false);
         this.mockFile.Setup(m => m.Exists(defaultBoldFontFilePath)).Returns(false);
@@ -418,7 +417,7 @@ public class FontLoaderTests
 
         // Check for directory existence
         this.mockDirectory.Verify(m => m.Exists(ContentDirPath), Times.Once);
-        this.mockDirectory.Verify(m => m.Exists(this.fontContentDirPath), Times.Once);
+        this.mockDirectory.Verify(m => m.Exists(FontContentDirPath), Times.Once);
 
         // Each file was verified if it exists
         this.mockFile.Verify(m => m.Exists(defaultRegularFontFilePath), Times.Once);
@@ -539,8 +538,8 @@ public class FontLoaderTests
     public void Load_WithFileNameAndExtensionOnly_LoadsFontFromContentDirectory()
     {
         // Arrange
-        var fileNameWithExt = $"{FontContentName}{FontExtension}";
-        var fileNameWithExtAndMetaData = $"{fileNameWithExt}|size:12";
+        const string fileNameWithExt = $"{FontContentName}{FontExtension}";
+        const string fileNameWithExtAndMetaData = $"{fileNameWithExt}|size:12";
 
         this.mockFontMetaDataParser.Setup(m => m.Parse(fileNameWithExtAndMetaData))
             .Returns(new FontMetaDataParseResult(
