@@ -221,7 +221,7 @@ internal sealed class RectGPUBuffer : GPUBufferBase<RectBatchItem>
     }
 
     /// <summary>
-    /// Generates default <see cref="RectVertexData"/> for all fout vertices that make
+    /// Generates default <see cref="RectVertexData"/> for all four vertices that make
     /// up a rectangle rendering area.
     /// </summary>
     /// <returns>The four vertex data items.</returns>

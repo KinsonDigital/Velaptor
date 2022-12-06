@@ -71,7 +71,7 @@ public interface IRenderer
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position are based on the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
