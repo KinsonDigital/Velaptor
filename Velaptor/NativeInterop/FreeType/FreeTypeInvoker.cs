@@ -25,7 +25,7 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     // ReSharper disable InconsistentNaming
 
     /// <inheritdoc/>
-    public FT_Vector FT_Get_Kerning(IntPtr face, uint left_glyph, uint right_glyph, uint kern_mode)
+    public FT_Vector FT_Get_Kerning(nint face, uint left_glyph, uint right_glyph, uint kern_mode)
     {
         var error = FT.FT_Get_Kerning(face, left_glyph, right_glyph, kern_mode, out var akerning);
 
@@ -39,49 +39,49 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     }
 
     /// <inheritdoc/>
-    public uint FT_Get_Char_Index(IntPtr face, uint charcode) => FT.FT_Get_Char_Index(face, charcode);
+    public uint FT_Get_Char_Index(nint face, uint charcode) => FT.FT_Get_Char_Index(face, charcode);
 
     /// <inheritdoc/>
-    public FT_Error FT_Load_Glyph(IntPtr face, uint glyph_index, int load_flags)
+    public FT_Error FT_Load_Glyph(nint face, uint glyph_index, int load_flags)
         => FT.FT_Load_Glyph(face, glyph_index, load_flags);
 
     /// <inheritdoc/>
-    public FT_Error FT_Load_Char(IntPtr face, uint char_code, int load_flags)
+    public FT_Error FT_Load_Char(nint face, uint char_code, int load_flags)
         => FT.FT_Load_Char(face, char_code, load_flags);
 
     /// <inheritdoc/>
-    public FT_Error FT_Render_Glyph(IntPtr slot, FT_Render_Mode render_mode) => FT.FT_Render_Glyph(slot, render_mode);
+    public FT_Error FT_Render_Glyph(nint slot, FT_Render_Mode render_mode) => FT.FT_Render_Glyph(slot, render_mode);
 
     /// <inheritdoc/>
-    public IntPtr FT_Init_FreeType()
+    public nint FT_Init_FreeType()
     {
         var error = FT.FT_Init_FreeType(out var result);
 
         if (error != FT_Error.FT_Err_Ok)
         {
             this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-            return IntPtr.Zero;
+            return 0;
         }
 
         return result;
     }
 
     /// <inheritdoc/>
-    public IntPtr FT_New_Face(IntPtr library, string filepathname, int face_index)
+    public nint FT_New_Face(nint library, string filepathname, int face_index)
     {
         var error = FT.FT_New_Face(library, filepathname, face_index, out var aface);
 
         if (error != FT_Error.FT_Err_Ok)
         {
             this.OnError?.Invoke(this, new FreeTypeErrorEventArgs(CreateErrorMessage(error.ToString())));
-            return IntPtr.Zero;
+            return 0;
         }
 
         return aface;
     }
 
     /// <inheritdoc/>
-    public void FT_Set_Char_Size(IntPtr face, IntPtr char_width, IntPtr char_height, uint horz_resolution, uint vert_resolution)
+    public void FT_Set_Char_Size(nint face, nint char_width, nint char_height, uint horz_resolution, uint vert_resolution)
     {
         var error = FT.FT_Set_Char_Size(face, char_width, char_height, horz_resolution, vert_resolution);
 
@@ -92,7 +92,7 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     }
 
     /// <inheritdoc/>
-    public void FT_Done_Face(IntPtr face)
+    public void FT_Done_Face(nint face)
     {
         var error = FT.FT_Done_Face(face);
 
@@ -103,10 +103,10 @@ internal sealed class FreeTypeInvoker : IFreeTypeInvoker
     }
 
     /// <inheritdoc/>
-    public void FT_Done_Glyph(IntPtr glyph) => FT.FT_Done_Glyph(glyph);
+    public void FT_Done_Glyph(nint glyph) => FT.FT_Done_Glyph(glyph);
 
     /// <inheritdoc/>
-    public void FT_Done_FreeType(IntPtr library)
+    public void FT_Done_FreeType(nint library)
     {
         var error = FT.FT_Done_FreeType(library);
 
