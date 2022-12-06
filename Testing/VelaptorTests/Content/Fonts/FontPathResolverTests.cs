@@ -7,11 +7,11 @@ namespace VelaptorTests.Content.Fonts;
 using System;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -56,7 +56,7 @@ public class FontPathResolverTests
     public void Ctor_WithNullContentFontPathResolverParam_ThrowsException()
     {
         // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        var act = () =>
         {
             _ = new FontPathResolver(
                 null,
@@ -64,14 +64,18 @@ public class FontPathResolverTests
                 this.mockFile.Object,
                 this.mockDirectory.Object,
                 this.mockPlatform.Object);
-        }, "The parameter must not be null. (Parameter 'contentFontPathResolver')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'contentFontPathResolver')");
     }
 
     [Fact]
     public void Ctor_WithNullWindowsFontPathResolverParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        var act = () =>
         {
             _ = new FontPathResolver(
                 this.mockContentPathResolver.Object,
@@ -79,14 +83,18 @@ public class FontPathResolverTests
                 this.mockFile.Object,
                 this.mockDirectory.Object,
                 this.mockPlatform.Object);
-        }, "The parameter must not be null. (Parameter 'windowsFontPathResolver')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'windowsFontPathResolver')");
     }
 
     [Fact]
     public void Ctor_WithNullFileParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        var act = () =>
         {
             _ = new FontPathResolver(
                 this.mockContentPathResolver.Object,
@@ -94,14 +102,18 @@ public class FontPathResolverTests
                 null,
                 this.mockDirectory.Object,
                 this.mockPlatform.Object);
-        }, "The parameter must not be null. (Parameter 'file')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'file')");
     }
 
     [Fact]
     public void Ctor_WithNullDirectoryParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        var act = () =>
         {
             _ = new FontPathResolver(
                 this.mockContentPathResolver.Object,
@@ -109,14 +121,18 @@ public class FontPathResolverTests
                 this.mockFile.Object,
                 null,
                 this.mockPlatform.Object);
-        }, "The parameter must not be null. (Parameter 'directory')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
     public void Ctor_WithNullPlatformParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Act
+        var act = () =>
         {
             _ = new FontPathResolver(
                 this.mockContentPathResolver.Object,
@@ -124,7 +140,11 @@ public class FontPathResolverTests
                 this.mockFile.Object,
                 this.mockDirectory.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'platform')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'platform')");
     }
     #endregion
 
@@ -135,13 +155,13 @@ public class FontPathResolverTests
         // Arrange
         MockWindowsPlatform();
         this.mockDirectory.Setup(m => m.Exists(RootDirInContentLocation)).Returns(true);
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.RootDirectoryPath;
+        var actual = sut.RootDirectoryPath;
 
         // Assert
-        Assert.Equal(RootDirInContentLocation, actual);
+        actual.Should().Be(RootDirInContentLocation);
     }
 
     [Fact]
@@ -150,13 +170,13 @@ public class FontPathResolverTests
         // Arrange
         MockWindowsPlatform();
         this.mockDirectory.Setup(m => m.Exists(RootDirInContentLocation)).Returns(false);
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.RootDirectoryPath;
+        var actual = sut.RootDirectoryPath;
 
         // Assert
-        Assert.Equal(RootDirInWindowsLocation, actual);
+        actual.Should().Be(RootDirInWindowsLocation);
     }
 
     [Fact]
@@ -164,13 +184,14 @@ public class FontPathResolverTests
     {
         // Arrange
         MockOSXPlatform();
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<NotImplementedException>(() =>
-        {
-            var unused = resolver.RootDirectoryPath;
-        }, OnlyWindowsSupportMessage);
+        // Act
+        var act = () => sut.RootDirectoryPath;
+
+        // Assert
+        act.Should().Throw<NotImplementedException>()
+            .WithMessage(OnlyWindowsSupportMessage);
     }
 
     [Fact]
@@ -179,13 +200,13 @@ public class FontPathResolverTests
         // Arrange
         MockWindowsPlatform();
         this.mockDirectory.Setup(m => m.Exists(RootDirInContentLocation)).Returns(true);
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ContentDirectoryName;
+        var actual = sut.ContentDirectoryName;
 
         // Assert
-        Assert.Equal(ContentDirNameInContentLocation, actual);
+        actual.Should().Be(ContentDirNameInContentLocation);
     }
 
     [Fact]
@@ -193,13 +214,13 @@ public class FontPathResolverTests
     {
         // Arrange
         MockWindowsPlatform();
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ContentDirectoryName;
+        var actual = sut.ContentDirectoryName;
 
         // Assert
-        Assert.Equal(ContentDirNameInWindowsLocation, actual);
+        actual.Should().Be(ContentDirNameInWindowsLocation);
     }
 
     [Fact]
@@ -207,13 +228,14 @@ public class FontPathResolverTests
     {
         // Arrange
         MockOSXPlatform();
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<NotImplementedException>(() =>
-        {
-            var unused = resolver.ContentDirectoryName;
-        }, OnlyWindowsSupportMessage);
+        // Act
+        var act = () => sut.ContentDirectoryName;
+
+        // Assert
+        act.Should().Throw<NotImplementedException>()
+            .WithMessage(OnlyWindowsSupportMessage);
     }
     #endregion
 
@@ -223,13 +245,17 @@ public class FontPathResolverTests
     {
         // Arrange
         MockOSXPlatform();
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<NotImplementedException>(() =>
+        // Act
+        var act = () =>
         {
-            resolver.ResolveFilePath("test-content");
-        }, OnlyWindowsSupportMessage);
+            sut.ResolveFilePath("test-content");
+        };
+
+        // Assert
+        act.Should().Throw<NotImplementedException>()
+            .WithMessage(OnlyWindowsSupportMessage);
     }
 
     [Fact]
@@ -241,13 +267,13 @@ public class FontPathResolverTests
         this.mockFile.Setup(m => m.Exists(expected)).Returns(true);
         this.mockContentPathResolver.Setup(m => m.ResolveFilePath("test-content"))
             .Returns(expected);
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ResolveFilePath("test-content");
+        var actual = sut.ResolveFilePath("test-content");
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -259,13 +285,13 @@ public class FontPathResolverTests
         this.mockFile.Setup(m => m.Exists(expected)).Returns(false);
         this.mockWindowsPathResolver.Setup(m => m.ResolveFilePath("test-content"))
             .Returns(expected);
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ResolveFilePath("test-content");
+        var actual = sut.ResolveFilePath("test-content");
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -273,13 +299,14 @@ public class FontPathResolverTests
     {
         // Arrange
         MockOSXPlatform();
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<NotImplementedException>(() =>
-        {
-            resolver.ResolveDirPath();
-        }, OnlyWindowsSupportMessage);
+        // Act
+        var act = () => sut.ResolveDirPath();
+
+        // Assert
+        act.Should().Throw<NotImplementedException>()
+            .WithMessage(OnlyWindowsSupportMessage);
     }
 
     [Fact]
@@ -291,13 +318,13 @@ public class FontPathResolverTests
         this.mockDirectory.Setup(m => m.Exists(expected)).Returns(true);
         this.mockContentPathResolver.Setup(m => m.ResolveDirPath())
             .Returns(expected);
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ResolveDirPath();
+        var actual = sut.ResolveDirPath();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -309,13 +336,13 @@ public class FontPathResolverTests
         this.mockDirectory.Setup(m => m.Exists(expected)).Returns(false);
         this.mockWindowsPathResolver.Setup(m => m.ResolveDirPath())
             .Returns(expected);
-        var resolver = CreateResolver();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = resolver.ResolveDirPath();
+        var actual = sut.ResolveDirPath();
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
     #endregion
 
@@ -323,7 +350,7 @@ public class FontPathResolverTests
     /// Creates a new instance of <see cref="FontPathResolver"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontPathResolver CreateResolver()
+    private FontPathResolver CreateSystemUnderTest()
     {
         return new FontPathResolver(
             this.mockContentPathResolver.Object,

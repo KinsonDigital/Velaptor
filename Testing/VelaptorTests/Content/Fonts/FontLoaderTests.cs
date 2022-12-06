@@ -8,6 +8,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
+using FluentAssertions;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -16,7 +17,6 @@ using Velaptor.Content.Factories;
 using Velaptor.Content.Fonts;
 using Velaptor.Graphics;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -29,8 +29,8 @@ public class FontLoaderTests
     private const string FontDirName = "fonts";
     private const string ContentDirPath = @"C:/content/";
     private const string FontContentName = "test-font";
+    private const string FontContentDirPath = $@"{ContentDirPath}{FontDirName}/";
     private readonly string metaData = $"size:{FontSize}";
-    private readonly string fontContentDirPath = $@"{ContentDirPath}{FontDirName}/";
     private readonly string fontFilePath;
     private readonly string filePathWithMetaData;
     private readonly string contentNameWithMetaData;
@@ -136,10 +136,10 @@ public class FontLoaderTests
     [Fact]
     public void Ctor_WithNullFontAtlasServiceParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 null,
                 this.mockEmbeddedFontResourceService.Object,
                 this.mockFontPathResolver.Object,
@@ -150,16 +150,21 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 this.mockFileStream.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'fontAtlasService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fontAtlasService')");
     }
 
     [Fact]
     public void Ctor_WithNullEmbeddedFontResourceService_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 null,
                 this.mockFontPathResolver.Object,
@@ -170,16 +175,21 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 this.mockFileStream.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'embeddedFontResourceService')");
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'embeddedFontResourceService')");
     }
 
     [Fact]
     public void Ctor_WithNullFontPathResolver_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
                 null,
@@ -190,16 +200,20 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 this.mockFileStream.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'fontPathResolver')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fontPathResolver')");
     }
 
     [Fact]
     public void Ctor_WithNullTextureCache_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
                 this.mockFontPathResolver.Object,
@@ -210,16 +224,20 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 this.mockFileStream.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'textureCache')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'textureCache')");
     }
 
     [Fact]
     public void Ctor_WithNullFontFactory_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
                 this.mockFontPathResolver.Object,
@@ -230,16 +248,20 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 this.mockFileStream.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'fontFactory')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fontFactory')");
     }
 
     [Fact]
     public void Ctor_WithNullFontMetaDataParser_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
                 this.mockFontPathResolver.Object,
@@ -250,16 +272,19 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 this.mockFileStream.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'fontMetaDataParser')");
+        };
+
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fontMetaDataParser')");
     }
 
     [Fact]
     public void Ctor_WithNullDirectoryParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
                 this.mockFontPathResolver.Object,
@@ -270,16 +295,20 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 this.mockFileStream.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'directory')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'directory')");
     }
 
     [Fact]
     public void Ctor_WithNullFileParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
                 this.mockFontPathResolver.Object,
@@ -290,16 +319,20 @@ public class FontLoaderTests
                 null,
                 this.mockFileStream.Object,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'file')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'file')");
     }
 
     [Fact]
     public void Ctor_WithNullNullParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
                 this.mockFontPathResolver.Object,
@@ -310,16 +343,20 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 null,
                 this.mockPath.Object);
-        }, "The parameter must not be null. (Parameter 'fileStream')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'fileStream')");
     }
 
     [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
-        // Arrange, Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
-            var unused = new FontLoader(
+            _ = new FontLoader(
                 this.mockFontAtlasService.Object,
                 this.mockEmbeddedFontResourceService.Object,
                 this.mockFontPathResolver.Object,
@@ -330,7 +367,11 @@ public class FontLoaderTests
                 this.mockFile.Object,
                 this.mockFileStream.Object,
                 null);
-        }, "The parameter must not be null. (Parameter 'path')");
+        };
+
+        // Arrange
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'path')");
     }
 
     [Fact]
@@ -342,10 +383,10 @@ public class FontLoaderTests
         var defaultItalicFontName = $"TimesNewRoman-Italic{FontExtension}";
         var defaultBoldItalicFontName = $"TimesNewRoman-BoldItalic{FontExtension}";
 
-        var defaultRegularFontFilePath = $"{this.fontContentDirPath}{defaultRegularFontName}";
-        var defaultBoldFontFilePath = $"{this.fontContentDirPath}{defaultBoldFontName}";
-        var defaultItalicFontFilePath = $"{this.fontContentDirPath}{defaultItalicFontName}";
-        var defaultBoldItalicFontFilePath = $"{this.fontContentDirPath}{defaultBoldItalicFontName}";
+        var defaultRegularFontFilePath = $"{FontContentDirPath}{defaultRegularFontName}";
+        var defaultBoldFontFilePath = $"{FontContentDirPath}{defaultBoldFontName}";
+        var defaultItalicFontFilePath = $"{FontContentDirPath}{defaultItalicFontName}";
+        var defaultBoldItalicFontFilePath = $"{FontContentDirPath}{defaultBoldItalicFontName}";
 
         var mockRegularFontFileStream = MockLoadResource(defaultRegularFontName);
         var mockBoldFontFileStream = MockLoadResource(defaultBoldFontName);
@@ -358,7 +399,7 @@ public class FontLoaderTests
         var mockCopyToBoldItalicStream = MockCopyToStream(defaultBoldItalicFontFilePath);
 
         this.mockDirectory.Setup(m => m.Exists(ContentDirPath)).Returns(false);
-        this.mockDirectory.Setup(m => m.Exists(this.fontContentDirPath)).Returns(false);
+        this.mockDirectory.Setup(m => m.Exists(FontContentDirPath)).Returns(false);
 
         this.mockFile.Setup(m => m.Exists(defaultRegularFontFilePath)).Returns(false);
         this.mockFile.Setup(m => m.Exists(defaultBoldFontFilePath)).Returns(false);
@@ -368,7 +409,7 @@ public class FontLoaderTests
         this.mockPath.SetupGet(p => p.AltDirectorySeparatorChar).Returns('/');
 
         // Act
-        CreateLoader();
+        CreateSystemUnderTest();
 
         // Assert
         this.mockFontPathResolver.VerifyGet(p => p.RootDirectoryPath, Times.Once);
@@ -376,7 +417,7 @@ public class FontLoaderTests
 
         // Check for directory existence
         this.mockDirectory.Verify(m => m.Exists(ContentDirPath), Times.Once);
-        this.mockDirectory.Verify(m => m.Exists(this.fontContentDirPath), Times.Once);
+        this.mockDirectory.Verify(m => m.Exists(FontContentDirPath), Times.Once);
 
         // Each file was verified if it exists
         this.mockFile.Verify(m => m.Exists(defaultRegularFontFilePath), Times.Once);
@@ -412,13 +453,14 @@ public class FontLoaderTests
     public void Load_WithNullOrEmptyParam_ThrowsException(string contentName)
     {
         // Arrange
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            loader.Load(contentName);
-        }, "The parameter must not be null. (Parameter 'contentWithMetaData')");
+        // Act
+        var act = () => sut.Load(contentName);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'contentWithMetaData')");
     }
 
     [Fact]
@@ -439,13 +481,14 @@ public class FontLoaderTests
                 string.Empty,
                 invalidMetaData,
                 FontSize));
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
-        {
-            loader.Load(contentName);
-        }, expected);
+        // Act
+        var act = () => sut.Load(contentName);
+
+        // Assert
+        act.Should().Throw<CachingMetaDataException>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -463,13 +506,14 @@ public class FontLoaderTests
         var expected = "The font content item 'missing-metadata' must have metadata post fixed to the";
         expected += " end of a content name or full file path";
 
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
-        {
-            loader.Load("missing-metadata");
-        }, expected);
+        // Act
+        var act = () => sut.Load("missing-metadata");
+
+        // Assert
+        act.Should().Throw<CachingMetaDataException>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -480,21 +524,22 @@ public class FontLoaderTests
 
         var expected = $"The font content item '{this.fontFilePath}' does not exist.";
 
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<FileNotFoundException>(() =>
-        {
-            loader.Load(this.filePathWithMetaData);
-        }, expected);
+        // Act
+        var act = () => sut.Load(this.filePathWithMetaData);
+
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage(expected);
     }
 
     [Fact]
     public void Load_WithFileNameAndExtensionOnly_LoadsFontFromContentDirectory()
     {
         // Arrange
-        var fileNameWithExt = $"{FontContentName}{FontExtension}";
-        var fileNameWithExtAndMetaData = $"{fileNameWithExt}|size:12";
+        const string fileNameWithExt = $"{FontContentName}{FontExtension}";
+        const string fileNameWithExtAndMetaData = $"{fileNameWithExt}|size:12";
 
         this.mockFontMetaDataParser.Setup(m => m.Parse(fileNameWithExtAndMetaData))
             .Returns(new FontMetaDataParseResult(
@@ -509,10 +554,10 @@ public class FontLoaderTests
         this.mockFontAtlasService.Setup(m => m.CreateFontAtlas(this.fontFilePath, FontSize))
             .Returns(() => (It.IsAny<ImageData>(), this.glyphMetricData));
 
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = loader.Load(fileNameWithExtAndMetaData);
+        var actual = sut.Load(fileNameWithExtAndMetaData);
 
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(fileNameWithExtAndMetaData), Times.Once);
@@ -530,17 +575,17 @@ public class FontLoaderTests
                     this.glyphMetricData),
             Times.Once);
 
-        Assert.Same(this.mockFont.Object, actual);
+        actual.Should().BeEquivalentTo(this.mockFont.Object);
     }
 
     [Fact]
     public void Load_WhenUsingFullFilePathWithMetaData_LoadsFont()
     {
         // Arrange
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = loader.Load(this.filePathWithMetaData);
+        var actual = sut.Load(this.filePathWithMetaData);
 
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.filePathWithMetaData), Times.Once);
@@ -557,17 +602,17 @@ public class FontLoaderTests
                     this.glyphMetricData),
             Times.Once);
 
-        Assert.Same(this.mockFont.Object, actual);
+        actual.Should().BeEquivalentTo(this.mockFont.Object);
     }
 
     [Fact]
     public void Load_WhenUsingContentNameWithMetaData_LoadsFont()
     {
         // Arrange
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = loader.Load(this.contentNameWithMetaData);
+        var actual = sut.Load(this.contentNameWithMetaData);
 
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.contentNameWithMetaData), Times.Once);
@@ -586,7 +631,7 @@ public class FontLoaderTests
                     this.glyphMetricData),
             Times.Once);
 
-        Assert.Same(this.mockFont.Object, actual);
+        actual.Should().BeEquivalentTo(this.mockFont.Object);
     }
 
     [Fact]
@@ -607,13 +652,14 @@ public class FontLoaderTests
                 string.Empty,
                 invalidMetaData,
                 FontSize));
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
-        {
-            loader.Unload(contentName);
-        }, expected);
+        // Act
+        var act = () => sut.Unload(contentName);
+
+        // Assert
+        act.Should().Throw<CachingMetaDataException>()
+            .WithMessage(expected);
     }
 
     [Fact]
@@ -634,23 +680,24 @@ public class FontLoaderTests
                 string.Empty,
                 string.Empty,
                 FontSize));
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<CachingMetaDataException>(() =>
-        {
-            loader.Unload(contentName);
-        }, expected);
+        // Act
+        var act = () => sut.Unload(contentName);
+
+        // Assert
+        act.Should().Throw<CachingMetaDataException>()
+            .WithMessage(expected);
     }
 
     [Fact]
     public void Unload_WhenUnloadingWithFullFilePathAndMetaData_UnloadsFonts()
     {
         // Arrange
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.Unload(this.filePathWithMetaData);
+        sut.Unload(this.filePathWithMetaData);
 
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.filePathWithMetaData), Times.Once);
@@ -661,10 +708,10 @@ public class FontLoaderTests
     public void Unload_WhenUnloadingWithContentNameAndMetaData_UnloadsFonts()
     {
         // Arrange
-        var loader = CreateLoader();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        loader.Unload(this.contentNameWithMetaData);
+        sut.Unload(this.contentNameWithMetaData);
 
         // Assert
         this.mockFontMetaDataParser.Verify(m => m.Parse(this.contentNameWithMetaData), Times.Once);
@@ -706,7 +753,7 @@ public class FontLoaderTests
     /// Creates an instance of <see cref="AtlasLoader"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private FontLoader CreateLoader() => new (
+    private FontLoader CreateSystemUnderTest() => new (
         this.mockFontAtlasService.Object,
         this.mockEmbeddedFontResourceService.Object,
         this.mockFontPathResolver.Object,
