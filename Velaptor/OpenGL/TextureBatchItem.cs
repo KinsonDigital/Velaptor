@@ -94,6 +94,34 @@ internal readonly struct TextureBatchItem : IEquatable<TextureBatchItem>
     /// <summary>
     /// Gets the layer that the a texture will be rendered on.
     /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         Lower layer values will render before higher layer values.
+    ///         If two separate textures have the same layer value, they will
+    ///         rendered in the order that the render method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
     public int Layer { get; }
 
     /// <summary>

@@ -6,10 +6,10 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.13</Version>
+    <Version>1.0.0-preview.14</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.13</FileVersion>
+    <FileVersion>1.0.0-preview.14</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
@@ -83,6 +83,10 @@
     <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.frag" />
     <None Remove="OpenGL\ShaderCode\rectangle.vert" />
     <EmbeddedResource Include="OpenGL\ShaderCode\rectangle.vert" />
+    <None Remove="OpenGL\ShaderCode\line-shader.frag" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\line.frag" />
+    <None Remove="OpenGL\ShaderCode\line-shader.vert" />
+    <EmbeddedResource Include="OpenGL\ShaderCode\line.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -93,12 +97,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MP3Sharp" Version="1.0.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Silk.NET" Version="2.16.0" />
-    <PackageReference Include="SimpleInjector" Version="5.4.0" />
+    <PackageReference Include="SimpleInjector" Version="5.4.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>

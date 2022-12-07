@@ -1,0 +1,26 @@
+﻿[
+  0.0, // Vertex 0 - VectorPos.X
+  1.0, // Vertex 0 - VectorPos.Y
+  3.0, // Vertex 0 - Color.R
+  4.0, // Vertex 0 - Color.G
+  5.0, // Vertex 0 - Color.B
+  2.0, // Vertex 0 - Color.A
+  6.0, // Vertex 1 - VectorPos.X
+  7.0, // Vertex 1 - VectorPos.Y
+  9.0, // Vertex 1 - Color.R
+  10.0, // Vertex 1 - Color.G
+  11.0, // Vertex 1 - Color.B
+  8.0, // Vertex 1 - Color.A
+  12.0, // Vertex 2 - VectorPos.X
+  13.0, // Vertex 2 - VectorPos.Y
+  15.0, // Vertex 2 - Color.R
+  16.0, // Vertex 2 - Color.G
+  17.0, // Vertex 2 - Color.B
+  14.0, // Vertex 2 - Color.A
+  18.0, // Vertex 3 - VectorPos.X
+  19.0, // Vertex 3 - VectorPos.Y
+  21.0, // Vertex 3 - Color.R
+  22.0, // Vertex 3 - Color.G
+  23.0, // Vertex 3 - Color.B
+  20.0 // Vertex 3 - Color.A
+]

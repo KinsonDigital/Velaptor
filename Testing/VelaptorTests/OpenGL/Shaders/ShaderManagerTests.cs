@@ -20,13 +20,16 @@ public class ShaderManagerTests
     private const string TextureShaderName = "texture-shader";
     private const string FontShaderName = "font-shader";
     private const string RectangleShaderName = "rectangle-shader";
+    private const string LineShaderName = "line-shader";
     private const uint TextureShaderId = 123u;
     private const uint FontShaderId = 456u;
     private const uint RectangleShaderId = 789u;
+    private const uint LineShaderId = 111u;
     private readonly Mock<IShaderFactory> mockShaderFactory;
     private readonly Mock<IShaderProgram> mockTextureShader;
     private readonly Mock<IShaderProgram> mockFontShader;
     private readonly Mock<IShaderProgram> mockRectShader;
+    private readonly Mock<IShaderProgram> mockLineShader;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderManagerTests"/> class.
@@ -45,10 +48,15 @@ public class ShaderManagerTests
         this.mockRectShader.SetupGet(p => p.Name).Returns(RectangleShaderName);
         this.mockRectShader.SetupGet(p => p.ShaderId).Returns(RectangleShaderId);
 
+        this.mockLineShader = new Mock<IShaderProgram>();
+        this.mockLineShader.SetupGet(p => p.Name).Returns(LineShaderName);
+        this.mockLineShader.SetupGet(p => p.ShaderId).Returns(LineShaderId);
+
         this.mockShaderFactory = new Mock<IShaderFactory>();
         this.mockShaderFactory.Setup(m => m.CreateTextureShader()).Returns(this.mockTextureShader.Object);
         this.mockShaderFactory.Setup(m => m.CreateFontShader()).Returns(this.mockFontShader.Object);
         this.mockShaderFactory.Setup(m => m.CreateRectShader()).Returns(this.mockRectShader.Object);
+        this.mockShaderFactory.Setup(m => m.CreateLineShader()).Returns(this.mockLineShader.Object);
     }
 
     #region Constructor Tests
@@ -90,6 +98,7 @@ public class ShaderManagerTests
     [InlineData(1, TextureShaderId)]
     [InlineData(2, FontShaderId)]
     [InlineData(3, RectangleShaderId)]
+    [InlineData(4, LineShaderId)]
     public void GetShaderId_WhenInvoked_ReturnsCorrectValue(int shaderTypeValue, uint expected)
     {
         // Arrange
@@ -107,6 +116,7 @@ public class ShaderManagerTests
     [InlineData(1, TextureShaderName)]
     [InlineData(2, FontShaderName)]
     [InlineData(3, RectangleShaderName)]
+    [InlineData(4, LineShaderName)]
     public void GetShaderName_WhenInvoked_ReturnsCorrectValue(int shaderTypeValue, string expected)
     {
         // Arrange
@@ -149,6 +159,7 @@ public class ShaderManagerTests
         this.mockTextureShader.VerifyOnce(m => m.Use());
         this.mockFontShader.VerifyNever(m => m.Use());
         this.mockRectShader.VerifyNever(m => m.Use());
+        this.mockLineShader.VerifyNever(m => m.Use());
     }
 
     [Fact]
@@ -164,6 +175,7 @@ public class ShaderManagerTests
         this.mockTextureShader.VerifyNever(m => m.Use());
         this.mockFontShader.VerifyOnce(m => m.Use());
         this.mockRectShader.VerifyNever(m => m.Use());
+        this.mockLineShader.VerifyNever(m => m.Use());
     }
 
     [Fact]
@@ -179,6 +191,23 @@ public class ShaderManagerTests
         this.mockTextureShader.VerifyNever(m => m.Use());
         this.mockFontShader.VerifyNever(m => m.Use());
         this.mockRectShader.VerifyOnce(m => m.Use());
+        this.mockLineShader.VerifyNever(m => m.Use());
+    }
+
+    [Fact]
+    public void Use_WithLineShaderType_UsesShader()
+    {
+        // Arrange
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Use(ShaderType.Line);
+
+        // Assert
+        this.mockTextureShader.VerifyNever(m => m.Use());
+        this.mockFontShader.VerifyNever(m => m.Use());
+        this.mockRectShader.VerifyNever(m => m.Use());
+        this.mockLineShader.VerifyOnce(m => m.Use());
     }
 
     [Fact]

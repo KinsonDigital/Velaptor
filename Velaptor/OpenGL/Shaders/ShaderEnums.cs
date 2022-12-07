@@ -23,4 +23,9 @@ internal enum ShaderType
     /// A rectangle shape shader.
     /// </summary>
     Rectangle = 3,
+
+    /// <summary>
+    /// A line shader.
+    /// </summary>
+    Line = 4,
 }

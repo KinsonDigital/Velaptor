@@ -8,7 +8,7 @@
 
 <!--PRE-PROCESSING-UNCOMMENT-START-->
 <!--
-![velaptor-logo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/release/v1.0.0/Documentation/Images/velaptor-logo.svg)
+![velaptor-logo](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/Documentation/Images/velaptor-logo.png)
 -->
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 

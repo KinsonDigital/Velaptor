@@ -262,7 +262,7 @@ public sealed class Font : IFont
     }
 
     /// <summary>
-    /// Gets the kerning value between 2 glyphs.
+    /// Gets the kerning value between two glyphs.
     /// </summary>
     /// <param name="leftGlyphIndex">The character index of the glyph to the left of the right glyph.</param>
     /// <param name="rightGlyphIndex">The character index of the glyph to the right of the left glyph.</param>

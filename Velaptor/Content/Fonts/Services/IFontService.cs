@@ -62,7 +62,7 @@ internal interface IFontService : IDisposable
     bool HasKerning(IntPtr facePtr);
 
     /// <summary>
-    /// Gets the kerning value between 2 glyphs.
+    /// Gets the kerning value between two glyphs.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <param name="leftGlyphIndex">The character index of the glyph to the left of the right glyph.</param>

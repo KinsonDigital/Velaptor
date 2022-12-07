@@ -14,6 +14,7 @@ internal sealed class ShaderManager : IShaderManager
     private readonly IShaderProgram textureShader;
     private readonly IShaderProgram fontShader;
     private readonly IShaderProgram rectShader;
+    private readonly IShaderProgram lineShader;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderManager"/> class.
@@ -26,6 +27,7 @@ internal sealed class ShaderManager : IShaderManager
         this.textureShader = shaderFactory.CreateTextureShader();
         this.fontShader = shaderFactory.CreateFontShader();
         this.rectShader = shaderFactory.CreateRectShader();
+        this.lineShader = shaderFactory.CreateLineShader();
     }
 
     /// <inheritdoc/>
@@ -35,6 +37,7 @@ internal sealed class ShaderManager : IShaderManager
             ShaderType.Texture => this.textureShader.ShaderId,
             ShaderType.Font => this.fontShader.ShaderId,
             ShaderType.Rectangle => this.rectShader.ShaderId,
+            ShaderType.Line => this.lineShader.ShaderId,
             _ => throw new ArgumentOutOfRangeException(nameof(shaderType), shaderType, $"The enum '{nameof(ShaderType)}' value is invalid.")
         };
 
@@ -49,6 +52,8 @@ internal sealed class ShaderManager : IShaderManager
                 return this.fontShader.Name;
             case ShaderType.Rectangle:
                 return this.rectShader.Name;
+            case ShaderType.Line:
+                return this.lineShader.Name;
             default:
                 throw new ArgumentOutOfRangeException(
                     nameof(shaderType),
@@ -70,6 +75,9 @@ internal sealed class ShaderManager : IShaderManager
                 break;
             case ShaderType.Rectangle:
                 this.rectShader.Use();
+                break;
+            case ShaderType.Line:
+                this.lineShader.Use();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(

@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Numerics;
 
 /// <summary>
-/// Represents the data of a GPU vertex for a rectangle.
+/// Represents a single vertex of the <see cref="RectGPUData"/> sent to the GPU.
 /// </summary>
 internal readonly struct RectVertexData
 {
@@ -132,8 +132,8 @@ internal readonly struct RectVertexData
     /// <summary>
     /// Gets the stride of the entire vertex data chunk in bytes.
     /// </summary>
-    /// <returns>The total bytes of the stride of the vertex.</returns>
-    public static uint GetTotalBytes() => Stride;
+    /// <returns>The total bytes of the vertex's stride.</returns>
+    public static uint GetStride() => Stride;
 
     /// <summary>
     /// Returns all of the vertex data as an array or ordered values.
@@ -142,9 +142,9 @@ internal readonly struct RectVertexData
     public IEnumerable<float> ToArray()
     {
         /* NOTE:
-            The order of the array elements are extremely important.
-            They determine the layout of each stride of vertex data and the layout
-            here has to match the layout told to OpenGL using the VertexAttribLocation() calls
+            The order of the array elements is extremely important.
+            It determines the layout of each stride of vertex data and that layout
+            has to match the layout told to OpenGL.
         */
 
         var result = new List<float>();

@@ -14,6 +14,7 @@ internal sealed class BufferManager : IBufferManager
     private readonly IGPUBuffer<TextureBatchItem> textureBuffer;
     private readonly IGPUBuffer<FontGlyphBatchItem> fontGlyphBuffer;
     private readonly IGPUBuffer<RectBatchItem> rectBuffer;
+    private readonly IGPUBuffer<LineBatchItem> lineBuffer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferManager"/> class.
@@ -26,6 +27,7 @@ internal sealed class BufferManager : IBufferManager
         this.textureBuffer = bufferFactory.CreateTextureGPUBuffer();
         this.fontGlyphBuffer = bufferFactory.CreateFontGPUBuffer();
         this.rectBuffer = bufferFactory.CreateRectGPUBuffer();
+        this.lineBuffer = bufferFactory.CreateLineGPUBuffer();
     }
 
     /// <inheritdoc/>
@@ -41,6 +43,9 @@ internal sealed class BufferManager : IBufferManager
                 break;
             case VelaptorBufferType.Rectangle:
                 this.rectBuffer.ViewPortSize = size;
+                break;
+            case VelaptorBufferType.Line:
+                this.lineBuffer.ViewPortSize = size;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -58,4 +63,7 @@ internal sealed class BufferManager : IBufferManager
 
     /// <inheritdoc/>
     public void UploadRectData(RectBatchItem data, uint batchIndex) => this.rectBuffer.UploadData(data, batchIndex);
+
+    /// <inheritdoc/>
+    public void UploadLineData(LineBatchItem data, uint batchIndex) => this.lineBuffer.UploadData(data, batchIndex);
 }

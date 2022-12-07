@@ -1,4 +1,4 @@
-﻿// <copyright file="IRenderer.cs" company="KinsonDigital">
+// <copyright file="IRenderer.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,11 +17,6 @@ using Content.Fonts;
 [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global", Justification = "Public facing API required for library users.")]
 public interface IRenderer
 {
-    /// <summary>
-    /// Gets the total number of items rendered for each batch.
-    /// </summary>
-    public const uint BatchSize = 1000;
-
     /// <summary>
     /// Gets or sets the render surface width.
     /// </summary>
@@ -76,13 +71,12 @@ public interface IRenderer
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The position is based on the center of the text.  The center of the text is based on the
-    ///         furthest most left, right, top, and bottom edges of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position are based on the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -119,13 +113,12 @@ public interface IRenderer
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The position is based on the center of the text.  The center of the text is based on the
-    ///         furthest most left, right, top, and bottom edges of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -162,13 +155,12 @@ public interface IRenderer
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The position is based on the center of the text.  The center of the text is based on the
-    ///         furthest most left, right, top, and bottom edges of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -206,13 +198,12 @@ public interface IRenderer
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The position is based on the center of the text.  The center of the text is based on the
-    ///         furthest most left, right, top, and bottom edges of the text.
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -252,13 +243,12 @@ public interface IRenderer
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
     ///     <para>
-    ///         The position is based on the center of the text.  The center of the text is based on the
-    ///         furthest most left, right, top, and bottom edges of the text.
+    ///         The position in the <paramref name="destRect"/> is based on the center of the texture.
     ///     </para>
     ///     <para>
     ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
-    ///         If 2 separate textures have the same <paramref name="layer"/> value, they will
-    ///         rendered in the order that the render method was invoked.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
     ///     </para>
     ///     <para>Example below:</para>
     ///
@@ -295,8 +285,36 @@ public interface IRenderer
     /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
+    ///     <para>
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(IFont font, string text, int x, int y, int layer = 0);
 
@@ -310,8 +328,36 @@ public interface IRenderer
     /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
+    ///     <para>
+    ///         The <paramref name="position"/> is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(IFont font, string text, Vector2 position, int layer = 0);
 
@@ -328,41 +374,91 @@ public interface IRenderer
     /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    /// <para>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
-    /// </para>
+    ///     <para>
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         The <paramref name="renderSize"/> is a value between 0 and 1.  Using the value 1 represents the text being rendered
+    ///         at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
     ///
-    /// <para>
-    ///     The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-    ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
-    /// </para>
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(IFont font, string text, int x, int y, float renderSize, float angle, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
-    /// at the given <paramref name="position"/>, with the given <paramref name="size"/>, and <paramref name="angle"/>.
+    /// at the given <paramref name="position"/>, with the given <paramref name="renderSize"/>, and <paramref name="angle"/>.
     /// </summary>
     /// <param name="font">The font to use for rendering the <paramref name="text"/>.</param>
     /// <param name="text">The text to render.</param>
     /// <param name="position">The position to render the text.</param>
-    /// <param name="size">The size of the text.</param>
+    /// <param name="renderSize">The size of the text.</param>
     /// <param name="angle">The angle of the text in degrees.</param>
     /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    /// <para>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
-    /// </para>
+    ///     <para>
+    ///         The <paramref name="position"/> is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         The <paramref name="renderSize"/> is a value between 0 and 1.  Using the value 1 represents the text being rendered
+    ///         at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
     ///
-    /// <para>
-    ///     The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-    ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
-    /// </para>
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
-    void Render(IFont font, string text, Vector2 position, float size, float angle, int layer = 0);
+    void Render(IFont font, string text, Vector2 position, float renderSize, float angle, int layer = 0);
 
     /// <summary>
     /// Renders the given <paramref name="text"/> using the given <paramref name="font"/>
@@ -377,15 +473,40 @@ public interface IRenderer
     /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    /// <para>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
-    /// </para>
+    ///     <para>
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
+    ///         at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
     ///
-    /// <para>
-    ///     The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-    ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
-    /// </para>
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(IFont font, string text, int x, int y, Color color, int layer = 0);
 
@@ -400,8 +521,36 @@ public interface IRenderer
     /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
+    ///     <para>
+    ///         The <paramref name="position"/> is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(IFont font, string text, Vector2 position, Color color, int layer = 0);
 
@@ -417,8 +566,36 @@ public interface IRenderer
     /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
+    ///     <para>
+    ///         The <paramref name="position"/> is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(IFont font, string text, Vector2 position, float angle, Color color, int layer = 0);
 
@@ -435,8 +612,36 @@ public interface IRenderer
     /// <param name="color">The color to apply to the rendering.</param>
     /// <param name="layer">The layer to render the text.</param>
     /// <remarks>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
+    ///     <para>
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(IFont font, string text, int x, int y, float angle, Color color, int layer = 0);
 
@@ -455,15 +660,40 @@ public interface IRenderer
     /// <param name="layer">The layer to render the text.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    /// <para>
-    ///     The position is based on the center of the text.  The center of the text is based on the
-    ///     furthest most left, right, top, and bottom edges of the text.
-    /// </para>
+    ///     <para>
+    ///         The <paramref name="x"/> and <paramref name="y"/> position is based on the center of the text.
+    ///         The center of the text is based on the furthest most left, right, top, and bottom edges of the text.
+    ///     </para>
+    ///     <para>
+    ///         The <paramref name="renderSize"/> is a value between 0 and 1.  Using the value 1 represents the text being rendered
+    ///         at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
+    ///     </para>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
     ///
-    /// <para>
-    ///     The size is a value between 0 and 1.  Using the value 1 represents the text being rendered
-    ///     at the standard size of 100%.  Example: Using 1.5 would represent 150% or 50% larger than the normal size.
-    /// </para>
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color, int layer = 0);
 
@@ -471,10 +701,222 @@ public interface IRenderer
     /// Renders the given <paramref name="rectangle"/>.
     /// </summary>
     /// <param name="rectangle">The rectangle to render.</param>
-    /// <param name="layer">The layer to render the text.</param>
+    /// <param name="layer">The layer to render the rectangle.</param>
     /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
     /// <remarks>
-    ///     The <see cref="RectShape.Position"/> is the center of the rectangle.
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
     /// </remarks>
     void Render(RectShape rectangle, int layer = 0);
+
+    /// <summary>
+    /// Renders the given <paramref name="line"/>.
+    /// </summary>
+    /// <param name="line">The line to render.</param>
+    /// <param name="layer">The layer to render the line.</param>
+    /// <exception cref="Exception">Thrown if the <see cref="Begin"/> method has not been called.</exception>
+    /// <remarks>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void Render(Line line, int layer = 0);
+
+    /// <summary>
+    /// Renders a line using the given <paramref name="start"/> and <paramref name="end"/> vectors on the given <paramref name="layer"/>.
+    /// </summary>
+    /// <param name="start">The start of the line.</param>
+    /// <param name="end">The end of the line.</param>
+    /// <param name="layer">The layer to render the line.</param>
+    /// <remarks>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void RenderLine(Vector2 start, Vector2 end, int layer = 0);
+
+    /// <summary>
+    /// Renders a line using the given <paramref name="start"/> and <paramref name="end"/> vectors on the given <paramref name="layer"/>
+    /// using the given <paramref name="color"/>.
+    /// </summary>
+    /// <param name="start">The start of the line.</param>
+    /// <param name="end">The end of the line.</param>
+    /// <param name="color">The color of the line.</param>
+    /// <param name="layer">The layer to render the line.</param>
+    /// <remarks>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void RenderLine(Vector2 start, Vector2 end, Color color, int layer = 0);
+
+    /// <summary>
+    /// Renders a line using the given <paramref name="start"/> and <paramref name="end"/> vectors on the given <paramref name="layer"/>
+    /// using the given line <paramref name="thickness"/>.
+    /// </summary>
+    /// <param name="start">The start of the line.</param>
+    /// <param name="end">The end of the line.</param>
+    /// <param name="thickness">The thickness of the line.</param>
+    /// <param name="layer">The layer to render the line.</param>
+    /// <remarks>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void RenderLine(Vector2 start, Vector2 end, uint thickness, int layer = 0);
+
+    /// <summary>
+    /// Renders a line using the given <paramref name="start"/> and <paramref name="end"/> vectors on the given <paramref name="layer"/>
+    /// using the given <paramref name="color"/> and line <paramref name="thickness"/>.
+    /// </summary>
+    /// <param name="start">The start of the line.</param>
+    /// <param name="end">The end of the line.</param>
+    /// <param name="color">The color of the line.</param>
+    /// <param name="thickness">The thickness of the line.</param>
+    /// <param name="layer">The layer to render the line.</param>
+    /// <remarks>
+    ///     <para>
+    ///         Lower <paramref name="layer"/> values will render before higher <paramref name="layer"/> values.
+    ///         If two separate textures have the same <paramref name="layer"/> value, they will
+    ///         render in the order that the method was invoked.
+    ///     </para>
+    ///     <para>Example below:</para>
+    ///
+    ///     <b>Render Method Invoked Order:</b>
+    ///     <list type="number">
+    ///         <item>Texture 1 (Layer -10)</item>
+    ///         <item>Texture 2 (Layer -20)</item>
+    ///         <item>Texture 3 (Layer 0)</item>
+    ///         <item>Texture 4 (Layer 0)</item>
+    ///         <item>Texture 5 (Layer 4)</item>
+    ///         <item>Texture 6 (Layer 3)</item>
+    ///     </list>
+    ///
+    ///     <b>Texture Render Order:</b>
+    ///     <list type="bullet">
+    ///         <item>Texture 2</item>
+    ///         <item>Texture 1</item>
+    ///         <item>Texture 3</item>
+    ///         <item>Texture 4</item>
+    ///         <item>Texture 6</item>
+    ///         <item>Texture 5</item>
+    ///     </list>
+    /// </remarks>
+    void RenderLine(Vector2 start, Vector2 end, Color color, uint thickness, int layer = 0);
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureQuadDataTesting.cs" company="KinsonDigital">
+﻿// <copyright file="TextureGPUDataTesting.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -9,20 +9,20 @@ using Velaptor.OpenGL.GPUData;
 using Xunit;
 
 /// <summary>
-/// Tests the <see cref="TextureQuadData"/> struct.
+/// Tests the <see cref="TextureGPUData"/> struct.
 /// </summary>
-public class TextureQuadDataTesting
+public class TextureGPUDataTesting
 {
     #region Overloaded Operator Tests
     [Fact]
     public void EqualsOperator_WithBothOperandsEqual_ReturnsTrue()
     {
         // Arrange
-        var quadA = default(TextureQuadData);
-        var quadB = default(TextureQuadData);
+        var sutA = default(TextureGPUData);
+        var sutB = default(TextureGPUData);
 
         // Act
-        var actual = quadA == quadB;
+        var actual = sutA == sutB;
 
         // Assert
         Assert.True(actual);
@@ -32,8 +32,8 @@ public class TextureQuadDataTesting
     public void EqualsOperator_WithBothOperandsNotEqual_ReturnsFalse()
     {
         // Arrange
-        var quadA = default(TextureQuadData);
-        var quadB = new TextureQuadData(
+        var sutA = default(TextureGPUData);
+        var sutB = new TextureGPUData(
             new TextureVertexData(
                 new Vector2(11, 22),
                 default,
@@ -43,7 +43,7 @@ public class TextureQuadDataTesting
             default);
 
         // Act
-        var actual = quadA != quadB;
+        var actual = sutA != sutB;
 
         // Assert
         Assert.True(actual);
@@ -55,7 +55,7 @@ public class TextureQuadDataTesting
     public void GetTotalBytes_WhenInvoked_ReturnsCorrectResult()
     {
         // Act
-        var actual = TextureQuadData.GetTotalBytes();
+        var actual = TextureGPUData.GetTotalBytes();
 
         // Assert
         Assert.Equal(128u, actual);
@@ -65,11 +65,11 @@ public class TextureQuadDataTesting
     public void Equals_WithEqualParam_ReturnsTrue()
     {
         // Arrange
-        var quadA = default(TextureQuadData);
-        var quadB = default(TextureQuadData);
+        var sut = default(TextureGPUData);
+        var dataB = default(TextureGPUData);
 
         // Act
-        var actual = quadA.Equals(quadB);
+        var actual = sut.Equals(dataB);
 
         // Assert
         Assert.True(actual);
@@ -79,11 +79,11 @@ public class TextureQuadDataTesting
     public void Equals_WhenInvokedWithParamOfDifferentType_ReturnsFalse()
     {
         // Arrange
-        var quadA = default(TextureQuadData);
-        var quadB = new object();
+        var sut = default(TextureGPUData);
+        var dataB = new object();
 
         // Act
-        var actual = quadA.Equals(quadB);
+        var actual = sut.Equals(dataB);
 
         // Assert
         Assert.False(actual);
@@ -93,11 +93,11 @@ public class TextureQuadDataTesting
     public void Equals_WhenInvokedWithEqualParamOfSameType_ReturnsTrue()
     {
         // Arrange
-        var quadA = default(TextureQuadData);
-        object quadB = default(TextureQuadData);
+        var sutA = default(TextureGPUData);
+        object sutB = default(TextureGPUData);
 
         // Act
-        var actual = quadA.Equals(quadB);
+        var actual = sutA.Equals(sutB);
 
         // Assert
         Assert.True(actual);

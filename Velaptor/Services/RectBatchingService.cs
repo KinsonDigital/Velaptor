@@ -24,7 +24,7 @@ internal sealed class RectBatchingService : IBatchingService<RectBatchItem>
     /// <summary>
     /// Initializes a new instance of the <see cref="RectBatchingService"/> class.
     /// </summary>
-    /// <param name="batchSizeReactable">Receives push notifications about the batch size.</param>
+    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
     public RectBatchingService(IReactable<BatchSizeData> batchSizeReactable)
     {
         EnsureThat.ParamIsNotNull(batchSizeReactable);

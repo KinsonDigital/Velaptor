@@ -324,7 +324,7 @@ public class ImageServiceTests : IDisposable
     }
 
     /// <summary>
-    /// Loads all of the pixel data into a 2 dimensional array of <see cref="NETColor"/>.
+    /// Loads all of the pixel data into a two dimensional array of <see cref="NETColor"/>.
     /// </summary>
     /// <returns>The pixel data from the test comparison image.</returns>
     [ExcludeFromCodeCoverage]

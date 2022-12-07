@@ -39,9 +39,9 @@ public class RectGPUDataTests
     public void ToArray_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange
-        var testDataFileName = $"{nameof(RectGPUData)}TestData.json";
+        const string testDataFileName = $"{nameof(RectGPUData)}TestData.json";
         var expected = TestDataLoader
-            .LoadTestData<(string name, int index, float value)>(string.Empty, testDataFileName);
+            .LoadTestData<(string name, int index, float value)[]>(string.Empty, testDataFileName);
 
         var data = RectGPUDataGenerator.GenerateGPUData(1);
 

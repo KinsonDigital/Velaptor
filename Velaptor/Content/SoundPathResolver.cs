@@ -34,10 +34,10 @@ internal sealed class SoundPathResolver : ContentPathResolver
     /// <param name="contentName">The name of the content.</param>
     /// <returns>The path to the content item.</returns>
     /// <remarks>
-    ///     The 2 types of sound formats supported are '.ogg' and '.mp3'.
+    ///     The two types of sound formats supported are '.ogg' and '.mp3'.
     /// <para>
     ///     Precedence is taken with '.ogg' files over '.mp3'.  What this means is that if
-    ///     there are 2 files <br/> with the same name but with different extensions in the
+    ///     there are two files <br/> with the same name but with different extensions in the
     ///     same <see cref="ContentPathResolver.ContentDirectoryName"/>, <br/> the '.ogg'
     ///     file will be loaded, not the '.mp3' file.
     /// </para>

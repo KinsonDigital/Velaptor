@@ -415,7 +415,7 @@ public class AssertExtensions : Assert
     /// <param name="height">The height of the second dimension.</param>
     /// <param name="action">The action to test each item against.</param>
     /// <remarks>
-    ///     The last 2 <see langword="in"/> parameters T2 and T3 of type <see langword="int"/> of the <paramref name="action"/>
+    ///     The last two <see langword="in"/> parameters T2 and T3 of type <see langword="int"/> of the <paramref name="action"/>
     ///     is the X and Y location within the <paramref name="collection"/> that failed the assertion.
     /// </remarks>
     public static void All<T>(T[,] collection, uint width, uint height, Action<T, int, int> action)

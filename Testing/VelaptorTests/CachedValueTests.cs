@@ -46,7 +46,7 @@ public class CachedValueTests
         var cachedValue = new CachedValue<int>(
             1234,
             () => externalSystemValue,
-            (value) => externalSystemValue = value,
+            value => externalSystemValue = value,
             true);
 
         // Act
@@ -65,7 +65,7 @@ public class CachedValueTests
         var cachedValue = new CachedValue<int>(
             1234,
             () => externalSystemValue,
-            (value) => externalSystemValue = value,
+            value => externalSystemValue = value,
             false);
 
         // Act
@@ -85,7 +85,7 @@ public class CachedValueTests
         var cachedValue = new CachedValue<int>(
             1234,
             () => externalSystemValue,
-            (value) => externalSystemValue = value,
+            value => externalSystemValue = value,
             false)
         {
             // Act
@@ -106,7 +106,7 @@ public class CachedValueTests
         var cachedValue = new CachedValue<int>(
             1234,
             () => externalSystemValue,
-            (value) => externalSystemValue = value,
+            value => externalSystemValue = value,
             true)
         {
             // Act
@@ -128,7 +128,7 @@ public class CachedValueTests
         var cachedValue = new CachedValue<int>(
             1234,
             It.IsAny<int>,
-            (_) => { });
+            _ => { });
 
         // Act
         var actual = cachedValue.GetValue();
@@ -144,7 +144,7 @@ public class CachedValueTests
         var cachedValue = new CachedValue<int>(
             5678,
             () => 1234,
-            (_) => { })
+            _ => { })
         {
             IsCaching = false,
         };
@@ -163,7 +163,7 @@ public class CachedValueTests
         var cachedValue = new CachedValue<int>(
             5678,
             () => 0,
-            (_) => { });
+            _ => { });
 
         // Act
         cachedValue.SetValue(1234);
@@ -182,7 +182,7 @@ public class CachedValueTests
         var cachedValue = new CachedValue<int>(
             5678,
             () => 0,
-            (value) => actual = value)
+            value => actual = value)
         {
             IsCaching = false,
         };

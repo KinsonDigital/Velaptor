@@ -1,4 +1,4 @@
-﻿// <copyright file="TextureQuadData.cs" company="KinsonDigital">
+﻿// <copyright file="TextureGPUData.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -10,16 +10,16 @@ using System.Diagnostics.CodeAnalysis;
 /// <summary>
 /// Holds data for a single quad in the GPU vertex buffer.
 /// </summary>
-internal readonly struct TextureQuadData : IEquatable<TextureQuadData>
+internal readonly struct TextureGPUData : IEquatable<TextureGPUData>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="TextureQuadData"/> struct.
+    /// Initializes a new instance of the <see cref="TextureGPUData"/> struct.
     /// </summary>
     /// <param name="vertex1">The top left corner vertex of the quad.</param>
     /// <param name="vertex2">The top right corner vertex of the quad.</param>
     /// <param name="vertex3">The bottom right corner vertex of the quad.</param>
     /// <param name="vertex4">The bottom left corner vertex of the quad.</param>
-    public TextureQuadData(in TextureVertexData vertex1, TextureVertexData vertex2, TextureVertexData vertex3, TextureVertexData vertex4)
+    public TextureGPUData(in TextureVertexData vertex1, TextureVertexData vertex2, TextureVertexData vertex3, TextureVertexData vertex4)
     {
         Vertex1 = vertex1;
         Vertex2 = vertex2;
@@ -53,8 +53,8 @@ internal readonly struct TextureQuadData : IEquatable<TextureQuadData>
     /// </summary>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
-    /// <returns><c>true</c> if the 2 operands are equal.</returns>
-    public static bool operator ==(TextureQuadData left, TextureQuadData right) => left.Equals(right);
+    /// <returns><c>true</c> if the two operands are equal.</returns>
+    public static bool operator ==(TextureGPUData left, TextureGPUData right) => left.Equals(right);
 
     /// <summary>
     /// Returns a value indicating whether or not the <paramref name="left"/> operand is not equal to the <paramref name="right"/> operand.
@@ -62,19 +62,19 @@ internal readonly struct TextureQuadData : IEquatable<TextureQuadData>
     /// </summary>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
-    /// <returns><c>true</c> if the 2 operands are equal.</returns>
-    public static bool operator !=(TextureQuadData left, TextureQuadData right) => !(left == right);
+    /// <returns><c>true</c> if the two operands are equal.</returns>
+    public static bool operator !=(TextureGPUData left, TextureGPUData right) => !(left == right);
 
     /// <summary>
     /// Returns the total number of bytes for this struct.
     /// </summary>
     /// <returns>The total number of bytes in size.</returns>
-    public static uint GetTotalBytes() => TextureVertexData.Stride() * 4u;
+    public static uint GetTotalBytes() => TextureVertexData.GetStride() * 4u;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
-        if (obj is not TextureQuadData data)
+        if (obj is not TextureGPUData data)
         {
             return false;
         }
@@ -83,7 +83,7 @@ internal readonly struct TextureQuadData : IEquatable<TextureQuadData>
     }
 
     /// <inheritdoc/>
-    public bool Equals(TextureQuadData other)
+    public bool Equals(TextureGPUData other)
         => Vertex1 == other.Vertex1 &&
            Vertex2 == other.Vertex2 &&
            Vertex3 == other.Vertex3 &&

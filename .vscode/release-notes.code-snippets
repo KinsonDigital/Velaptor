@@ -16,7 +16,6 @@
 	// 	"description": "Log output to console"
 	// }
 
-
 	"Issue Link": {
 		"scope": "markdown",
 		"prefix": "issue-link",
@@ -29,7 +28,7 @@
 		"scope": "markdown",
 		"prefix": "issue-link-oc",
 		"body": [
-			"[#${1:Issue #}](https://github.com/KinsonDigital/Velaptor/issues/${1:Issue #}) ([$3🙏🏼](https://github.com/$3)) - "
+			"[#${1:Issue #}](https://github.com/KinsonDigital/Velaptor/issues/${1:Issue #}) ([@${2:Repo Owner}🙏🏼](https://github.com/${2:Repo Owner})) - "
 		],
 		"description": "Link to the issue with outside contributor"
 	},

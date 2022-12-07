@@ -4,6 +4,7 @@
 
 namespace VelaptorTests.Content.Fonts;
 
+using FluentAssertions;
 using Velaptor.Content.Fonts;
 using Xunit;
 
@@ -33,7 +34,7 @@ public class FontStatsTests
         var actual = statsA.Equals(statsB);
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -56,7 +57,7 @@ public class FontStatsTests
         var actual = statsA.Equals(statsB);
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -74,7 +75,7 @@ public class FontStatsTests
         var actual = statsA.Equals(statsB);
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
     #endregion
 }

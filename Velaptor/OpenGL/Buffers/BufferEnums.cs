@@ -23,4 +23,9 @@ internal enum VelaptorBufferType
     /// A rectangle GPU buffer.
     /// </summary>
     Rectangle = 3,
+
+    /// <summary>
+    ///  A line GPU buffer.
+    /// </summary>
+    Line = 4,
 }

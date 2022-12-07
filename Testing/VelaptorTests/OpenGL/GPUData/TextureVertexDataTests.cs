@@ -58,20 +58,10 @@ public class TextureVertexDataTests
 
     #region Method Tests
     [Fact]
-    public void TotalElements_WhenInvoked_ReturnsCorrectResult()
-    {
-        // Act
-        var actual = TextureVertexData.TotalElements();
-
-        // Assert
-        Assert.Equal(8u, actual);
-    }
-
-    [Fact]
     public void Stride_WhenInvoked_ReturnsCorrectResult()
     {
         // Act
-        var actual = TextureVertexData.Stride();
+        var actual = TextureVertexData.GetStride();
 
         // Assert
         Assert.Equal(32u, actual);

@@ -60,4 +60,48 @@ internal static class EnsureThat
             throw new ArgumentNullException(paramName, "The string parameter must not be null or empty.");
         }
     }
+
+    /// <summary>
+    /// Throws a <see cref="NullReferenceException"/> if the given <paramref name="pointer"/> is a value of zero.
+    /// </summary>
+    /// <param name="pointer">The pointer to check.</param>
+    /// <param name="paramName">The name of the parameter being checked.</param>
+    /// <exception cref="NullReferenceException">
+    ///     Thrown if the <paramref name="pointer"/> is a value of zero.
+    /// </exception>
+    public static void PointerIsNotNull(nint pointer, [CallerArgumentExpression("pointer")] string paramName = "")
+    {
+        if (pointer != IntPtr.Zero)
+        {
+            return;
+        }
+
+        var exMsg = string.IsNullOrEmpty(paramName) is false
+            ? $"The pointer parameter '{paramName}' cannot be a value of zero."
+            : "The pointer cannot be a value of zero.";
+
+        throw new NullReferenceException(exMsg);
+    }
+
+    /// <summary>
+    /// Throws a <see cref="NullReferenceException"/> if the given <paramref name="pointer"/> is a value of zero.
+    /// </summary>
+    /// <param name="pointer">The pointer to check.</param>
+    /// <param name="paramName">The name of the parameter being checked.</param>
+    /// <exception cref="NullReferenceException">
+    ///     Thrown if the <paramref name="pointer"/> is a value of zero.
+    /// </exception>
+    public static void PointerIsNotNull(nuint pointer, [CallerArgumentExpression("pointer")] string paramName = "")
+    {
+        if (pointer != UIntPtr.Zero)
+        {
+            return;
+        }
+
+        var exMsg = string.IsNullOrEmpty(paramName) is false
+            ? $"The pointer parameter '{paramName}' cannot be a value of zero."
+            : "The pointer cannot be a value of zero.";
+
+        throw new NullReferenceException(exMsg);
+    }
 }
