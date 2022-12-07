@@ -20,7 +20,7 @@ layout(location = 8) in float a_topRightCornerRadius;
 
 out vec4 pass_shape;
 out vec4 pass_color;
-out float pass_isFilled;
+out float pass_isFilled; // This is treated as a boolean. <= 0 is false and >= 1 is true.
 out float pass_borderThickness;
 out float pass_topLeftCornerRadius;
 out float pass_bottomLeftCornerRadius;

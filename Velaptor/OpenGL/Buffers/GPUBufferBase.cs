@@ -84,9 +84,9 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
     public SizeU ViewPortSize { get; set; }
 
     /// <summary>
-    /// Gets the size of the batch.
+    /// Gets or sets the size of the batch.
     /// </summary>
-    protected internal uint BatchSize { get; private set; } = 100;
+    protected internal uint BatchSize { get; protected set; } = 100;
 
     /// <summary>
     /// Gets a value indicating whether or not the buffer has been initialized.
@@ -228,6 +228,10 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
         {
             attributes = Attribute.GetCustomAttributes(typeof(RectGPUBuffer));
         }
+        else if (currentType == typeof(LineGPUBuffer))
+        {
+            attributes = Attribute.GetCustomAttributes(typeof(LineGPUBuffer));
+        }
         else
         {
             Name = "UNKNOWN BUFFER";
@@ -240,14 +244,9 @@ internal abstract class GPUBufferBase<TData> : IGPUBuffer<TData>
 
         foreach (var attribute in attributes)
         {
-            switch (attribute)
+            if (attribute is GPUBufferNameAttribute nameAttribute)
             {
-                case BatchSizeAttribute sizeAttribute:
-                    BatchSize = sizeAttribute.BatchSize;
-                    break;
-                case GPUBufferNameAttribute nameAttribute:
-                    Name = nameAttribute.Name;
-                    break;
+                Name = nameAttribute.Name;
             }
         }
     }

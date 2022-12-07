@@ -4,8 +4,10 @@
 
 namespace VelaptorTests.OpenGL.Buffers;
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using FluentAssertions;
 using Moq;
 using Velaptor.Exceptions;
 using Velaptor.Graphics;
@@ -23,14 +25,17 @@ using Xunit;
 /// </summary>
 public class TextureGPUBufferTests
 {
+    private const uint BatchSize = 1000u;
     private const uint VertexArrayId = 111;
     private const uint VertexBufferId = 222;
     private const uint IndexBufferId = 333;
     private readonly Mock<IGLInvoker> mockGL;
     private readonly Mock<IOpenGLService> mockGLService;
     private readonly Mock<IReactable<GLInitData>> mockGLInitReactable;
+    private readonly Mock<IReactable<BatchSizeData>> mockBatchSizeReactable;
     private readonly Mock<IReactable<ShutDownData>> mockShutDownReactable;
     private IReactor<GLInitData>? glInitReactor;
+    private IReactor<BatchSizeData>? batchSizeReactor;
     private bool vertexBufferCreated;
     private bool indexBufferCreated;
 
@@ -70,6 +75,18 @@ public class TextureGPUBufferTests
                 }
 
                 this.glInitReactor = reactor;
+            });
+
+        this.mockBatchSizeReactable = new Mock<IReactable<BatchSizeData>>();
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
+            .Callback<IReactor<BatchSizeData>>(reactor =>
+            {
+                if (reactor is null)
+                {
+                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                }
+
+                this.batchSizeReactor = reactor;
             });
 
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
@@ -126,6 +143,56 @@ public class TextureGPUBufferTests
             },
         };
     }
+
+    #region Constructor Tests
+    [Fact]
+    public void Ctor_WithNullBatchSizeReactableParam_ThrowsException()
+    {
+        // Arrange & Act
+        var act = () =>
+        {
+            _ = new TextureGPUBuffer(
+                this.mockGL.Object,
+                this.mockGLService.Object,
+                this.mockGLInitReactable.Object,
+                null,
+                this.mockShutDownReactable.Object);
+        };
+
+        // Assert
+        act.Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'batchSizeReactable')");
+    }
+
+    [Fact]
+    public void Ctor_WhenBatchSizeReactableEndsNotifications_UnsubscriberInvoked()
+    {
+        // Arrange
+        var mockUnsubscriber = new Mock<IDisposable>();
+
+        this.mockBatchSizeReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<BatchSizeData>>()))
+            .Callback<IReactor<BatchSizeData>>(reactor =>
+            {
+                if (reactor is null)
+                {
+                    Assert.True(false, "GL initialization reactable subscription failed.  Reactor is null.");
+                }
+
+                this.batchSizeReactor = reactor;
+            })
+            .Returns<IReactor<BatchSizeData>>(_ => mockUnsubscriber.Object);
+
+        _ = CreateSystemUnderTest();
+
+        // Act
+        this.batchSizeReactor.OnCompleted();
+        this.batchSizeReactor.OnCompleted();
+
+        // Assert
+        mockUnsubscriber.Verify(m => m.Dispose(), Times.Once);
+    }
+    #endregion
 
     #region Method Tests
     [Fact]
@@ -266,6 +333,7 @@ public class TextureGPUBufferTests
         // Arrange
         var sut = CreateSystemUnderTest();
         this.glInitReactor.OnNext(default);
+        this.batchSizeReactor.OnNext(new BatchSizeData(BatchSize));
 
         // Act
         var actual = sut.GenerateData();
@@ -339,5 +407,6 @@ public class TextureGPUBufferTests
         this.mockGL.Object,
         this.mockGLService.Object,
         this.mockGLInitReactable.Object,
+        this.mockBatchSizeReactable.Object,
         this.mockShutDownReactable.Object);
 }

@@ -6,7 +6,6 @@ namespace Velaptor.OpenGL.Shaders;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Graphics;
 using Guards;
 using Velaptor.NativeInterop.OpenGL;
 using Exceptions;
@@ -15,14 +14,12 @@ using Reactables.Core;
 using Reactables.ReactableData;
 
 /// <inheritdoc/>
-[BatchSize(IRenderer.BatchSize)]
 internal abstract class ShaderProgram : IShaderProgram
 {
     private readonly IShaderLoaderService<uint> shaderLoaderService;
     private readonly IDisposable glInitReactorUnsubscriber;
     private readonly IDisposable shutDownReactorUnsubscriber;
     private bool isInitialized;
-    private uint batchSize;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
@@ -78,7 +75,12 @@ internal abstract class ShaderProgram : IShaderProgram
     public string Name { get; private set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value indicating whether or not a value if the <see cref="ShaderProgram"/> is disposed.
+    /// Gets or sets the size of the batch.
+    /// </summary>
+    public uint BatchSize { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or not the <see cref="ShaderProgram"/> is disposed.
     /// </summary>
     [SuppressMessage(
         "ReSharper",
@@ -135,6 +137,12 @@ internal abstract class ShaderProgram : IShaderProgram
         IsDisposed = true;
     }
 
+    /// <summary>
+    /// Initializes the shader program by compiling the vertex and fragment shaders.
+    /// </summary>
+    /// <exception cref="Exception">
+    ///     Thrown if the shader compilation throws an error.
+    /// </exception>
     private void Init()
     {
         if (this.isInitialized)
@@ -144,7 +152,7 @@ internal abstract class ShaderProgram : IShaderProgram
 
         OpenGLService.BeginGroup($"Load {Name} Vertex Shader");
 
-        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
+        var vertShaderSrc = this.shaderLoaderService.LoadVertSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", BatchSize) });
         var vertShaderId = GL.CreateShader(GLShaderType.VertexShader);
 
         OpenGLService.LabelShader(vertShaderId, $"{Name} Vertex Shader");
@@ -164,7 +172,7 @@ internal abstract class ShaderProgram : IShaderProgram
 
         OpenGLService.BeginGroup($"Load {Name} Fragment Shader");
 
-        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", this.batchSize) });
+        var fragShaderSrc = this.shaderLoaderService.LoadFragSource(Name, new (string name, uint value)[] { ("BATCH_SIZE", BatchSize) });
         var fragShaderId = GL.CreateShader(GLShaderType.FragmentShader);
 
         OpenGLService.LabelShader(fragShaderId, $"{Name} Fragment Shader");
@@ -188,6 +196,16 @@ internal abstract class ShaderProgram : IShaderProgram
         this.isInitialized = true;
     }
 
+    /// <summary>
+    /// Creates an <c>OpenGL</c> shader program using the given <paramref name="shaderName"/>,
+    /// <paramref name="vertShaderId"/>, and <paramref name="fragShaderId"/>.
+    /// </summary>
+    /// <param name="shaderName">The name to give the shader program.</param>
+    /// <param name="vertShaderId">The <c>OpenGL</c> vertex shader ID.</param>
+    /// <param name="fragShaderId">The <c>OpenGL</c> fragment shader ID.</param>
+    /// <exception cref="Exception">
+    ///     Thrown if the linking process during shader compilation throws an error.
+    /// </exception>
     private void CreateProgram(string shaderName, uint vertShaderId, uint fragShaderId)
     {
         OpenGLService.BeginGroup($"Create {shaderName} Shader Program");
@@ -211,6 +229,17 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService.EndGroup();
     }
 
+    /// <summary>
+    /// Performs cleanup after the vertex and fragments shaders are compiled, linked,
+    /// and sent to the GPU.
+    /// </summary>
+    /// <param name="name">The name of the shader program.</param>
+    /// <param name="vertShaderId">The <c>OpenGL</c> vertex shader ID.</param>
+    /// <param name="fragShaderId">The <c>OpenGL</c> fragment shader ID.</param>
+    /// <remarks>
+    ///     The vertex and fragment shader code is not needed on the CPU side
+    ///     once the GPU receives the shader code result.
+    /// </remarks>
     private void CleanShadersIfReady(string name, uint vertShaderId, uint fragShaderId)
     {
         OpenGLService.BeginGroup($"Clean Up {name} Vertex Shader");
@@ -229,6 +258,9 @@ internal abstract class ShaderProgram : IShaderProgram
         OpenGLService.EndGroup();
     }
 
+    /// <summary>
+    /// Processes any custom attributes that may or may not be on the implementing class.
+    /// </summary>
     private void ProcessCustomAttributes()
     {
         Attribute[]? attributes = null;
@@ -246,6 +278,10 @@ internal abstract class ShaderProgram : IShaderProgram
         {
             attributes = Attribute.GetCustomAttributes(typeof(RectangleShader));
         }
+        else if (currentType == typeof(LineShader))
+        {
+            attributes = Attribute.GetCustomAttributes(typeof(LineShader));
+        }
         else
         {
             Name = "UNKNOWN";
@@ -258,14 +294,9 @@ internal abstract class ShaderProgram : IShaderProgram
 
         foreach (var attribute in attributes)
         {
-            switch (attribute)
+            if (attribute is ShaderNameAttribute shaderNameAttribute)
             {
-                case ShaderNameAttribute nameAttribute:
-                    Name = nameAttribute.Name;
-                    break;
-                case BatchSizeAttribute sizeAttribute:
-                    this.batchSize = sizeAttribute.BatchSize;
-                    break;
+                Name = shaderNameAttribute.Name;
             }
         }
     }

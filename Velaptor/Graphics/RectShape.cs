@@ -34,7 +34,7 @@ public struct RectShape
     /// Gets or sets the width of the rectangle.
     /// </summary>
     /// <remarks>
-    ///     The width is restricted to a minimum value of 1.
+    ///     The width is restricted to a minimum value of one.
     /// </remarks>
     public float Width
     {
@@ -51,7 +51,7 @@ public struct RectShape
     /// Gets or sets the height of the rectangle.
     /// </summary>
     /// <remarks>
-    ///     The height is restricted to a minimum value of 1.
+    ///     The height is restricted to a minimum value of one.
     /// </remarks>
     public float Height
     {

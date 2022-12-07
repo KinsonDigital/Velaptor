@@ -162,6 +162,7 @@ internal static class IoC
         IoCContainer.Register<IBatchingService<TextureBatchItem>, TextureBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<FontGlyphBatchItem>, FontGlyphBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchingService<RectBatchItem>, RectBatchingService>(Lifestyle.Singleton);
+        IoCContainer.Register<IBatchingService<LineBatchItem>, LineBatchingService>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchServiceManager, BatchServiceManager>(Lifestyle.Singleton);
 
         IoCContainer.Register<IFontStatsService>(

@@ -246,7 +246,7 @@ public class RenderTextScene : SceneBase
             return;
         }
 
-        UnloadSceneContent();
+        ContentLoader.UnloadFont(this.textFont);
 
         base.UnloadContent();
     }
@@ -314,16 +314,11 @@ public class RenderTextScene : SceneBase
 
         if (disposing)
         {
-            UnloadSceneContent();
+            UnloadContent();
         }
 
         base.Dispose(disposing);
     }
-
-    /// <summary>
-    /// Unloads the scenes content.
-    /// </summary>
-    private void UnloadSceneContent() => ContentLoader.UnloadFont(this.textFont);
 
     private void LayoutButtonsLeftSide()
     {

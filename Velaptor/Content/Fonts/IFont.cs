@@ -87,7 +87,7 @@ public interface IFont : IContent
     GlyphMetrics[] ToGlyphMetrics(string text);
 
     /// <summary>
-    /// Gets the kerning between 2 glyphs using the given <paramref name="leftGlyphIndex"/> and <paramref name="rightGlyphIndex"/>.
+    /// Gets the kerning between two glyphs using the given <paramref name="leftGlyphIndex"/> and <paramref name="rightGlyphIndex"/>.
     /// </summary>
     /// <param name="leftGlyphIndex">The index of the left glyph.</param>
     /// <param name="rightGlyphIndex">The index of the right glyph.</param>

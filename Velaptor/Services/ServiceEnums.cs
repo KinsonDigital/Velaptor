@@ -23,4 +23,9 @@ internal enum BatchServiceType
     /// A rectangle batching service.
     /// </summary>
     Rectangle = 3,
+
+    /// <summary>
+    /// A line batching service.
+    /// </summary>
+    Line = 4,
 }

@@ -25,7 +25,7 @@ internal sealed class TextureBatchingService : IBatchingService<TextureBatchItem
     /// <summary>
     /// Initializes a new instance of the <see cref="TextureBatchingService"/> class.
     /// </summary>
-    /// <param name="batchSizeReactable">Receives push notifications about the batch size.</param>
+    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
     public TextureBatchingService(IReactable<BatchSizeData> batchSizeReactable)
     {
         EnsureThat.ParamIsNotNull(batchSizeReactable);

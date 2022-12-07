@@ -609,7 +609,7 @@ internal sealed class GLWindow : VelaptorIWindow
             new CachedValue<uint>( // value
                 defaultValue: width,
                 getterWhenNotCaching: () => (uint)this.glWindow.Size.X,
-                setterWhenNotCaching: (value) =>
+                setterWhenNotCaching: value =>
                 {
                     this.glWindow.Size = new Vector2D<int>((int)value, this.glWindow.Size.Y);
                 }));
@@ -619,7 +619,7 @@ internal sealed class GLWindow : VelaptorIWindow
             new CachedValue<uint>( // value
                 defaultValue: height,
                 getterWhenNotCaching: () => (uint)this.glWindow.Size.Y,
-                setterWhenNotCaching: (value) =>
+                setterWhenNotCaching: value =>
                 {
                     this.glWindow.Size = new Vector2D<int>(this.glWindow.Size.X, (int)value);
                 }));
@@ -635,7 +635,7 @@ internal sealed class GLWindow : VelaptorIWindow
             new CachedValue<string>( // value
                 defaultValue: "Velaptor Application",
                 getterWhenNotCaching: () => this.glWindow.Title,
-                setterWhenNotCaching: (value) =>
+                setterWhenNotCaching: value =>
                 {
                     this.glWindow.Title = value;
                 }));
@@ -662,7 +662,7 @@ internal sealed class GLWindow : VelaptorIWindow
         CachedPosition = new CachedValue<Vector2>(
             defaultValue: defaultPosition,
             getterWhenNotCaching: () => new Vector2(this.glWindow.Position.X, this.glWindow.Position.Y),
-            setterWhenNotCaching: (value) =>
+            setterWhenNotCaching: value =>
             {
                 this.glWindow.Position = new Vector2D<int>((int)value.X, (int)value.Y);
             });
@@ -672,7 +672,7 @@ internal sealed class GLWindow : VelaptorIWindow
             new CachedValue<int>( // value
                 defaultValue: 60,
                 getterWhenNotCaching: () => (int)this.glWindow.UpdatesPerSecond,
-                setterWhenNotCaching: (value) =>
+                setterWhenNotCaching: value =>
                 {
                     this.glWindow.UpdatesPerSecond = value;
                 }));
@@ -683,7 +683,7 @@ internal sealed class GLWindow : VelaptorIWindow
                 defaultValue: true,
                 getterWhenNotCaching: () => this.glInputContext.Mice.Count > 0 &&
                                             this.glInputContext.Mice[0].Cursor.CursorMode == CursorMode.Normal,
-                setterWhenNotCaching: (value) =>
+                setterWhenNotCaching: value =>
                 {
                     var cursorMode = value ? CursorMode.Normal : CursorMode.Hidden;
                     this.glInputContext.Mice[0].Cursor.CursorMode = cursorMode;
@@ -708,7 +708,7 @@ internal sealed class GLWindow : VelaptorIWindow
                     _ => throw new EnumOutOfRangeException(exceptionMsg),
                 };
             },
-            setterWhenNotCaching: (value) =>
+            setterWhenNotCaching: value =>
             {
                 var enumTypeStr = nameof(Velaptor);
                 enumTypeStr += $".{nameof(StateOfWindow)}";
@@ -744,7 +744,7 @@ internal sealed class GLWindow : VelaptorIWindow
                     _ => throw new EnumOutOfRangeException(exceptionMsg),
                 };
             },
-            setterWhenNotCaching: (value) =>
+            setterWhenNotCaching: value =>
             {
                 var enumTypeStr = nameof(Velaptor);
                 enumTypeStr += $".{nameof(WindowBorder)}";

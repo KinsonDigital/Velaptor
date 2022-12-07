@@ -25,6 +25,7 @@ public class BufferManagerTests
     private readonly Mock<IGPUBuffer<TextureBatchItem>> mockTextureBuffer;
     private readonly Mock<IGPUBuffer<FontGlyphBatchItem>> mockFontGlyphBuffer;
     private readonly Mock<IGPUBuffer<RectBatchItem>> mockRectBuffer;
+    private readonly Mock<IGPUBuffer<LineBatchItem>> mockLineBuffer;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BufferManagerTests"/> class.
@@ -34,11 +35,13 @@ public class BufferManagerTests
         this.mockTextureBuffer = new Mock<IGPUBuffer<TextureBatchItem>>();
         this.mockFontGlyphBuffer = new Mock<IGPUBuffer<FontGlyphBatchItem>>();
         this.mockRectBuffer = new Mock<IGPUBuffer<RectBatchItem>>();
+        this.mockLineBuffer = new Mock<IGPUBuffer<LineBatchItem>>();
 
         this.mockBufferFactory = new Mock<IGPUBufferFactory>();
         this.mockBufferFactory.Setup(m => m.CreateTextureGPUBuffer()).Returns(this.mockTextureBuffer.Object);
         this.mockBufferFactory.Setup(m => m.CreateFontGPUBuffer()).Returns(this.mockFontGlyphBuffer.Object);
         this.mockBufferFactory.Setup(m => m.CreateRectGPUBuffer()).Returns(this.mockRectBuffer.Object);
+        this.mockBufferFactory.Setup(m => m.CreateLineGPUBuffer()).Returns(this.mockLineBuffer.Object);
     }
 
     #region Method Tests
@@ -82,6 +85,20 @@ public class BufferManagerTests
 
         // Assert
         this.mockRectBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
+    }
+
+    [Fact]
+    public void SetViewPortSize_WithLineBufferType_ReturnsCorrectResult()
+    {
+        // Arrange
+        var expectedSize = new SizeU(111u, 222u);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.SetViewPortSize(VelaptorBufferType.Line, new SizeU(111u, 222u));
+
+        // Assert
+        this.mockLineBuffer.VerifySetOnce(p => p.ViewPortSize = expectedSize);
     }
 
     [Fact]
@@ -161,6 +178,25 @@ public class BufferManagerTests
 
         // Assert
         this.mockRectBuffer.VerifyOnce(m => m.UploadData(data, 789u));
+    }
+
+    [Fact]
+    public void UploadLineData_WhenInvoked_UploadsData()
+    {
+        // Arrange
+        var data = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            19);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.UploadLineData(data, 789u);
+
+        // Assert
+        this.mockLineBuffer.VerifyOnce(m => m.UploadData(data, 789u));
     }
     #endregion
 

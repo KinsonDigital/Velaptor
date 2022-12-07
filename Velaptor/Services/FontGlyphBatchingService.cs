@@ -27,7 +27,7 @@ internal sealed class FontGlyphBatchingService : IBatchingService<FontGlyphBatch
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGlyphBatchingService"/> class.
     /// </summary>
-    /// <param name="batchSizeReactable">Receives push notifications about the batch size.</param>
+    /// <param name="batchSizeReactable">Receives a push notification about the batch size.</param>
     public FontGlyphBatchingService(IReactable<BatchSizeData> batchSizeReactable)
     {
         EnsureThat.ParamIsNotNull(batchSizeReactable);

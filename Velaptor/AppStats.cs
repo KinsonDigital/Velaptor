@@ -24,7 +24,7 @@ public static class AppStats
     private static readonly List<(string fontFileName, string fontSize)> LoadedFonts = new ();
 
     /// <summary>
-    /// Gets all of the rendered textures for the last 2 frames in <c>string</c> format.
+    /// Gets all of the rendered textures for the last two frames in <c>string</c> format.
     /// </summary>
     /// <returns>The recorded frame information.</returns>
     public static string GetFontGlyphRenderingData()
@@ -77,7 +77,7 @@ public static class AppStats
     }
 
     /// <summary>
-    /// Records information about the textures that have been rendered for the 2 most recent frames.
+    /// Records information about the textures that have been rendered for the two most recent frames.
     /// </summary>
     /// <param name="frame">The application frame.</param>
     /// <param name="glyph">The glyph being rendered.</param>
@@ -103,14 +103,14 @@ public static class AppStats
 
         var distinctResult = frames.Distinct().ToArray();
 
-        // As long as there are at least 2 frames of info recorded
+        // As long as there are at least two frames of info recorded
         if (distinctResult.Length >= 2)
         {
             secondLargest = distinctResult.Skip(1).First();
         }
 
         // As long as there are frames recorded, attempt to clean up all frames
-        // that are older than the last 2 recorded frames
+        // that are older than the last two recorded frames
         if (largestFrame != 0u && secondLargest != 0u)
         {
             GlyphTextures.DequeueWhile(_ => frames.Length >= 2);
@@ -163,7 +163,7 @@ public static class AppStats
 
         var sections = fontInfo.Split('|');
 
-        // If there are not 2 sections and it does not contain any font metadata
+        // If there are not two sections and it does not contain any font metadata
         if (sections.Length != 2 || !sections[1].Contains(':'))
         {
             return;

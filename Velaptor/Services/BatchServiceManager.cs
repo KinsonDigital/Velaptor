@@ -15,6 +15,7 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     private readonly IBatchingService<TextureBatchItem> textureBatchingService;
     private readonly IBatchingService<FontGlyphBatchItem> fontGlyphBatchingService;
     private readonly IBatchingService<RectBatchItem> rectBatchingService;
+    private readonly IBatchingService<LineBatchItem> lineBatchingService;
     private bool disposed;
 
     /// <summary>
@@ -23,14 +24,17 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     /// <param name="textureBatchingService">Manages a batch of textures.</param>
     /// <param name="fontGlyphBatchingService">Manages a batch of font glyphs.</param>
     /// <param name="rectBatchingService">Manages the batch of rectangles.</param>
+    /// <param name="lineBatchingService">Manages the batch of lines.</param>
     public BatchServiceManager(
         IBatchingService<TextureBatchItem> textureBatchingService,
         IBatchingService<FontGlyphBatchItem> fontGlyphBatchingService,
-        IBatchingService<RectBatchItem> rectBatchingService)
+        IBatchingService<RectBatchItem> rectBatchingService,
+        IBatchingService<LineBatchItem> lineBatchingService)
     {
         EnsureThat.ParamIsNotNull(textureBatchingService);
         EnsureThat.ParamIsNotNull(fontGlyphBatchingService);
         EnsureThat.ParamIsNotNull(rectBatchingService);
+        EnsureThat.ParamIsNotNull(lineBatchingService);
 
         this.textureBatchingService = textureBatchingService;
         this.textureBatchingService.ReadyForRendering += TextureBatchingServiceReadyForRendering;
@@ -40,6 +44,9 @@ internal sealed class BatchServiceManager : IBatchServiceManager
 
         this.rectBatchingService = rectBatchingService;
         this.rectBatchingService.ReadyForRendering += RectBatchingServiceReadyForRendering;
+
+        this.lineBatchingService = lineBatchingService;
+        this.lineBatchingService.ReadyForRendering += LineBatchingServiceReadyForRendering;
     }
 
     /// <inheritdoc/>
@@ -50,6 +57,9 @@ internal sealed class BatchServiceManager : IBatchServiceManager
 
     /// <inheritdoc/>
     public event EventHandler<EventArgs>? RectBatchReadyForRendering;
+
+    /// <inheritdoc/>
+    public event EventHandler<EventArgs>? LineBatchReadyForRendering;
 
     /// <inheritdoc/>
     public ReadOnlyCollection<TextureBatchItem> TextureBatchItems
@@ -73,6 +83,13 @@ internal sealed class BatchServiceManager : IBatchServiceManager
     }
 
     /// <inheritdoc/>
+    public ReadOnlyCollection<LineBatchItem> LineBatchItems
+    {
+        get => this.lineBatchingService.BatchItems;
+        set => this.lineBatchingService.BatchItems = value;
+    }
+
+    /// <inheritdoc/>
     public void AddTextureBatchItem(TextureBatchItem batchItem) => this.textureBatchingService.Add(batchItem);
 
     /// <inheritdoc/>
@@ -80,6 +97,9 @@ internal sealed class BatchServiceManager : IBatchServiceManager
 
     /// <inheritdoc/>
     public void AddRectBatchItem(RectBatchItem batchItem) => this.rectBatchingService.Add(batchItem);
+
+    /// <inheritdoc/>
+    public void AddLineBatchItem(LineBatchItem batchItem) => this.lineBatchingService.Add(batchItem);
 
     /// <inheritdoc/>
     public void EmptyBatch(BatchServiceType serviceType)
@@ -94,6 +114,9 @@ internal sealed class BatchServiceManager : IBatchServiceManager
                 break;
             case BatchServiceType.Rectangle:
                 this.rectBatchingService.EmptyBatch();
+                break;
+            case BatchServiceType.Line:
+                this.lineBatchingService.EmptyBatch();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -116,6 +139,9 @@ internal sealed class BatchServiceManager : IBatchServiceManager
                 break;
             case BatchServiceType.Rectangle:
                 this.RectBatchReadyForRendering?.Invoke(this, EventArgs.Empty);
+                break;
+            case BatchServiceType.Line:
+                this.LineBatchReadyForRendering?.Invoke(this, EventArgs.Empty);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
@@ -144,26 +170,33 @@ internal sealed class BatchServiceManager : IBatchServiceManager
             this.textureBatchingService.ReadyForRendering -= TextureBatchingServiceReadyForRendering;
             this.fontGlyphBatchingService.ReadyForRendering -= FontGlyphBatchingServiceReadyForRendering;
             this.rectBatchingService.ReadyForRendering -= RectBatchingServiceReadyForRendering;
+            this.lineBatchingService.ReadyForRendering -= LineBatchingServiceReadyForRendering;
         }
 
         this.disposed = true;
     }
 
     /// <summary>
-    /// Invoked the texture batch filled event.
+    /// Invokes the texture batch filled event.
     /// </summary>
     private void TextureBatchingServiceReadyForRendering(object? sender, EventArgs e)
         => this.TextureBatchReadyForRendering?.Invoke(sender, e);
 
     /// <summary>
-    /// Invoked the font glyph batch filled event.
+    /// Invokes the font glyph batch filled event.
     /// </summary>
     private void FontGlyphBatchingServiceReadyForRendering(object? sender, EventArgs e)
         => this.FontGlyphBatchReadyForRendering?.Invoke(sender, e);
 
     /// <summary>
-    /// Invoked the rectangle batch filled event.
+    /// Invokes the rectangle batch filled event.
     /// </summary>
     private void RectBatchingServiceReadyForRendering(object? sender, EventArgs e)
         => this.RectBatchReadyForRendering?.Invoke(sender, e);
+
+    /// <summary>
+    /// Invokes the line batch filled event.
+    /// </summary>
+    private void LineBatchingServiceReadyForRendering(object? sender, EventArgs e)
+        => this.LineBatchReadyForRendering?.Invoke(sender, e);
 }

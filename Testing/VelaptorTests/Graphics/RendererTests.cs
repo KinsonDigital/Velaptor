@@ -88,6 +88,8 @@ public class RendererTests
             .Returns(Array.Empty<FontGlyphBatchItem>().ToReadOnlyCollection());
         this.mockBatchServiceManager.SetupGet(p => p.RectBatchItems)
             .Returns(Array.Empty<RectBatchItem>().ToReadOnlyCollection());
+        this.mockBatchServiceManager.SetupGet(p => p.LineBatchItems)
+            .Returns(Array.Empty<LineBatchItem>().ToReadOnlyCollection());
 
         this.mockGLInitUnsubscriber = new Mock<IDisposable>();
         this.mockGLInitReactable = new Mock<IReactable<GLInitData>>();
@@ -886,7 +888,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoked_AddsCorrectBatchItems)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
         const string renderText = "Font_Testing";
@@ -924,7 +926,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking4ParamsWithXAndYOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -965,7 +967,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking3ParamsWithPositionOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1005,7 +1007,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking6ParamsWithXAndYOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1048,7 +1050,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithPositionOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1090,7 +1092,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithColorOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1132,7 +1134,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking4ParamsWithPositionAndColorOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1173,7 +1175,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking6ParamsWithColorOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1216,7 +1218,7 @@ public class RendererTests
         // Arrange
         const string expectedTestDataFileName = $"{nameof(RenderFont_WhenInvoking5ParamsWithPositionAndColorOverload_RendersFont)}.json";
         var expectedBatchResultData =
-            TestDataLoader.LoadTestData<FontGlyphBatchItem>(BatchTestDataDirPath, expectedTestDataFileName);
+            TestDataLoader.LoadTestData<FontGlyphBatchItem[]>(BatchTestDataDirPath, expectedTestDataFileName);
 
         var actualBatchResultData = new List<FontGlyphBatchItem>();
 
@@ -1439,6 +1441,201 @@ public class RendererTests
     }
 
     [Fact]
+    public void RenderLine_WhenInvoking2ParamMethodOverload_AddsToBatch()
+    {
+        // Arrange
+        var expected = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            9,
+            10);
+
+        var line = new Line(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            9);
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.Render(line, 10);
+
+        // Assert
+        this.mockBatchServiceManager.VerifyOnce(m => m.AddLineBatchItem(expected));
+    }
+
+    [Fact]
+    public void RenderLine_WhenInvoking3ParamMethodOverload_AddsToBatch()
+    {
+        // Arrange
+        var expected = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.White,
+            1u,
+            10);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.RenderLine(new Vector2(1, 2), new Vector2(3, 4), 10);
+
+        // Assert
+        this.mockBatchServiceManager.VerifyOnce(m => m.AddLineBatchItem(expected));
+    }
+
+    [Fact]
+    public void RenderLine_WhenInvoking4ParamWithColorMethodOverload_AddsToBatch()
+    {
+        // Arrange
+        var expected = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            1u,
+            10);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.RenderLine(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            10);
+
+        // Assert
+        this.mockBatchServiceManager.VerifyOnce(m => m.AddLineBatchItem(expected));
+    }
+
+    [Fact]
+    public void RenderLine_WhenInvoking4ParamWithThicknessMethodOverload_AddsToBatch()
+    {
+        // Arrange
+        var expected = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.White,
+            11u,
+            10);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.RenderLine(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            11u,
+            10);
+
+        // Assert
+        this.mockBatchServiceManager.VerifyOnce(m => m.AddLineBatchItem(expected));
+    }
+
+    [Fact]
+    public void RenderLine_WhenInvokingOverloadWithAllParams_AddsToBatch()
+    {
+        // Arrange
+        var expected = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            9u,
+            10);
+
+        var sut = CreateSystemUnderTest();
+
+        // Act
+        sut.RenderLine(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            9u,
+            10);
+
+        // Assert
+        this.mockBatchServiceManager.VerifyOnce(m => m.AddLineBatchItem(expected));
+    }
+
+    [Fact]
+    public void RenderLine_WithNoLineItemsToRender_SetsUpCorrectDebugGroupAndExits()
+    {
+        // Arrange
+        const string shaderName = "TestLineShader";
+        this.mockShaderManager.Setup(m => m.GetShaderName(ShaderType.Line)).Returns(shaderName);
+        var unused = CreateSystemUnderTest();
+
+        // Act
+        this.mockBatchServiceManager.Raise(e => e.LineBatchReadyForRendering += null, EventArgs.Empty);
+
+        // Assert
+        this.mockGLService.Verify(m => m.BeginGroup("Render Line Process - Nothing To Render"), Times.Once);
+        this.mockGLService.Verify(m => m.EndGroup(), Times.Once);
+        this.mockGLService.VerifyNever(m => m.BeginGroup($"Render Line Process With {shaderName} Shader"));
+        this.mockShaderManager.VerifyNever(m => m.Use(It.IsAny<ShaderType>()));
+        this.mockGLService.VerifyNever(m =>
+            m.BeginGroup(It.Is<string>(value => value.StartsWith("Update Line Data - TextureID"))));
+        this.mockGL.VerifyNever(m => m.ActiveTexture(It.IsAny<GLTextureUnit>()));
+        this.mockGLService.VerifyNever(m => m.BindTexture2D(It.IsAny<uint>()));
+        this.mockBufferManager.VerifyNever(m =>
+            m.UploadLineData(It.IsAny<LineBatchItem>(), It.IsAny<uint>()));
+        this.mockGLService.VerifyNever(m =>
+            m.BeginGroup(It.Is<string>(value => value.StartsWith("Render ") && value.EndsWith(" Texture Elements"))));
+        this.mockGL.VerifyNever(m => m.DrawElements(
+            It.IsAny<GLPrimitiveType>(),
+            It.IsAny<uint>(),
+            It.IsAny<GLDrawElementsType>(),
+            It.IsAny<IntPtr>()));
+        this.mockBatchServiceManager.VerifyNever(m => m.EmptyBatch(BatchServiceType.Line));
+    }
+
+    [Fact]
+    public void RenderLine_WhenInvoked_RendersLine()
+    {
+        // Arrange
+        const uint batchIndex = 0;
+
+        var rect = new Line(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            5);
+
+        var batchItem = new LineBatchItem(
+            new Vector2(1, 2),
+            new Vector2(3, 4),
+            Color.FromArgb(5, 6, 7, 8),
+            9,
+            10);
+
+        var shouldNotRenderEmptyItem = default(LineBatchItem);
+
+        var items = new[] { batchItem, shouldNotRenderEmptyItem };
+
+        var sut = CreateSystemUnderTest();
+        this.mockBatchServiceManager.Setup(m => m.AddLineBatchItem(It.IsAny<LineBatchItem>()))
+            .Callback<LineBatchItem>(_ =>
+            {
+                MockLineBatchItems(items);
+                this.mockBatchServiceManager.Raise(m => m.LineBatchReadyForRendering += null, EventArgs.Empty);
+            });
+        this.glInitReactor.OnNext(default);
+
+        // Act
+        sut.Begin();
+        sut.Render(rect);
+
+        // Assert
+        this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Line Elements"));
+        this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
+        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
+        this.mockBufferManager.VerifyOnce(m => m.UploadLineData(batchItem, batchIndex));
+        this.mockBufferManager.VerifyNever(m => m.UploadLineData(shouldNotRenderEmptyItem, batchIndex));
+        this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Line), Times.Once);
+    }
+
+    [Fact]
     public void End_WhenInvoked_EndsBatches()
     {
         // Arrange
@@ -1546,12 +1743,19 @@ public class RendererTests
         return result;
     }
 
+    /// <summary>
+    /// Mocks the font metrics for testing.
+    /// </summary>
     private void MockFontMetrics()
     {
-        this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics>(string.Empty, GlyphTestDataFileName).ToList();
+        this.allGlyphMetrics = TestDataLoader.LoadTestData<GlyphMetrics[]>(string.Empty, GlyphTestDataFileName).ToList();
         this.mockFont.SetupGet(p => p.Metrics).Returns(() => this.allGlyphMetrics.ToArray().ToReadOnlyCollection());
     }
 
+    /// <summary>
+    /// Mocks the given <paramref name="text"/> to glyph metrics for testing.
+    /// </summary>
+    /// <param name="text">The text of glyphs to mock.</param>
     private void MockToGlyphMetrics(string text)
     {
         this.mockFont.Setup(m => m.ToGlyphMetrics(text)).Returns(() =>
@@ -1633,5 +1837,15 @@ public class RendererTests
     {
         this.mockBatchServiceManager.SetupProperty(p => p.RectBatchItems);
         this.mockBatchServiceManager.Object.RectBatchItems = items.ToReadOnlyCollection();
+    }
+
+    /// <summary>
+    /// Mocks the <see cref="BatchServiceManager.LineBatchItems"/> property of the <see cref="IBatchServiceManager"/>.
+    /// </summary>
+    /// <param name="items">The items to store in the service.</param>
+    private void MockLineBatchItems(LineBatchItem[] items)
+    {
+        this.mockBatchServiceManager.SetupProperty(p => p.LineBatchItems);
+        this.mockBatchServiceManager.Object.LineBatchItems = items.ToReadOnlyCollection();
     }
 }

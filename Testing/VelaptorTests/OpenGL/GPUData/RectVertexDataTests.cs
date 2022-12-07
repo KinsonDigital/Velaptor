@@ -68,7 +68,7 @@ public class RectVertexDataTests
     public void GetTotalBytes_WhenInvoked_ReturnsCorrectResult()
     {
         // Arrange & Act
-        var actual = RectVertexData.GetTotalBytes();
+        var actual = RectVertexData.GetStride();
 
         // Assert
         Assert.Equal(64u, actual);

@@ -40,7 +40,7 @@ public static class TestDataLoader
     ///     If the <paramref name="relativeDirPath"/> is null or empty, then the default root test data directory path will be used.
     /// </para>
     /// </remarks>
-    public static T[] LoadTestData<T>(string? relativeDirPath, string fileName)
+    public static T LoadTestData<T>(string? relativeDirPath, string fileName)
     {
         var loadTestDataPrefix = $"Loading test data error:{Environment.NewLine}\t";
 
@@ -94,7 +94,7 @@ public static class TestDataLoader
             },
         };
 
-        var result = JsonConvert.DeserializeObject<T[]>(testJSONData, settings);
+        var result = JsonConvert.DeserializeObject<T>(testJSONData, settings);
 
         if (result is null)
         {

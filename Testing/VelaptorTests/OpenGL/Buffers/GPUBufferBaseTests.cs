@@ -80,7 +80,7 @@ public class GPUBufferBaseTests
         this.mockShutDownReactable = new Mock<IReactable<ShutDownData>>();
         this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>((reactor) =>
+            .Callback<IReactor<ShutDownData>>(reactor =>
             {
                 if (reactor is null)
                 {
@@ -381,7 +381,7 @@ public class GPUBufferBaseTests
         // Arrange
         this.mockShutDownReactable.Setup(m => m.Subscribe(It.IsAny<IReactor<ShutDownData>>()))
             .Returns(this.mockShutDownUnsubscriber.Object)
-            .Callback<IReactor<ShutDownData>>((reactor) =>
+            .Callback<IReactor<ShutDownData>>(reactor =>
             {
                 if (reactor is null)
                 {
