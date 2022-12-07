@@ -16,9 +16,9 @@ As with all software, there is always a chance for issues and bugs, especially f
 1. [#154](https://github.com/KinsonDigital/Velaptor/issues/154) - Added the ability to render 2D line primitives with the following features.
    > **💡**
    > To render a line, use the new render methods added to `IRenderer` interface.
-   - Simple 2D line primitive rendering
-   - Line colors
-   - Line thickness
+   - Simple 2D line primitive rendering.
+   - Line colors.
+   - Line thickness.
 
 ---
 
@@ -58,5 +58,5 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Other 🪧</h2>
 <h5 align="center">(Includes anything that does not fit into the categories above)</h5>
 
-1. [#154](https://github.com/KinsonDigital/Velaptor/issues/154) - Added two new scenes to the _**VelaptorTesting**_ application for testing.
+1. [#154](https://github.com/KinsonDigital/Velaptor/issues/154) - Added two new scenes to the _**VelaptorTesting**_ application.
 2. [#433](https://github.com/KinsonDigital/Velaptor/issues/433) - Fixed a broken link to the logo in the project README file that was used for the NuGet package.
