@@ -1,4 +1,4 @@
-// <copyright file="RenderTextScene.cs" company="KinsonDigital">
+// <copyright file="TextRenderingScene.cs" company="KinsonDigital">
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
@@ -17,7 +17,7 @@ using Core;
 /// <summary>
 /// Used to test whether or not text is properly rendered to the screen.
 /// </summary>
-public class RenderTextScene : SceneBase
+public class TextRenderingScene : SceneBase
 {
     private const int LeftMargin = 50;
     private const int VertButtonSpacing = 10;
@@ -47,10 +47,10 @@ public class RenderTextScene : SceneBase
     private float renderSize = 1f;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RenderTextScene"/> class.
+    /// Initializes a new instance of the <see cref="TextRenderingScene"/> class.
     /// </summary>
     /// <param name="contentLoader">Loads content for the scene.</param>
-    public RenderTextScene(IContentLoader contentLoader)
+    public TextRenderingScene(IContentLoader contentLoader)
         : base(contentLoader) =>
         this.windowCenter = new Point(
             (int)(MainWindow.WindowWidth / 2f),
