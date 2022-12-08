@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>11.0</LangVersion>
     <Configurations>Release;Debug-Console;Debug;Release-Console</Configurations>
     <Nullable>enable</Nullable>
     <AssemblyName>VelaptorTesting</AssemblyName>
