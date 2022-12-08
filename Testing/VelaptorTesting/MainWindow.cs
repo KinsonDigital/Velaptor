@@ -47,9 +47,9 @@ public class MainWindow : Window
 
         this.sceneManager = new SceneManager(renderer);
 
-        var renderTextScene = new RenderTextScene(contentLoader)
+        var textRenderingScene = new TextRenderingScene(contentLoader)
         {
-            Name = SplitByUpperCase(nameof(RenderTextScene)),
+            Name = SplitByUpperCase(nameof(TextRenderingScene)),
         };
 
         var layeredTextRenderingScene = new LayeredTextRenderingScene(contentLoader)
@@ -107,7 +107,7 @@ public class MainWindow : Window
             Name = SplitByUpperCase(nameof(SoundScene)),
         };
 
-        this.sceneManager.AddScene(renderTextScene, true);
+        this.sceneManager.AddScene(textRenderingScene, true);
         this.sceneManager.AddScene(layeredTextRenderingScene);
         this.sceneManager.AddScene(keyboardScene);
         this.sceneManager.AddScene(mouseScene);

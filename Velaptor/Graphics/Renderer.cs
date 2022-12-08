@@ -289,11 +289,6 @@ internal sealed class Renderer : IRenderer
             throw new ArgumentNullException(nameof(font), $"Cannot render a null '{nameof(IFont)}'.");
         }
 
-        if (string.IsNullOrEmpty(text))
-        {
-            return;
-        }
-
         if (font.Size == 0u)
         {
             return;
@@ -312,6 +307,11 @@ internal sealed class Renderer : IRenderer
         var characterY = (float)y;
 
         text = text.TrimNewLineFromEnd();
+
+        if (string.IsNullOrEmpty(text))
+        {
+            return;
+        }
 
         var lines = text.Split(Environment.NewLine).TrimAllEnds();
 

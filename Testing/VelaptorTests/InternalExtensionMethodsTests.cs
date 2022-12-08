@@ -374,16 +374,15 @@ public class InternalExtensionMethodsTests
     }
 
     [Theory]
-    [InlineData("test\n")]
-    [InlineData("test\r")]
-    [InlineData("test\n\r")]
-    [InlineData("test\r\n")]
-    public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string value)
+    [InlineData("", "")]
+    [InlineData(null, "")]
+    [InlineData("test\n", "test")]
+    [InlineData("test\r", "test")]
+    [InlineData("test\n\r", "test")]
+    [InlineData("test\r\n", "test")]
+    public void TrimNewLineFromEnd_WhenInvoked_ReturnsCorrectResult(string value, string expected)
     {
-        // Arrange
-        const string expected = "test";
-
-        // Act
+        // Arrange & Act
         var actual = value.TrimNewLineFromEnd();
 
         // Assert
