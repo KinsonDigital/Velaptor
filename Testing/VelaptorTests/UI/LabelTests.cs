@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using FluentAssertions;
 using Moq;
 using Velaptor;
 using Velaptor.Content;
@@ -17,7 +18,6 @@ using Velaptor.Content.Fonts;
 using Velaptor.Graphics;
 using Velaptor.Input;
 using Velaptor.UI;
-using Helpers;
 using Xunit;
 using VelFontStyle = Velaptor.Content.Fonts.FontStyle;
 
@@ -50,21 +50,29 @@ public class LabelTests
     [Fact]
     public void Ctor_WithNullContentLoaderParam_ThrowsException()
     {
-        // Arrange & Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new Label(null, this.mockFont.Object, this.mockMouse.Object);
-        }, "The parameter must not be null. (Parameter 'contentLoader')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'contentLoader')");
     }
 
     [Fact]
     public void Ctor_WithNullFontParam_ThrowsException()
     {
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
+        // Arrange & Act
+        var act = () =>
         {
             _ = new Label(this.mockContentLoader.Object, null, this.mockMouse.Object);
-        }, "The parameter must not be null. (Parameter 'font')");
+        };
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'font')");
     }
     #endregion
 
@@ -80,7 +88,7 @@ public class LabelTests
         var actual = sut.Text;
 
         // Assert
-        Assert.Equal("test-value", actual);
+        actual.Should().Be("test-value");
     }
 
     [Fact]
@@ -94,7 +102,7 @@ public class LabelTests
         var actual = sut.Position;
 
         // Assert
-        Assert.Equal(new Point(11, 22), actual);
+        actual.Should().Be(new Point(11, 22));
     }
 
     [Fact]
@@ -112,7 +120,7 @@ public class LabelTests
         var actual = sut.CharacterBounds;
 
         // Assert
-        Assert.Empty(actual);
+        actual.Should().BeEmpty();
         this.mockFont.Verify(m => m.GetCharacterBounds(It.IsAny<string>(), It.IsAny<Vector2>()), Times.Never);
     }
 
@@ -146,7 +154,7 @@ public class LabelTests
         var actual = sut.CharacterBounds;
 
         // Assert
-        Assert.Equal(labelText.Length, actual.Count);
+        actual.Count.Should().Be(labelText.Length);
         this.mockFont.Verify(m => m.GetCharacterBounds(labelText, new Vector2(46, 200)), Times.Once);
     }
 
@@ -160,7 +168,7 @@ public class LabelTests
         var actual = sut.AutoSize;
 
         // Assert
-        Assert.True(actual, $"The expected default value of the '{nameof(Label.AutoSize)}' property must be true.");
+        actual.Should().BeTrue($"the default value of the '{nameof(Label.AutoSize)}' property must be true.");
     }
 
     [Fact]
@@ -173,7 +181,7 @@ public class LabelTests
         sut.AutoSize = false;
 
         // Assert
-        Assert.False(sut.AutoSize);
+        sut.AutoSize.Should().BeFalse();
     }
 
     [Theory]
@@ -187,6 +195,7 @@ public class LabelTests
         // Arrange
         const string testText = "xunit";
         this.mockFont.Setup(m => m.Measure(testText)).Returns(new SizeF(expected, 20));
+
         var sut = CreateSystemUnderTest();
         sut.AutoSize = autoSize;
         sut.Text = testText;
@@ -197,7 +206,7 @@ public class LabelTests
         var actual = sut.Width;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -211,6 +220,7 @@ public class LabelTests
         // Arrange
         const string testText = "xunit";
         this.mockFont.Setup(m => m.Measure(testText)).Returns(new SizeF(10, expected));
+
         var sut = CreateSystemUnderTest();
         sut.AutoSize = autoSize;
         sut.Text = testText;
@@ -221,7 +231,7 @@ public class LabelTests
         var actual = sut.Height;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -229,13 +239,14 @@ public class LabelTests
     {
         // Arrange
         this.mockFont.SetupProperty(p => p.Style);
+
         var sut = CreateSystemUnderTest();
 
         // Act
         sut.Style = FontStyle.Italic;
 
         // Assert
-        Assert.Equal(FontStyle.Italic, sut.Style);
+        sut.Style.Should().Be(FontStyle.Italic);
     }
 
     [Fact]
@@ -252,8 +263,8 @@ public class LabelTests
         var actualHeight = sut.Height;
 
         // Assert
-        Assert.Equal(0u, actualWidth);
-        Assert.Equal(0u, actualHeight);
+        actualWidth.Should().Be(0);
+        actualHeight.Should().Be(0);
     }
 
     [Fact]
@@ -266,7 +277,7 @@ public class LabelTests
         var actual = sut.Color;
 
         // Assert
-        Assert.Equal(Color.Black, actual);
+        actual.Should().Be(Color.Black);
     }
 
     [Fact]
@@ -280,7 +291,7 @@ public class LabelTests
         var actual = sut.Color;
 
         // Assert
-        Assert.Equal(Color.FromArgb(11, 22, 33, 44), actual);
+        actual.Should().Be(Color.FromArgb(11, 22, 33, 44));
     }
 
     [Fact]
@@ -294,7 +305,7 @@ public class LabelTests
         var actual = sut.Font;
 
         // Assert
-        Assert.Same(this.mockFont.Object, actual);
+        actual.Should().Be(this.mockFont.Object);
     }
     #endregion
 
@@ -303,7 +314,7 @@ public class LabelTests
     public void LoadContent_WhenInvoked_LoadsCorrectFont()
     {
         // Arrange
-        var expectedCharBounds = new ReadOnlyCollection<(char, RectangleF)>(
+        var expected = new ReadOnlyCollection<(char, RectangleF)>(
             new[]
             {
                 ('a', new RectangleF(1f, 2f, 3f, 4f)),
@@ -313,7 +324,8 @@ public class LabelTests
         const string testText = "test-value";
         var position = new Vector2(11f, 22f);
         this.mockFont.Setup(m => m.GetCharacterBounds(testText, position))
-            .Returns(() => expectedCharBounds);
+            .Returns(() => expected);
+
         var sut = CreateSystemUnderTest();
         sut.Text = testText;
         sut.Position = position.ToPoint();
@@ -323,7 +335,7 @@ public class LabelTests
         sut.LoadContent();
 
         // Assert
-        Assert.Equal(expectedCharBounds, sut.CharacterBounds);
+        sut.CharacterBounds.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -361,7 +373,7 @@ public class LabelTests
         var actual = sut.CharacterBounds;
 
         // Assert
-        Assert.Equal(labelText.Length, actual.Count);
+        actual.Count.Should().Be(labelText.Length);
         this.mockFont.Verify(m => m.GetCharacterBounds(labelText, new Vector2(46, 200)), Times.Once);
     }
 
@@ -398,11 +410,12 @@ public class LabelTests
         // Arrange
         var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        AssertExtensions.ThrowsWithMessage<ArgumentNullException>(() =>
-        {
-            sut.Render(null);
-        }, "The parameter must not be null. (Parameter 'renderer')");
+        // Act
+        var act = () => sut.Render(null);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>()
+            .WithMessage("The parameter must not be null. (Parameter 'renderer')");
     }
 
     [Fact]
@@ -410,6 +423,7 @@ public class LabelTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderer>();
+
         var sut = CreateSystemUnderTest();
         sut.Visible = true;
 
@@ -452,6 +466,7 @@ public class LabelTests
     {
         // Arrange
         var mockRenderer = new Mock<IRenderer>();
+
         var sut = CreateSystemUnderTest();
         sut.Text = string.Empty;
         sut.LoadContent();
