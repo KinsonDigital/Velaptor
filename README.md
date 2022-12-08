@@ -182,7 +182,7 @@ To learn how to contribute to the project, go [here](https://github.com/KinsonDi
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
 **Velaptor** and all of the [KinsonDigital](https://github.com/KinsonDigital) organization projects require significant effort to maintain, as such we greatly appreciate any financial support you are able to provide!
-This helps ensure the long term viability of all the projects in the organization, and to help support the developers who maintain **Velaptor** in their free time. [Calvin Wilkinson](https://github.com/sponsors/KinsonDigital) is accepting GitHub Sponsorships.
+This helps ensure the long term viability of all the projects in the organization and to [help support](https://github.com/sponsors/KinsonDigital) the project maintainers in their free time.
 
 <!--PRE-PROCESSING-COMMENT-START-->
 <h2 style="font-weight:bold;border:0" align="center">Further Resources</h2>
