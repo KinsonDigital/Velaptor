@@ -24,7 +24,7 @@
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Velaptor</Product>
-    <Description>2D game or application development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
+    <Description>2D game or application development framework that provides 2D rendering, sound, keyboard and mouse input, etc.</Description>
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>
