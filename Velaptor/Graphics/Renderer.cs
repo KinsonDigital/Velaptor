@@ -532,7 +532,7 @@ internal sealed class Renderer : IRenderer
                 var totalElements = 6u * totalItemsToRender;
 
                 this.openGLService.BeginGroup($"Render {totalElements} Texture Elements");
-                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
                 this.openGLService.EndGroup();
 
                 totalItemsToRender = 0;
@@ -604,7 +604,7 @@ internal sealed class Renderer : IRenderer
                 var totalElements = 6u * totalItemsToRender;
 
                 this.openGLService.BeginGroup($"Render {totalElements} Font Elements");
-                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+                this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
                 this.openGLService.EndGroup();
 
                 totalItemsToRender = 0;
@@ -662,7 +662,7 @@ internal sealed class Renderer : IRenderer
             var totalElements = 6u * totalItemsToRender;
 
             this.openGLService.BeginGroup($"Render {totalElements} Rectangle Elements");
-            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
             this.openGLService.EndGroup();
 
             // Empties the batch
@@ -716,7 +716,7 @@ internal sealed class Renderer : IRenderer
             var totalElements = 6u * totalItemsToRender;
 
             this.openGLService.BeginGroup($"Render {totalElements} Line Elements");
-            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero);
+            this.gl.DrawElements(GLPrimitiveType.Triangles, totalElements, GLDrawElementsType.UnsignedInt, nint.Zero);
             this.openGLService.EndGroup();
 
             // Empties the batch

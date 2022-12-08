@@ -77,7 +77,7 @@ internal interface IGLFWInvoker : IDisposable
     /// </summary>
     /// <param name="monitor">The monitor to query.</param>
     /// <returns>The monitor scale in the X and Y axis.</returns>
-    Vector2 GetMonitorContentScale(IntPtr monitor);
+    Vector2 GetMonitorContentScale(nint monitor);
 
     /// <summary>
     /// <para>
@@ -103,7 +103,7 @@ internal interface IGLFWInvoker : IDisposable
     ///     Possible errors include <see cref="ErrorCode.NotInitialized"/>.
     /// </para>
     /// </remarks>
-    IntPtr[] GetMonitors();
+    nint[] GetMonitors();
 
     /// <summary>
     /// <para>
@@ -129,5 +129,5 @@ internal interface IGLFWInvoker : IDisposable
     ///     Possible errors include <see cref="ErrorCode.NotInitialized"/> and <see cref="ErrorCode.PlatformError"/>.
     /// </para>
     /// </remarks>
-    GLFWVideoMode GetVideoMode(IntPtr monitor);
+    GLFWVideoMode GetVideoMode(nint monitor);
 }

@@ -509,7 +509,7 @@ public class RendererTests
             It.IsAny<GLPrimitiveType>(),
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
-            It.IsAny<IntPtr>()));
+            It.IsAny<nint>()));
         this.mockBatchServiceManager.VerifyNever(m => m.EmptyBatch(BatchServiceType.FontGlyph));
     }
 
@@ -704,7 +704,7 @@ public class RendererTests
         // Assert
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 12 Texture Elements"));
         this.mockGL.VerifyOnce(m
-            => m.DrawElements(GLPrimitiveType.Triangles, expectedTotalElements, GLDrawElementsType.UnsignedInt, IntPtr.Zero));
+            => m.DrawElements(GLPrimitiveType.Triangles, expectedTotalElements, GLDrawElementsType.UnsignedInt, nint.Zero));
         this.mockGLService.VerifyOnce(m => m.BindTexture2D(TextureId));
         this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(itemA, itemABatchIndex));
         this.mockBufferManager.VerifyOnce(m => m.UploadTextureData(itemB, itemBBatchIndex));
@@ -753,7 +753,7 @@ public class RendererTests
             It.IsAny<GLPrimitiveType>(),
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
-            It.IsAny<IntPtr>()));
+            It.IsAny<nint>()));
         this.mockBatchServiceManager.VerifyNever(m => m.EmptyBatch(BatchServiceType.FontGlyph));
     }
 
@@ -1302,7 +1302,7 @@ public class RendererTests
         this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles,
                 6u * (uint)renderText.Length,
                 GLDrawElementsType.UnsignedInt,
-                IntPtr.Zero),
+                nint.Zero),
             Times.Once());
         this.mockGLService.Verify(m => m.BindTexture2D(FontAtlasTextureId), Times.Once);
         this.mockBufferManager.Verify(m => m.UploadFontGlyphData(It.IsAny<FontGlyphBatchItem>(),
@@ -1339,7 +1339,7 @@ public class RendererTests
             It.IsAny<GLPrimitiveType>(),
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
-            It.IsAny<IntPtr>()));
+            It.IsAny<nint>()));
         this.mockBatchServiceManager.VerifyNever(m => m.EmptyBatch(BatchServiceType.Rectangle));
     }
 
@@ -1434,7 +1434,7 @@ public class RendererTests
         // Assert
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Rectangle Elements"));
         this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
-        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
+        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero), Times.Once());
         this.mockBufferManager.VerifyOnce(m => m.UploadRectData(batchItem, batchIndex));
         this.mockBufferManager.VerifyNever(m => m.UploadRectData(shouldNotRenderEmptyItem, batchIndex));
         this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Rectangle), Times.Once);
@@ -1586,7 +1586,7 @@ public class RendererTests
             It.IsAny<GLPrimitiveType>(),
             It.IsAny<uint>(),
             It.IsAny<GLDrawElementsType>(),
-            It.IsAny<IntPtr>()));
+            It.IsAny<nint>()));
         this.mockBatchServiceManager.VerifyNever(m => m.EmptyBatch(BatchServiceType.Line));
     }
 
@@ -1629,7 +1629,7 @@ public class RendererTests
         // Assert
         this.mockGLService.VerifyOnce(m => m.BeginGroup("Render 6 Line Elements"));
         this.mockGLService.Verify(m => m.EndGroup(), Times.Exactly(3));
-        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, IntPtr.Zero), Times.Once());
+        this.mockGL.Verify(m => m.DrawElements(GLPrimitiveType.Triangles, 6, GLDrawElementsType.UnsignedInt, nint.Zero), Times.Once());
         this.mockBufferManager.VerifyOnce(m => m.UploadLineData(batchItem, batchIndex));
         this.mockBufferManager.VerifyNever(m => m.UploadLineData(shouldNotRenderEmptyItem, batchIndex));
         this.mockBatchServiceManager.Verify(m => m.EmptyBatch(BatchServiceType.Line), Times.Once);

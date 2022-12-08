@@ -20,7 +20,7 @@ internal interface IFontService : IDisposable
     /// <returns>
     ///     The pointer to the created font face.
     /// </returns>
-    IntPtr CreateFontFace(string fontFilePath);
+    nint CreateFontFace(string fontFilePath);
 
     /// <summary>
     /// Pulls the 8-bit grayscale bitmap data for the given <paramref name="glyphChar"/>.
@@ -29,7 +29,7 @@ internal interface IFontService : IDisposable
     /// <param name="glyphChar">The glyph character to create the image from.</param>
     /// <param name="glyphIndex">The index of the glyph in the font file.</param>
     /// <returns>The 8-bit gray scale image pixel data with the width and height.</returns>
-    (byte[] pixelData, uint width, uint height) CreateGlyphImage(IntPtr facePtr, char glyphChar, uint glyphIndex);
+    (byte[] pixelData, uint width, uint height) CreateGlyphImage(nint facePtr, char glyphChar, uint glyphIndex);
 
     /// <summary>
     /// Creates all of the glyph metrics for each glyph.
@@ -37,7 +37,7 @@ internal interface IFontService : IDisposable
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <param name="glyphIndices">The glyph index for each glyph.</param>
     /// <returns>The glyph metrics for each glyph/character.</returns>
-    Dictionary<char, GlyphMetrics> CreateGlyphMetrics(IntPtr facePtr, Dictionary<char, uint> glyphIndices);
+    Dictionary<char, GlyphMetrics> CreateGlyphMetrics(nint facePtr, Dictionary<char, uint> glyphIndices);
 
     /// <summary>
     /// Gets all of the font indices from the font file for each glyph.
@@ -45,21 +45,21 @@ internal interface IFontService : IDisposable
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <param name="glyphChars">The list of glyphs to get the indices for.</param>
     /// <returns>The index for each glyph.</returns>
-    Dictionary<char, uint> GetGlyphIndices(IntPtr facePtr, char[]? glyphChars);
+    Dictionary<char, uint> GetGlyphIndices(nint facePtr, char[]? glyphChars);
 
     /// <summary>
     /// Sets the nominal character size in points.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <param name="sizeInPoints">The size in points used to calculate the character size.</param>
-    void SetFontSize(IntPtr facePtr, uint sizeInPoints);
+    void SetFontSize(nint facePtr, uint sizeInPoints);
 
     /// <summary>
     /// Returns a value indicating whether or not the face uses kerning between two glyphs of the same face.
     /// </summary>
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <returns><c>true</c> if the face uses kerning.</returns>
-    bool HasKerning(IntPtr facePtr);
+    bool HasKerning(nint facePtr);
 
     /// <summary>
     /// Gets the kerning value between two glyphs.
@@ -72,7 +72,7 @@ internal interface IFontService : IDisposable
     /// Refer to the URL below for more info.
     /// <para>https://freetype.org/freetype2/docs/glyphs/glyphs-4.html#section-1.</para>
     /// </remarks>
-    float GetKerning(IntPtr facePtr, uint leftGlyphIndex, uint rightGlyphIndex);
+    float GetKerning(nint facePtr, uint leftGlyphIndex, uint rightGlyphIndex);
 
     /// <summary>
     /// Gets the style of the font at the given <paramref name="fontFilePath"/>.
@@ -94,11 +94,11 @@ internal interface IFontService : IDisposable
     /// <param name="facePtr">The pointer to the font face.</param>
     /// <param name="sizeInPoints">The size in points used to calculate the line spacing.</param>
     /// <returns>The line spacing as a scaled value.</returns>
-    float GetFontScaledLineSpacing(IntPtr facePtr, uint sizeInPoints);
+    float GetFontScaledLineSpacing(nint facePtr, uint sizeInPoints);
 
     /// <summary>
     /// Disposes of the font face that the given <paramref name="facePtr"/> points to.
     /// </summary>
     /// <param name="facePtr">The pointer to the face to dispose of.</param>
-    void DisposeFace(IntPtr facePtr);
+    void DisposeFace(nint facePtr);
 }
