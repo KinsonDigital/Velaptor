@@ -129,7 +129,7 @@ We currently have the following maintainers:
 -->
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
-- Go to the [Table Of Contents](./Documentation/TableOfContents.md) for instructions on various topics such as:
+- Go to the [Table Of Contents](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/Documentation/TableOfContents.md) for instructions on various topics such as:
   - Branching
   - Release Process
   - Environment Setup
