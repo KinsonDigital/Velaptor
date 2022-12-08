@@ -89,7 +89,7 @@ Velaptor is a 2D game development framework written in modern C# that strives to
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
 ### **Cross-Platform**
-We strive for **Velaptor** to be a cross platform library by running under **.NET v6.0+** and by using cross platform dependencies as much as possible. If a cross platform dependency cannot be found, than the appropriate platform specific implementations will be used based on the platform.
+We strive for **Velaptor** to be a cross platform library by using cross platform dependencies as much as possible. If a cross platform dependency cannot be found, than the appropriate platform specific implementations will be used based on the platform.
 
 ### **Easy To Use**
 One of the goals of this library is to make sure that the it is easy to use.  Everything from naming, documentation and usability of the API will be first class citizens.
