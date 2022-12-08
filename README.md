@@ -137,15 +137,18 @@ We currently have the following maintainers:
 
 <!--PRE-PROCESSING-COMMENT-START-->
 <h2 style="font-weight:bold;border:0" align="center">🙏🏼Contributing</h2>
+
+To learn how to contribute to the project, go [here](./CONTRIBUTING.md).
 <!--PRE-PROCESSING-COMMENT-STOP-->
 
 <!--PRE-PROCESSING-UNCOMMENT-START-->
 <!--
 ## **🙏🏼Contributing**
+
+To learn how to contribute to the project, go [here](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/CONTRIBUTING.md).
 -->
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
-To learn how to contribute to the project, go [here](./CONTRIBUTING.md).
 
 <!--PRE-PROCESSING-COMMENT-START-->
 <h2 style="font-weight:bold;border:0" align="center">Practices</h2>
