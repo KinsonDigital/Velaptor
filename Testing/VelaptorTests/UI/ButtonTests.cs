@@ -18,7 +18,6 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Input;
 using Velaptor.UI;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -128,7 +127,7 @@ public class ButtonTests
         var actual = sut.Position;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -141,7 +140,7 @@ public class ButtonTests
         var actual = sut.AutoSize;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -154,7 +153,7 @@ public class ButtonTests
         sut.AutoSize = false;
 
         // Assert
-        Assert.False(sut.AutoSize);
+        sut.AutoSize.Should().BeFalse();
     }
 
     [Fact]
@@ -171,8 +170,8 @@ public class ButtonTests
         sut.AutoSize = false;
 
         // Assert
-        AssertExtensions.EqualWithMessage(123u, sut.Width, "The width is incorrect.");
-        AssertExtensions.EqualWithMessage(456u, sut.Height, "The height is incorrect.");
+        sut.Width.Should().Be(123u, "The width is incorrect.");
+        sut.Height.Should().Be(456u, "The height is incorrect.");
     }
 
     [Theory]
@@ -180,7 +179,7 @@ public class ButtonTests
     [InlineData(false, 40u)]
     public void Width_WhenSettingValueWithAutoSizeTurnedOn_ReturnsCorrectResult(
         bool autoSize,
-        uint expectedWidth)
+        uint expected)
     {
         // Arrange
         this.mockFont.Setup(m => m.Measure(It.IsAny<string>())).Returns(new SizeF(30, 40));
@@ -193,7 +192,8 @@ public class ButtonTests
         sut.Width = 40;
 
         // Assert
-        Assert.Equal(expectedWidth, sut.Width);
+        Assert.Equal(expected, sut.Width);
+        sut.Width.Should().Be(expected);
     }
 
     [Fact]
@@ -207,7 +207,7 @@ public class ButtonTests
         var actual = sut.Text;
 
         // Assert
-        Assert.Equal(ButtonTextValue, actual);
+        actual.Should().Be(ButtonTextValue);
     }
 
     [Fact]
@@ -222,7 +222,7 @@ public class ButtonTests
         var actual = sut.Text;
 
         // Assert
-        Assert.Equal("test-value", actual);
+        actual.Should().Be("test-value");
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class ButtonTests
         var actual = sut.BorderVisible;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -248,7 +248,7 @@ public class ButtonTests
         sut.BorderVisible = true;
 
         // Assert
-        Assert.True(sut.BorderVisible);
+        sut.BorderVisible.Should().BeTrue();
     }
 
     [Fact]
@@ -261,7 +261,7 @@ public class ButtonTests
         var actual = sut.BorderColor;
 
         // Assert
-        Assert.Equal(Color.SlateGray, actual);
+        actual.Should().Be(Color.SlateGray);
     }
 
     [Fact]
@@ -274,7 +274,7 @@ public class ButtonTests
         sut.BorderColor = Color.Red;
 
         // Assert
-        Assert.Equal(Color.Red, sut.BorderColor);
+        sut.BorderColor.Should().Be(Color.Red);
     }
 
     [Fact]
@@ -287,7 +287,7 @@ public class ButtonTests
         sut.BorderThickness = 123u;
 
         // Assert
-        Assert.Equal(123u, sut.BorderThickness);
+        sut.BorderThickness.Should().Be(123u);
     }
 
     [Fact]
@@ -300,7 +300,7 @@ public class ButtonTests
         sut.FaceColor = Color.CornflowerBlue;
 
         // Assert
-        Assert.Equal(Color.CornflowerBlue, sut.FaceColor);
+        sut.FaceColor.Should().Be(Color.CornflowerBlue);
     }
 
     [Fact]
@@ -314,7 +314,7 @@ public class ButtonTests
         sut.CornerRadius = new CornerRadius(10f, 20f, 30f, 40f);
 
         // Assert
-        Assert.Equal(expected, sut.CornerRadius);
+        sut.CornerRadius.Should().Be(expected);
     }
 
     [Fact]
@@ -329,7 +329,7 @@ public class ButtonTests
         sut.FontSize = 123u;
 
         // Assert
-        Assert.Equal(123u, sut.FontSize);
+        sut.FontSize.Should().Be(123u);
     }
 
     [Fact]
@@ -342,7 +342,7 @@ public class ButtonTests
         var actual = sut.Enabled;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -356,7 +356,7 @@ public class ButtonTests
         sut.Enabled = false;
 
         // Assert
-        Assert.False(sut.Enabled);
+        sut.Enabled.Should().BeFalse();
     }
     #endregion
 
@@ -378,9 +378,9 @@ public class ButtonTests
         sut.LoadContent();
 
         // Assert
-        Assert.Equal("test-value", sut.Text);
-        Assert.False(sut.Enabled);
-        Assert.Equal(new Point(11, 22), sut.Position);
+        sut.Text.Should().Be("test-value");
+        sut.Enabled.Should().BeFalse();
+        sut.Position.Should().Be(new Point(11, 22));
         this.mockContentLoader.Verify(m => m.LoadFont("TimesNewRoman-Regular.ttf", 12), Times.Once);
     }
 
@@ -395,7 +395,7 @@ public class ButtonTests
         sut.UnloadContent();
 
         // Assert
-        Assert.False(sut.IsLoaded);
+        sut.IsLoaded.Should().BeFalse();
     }
 
     [Fact]
@@ -408,7 +408,7 @@ public class ButtonTests
         sut.UnloadContent();
 
         // Assert
-        Assert.False(sut.IsLoaded);
+        sut.IsLoaded.Should().BeFalse();
         this.mockContentLoader.Verify(m => m.UnloadTexture(this.mockTexture.Object), Times.Never);
     }
 
@@ -488,6 +488,17 @@ public class ButtonTests
     public void Render_WhenInvoked_RendersButtonFace()
     {
         // Arrange
+        var expected = default(RectShape);
+        expected.Position = new Vector2(400f, 600f);
+        expected.IsFilled = true;
+        expected.BorderThickness = 0u;
+        expected.Color = Color.DarkGray;
+        expected.Width = 100u;
+        expected.Height = 50f;
+        expected.CornerRadius = new CornerRadius(11f, 22f, 33f, 44f);
+        expected.Top = 574f;
+        expected.Bottom = 625f;
+
         var actual = default(RectShape);
 
         var mockRenderer = new Mock<IRenderer>();
@@ -519,53 +530,8 @@ public class ButtonTests
         // Assert
         mockRenderer.Verify(m => m.Render(actual, 0), Times.Once);
 
-        // Assert that the values of the rectangle were set correctly
-        AssertExtensions.TypeMemberEquals(
-            new Vector2(400, 600),
-            actual.Position,
-            nameof(RectShape),
-            nameof(RectShape.Position));
-        AssertExtensions.TypeMemberTrue(actual.IsFilled, nameof(RectShape), nameof(RectShape.IsFilled));
-        AssertExtensions.TypeMemberEquals(
-            0u,
-            actual.BorderThickness,
-            nameof(RectShape),
-            nameof(RectShape.BorderThickness));
-        AssertExtensions.TypeMemberEquals(
-            Color.DarkGray,
-            actual.Color,
-            nameof(RectShape),
-            nameof(RectShape.BorderThickness));
-        AssertExtensions.TypeMemberEquals(
-            100u,
-            actual.Width,
-            nameof(RectShape),
-            nameof(RectShape.Width));
-        AssertExtensions.TypeMemberEquals(
-            50u,
-            actual.Height,
-            nameof(RectShape),
-            nameof(RectShape.Height));
-        AssertExtensions.TypeMemberEquals(
-            11f,
-            actual.CornerRadius.TopLeft,
-            nameof(RectShape),
-            $"{nameof(RectShape.CornerRadius)}.{nameof(RectShape.CornerRadius.TopLeft)}");
-        AssertExtensions.TypeMemberEquals(
-            22f,
-            actual.CornerRadius.BottomLeft,
-            nameof(RectShape),
-            $"{nameof(RectShape.CornerRadius)}.{nameof(RectShape.CornerRadius.BottomLeft)}");
-        AssertExtensions.TypeMemberEquals(
-            33f,
-            actual.CornerRadius.BottomRight,
-            nameof(RectShape),
-            $"{nameof(RectShape.CornerRadius)}.{nameof(RectShape.CornerRadius.BottomRight)}");
-        AssertExtensions.TypeMemberEquals(
-            44f,
-            actual.CornerRadius.TopRight,
-            nameof(RectShape),
-            $"{nameof(RectShape.CornerRadius)}.{nameof(RectShape.CornerRadius.TopRight)}");
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -606,7 +572,7 @@ public class ButtonTests
         sut.Render(mockRenderer.Object);
 
         // Assert
-        Assert.Equal(expected, btnFace.Color);
+        btnFace.Color.Should().Be(expected);
     }
 
     [Fact]
@@ -648,7 +614,7 @@ public class ButtonTests
         sut.Render(mockRenderer.Object);
 
         // Assert
-        Assert.Equal(expected, btnFace.Color);
+        btnFace.Color.Should().Be(expected);
     }
     #endregion
 
