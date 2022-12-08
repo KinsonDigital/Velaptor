@@ -71,7 +71,7 @@ internal static class EnsureThat
     /// </exception>
     public static void PointerIsNotNull(nint pointer, [CallerArgumentExpression("pointer")] string paramName = "")
     {
-        if (pointer != IntPtr.Zero)
+        if (pointer != nint.Zero)
         {
             return;
         }
@@ -93,7 +93,7 @@ internal static class EnsureThat
     /// </exception>
     public static void PointerIsNotNull(nuint pointer, [CallerArgumentExpression("pointer")] string paramName = "")
     {
-        if (pointer != UIntPtr.Zero)
+        if (pointer != nuint.Zero)
         {
             return;
         }

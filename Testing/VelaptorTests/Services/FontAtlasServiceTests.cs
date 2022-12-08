@@ -39,7 +39,7 @@ public class FontAtlasServiceTests
     };
     private readonly Dictionary<char, uint> glyphIndices = new ();
     private readonly Mock<IFile> mockFile;
-    private readonly IntPtr facePtr = new (5678);
+    private readonly nint facePtr = new (5678);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontAtlasServiceTests"/> class.
@@ -254,7 +254,7 @@ public class FontAtlasServiceTests
         // Assert
         this.mockFontService.Verify(
             m => m.CreateGlyphImage(
-                It.IsAny<IntPtr>(),
+                It.IsAny<nint>(),
                 It.IsAny<char>(),
                 It.IsAny<uint>()),
             Times.Exactly(95));

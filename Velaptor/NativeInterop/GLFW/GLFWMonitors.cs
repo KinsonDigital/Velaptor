@@ -51,7 +51,7 @@ internal sealed class GLFWMonitors : IMonitors
     /// <inheritdoc/>
     public void Refresh()
     {
-        Vector2 GetMonitorScale(IntPtr monitorHandle)
+        Vector2 GetMonitorScale(nint monitorHandle)
         {
             var scale = this.glfwInvoker.GetMonitorContentScale(monitorHandle);
 

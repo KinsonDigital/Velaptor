@@ -34,7 +34,7 @@ internal sealed class FontAtlasService : IFontAtlasService
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=',
         '~', '_', '+', '[', ']', '\\', ';', '\'', ',', '.', '/', '{', '}', '|', ':', '"', '<', '>', '?', ' ', '□',
     };
-    private IntPtr facePtr;
+    private nint facePtr;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontAtlasService"/> class.

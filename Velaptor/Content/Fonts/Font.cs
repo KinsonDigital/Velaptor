@@ -28,7 +28,7 @@ public sealed class Font : IFont
     private readonly IFontStatsService fontStatsService;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IItemCache<string, ITexture> textureCache;
-    private readonly IntPtr facePtr;
+    private readonly nint facePtr;
     private readonly GlyphMetrics invalidGlyph;
     private readonly char[] availableGlyphCharacters =
     {
