@@ -28,6 +28,10 @@
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>
+    <PackageReleaseNotes>https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/Documentation/ReleaseNotes/PreviewReleases/Release-Notes-v1.0.0-preview.14.md</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/KinsonDigital/Velaptor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/KinsonDigital/Velaptor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageIcon>velaptor-logo.png</PackageIcon>
     <Platforms>x64</Platforms>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
