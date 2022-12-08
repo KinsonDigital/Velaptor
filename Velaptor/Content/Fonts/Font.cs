@@ -168,17 +168,8 @@ public sealed class Font : IFont
     /// <inheritdoc/>
     public SizeF Measure(string text)
     {
-        if (string.IsNullOrEmpty(text))
-        {
-            return SizeF.Empty;
-        }
-
         // Trim all of the '\n' and '\r' characters from the end
-        while (text.EndsWith('\n') || text.EndsWith('\r'))
-        {
-            text = text.TrimEnd('\n');
-            text = text.TrimEnd('\r');
-        }
+        text = text.TrimNewLineFromEnd();
 
         // Just in case the text was ONLY '\r' and/or '\n' characters, nothing would be left.
         if (string.IsNullOrEmpty(text))

@@ -399,6 +399,11 @@ internal static class InternalExtensionMethods
     /// <returns>Returns the string with all new line characters removed from the end.</returns>
     public static string TrimNewLineFromEnd(this string value)
     {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
         const char newLine = '\n';
         const char carriageReturn = '\r';
 
