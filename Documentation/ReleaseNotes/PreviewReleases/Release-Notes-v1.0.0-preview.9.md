@@ -4,7 +4,7 @@
 
 <h2 align="center" style='font-weight:bold'>Quick Reminder</h2>
 
-<div algn="center">
+<div align="center">
 
 As with all software, there is always a chance for issues and bugs, especially for preview releases, which is why your input is greatly appreciated. 🙏🏼
 </div>
