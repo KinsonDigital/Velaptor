@@ -6,10 +6,10 @@
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.14</Version>
+    <Version>1.0.0-preview.15</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.14</FileVersion>
+    <FileVersion>1.0.0-preview.15</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
