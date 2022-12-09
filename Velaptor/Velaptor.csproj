@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>10.0</LangVersion>
+    <TargetFramework>net7.0</TargetFramework>
+    <LangVersion>11.0</LangVersion>
     <RootNamespace>Velaptor</RootNamespace>
     <AssemblyName>Velaptor</AssemblyName>
 
     <!--Update this for production and preview releases-->
-    <Version>1.0.0-preview.14</Version>
+    <Version>1.0.0-preview.15</Version>
 
     <!--Update this for production and preview releases-->
-    <FileVersion>1.0.0-preview.14</FileVersion>
+    <FileVersion>1.0.0-preview.15</FileVersion>
 
     <!--
       DO NOT UPDATE THIS FOR PREVIEW RELEASES!!
@@ -24,10 +24,14 @@
     <Authors>Calvin Wilkinson</Authors>
     <Company>Kinson Digital</Company>
     <Product>Velaptor</Product>
-    <Description>2D game or application development framework that provides 2D rendering, sound, and keyboard and mouse input.</Description>
+    <Description>2D game or application development framework that provides 2D rendering, sound, keyboard and mouse input, etc.</Description>
     <Copyright>Copyright ©2022 Kinson Digital</Copyright>
     <PackageTags>velaptor raptor 2D game games framework</PackageTags>
     <Configurations>Debug;Release</Configurations>
+    <PackageReleaseNotes>https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/Documentation/ReleaseNotes/PreviewReleases/Release-Notes-v1.0.0-preview.14.md</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/KinsonDigital/Velaptor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/KinsonDigital/Velaptor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageIcon>velaptor-logo.png</PackageIcon>
     <Platforms>x64</Platforms>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -92,7 +96,7 @@
   <ItemGroup>
     <PackageReference Include="FreeTypeSharp" Version="1.1.3" />
     <PackageReference Include="KinsonDigital.CASL" Version="1.0.0-preview.10" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

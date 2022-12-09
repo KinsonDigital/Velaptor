@@ -8,7 +8,7 @@
 
 <!--PRE-PROCESSING-UNCOMMENT-START-->
 <!--
-![velaptor-logo](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/Documentation/Images/velaptor-logo.png)
+![velaptor-logo](https://raw.githubusercontent.com/KinsonDigital/Velaptor/release/v1.0.0/Documentation/Images/velaptor-logo.png)
 -->
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
@@ -27,7 +27,7 @@
 <div align="center">
 
 ![Production Release Status](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Production%20Release?label=Production%20Release%20%F0%9F%9A%80&logo=GitHub&style=flat)
-[![Preview Release Status](https://img.shields.io/github/workflow/status/kinsondigital/Velaptor/%F0%9F%9A%80Preview%20Release?color=%23238636&label=Preview%20Release%20%F0%9F%9A%80&logo=github)](https://github.com/KinsonDigital/Velaptor/actions/workflows/preview-release.yml)
+[![Preview Release Status](https://img.shields.io/github/workflow/status/kinsondigital/Velaptor/%F0%9F%9A%80Preview%20Release?color=%23238636&label=Preview%20Release%20%F0%9F%9A%80&logo=github)](https://github.com/KinsonDigital/Velaptor/actions/workflows/prev-release.yml)
 [![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)
 
 ![Unit Test Status](https://img.shields.io/github/workflow/status/kinsondigital/Velaptor/%E2%9C%94Unit%20Testing%20Status%20Check?color=%23238636&label=Unit%20Tests)
@@ -42,7 +42,7 @@
 <!--PRE-PROCESSING-UNCOMMENT-START-->
 <!--
 ![Production Release Status](https://img.shields.io/github/workflow/status/KinsonDigital/Velaptor/%F0%9F%9A%80Production%20Release?label=Production%20Release%20%F0%9F%9A%80&logo=GitHub&style=flat)
-[![Preview Release Status](https://img.shields.io/github/workflow/status/kinsondigital/Velaptor/%F0%9F%9A%80Preview%20Release?color=%23238636&label=Preview%20Release%20%F0%9F%9A%80&logo=github)](https://github.com/KinsonDigital/Velaptor/actions/workflows/preview-release.yml)
+[![Preview Release Status](https://img.shields.io/github/workflow/status/kinsondigital/Velaptor/%F0%9F%9A%80Preview%20Release?color=%23238636&label=Preview%20Release%20%F0%9F%9A%80&logo=github)](https://github.com/KinsonDigital/Velaptor/actions/workflows/prev-release.yml)
 [![Latest Nuget Release](https://img.shields.io/nuget/vpre/kinsondigital.Velaptor?label=Latest%20Release&logo=nuget)](https://www.nuget.org/packages/KinsonDigital.Velaptor)
 
 ![Unit Test Status](https://img.shields.io/github/workflow/status/kinsondigital/Velaptor/%E2%9C%94Unit%20Testing%20Status%20Check?color=%23238636&label=Unit%20Tests)
@@ -89,7 +89,7 @@ Velaptor is a 2D game development framework written in modern C# that strives to
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
 ### **Cross-Platform**
-We strive for **Velaptor** to be a cross platform library by running under **.NET v6.0+** and by using cross platform dependencies as much as possible. If a cross platform dependency cannot be found, than the appropriate platform specific implementations will be used based on the platform.
+We strive for **Velaptor** to be a cross platform library by using cross platform dependencies as much as possible. If a cross platform dependency cannot be found, than the appropriate platform specific implementations will be used based on the platform.
 
 ### **Easy To Use**
 One of the goals of this library is to make sure that the it is easy to use.  Everything from naming, documentation and usability of the API will be first class citizens.
@@ -121,31 +121,40 @@ We currently have the following maintainers:
 
 <!--PRE-PROCESSING-COMMENT-START-->
 <h2 style="font-weight:bold;border:0" align="center">📄Documentation</h2>
-<!--PRE-PROCESSING-COMMENT-STOP-->
-
-<!--PRE-PROCESSING-UNCOMMENT-START-->
-<!--
-## **📄Documentation**
--->
-<!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
 - Go to the [Table Of Contents](./Documentation/TableOfContents.md) for instructions on various topics such as:
   - Branching
   - Release Process
   - Environment Setup
   - and more . . .
+<!--PRE-PROCESSING-COMMENT-STOP-->
+
+<!--PRE-PROCESSING-UNCOMMENT-START-->
+<!--
+## **📄Documentation**
+
+- Go to the [Table Of Contents](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/Documentation/TableOfContents.md) for instructions on various topics such as:
+  - Branching
+  - Release Process
+  - Environment Setup
+  - and more . . .
+-->
+<!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
 <!--PRE-PROCESSING-COMMENT-START-->
 <h2 style="font-weight:bold;border:0" align="center">🙏🏼Contributing</h2>
+
+To learn how to contribute to the project, go [here](./CONTRIBUTING.md).
 <!--PRE-PROCESSING-COMMENT-STOP-->
 
 <!--PRE-PROCESSING-UNCOMMENT-START-->
 <!--
 ## **🙏🏼Contributing**
+
+To learn how to contribute to the project, go [here](https://github.com/KinsonDigital/Velaptor/blob/release/v1.0.0/CONTRIBUTING.md).
 -->
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
-To learn how to contribute to the project, go [here](./CONTRIBUTING.md).
 
 <!--PRE-PROCESSING-COMMENT-START-->
 <h2 style="font-weight:bold;border:0" align="center">Practices</h2>
@@ -173,7 +182,7 @@ To learn how to contribute to the project, go [here](./CONTRIBUTING.md).
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
 **Velaptor** and all of the [KinsonDigital](https://github.com/KinsonDigital) organization projects require significant effort to maintain, as such we greatly appreciate any financial support you are able to provide!
-This helps ensure the long term viability of all the projects in the organization, and to help support the developers who maintain **Velaptor** in their free time. [Calvin Wilkinson](https://github.com/sponsors/KinsonDigital) is accepting GitHub Sponsorships.
+This helps ensure the long term viability of all the projects in the organization and to [help support](https://github.com/sponsors/KinsonDigital) the project maintainers in their free time.
 
 <!--PRE-PROCESSING-COMMENT-START-->
 <h2 style="font-weight:bold;border:0" align="center">Further Resources</h2>
@@ -185,7 +194,7 @@ This helps ensure the long term viability of all the projects in the organizatio
 -->
 <!--PRE-PROCESSING-UNCOMMENT-STOP-->
 
-- The sample project named **VelaptorTesting** can be found in the [Testing Folder](https://github.com/KinsonDigital/Velaptor/tree/preview/master/Testing/VelaptorTesting)
+- The sample project named **VelaptorTesting** can be found in the [Testing Folder](https://github.com/KinsonDigital/Velaptor/tree/release/v1.0.0/Testing/VelaptorTesting)
   > **Note**
   > This is a sample project for the purpose of performing manual testing of the library as well as understanding how to use it.
 - [CASL](https://github.com/KinsonDigital/CASL) is used for audio.

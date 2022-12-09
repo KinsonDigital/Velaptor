@@ -25,8 +25,8 @@ public unsafe class GLFWMonitorsTests
     // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
     private readonly Monitor monitorA;
     private readonly Monitor monitorB;
-    private readonly IntPtr monitorHandleA;
-    private readonly IntPtr monitorHandleB;
+    private readonly nint monitorHandleA;
+    private readonly nint monitorHandleB;
     private readonly GLFWVideoMode videoModeA;
     private readonly GLFWVideoMode videoModeB;
     // ReSharper restore PrivateFieldCanBeConvertedToLocalVariable
@@ -64,12 +64,12 @@ public unsafe class GLFWMonitorsTests
 
         fixed (Monitor* pMonitorA = &this.monitorA)
         {
-            this.monitorHandleA = (IntPtr)pMonitorA;
+            this.monitorHandleA = (nint)pMonitorA;
         }
 
         fixed (Monitor* pMonitorB = &this.monitorB)
         {
-            this.monitorHandleB = (IntPtr)pMonitorB;
+            this.monitorHandleB = (nint)pMonitorB;
         }
 
         this.mockGLFWInvoker = new Mock<IGLFWInvoker>();

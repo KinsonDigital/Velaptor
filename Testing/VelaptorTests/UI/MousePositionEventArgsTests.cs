@@ -5,6 +5,7 @@
 namespace VelaptorTests.UI;
 
 using System.Drawing;
+using FluentAssertions;
 using Velaptor.UI;
 using Xunit;
 
@@ -24,6 +25,6 @@ public class MousePositionEventArgsTests
         var actual = eventArgs.MousePosition;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 }

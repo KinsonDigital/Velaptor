@@ -28,7 +28,7 @@ public sealed class Font : IFont
     private readonly IFontStatsService fontStatsService;
     private readonly IFontAtlasService fontAtlasService;
     private readonly IItemCache<string, ITexture> textureCache;
-    private readonly IntPtr facePtr;
+    private readonly nint facePtr;
     private readonly GlyphMetrics invalidGlyph;
     private readonly char[] availableGlyphCharacters =
     {
@@ -168,18 +168,13 @@ public sealed class Font : IFont
     /// <inheritdoc/>
     public SizeF Measure(string text)
     {
+        // Trim all of the '\n' and '\r' characters from the end
+        text = text.TrimNewLineFromEnd();
+
+        // Just in case the text was ONLY '\r' and/or '\n' characters, nothing would be left.
         if (string.IsNullOrEmpty(text))
         {
             return SizeF.Empty;
-        }
-
-        // TODO: Trim end of line escape sequences off the end
-        var foundGlyphs = text.Select(character
-            => this.metrics.FirstOrDefault(g => g.Glyph == character)).ToList();
-
-        if (text.Any(c => this.availableGlyphCharacters.Contains(c) is false))
-        {
-            foundGlyphs.Add(this.invalidGlyph);
         }
 
         var leftCharacterIndex = 0u;
@@ -219,20 +214,15 @@ public sealed class Font : IFont
 
         for (var i = 0; i < lines.Length; i++)
         {
-            var line = lines[i];
-            var lineGlyphs = line.Select(c =>
-                    this.availableGlyphCharacters.Contains(c)
-                        ? foundGlyphs.FirstOrDefault(g => g.Glyph == c)
-                        : this.invalidGlyph)
-                .ToArray();
+            var lineGlyphs = ToGlyphMetrics(lines[i]);
 
-            var verticalOffset = 0f;
+            const float verticalOffset = 0f;
 
-            var lastLine = i == lines.Length - 1;
+            var isLastLine = i == lines.Length - 1;
 
             var lineSize = MeasureLine(lineGlyphs);
             totalHeight += lineSize.Height;
-            totalHeight += lastLine ? 0 : LineSpacing - lineSize.Height;
+            totalHeight += isLastLine ? 0 : LineSpacing - lineSize.Height;
             totalHeight += verticalOffset;
 
             lineSizes.Add(lineSize);
@@ -250,15 +240,40 @@ public sealed class Font : IFont
     /// <returns>The list of glyph metrics of the given <paramref name="text"/>.</returns>
     public GlyphMetrics[] ToGlyphMetrics(string text)
     {
-        var textGlyphs = this.metrics.Where(m => text.Contains(m.Glyph)).ToList();
-        textGlyphs.Add(this.invalidGlyph);
+        var textGlyphs = new List<GlyphMetrics>();
 
-        return text.Select(character
-            => (from m in textGlyphs
-                where m.Glyph == (this.availableGlyphCharacters.Contains(character)
-                    ? character
-                    : InvalidCharacter)
-                select m).FirstOrDefault()).ToArray();
+        foreach (var metric in this.metrics)
+        {
+            if (text.Contains(metric.Glyph))
+            {
+                textGlyphs.Add(metric);
+            }
+        }
+
+        var result = new List<GlyphMetrics>();
+
+        foreach (var character in text)
+        {
+            foreach (var m in textGlyphs)
+            {
+                var isInvalid = this.availableGlyphCharacters.Contains(character) is false;
+
+                if (isInvalid)
+                {
+                    result.Add(this.invalidGlyph);
+                    break;
+                }
+
+                if (m.Glyph != character)
+                {
+                    continue;
+                }
+
+                result.Add(m);
+            }
+        }
+
+        return result.ToArray();
     }
 
     /// <summary>
@@ -282,16 +297,7 @@ public sealed class Font : IFont
             return Array.Empty<(char, RectangleF)>();
         }
 
-        var textMetrics = new List<GlyphMetrics>();
-
-        foreach (var character in text)
-        {
-            var foundGlyph = (from g in this.metrics
-                where g.Glyph == character
-                select g).FirstOrDefault();
-
-            textMetrics.Add(foundGlyph);
-        }
+        var textMetrics = ToGlyphMetrics(text);
 
         var result = new List<(char character, RectangleF bounds)>();
 
@@ -361,20 +367,32 @@ public sealed class Font : IFont
             return;
         }
 
-        // If all of the font styles were not found, attempt to find them in the systems directory
-        var missingStyles = (from style in allStyles
-            where this.fontStats.Any(s => s.Style == style) is false
-            select style).ToArray();
+        var missingStyles = new List<FontStyle>();
+        var currentStyles = this.fontStats.Select(s => s.Style).ToArray();
+
+        foreach (var style in allStyles)
+        {
+            if (Array.IndexOf(currentStyles, style) == -1)
+            {
+                missingStyles.Add(style);
+            }
+        }
 
         // Try to find each missing style in the system fonts
         var systemFontStats = this.fontStatsService.GetSystemStatsForFontFamily(FamilyName);
 
-        var missingFontStyles = (from f in systemFontStats
-            where missingStyles.Contains(f.Style)
-            select f).ToArray();
+        var missingFontStats = new List<FontStats>();
+
+        foreach (var missingStat in systemFontStats)
+        {
+            if (missingStyles.Contains(missingStat.Style))
+            {
+                missingFontStats.Add(missingStat);
+            }
+        }
 
         var newList = new List<FontStats>();
-        newList.AddRange(missingFontStyles);
+        newList.AddRange(missingFontStats);
         newList.AddRange(this.fontStats);
         this.fontStats = newList.ToArray();
     }
@@ -385,9 +403,15 @@ public sealed class Font : IFont
     /// <exception cref="LoadFontException">Thrown if the current style that is being attempted does not exist.</exception>
     private void RebuildFontAtlasTexture()
     {
-        var fontFilePath = (from s in this.fontStats
-            where s.Style == this.fontStyle
-            select s.FontFilePath).FirstOrDefault();
+        var fontFilePath = string.Empty;
+
+        foreach (var fontStat in this.fontStats ?? Array.Empty<FontStats>())
+        {
+            if (fontStat.Style == this.fontStyle)
+            {
+                fontFilePath = fontStat.FontFilePath;
+            }
+        }
 
         if (string.IsNullOrEmpty(fontFilePath))
         {
@@ -397,7 +421,7 @@ public sealed class Font : IFont
         var filePathWithMetaData = $"{fontFilePath}|size:{Size}";
         FontTextureAtlas = this.textureCache.GetItem(filePathWithMetaData);
 
-        var (_, glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fontFilePath, Size);
+        (_, GlyphMetrics[] glyphMetrics) = this.fontAtlasService.CreateFontAtlas(fontFilePath, Size);
 
         LineSpacing = this.fontService.GetFontScaledLineSpacing(this.facePtr, Size);
 

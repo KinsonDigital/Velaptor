@@ -21,11 +21,6 @@ public class AssertExtensions : Assert
     private const string TableFlip = "(╯'□')╯︵┻━┻  ";
 
     /// <summary>
-    /// Fails the test with a message that the unit test is not implemented or needs rework.
-    /// </summary>
-    public static void TestNotImplemented() => Assert.True(false, "Test Not Implemented Or Needs Rework");
-
-    /// <summary>
     /// Verifies that the exact exception type (not a derived exception type) is thrown and that
     /// the exception message matches the given <paramref name="expectedMessage"/>.
     /// </summary>
@@ -242,67 +237,6 @@ public class AssertExtensions : Assert
     }
 
     /// <summary>
-    /// Asserts that all of the given <paramref name="items"/> are <c>true</c> which is dictated
-    /// by the given <paramref name="arePredicate"/> predicate.
-    /// </summary>
-    /// <typeparam name="T">The type of item in the list of items.</typeparam>
-    /// <param name="items">The list of items to assert.</param>
-    /// <param name="arePredicate">Fails the assertion when returning <c>false</c>.</param>
-    public static void AllItemsAre<T>(IEnumerable<T> items, Predicate<T> arePredicate)
-    {
-        if (arePredicate is null)
-        {
-            Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{arePredicate}' parameter.");
-        }
-
-        var itemsToCheck = items.ToArray();
-
-        for (var i = 0; i < itemsToCheck.Length; i++)
-        {
-            if (arePredicate(itemsToCheck[i]))
-            {
-                continue;
-            }
-
-            Assert.True(false, $"{TableFlip}The item '{itemsToCheck[i]}' at index '{i}' returned false with the '{nameof(arePredicate)}'");
-        }
-    }
-
-    /// <summary>
-    /// Verifies that all of the given <paramref name="items"/> in the collection pass as long as the
-    /// <paramref name="assertAction"/> does not contain an assertion failure.  If the <paramref name="includePredicate"/>
-    /// returns true, the item is checked.
-    /// </summary>
-    /// <param name="items">The items to check.</param>
-    /// <param name="includePredicate">Runs the <paramref name="assertAction"/> if the predicate returns true.</param>
-    /// <param name="assertAction">
-    ///     Contains the code to perform an assertion.  If the action code returns, then the assertion has passed.
-    /// </param>
-    /// <typeparam name="T">The data type of the items.</typeparam>
-    public static void AllIncluded<T>(IEnumerable<T> items, Predicate<T> includePredicate, Action<T> assertAction)
-    {
-        if (includePredicate is null)
-        {
-            Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{nameof(includePredicate)}' parameter.");
-        }
-
-        if (assertAction is null)
-        {
-            Assert.True(false, $"{TableFlip}Cannot perform assertion with null '{nameof(assertAction)}' parameter.");
-        }
-
-        var itemsToCheck = items.ToArray();
-
-        foreach (var t in itemsToCheck)
-        {
-            if (includePredicate(t))
-            {
-                assertAction(t);
-            }
-        }
-    }
-
-    /// <summary>
     /// Asserts that all of the items between the <paramref name="expectedItems"/> and <paramref name="actualItems"/>
     /// arrays are equal for all of the items inclusively between <paramref name="indexStart"/> and <paramref name="indexStop"/>.
     /// </summary>
@@ -481,29 +415,6 @@ public class AssertExtensions : Assert
     }
 
     /// <summary>
-    /// Verifies that the two enums are equivalent.
-    /// </summary>
-    /// <param name="expected">The expected enum.</param>
-    /// <param name="actual">The actual enum.</param>
-    /// <param name="message">The message to be shown about the failed assertion.</param>
-    public static void EqualWithMessage(Enum expected, Enum actual, string message)
-    {
-        var assertException = new AssertActualExpectedException(
-            expected.ToString(),
-            actual.ToString(),
-            $"{TableFlip}{message}");
-
-        try
-        {
-            Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? TableFlip : message);
-        }
-        catch (Exception)
-        {
-            throw assertException;
-        }
-    }
-
-    /// <summary>
     /// Verifies if the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
     /// </summary>
     /// <typeparam name="T">The <see cref="IEquatable{T}"/> type of the <paramref name="expected"/> and <paramref name="actual"/>.</typeparam>
@@ -523,87 +434,6 @@ public class AssertExtensions : Assert
             var actualStr = actual is null ? "NULL" : actual.ToString();
 
             throw new AssertActualExpectedException(expectedStr, actualStr, $"{TableFlip}{message}");
-        }
-    }
-
-    /// <summary>
-    /// Verifies that an object reference is not null and shows the given <paramref name="message"/> if the assertion fails.
-    /// </summary>
-    /// <param name="obj">The object to be validated.</param>
-    /// <param name="message">The message to display if the assertion fails.</param>
-    /// <exception cref="T:Xunit.Sdk.NotNullException">Thrown when the object is not null.</exception>
-    public static void NotNullWithMessage(object obj, string message) => Assert.True(obj != null, message);
-
-    /// <summary>
-    /// Verifies whether or not the <paramref name="expected"/> and <paramref name="actual"/> arguments are equal.
-    /// </summary>
-    /// <typeparam name="T">
-    ///     The <see cref="IEquatable{T}"/> type of the <paramref name="expected"/> and <paramref name="actual"/> parameters.
-    /// </typeparam>
-    /// <param name="expected">The expected <see langword="int"/> value.</param>
-    /// <param name="actual">The actual <see langword="int"/> value.</param>
-    /// <param name="typeName">The name of the type that is being compared.</param>
-    /// <param name="memberName">The name of the type member being compared.</param>
-    public static void TypeMemberEquals<T>(T? expected, T? actual, string typeName, string memberName)
-        where T : IEquatable<T>
-    {
-        var message = $"{typeName}.{memberName} incorrect.";
-
-        try
-        {
-            Assert.True(expected.Equals(actual), string.IsNullOrEmpty(message) ? string.Empty : message);
-        }
-        catch (Exception)
-        {
-            var expectedStr = expected is null ? "NULL" : expected.ToString();
-            var actualStr = actual is null ? "NULL" : actual.ToString();
-
-            throw new AssertActualExpectedException(expectedStr, actualStr, $"{TableFlip}{message}");
-        }
-    }
-
-    /// <summary>
-    /// Verifies that an expression is true for a member of a type.
-    /// </summary>
-    /// <param name="condition">The condition to be expected.</param>
-    /// <param name="typeName">The name of the type that contains the member.</param>
-    /// <param name="memberName">The name of the member that is not <c>true</c>.</param>
-    public static void TypeMemberTrue(bool condition, string typeName, string memberName)
-    {
-        var message = $"{TableFlip}{typeName}.{memberName} not true.";
-        Assert.True(condition, message);
-    }
-
-    /// <summary>
-    /// Verifies that an expression is false for a member of a type.
-    /// </summary>
-    /// <param name="condition">The condition to be expected.</param>
-    /// <param name="typeName">The name of the type that contains the member.</param>
-    /// <param name="memberName">The name of the member that is not <c>false</c>.</param>
-    public static void TypeMemberFalse(bool condition, string typeName, string memberName)
-    {
-        var message = $"{TableFlip}{typeName}.{memberName} not true.";
-        False(condition, message);
-    }
-
-    /// <summary>
-    /// Verifies that an event with the exact event args is not raised.
-    /// </summary>
-    /// <typeparam name="T">The type of the event arguments to expect.</typeparam>
-    /// <param name="attach">Code to attach the event handler.</param>
-    /// <param name="detach">Code to detach the event handler.</param>
-    /// <param name="testCode">A delegate to the code to be tested.</param>
-    public static void DoesNotRaise<T>(Action<EventHandler<T>> attach, Action<EventHandler<T>> detach, Action testCode)
-        where T : EventArgs
-    {
-        try
-        {
-            Raises(attach, detach, testCode);
-            Equal("No event was raised", "An event was raised.");
-        }
-        catch (Exception ex)
-        {
-            Equal($"(No event was raised){Environment.NewLine}EventArgs{Environment.NewLine}(No event was raised)", ex.Message);
         }
     }
 }

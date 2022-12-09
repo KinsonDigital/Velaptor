@@ -49,9 +49,9 @@ internal sealed class GLFWInvoker : IGLFWInvoker
     public bool Init() => this.glfw.Init();
 
     /// <inheritdoc/>
-    public IntPtr[] GetMonitors()
+    public nint[] GetMonitors()
     {
-        var result = new List<IntPtr>();
+        var result = new List<nint>();
 
         unsafe
         {
@@ -59,7 +59,7 @@ internal sealed class GLFWInvoker : IGLFWInvoker
 
             for (var i = 0; i < count; i++)
             {
-                result.Add((IntPtr)unsafeMonitorPointers[i]);
+                result.Add((nint)unsafeMonitorPointers[i]);
             }
         }
 
@@ -67,7 +67,7 @@ internal sealed class GLFWInvoker : IGLFWInvoker
     }
 
     /// <inheritdoc/>
-    public Vector2 GetMonitorContentScale(IntPtr monitor)
+    public Vector2 GetMonitorContentScale(nint monitor)
     {
         unsafe
         {
@@ -78,7 +78,7 @@ internal sealed class GLFWInvoker : IGLFWInvoker
     }
 
     /// <inheritdoc/>
-    public GLFWVideoMode GetVideoMode(IntPtr monitor)
+    public GLFWVideoMode GetVideoMode(nint monitor)
     {
         GLFWVideoMode result = default;
 

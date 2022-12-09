@@ -26,7 +26,7 @@ internal sealed class FontService : IFontService
     private readonly IFreeTypeInvoker freeTypeInvoker;
     private readonly ISystemMonitorService sysMonitorService;
     private readonly IPlatform platform;
-    private readonly IntPtr libraryPtr;
+    private readonly nint libraryPtr;
     private bool isDisposed;
 
     /// <summary>
@@ -54,11 +54,11 @@ internal sealed class FontService : IFontService
     }
 
     /// <inheritdoc/>
-    public IntPtr CreateFontFace(string fontFilePath)
+    public nint CreateFontFace(string fontFilePath)
     {
         var result = this.freeTypeInvoker.FT_New_Face(this.libraryPtr, fontFilePath, 0);
 
-        if (result == IntPtr.Zero)
+        if (result == nint.Zero)
         {
             throw new LoadFontException("An invalid pointer value of zero was returned when creating a new font face.");
         }
@@ -67,7 +67,7 @@ internal sealed class FontService : IFontService
     }
 
     /// <inheritdoc/>
-    public (byte[] pixelData, uint width, uint height) CreateGlyphImage(IntPtr facePtr, char glyphChar, uint glyphIndex)
+    public (byte[] pixelData, uint width, uint height) CreateGlyphImage(nint facePtr, char glyphChar, uint glyphIndex)
     {
         var face = Marshal.PtrToStructure<FT_FaceRec>(facePtr);
 
@@ -90,7 +90,7 @@ internal sealed class FontService : IFontService
     }
 
     /// <inheritdoc/>
-    public Dictionary<char, GlyphMetrics> CreateGlyphMetrics(IntPtr facePtr, Dictionary<char, uint> glyphIndices)
+    public Dictionary<char, GlyphMetrics> CreateGlyphMetrics(nint facePtr, Dictionary<char, uint> glyphIndices)
     {
         var result = new Dictionary<char, GlyphMetrics>();
 
@@ -153,7 +153,7 @@ internal sealed class FontService : IFontService
     }
 
     /// <inheritdoc/>
-    public Dictionary<char, uint> GetGlyphIndices(IntPtr facePtr, char[]? glyphChars)
+    public Dictionary<char, uint> GetGlyphIndices(nint facePtr, char[]? glyphChars)
     {
         if (glyphChars is null)
         {
@@ -174,14 +174,14 @@ internal sealed class FontService : IFontService
     }
 
     /// <inheritdoc/>
-    public void SetFontSize(IntPtr facePtr, uint sizeInPoints)
+    public void SetFontSize(nint facePtr, uint sizeInPoints)
     {
         if (sizeInPoints <= 0)
         {
             throw new ArgumentException("The font size must be larger than 0.", nameof(sizeInPoints));
         }
 
-        var sizeInPointsPtr = (IntPtr)(sizeInPoints << 6);
+        var sizeInPointsPtr = (nint)(sizeInPoints << 6);
 
         // If the main monitor is null, throw an exception.  This is required to set the character size.
         if (this.sysMonitorService.MainMonitor is null)
@@ -198,11 +198,11 @@ internal sealed class FontService : IFontService
     }
 
     /// <inheritdoc/>
-    public bool HasKerning(IntPtr facePtr)
+    public bool HasKerning(nint facePtr)
     {
         bool result;
 
-        if (facePtr == IntPtr.Zero)
+        if (facePtr == nint.Zero)
         {
             // TODO: This should invoke the error callback instead
             throw new Exception("The font face has not been created yet.");
@@ -219,7 +219,7 @@ internal sealed class FontService : IFontService
     }
 
     /// <inheritdoc/>
-    public float GetKerning(IntPtr facePtr, uint leftGlyphIndex, uint rightGlyphIndex)
+    public float GetKerning(nint facePtr, uint leftGlyphIndex, uint rightGlyphIndex)
     {
         if (HasKerning(facePtr) is false || leftGlyphIndex == 0 || rightGlyphIndex == 0)
         {
@@ -294,9 +294,9 @@ internal sealed class FontService : IFontService
     // TODO: Convert the size parameter to uint
 
     /// <inheritdoc/>
-    public float GetFontScaledLineSpacing(IntPtr facePtr, uint sizeInPoints)
+    public float GetFontScaledLineSpacing(nint facePtr, uint sizeInPoints)
     {
-        if (facePtr == IntPtr.Zero)
+        if (facePtr == nint.Zero)
         {
             throw new ArgumentException("The font face pointer must not be null.", nameof(facePtr));
         }
@@ -312,7 +312,7 @@ internal sealed class FontService : IFontService
     }
 
     /// <inheritdoc/>
-    public void DisposeFace(IntPtr facePtr) => this.freeTypeInvoker.FT_Done_Face(facePtr);
+    public void DisposeFace(nint facePtr) => this.freeTypeInvoker.FT_Done_Face(facePtr);
 
     /// <inheritdoc/>
     public void Dispose()

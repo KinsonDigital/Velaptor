@@ -34,7 +34,7 @@ public class FontTests : IDisposable
     private const string FontName = "test-font";
     private const string FontExtension = ".ttf";
     private readonly string fontFilePath;
-    private readonly IntPtr facePtr = new (5678);
+    private readonly nint facePtr = new (5678);
     private readonly Mock<IFontService> mockFontService;
     private readonly Mock<IFontStatsService> mockFontStatsService;
     private readonly Mock<ITexture> mockTexture;
@@ -453,7 +453,7 @@ public class FontTests : IDisposable
         sut.FontTextureAtlas.Should().Be(this.mockTexture.Object);
         sut.LineSpacing.Should().Be(123);
         this.mockFontAtlasService.VerifyNever(m => m.CreateFontAtlas(It.IsAny<string>(), It.IsAny<uint>()));
-        this.mockFontService.VerifyNever(m => m.GetFontScaledLineSpacing(It.IsAny<IntPtr>(), 0u));
+        this.mockFontService.VerifyNever(m => m.GetFontScaledLineSpacing(It.IsAny<nint>(), 0u));
     }
     #endregion
 

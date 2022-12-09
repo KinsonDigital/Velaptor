@@ -17,7 +17,6 @@ using Velaptor.OpenGL;
 using Velaptor.Reactables.Core;
 using Velaptor.Reactables.ReactableData;
 using Velaptor.Services;
-using Helpers;
 using Xunit;
 
 /// <summary>
@@ -62,7 +61,7 @@ public class TextureBatchingServiceTests
     public void Ctor_WhenReceivingBatchSizePushNotification_CreatesBatchItemList()
     {
         // Arrange & Act
-        var sut = CreateService();
+        var sut = CreateSystemUnderTest();
         this.reactor.OnNext(new BatchSizeData(4u));
 
         // Assert
@@ -73,7 +72,7 @@ public class TextureBatchingServiceTests
     public void Ctor_WhenEndNotificationsIsInvoked_UnsubscribesFromReactable()
     {
         // Arrange
-        _ = CreateService();
+        _ = CreateSystemUnderTest();
 
         // Act
         this.reactor.OnCompleted();
@@ -112,15 +111,14 @@ public class TextureBatchingServiceTests
 
         var batchItems = new List<TextureBatchItem> { batchItem1, batchItem2 };
         var expected = new ReadOnlyCollection<TextureBatchItem>(batchItems.ToReadOnlyCollection());
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        service.BatchItems = batchItems.ToReadOnlyCollection();
-        var actual = service.BatchItems;
+        sut.BatchItems = batchItems.ToReadOnlyCollection();
+        var actual = sut.BatchItems;
 
         // Assert
-        AssertExtensions.ItemsEqual(expected.ToArray(), actual.ToArray());
-        AssertExtensions.ItemsEqual(expected.ToArray(), actual.ToArray());
+        actual.Should().BeEquivalentTo(expected.ToArray());
     }
     #endregion
 
@@ -151,21 +149,18 @@ public class TextureBatchingServiceTests
             2,
             0);
 
-        var service = CreateService();
-        this.reactor.OnNext(new BatchSizeData(1u));
-        service.Add(batchItem1);
+        var sut = CreateSystemUnderTest();
 
-        // Act & Assert
-        Assert.Raises<EventArgs>(e =>
-        {
-            service.ReadyForRendering += e;
-        }, e =>
-        {
-            service.ReadyForRendering -= e;
-        }, () =>
-        {
-            service.Add(batchItem2);
-        });
+        var monitor = sut.Monitor();
+
+        this.reactor.OnNext(new BatchSizeData(1u));
+        sut.Add(batchItem1);
+
+        // Act
+        sut.Add(batchItem2);
+
+        // Assert
+        monitor.Should().Raise(nameof(TextureBatchingService.ReadyForRendering));
     }
 
     [Fact]
@@ -194,16 +189,16 @@ public class TextureBatchingServiceTests
             2,
             0);
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
         this.reactor.OnNext(new BatchSizeData(2u));
-        service.Add(batchItem1);
-        service.Add(batchItem2);
+        sut.Add(batchItem1);
+        sut.Add(batchItem2);
 
         // Act
-        service.EmptyBatch();
+        sut.EmptyBatch();
 
         // Assert
-        Assert.Equal(expected, service.BatchItems);
+        sut.BatchItems.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -213,16 +208,16 @@ public class TextureBatchingServiceTests
         var batchItem1 = default(TextureBatchItem);
         var batchItem2 = default(TextureBatchItem);
 
-        var service = CreateService();
+        var sut = CreateSystemUnderTest();
         this.reactor.OnNext(new BatchSizeData(2u));
-        service.BatchItems = new List<TextureBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
+        sut.BatchItems = new List<TextureBatchItem> { batchItem1, batchItem2 }.ToReadOnlyCollection();
 
         // Act
-        service.EmptyBatch();
+        sut.EmptyBatch();
 
         // Assert
-        Assert.Equal(batchItem1, service.BatchItems[0]);
-        Assert.Equal(batchItem2, service.BatchItems[1]);
+        sut.BatchItems[0].Should().BeEquivalentTo(batchItem1);
+        sut.BatchItems[1].Should().BeEquivalentTo(batchItem2);
     }
     #endregion
 
@@ -230,5 +225,5 @@ public class TextureBatchingServiceTests
     /// Creates a new instance of <see cref="TextureBatchingService"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private TextureBatchingService CreateService() => new (this.mockBatchSizeReactable.Object);
+    private TextureBatchingService CreateSystemUnderTest() => new (this.mockBatchSizeReactable.Object);
 }

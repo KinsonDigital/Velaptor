@@ -11,7 +11,7 @@ using Moq;
 using Velaptor.Input;
 using Velaptor.UI;
 using Fakes;
-using Helpers;
+using FluentAssertions;
 using Xunit;
 
 /// <summary>
@@ -50,7 +50,7 @@ public class ControlBaseTests
         var actual = sut.Name;
 
         // Act
-        Assert.Equal(string.Empty, actual);
+        actual.Should().BeEmpty();
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ControlBaseTests
         var actual = sut.Name;
 
         // Assert
-        Assert.Equal("test-name", actual);
+        actual.Should().Be("test-name");
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class ControlBaseTests
         var actual = sut.Position;
 
         // Assert
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -95,8 +95,8 @@ public class ControlBaseTests
         var actualPosX = sut.Position.X;
 
         // Assert
-        Assert.Equal(expected, actualLeft);
-        Assert.Equal(expected, actualPosX);
+        actualLeft.Should().Be(expected);
+        actualPosX.Should().Be(expected);
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class ControlBaseTests
         var actualPosX = sut.Position.X;
 
         // Assert
-        Assert.Equal(expected, actualRight);
-        Assert.Equal(20, actualPosX);
+        actualRight.Should().Be(expected);
+        actualPosX.Should().Be(20);
     }
 
     [Fact]
@@ -126,10 +126,10 @@ public class ControlBaseTests
 
         // Act
         sut.Top = 20;
-        var actualTop = sut.Top;
+        var actual = sut.Top;
 
         // Assert
-        Assert.Equal(expected, actualTop);
+        actual.Should().Be(expected);
     }
 
     [Fact]
@@ -143,11 +143,11 @@ public class ControlBaseTests
 
         // Act
         var actualBottom = sut.Bottom;
-        var positionY = sut.Position.Y;
+        var actualPosY = sut.Position.Y;
 
         // Assert
-        Assert.Equal(expected, actualBottom);
-        Assert.Equal(20, positionY);
+        actualBottom.Should().Be(expected);
+        actualPosY.Should().Be(20);
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class ControlBaseTests
         var actual = sut.Width;
 
         // Assert
-        Assert.Equal(11u, actual);
+        actual.Should().Be(11u);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class ControlBaseTests
         var actual = sut.Height;
 
         // Assert
-        Assert.Equal(11u, actual);
+        actual.Should().Be(11u);
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class ControlBaseTests
         var actual = sut.Visible;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class ControlBaseTests
         var actual = sut.Visible;
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
@@ -215,7 +215,7 @@ public class ControlBaseTests
         var actual = sut.Enabled;
 
         // Assert
-        Assert.True(actual);
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -229,44 +229,44 @@ public class ControlBaseTests
         var actual = sut.Enabled;
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
 
     [Fact]
     public void MouseDownColor_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var control = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = control.MouseDownColor;
+        var actual = sut.MouseDownColor;
 
         // Assert
-        Assert.Equal(Color.FromArgb(255, 190, 190, 190), actual);
+        actual.Should().Be(Color.FromArgb(255, 190, 190, 190));
     }
 
     [Fact]
     public void MouseHoverColor_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
-        var control = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        var actual = control.MouseHoverColor;
+        var actual = sut.MouseHoverColor;
 
         // Assert
-        Assert.Equal(Color.FromArgb(255, 230, 230, 230), actual);
+        actual.Should().Be(Color.FromArgb(255, 230, 230, 230));
     }
 
     [Fact]
     public void MouseDownColor_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var control = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        control.MouseDownColor = Color.FromArgb(11, 22, 33, 44);
-        var actual = control.MouseDownColor;
+        sut.MouseDownColor = Color.FromArgb(11, 22, 33, 44);
+        var actual = sut.MouseDownColor;
 
         // Assert
         Assert.Equal(Color.FromArgb(11, 22, 33, 44), actual);
@@ -276,14 +276,14 @@ public class ControlBaseTests
     public void MouseHoverColor_WhenSettingValue_ReturnsCorrectResult()
     {
         // Arrange
-        var control = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        control.MouseHoverColor = Color.FromArgb(11, 22, 33, 44);
-        var actual = control.MouseHoverColor;
+        sut.MouseHoverColor = Color.FromArgb(11, 22, 33, 44);
+        var actual = sut.MouseHoverColor;
 
         // Assert
-        Assert.Equal(Color.FromArgb(11, 22, 33, 44), actual);
+        actual.Should().Be(Color.FromArgb(11, 22, 33, 44));
     }
     #endregion
 
@@ -299,8 +299,8 @@ public class ControlBaseTests
         sut.LoadContent();
         var afterLoad = sut.IsLoaded;
 
-        Assert.False(beforeLoad);
-        Assert.True(afterLoad);
+        beforeLoad.Should().BeFalse();
+        afterLoad.Should().BeTrue();
     }
 
     [Theory]
@@ -335,10 +335,10 @@ public class ControlBaseTests
         sut.Update(default);
 
         // Assert
-        Assert.Equal(alpha, sut.TintColorValue.A);
-        Assert.Equal(red, sut.TintColorValue.R);
-        Assert.Equal(green, sut.TintColorValue.G);
-        Assert.Equal(blue, sut.TintColorValue.B);
+        sut.TintColorValue.A.Should().Be(alpha);
+        sut.TintColorValue.R.Should().Be(red);
+        sut.TintColorValue.G.Should().Be(green);
+        sut.TintColorValue.B.Should().Be(blue);
     }
 
     [Fact]
@@ -360,6 +360,7 @@ public class ControlBaseTests
         sut.Height = 100;
 
         sut.LoadContent();
+        var monitor = sut.Monitor();
 
         // Act
         sut.Update(default);
@@ -368,13 +369,7 @@ public class ControlBaseTests
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseStateWhenOverControl);
 
         // Assert
-        Assert.Raises<MousePositionEventArgs>(
-            e => sut.MouseMove += e,
-            e => sut.MouseMove -= e,
-            () =>
-            {
-                sut.Update(default);
-            });
+        monitor.Should().Raise(nameof(ControlBase.MouseMove));
     }
 
     [Fact]
@@ -393,18 +388,13 @@ public class ControlBaseTests
         sut.Height = 100;
 
         sut.LoadContent();
+        var monitor = sut.Monitor();
 
         // Act
         sut.Update(default);
 
         // Assert
-        Assert.Raises<EventArgs>(
-            e => sut.MouseDown += e,
-            e => sut.MouseDown -= e,
-            () =>
-            {
-                sut.Update(default);
-            });
+        monitor.Should().Raise(nameof(ControlBase.MouseDown));
     }
 
     [Fact]
@@ -425,22 +415,27 @@ public class ControlBaseTests
         sut.Width = 100;
         sut.Height = 100;
 
-        var clickInvoked = false;
+        var clickEventInvoked = false;
 
-        void CtrlClicked(object? sender, EventArgs e)
+        // ReSharper disable InconsistentNaming
+        void Control_Clicked(object? sender, EventArgs e)
         {
-            clickInvoked = true;
+            clickEventInvoked = true;
         }
 
-        void MouseUp(object? sender, EventArgs e)
+        void Control_MouseUp(object? sender, EventArgs e)
         {
-            Assert.False(clickInvoked, $"The '{nameof(ControlBase.MouseUp)}' event must be invoked before '{nameof(ControlBase.Click)}'");
+            const string becauseMsg =
+                $"The '{nameof(ControlBase.MouseUp)}' event must be invoked before the '{nameof(ControlBase.Click)}' event";
+            clickEventInvoked.Should().BeFalse(becauseMsg);
         }
 
-        sut.Click += CtrlClicked;
-        sut.MouseUp += MouseUp;
+        // ReSharper restore InconsistentNaming
+        sut.Click += Control_Clicked;
+        sut.MouseUp += Control_MouseUp;
 
         sut.LoadContent();
+        var monitor = sut.Monitor();
 
         // Act
         sut.Update(default);
@@ -448,14 +443,12 @@ public class ControlBaseTests
         // Set left mouse button as up which is a full click
         this.mockMouseInput.Setup(m => m.GetState()).Returns(mouseButtonUpOverControlState);
 
+        // Invoked update again after mouse button has been lifted
+        sut.Update(default);
+
         // Assert
-        Assert.Raises<EventArgs>(
-            e => sut.MouseUp += e,
-            e => sut.MouseUp -= e,
-            () =>
-            {
-                sut.Update(default);
-            });
+        monitor.Should().Raise(nameof(ControlBase.MouseUp));
+        monitor.Should().Raise(nameof(ControlBase.Click));
     }
 
     [Fact]
@@ -473,11 +466,13 @@ public class ControlBaseTests
         sut.Width = 100;
         sut.Height = 100;
 
-        // Act & Assert
-        AssertExtensions.DoesNotRaise<EventArgs>(
-            e => sut.MouseDown += e,
-            e => sut.MouseDown -= e,
-            () => sut.Update(default));
+        var monitor = sut.Monitor();
+
+        // Act
+        sut.Update(default);
+
+        // Assert
+        monitor.Should().NotRaise(nameof(ControlBase.MouseDown));
     }
 
     [Fact]
@@ -496,27 +491,29 @@ public class ControlBaseTests
         sut.Width = 100;
         sut.Height = 100;
 
+        var monitor = sut.Monitor();
+
         sut.LoadContent();
 
-        // Act & Assert
-        AssertExtensions.DoesNotRaise<EventArgs>(
-            e => sut.MouseDown += e,
-            e => sut.MouseDown -= e,
-            () => sut.Update(default));
+        // Act
+        sut.Update(default);
+
+        // Assert
+        monitor.Should().NotRaise(nameof(ControlBase.MouseDown));
     }
 
     [Fact]
     public void UnloadContent_WhenInvoked_SetsControlAsUnloaded()
     {
         // Arrange
-        var control = CreateSystemUnderTest();
+        var sut = CreateSystemUnderTest();
 
         // Act
-        control.UnloadContent();
-        var actual = control.IsLoaded;
+        sut.UnloadContent();
+        var actual = sut.IsLoaded;
 
         // Assert
-        Assert.False(actual);
+        actual.Should().BeFalse();
     }
     #endregion
 
@@ -525,5 +522,5 @@ public class ControlBaseTests
     /// </summary>
     /// <returns>The instance to test.</returns>
     private ControlBaseFake CreateSystemUnderTest()
-        => new ControlBaseFake(this.mockMouseInput.Object);
+        => new (this.mockMouseInput.Object);
 }
