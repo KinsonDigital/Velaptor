@@ -46,7 +46,7 @@ As with all software, there is always a chance for issues and bugs, especially f
    > This includes the other various projects within the application such as the unit testing and _**Velaptor Testing**_ projects.
 2. [#447](https://github.com/KinsonDigital/Velaptor/issues/447) - Improved the performance of the `Font` class.
    > **💡**
-   > These performance improves affect the render text process as well as UI controls that contain text.
+   > These performance improvements affect the render text process as well as UI controls that contain text.
    - Improved the performance of the `Font.Measure()` method which is used to measure the size of the text.
    - Improved the performance of the `Font.ToGlyphMetrics()` method which is used to get the metrics for all of the glyphs in a piece of text.
    - Improved the performance of the `Font.GetCharacterBounds()` method which is for getting a list of all the individual characters and the associated rectangular bounds of each character for a piece of text.
