@@ -10,7 +10,7 @@ When contributing with an issue, please only use the issues with the description
 
 **Considerations:**
 
-The **Velaptor** team will merge changes that improve the library significantly. We will not merge changes that have narrowly-defined benefits or are breaking in some way. All contributions must also follow all other guidelines outlined in this document.
+Only the **Velaptor** team will merge changes that improve the library significantly. We will not merge changes that have narrowly-defined benefits or are breaking in any way. All contributions must also follow all other guidelines outlined in this document.
 
 <h2 style="border:0;font-weight:bold" align="center">DOs and DON'Ts</h2>
 
