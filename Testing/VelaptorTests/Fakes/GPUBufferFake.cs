@@ -14,7 +14,7 @@ using NETSizeF = System.Drawing.SizeF;
 /// <summary>
 /// Used to test the abstract class <see cref="GPUBufferBase{TData}"/>.
 /// </summary>
-internal class GPUBufferFake : GPUBufferBase<TextureBatchItem>
+internal sealed class GPUBufferFake : GPUBufferBase<TextureBatchItem>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="GPUBufferFake"/> class for the purpose of testing.
