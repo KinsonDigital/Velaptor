@@ -295,7 +295,7 @@ public sealed class FontLoader : ILoader<IFont>
             }
 
             using var fontFileStream = this.embeddedFontResourceService.LoadResource(fontName);
-            using var copyToStream = this.fileStream.Create(filePath, FileMode.Create, FileAccess.Write);
+            using var copyToStream = this.fileStream.New(filePath, FileMode.Create, FileAccess.Write);
 
             fontFileStream?.CopyTo(copyToStream);
         }

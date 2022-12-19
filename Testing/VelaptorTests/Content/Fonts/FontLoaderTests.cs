@@ -8,7 +8,9 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.IO.Abstractions;
+using Fakes;
 using FluentAssertions;
+using Helpers;
 using Moq;
 using Velaptor.Content;
 using Velaptor.Content.Caching;
@@ -427,22 +429,22 @@ public class FontLoaderTests
 
         // Check that each file was created
         this.mockFileStream.Verify(m =>
-                m.Create(defaultRegularFontFilePath, FileMode.Create, FileAccess.Write),
+                m.New(defaultRegularFontFilePath, FileMode.Create, FileAccess.Write),
             Times.Once);
         this.mockFileStream.Verify(m =>
-                m.Create(defaultBoldFontFilePath, FileMode.Create, FileAccess.Write),
+                m.New(defaultBoldFontFilePath, FileMode.Create, FileAccess.Write),
             Times.Once);
         this.mockFileStream.Verify(m =>
-                m.Create(defaultItalicFontFilePath, FileMode.Create, FileAccess.Write),
+                m.New(defaultItalicFontFilePath, FileMode.Create, FileAccess.Write),
             Times.Never);
         this.mockFileStream.Verify(m =>
-                m.Create(defaultBoldItalicFontFilePath, FileMode.Create, FileAccess.Write),
+                m.New(defaultBoldItalicFontFilePath, FileMode.Create, FileAccess.Write),
             Times.Once);
 
-        mockRegularFontFileStream.Verify(m => m.CopyTo(mockCopyToRegularStream.Object, It.IsAny<int>()), Times.Once);
-        mockBoldFontFileStream.Verify(m => m.CopyTo(mockCopyToBoldStream.Object, It.IsAny<int>()), Times.Once);
-        mockItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToItalicStream.Object, It.IsAny<int>()), Times.Never);
-        mockBoldItalicFontFileStream.Verify(m => m.CopyTo(mockCopyToBoldItalicStream.Object, It.IsAny<int>()), Times.Once);
+        mockRegularFontFileStream.VerifyOnce(m => m.CopyTo(mockCopyToRegularStream.Object, It.IsAny<int>()));
+        mockBoldFontFileStream.VerifyOnce(m => m.CopyTo(mockCopyToBoldStream.Object, It.IsAny<int>()));
+        mockItalicFontFileStream.VerifyNever(m => m.CopyTo(mockCopyToItalicStream.Object, It.IsAny<int>()));
+        mockBoldItalicFontFileStream.VerifyOnce(m => m.CopyTo(mockCopyToBoldItalicStream.Object, It.IsAny<int>()));
     }
     #endregion
 
@@ -785,10 +787,10 @@ public class FontLoaderTests
     /// </summary>
     /// <param name="filePath">The file path to mock.</param>
     /// <returns>The mock object to verify against.</returns>
-    private Mock<Stream> MockCopyToStream(string filePath)
+    private Mock<FileSystemStreamFake> MockCopyToStream(string filePath)
     {
-        var result = new Mock<Stream>();
-        this.mockFileStream.Setup(m => m.Create(filePath, FileMode.Create, FileAccess.Write))
+        var result = new Mock<FileSystemStreamFake>();
+        this.mockFileStream.Setup(m => m.New(filePath, FileMode.Create, FileAccess.Write))
             .Returns(result.Object);
 
         return result;
