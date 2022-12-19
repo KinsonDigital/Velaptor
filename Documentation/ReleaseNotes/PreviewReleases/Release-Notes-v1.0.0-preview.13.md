@@ -14,8 +14,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">New Features ✨</h2>
 
 1. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Added layered rendering to textures. This includes a new optional parameter added to all of the `IRenderer` method overloads below:
-   > **💡**
-   > The layer parameter represents the layer where the texture will be rendered.  Smaller layers will be rendered
+   > **💡**The layer parameter represents the layer where the texture will be rendered.  Smaller layers will be rendered
    > behind layers with a higher layer value.  If two textures have the same layer, the order of rendering will be based
    > on the order of the `Render` method calls.  Negative layer values are allowed.
    - `IRender.Render(ITexture texture, int x, int y, int layer = 0)`
@@ -24,8 +23,7 @@ As with all software, there is always a chance for issues and bugs, especially f
    - `IRender.Render(ITexture texture, int x, int y, Color color, RenderEffects effects, int layer = 0)`
    - `IRender.Render(ITexture texture, NETRect srcRect, NETRect destRect, float size, float angle, Color color, RenderEffects effects, int layer = 0)`
 1. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Added layered rendering to text. This includes a new optional parameter added to all of the `IRenderer` method overloads below:
-   > **💡**
-   > The layer parameter represents the layer where the texture will be rendered.  Smaller layers will be rendered
+   > **💡**The layer parameter represents the layer where the texture will be rendered.  Smaller layers will be rendered
    > behind layers with a higher layer value.  If two textures have the same layer, the order of rendering will be based
    > on the order of the `Render` method calls.  Negative layer values are allowed.
    - `Render(IFont font, string text, int x, int y, int layer = 0)`
@@ -38,8 +36,7 @@ As with all software, there is always a chance for issues and bugs, especially f
    - `Render(IFont font, string text, int x, int y, float angle, Color color, int layer = 0)`
    - `Render(IFont font, string text, int x, int y, float renderSize, float angle, Color color, int layer = 0)`
 1. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Added layered rendering to rendering of rectangle primitives. This includes a new optional parameter added to all of the `IRenderer` method overloads below:
-      > **💡**
-      > The layer parameter represents the layer where the texture will be rendered.  Smaller layers will be rendered
+      > **💡**The layer parameter represents the layer where the texture will be rendered.  Smaller layers will be rendered
       > behind layers with a higher layer value.  If two textures have the same layer, the order of rendering will be based
       > on the order of the `Render` method calls.  Negative layer values are allowed.
      - `Render(RectShape rectangle, int layer = 0)`
@@ -49,8 +46,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 <h2 style="font-weight:bold" align="center">Bug Fixes 🐛</h2>
 
 1. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Fixed a bug where the default size value of one of the render text overloads was incorrect.
-    > **💡**
-    > The method overload that was fixed was the `IRenderer.Render(IFont, string, Vector2, Color, int)` method.
+    > **💡**The method overload that was fixed was the `IRenderer.Render(IFont, string, Vector2, Color, int)` method.
 
 ---
 
@@ -77,8 +73,7 @@ As with all software, there is always a chance for issues and bugs, especially f
 
 1. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Improved performance in rendering textures, text, and rectangle primitives.
 2. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Added a new feature to the **_Velaptor Testing_** application debug console to display all of the loaded textures.  This includes font atlas textures, regular atlas textures and full textures.
-   > **💡**
-   > Use the command `--show loaded-textures` in the testing application debug console to view the loaded textures.
+   > **💡**Use the command `--show loaded-textures` in the testing application debug console to view the loaded textures.
 3. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Refactored and cleaned up various areas of the code base.
 4. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Refactored, improved, and increased code coverage of unit tests across the code base.
 5. [#434](https://github.com/KinsonDigital/Velaptor/issues/434) - Created three new scenes in the **_Velaptor Testing_** application to test out layered rendering for textures, text, and rectangle primitives.
